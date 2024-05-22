@@ -2,30 +2,17 @@ package org.preesm.algorithm.clustering.scape;
 
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.Timings;
-import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.GPU;
-import org.preesm.model.slam.TimingType;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -63,9 +50,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
             values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
 
-        @Parameter(name = ClusteringScapeTask.NON_CLUSTER_PARAM,
-            description = "does not allow to group the actors entered in parameter",
-            values = { @Value(name = "String", effect = "disable cluster") }) })
+    })
 
 public class ClusteringScapeTask extends AbstractTaskImplementation {
 
@@ -77,9 +62,6 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
 
   public static final String LEVEL_PARAM          = "Level number";
   public static final String LEVEL_NUMBER_DEFAULT = "1";           // 1
-
-  public static final String NON_CLUSTER_PARAM   = "Non-cluster actor";
-  public static final String NON_CLUSTER_DEFAULT = "";
 
   public static final String PARAM_PRINTER    = "Printer";
   public static final String VALUE_PRINTER_IR = "IR";
@@ -109,88 +91,77 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
       default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
     };
 
-    final String nonClusterable = parameters.get(NON_CLUSTER_PARAM);
-    final String[] nonClusterableListStr = nonClusterable.split("\\*");
-
     // Task inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final Long stackSize = this.stack;
     final int clusterNumber = this.cluster;
 
-    final List<AbstractActor> nonClusterableList = new LinkedList<>();
-    for (final String element : nonClusterableListStr) {
-      for (final AbstractActor a : scenario.getAlgorithm().getExecutableActors()) {
-        if (a.getName().equals(element) && !nonClusterableList.contains(a)) {
-          nonClusterableList.add(a);
-        }
-      }
-    }
+    final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber);
 
-    final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, clusteringMode, clusterNumber);
-
-    final PiGraph tempGraph = clusteringScape.execute();
+    final Scenario outputScenario = clusteringScape.execute();
     final Map<Actor, Long> clusterMemory = clusteringScape.getClusterMemory();
 
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
-    output.put("PiMM", tempGraph);
+    output.put("PiMM", outputScenario.getAlgorithm());
     // update scenario, clear the intra cluster actors
-    for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
-      gp.getValue().clear();
-    }
-    // add all actor on all resources if full CPU
-    // Smarter alloc : Ewen (smart)
-
-    final Timings time = scenario.getTimings();
-
-    final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
-
-    int timingOnCPU = 0;
-    int timingOnGPU = 0;
-
-    for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
-      final AbstractActor actor = actorEntry.getKey();
-      final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
-
-      for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
-        final Component component = componentEntry.getKey();
-        final EMap<TimingType, String> timingMap = componentEntry.getValue();
-
-        for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
-          final TimingType timingType = timingEntry.getKey();
-          final String timingValue = timingEntry.getValue();
-
-          if (component.toString().contains("CPU")) {
-            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-              timingOnCPU += Integer.parseInt(timingValue);
-            }
-          } else if (component.toString().contains("GPU")) {
-            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-              timingOnGPU += Integer.parseInt(timingValue);
-            }
-          }
-        }
-      }
-    }
-
-    // End of smarter alloc
-
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
-        || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
-      scenario.getConstraints().getGroupConstraints()
-          .forEach(groupConstraint -> tempGraph.getAllActors().forEach(actor -> groupConstraint.getValue().add(actor)));
-      // temporary force srv/urc cluster to be map on GPU other on CPU if dual design
-      // TODO: implementing smarter allocation
-
-    } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
-      scenario.getConstraints().getGroupConstraints()
-          .forEach(gp -> tempGraph.getAllActors().stream()
-              .filter(actor -> (gp.getKey().getComponent() instanceof GPU
-                  && (actor.getName().contains("srv") || actor.getName().contains("urc")))
-                  || (gp.getKey().getComponent() instanceof CPU
-                      && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
-              .forEach(gp.getValue()::add));
-    }
+    // for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
+    // gp.getValue().clear();
+    // }
+    // // add all actor on all resources if full CPU
+    // // Smarter alloc : Ewen (smart)
+    //
+    // final Timings time = scenario.getTimings();
+    //
+    // final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
+    //
+    // int timingOnCPU = 0;
+    // int timingOnGPU = 0;
+    //
+    // for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
+    // final AbstractActor actor = actorEntry.getKey();
+    // final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
+    //
+    // for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
+    // final Component component = componentEntry.getKey();
+    // final EMap<TimingType, String> timingMap = componentEntry.getValue();
+    //
+    // for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
+    // final TimingType timingType = timingEntry.getKey();
+    // final String timingValue = timingEntry.getValue();
+    //
+    // if (component.toString().contains("CPU")) {
+    // if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+    // timingOnCPU += Integer.parseInt(timingValue);
+    // }
+    // } else if (component.toString().contains("GPU")) {
+    // if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+    // timingOnGPU += Integer.parseInt(timingValue);
+    // }
+    // }
+    // }
+    // }
+    // }
+    //
+    // // End of smarter alloc
+    //
+    // if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
+    // || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
+    // scenario.getConstraints().getGroupConstraints()
+    // .forEach(groupConstraint -> outputScenario.getAllActors().forEach(actor ->
+    // groupConstraint.getValue().add(actor)));
+    // // temporary force srv/urc cluster to be map on GPU other on CPU if dual design
+    // // TODO: implementing smarter allocation
+    //
+    // } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
+    // scenario.getConstraints().getGroupConstraints()
+    // .forEach(gp -> outputScenario.getAllActors().stream()
+    // .filter(actor -> (gp.getKey().getComponent() instanceof GPU
+    // && (actor.getName().contains("srv") || actor.getName().contains("urc")))
+    // || (gp.getKey().getComponent() instanceof CPU
+    // && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
+    // .forEach(gp.getValue()::add));
+    // }
 
     // return scenario updated
     output.put("scenario", scenario);
@@ -207,7 +178,6 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     parameters.put(STACK_PARAM, STACK_SIZE_DEFAULT);
     parameters.put(LEVEL_PARAM, LEVEL_NUMBER_DEFAULT);
     parameters.put(CLUSTERING_PARAM, CLUSTERING_MODE_DEFAULT);
-    parameters.put(NON_CLUSTER_PARAM, NON_CLUSTER_DEFAULT);
 
     return parameters;
   }

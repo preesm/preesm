@@ -6,7 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
+import java.util.Map.Entry;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -40,13 +41,24 @@ import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
+import org.preesm.model.scenario.Timings;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.TimingType;
-import org.preesm.model.slam.impl.GPUImpl;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
+/**
+ * This class apply the Scaling up of Cluster of Actors on Processing Element (SCAPE) transformation. Supported
+ * processing elements are x86 CPU cores and cuda GPU kernels.
+ *
+ * @author orenaud
+ * @author emichel
+ *
+ */
 public class ClusteringScape extends ClusterPartitioner {
 
   /**
@@ -78,7 +90,7 @@ public class ClusteringScape extends ClusterPartitioner {
     this.clusterMemory = new LinkedHashMap<>();
   }
 
-  public PiGraph execute() {
+  public Scenario execute() {
     // brings RV down to the lowest level
     initHierarchy();
 
@@ -96,15 +108,73 @@ public class ClusteringScape extends ClusterPartitioner {
     coarseCluster();
     // Pattern identification
     patternIDs();
-
+    // remove the temporary single sources that helped optimization algorithms
     final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
     scenario.setAlgorithm(multiBranch);
+    // check consistency
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     PiBRV.printRV(brv);
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
-    return graph;
+    scenarioUpdate();
+    return scenario;
+  }
+
+  private void scenarioUpdate() {
+    // TODO: refactor this method
+
+    // remove all actors to force mapping of each to the appropriate architecture type
+    scenario.getConstraints().getGroupConstraints().forEach(gp -> gp.getValue().clear());
+
+    // compute CPU-GPU timing
+    final Timings time = scenario.getTimings();
+
+    final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
+
+    int timingOnCPU = 0;
+    int timingOnGPU = 0;
+
+    for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
+      final AbstractActor actor = actorEntry.getKey();
+      final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
+
+      for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
+        final Component component = componentEntry.getKey();
+        final EMap<TimingType, String> timingMap = componentEntry.getValue();
+
+        for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
+          final TimingType timingType = timingEntry.getKey();
+          final String timingValue = timingEntry.getValue();
+
+          if (component.toString().contains("CPU")) {
+            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+              timingOnCPU += Integer.parseInt(timingValue);
+            }
+          } else if (component.toString().contains("GPU")) {
+            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
+              timingOnGPU += Integer.parseInt(timingValue);
+            }
+          }
+        }
+      }
+    }
+    // map according smart condition
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
+        || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
+      scenario.getConstraints().getGroupConstraints().forEach(groupConstraint -> scenario.getAlgorithm().getAllActors()
+          .forEach(actor -> groupConstraint.getValue().add(actor)));
+
+    } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
+      scenario.getConstraints().getGroupConstraints()
+          .forEach(gp -> scenario.getAlgorithm().getAllActors().stream()
+              .filter(actor -> (gp.getKey().getComponent() instanceof GPU
+                  && (actor.getName().contains("srv") || actor.getName().contains("urc")))
+                  || (gp.getKey().getComponent() instanceof CPU
+                      && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
+              .forEach(gp.getValue()::add));
+    }
+
   }
 
   /**
@@ -251,31 +321,25 @@ public class ClusteringScape extends ClusterPartitioner {
   private void executeMode0() {
     final Long fulcrumLevel = fulcrumLevelID - 1;
     if (hierarchicalLevelOrdered.containsKey(fulcrumLevel)) {
-      for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
-        PiGraph newCluster = null;
+      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevel)) {
+        PiGraph newGraph = null;
         boolean isHasCluster = true;
-        do {
+        while (isHasCluster) {
           final int size = graph.getAllChildrenGraphs().size();
-          final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-          // URC transfo
-          newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-              .cluster();
-          if (graph.getAllChildrenGraphs().size() == size) {
-            // SRV transfo
-            newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-                .cluster();
-          }
+
+          newGraph = applyClusterPartitionersData(piGraph);
+
           if (graph.getAllChildrenGraphs().size() == size) {
             isHasCluster = false;
           }
-          if (!newCluster.getChildrenGraphs().isEmpty()) {
-            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
-            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+          if (!newGraph.getChildrenGraphs().isEmpty()) {
+            final Long mem = mem(newGraph.getChildrenGraphs().get(0));
+            final String clusterName = newGraph.getChildrenGraphs().get(0).getName();
+            cluster(newGraph.getChildrenGraphs().get(0), scenario, stackSize);
             clusterMemory.put(findCluster(clusterName), mem);
             clusterId++;
           }
-        } while (isHasCluster);
+        }
       }
     }
     topCluster();
@@ -385,6 +449,24 @@ public class ClusteringScape extends ClusterPartitioner {
     }
   }
 
+  private PiGraph applyClusterPartitionersData(PiGraph piGraph) {
+    PiGraph newCluster;
+
+    final int size = graph.getAllChildrenGraphs().size();
+    final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
+
+    // URC transfo
+    newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
+        .cluster();
+
+    if (graph.getAllChildrenGraphs().size() == size) {
+      // SRV transfo
+      newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
+          .cluster();
+    }
+    return newCluster;
+  }
+
   private PiGraph applyClusterPartitioners(PiGraph piGraph) {
 
     PiGraph newCluster;
@@ -456,8 +538,9 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
 
-    // compute the cluster schedule
+    // add a temporary single source in case of multiple source
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
+    // compute the cluster schedule
     final List<ScapeSchedule> schedule = new ScheduleScape(singleBranch).execute();
     final Scenario clusterScenario = lastLevelScenario(singleBranch, scenario);
     // retrieve cluster timing
@@ -567,9 +650,9 @@ public class ClusteringScape extends ClusterPartitioner {
    *
    * @param repetitionVector
    *          list of the cluster repetition vector
-   * @param copiedCluster
+   * @param cluster
    *          PiGraph of the cluster
-   * @param scenario2
+   * @param scenario
    *          contains list of timing
    */
   private static Map<Component, Map<TimingType, String>> clusterTiming(Map<AbstractVertex, Long> repetitionVector,
@@ -587,57 +670,74 @@ public class ClusteringScape extends ClusterPartitioner {
       return clusterTiming; // Early exit
     }
 
-    final Design design = scenario.getDesign();
-    Long dedicatedMemSpeed = 0L;
-    Long unifiedMemSpeed = 0L;
-    Long memSize = 0L;
-    String memoryToUse = "";
-    for (final Component comp : design.getComponents()) {
-      if (comp instanceof GPUImpl) {
-        memSize = (long) ((GPUImpl) comp).getMemSize();
-        dedicatedMemSpeed = (long) ((GPUImpl) comp).getDedicatedMemSpeed();
-        unifiedMemSpeed = (long) ((GPUImpl) comp).getUnifiedMemSpeed();
-        memoryToUse = ((GPUImpl) comp).getMemoryToUse();
+    // Compute the execution time a a cluster running on each architecture type
+    for (final Component pe : archi.getProcessingElements()) {
+      if (pe instanceof final CPU cpu) {
+        clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
+            String.valueOf(timingCPU(repetitionVector, cluster, scenario, cpu)));
+      } else if (pe instanceof final GPU gpu) {
+        clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME, String.valueOf(timingGPU(cluster, gpu)));
       }
-    }
 
-    // For each processing element
-    for (final Component opId : archi.getProcessingElements()) {
-      // sum the actor timing contained in the cluster
-      Long sum = 0L;
-      for (final AbstractActor actor : cluster.getOnlyActors()) {
-        if (actor instanceof Actor) {
-          final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
-              .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
-
-          sum += scenario.getTimings().evaluateTimingOrDefault(aaa, opId, TimingType.EXECUTION_TIME)
-              * repetitionVector.get(actor);
-
-        }
-
-        clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
-
-      }
-      if (opId.getClass().getName().contains("GPU")) {
-        for (final DataPort test : cluster.getAllDataPorts()) {
-          final Long gpuInputSize = test.getPortRateExpression().evaluate();
-          double time;
-
-          if (memoryToUse.equalsIgnoreCase("unified")) {
-            time = ((double) gpuInputSize / (double) unifiedMemSpeed);
-          } else {
-            time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
-          }
-
-          sum += (long) time;
-        }
-        clusterTiming.get(opId).replace(TimingType.EXECUTION_TIME, String.valueOf(sum));
-      }
     }
     PreesmLogger.getLogger().log(Level.INFO,
         "Timing " + cluster.getName() + ": " + clusterTiming.get(archi.getProcessingElements().get(0)));
 
     return clusterTiming;
+  }
+
+  private static Long timingGPU(PiGraph cluster, GPU gpu) {
+    // If GPU parameters are different from 0, use their value, otherwise default to 1
+    final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 0 ? (long) gpu.getDedicatedMemSpeed() : 1;
+    final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 0 ? (long) gpu.getUnifiedMemSpeed() : 1;
+    final String memoryToUse = gpu.getMemoryToUse();
+
+    Long sum = 0L;
+    for (final DataPort dataPort : cluster.getAllDataPorts()) {
+      final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
+      double time;
+
+      if (memoryToUse.equalsIgnoreCase("unified")) {
+        time = ((double) gpuInputSize / (double) unifiedMemSpeed);
+      } else {
+        time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
+      }
+
+      sum += (long) time;
+    }
+
+    return sum;
+  }
+
+  /**
+   * The execution time of a cluster on a CPU processing element is the sum of executable actors only. There is no data
+   * transfer within an actor cluster, as it is built sequentially for this type of architecture.
+   *
+   * @param repetitionVector
+   *          list of the cluster repetition vector
+   * @param cluster
+   *          PiGraph of the cluster
+   * @param scenario
+   *          contains list of timing
+   * @param cpu
+   *          CPU-type processing element
+   * @return cluster execution time on CPU
+   */
+
+  private static Long timingCPU(Map<AbstractVertex, Long> repetitionVector, PiGraph cluster, Scenario scenario,
+      CPU cpu) {
+    // sum the actor timing contained in the cluster
+    Long sum = 0L;
+    for (final AbstractActor actor : cluster.getOnlyActors()) {
+      if (actor instanceof Actor) {
+        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
+            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
+
+        sum += scenario.getTimings().evaluateTimingOrDefault(aaa, cpu, TimingType.EXECUTION_TIME)
+            * repetitionVector.get(actor);
+      }
+    }
+    return sum;
   }
 
   /**
