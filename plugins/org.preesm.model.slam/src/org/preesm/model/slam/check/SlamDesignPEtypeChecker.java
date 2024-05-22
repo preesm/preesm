@@ -59,6 +59,19 @@ public class SlamDesignPEtypeChecker {
   }
 
   /**
+   * Checks if the design has CPU and GPU processing elements only (possibly not the same CPU/GPU).
+   *
+   * @param design
+   *          the design
+   * @return true if dual CPU GPU
+   */
+  public static boolean isEitherCPUGPU(final Design design) {
+    final List<ProcessingElement> pes = design.getProcessingElements();
+    return (!pes.isEmpty() && pes.stream().allMatch(x -> ((x instanceof CPU) || (x instanceof GPU)))
+        && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
+  }
+
+  /**
    * Checks if the design has a single FPGA processing element only.
    *
    * @param design

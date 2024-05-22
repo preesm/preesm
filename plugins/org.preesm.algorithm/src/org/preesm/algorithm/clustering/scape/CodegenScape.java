@@ -51,14 +51,14 @@ public class CodegenScape {
       for (final ScapeSchedule sche : schedule) {
         sche.setOnGPU(true);
       }
+
+      final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();
+      new CodegenScapeBuilder(build2, schedule, subGraph, stackSize);
+
+      final String cufile = clusterName + ".cu";
+      final StringConcatenation clusterCuContent = buildCuContent(build2, subGraph);
+      PreesmIOHelper.getInstance().print(clusterPath, cufile, clusterCuContent);
     }
-
-    final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();
-    new CodegenScapeBuilder(build2, schedule, subGraph, stackSize);
-
-    final String cufile = clusterName + ".cu";
-    final StringConcatenation clusterCuContent = buildCuContent(build2, subGraph);
-    PreesmIOHelper.getInstance().print(clusterPath, cufile, clusterCuContent);
   }
 
   /**
