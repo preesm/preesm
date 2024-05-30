@@ -1,12 +1,12 @@
 --- RCPTT testcase ---
 Format-Version: 1.0
-Element-Name: graphManipulation
+Element-Name: graphManipulation1
 Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _x_OAAAxsEe-T4to_uoKAPw
 Runtime-Version: 2.5.4.202210020716
-Save-Time: 5/10/24, 6:58 PM
+Save-Time: 5/17/24, 12:54 PM
 Testcase-Type: ecl
 Verifications: _L6vzQAyAEe-T4to_uoKAPw
 
@@ -18,10 +18,10 @@ get-menu -path "File/New/Project..." | click -metaKeys ""
 with [get-window "New Project"] {
     get-tree | select "Preesm/Preesm Project"
     get-button "Next >" | click -metaKeys ""
-    get-editbox -after [get-label "Project name:"] | set-text "pisdf-copy-paste"
+    get-editbox -after [get-label "Project name:"] | set-text "graphManipulation1"
     get-button Finish | click
 }
-get-view "Project Explorer" | get-tree | select "pisdf-copy-paste/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
+get-view "Project Explorer" | get-tree | select "graphManipulation1/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
     | click -metaKeys ""
 with [get-window "New Algorithm (PiMM)"] {
     get-editbox -after [get-label "File name:"] | set-text "graph.diagram"
@@ -794,7 +794,7 @@ with [get-editor graph] {
         key-type "M1+s"
     }
 }
-get-view "Project Explorer" | get-tree | select "pisdf-copy-paste/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
+get-view "Project Explorer" | get-tree | select "graphManipulation1/Algo" | get-menu -path "New/Preesm Algorithm (PiSDF)" 
     | click -metaKeys ""
 with [get-window "New Algorithm (PiMM)"] {
     get-editbox -after [get-label "File name:"] | set-text "graph2.diagram"

@@ -1,16 +1,16 @@
 --- RCPTT verification ---
 Format-Version: 1.0
-Element-Name: copyPasteVerification
+Element-Name: graphManipulation1Verification
 Element-Type: verification
 Element-Version: 2.0
 Id: _L6vzQAyAEe-T4to_uoKAPw
 Runtime-Version: 2.5.4.202210020716
-Save-Time: 5/9/24, 1:30 PM
+Save-Time: 5/17/24, 12:55 PM
 Verification-Type: org.eclipse.rcptt.verifications.workspace
 
-------=_contents/pisdf-copy-paste/Algo/graph2.pi-24a289cc-676f-3d59-972b-cf3a0718cf95
+------=_contents/graphManipulation1/Algo/graph2.pi-3724d501-79fe-3068-94d5-807e92fabf79
 Content-Type: q7/binary
-Entry-Name: contents/pisdf-copy-paste/Algo/graph2.pi
+Entry-Name: contents/graphManipulation1/Algo/graph2.pi
 
 UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAADlWF1vmzAUfc+vsPy+
 0ORpmpJUk9pJlaa2qjpNe4ocbCgLsZExWfPv5w8MGBwCKU9bHxow955z7vXFvmZ1+35IwZHwPGF0DRfz
@@ -28,10 +28,10 @@ KSZz2TOZnTXL0aGWkolm99kvom5fm7yNUU2eMnkWHE7evxA3hcVEwN5SWw6JH5OMUExoeKqFVCc6J9LR
 CL3r42hIe1Ttwewe9Ebq9BwExgO0G/krUtUpAvsBwXyS2cxW9tvMZvYXUEsHCF/zF6QHAwAA4xEAAFBL
 AQIUABQACAgIAAAAIQBf8xekBwMAAOMRAAAIAAkAAAAAAAAAAAAAAAAAAAAuY29udGVudFVUBQABAAAA
 AFBLBQYAAAAAAQABAD8AAABGAwAAAAA=
-------=_contents/pisdf-copy-paste/Algo/graph2.pi-24a289cc-676f-3d59-972b-cf3a0718cf95--
-------=_contents/pisdf-copy-paste/Algo/graph.diagram-2a29c1ff-2b44-3370-898f-4f6b00beb5c9
+------=_contents/graphManipulation1/Algo/graph2.pi-3724d501-79fe-3068-94d5-807e92fabf79--
+------=_contents/graphManipulation1/Algo/graph.diagram-ecb7828c-9498-3c22-8d61-127f79478e74
 Content-Type: q7/binary
-Entry-Name: contents/pisdf-copy-paste/Algo/graph.diagram
+Entry-Name: contents/graphManipulation1/Algo/graph.diagram
 
 UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAADtXVtz2zYWfu+v0Gif
 YxEX3jJxm2ySpp5pmkyS7u5bR5YZmY1uI8mJ3V+/oERSkIgbJZAAJbwkFgmCIIDv3HHOi18ep5Pe92S5
@@ -116,48 +116,10 @@ dh1nOT3yjgNWWxBRs5iVAcgbh8wh01Oe0VvRkCHcTQaIcNkYsdYHej415nIyAmbH1ChAUM5yKN0ku3kD
 ZXqSTUnN3mw4JVdfLdPhhOA9/SfZlDC9nU/uciIgbUwavBgQ6vImHRIwEfb1f1BLBwgy4TCovxIAAEps
 AQBQSwECFAAUAAgICAAAACEAMuEwqL8SAABKbAEACAAJAAAAAAAAAAAAAAAAAAAALmNvbnRlbnRVVAUA
 AQAAAABQSwUGAAAAAAEAAQA/AAAA/hIAAAAA
-------=_contents/pisdf-copy-paste/Algo/graph.diagram-2a29c1ff-2b44-3370-898f-4f6b00beb5c9--
-------=_contents/pisdf-copy-paste/Algo/graph.pi-2c11ce25-9d6a-312e-9203-83170bff720c
+------=_contents/graphManipulation1/Algo/graph.diagram-ecb7828c-9498-3c22-8d61-127f79478e74--
+------=_contents/graphManipulation1/Algo/graph2.diagram-fb738860-3f96-3e8e-ad35-16c3b63c8519
 Content-Type: q7/binary
-Entry-Name: contents/pisdf-copy-paste/Algo/graph.pi
-
-UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAADtWk1z2jAQvfMrPL4X
-A6dOB8il7UwuSQ7tmRG2cFyM5BGChn9ffViWZMtENsqhE3IIILTvvV2td2WZ5cPboYzOkBwLjFbxfDqL
-I4hSnBUoX8W/f/388jV+WE+WOQHVK5vJZqPjKn6ltPqWJPXoVLxmBPxlVlNM8kRMi9eTiP0t9/ASAUrJ
-FIEDXMUVIOyVMso42mGyioV1HBWZ9V3itj4DUoBtCR3G+qseW0Dy0wEiqmwRzqA01d/0mPL/sRygl4oN
-HClhzloiekwzWIJLvy3MctiYCqCID2VwB04lZeYFgSmFWR1NMS0DFESMpta1FmbLhA8bs7h7EXyrGMnM
-CG8c7QvUfEiuGhxeTIsDLjMe4E2N03xWNh2whvQRKZB0l28KtCl2IIXvsAvLzWy4YG1zk2QNc120yKCU
-YqKmyw96mphaYUItuOpE48i4Jkzgdy3qlXGaAIQwBVRc0U/PTz9ML/CJGijs04svRhNnCWapKVAYlO8j
-YTpehcKxBC0Tvty9CfPMLa1IX0sYfrHqq+JIUme+DFRcg3pp5nMNyUe0H6fAWkIF6qVgSzIFsiUYZCk4
-0gAaRidjZ/XnoYAWfgH5g4smI8T7EMEY60QLZvERl2Z/KFhv3CsI8f4z5wXZKgSCTyjbnnY76O4vnyM5
-RH/V3fnebj9pu7U3aF4NV5sEbbmb2aCma6gI2XZ9VbDGqxXcW69qvTom9+a718G4t9+tDsa9ATcIOaQU
-ErVr1X2Z1/HNRr7nPcbSJWnrM5ESnmHJz2EQjKNjDRco3RhckJjkcGxMWNJY9L0R0tkl42JZ9caIWf0/
-UeJHWm2EXbHDzCV8IinUezpLi/ySC6q3BxEFhHEZW0A5IKfwbIvkGdsZF1k7PvrYTMZ53bManZO0hMsf
-7s0gXz7AEz8/XPLV4YSpuR6zhCgPxJ28rd+Sn/iQCpBWlOZuPnl3eCuhRPFjdK7RcMoapsXpppR11Wac
-D6eUMF6M/D7zZj4O4sXWHECZlHowQPYsfN1cBEqeHkJ3X7Q08EIcKJte3CL0GaXJa4wK8hKj3I9c3091
-q0S7jht1oluzR611m/d6rQhBqnAG1IsQtA2Qd83oso6sGt6scoMcoHJ4Mxr30Y7qIYaD5FRvBek6PKKG
-eOyXTT05bC5ed3cYWcb8/e7dvoYpZQ4h7xSzNrc1PrCg9Tnnvx4jkyKDFUQZROlFi2memloeD0a4uskc
-DKkeB1/B7B6UDtTpeIQ1HKD9CGpEqDqX5VA8nQw93WBk+Pt6q5Nj5HI8IlO9cueWCDiPSceAdI85xy1G
-9zpXP8KQP2tZT5bq9y3ryT9QSwcIqF/FfN4DAAAnIwAAUEsBAhQAFAAICAgAAAAhAKhfxXzeAwAAJyMA
-AAgACQAAAAAAAAAAAAAAAAAAAC5jb250ZW50VVQFAAEAAAAAUEsFBgAAAAABAAEAPwAAAB0EAAAAAA==
-
-------=_contents/pisdf-copy-paste/Algo/graph.pi-2c11ce25-9d6a-312e-9203-83170bff720c--
-------=_.q7.content-3d2e0690-ce48-3609-83e0-c704d49f1eaf
-Content-Type: q7/binary
-Entry-Name: .q7.content
-
-UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAACdksFKxDAQQO/9ipB7
-Ey0iUtouPXgQFVYQ9baUNO1G20xIZrddv95kbQt72RVvk8ybNzMh2WrsO7KX1inQOb1mV5RILaBWus3p
-Dpv4jq6KKAPbMik6ZZxkVhhEJnBkA9gvZyoh0/c5epNWNUpU6H1k7FW6uJPg9t20S/19TreIJuV8GAYG
-fct8B/7x/DAjFxou5TMTyo8c9xxfOEp01XtagDmsK4cn81Gi6pxunm733y/lobyX8esNwmYHj+V6oEVE
-SCZAo9QYYn8yFj6lQDdJjXJ1Ewd1bIKb/mIebKCr/d4TV3YtLLmQVZ2cc62tzJbVqvJBT/lZyqjzQPI3
-T3Iiyvg07LQjn5c87s+XB8j4v/5AEf0AUEsHCNOruzEVAQAAYwIAAFBLAQIUABQACAgIAAAAIQDTq7sx
-FQEAAGMCAAAIAAkAAAAAAAAAAAAAAAAAAAAuY29udGVudFVUBQABAAAAAFBLBQYAAAAAAQABAD8AAABU
-AQAAAAA=
-------=_.q7.content-3d2e0690-ce48-3609-83e0-c704d49f1eaf--
-------=_contents/pisdf-copy-paste/Algo/graph2.diagram-06a91c6d-a81b-36b4-b3c1-32f02c1a48f8
-Content-Type: q7/binary
-Entry-Name: contents/pisdf-copy-paste/Algo/graph2.diagram
+Entry-Name: contents/graphManipulation1/Algo/graph2.diagram
 
 UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAADtXVlz2zgSfp9foeI+
 28JB8HDFM/HaOVyVwxV7dvdtipYYiROKVFF0Ys+vX1C8IBEEKZkHaPMlsYAm2Gj01+hGA+CbPx5X7uSn
@@ -213,4 +175,42 @@ GzLijP/oUASPJTXnP7qVIyEmuEoyyBQTm0becHShUEKr8VlmGgZaRqxzWUZ5/6ChZsSYNz4IEIaNrH9a
 VfeglglOr1SSfERgZji2JxYnnrWipReBY7kU8M4/9vaI6L3vzhMrUElMCd5MqXm5ciyKJmoW/w9QSwcI
 V5fSDv0LAACXtAAAUEsBAhQAFAAICAgAAAAhAFeX0g79CwAAl7QAAAgACQAAAAAAAAAAAAAAAAAAAC5j
 b250ZW50VVQFAAEAAAAAUEsFBgAAAAABAAEAPwAAADwMAAAAAA==
-------=_contents/pisdf-copy-paste/Algo/graph2.diagram-06a91c6d-a81b-36b4-b3c1-32f02c1a48f8--
+------=_contents/graphManipulation1/Algo/graph2.diagram-fb738860-3f96-3e8e-ad35-16c3b63c8519--
+------=_.q7.content-3d2e0690-ce48-3609-83e0-c704d49f1eaf
+Content-Type: q7/binary
+Entry-Name: .q7.content
+
+UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAACdks9PgzAUgO/8FU3v
+ax0xxpDCwsGD0SWaGPW2NKWwp6VtShnoX29BIO6waby99n393o+UbfpaoYN0DRid4jW5wEhqYQrQVYpb
+X66u8SaLmHEVkUKBbSRxwnpPhO9JZ9x7Y7mQycscPUsHJQjugw/1NSSLOx7coZpuknCf4r33NqG06zpi
+6oqECvR1ezsjvxRcns/M8HzkaODowmGkeR3oynG733INtlVjb+ufjWIERYp391eHz8f8I7+Rq6dLb3at
+ucsfOpxFCDFhtJfaD3E4WWfepPDNSTv+BgNaGlWEFUxkriqz5IYsKHlkIQXwENSYnqUsnAfiv3niIxGj
+U7PTlHQec9wAXVbA6L++QxZ9AVBLBwhvk8FlEAEAAG4CAABQSwECFAAUAAgICAAAACEAb5PBZRABAABu
+AgAACAAJAAAAAAAAAAAAAAAAAAAALmNvbnRlbnRVVAUAAQAAAABQSwUGAAAAAAEAAQA/AAAATwEAAAAA
+
+------=_.q7.content-3d2e0690-ce48-3609-83e0-c704d49f1eaf--
+------=_contents/graphManipulation1/Algo/graph.pi-9e4cfd3e-2425-340a-8b65-b5f3aae81d21
+Content-Type: q7/binary
+Entry-Name: contents/graphManipulation1/Algo/graph.pi
+
+UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAADtWk1z2jAQvfMrPL4X
+A6dOB8il7UwuSQ7tmRG2cFyM5BGChn9ffViWZMtENsqhE3IIILTvvV2td2WZ5cPboYzOkBwLjFbxfDqL
+I4hSnBUoX8W/f/388jV+WE+WOQHVK5vJZqPjKn6ltPqWJPXoVLxmBPxlVlNM8kRMi9eTiP0t9/ASAUrJ
+FIEDXMUVIOyVMso42mGyioV1HBWZ9V3itj4DUoBtCR3G+qseW0Dy0wEiqmwRzqA01d/0mPL/sRygl4oN
+HClhzloiekwzWIJLvy3MctiYCqCID2VwB04lZeYFgSmFWR1NMS0DFESMpta1FmbLhA8bs7h7EXyrGMnM
+CG8c7QvUfEiuGhxeTIsDLjMe4E2N03xWNh2whvQRKZB0l28KtCl2IIXvsAvLzWy4YG1zk2QNc120yKCU
+YqKmyw96mphaYUItuOpE48i4Jkzgdy3qlXGaAIQwBVRc0U/PTz9ML/CJGijs04svRhNnCWapKVAYlO8j
+YTpehcKxBC0Tvty9CfPMLa1IX0sYfrHqq+JIUme+DFRcg3pp5nMNyUe0H6fAWkIF6qVgSzIFsiUYZCk4
+0gAaRidjZ/XnoYAWfgH5g4smI8T7EMEY60QLZvERl2Z/KFhv3CsI8f4z5wXZKgSCTyjbnnY76O4vnyM5
+RH/V3fnebj9pu7U3aF4NV5sEbbmb2aCma6gI2XZ9VbDGqxXcW69qvTom9+a718G4t9+tDsa9ATcIOaQU
+ErVr1X2Z1/HNRr7nPcbSJWnrM5ESnmHJz2EQjKNjDRco3RhckJjkcGxMWNJY9L0R0tkl42JZ9caIWf0/
+UeJHWm2EXbHDzCV8IinUezpLi/ySC6q3BxEFhHEZW0A5IKfwbIvkGdsZF1k7PvrYTMZ53bManZO0hMsf
+7s0gXz7AEz8/XPLV4YSpuR6zhCgPxJ28rd+Sn/iQCpBWlOZuPnl3eCuhRPFjdK7RcMoapsXpppR11Wac
+D6eUMF6M/D7zZj4O4sXWHECZlHowQPYsfN1cBEqeHkJ3X7Q08EIcKJte3CL0GaXJa4wK8hKj3I9c3091
+q0S7jht1oluzR611m/d6rQhBqnAG1IsQtA2Qd83oso6sGt6scoMcoHJ4Mxr30Y7qIYaD5FRvBek6PKKG
+eOyXTT05bC5ed3cYWcb8/e7dvoYpZQ4h7xSzNrc1PrCg9Tnnvx4jkyKDFUQZROlFi2memloeD0a4uskc
+DKkeB1/B7B6UDtTpeIQ1HKD9CGpEqDqX5VA8nQw93WBk+Pt6q5Nj5HI8IlO9cueWCDiPSceAdI85xy1G
+9zpXP8KQP2tZT5bq9y3ryT9QSwcIqF/FfN4DAAAnIwAAUEsBAhQAFAAICAgAAAAhAKhfxXzeAwAAJyMA
+AAgACQAAAAAAAAAAAAAAAAAAAC5jb250ZW50VVQFAAEAAAAAUEsFBgAAAAABAAEAPwAAAB0EAAAAAA==
+
+------=_contents/graphManipulation1/Algo/graph.pi-9e4cfd3e-2425-340a-8b65-b5f3aae81d21--
