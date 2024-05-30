@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -41,7 +39,6 @@ import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioFactory;
-import org.preesm.model.scenario.Timings;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
@@ -49,7 +46,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.TimingType;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class apply the Scaling up of Cluster of Actors on Processing Element (SCAPE) transformation. Supported
@@ -91,6 +87,7 @@ public class ClusteringScape extends ClusterPartitioner {
   }
 
   public Scenario execute() {
+
     // brings RV down to the lowest level
     initHierarchy();
 
@@ -103,6 +100,9 @@ public class ClusteringScape extends ClusterPartitioner {
 
     // compute cluster-able level ID
     fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scapeMode, levelNumber, hierarchicalLevelOrdered);
+
+    // initializes all actors on CPU by default
+    graph.getAllActors().forEach(actor -> actor.setOnGPU(false));
 
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
@@ -118,62 +118,18 @@ public class ClusteringScape extends ClusterPartitioner {
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     scenarioUpdate();
+
     return scenario;
   }
 
   private void scenarioUpdate() {
-    // TODO: refactor this method
 
     // remove all actors to force mapping of each to the appropriate architecture type
-    scenario.getConstraints().getGroupConstraints().forEach(gp -> gp.getValue().clear());
+    scenario.getConstraints().getGroupConstraints().forEach(x -> x.getValue().clear());
 
-    // compute CPU-GPU timing
-    final Timings time = scenario.getTimings();
-
-    final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
-
-    int timingOnCPU = 0;
-    int timingOnGPU = 0;
-
-    for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
-      final AbstractActor actor = actorEntry.getKey();
-      final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
-
-      for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
-        final Component component = componentEntry.getKey();
-        final EMap<TimingType, String> timingMap = componentEntry.getValue();
-
-        for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
-          final TimingType timingType = timingEntry.getKey();
-          final String timingValue = timingEntry.getValue();
-
-          if (component.toString().contains("CPU")) {
-            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-              timingOnCPU += Integer.parseInt(timingValue);
-            }
-          } else if (component.toString().contains("GPU")) {
-            if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-              timingOnGPU += Integer.parseInt(timingValue);
-            }
-          }
-        }
-      }
-    }
-    // map according smart condition
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
-        || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
-      scenario.getConstraints().getGroupConstraints().forEach(groupConstraint -> scenario.getAlgorithm().getAllActors()
-          .forEach(actor -> groupConstraint.getValue().add(actor)));
-
-    } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
-      scenario.getConstraints().getGroupConstraints()
-          .forEach(gp -> scenario.getAlgorithm().getAllActors().stream()
-              .filter(actor -> (gp.getKey().getComponent() instanceof GPU
-                  && (actor.getName().contains("srv") || actor.getName().contains("urc")))
-                  || (gp.getKey().getComponent() instanceof CPU
-                      && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
-              .forEach(gp.getValue()::add));
-    }
+    // map all call on CPU
+    scenario.getConstraints().getGroupConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
+        .forEach(x -> scenario.getAlgorithm().getAllActors().forEach(actor -> x.getValue().add(actor)));
 
   }
 
@@ -333,9 +289,10 @@ public class ClusteringScape extends ClusterPartitioner {
             isHasCluster = false;
           }
           if (!newGraph.getChildrenGraphs().isEmpty()) {
-            final Long mem = mem(newGraph.getChildrenGraphs().get(0));
-            final String clusterName = newGraph.getChildrenGraphs().get(0).getName();
-            cluster(newGraph.getChildrenGraphs().get(0), scenario, stackSize);
+            final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
+            final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
+            final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
+            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
             clusterMemory.put(findCluster(clusterName), mem);
             clusterId++;
           }
@@ -343,6 +300,80 @@ public class ClusteringScape extends ClusterPartitioner {
       }
     }
     topCluster();
+  }
+
+  /**
+   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
+   * sequential parts. This extended method retains its parameterized nature, with the aim of reducing data parallelism
+   * and enhancing pipeline parallelism to align with the intended target.
+   *
+   */
+  private void executeMode1() {
+    final Long fulcrumLevel = fulcrumLevelID - 1;
+    if (hierarchicalLevelOrdered.containsKey(fulcrumLevel)) {
+      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevel)) {
+        PiGraph newGraph = null;
+        boolean isHasCluster = true;
+
+        while (isHasCluster) {
+
+          final int size = graph.getAllChildrenGraphs().size();
+
+          newGraph = applyClusterPartitioners(piGraph);
+
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newGraph.getChildrenGraphs().isEmpty()) {
+            final int newSize = graph.getAllChildrenGraphs().size();
+            for (int i = 0; i < (newSize - size); i++) {
+              final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
+              final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
+              final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
+              clusterMemory.put(findCluster(clusterName), mem);
+            }
+            clusterId++;
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
+   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
+   * on the context.
+   *
+   */
+  private void executeMode2() {
+    for (Long i = fulcrumLevelID - 1; i >= 0L; i--) {
+      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(i)) {
+        PiGraph newGraph = null;
+        boolean isHasCluster = true;
+        while (isHasCluster) {
+
+          final int size = graph.getAllChildrenGraphs().size();
+
+          newGraph = applyClusterPartitioners(piGraph);
+
+          if (graph.getAllChildrenGraphs().size() == size) {
+            isHasCluster = false;
+          }
+          if (!newGraph.getChildrenGraphs().isEmpty()) {
+            final int newSize = graph.getAllChildrenGraphs().size();
+            for (int j = 0; j < (newSize - size); j++) {
+              final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
+              final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
+              final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
+              clusterMemory.put(findCluster(clusterName), mem);
+            }
+            clusterId++;
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -379,74 +410,6 @@ public class ClusteringScape extends ClusterPartitioner {
       }
     }
     return null;
-  }
-
-  /**
-   *
-   * The first extension introduces two additional patterns to the original SCAPE method: LOOP for cycles and SEQ for
-   * sequential parts. This extended method retains its parameterised nature, with the aim of reducing data parallelism
-   * and enhancing pipeline parallelism to align with the intended target.
-   *
-   */
-  private void executeMode1() {
-    for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
-      PiGraph newCluster = null;
-      boolean isHasCluster = true;
-
-      while (isHasCluster) {
-
-        final int size = graph.getAllChildrenGraphs().size();
-
-        newCluster = applyClusterPartitioners(piGraph);
-
-        if (graph.getAllChildrenGraphs().size() == size) {
-          isHasCluster = false;
-        }
-        if (!newCluster.getChildrenGraphs().isEmpty()) {
-          final int newSize = graph.getAllChildrenGraphs().size();
-          for (int i = 0; i < (newSize - size); i++) {
-            final Long mem = mem(newCluster.getChildrenGraphs().get(0));
-            final String clusterName = newCluster.getChildrenGraphs().get(0).getName();
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
-            clusterMemory.put(findCluster(clusterName), mem);
-          }
-          clusterId++;
-        }
-      }
-    }
-  }
-
-  /**
-   * The second extension of the SCAPE method takes into account the hierarchical context when choosing the clustering
-   * approach. This allows for the adaptation of parallelism or the coarsening of identified hierarchical levels based
-   * on the context.
-   *
-   */
-  private void executeMode2() {
-    for (Long i = fulcrumLevelID; i >= 0L; i--) {
-      for (final PiGraph piGraph : hierarchicalLevelOrdered.get(i)) {
-        PiGraph newGraph = null;
-        boolean isHasCluster = true;
-        while (isHasCluster) {
-
-          final int size = graph.getAllChildrenGraphs().size();
-
-          newGraph = applyClusterPartitioners(piGraph);
-
-          if (graph.getAllChildrenGraphs().size() == size) {
-            isHasCluster = false;
-          }
-          if (!newGraph.getChildrenGraphs().isEmpty() && isHasCluster) {
-            final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
-            final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
-            final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
-            clusterMemory.put(findCluster(clusterName), mem);
-            clusterId++;
-          }
-        }
-      }
-    }
   }
 
   private PiGraph applyClusterPartitionersData(PiGraph piGraph) {
@@ -503,9 +466,9 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   private void coarseCluster() {
     final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
-    if (fulcrumLevelID < totalLevelNumber) {
+    if (fulcrumLevelID <= totalLevelNumber) {
 
-      for (Long i = totalLevelNumber; i > fulcrumLevelID; i--) {
+      for (Long i = totalLevelNumber; i >= fulcrumLevelID; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
           final String clusterName = g.getName();

@@ -27,6 +27,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -401,7 +402,7 @@ public class CodegenScapeBuilder {
   private String processClusteredDelay(ScapeSchedule sc) {
     final StringBuilder memcpy = new StringBuilder();
     for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
-      if (out.getFifo().isHasADelay()) {
+      if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
         memcpy.append(
             "memcpy(" + delay.getActor().getSetterActor().getName() + "," + delay.getActor().getGetterActor().getName()
@@ -419,7 +420,8 @@ public class CodegenScapeBuilder {
     if (sc.getActor() instanceof ExecutableActor) {
       String funcName = sc.getActor().getName();
       FunctionPrototype loopPrototype = null;
-      if (((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
+      if (((Actor) sc.getActor()).getRefinement() != null
+          && ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype() != null) {
         loopPrototype = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype();
         funcName = ((CHeaderRefinement) ((Actor) sc.getActor()).getRefinement()).getLoopPrototype().getName();
       }
@@ -469,7 +471,7 @@ public class CodegenScapeBuilder {
       if (in.getFifo().getSource() instanceof final DataInputInterface din) {
         scale = din.getDataPort().getExpression().evaluate() / sc.getRepetition();
         buffname = din.getName();
-      } else if (in.getFifo().isHasADelay()) {
+      } else if (in.getFifo().isHasADelay() && in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = in.getFifo().getDelay();
         buffname = delay.getActor().getSetterActor().getName();
       } else {
@@ -501,7 +503,7 @@ public class CodegenScapeBuilder {
       if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
         scale = dout.getDataPort().getExpression().evaluate() / sc.getRepetition();
         buffname = dout.getName();
-      } else if (out.getFifo().isHasADelay()) {
+      } else if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
         buffname = delay.getActor().getGetterActor().getName();
       } else {

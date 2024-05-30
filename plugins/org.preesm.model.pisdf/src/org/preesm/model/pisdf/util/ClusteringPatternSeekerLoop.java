@@ -31,7 +31,25 @@ public class ClusteringPatternSeekerLoop extends ClusteringPatternSeeker {
   }
 
   /**
-   * This function finds all the actors in a single-actor cycle
+   * This function finds all the actors in a single-actor cycle that can't be unrolled
+   *
+   * @return list of single-actor cycle
+   */
+  public List<AbstractActor> singleNotLocalseek() {
+    final List<AbstractActor> actorLOOP = new LinkedList<>();
+    for (final Delay delays : graph.getDelays()) {
+      if (!delays.getLevel().equals(PersistenceLevel.NONE)
+          && delays.getContainingFifo().getTarget().equals(delays.getContainingFifo().getSource())) {
+        actorLOOP.add((AbstractActor) delays.getContainingFifo().getTarget());
+        return actorLOOP;
+      }
+    }
+
+    return actorLOOP;
+  }
+
+  /**
+   * This function finds all the actors in a single-actor cycle that can be unrolled
    *
    * @return list of single-actor cycle
    */

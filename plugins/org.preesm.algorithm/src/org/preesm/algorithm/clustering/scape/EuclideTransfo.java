@@ -22,8 +22,11 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class divides the data parallelism according to Euclidean division based on the architecture's equivalent core
@@ -64,32 +67,34 @@ public class EuclideTransfo {
    * @return Transformed PiGraph
    */
   public PiGraph execute() {
-    // check if there is no global or local delay, and there is only single actor loop
-    if (graph.getDelays().stream().anyMatch(x -> x.getLevel() != PersistenceLevel.NONE) && !graph.getDelays().stream()
-        .allMatch(x -> x.getContainingFifo().getSource().equals(x.getContainingFifo().getTarget()))) {
-      return graph;
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
+      // check if there is no global or local delay, and there is only single actor loop
+      if (graph.getDelays().stream().anyMatch(x -> x.getLevel() != PersistenceLevel.NONE) && !graph.getDelays().stream()
+          .allMatch(x -> x.getContainingFifo().getSource().equals(x.getContainingFifo().getTarget()))) {
+        return graph;
+      }
+      final Long coreEquivalent = computeSingleNodeCoreEquivalent(scenario);
+      // construct hierarchical structure
+
+      hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
+      levelBound = (long) (hierarchicalLevelOrdered.size() - 1);
+
+      // compute Euclide-able level ID
+      divideIDs(coreEquivalent);
+
+      // check consistency
+      final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
+          CheckerErrorLevel.NONE);
+      pgcc.check(graph);
+      PiBRV.printRV(brv);
     }
-    final Long coreEquivalent = computeSingleNodeCoreEquivalent(scenario);
-    // construct hierarchical structure
-
-    hierarchicalLevelOrdered = HierarchicalRoute.fillHierarchicalStructure(graph);
-    levelBound = (long) (hierarchicalLevelOrdered.size() - 1);
-
-    // compute Euclide-able level ID
-    divideIDs(coreEquivalent);
-
-    // check consistency
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
-        CheckerErrorLevel.NONE);
-    pgcc.check(graph);
-    PiBRV.printRV(brv);
     return graph;
   }
 
   /**
-   * the method compute the number of equivalent cores that comes down to calculating the linear function that relates
-   * the frequency of the cores that make up the architecture.
+   * the method compute the number of equivalent CPU cores that comes down to calculating the linear function that
+   * relates the frequency of the cores that make up the architecture.
    *
    * @return The number of equivalent cores (not sure for Long value, may be an int)
    */
@@ -106,13 +111,17 @@ public class EuclideTransfo {
 
         Long sumTiming = 0L;
         Long slow = Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor,
-            inputArchi.getOperatorComponentInstances().get(0).getComponent()));
+            inputArchi.getOperatorComponentInstances().stream().map(ComponentInstance::getComponent)
+                .filter(component -> component instanceof CPU).findFirst().orElseThrow()));
         for (final ComponentInstance opId : inputArchi.getOperatorComponentInstances()) {
-          sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
-          final Long timeSeek = Long
-              .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
-          if (timeSeek < slow) {
-            slow = timeSeek;
+          final Component component = opId.getComponent();
+          if (component instanceof CPU) {
+            sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+            final Long timeSeek = Long
+                .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
+            if (timeSeek < slow) {
+              slow = timeSeek;
+            }
           }
         }
         coreEq += (sumTiming / slow);
@@ -122,7 +131,10 @@ public class EuclideTransfo {
     if (actorNumber > 0) {
       coreEq /= actorNumber;
     } else {
-      coreEq = (long) inputArchi.getOperatorComponentInstances().size();
+      // coreEq = (long) inputArchi.getOperatorComponentInstances().size();
+      coreEq = inputArchi.getOperatorComponentInstances().stream().filter(opId -> opId.getComponent() instanceof CPU)
+          .count();
+
     }
     return coreEq;
   }

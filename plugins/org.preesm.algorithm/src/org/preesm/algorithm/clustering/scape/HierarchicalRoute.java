@@ -5,9 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.preesm.algorithm.node.partitioner.PipelineCycleInfo;
-import org.preesm.model.pisdf.Delay;
-
+import java.util.logging.Level;
+import org.preesm.algorithm.clustering.partitioner.ScapeMode;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
@@ -69,6 +71,9 @@ public class HierarchicalRoute {
     final Long totalLevelNumber = (long) (hierarchicalLevelOrdered.size() - 1);
 
     if (scapeMode == ScapeMode.DATA || scapeMode == ScapeMode.DATA_PIPELINE) {
+      final String message = "Level configuration: 0-> full clustering, " + (totalLevelNumber + 1)
+          + "-> nothing, between -> cluster partially";
+      PreesmLogger.getLogger().log(Level.INFO, () -> message);
       return (long) levelNumber;
     }
 
@@ -88,7 +93,7 @@ public class HierarchicalRoute {
       }
     }
 
-    return count;
+    return count + 1;
   }
 
 }

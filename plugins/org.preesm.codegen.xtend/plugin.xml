@@ -70,7 +70,7 @@
             </core_type>
             <core_type type="ARM_CortexA15">
             </core_type>
-            <core_type type="defaultGPU">
+            <core_type type="CUDA">
             </core_type>
          </printer>
          <printer
