@@ -44,7 +44,6 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.BroadcastActor;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class AddBroadcastActorFeature.
  */

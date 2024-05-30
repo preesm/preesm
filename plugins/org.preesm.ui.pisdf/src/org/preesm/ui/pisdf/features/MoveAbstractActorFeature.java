@@ -123,49 +123,52 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
     final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
     final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-    if ((deltaX != 0) || (deltaY != 0)) {
-      final Set<FreeFormConnection> connectionSet = new HashSet<>();
-
-      final FreeFormConnection[] containerConnections = calculateContainerConnectionsLocal(context);
-      Collections.addAll(connectionSet, containerConnections);
-
-      final FreeFormConnection[] connectedConnections = calculateConnectedConnectionsLocal(context);
-      Collections.addAll(connectionSet, connectedConnections);
-
-      // Check if the delay is selected in the graphical interface
-      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
-          .getSelectedPictogramElements();
-
-      final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
-      final List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
-          .collect(Collectors.toList());
-
-      for (final Delay d : implicitlyMovedDelay) {
-        if (!listBO.contains(d)) {
-          listBO.add(d);
-          final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), d.getContainingFifo());
-          selectedPEs.add(cs);
-        }
-      }
-
-      final List<Object> listBOd = new ArrayList<>();
-      for (final Object o : listBO) {
-        if (o instanceof final Delay delay) {
-          listBOd.add(delay.getActor());
-        } else {
-          listBOd.add(o);
-        }
-      }
-
-      // add fifo to/from getter/setter if also selected
-      findExtraConnectedDelaysAndConnections(implicitlyMovedDelay, listBOd, selectedPEs, connectionSet,
-          implicitlyMovedDelay);
-
-      // Move implicitlyMovedDelays
-      implicitlyMovedDelay.forEach(del -> moveDelay(context, del));
-
-      connectionSet.forEach(conn -> moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY));
+    if ((deltaX == 0) && (deltaY == 0)) {
+      // Early exit
+      return;
     }
+
+    final Set<FreeFormConnection> connectionSet = new HashSet<>();
+
+    final FreeFormConnection[] containerConnections = calculateContainerConnectionsLocal(context);
+    Collections.addAll(connectionSet, containerConnections);
+
+    final FreeFormConnection[] connectedConnections = calculateConnectedConnectionsLocal(context);
+    Collections.addAll(connectionSet, connectedConnections);
+
+    // Check if the delay is selected in the graphical interface
+    final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
+        .getSelectedPictogramElements();
+
+    final List<PictogramElement> selectedPEs = new ArrayList<>(Arrays.asList(selectedPictogramElements));
+    final List<Object> listBO = selectedPEs.stream().map(e -> getBusinessObjectForPictogramElement(e))
+        .collect(Collectors.toList());
+
+    for (final Delay d : implicitlyMovedDelay) {
+      if (!listBO.contains(d)) {
+        listBO.add(d);
+        final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(getDiagram(), d.getContainingFifo());
+        selectedPEs.add(cs);
+      }
+    }
+
+    final List<Object> listBOd = new ArrayList<>();
+    for (final Object o : listBO) {
+      if (o instanceof final Delay delay) {
+        listBOd.add(delay.getActor());
+      } else {
+        listBOd.add(o);
+      }
+    }
+
+    // add fifo to/from getter/setter if also selected
+    findExtraConnectedDelaysAndConnections(implicitlyMovedDelay, listBOd, selectedPEs, connectionSet,
+        implicitlyMovedDelay);
+
+    // Move implicitlyMovedDelays
+    implicitlyMovedDelay.forEach(del -> moveDelay(context, del));
+
+    connectionSet.forEach(conn -> moveAllBendpointsOnFFConnectionLocal(conn, deltaX, deltaY));
   }
 
   /**
@@ -319,6 +322,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
     final FreeFormConnection[] ret = new FreeFormConnection[0];
 
     if (!(context.getShape() instanceof ContainerShape)) {
+      // Early exit
       return ret;
     }
 
@@ -332,50 +336,52 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
     final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
     final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-    if ((deltaX != 0) || (deltaY != 0)) {
+    if ((deltaX == 0) && (deltaY == 0)) {
+      // Early exit
+      return retList.toArray(ret);
+    }
 
-      final List<Anchor> anchorsFrom = getAnchorsLocal(shapeToMove);
-      final List<Anchor> anchorsTo = new ArrayList<>(anchorsFrom);
+    final List<Anchor> anchorsFrom = getAnchorsLocal(shapeToMove);
+    final List<Anchor> anchorsTo = new ArrayList<>(anchorsFrom);
 
-      for (final Anchor anchorFrom : anchorsFrom) {
+    for (final Anchor anchorFrom : anchorsFrom) {
 
-        final Collection<Connection> outgoingConnections = anchorFrom.getOutgoingConnections();
+      final Collection<Connection> outgoingConnections = anchorFrom.getOutgoingConnections();
 
-        for (final Connection connection : outgoingConnections) {
+      for (final Connection connection : outgoingConnections) {
 
-          final Object objFifo = getBusinessObjectForPictogramElement(connection);
-          Connection targetConnection = null;
-          Delay delay = null;
-          if (objFifo instanceof final Fifo fifo) {
-            delay = fifo.getDelay();
-            if (delay != null) {
-              // Is the second half of the connection the one given to the delete
-              // context, except if delay on setter.
-              final AnchorContainer parent = connection.getEnd().getParent();
-              final Object obj = getBusinessObjectForPictogramElement(parent);
-              if (obj instanceof final Delay d && obj == delay) {
-                targetConnection = getTargetConnection(this, d, parent, connection);
-              }
+        final Object objFifo = getBusinessObjectForPictogramElement(connection);
+        Connection targetConnection = null;
+        Delay delay = null;
+        if (objFifo instanceof final Fifo fifo) {
+          delay = fifo.getDelay();
+          if (delay != null) {
+            // Is the second half of the connection the one given to the delete
+            // context, except if delay on setter.
+            final AnchorContainer parent = connection.getEnd().getParent();
+            final Object obj = getBusinessObjectForPictogramElement(parent);
+            if (obj instanceof final Delay d && obj == delay) {
+              targetConnection = getTargetConnection(this, d, parent, connection);
             }
           }
+        }
 
-          for (final Anchor anchorTo : anchorsTo) {
+        for (final Anchor anchorTo : anchorsTo) {
 
-            final Collection<Connection> incomingConnections = anchorTo.getIncomingConnections();
-            if (incomingConnections.contains(connection) && connection instanceof final FreeFormConnection ffc) {
-              retList.add(ffc);
-            }
-
-            if (targetConnection != null && incomingConnections.contains(targetConnection)
-                && targetConnection instanceof final FreeFormConnection targetFfc) {
-              this.implicitlyMovedDelay.add(delay);
-              retList.add(targetFfc);
-              retList.add((FreeFormConnection) connection);
-              // we do not add self connections to the list of moved connections since we want the bendpoints
-              // to be recreated (they will be aligned and removed otherwise)
-            }
-
+          final Collection<Connection> incomingConnections = anchorTo.getIncomingConnections();
+          if (incomingConnections.contains(connection) && connection instanceof final FreeFormConnection ffc) {
+            retList.add(ffc);
           }
+
+          if (targetConnection != null && incomingConnections.contains(targetConnection)
+              && targetConnection instanceof final FreeFormConnection targetFfc) {
+            this.implicitlyMovedDelay.add(delay);
+            retList.add(targetFfc);
+            retList.add((FreeFormConnection) connection);
+            // we do not add self connections to the list of moved connections since we want the bendpoints
+            // to be recreated (they will be aligned and removed otherwise)
+          }
+
         }
       }
     }
@@ -400,64 +406,70 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
     final int deltaX = x - shapeToMove.getGraphicsAlgorithm().getX();
     final int deltaY = y - shapeToMove.getGraphicsAlgorithm().getY();
 
-    if ((deltaX != 0) || (deltaY != 0)) {
-      final List<Anchor> anchors = getAnchorsLocal(shapeToMove);
+    if ((deltaX == 0) && (deltaY == 0)) {
+      // Early exit
+      return retList.toArray(new FreeFormConnection[0]);
+    }
 
-      final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
-          .getSelectedPictogramElements();
-      if (selectedPictogramElements != null) {
-        for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
-          final PictogramElement selPe = selectedPictogramElement;
-          final Object objSel = getBusinessObjectForPictogramElement(selPe);
-          if (selPe != shapeToMove && (selPe instanceof final Shape selShape) && !(selPe instanceof Diagram)
-              && !(objSel instanceof Delay)) {
-            final List<Anchor> selShapeAnchors = getAnchorsLocal(selShape);
-            for (final Anchor toAnchor : selShapeAnchors) {
-              final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
-              for (final Connection inConn : incomingConnections) {
-                if (inConn instanceof FreeFormConnection) {
+    final List<Anchor> anchors = getAnchorsLocal(shapeToMove);
 
-                  final Object objFifo = getBusinessObjectForPictogramElement(inConn);
-                  Connection sourceConnection = null;
-                  Delay delay = null;
-                  if (objFifo instanceof final Fifo fifo) {
-                    delay = fifo.getDelay();
-                    if (delay != null) {
-                      // Is the second half of the inConn the one given to the delete
-                      // context, except if delay on setter.
-                      final AnchorContainer parent = inConn.getStart().getParent();
-                      final Object obj = getBusinessObjectForPictogramElement(parent);
-                      if (obj instanceof final Delay d && obj == delay) {
-                        sourceConnection = getSourceConnection(this, d, parent, inConn);
-                      }
-                    }
-                  }
-                  final Anchor startAnchor = inConn.getStart();
-                  if (anchors.contains(startAnchor)) {
-                    retList.add((FreeFormConnection) inConn);
-                    this.movedConnections.add((FreeFormConnection) inConn);
-                  }
+    final PictogramElement[] selectedPictogramElements = getDiagramBehavior().getDiagramContainer()
+        .getSelectedPictogramElements();
 
-                  if (sourceConnection != null) {
-                    final Anchor startSourceAnchor = sourceConnection.getStart();
-                    if (anchors.contains(startSourceAnchor)) {
-                      this.implicitlyMovedDelay.add(delay);
-                      retList.add((FreeFormConnection) sourceConnection);
-                      retList.add((FreeFormConnection) inConn);
-                      this.movedConnections.add((FreeFormConnection) sourceConnection);
-                      this.movedConnections.add((FreeFormConnection) inConn);
-                    }
+    if (selectedPictogramElements == null) {
+      // Early exit
+      return retList.toArray(new FreeFormConnection[0]);
+    }
+
+    for (final PictogramElement selectedPictogramElement : selectedPictogramElements) {
+      final PictogramElement selPe = selectedPictogramElement;
+      final Object objSel = getBusinessObjectForPictogramElement(selPe);
+      if (selPe != shapeToMove && (selPe instanceof final Shape selShape) && !(selPe instanceof Diagram)
+          && !(objSel instanceof Delay)) {
+        final List<Anchor> selShapeAnchors = getAnchorsLocal(selShape);
+        for (final Anchor toAnchor : selShapeAnchors) {
+          final EList<Connection> incomingConnections = toAnchor.getIncomingConnections();
+          for (final Connection inConn : incomingConnections) {
+
+            if (inConn instanceof final FreeFormConnection inCon) {
+              final Object objFifo = getBusinessObjectForPictogramElement(inCon);
+              Connection sourceConnection = null;
+              Delay delay = null;
+              if (objFifo instanceof final Fifo fifo) {
+                delay = fifo.getDelay();
+                if (delay != null) {
+                  // Is the second half of the inConn the one given to the delete
+                  // context, except if delay on setter.
+                  final AnchorContainer parent = inCon.getStart().getParent();
+                  final Object obj = getBusinessObjectForPictogramElement(parent);
+                  if (obj instanceof final Delay d && obj == delay) {
+                    sourceConnection = getSourceConnection(this, d, parent, inCon);
                   }
                 }
               }
-            }
+              final Anchor startAnchor = inConn.getStart();
+              if (anchors.contains(startAnchor)) {
+                retList.add(inCon);
+                this.movedConnections.add(inCon);
+              }
 
+              if (sourceConnection != null) {
+                final Anchor startSourceAnchor = sourceConnection.getStart();
+                if (anchors.contains(startSourceAnchor)) {
+                  this.implicitlyMovedDelay.add(delay);
+                  retList.add((FreeFormConnection) sourceConnection);
+                  retList.add(inCon);
+                  this.movedConnections.add((FreeFormConnection) sourceConnection);
+                  this.movedConnections.add(inCon);
+                }
+              }
+            }
           }
         }
       }
     }
-    return retList.toArray(new FreeFormConnection[0]);
 
+    return retList.toArray(new FreeFormConnection[0]);
   }
 
   private List<Anchor> getAnchorsLocal(Shape theShape) {

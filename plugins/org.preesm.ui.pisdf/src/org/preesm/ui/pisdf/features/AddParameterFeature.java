@@ -53,7 +53,6 @@ import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Add feature to add a {@link Parameter} to the Diagram.
  *

@@ -114,8 +114,7 @@ public class FileUtils {
       final Object[] children = super.getChildren(element);
       final List<Object> list = new ArrayList<>();
       for (final Object o : children) {
-        if (o instanceof IFile) {
-          final IFile file = (IFile) o;
+        if (o instanceof final IFile file) {
           if ((file.getFileExtension() != null) && this.fileExtensions.contains(file.getFileExtension())) {
             list.add(o);
           }
@@ -281,7 +280,8 @@ public class FileUtils {
           final boolean isContainer = element instanceof IContainer;
           if (isFile) {
             return true;
-          } else if (isContainer) {
+          }
+          if (isContainer) {
             final IContainer container = (IContainer) element;
             try {
               container.accept(resource -> {
@@ -324,7 +324,7 @@ public class FileUtils {
 
   /**
    * Create a file in the given folder path.
-   * 
+   *
    * @param iProject
    *          original project of the graph.
    * @param targetFolder

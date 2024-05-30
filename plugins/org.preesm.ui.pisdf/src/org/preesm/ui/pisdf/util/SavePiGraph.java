@@ -55,16 +55,20 @@ import org.preesm.ui.utils.FileUtils;
 
 /**
  * Helper to save a PiGraph from a menu command.
- * 
+ *
  * @author ahonorat
  */
 public class SavePiGraph {
+
+  private SavePiGraph() {
+    // Forbids instantiation
+  }
 
   /**
    * Opens a dialog box to select in which folder to write a PiGraph.
    * <p>
    * The folder can be picked in any project.
-   * 
+   *
    * @param iProject
    *          original project of the graph.
    * @param graph
@@ -89,7 +93,7 @@ public class SavePiGraph {
 
   /**
    * Write a PiGraph in the given folder path.
-   * 
+   *
    * @param iProject
    *          original project of the graph.
    * @param targetFolder
@@ -112,7 +116,7 @@ public class SavePiGraph {
     try (final OutputStream outStream = new FileOutputStream(osString);) {
       // Write the Graph to the OutputStream using the Pi format
       new PiWriter(uri).write(graph, outStream);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
     }
 

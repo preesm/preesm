@@ -45,7 +45,6 @@ import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.MoldableParameter;
 
-// TODO: Auto-generated Javadoc
 /**
  * Add feature to add a {@link MoldableParameter} to the Diagram.
  *
