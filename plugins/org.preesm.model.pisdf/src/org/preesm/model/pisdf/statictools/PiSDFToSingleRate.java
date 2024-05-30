@@ -119,6 +119,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   /** Current graph prefix */
   private String graphPrefix;
 
+  public static final String SRDAG_NAME_SUFFIX = "_srdag";
+
   /**
    * Current instance: stores the firing number of the current element. This is a global firing id: from 0 to full
    * repetition vector - 1 (not local default repetition vector).
@@ -221,6 +223,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " SRDAG with " + acyclicSRPiMM.getAllActors().size()
         + " vertices and " + acyclicSRPiMM.getAllFifos().size() + " edges ");
+
+    acyclicSRPiMM.setName(acyclicSRPiMM.getName() + SRDAG_NAME_SUFFIX);
+
     return acyclicSRPiMM;
   }
 
