@@ -44,6 +44,7 @@ import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ForkActor;
@@ -54,7 +55,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * This class selects color for Gantt Actors, based on their type.
- * 
+ *
  * @author ahonorat
  */
 public class TaskColorSelector extends PiMMSwitch<Color> {
@@ -69,6 +70,7 @@ public class TaskColorSelector extends PiMMSwitch<Color> {
   private final Color seActorC;
   private final Color rsActorC;
   private final Color reActorC;
+  private final Color gpuActorC;
 
   /**
    * Initializes default colors.
@@ -88,6 +90,7 @@ public class TaskColorSelector extends PiMMSwitch<Color> {
     forkActorC = new Color(255, 165, 79);
     rbActorC = new Color(255, 218, 185);
     bcActorC = new Color(222, 184, 135);
+    gpuActorC = new Color(116, 183, 27);
 
   }
 
@@ -158,15 +161,20 @@ public class TaskColorSelector extends PiMMSwitch<Color> {
     return rbActorC;
   }
 
+  @Override
+  public Color caseActor(final Actor actor) {
+    return gpuActorC;
+  }
+
   /**
    * Return a color for vertices in MapperDAG
-   * 
+   *
    * @param vertex
    *          Vertex to consider.
    * @return Color, or null if default actor.
    */
   public Color mapperDAGcompability(MapperDAGVertex vertex) {
-    String kind = vertex.getKind();
+    final String kind = vertex.getKind();
     Color res = null;
     if (kind != null) {
       switch (kind) {
@@ -188,6 +196,9 @@ public class TaskColorSelector extends PiMMSwitch<Color> {
           break;
         case MapperDAGVertex.DAG_INIT_VERTEX:
           res = initActorC;
+          break;
+        case MapperDAGVertex.DAG_GPU_OFFLOAD:
+          res = gpuActorC;
           break;
         default:
       }

@@ -122,7 +122,8 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     }
 
     // filter multinode interface
-    if (base.getName().startsWith("urc_") || base.getName().startsWith("src_") || base.getName().startsWith("snk_")
+    if (base.getName().startsWith("urc_") || base.getName().startsWith("src_") || base.getName().startsWith("loop_")
+        || base.getName().startsWith("snk_")
         || base.getDataInputPorts().stream()
             .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("src_"))
         || base.getDataInputPorts().stream().anyMatch(
@@ -197,7 +198,8 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
       // URC)
       if (Boolean.TRUE.equals(
           Objects.equals(brv.get(candidate), brv.get(base)) && noCycle && para && !(candidate instanceof PiGraph))
-          && !candidate.getName().startsWith("urc_") && !candidate.getName().startsWith("srv_") && candidate != base) {
+          && !candidate.getName().startsWith("urc_") && !candidate.getName().startsWith("srv_")
+          && !candidate.getName().startsWith("loop_") && candidate != base) {
         // Return the candidate
         return candidate;
       }

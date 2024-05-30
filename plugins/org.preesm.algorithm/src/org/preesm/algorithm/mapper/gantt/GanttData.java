@@ -53,6 +53,7 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -121,6 +122,11 @@ public class GanttData {
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
+      if (currentVertex.getKind().equals(MapperDAGVertex.DAG_VERTEX)
+          && ((Actor) currentVertex.getOrigVertex()).isOnGPU()) {
+        currentVertex.setKind(MapperDAGVertex.DAG_GPU_OFFLOAD);
+
+      }
       final ComponentInstance cmp = currentVertex.getEffectiveComponent();
 
       if (cmp != null) {
@@ -136,12 +142,13 @@ public class GanttData {
         PreesmLogger.getLogger().log(Level.SEVERE, message);
       }
     }
+
     return true;
   }
 
   /**
    * Fills GanntData with new synthesis results.
-   * 
+   *
    * @param mapping
    *          Mapping of actors.
    * @param execTimings
@@ -151,10 +158,10 @@ public class GanttData {
   public boolean insertSchedulerMapping(final Mapping mapping,
       final Map<AbstractActor, ActorExecutionTiming> execTimings) {
     final TaskColorSelector tcs = new TaskColorSelector();
-    for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
-      AbstractActor aa = e.getKey();
-      ActorExecutionTiming aet = e.getValue();
-      for (ComponentInstance ci : mapping.getMapping(aa)) {
+    for (final Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final ActorExecutionTiming aet = e.getValue();
+      for (final ComponentInstance ci : mapping.getMapping(aa)) {
         if (!insertTask(aa.getName(), ci.getInstanceName(), aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
           return false;
         }
@@ -172,6 +179,15 @@ public class GanttData {
   public List<GanttComponent> getComponents() {
     final List<GanttComponent> componentList = new ArrayList<>(this.components.values());
     Collections.sort(componentList);
+    return componentList;
+  }
+
+  // mais pourquoi il met pas à jour la liste...
+  public List<GanttComponent> addComponent(GanttComponent component) {
+    final List<GanttComponent> componentList = new ArrayList<>(this.components.values());
+    componentList.add(component);
+    this.components.put(component.getId(), component);
+    // this.components.put(component.getId(), component);
     return componentList;
   }
 

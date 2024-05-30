@@ -103,6 +103,8 @@ public class MapperDAGVertex extends DAGVertex {
 
   /** Key to access to property dag_broadcast_vertex. */
   public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
+  /** Key to access to property dag_broadcast_vertex. */
+  public static final String DAG_GPU_OFFLOAD = "gpu_offload_vertex";
 
   static {
     AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
@@ -151,9 +153,8 @@ public class MapperDAGVertex extends DAGVertex {
       @SuppressWarnings("unchecked")
       final T lookupVertex = (T) referencePiMMGraph.lookupVertex(this.getName());
       return lookupVertex;
-    } else {
-      return referencePiVertex;
     }
+    return referencePiVertex;
   }
 
   /*
@@ -176,8 +177,7 @@ public class MapperDAGVertex extends DAGVertex {
       result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
           ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
           ((ReceiveVertex) this).getNodeIndex(), origVertex);
-    } else if (this instanceof TransferVertex) {
-      final TransferVertex t = (TransferVertex) this;
+    } else if (this instanceof final TransferVertex t) {
       result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
           t.getNodeIndex(), origVertex);
     } else {
@@ -218,8 +218,7 @@ public class MapperDAGVertex extends DAGVertex {
   @Override
   public boolean equals(final Object obj) {
 
-    if (obj instanceof MapperDAGVertex) {
-      final MapperDAGVertex v = (MapperDAGVertex) obj;
+    if (obj instanceof final MapperDAGVertex v) {
       return (getName().compareTo(v.getName()) == 0);
     }
 
@@ -320,9 +319,11 @@ public class MapperDAGVertex extends DAGVertex {
   public String getPropertyStringValue(final String propertyName) {
     if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
       return getEffectiveOperator().getComponent().getVlnv().getName();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
       return getInit().getInitialOperatorList().toString();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
       return getInit().getParentVertex().getId();
     } else if (propertyName.equals(ImplementationPropertyNames.Task_duration)) {
       return String.valueOf(getTiming().getCost());
@@ -371,6 +372,10 @@ public class MapperDAGVertex extends DAGVertex {
     return ((MapperDAG) getBase()).getMappings().getMapping(getName());
   }
 
+  public org.preesm.model.pisdf.AbstractVertex getOrigVertex() {
+    return origVertex;
+  }
+
   /**
    * A computation vertex has an effective operator: the operator executing it.
    *
@@ -379,9 +384,8 @@ public class MapperDAGVertex extends DAGVertex {
   public ComponentInstance getEffectiveOperator() {
     if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof ProcessingElement)) {
       return this.effectiveComponent;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**

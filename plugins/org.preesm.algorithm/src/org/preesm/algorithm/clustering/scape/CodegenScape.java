@@ -84,7 +84,7 @@ public class CodegenScape {
     result.append(build.getInitFunc() + ";\n");
     result.append(build.getLoopFunc() + ";\n");
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
-      if (actor instanceof Actor) {
+      if (actor instanceof final Actor a && a.getRefinement() != null) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
         result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
       }
@@ -128,7 +128,7 @@ public class CodegenScape {
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
-        if (cHeaderRefinement.getInitPrototype() != null) {
+        if (cHeaderRefinement != null && cHeaderRefinement.getInitPrototype() != null) {
           result.append(cHeaderRefinement.getInitPrototype().getName() + "();\n\n");
         }
       }

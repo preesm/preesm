@@ -207,6 +207,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseActor(final Actor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
+
+    if (actor.isOnGPU()) {
+      vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.DAG_GPU_OFFLOAD);
+    }
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
@@ -389,8 +393,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
     for (final ConfigInputPort p : actor.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue((param.getExpression().getExpressionAsString()));
         vertex.getArguments().addArgument(arg);
@@ -684,7 +687,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Check that we are indeed in a flat graph
-    for (PiGraph childrenGraph : graph.getChildrenGraphs()) {
+    for (final PiGraph childrenGraph : graph.getChildrenGraphs()) {
       if (!childrenGraph.isCluster()) {
         throw new UnsupportedOperationException("This method is not applicable for non flatten PiMM Graphs.");
       }

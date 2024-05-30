@@ -63,6 +63,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
   private final int       clusterId;
   private final ScapeMode scapeMode;
   private final PiGraph   graph;
+  Boolean                 isOnGPU = false;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -80,7 +81,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    */
   public ClusterPartitionerSRV(PiGraph graph, final Scenario scenario, final int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
-    super(scenario.getAlgorithm(), scenario, numberOfPEs);
+    super(graph, scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
@@ -106,10 +107,12 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
+      // compute mapping
+      final Long nPE = ClusterPartitionerURC.mapping(graphSRVs, scenario, numberOfPEs, isOnGPU, brv);
 
       // apply scaling
       final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
-          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, scapeMode);
+          brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -121,7 +124,8 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
         dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
       }
     }
-
+    // map the cluster on the CPU or GPU according to timing
+    this.graph.setOnGPU(isOnGPU);
     return this.graph;
   }
 

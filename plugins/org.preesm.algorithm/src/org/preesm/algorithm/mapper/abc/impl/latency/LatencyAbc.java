@@ -40,6 +40,7 @@
  */
 package org.preesm.algorithm.mapper.abc.impl.latency;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -78,6 +79,7 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -188,6 +190,15 @@ public abstract class LatencyAbc {
     }
   }
 
+  /**
+   * Gets the task scheduler of the current ABC.
+   *
+   * @return The task scheduler.
+   */
+  public AbstractTaskSched getTaskScheduler() {
+    return this.taskScheduler;
+  }
+
   public final MapperDAG getDAG() {
     return this.dag;
   }
@@ -267,9 +278,8 @@ public abstract class LatencyAbc {
             && effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
           // skip remapping if operator is already properly set
           return;
-        } else {
-          finalOperator = initEffectiveOperator;
         }
+        finalOperator = initEffectiveOperator;
       } else {
         finalOperator = specifiedOperator;
       }
@@ -284,7 +294,8 @@ public abstract class LatencyAbc {
 
     // Testing if the vertex or its group can be mapped on the
     // target operator
-    if (isMapable(impvertex, finalOperator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
+    if (isMapable(impvertex, finalOperator, false) || !updateRank || (impvertex instanceof TransferVertex)
+        || ((AbstractActor) dagvertex.getOrigVertex()).isOnGPU()) {
 
       // Implementation property is set in both DAG and
       // implementation
@@ -294,8 +305,21 @@ public abstract class LatencyAbc {
       impvertex.setEffectiveComponent(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
+      // if (((AbstractActor) dagvertex.getOrigVertex()).isOnGPU()) {
+      // final ComponentInstance gpuOperator = this.archi.getComponentInstances().stream()
+      // .filter(x -> x.getComponent() instanceof GPU).findFirst().orElseThrow();
+      //
+      // final MapperDAGVertex copyDagVertex = dagvertex.copy();
+      // final MapperDAGVertex copyImpVertex = impvertex.copy();
+      //
+      // copyDagVertex.setEffectiveComponent(gpuOperator);
+      // copyImpVertex.setEffectiveComponent(gpuOperator);
+      //
+      // fireNewMappedVertex(copyImpVertex, true);
+      // }
 
     } else {
+
       final String msg = impvertex + " can not be mapped (single) on " + finalOperator;
       PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }
@@ -522,21 +546,19 @@ public abstract class LatencyAbc {
 
     if (ECollections.indexOf(opList, preferedOperator, 0) != -1) {
       return preferedOperator;
-    } else {
-
-      // Search among the operators with same type than the prefered one
-      for (final ComponentInstance op : opList) {
-        if ((preferedOperator != null)
-            && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
-          return op;
-        }
+    }
+    // Search among the operators with same type than the prefered one
+    for (final ComponentInstance op : opList) {
+      if ((preferedOperator != null)
+          && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
+        return op;
       }
+    }
 
-      // Search among the operators with other type than the prefered one
-      for (final ComponentInstance op : opList) {
-        if (isMapable(currentvertex, op, true)) {
-          return op;
-        }
+    // Search among the operators with other type than the prefered one
+    for (final ComponentInstance op : opList) {
+      if (isMapable(currentvertex, op, true)) {
+        return op;
       }
     }
 
@@ -971,7 +993,7 @@ public abstract class LatencyAbc {
 
   /**
    * Set the best latency of this LatencyAbc.
-   * 
+   *
    * @param bestLatency
    *          value to set.
    */
@@ -1026,6 +1048,12 @@ public abstract class LatencyAbc {
     final GanttData ganttData = new GanttData();
     ganttData.insertDag(this.implementation);
     return ganttData;
+  }
+
+  public void setGanttData(GanttData ganttData) {
+
+    ganttData.insertTask("srv_8_1_0 (x1)", "gpu", 2, 10000, Color.CYAN);
+    // ganttData.insertDag(this.implementation); // assuming GanttData has a method to get the DAG
   }
 
   /**
@@ -1130,4 +1158,5 @@ public abstract class LatencyAbc {
 
     }
   }
+
 }

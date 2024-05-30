@@ -93,7 +93,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
    */
   public ClusterPartitionerLOOP(final PiGraph graph, final Scenario scenario, int numberOfPEs,
       Map<AbstractVertex, Long> brv, int clusterId) {
-    super(scenario.getAlgorithm(), scenario, numberOfPEs);
+    super(graph, scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
   }
@@ -129,7 +129,19 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
         duplicationValue = brv.get(graphLocalSingleLOOPs.get(0));
       }
       semiUnroll(graphLocalSingleLOOPs.get(0), duplicationValue, brv.get(graphLocalSingleLOOPs.get(0)));
-
+      return this.graph;
+    }
+    // retrieve the obtained or existing single local cycle to be coarse
+    final List<AbstractActor> graphNotLocalSingleLOOPs = new ClusteringPatternSeekerLoop(graph).singleNotLocalseek();
+    if (!graphNotLocalSingleLOOPs.isEmpty()) {
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, graphNotLocalSingleLOOPs, LOOP_PREFIX + clusterId)
+          .build();
+      // Add constraints of the cluster in the scenario.
+      subGraph.setClusterValue(true);
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphNotLocalSingleLOOPs,
+          this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
+      }
     }
 
     return this.graph;

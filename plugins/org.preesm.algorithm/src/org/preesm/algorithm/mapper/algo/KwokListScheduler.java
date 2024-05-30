@@ -123,16 +123,15 @@ public class KwokListScheduler {
         } else {
           // If the group mapping enters in conflict with the fcp mapping, find a solution
           final List<ComponentInstance> groupOperators = archisimu.getCandidateOperators(currentvertex, true);
-          if (!groupOperators.isEmpty()) {
-            archisimu.map(currentvertex, groupOperators.get(0), true, false);
-          } else {
+          if (groupOperators.isEmpty()) {
             final String msg = "Found no operator for: " + currentvertex + ". Certainly a relative constraint problem.";
             throw new PreesmRuntimeException(msg);
           }
+          archisimu.map(currentvertex, groupOperators.get(0), true, false);
         }
       } else {
 
-        long time = Long.MAX_VALUE;
+        final long time = Long.MAX_VALUE;
         // Choose the operator
 
         final ComponentInstance chosenOperator = choseOperator(dag, archisimu, currentvertex, time);
@@ -146,6 +145,12 @@ public class KwokListScheduler {
           PreesmLogger.getLogger().log(Level.INFO, msg);
         }
       }
+      // if (((AbstractActor) currentvertex.getOrigVertex()).isOnGPU()) {
+      // final MapperDAGVertex copyVertex = currentvertex.copy();
+      // final ComponentInstance gpuOperator = archisimu.getScenario().getDesign().getComponentInstances().stream()
+      // .filter(x -> x.getComponent() instanceof GPU).findFirst().orElseThrow();
+      // archisimu.map(currentvertex, gpuOperator, true, false);
+      // }
     }
     return dag;
   }
@@ -186,20 +191,12 @@ public class KwokListScheduler {
         case MapperDAGVertex.DAG_INIT_VERTEX:
           final MapperDAGVertex dagEndVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
           final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
-          if (endEffectiveOperator != null) {
-            res = endEffectiveOperator;
-          } else {
-            res = null;
-          }
+          res = endEffectiveOperator;
           break;
         case MapperDAGVertex.DAG_END_VERTEX:
           final MapperDAGVertex dagInitVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
           final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
-          if (initEffectiveOperator != null) {
-            res = initEffectiveOperator;
-          } else {
-            res = null;
-          }
+          res = initEffectiveOperator;
           break;
         default:
           res = null;
