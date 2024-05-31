@@ -402,8 +402,6 @@ with [get-editor NewGraph | get-diagram -index 1 | get-edit-part -name NewGraph]
         mouse-release 9 8 button1 -height 16 -width 16
     }
 }
-//get-view Properties | get-combo -after [get-label "Default Value:"] | select permanent
-//get-view Properties | get-editbox -after [get-label "Name:"] | set-text 1
 with [get-view Properties] {
     get-editbox -after [get-label "Name:"] | set-text 1
     get-combo -after [get-label "Default Value:"] | select permanent
@@ -420,12 +418,12 @@ with [get-editor NewGraph | get-diagram -index 1] {
 //    key-type Del
 //}
 //get-window "Delete Resources" | get-button OK | click
-//get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph.pi" | get-menu 
-//    -path "Preesm/Compute PiSDF SRDAG (Single Rate)" | click
-//with [get-window "Select result location"] {
-//    get-tree | select "graphManipulation2/Algo"
-//    get-button OK | click
-//}
-//get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph_srdag.pi" | get-menu 
-//    -path "Preesm/Generate .diagram" | click
+get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph.pi" | get-menu 
+    -path "Preesm/Compute PiSDF SRDAG (Single Rate)" | click
+with [get-window "Select result location"] {
+    get-tree | select "graphManipulation2/Algo"
+    get-button OK | click
+}
+get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph_srdag.pi" | get-menu 
+    -path "Preesm/Generate .diagram" | click
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--
