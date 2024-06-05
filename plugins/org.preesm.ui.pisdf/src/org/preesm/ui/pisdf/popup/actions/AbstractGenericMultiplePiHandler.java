@@ -17,10 +17,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
@@ -32,7 +32,7 @@ public abstract class AbstractGenericMultiplePiHandler extends AbstractHandler {
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
-    final IWorkbenchWindow wwindow = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    final IWorkbenchWindow wwindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
     final IWorkbenchPage page = wwindow.getActivePage();
 
     final ISelection activeSelection = page.getSelection();

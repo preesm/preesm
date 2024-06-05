@@ -44,8 +44,8 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PlatformUI;
 import org.preesm.model.scenario.generator.ScenariosGenerator;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.wizards.PreesmProjectNature;
 
 /**
@@ -60,7 +60,7 @@ public class ScenariosGeneratorPopup extends AbstractHandler {
   public Object execute(final ExecutionEvent event) throws ExecutionException {
     try {
       // Get the selected IProject
-      final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
+      final IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
       final TreeSelection selection = (TreeSelection) page.getSelection();
       final IProject project = (IProject) selection.getFirstElement();
       final ScenariosGenerator generator = new ScenariosGenerator(project);

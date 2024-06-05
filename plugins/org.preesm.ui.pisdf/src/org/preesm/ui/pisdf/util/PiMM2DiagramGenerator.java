@@ -40,7 +40,6 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.pisdf.diagram.PiMMDiagramEditor;
 import org.preesm.ui.pisdf.features.PasteFeature;
 import org.preesm.ui.pisdf.layout.AutoLayoutFeature;
@@ -48,7 +47,7 @@ import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 public class PiMM2DiagramGenerator {
 
-  private static final IWorkbench WORKBENCH = PreesmUIPlugin.getDefault().getWorkbench();
+  private static final IWorkbench WORKBENCH = PlatformUI.getWorkbench();
 
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
   private static final IWorkspaceRoot WORKSPACE_ROOT = PiMM2DiagramGenerator.WORKSPACE.getRoot();

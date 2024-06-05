@@ -41,6 +41,7 @@ import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.IConsoleManager;
@@ -48,7 +49,6 @@ import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.logger.DefaultPreesmFormatter;
-import org.preesm.ui.PreesmUIPlugin;
 
 /**
  * Displaying information or error messages through a console initialized by the initConsole method.
@@ -97,7 +97,7 @@ public class PreesmWorkflowLogger extends Logger {
     // Writes a log in console
     this.console.activate();
     try (final MessageConsoleStream stream = new MessageConsoleStream(this.console, this.console.getCharset())) {
-      PreesmUIPlugin.getDefault().getWorkbench().getDisplay().asyncExec(() -> {
+      PlatformUI.getWorkbench().getDisplay().asyncExec(() -> {
         if (levelVal < Level.WARNING.intValue()) {
           stream.setColor(new Color(null, 0, 0, 0));
         } else if (levelVal == Level.WARNING.intValue()) {

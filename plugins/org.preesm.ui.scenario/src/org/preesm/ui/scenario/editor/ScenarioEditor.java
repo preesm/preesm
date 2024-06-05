@@ -50,6 +50,7 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.forms.editor.SharedHeaderFormEditor;
 import org.eclipse.ui.part.FileEditorInput;
 import org.preesm.commons.DomUtil;
@@ -57,7 +58,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.serialize.ScenarioParser;
 import org.preesm.model.scenario.serialize.ScenarioWriter;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.scenario.editor.codegen.CodegenPage;
 import org.preesm.ui.scenario.editor.constraints.ConstraintsPage;
 import org.preesm.ui.scenario.editor.energy.EnergyPage;
@@ -121,7 +121,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
         this.scenario = parser.parseXmlFile(this.scenarioFile);
 
         if (!this.scenario.getSizesAreInBit()) {
-          MessageDialog.openError(PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getShell(),
+          MessageDialog.openError(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
               "Scenario " + scenario.getScenarioURL() + " is out-of-date.\n",
               "The Scenario was created with an older version of PREESM."
                   + " Change the datatype sizes from bytes to bits in the Simulation tab and save the Scenario."

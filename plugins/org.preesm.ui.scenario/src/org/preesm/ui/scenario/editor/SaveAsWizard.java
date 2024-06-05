@@ -46,9 +46,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.preesm.ui.PreesmUIPlugin;
 
 /**
  * This class provides a save as excel sheet wizard.
@@ -138,7 +138,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
     }
 
     // Open editor on new file.
-    final IWorkbenchWindow dw = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
     try {
       if (dw != null) {
         BasicNewResourceWizard.selectAndReveal(file, dw);
