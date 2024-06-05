@@ -79,7 +79,7 @@ public class PiMMDiagramEditor extends DiagramEditor implements IGotoMarker {
       return;
     }
     final EObject object = getDiagramTypeProvider().getDiagram().eResource().getEObject(uriFragment);
-    if ((object == null) || !(object instanceof PictogramElement)) {
+    if (object instanceof PictogramElement) {
       return;
     }
     selectPictogramElements(new PictogramElement[] { (PictogramElement) object });

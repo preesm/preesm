@@ -169,26 +169,25 @@ public class ParameterDecorators {
     detector.doSwitch(parameter);
     if (detector.cyclesDetected()) {
       for (final List<Parameter> cycle : detector.getCycles()) {
+
+        ImageDecorator imageRenderingDecorator;
+        final StringBuilder message = new StringBuilder();
+
         if (!cycle.contains(parameter)) {
-          // If the parameter is not contained in a detected cycle but
-          // cycles were detected
-          // its locally static status cannot be determined
-          final ImageDecorator imageRenderingDecorator = new ImageDecorator(
-              IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+          // If the parameter is not contained in a detected cycle but cycles
+          // were detected its locally static status cannot be determined
+          imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
 
-          imageRenderingDecorator.setMessage("Parameter depends on parameters contained in a cycle.");
-          imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
-          imageRenderingDecorator.setY(8);
+          message.append("Parameter depends on parameters contained in a cycle.");
+        } else {
 
-          return imageRenderingDecorator;
+          imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+
+          message.append("Parameter belongs to a cycle: ");
+          cycle.forEach(p -> message.append(p.getName() + ">"));
+          message.append(parameter.getName());
         }
-        final ImageDecorator imageRenderingDecorator = new ImageDecorator(
-            IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-        final StringBuilder message = new StringBuilder("Parameter belongs to a cycle: ");
-        for (final Parameter param : cycle) {
-          message.append(param.getName() + ">");
-        }
-        message.append(parameter.getName());
+
         imageRenderingDecorator.setMessage(message.toString());
         imageRenderingDecorator.setX((pe.getGraphicsAlgorithm().getWidth() / 2) - 8);
         imageRenderingDecorator.setY(8);

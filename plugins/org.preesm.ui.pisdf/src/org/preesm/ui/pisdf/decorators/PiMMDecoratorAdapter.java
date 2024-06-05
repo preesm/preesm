@@ -60,12 +60,8 @@ public class PiMMDecoratorAdapter extends EContentAdapter {
   public void notifyChanged(Notification notification) {
 
     switch (notification.getFeatureID(Resource.class)) {
-      case Notification.SET:
-      case Notification.ADD:
-      case Notification.REMOVE:
-      case Notification.UNSET:
-        // Notification.CREATE equivalent, but without deprecation warning
-      case 0:
+      case Notification.SET, Notification.ADD, Notification.REMOVE, Notification.UNSET, 0:
+        // Notification.CREATE is deprecated
         getPesAndDecorators().clear();
         break;
       default:
