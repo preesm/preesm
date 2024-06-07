@@ -69,19 +69,18 @@ public class CommunicationOrderChecker {
   /**
    * This methods get the related operator which will execute the given DAGVertex. It performs safely by checking the
    * type of the associated property.
-   * 
+   *
    * @param vertex
    *          The vertex.
    * @return The associated operator component instance, or null if it is not a {@link ComponentInstance}
-   * 
+   *
    */
   private static ComponentInstance getVertexComponent(DAGVertex vertex) {
-    Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+    final Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
     if (obj instanceof ComponentInstance) {
       return (ComponentInstance) obj;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**
@@ -125,7 +124,7 @@ public class CommunicationOrderChecker {
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .toString();
       final boolean isSend = vertexType.equals("send");
       final boolean isReceive = vertexType.equals("receive");
@@ -163,11 +162,11 @@ public class CommunicationOrderChecker {
 
         // Get corresponding edges (in scheduling order)
         final List<DAGEdge> senderDagEdges = new ArrayList<>(senders.size());
-        senders.forEach(sender -> senderDagEdges.add(
-            (DAGEdge) sender.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+        senders.forEach(sender -> senderDagEdges.add((DAGEdge) sender.getPropertyBean()
+            .getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE)));
         final List<DAGEdge> receiverDagEdges = new ArrayList<>(receivers.size());
         receivers.forEach(receiver -> receiverDagEdges.add((DAGEdge) receiver.getPropertyBean()
-            .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+            .getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE)));
 
         // Keep only the DAGEdges in common (they are the one corresponding to communications between the selected
         // sender and receiver
@@ -212,7 +211,7 @@ public class CommunicationOrderChecker {
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final String vertexType = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .toString();
       final boolean isSend = vertexType.equals("send");
       final boolean isReceive = vertexType.equals("receive");
@@ -242,12 +241,12 @@ public class CommunicationOrderChecker {
 
       // For each receive, check that the corresponding send if in the rest of the list
       // Create the list of corresponding dagEdge
-      List<DAGEdge> senderReceiverEdges = new ArrayList<>(sendersReceivers.size());
+      final List<DAGEdge> senderReceiverEdges = new ArrayList<>(sendersReceivers.size());
       sendersReceivers.forEach(vertex -> senderReceiverEdges
-          .add(vertex.getPropertyBean().getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge)));
+          .add(vertex.getPropertyBean().getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE)));
       int i;
       for (i = 0; i < sendersReceivers.size() - 1; i++) {
-        DAGVertex vertex = sendersReceivers.get(i);
+        final DAGVertex vertex = sendersReceivers.get(i);
         if (vertex instanceof ReceiveVertex) {
           if (i == sendersReceivers.size()) {
             // This should not happen, if a receive is the last of the list, its corresponding send cannot be after it
@@ -257,7 +256,7 @@ public class CommunicationOrderChecker {
                 + " is scheduled after its corresponding Send." + " Contact Preesm developers for more information.");
           }
 
-          DAGEdge edge = senderReceiverEdges.get(i);
+          final DAGEdge edge = senderReceiverEdges.get(i);
           if (!senderReceiverEdges.subList(i + 1, sendersReceivers.size()).contains(edge)) {
             throw new PreesmRuntimeException("On operator: " + component
                 + ", a Receive vertex of an intermediate step of a multi-step communication"

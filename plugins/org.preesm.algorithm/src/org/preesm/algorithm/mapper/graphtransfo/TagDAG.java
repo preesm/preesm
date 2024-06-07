@@ -98,8 +98,8 @@ public class TagDAG {
       final EdgeSchedType edgeSchedType) {
 
     final PropertyBean bean = dag.getPropertyBean();
-    bean.setValue(ImplementationPropertyNames.Graph_AbcReferenceType, simu.getType());
-    bean.setValue(ImplementationPropertyNames.Graph_EdgeSchedReferenceType, edgeSchedType);
+    bean.setValue(ImplementationPropertyNames.GRAPH_ABC_REFERENCE_TYPE, simu.getType());
+    bean.setValue(ImplementationPropertyNames.GRAPH_EDGE_SCHED_REFERENCE_TYPE, edgeSchedType);
 
     addSendReceive(dag, architecture, scenario);
     addProperties(dag, simu);
@@ -156,28 +156,28 @@ public class TagDAG {
         final MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex).incomingEdges().toArray()[0];
 
         // Setting the vertex type
-        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.SEND);
+        bean.setValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
         final ComponentInstance sender = ((SendVertex) currentVertex).getRouteStep().getSender();
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator, sender);
+        bean.setValue(ImplementationPropertyNames.VERTEX_OPERATOR, sender);
 
         // Setting the medium transmitting the current data
         final SlamRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
-        bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, sendRs);
+        bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP, sendRs);
 
         // Setting the size of the transmitted data
-        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, incomingEdge.getInit().getDataSize());
+        bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_DATA_SIZE, incomingEdge.getInit().getDataSize());
 
         // Setting the name of the data sending vertex
-        bean.setValue(ImplementationPropertyNames.Send_senderGraphName, incomingEdge.getSource().getName());
+        bean.setValue(ImplementationPropertyNames.SEND_SENDER_GRAPH_NAME, incomingEdge.getSource().getName());
 
         // Setting the address of the operator on which vertex is
         // executed
         final String baseAddress = sender.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
-          bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
+          bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_ADDRESS, baseAddress);
         }
 
       } else if (currentVertex instanceof ReceiveVertex) {
@@ -185,38 +185,38 @@ public class TagDAG {
         final MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex).outgoingEdges().toArray()[0];
 
         // Setting the vertex type
-        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.RECEIVE);
+        bean.setValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
         final ComponentInstance receiver = ((ReceiveVertex) currentVertex).getRouteStep().getReceiver();
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator, receiver);
+        bean.setValue(ImplementationPropertyNames.VERTEX_OPERATOR, receiver);
 
         // Setting the medium transmitting the current data
         final SlamRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
-        bean.setValue(ImplementationPropertyNames.SendReceive_routeStep, rcvRs);
+        bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP, rcvRs);
 
         // Setting the size of the transmitted data
-        bean.setValue(ImplementationPropertyNames.SendReceive_dataSize, outgoingEdge.getInit().getDataSize());
+        bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_DATA_SIZE, outgoingEdge.getInit().getDataSize());
 
         // Setting the name of the data receiving vertex
-        bean.setValue(ImplementationPropertyNames.Receive_receiverGraphName, outgoingEdge.getTarget().getName());
+        bean.setValue(ImplementationPropertyNames.RECEIVE_RECEIVER_GRAPH_NAME, outgoingEdge.getTarget().getName());
 
         // Setting the address of the operator on which vertex is
         // executed
         final String baseAddress = receiver.getParameters().get(OPERATOR_BASE_ADDRESS);
 
         if (baseAddress != null) {
-          bean.setValue(ImplementationPropertyNames.SendReceive_Operator_address, baseAddress);
+          bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_ADDRESS, baseAddress);
         }
       } else {
 
         // Setting the operator on which vertex is executed
-        bean.setValue(ImplementationPropertyNames.Vertex_Operator, currentVertex.getEffectiveOperator());
+        bean.setValue(ImplementationPropertyNames.VERTEX_OPERATOR, currentVertex.getEffectiveOperator());
 
         // Setting the vertex type
-        bean.setValue(ImplementationPropertyNames.Vertex_vertexType, VertexType.TASK);
+        bean.setValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE, VertexType.TASK);
 
-        bean.setValue(ImplementationPropertyNames.Vertex_originalVertexId, currentVertex.getId());
+        bean.setValue(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID, currentVertex.getId());
 
         // Setting the task duration
         final ComponentInstance effectiveOperator = currentVertex
@@ -225,17 +225,17 @@ public class TagDAG {
         final long singleRepeatTime = currentVertex.getInit().getTime(effectiveOperator);
         final long nbRepeat = currentVertex.getInit().getNbRepeat();
         final long totalTime = nbRepeat * singleRepeatTime;
-        bean.setValue(ImplementationPropertyNames.Task_duration, totalTime);
+        bean.setValue(ImplementationPropertyNames.TASK_DURATION, totalTime);
 
         // Tags the DAG with vertex starttime when possible
         if (simu instanceof LatencyAbc) {
           final long startTime = (simu).getTLevel(currentVertex, false);
-          bean.setValue(ImplementationPropertyNames.Start_time, startTime);
+          bean.setValue(ImplementationPropertyNames.START_TIME, startTime);
         }
       }
 
       // Setting the scheduling total order
-      bean.setValue(ImplementationPropertyNames.Vertex_schedulingOrder, currentVertex.getTotalOrder());
+      bean.setValue(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER, currentVertex.getTotalOrder());
     }
   }
 

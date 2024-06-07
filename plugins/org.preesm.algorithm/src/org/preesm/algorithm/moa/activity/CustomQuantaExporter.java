@@ -239,7 +239,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
    * information
    */
   private void visitVertex(final MapperDAGVertex vertex) {
-    final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
+    final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.TASK_DURATION);
     final Component operator = vertex.getEffectiveComponent().getComponent();
     final String cquanta = this.customQuanta.getQuanta(vertex.getName(), operator);
 

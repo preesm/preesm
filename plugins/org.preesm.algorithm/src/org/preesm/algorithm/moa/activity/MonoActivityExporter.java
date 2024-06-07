@@ -198,7 +198,7 @@ public class MonoActivityExporter extends AbstractTaskImplementation {
    */
   private void visitVertex(final MapperDAGVertex vertex) {
     this.activity.addTokenNumber(vertex.getEffectiveComponent().getInstanceName(), 1);
-    final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration);
+    final String duration = vertex.getPropertyStringValue(ImplementationPropertyNames.TASK_DURATION);
     this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(), Long.valueOf(duration));
   }
 

@@ -158,8 +158,8 @@ public class StatGeneratorAbc extends AbstractStatGenerator {
 
         final PropertyBean comSrcBeans = scr.getPropertyBean();
         final PropertyBean comTgtBeans = tgt.getPropertyBean();
-        final Object srcVtxTypeObj = comSrcBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
-        final Object tgtVtxTypeObj = comTgtBeans.getValue(ImplementationPropertyNames.Vertex_vertexType);
+        final Object srcVtxTypeObj = comSrcBeans.getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE);
+        final Object tgtVtxTypeObj = comTgtBeans.getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE);
 
         final String srcVtxType = srcVtxTypeObj.toString();
         final String tgtVtxType = tgtVtxTypeObj.toString();

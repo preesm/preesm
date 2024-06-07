@@ -105,12 +105,12 @@ public class MapperDAGVertex extends DAGVertex {
   public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
 
   static {
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Task_duration);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Operator);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR_DEF);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.TASK_DURATION);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR);
   }
 
   /**
@@ -318,17 +318,17 @@ public class MapperDAGVertex extends DAGVertex {
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {
-    if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR_DEF)) {
       return getEffectiveOperator().getComponent().getVlnv().getName();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
       return getInit().getInitialOperatorList().toString();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
       return getInit().getParentVertex().getId();
-    } else if (propertyName.equals(ImplementationPropertyNames.Task_duration)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
       return String.valueOf(getTiming().getCost());
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
       return String.valueOf(getTiming().getTotalOrder(this));
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Operator)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
       return getEffectiveComponent().getInstanceName();
     }
     return super.getPropertyStringValue(propertyName);

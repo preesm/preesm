@@ -197,7 +197,7 @@ public class ActivityExporter extends AbstractTaskImplementation {
   private void visitVertex(final MapperDAGVertex vertex) {
     this.activity.addTokenNumber(vertex.getEffectiveComponent().getInstanceName(), 1);
     this.activity.addQuantaNumber(vertex.getEffectiveComponent().getInstanceName(),
-        Long.valueOf(vertex.getPropertyStringValue(ImplementationPropertyNames.Task_duration)));
+        Long.valueOf(vertex.getPropertyStringValue(ImplementationPropertyNames.TASK_DURATION)));
   }
 
   /**

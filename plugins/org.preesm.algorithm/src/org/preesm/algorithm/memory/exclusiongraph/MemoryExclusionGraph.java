@@ -184,9 +184,9 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
 
     // As the non-task vertices are removed at the beginning of the build function. This if statement could probably be
     // removed. (I keep it just in case)
-    if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+    if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
         .equals(VertexType.TASK)
-        && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+        && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
             .equals(VertexType.TASK)) {
       final MemoryExclusionVertex newNode = new MemoryExclusionVertex(edge, this.scenario);
 
@@ -341,7 +341,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     final Set<DAGVertex> nonTaskVertices = new LinkedHashSet<>();
 
     for (final DAGVertex vert : dagVertices) {
-      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final boolean isTask = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .equals(VertexType.TASK);
       String vertKind = "";
 
@@ -998,7 +998,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .equals(VertexType.TASK);
 
       String vertKind = "";
@@ -1125,7 +1125,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     while (iterDAGVertices.hasNext()) {
       final DAGVertex currentVertex = iterDAGVertices.next();
 
-      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final boolean isTask = currentVertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .equals(VertexType.TASK);
 
       String vertKind = "";
@@ -1139,7 +1139,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
           || vertKind.equals(MapperDAGVertex.DAG_INIT_VERTEX) || vertKind.equals(MapperDAGVertex.DAG_END_VERTEX)
           || vertKind.equals(MapperDAGVertex.DAG_FORK_VERTEX) || vertKind.equals(MapperDAGVertex.DAG_JOIN_VERTEX)) {
         final Integer schedulingOrder = currentVertex.getPropertyBean()
-            .getValue(ImplementationPropertyNames.Vertex_schedulingOrder);
+            .getValue(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER);
         if (schedulingOrder == null) {
           throw new PreesmRuntimeException("Cannot build the memory exclusion graph of a non scheduled DAG",
               new NullPointerException());
@@ -1198,7 +1198,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
         // to outgoing edges of the currentVertex, and ExclusionVertices
         // in newPredecessors list
         for (final DAGEdge outgoingEdge : currentVertex.outgoingEdges()) {
-          if (outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          if (outgoingEdge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
               .equals(VertexType.TASK)) {
             final MemoryExclusionVertex edgeVertex = new MemoryExclusionVertex(outgoingEdge, this.scenario);
             for (final MemoryExclusionVertex newPredecessor : newPredecessors) {

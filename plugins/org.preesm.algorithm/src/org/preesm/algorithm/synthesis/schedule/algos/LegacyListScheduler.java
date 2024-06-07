@@ -90,7 +90,7 @@ public class LegacyListScheduler extends AbstractScheduler {
     scheduledDAGIterator.forEachRemaining(vert -> {
       final AbstractActor orderedActor = vert.getReferencePiVertex();
       if (orderedActor == null) {
-        final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+        final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
             .toString();
         if (VertexType.TYPE_SEND.equals(vertexType) || VertexType.TYPE_RECEIVE.equals(vertexType)) {
           // skip
@@ -101,7 +101,7 @@ public class LegacyListScheduler extends AbstractScheduler {
       } else {
 
         final ComponentInstance targetCmpIntance = vert.getPropertyBean()
-            .getValue(ImplementationPropertyNames.Vertex_Operator);
+            .getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
 
         createMapping.getMappings().put(orderedActor, ECollections.singletonEList(targetCmpIntance));
         if (!cmpSchedules.containsKey(targetCmpIntance)) {

@@ -72,8 +72,8 @@ public class TransferVertex extends MapperDAGVertex {
   private InvolvementVertex involvementVertex = null;
 
   static {
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_dataSize);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_DEF);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.SEND_RECEIVE_DATA_SIZE);
   }
 
   /**
@@ -103,7 +103,7 @@ public class TransferVertex extends MapperDAGVertex {
 
     // Retrieve and Save the corresponding DAGEdge in the properties
     final DAGEdge dagEdge = base.getEdge(source, target);
-    setPropertyValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge, dagEdge);
+    setPropertyValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE, dagEdge);
   }
 
   /**
@@ -205,7 +205,7 @@ public class TransferVertex extends MapperDAGVertex {
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {
-    if (propertyName.equals(ImplementationPropertyNames.SendReceive_OperatorDef)) {
+    if (propertyName.equals(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_DEF)) {
       return getEffectiveOperator().getComponent().getVlnv().getName();
     }
     return super.getPropertyStringValue(propertyName);

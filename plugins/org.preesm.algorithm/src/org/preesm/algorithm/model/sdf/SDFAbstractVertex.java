@@ -103,7 +103,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
 
     @SuppressWarnings("unchecked")
     final T res = (T) VertexPath.lookup(referencePiMMGraph,
-        this.getPropertyStringValue(ImplementationPropertyNames.Vertex_originalVertexId));
+        this.getPropertyStringValue(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID));
     return res;
   }
 
