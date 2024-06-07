@@ -57,14 +57,14 @@ import org.preesm.ui.pisdf.features.MoveAbstractActorFeature;
 
 /**
  * Class dedicated to layout bendpoints on actor ports.
- * 
+ *
  * @author ahonorat
  */
 public interface LayoutActorBendpoints {
 
   /**
-   * 
-   * 
+   *
+   *
    * @param cs
    *          Actor shape
    * @param af
@@ -117,7 +117,7 @@ public interface LayoutActorBendpoints {
         // at least two
         // if the fifo has a delay, remove a bendpoint (if any).
         final int nbBendpoints = (((fifoOrDependency != null)
-            && ((fifoOrDependency instanceof Fifo) && (((Fifo) fifoOrDependency).getDelay() != null)))
+            && ((fifoOrDependency instanceof final Fifo fifo) && (fifo.getDelay() != null)))
             || (fifoOrDependency instanceof Dependency)) ? -1 : 0;
 
         // Check if the last or first Bendpoint exists.

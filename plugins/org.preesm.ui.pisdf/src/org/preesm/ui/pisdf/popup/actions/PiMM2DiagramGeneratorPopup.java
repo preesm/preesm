@@ -88,7 +88,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     return null;
   }
 
-  private void generateDiagramFile(final IFile piFile) throws ExecutionException {
+  private void generateDiagramFile(final IFile piFile) {
     try {
       final IPath fullPath = piFile.getFullPath();
       final IPath diagramFilePath = fullPath.removeFileExtension().addFileExtension("diagram");

@@ -109,8 +109,7 @@ public class ScenarioEditor extends SharedHeaderFormEditor implements IPropertyL
     setInput(input);
     setPartName(input.getName());
 
-    if (input instanceof FileEditorInput) {
-      final FileEditorInput fileInput = (FileEditorInput) input;
+    if (input instanceof final FileEditorInput fileInput) {
       this.scenarioFile = fileInput.getFile();
     }
 

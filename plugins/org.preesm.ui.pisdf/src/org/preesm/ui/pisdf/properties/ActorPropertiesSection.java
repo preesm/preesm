@@ -38,7 +38,6 @@
  */
 package org.preesm.ui.pisdf.properties;
 
-import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
@@ -577,7 +576,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         this.butRefinementBrowse.setEnabled(enabled);
         this.butRefinementOpen.setEnabled(false);
       } else {
-        final IPath path = Optional.ofNullable(refinement.getFilePath()).map(Path::new).orElse(null);
+        final IPath path = new Path(refinement.getFilePath());
         final String text = path.lastSegment();
         this.lblRefinementObj.setText(text);
 
@@ -620,7 +619,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.butMemoryScriptBrowse.setEnabled(true);
           this.butMemoryScriptOpen.setEnabled(false);
         } else {
-          final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
+          final IPath path = new Path(actor.getMemoryScriptPath());
           final String text = path.lastSegment();
 
           this.lblMemoryScriptObj.setText(text);

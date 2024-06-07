@@ -67,19 +67,16 @@ public class WorkflowRunnerPopup extends AbstractHandler {
     final ISelection activeSelection = HandlerUtil.getActiveMenuSelection(event);
 
     IFile workflowFile = null;
-    if (activeSelection instanceof ITreeSelection) {
-      final ITreeSelection treeSelection = (ITreeSelection) activeSelection;
+    if (activeSelection instanceof final ITreeSelection treeSelection) {
       final Object firstElement = treeSelection.getFirstElement();
-      if (firstElement instanceof IFile) {
+      if (firstElement instanceof final IFile iFile) {
         // get there when right clicking on a workflow file in the file tree explorer:
         // that is a TreeSelection and active element is an IFile
-        workflowFile = (IFile) firstElement;
+        workflowFile = iFile;
       }
-    } else if (activeSelection instanceof StructuredSelection) {
-      final StructuredSelection structuredSelection = (StructuredSelection) activeSelection;
+    } else if (activeSelection instanceof final StructuredSelection structuredSelection) {
       final Object firstElement = structuredSelection.getFirstElement();
-      if (firstElement instanceof ITabbedPropertySheetPageContributor) {
-        final ITabbedPropertySheetPageContributor graph = (ITabbedPropertySheetPageContributor) firstElement;
+      if (firstElement instanceof final ITabbedPropertySheetPageContributor graph) {
         final String contributorId = graph.getContributorId();
         if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from

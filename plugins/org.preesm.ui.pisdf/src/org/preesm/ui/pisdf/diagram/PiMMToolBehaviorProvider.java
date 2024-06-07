@@ -204,8 +204,8 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     final List<IDecorator> decorators = new ArrayList<>();
     for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
       for (final Object pbo : a.getLink().getBusinessObjects()) {
-        if (pbo instanceof Port) {
-          for (final IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
+        if (pbo instanceof final Port port) {
+          for (final IDecorator d : PortDecorators.getDecorators(port, a)) {
             decorators.add(d);
           }
         }

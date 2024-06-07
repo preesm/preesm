@@ -109,10 +109,8 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Port) {
-        if (((Port) bo).eContainer() instanceof ExecutableActor) {
-          ret = true;
-        }
+      if (bo instanceof final Port port && port.eContainer() instanceof ExecutableActor) {
+        ret = true;
       }
     }
     return ret;
@@ -131,8 +129,7 @@ public class RenameActorPortFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Port) {
-        final Port port = (Port) bo;
+      if (bo instanceof final Port port) {
         final AbstractActor vertex = (AbstractActor) port.eContainer();
         final String currentName = port.getName();
 
