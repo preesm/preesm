@@ -67,8 +67,8 @@ import org.preesm.ui.scenario.editor.SaveAsWizard;
  */
 public class EnergyModelExporter extends ExcelWriter {
 
-  private final Scenario scenario;
-  private Set<PapiEvent> papiEvents;
+  private final Scenario       scenario;
+  private final Set<PapiEvent> papiEvents;
 
   /**
    */
@@ -104,7 +104,7 @@ public class EnergyModelExporter extends ExcelWriter {
     try {
       os.write(addFirstLine().getBytes());
       os.write(addModels().getBytes());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       PreesmLogger.getLogger().log(Level.WARNING, "Could not write energy model", e);
     }
   }
@@ -115,15 +115,15 @@ public class EnergyModelExporter extends ExcelWriter {
    */
   protected String addFirstLine() {
     String text = " ";
-    for (Entry<Component, EMap<PapiEvent, Double>> models : this.scenario.getPapifyConfig()
+    for (final Entry<Component, EMap<PapiEvent, Double>> models : this.scenario.getPapifyConfig()
         .getPapifyEnergyKPIModels()) {
-      for (Entry<PapiEvent, Double> params : models.getValue()) {
+      for (final Entry<PapiEvent, Double> params : models.getValue()) {
         if (!papiEvents.contains(params.getKey())) {
           this.papiEvents.add(params.getKey());
         }
       }
     }
-    for (PapiEvent event : this.papiEvents) {
+    for (final PapiEvent event : this.papiEvents) {
       text = text.concat(",").concat(event.getName());
     }
     text = text.concat("\n");
@@ -136,17 +136,17 @@ public class EnergyModelExporter extends ExcelWriter {
    */
   protected String addModels() {
     String text = "";
-    for (Entry<Component, EMap<PapiEvent, Double>> models : this.scenario.getPapifyConfig()
+    for (final Entry<Component, EMap<PapiEvent, Double>> models : this.scenario.getPapifyConfig()
         .getPapifyEnergyKPIModels()) {
       String modelPart = "";
-      for (PapiEvent event : this.papiEvents) {
+      for (final PapiEvent event : this.papiEvents) {
         if (models.getValue().containsKey(event)) {
           modelPart = modelPart.concat(",").concat(models.getValue().get(event).toString());
         } else {
           modelPart = modelPart.concat(",");
         }
       }
-      for (ComponentInstance componentInstance : models.getKey().getInstances()) {
+      for (final ComponentInstance componentInstance : models.getKey().getInstances()) {
         text = text.concat(componentInstance.getInstanceName()).concat(modelPart).concat("\n");
       }
     }
@@ -155,6 +155,6 @@ public class EnergyModelExporter extends ExcelWriter {
 
   @Override
   protected void addCells(WritableSheet sheet) {
-
+    // empty
   }
 }

@@ -56,10 +56,14 @@ import org.preesm.model.pisdf.Fifo;
 //TODO Use AbstractGraph instead of PiGraph structure and nbVisits map?
 /**
  * This class is dedicated to compute a topological ranking of actors in a PiGraph.
- * 
+ *
  * @author ahonorat
  */
 public class TopologicalRanking {
+
+  private TopologicalRanking() {
+    // Forbids instantiation
+  }
 
   /**
    * This class helps to create the topological rank.
@@ -88,12 +92,12 @@ public class TopologicalRanking {
 
   /**
    * Computes ASAP topological ranking of a flat graph.
-   * 
+   *
    * @param hlbd
    *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPranking(final HeuristicLoopBreakingDelays hlbd) {
+  public static Map<AbstractActor, TopoVisit> topologicalAsapRanking(final HeuristicLoopBreakingDelays hlbd) {
 
     final Set<AbstractActor> sourceActors = hlbd.allSourceActors;
     final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRank;
@@ -129,13 +133,13 @@ public class TopologicalRanking {
     }
 
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       topoRanks.entrySet().stream().forEach(e -> {
-        TopoVisit v = e.getValue();
+        final TopoVisit v = e.getValue();
         sb.append(
             "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
       });
-      PreesmLogger.getLogger().log(Level.FINE, "Ranks: " + sb.toString());
+      PreesmLogger.getLogger().fine(() -> "Ranks: " + sb.toString());
     }
 
     return topoRanks;
@@ -143,12 +147,12 @@ public class TopologicalRanking {
 
   /**
    * Computes ASAP topological ranking of a mirrored flat graph.
-   * 
+   *
    * @param hlbd
    *          Heuristic used to break the cycles.
    * @return Rank of each actor.
    */
-  public static Map<AbstractActor, TopoVisit> topologicalASAPrankingT(final HeuristicLoopBreakingDelays hlbd) {
+  public static Map<AbstractActor, TopoVisit> topologicalAsapRankingT(final HeuristicLoopBreakingDelays hlbd) {
 
     final Set<AbstractActor> sinkActors = hlbd.allSinkActors;
     final Map<AbstractActor, Integer> actorsNbVisits = hlbd.actorsNbVisitsTopoRankT;
@@ -184,13 +188,13 @@ public class TopologicalRanking {
     }
 
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
-      StringBuilder sb = new StringBuilder();
+      final StringBuilder sb = new StringBuilder();
       topoRanks.entrySet().stream().forEach(e -> {
-        TopoVisit v = e.getValue();
+        final TopoVisit v = e.getValue();
         sb.append(
             "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
       });
-      PreesmLogger.getLogger().log(Level.FINE, "RanksT: " + sb.toString());
+      PreesmLogger.getLogger().fine(() -> "RanksT: " + sb.toString());
     }
 
     return topoRanks;
@@ -198,7 +202,7 @@ public class TopologicalRanking {
 
   /**
    * Computes a map of actors sorted per rank (ASAP or ALAP).
-   * 
+   *
    * @param topoRanks
    *          Ranks computed by {@link #topologicalASAPranking} or {@link #topologicalALAPranking}.
    * @param reverse
@@ -211,18 +215,16 @@ public class TopologicalRanking {
   public static SortedMap<Integer, Set<AbstractActor>> mapRankActors(final Map<AbstractActor, TopoVisit> topoRanks,
       boolean reverse, int maxRank) {
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = new TreeMap<>();
-    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
+    for (final Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
       final AbstractActor aa = e.getKey();
       final TopoVisit tv = e.getValue();
       int rank = tv.rank;
       if (reverse) {
         rank = maxRank - tv.rank;
       }
-      Set<AbstractActor> aas = irRankActors.get(rank);
-      if (aas == null) {
-        aas = new HashSet<>();
-        irRankActors.put(rank, aas);
-      }
+
+      final Set<AbstractActor> aas = irRankActors.computeIfAbsent(rank, r -> new HashSet<>());
+
       aas.add(aa);
     }
     return irRankActors;

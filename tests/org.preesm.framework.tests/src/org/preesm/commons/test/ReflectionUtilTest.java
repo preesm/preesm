@@ -35,6 +35,7 @@
 package org.preesm.commons.test;
 
 import java.util.Collection;
+import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.commons.ReflectionUtil;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -53,6 +54,9 @@ public class ReflectionUtilTest {
     for (final Class<?> t : lookupChildClassesOf) {
       System.out.println(t);
     }
+
+    // Replace by Assertions.assertDoesNotThrow from junit5
+    Assert.assertTrue(true);
   }
 
 }

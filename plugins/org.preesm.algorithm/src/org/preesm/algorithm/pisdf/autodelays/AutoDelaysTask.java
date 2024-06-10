@@ -114,10 +114,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Works only on homogeneous architectures. The heuristic will perform a search of all simple cycles,"
         + " so the task may take a long time to run if many cycles are present.",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = {
         @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
@@ -310,7 +311,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
 
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalAsapRanking(hlbd);
     // build intermediate list of actors per rank
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     // offset of one to ease some computations
@@ -323,7 +324,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final int selec = Math.min(nbPreCuts, maxRank - 1);
     final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
-    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalAsapRankingT(hlbd);
     // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
     // beginning
     hlbd.allSourceActors.stream().forEach(x -> {
@@ -471,13 +472,13 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
       setCut(delays, true);
       if (nbCutsTested % 1000 == 0) {
-        System.err.println("1000 cuts tested.");
+        PreesmLogger.getLogger().fine(() -> "1000 cuts tested.");
       }
     }
     final long duration = System.nanoTime() - time2;
     PreesmLogger.getLogger().setLevel(backupLevel);
     PreesmLogger.getLogger().info("Number of cuts tested: " + nbCutsTested);
-    PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
+    PreesmLogger.getLogger().info(() -> "Time of choco tests " + Math.round(duration / 1e6) + " ms.");
     if (bestDelays != null) {
       setCut(bestDelays, false);
       final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
@@ -489,7 +490,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName() + "\n");
       }
 
-      PreesmLogger.getLogger().info("Best Choco cut: " + sb.toString());
+      PreesmLogger.getLogger().info(() -> "Best Choco cut: " + sb.toString());
     }
     return dsc;
   }
@@ -743,6 +744,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         }
       }
     }
+
     PreesmLogger.getLogger().log(Level.FINE, "Max Actors in Parallel: " + maxParallelActors);
 
     // we divide by the number of maxii

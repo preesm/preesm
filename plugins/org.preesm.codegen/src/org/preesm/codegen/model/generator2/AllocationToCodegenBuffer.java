@@ -217,12 +217,11 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     for (final AbstractActor actor : allActors) {
       for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
         final ISetter setter = cip.getIncomingDependency().getSetter();
-        if (setter instanceof Parameter) {
-          final long evaluate = ((Parameter) setter).getValueExpression().evaluate();
-          portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
-        } else {
+        if (!(setter instanceof final Parameter parameter)) {
           throw new PreesmRuntimeException();
         }
+        final long evaluate = parameter.getValueExpression().evaluate();
+        portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
       }
     }
   }

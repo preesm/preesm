@@ -144,7 +144,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
    */
   @Override
   public void widgetDefaultSelected(final SelectionEvent e) {
-
+    // empty
   }
 
   /**
@@ -155,6 +155,7 @@ public class PapifyEventLabelProvider implements ITableLabelProvider, SelectionL
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
+    // empty
   }
 
   @Override

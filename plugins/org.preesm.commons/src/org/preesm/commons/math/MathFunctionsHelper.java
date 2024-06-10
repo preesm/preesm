@@ -52,6 +52,10 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  */
 public class MathFunctionsHelper {
 
+  private MathFunctionsHelper() {
+    // Forbids instantiation
+  }
+
   /**
    * computes the Greatest Common Divisor (GCD) of two doubles
    *
@@ -147,7 +151,7 @@ public class MathFunctionsHelper {
   }
 
   /**
-   * Compute rationnal null space.
+   * Compute rational null space.
    *
    * @param matrix
    *          the matrix

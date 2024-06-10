@@ -47,6 +47,10 @@ import java.io.IOException;
  */
 public class ScheduleUtils {
 
+  private ScheduleUtils() {
+    // Forbids instantiation
+  }
+
   private static final String read(final File fileName) throws IOException {
     String line = null;
     final StringBuilder sb = new StringBuilder();

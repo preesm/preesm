@@ -48,6 +48,10 @@ import org.preesm.commons.logger.PreesmLogger;
  */
 public abstract class IBSDFConsistency {
 
+  private IBSDFConsistency() {
+    // Forbids instantiation
+  }
+
   /**
    * Compute the Repetition factor of all actors of the hierarchy
    *
@@ -66,21 +70,19 @@ public abstract class IBSDFConsistency {
           + timer.toString();
       PreesmLogger.getLogger().log(Level.SEVERE, m);
       return false;
-    } else {
-      // step 2: compute the RV of each subgraph
-      for (final SDFAbstractVertex actor : graph.vertexSet()) {
-        if (actor.getGraphDescription() != null) {
-          if (!IBSDFConsistency.computeRV((SDFGraph) actor.getGraphDescription())) {
-            timer.stop();
-            return false;
-          }
-        }
-      }
-      timer.stop();
-      final String msg = "IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in "
-          + timer.toString();
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-      return true;
     }
+    // step 2: compute the RV of each subgraph
+    for (final SDFAbstractVertex actor : graph.vertexSet()) {
+      if (actor.getGraphDescription() != null && !IBSDFConsistency.computeRV((SDFGraph) actor.getGraphDescription())) {
+        timer.stop();
+        return false;
+      }
+
+    }
+    timer.stop();
+    final String msg = "IBSDF RV computation : " + graph.getName() + " is consistent !! evaluated in "
+        + timer.toString();
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    return true;
   }
 }

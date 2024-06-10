@@ -15,6 +15,10 @@ import org.preesm.model.scenario.Scenario;
 
 public class TokenPackingAnalysis {
 
+  private TokenPackingAnalysis() {
+    // Forbids instantiation
+  }
+
   private static final Long BRAM_18K = 18 * 1024L;
   private static final Long BRAM_16K = 16 * 1024L;
 
@@ -45,7 +49,7 @@ public class TokenPackingAnalysis {
     noPackingSum = 0L;
     packingSum = 0L;
 
-    for (Fifo fifo : res.flatGraph.getAllFifos()) {
+    for (final Fifo fifo : res.flatGraph.getAllFifos()) {
       // TODO add test to verify if fifo can be packed without creating deadlock
 
       if (!((fifo.getSource() instanceof InterfaceActor) || (fifo.getTarget() instanceof InterfaceActor))) {
@@ -81,7 +85,7 @@ public class TokenPackingAnalysis {
 
     AbstractActor attachedActor = null;
 
-    long defaultBramWidth = dataTypeSize;
+    final long defaultBramWidth = dataTypeSize;
 
     final long baseNbBram = bramUsageVitis(depth, dataTypeSize);
 
@@ -182,7 +186,8 @@ public class TokenPackingAnalysis {
     // TODO Bien vérifier la formule pour le cas depth < 512. Cette division par 18 me parait étrange.
     if (depth < 512) {
       return (long) Math.ceil((double) dataWidth / 18);
-    } else if (512 <= depth && depth < 2048) {
+    }
+    if (512 <= depth && depth < 2048) {
       return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
     } else if (2048 <= depth && depth < 4096) {
       long bram = (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);

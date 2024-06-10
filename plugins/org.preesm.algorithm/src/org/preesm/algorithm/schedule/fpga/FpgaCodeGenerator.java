@@ -134,6 +134,10 @@ public class FpgaCodeGenerator {
   public static final String SUFFIX_INTERFACE_VECTOR  = "_vect";            // suffix name for host vector
   public static final String SUFFIX_INTERFACE_BUFFER  = "_buff";            // suffix name for host buffer
 
+  private static final String KERNEL_NAME_READ  = "KERNEL_NAME_READ";
+  private static final String KERNEL_NAME_WRITE = "KERNEL_NAME_WRITE";
+  private static final String PREESM_INCLUDES   = "PREESM_INCLUDES";
+
   protected static final String PRAGMA_AXILITE_CTRL  = "#pragma HLS INTERFACE s_axilite port=return\n";
   protected static final int    PYNQ_INTERFACE_DEPTH = 64;
   protected static final long   MIN_BUFFER_DEPTH     = 2L;
@@ -344,8 +348,8 @@ public class FpgaCodeGenerator {
     // 2- init context
     final VelocityContext context = new VelocityContext();
     context.put("APPLI_NAME", graphName);
-    context.put("KERNEL_NAME_READ", getReadKernelName());
-    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
+    context.put(KERNEL_NAME_READ, getReadKernelName());
+    context.put(KERNEL_NAME_WRITE, getWriteKernelName());
 
     final StringBuilder sbConstants = new StringBuilder();
     analysisResult.interfaceRates.forEach((ia, p) -> {
@@ -395,8 +399,8 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
 
     context.put("KERNEL_NAME_TOP", getTopKernelName());
-    context.put("KERNEL_NAME_READ", getReadKernelName());
-    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
+    context.put(KERNEL_NAME_READ, getReadKernelName());
+    context.put(KERNEL_NAME_WRITE, getWriteKernelName());
     context.put("GLOBAL_CLOCK_MHZ", Integer.toString(fpga.getFrequency()));
     context.put("PART_NAME", fpga.getPart());
     context.put("BOARD_NAME", fpga.getBoard());
@@ -521,8 +525,8 @@ public class FpgaCodeGenerator {
     context.put("READ_KERNEL_SOURCE", getReadKernelName() + ".cpp");
     context.put("WRITE_KERNEL_SOURCE", getWriteKernelName() + ".cpp");
     context.put("KERNEL_NAME_TOP", getTopKernelName());
-    context.put("KERNEL_NAME_READ", getReadKernelName());
-    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
+    context.put(KERNEL_NAME_READ, getReadKernelName());
+    context.put(KERNEL_NAME_WRITE, getWriteKernelName());
     context.put("APPLI_NAME", graphName);
 
     // 3- init template reader
@@ -547,9 +551,7 @@ public class FpgaCodeGenerator {
       sb.append(String.format("#define %s %d%n", getInterfaceFactorNameMacro(ia), factor));
     });
 
-    allFifoDepths.forEach((x, y) -> {
-      sb.append(String.format("#define %s %d%n", getFifoStreamSizeNameMacro(x), y));
-    });
+    allFifoDepths.forEach((x, y) -> sb.append(String.format("#define %s %d%n", getFifoStreamSizeNameMacro(x), y)));
     sb.append("#define NB_ITERATIONS_COSIM 3\n");
 
     return sb.toString();
@@ -563,9 +565,9 @@ public class FpgaCodeGenerator {
     // 2- init context
     final VelocityContext context = new VelocityContext();
 
-    context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
-    context.put("KERNEL_NAME_READ", getReadKernelName());
-    context.put("KERNEL_NAME_WRITE", getWriteKernelName());
+    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(KERNEL_NAME_READ, getReadKernelName());
+    context.put(KERNEL_NAME_WRITE, getWriteKernelName());
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
@@ -669,7 +671,7 @@ public class FpgaCodeGenerator {
     String includes = includeCFile(TEMPLATE_DEFINE_HEADER_NAME);
     includes += includeCFile(getCReadKernelName().toLowerCase() + ".h");
     includes += includeCFile(getCWriteKernelName().toLowerCase() + ".h");
-    context.put("PREESM_INCLUDES", includes);
+    context.put(PREESM_INCLUDES, includes);
 
     // Replace placeholders names in code
     context.put("XMEM_READ_KERNEL_NAME", getCReadKernelName());
@@ -743,7 +745,7 @@ public class FpgaCodeGenerator {
     // 2- init context
     final VelocityContext context = new VelocityContext();
 
-    context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
     context.put("PREESM_TOP_KERNEL", getTopKernelSignature() + ";\n");
 
@@ -808,7 +810,7 @@ public class FpgaCodeGenerator {
     final List<
         String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
 
-    context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
     context.put("USER_INCLUDES",
         findAllCHeaderFileNamesUsed.stream().map(FpgaCodeGenerator::includeCFile).collect(Collectors.joining()));
@@ -822,10 +824,10 @@ public class FpgaCodeGenerator {
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
     // 2.2- we add all other calls to the map
     final Map<Actor, Pair<String, String>> actorTemplateParts = new LinkedHashMap<>();
-    analysisResult.flatGraph.getActorsWithRefinement().forEach(x -> {
-      // at this point, all actors should have a CHeaderRefinement
-      actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x));
-    });
+
+    // at this point, all actors should have a CHeaderRefinement
+    analysisResult.flatGraph.getActorsWithRefinement()
+        .forEach(x -> actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x)));
     generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
     generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
     // 2.3- we wrap the actor init calls
@@ -860,7 +862,7 @@ public class FpgaCodeGenerator {
       // TODO wrap in a dedicated function?
       final HeuristicLoopBreakingDelays hlbd = new HeuristicLoopBreakingDelays();
       hlbd.performAnalysis(analysisResult.flatGraph, analysisResult.flatBrv);
-      final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+      final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalAsapRanking(hlbd);
       irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     }
 
@@ -1031,7 +1033,7 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
     // read kernel prototype
     final StringBuilder sb = new StringBuilder("void " + getReadKernelName() + "(\n  ");
@@ -1109,7 +1111,7 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    context.put("PREESM_INCLUDES", includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
     // write kernel prototype
     final StringBuilder sb = new StringBuilder("void " + getWriteKernelName() + "(\n  ");
@@ -1226,11 +1228,11 @@ public class FpgaCodeGenerator {
   }
 
   public static final String getFifoStreamName(final Fifo fifo) {
-    if (fifo.getSource() instanceof InterfaceActor) {
-      return ((InterfaceActor) fifo.getSource()).getName() + SUFFIX_INTERFACE_STREAM;
+    if (fifo.getSource() instanceof final InterfaceActor srcInterfaceActor) {
+      return srcInterfaceActor.getName() + SUFFIX_INTERFACE_STREAM;
     }
-    if (fifo.getTarget() instanceof InterfaceActor) {
-      return ((InterfaceActor) fifo.getTarget()).getName() + SUFFIX_INTERFACE_STREAM;
+    if (fifo.getTarget() instanceof final InterfaceActor tgtInterfaceActor) {
+      return tgtInterfaceActor.getName() + SUFFIX_INTERFACE_STREAM;
     }
     return "stream__" + fifo.getId().replace('.', '_').replace("-", "__");
   }

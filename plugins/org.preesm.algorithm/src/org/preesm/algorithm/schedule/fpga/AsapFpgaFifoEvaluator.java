@@ -89,8 +89,8 @@ public class AsapFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluator {
       }
     }
 
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
-    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalAsapRanking(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalAsapRankingT(hlbd);
     // build intermediate list of actors per rank to perform scheduling analysis
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     final SortedMap<Integer, Set<AbstractActor>> irRankActorsT = TopologicalRanking.mapRankActors(topoRanksT, false, 0);

@@ -38,7 +38,6 @@ package org.preesm.algorithm.pisdf.periods;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
@@ -55,6 +54,10 @@ import org.preesm.model.pisdf.Actor;
  */
 class HeuristicPeriodicActorSelection {
 
+  private HeuristicPeriodicActorSelection() {
+    // Forbids instantiation
+  }
+
   static Map<Actor, Double> selectActors(final Map<Actor, Long> periodicActors, final HeuristicLoopBreakingDelays hlbd,
       final int rate, final Map<AbstractVertex, Long> wcets, final boolean reverse) {
     if (rate == 0 || periodicActors.isEmpty()) {
@@ -63,9 +66,9 @@ class HeuristicPeriodicActorSelection {
 
     Map<AbstractActor, TopoVisit> topoRanks = null;
     if (reverse) {
-      topoRanks = TopologicalRanking.topologicalASAPrankingT(hlbd);
+      topoRanks = TopologicalRanking.topologicalAsapRankingT(hlbd);
     } else {
-      topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+      topoRanks = TopologicalRanking.topologicalAsapRanking(hlbd);
     }
     final Map<Actor, Double> topoRanksPeriodic = new LinkedHashMap<>();
     for (final Entry<Actor, Long> e : periodicActors.entrySet()) {
@@ -75,12 +78,12 @@ class HeuristicPeriodicActorSelection {
       }
       final long rank = topoRanks.get(actor).getRank();
       final long period = e.getValue();
-      long wcetMin = wcets.get(actor);
+      final long wcetMin = wcets.get(actor);
       topoRanksPeriodic.put(actor, (period - wcetMin) / (double) rank);
     }
     final StringBuilder sb = new StringBuilder();
     topoRanksPeriodic.entrySet().forEach(a -> sb.append(a.getKey().getName() + "(" + a.getValue() + ") / "));
-    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor ranks: " + sb.toString());
+    PreesmLogger.getLogger().info(() -> "Periodic actor ranks: " + sb.toString());
 
     return HeuristicPeriodicActorSelection.selectFromRate(periodicActors, topoRanksPeriodic, rate);
   }
@@ -91,12 +94,8 @@ class HeuristicPeriodicActorSelection {
     final double nActorsToSelect = nbPeriodicActors * (rate / 100.0);
     final int nbActorsToSelect = Math.max((int) Math.ceil(nActorsToSelect), 1);
 
-    final Map<Actor,
-        Double> selectedActors = topoRanksPeriodic.entrySet().stream().sorted(Map.Entry.comparingByValue())
-            .limit(nbActorsToSelect)
-            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
-
-    return selectedActors;
+    return topoRanksPeriodic.entrySet().stream().sorted(Map.Entry.comparingByValue()).limit(nbActorsToSelect)
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
   }
 
 }
