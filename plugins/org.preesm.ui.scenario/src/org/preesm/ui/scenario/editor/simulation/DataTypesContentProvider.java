@@ -51,8 +51,7 @@ public class DataTypesContentProvider implements IStructuredContentProvider {
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario inputScenario) {
 
       // Retrieving the data types from the scenario
       this.elementTable = inputScenario.getSimulationInfo().getDataTypes().entrySet().toArray();

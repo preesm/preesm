@@ -278,7 +278,7 @@ public class TagDAG {
           dagEdge.getTargetLabel(), dagEdge.getWeight().longValue());
       agg.add(props);
     }
-    edge.getPropertyBean().setValue(BufferAggregate.propertyBeanName, agg);
+    edge.getPropertyBean().setValue(BufferAggregate.PROPERTY_BEAN_NAME, agg);
   }
 
 }

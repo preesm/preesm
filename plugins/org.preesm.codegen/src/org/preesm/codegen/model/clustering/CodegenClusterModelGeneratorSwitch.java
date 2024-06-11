@@ -195,13 +195,13 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
    */
   public void generate(final Schedule schedule) {
     // Get PiGraph
-    final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
+    final PiGraph piGraph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
     // Compute repetition vector for the whole process
-    this.repVector = PiBRV.compute(graph, BRVMethod.LCM);
+    this.repVector = PiBRV.compute(piGraph, BRVMethod.LCM);
     // Print block from input schedule into operatorBlock
-    CodeElt cluster = doSwitch(schedule);
-    if (cluster instanceof ClusterBlock) {
-      ((ClusterBlock) cluster).setContainParallelism(this.parallelFirginsInside);
+    final CodeElt cluster = doSwitch(schedule);
+    if (cluster instanceof final ClusterBlock clusterBlock) {
+      clusterBlock.setContainParallelism(this.parallelFirginsInside);
     }
     this.operatorBlock.getLoopBlock().getCodeElts().add(cluster);
     // Add delay buffer and sub-buffer in global
@@ -291,10 +291,10 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     }
 
     // Build corresponding actor function/special call
-    if (actor instanceof SpecialActor) {
-      actorBlock.getCodeElts().add(generateSpecialActorFiring((SpecialActor) actor, finiteLoopBlock));
-    } else if (actor instanceof ExecutableActor) {
-      actorBlock.getCodeElts().add(generateExecutableActorFiring((ExecutableActor) actor, finiteLoopBlock));
+    if (actor instanceof final SpecialActor spacialActor) {
+      actorBlock.getCodeElts().add(generateSpecialActorFiring(spacialActor, finiteLoopBlock));
+    } else if (actor instanceof final ExecutableActor executableActor) {
+      actorBlock.getCodeElts().add(generateExecutableActorFiring(executableActor, finiteLoopBlock));
     }
 
     // Add delay pop if necessary
@@ -491,8 +491,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final void generateExternalClusterBuffers(final PiGraph cluster, final CodeElt block) {
     // Get the list of external Fifo in the current cluster
-    final List<Fifo> externalFifo = new LinkedList<>();
-    externalFifo.addAll(cluster.getFifos());
+    final List<Fifo> externalFifo = new LinkedList<>(cluster.getFifos());
     externalFifo.removeAll(ClusteringHelper.getInternalClusterFifo(cluster));
 
     // For all external Fifo
@@ -530,7 +529,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       // If cluster is repeated few times, create an iterated buffer
       if (inside && (this.repVector.get(cluster) > 1)) {
         buffer = generateIteratedBuffer(buffer, cluster, outsidePort);
-        FiniteLoopBlock flb = (FiniteLoopBlock) block;
+        final FiniteLoopBlock flb = (FiniteLoopBlock) block;
         if (fifo.getSource() instanceof DataInputInterface) {
           flb.getInBuffers().add((IteratedBuffer) buffer);
         } else {
@@ -588,9 +587,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       iteratedBuffer.setType(buffer.getType());
       iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
       return iteratedBuffer;
-    } else {
-      return buffer;
     }
+    return buffer;
   }
 
   private final Buffer generateBuffer(final Fifo fifo, final int iterator) {
@@ -618,9 +616,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void fillFunctionCallArguments(final FunctionCall functionCall, final Actor actor,
       final FiniteLoopBlock flb) {
     // Retrieve Refinement from actor
-    if (actor.getRefinement() instanceof CHeaderRefinement) {
+    if (actor.getRefinement() instanceof final CHeaderRefinement cheader) {
       // Retrieve C header refinement
-      final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
       if (cheader.getLoopPrototype() == null) {
         throw new PreesmRuntimeException(
             "CodegenClusterModelGenerator: cannot find C loop function prototype for actor " + actor.getName());
@@ -636,10 +633,10 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
         // Search for the corresponding port into actor ports list
         final Port associatedPort = actor.lookupPort(a.getName());
         // Add argument into function call
-        if (associatedPort instanceof DataPort) {
-          addDataPortArgument(functionCall, actor, (DataPort) associatedPort, a, flb);
-        } else if (associatedPort instanceof ConfigInputPort) {
-          addConfigInputPortArgument(functionCall, (ConfigInputPort) associatedPort, a);
+        if (associatedPort instanceof final DataPort associatedDataPort) {
+          addDataPortArgument(functionCall, actor, associatedDataPort, a, flb);
+        } else if (associatedPort instanceof final ConfigInputPort associatedCip) {
+          addConfigInputPortArgument(functionCall, associatedCip, a);
         }
       }
     }
@@ -688,9 +685,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
   private final void addInitFunctionCall(final Actor actor) {
     // Retrieve Refinement from actor
-    if (actor.getRefinement() instanceof CHeaderRefinement) {
+    if (actor.getRefinement() instanceof final CHeaderRefinement cheader) {
 
-      final CHeaderRefinement cheader = (CHeaderRefinement) actor.getRefinement();
       // Verify that a init prototype is present
       if (cheader.getInitPrototype() == null) {
         return;
@@ -710,8 +706,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
         // Search for the corresponding port into actor ports list
         final Port associatedPort = actor.lookupPort(a.getName());
         // Add argument to function call
-        if (associatedPort instanceof ConfigInputPort) {
-          addConfigInputPortArgument(functionCall, (ConfigInputPort) associatedPort, a);
+        if (associatedPort instanceof final ConfigInputPort associatedCip) {
+          addConfigInputPortArgument(functionCall, associatedCip, a);
         }
       }
 
@@ -723,9 +719,11 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final Buffer retrieveAssociatedBuffer(final Fifo fifo, final PortKind dir) {
     if (this.internalBufferMap.containsKey(fifo)) {
       return this.internalBufferMap.get(fifo);
-    } else if (this.externalBufferMap.containsKey(fifo)) {
+    }
+    if (this.externalBufferMap.containsKey(fifo)) {
       return this.externalBufferMap.get(fifo);
-    } else if (this.delaySubBufferMap.containsKey(fifo)) {
+    }
+    if (this.delaySubBufferMap.containsKey(fifo)) {
       final Triple<SubBuffer, SubBuffer, SubBuffer> delayBufferTriple = this.delaySubBufferMap.get(fifo);
       switch (dir) {
         case DATA_INPUT:
@@ -742,9 +740,8 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private Buffer getOuterClusterBuffer(final DataPort graphPort) {
     if (this.outsideFetcher != null) {
       return this.outsideFetcher.getOuterClusterBuffer(graphPort, this.fetcherMap);
-    } else {
-      throw new PreesmRuntimeException("CodegenClusterModelGenerator: no outside fetcher is set");
     }
+    throw new PreesmRuntimeException("CodegenClusterModelGenerator: no outside fetcher is set");
   }
 
 }

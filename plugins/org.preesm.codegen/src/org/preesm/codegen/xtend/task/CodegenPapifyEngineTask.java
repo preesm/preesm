@@ -87,7 +87,7 @@ public class CodegenPapifyEngineTask extends AbstractTaskImplementation {
             + "It does nothing and can be safely removed.\n"
             + "See the new 'Papify' parameter of the codegen tasks for equivalent behavior.");
 
-    LinkedHashMap<String, Object> output = new LinkedHashMap<>();
+    final LinkedHashMap<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, algo);
     return output;
   }

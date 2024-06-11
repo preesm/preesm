@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -1017,7 +1016,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @return the {@link List} of roots.
    */
   private static List<Parameter> findRootParameters(final List<Parameter> params) {
-    return params.stream().filter(x -> !x.isDependent()).collect(Collectors.toList());
+    return params.stream().filter(x -> !x.isDependent()).toList();
   }
 
   /**

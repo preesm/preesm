@@ -246,7 +246,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               + " options to false in the workflow tasks" + " to get rid of this error.");
         }
         final DAGEdge outgoingEdge = dag.outgoingEdgesOf(dagInitVertex).iterator().next();
-        final BufferAggregate buffers = outgoingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        final BufferAggregate buffers = outgoingEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
         if (buffers.isEmpty()) {
           throw new PreesmRuntimeException(
               "DAGEdge " + outgoingEdge + " has no buffer properties.\n This is not supported by the MemEx builder.");

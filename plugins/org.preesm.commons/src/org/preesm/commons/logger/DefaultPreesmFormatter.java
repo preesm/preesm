@@ -61,30 +61,30 @@ public class DefaultPreesmFormatter extends Formatter {
    * @see java.util.logging.Formatter#format(java.util.logging.LogRecord)
    */
   @Override
-  public String format(final LogRecord record) {
+  public String format(final LogRecord logRecord) {
 
     final StringBuilder output = new StringBuilder();
 
-    if (!hasRawFlag(record)) {
-      final Date date = new Date(record.getMillis());
+    if (!hasRawFlag(logRecord)) {
+      final Date date = new Date(logRecord.getMillis());
 
       output.append(PreesmLogger.getFormattedTime(date));
       // Default printing for warn & severe
-      if (record.getLevel().intValue() > Level.WARNING.intValue()) {
-        output.append(" ").append(record.getLevel());
-      } else if (record.getLevel().intValue() > Level.INFO.intValue()) {
-        output.append(" ").append(record.getLevel());
-      } else if (record.getLevel().intValue() == Level.INFO.intValue()) {
+      if (logRecord.getLevel().intValue() > Level.WARNING.intValue()) {
+        output.append(" ").append(logRecord.getLevel());
+      } else if (logRecord.getLevel().intValue() > Level.INFO.intValue()) {
+        output.append(" ").append(logRecord.getLevel());
+      } else if (logRecord.getLevel().intValue() == Level.INFO.intValue()) {
         output.append(" NOTICE");
-      } else if (record.getLevel().intValue() < Level.INFO.intValue()) {
+      } else if (logRecord.getLevel().intValue() < Level.INFO.intValue()) {
         output.append(" DEBUG");
       }
       output.append(": ");
     }
 
-    output.append(record.getMessage());
+    output.append(logRecord.getMessage());
 
-    final Throwable thrown = record.getThrown();
+    final Throwable thrown = logRecord.getThrown();
     if (thrown != null && debugMode) {
       output.append("\n" + ExceptionUtils.getStackTrace(thrown));
     }
@@ -95,12 +95,12 @@ public class DefaultPreesmFormatter extends Formatter {
   /**
    * Checks for raw flag.
    *
-   * @param record
+   * @param logRecord
    *          the record
    * @return true, if successful
    */
-  private boolean hasRawFlag(final LogRecord record) {
-    final Object[] params = record.getParameters();
+  private boolean hasRawFlag(final LogRecord logRecord) {
+    final Object[] params = logRecord.getParameters();
     if (params == null) {
       return false;
     }

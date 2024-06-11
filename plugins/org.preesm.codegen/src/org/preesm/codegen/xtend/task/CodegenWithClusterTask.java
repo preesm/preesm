@@ -62,6 +62,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenWithClusterTask.
@@ -69,8 +70,10 @@ import org.preesm.workflow.elements.Workflow;
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenClusterTask", name = "Code Generation with cluster",
     category = "Code Generation",
 
-    inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
+    inputs = { @Port(name = "MEGs", type = Map.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
         @Port(name = "CS", type = Map.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
@@ -130,11 +133,9 @@ public class CodegenWithClusterTask extends CodegenTask {
     final Map<AbstractActor, Schedule> scheduleMapping = (Map<AbstractActor, Schedule>) inputs.get("CS");
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    if (!(algoDAG instanceof MapperDAG)) {
+    if (!(algoDAG instanceof final MapperDAG algo)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
-    final MapperDAG algo = (MapperDAG) algoDAG;
-
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, scheduleMapping);
     // Retrieve the PAPIFY flag

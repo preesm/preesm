@@ -194,34 +194,36 @@ public class CodegenEngine {
   private void registerBlockPrinters(final String selectedPrinter, final Set<IConfigurationElement> usablePrinters,
       final Block b) {
     IConfigurationElement foundPrinter = null;
-    if (b instanceof CoreBlock) {
-      final String coreType = ((CoreBlock) b).getCoreType();
-      for (final IConfigurationElement printer : usablePrinters) {
-        final IConfigurationElement[] supportedCores = printer.getChildren();
-        for (final IConfigurationElement supportedCore : supportedCores) {
-          if (supportedCore.getAttribute("type").equals(coreType)) {
-            foundPrinter = printer;
-            break;
-          }
-        }
-        if (foundPrinter != null) {
+    if (!(b instanceof final CoreBlock coreBlock)) {
+      throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
+    }
+    final String coreType = coreBlock.getCoreType();
+
+    for (final IConfigurationElement printer : usablePrinters) {
+      final IConfigurationElement[] supportedCores = printer.getChildren();
+      for (final IConfigurationElement supportedCore : supportedCores) {
+        if (supportedCore.getAttribute("type").equals(coreType)) {
+          foundPrinter = printer;
           break;
         }
       }
       if (foundPrinter != null) {
-
-        if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-          this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-        }
-        final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-        blocks.add(b);
-      } else {
-        throw new PreesmRuntimeException(
-            "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+        break;
       }
-    } else {
-      throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
     }
+
+    if (foundPrinter == null) {
+      throw new PreesmRuntimeException(
+          "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+    }
+
+    // if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
+    // this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
+    // }
+    this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, fp -> new ArrayList<>());
+
+    final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+    blocks.add(coreBlock);
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {

@@ -66,6 +66,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenTask.
@@ -73,8 +74,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenTask", name = "Code Generation",
     category = "Code Generation",
 
-    inputs = { @Port(name = "MEGs", type = Map.class), @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class) },
+    inputs = { @Port(name = "MEGs", type = Map.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -137,20 +140,19 @@ public class CodegenTask extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
 
-    final Design archi = (Design) inputs.get("architecture");
-    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs.get("DAG");
+    final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final DirectedAcyclicGraph algoDAG = (DirectedAcyclicGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
     @SuppressWarnings("unchecked")
     final Map<String, MemoryExclusionGraph> megs = (Map<String, MemoryExclusionGraph>) inputs.get("MEGs");
-    if (!(algoDAG instanceof MapperDAG)) {
+    if (!(algoDAG instanceof final MapperDAG algo)) {
       throw new PreesmRuntimeException("The input DAG has not been scheduled");
     }
-    final MapperDAG algo = (MapperDAG) algoDAG;
-
     // Generate intermediate model
     final CodegenModelGenerator generator = new CodegenModelGenerator(archi, algo, megs, scenario, null);
     // Retrieve the PAPIFY flag

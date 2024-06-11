@@ -75,7 +75,7 @@ public class ClassicalMethod {
 
     // -> Step 3: compute the throughput as 1/k
     final double throughput = 1 / k.doubleValue();
-    PreesmLogger.getLogger().log(Level.FINEST, "Throughput of the graph = " + throughput);
+    PreesmLogger.getLogger().finest(() -> "Throughput of the graph = " + throughput);
 
     return throughput;
   }

@@ -43,7 +43,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -233,8 +232,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final ComponentInstance mainOperatorName = getEngine().getScenario().getSimulationInfo().getMainOperator();
     final Collection<Block> codeBlocks = getEngine().getCodeBlocks();
     for (final Block block : codeBlocks) {
-      if (block.getName().equals(mainOperatorName.getInstanceName()) && block instanceof CoreBlock) {
-        return ((CoreBlock) block).getCoreID();
+      if (block.getName().equals(mainOperatorName.getInstanceName()) && block instanceof final CoreBlock coreBlock) {
+        return coreBlock.getCoreID();
       }
     }
     // If nothing is mapped on the main operator, there is no code block that has been generated for
@@ -294,8 +293,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public void preProcessing(final List<Block> printerBlocks, final Collection<Block> allBlocks) {
     // by default, check that all Operators have a unique hardware ID
     // this can be overriden.
-    final List<CoreBlock> operatorBlocks = allBlocks.stream().filter(block -> block instanceof CoreBlock)
-        .map(block -> (CoreBlock) block).collect(Collectors.toList());
+    final List<CoreBlock> operatorBlocks = allBlocks.stream().filter(CoreBlock.class::isInstance)
+        .map(CoreBlock.class::cast).toList();
     final long operatorBlockCount = operatorBlocks.size();
     for (int i = 0; i < operatorBlockCount; i++) {
       final CoreBlock coreBlocki = operatorBlocks.get(i);
@@ -607,9 +606,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public CharSequence casePapifyAction(final PapifyAction action) {
     if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
       return printPapifyActionDefinition(action);
-    } else {
-      return printPapifyActionParam(action);
     }
+    return printPapifyActionParam(action);
 
   }
 
@@ -729,8 +727,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     final EList<Variable> variables = clusterBlock.getDefinitions();
     for (final Variable variable : variables) {
-      if (variable instanceof Buffer) {
-        final CharSequence code = printBufferDefinition((Buffer) variable);
+      if (variable instanceof final Buffer buffer) {
+        final CharSequence code = printBufferDefinition(buffer);
         result.append(code, indentation);
       }
     }
@@ -799,24 +797,13 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseSpecialCall(final SpecialCall specialCall) {
-    CharSequence result;
-    switch (specialCall.getType()) {
-      case FORK:
-        result = printFork(specialCall);
-        break;
-      case JOIN:
-        result = printJoin(specialCall);
-        break;
-      case BROADCAST:
-        result = printBroadcast(specialCall);
-        break;
-      case ROUND_BUFFER:
-        result = printRoundBuffer(specialCall);
-        break;
-      default:
-        result = printSpecialCall(specialCall);
-    }
-    return result;
+    return switch (specialCall.getType()) {
+      case FORK -> printFork(specialCall);
+      case JOIN -> printJoin(specialCall);
+      case BROADCAST -> printBroadcast(specialCall);
+      case ROUND_BUFFER -> printRoundBuffer(specialCall);
+      default -> printSpecialCall(specialCall);
+    };
   }
 
   @Override

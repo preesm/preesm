@@ -86,6 +86,9 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
   /** The factory. */
   private final IModelVertexFactory<DAGVertex> factory;
 
+  private static final String INIT_INFIX = "_init_";
+  private static final String END_INFIX  = "_end_";
+
   /**
    * Builds a new DAGTransformation visitor,.
    *
@@ -143,7 +146,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
         for (final SDFAbstractVertex current : sortedCycle) {
           final SDFAbstractVertex copy = current.copy();
           if (mapCopies.get(current) == null) {
-            mapCopies.put(current, new ArrayList<SDFAbstractVertex>());
+            mapCopies.put(current, new ArrayList<>());
           }
           mapCopies.get(current).add(copy);
           createdVertices.add(copy);
@@ -183,7 +186,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       }
     }
     final SDFInitVertex initVertex = new SDFInitVertex();
-    initVertex.setName(loop.getTarget().getName() + "_init_" + loop.getTargetInterface().getName());
+    initVertex.setName(loop.getTarget().getName() + INIT_INFIX + loop.getTargetInterface().getName());
     final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
     sinkInit.setName(loop.getSourceInterface().getName());
     initVertex.addSink(sinkInit);
@@ -191,7 +194,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     graph.addVertex(initVertex);
 
     final SDFEndVertex endVertex = new SDFEndVertex();
-    endVertex.setName(loop.getSource().getName() + "_end_" + loop.getSourceInterface().getName());
+    endVertex.setName(loop.getSource().getName() + END_INFIX + loop.getSourceInterface().getName());
     final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
     sourceEnd.setName(loop.getTargetInterface().getName());
     endVertex.addSource(sourceEnd);
@@ -384,7 +387,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     }
     for (final SDFEdge loop : loops) {
       final SDFInitVertex initVertex = new SDFInitVertex();
-      initVertex.setName(loop.getTarget().getName() + "_init_" + loop.getTargetInterface().getName());
+      initVertex.setName(loop.getTarget().getName() + INIT_INFIX + loop.getTargetInterface().getName());
       final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
       sinkInit.setName("init_out");
       initVertex.addSink(sinkInit);
@@ -392,7 +395,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       graph.addVertex(initVertex);
 
       final SDFEndVertex endVertex = new SDFEndVertex();
-      endVertex.setName(loop.getSource().getName() + "_end_" + loop.getSourceInterface().getName());
+      endVertex.setName(loop.getSource().getName() + END_INFIX + loop.getSourceInterface().getName());
       final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
       sourceEnd.setName("end_in");
       endVertex.addSource(sourceEnd);
@@ -427,7 +430,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
       final SDFEdge edge = edges.get(0);
       if (edge.getDelay().longValue() > 0) {
         final SDFInitVertex initVertex = new SDFInitVertex();
-        initVertex.setName(edge.getTarget().getName() + "_init_" + edge.getTargetInterface().getName());
+        initVertex.setName(edge.getTarget().getName() + INIT_INFIX + edge.getTargetInterface().getName());
         final SDFSinkInterfaceVertex sinkInit = new SDFSinkInterfaceVertex(null);
         sinkInit.setName("init_out");
         initVertex.addSink(sinkInit);
@@ -435,7 +438,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
         graph.addVertex(initVertex);
 
         final SDFEndVertex endVertex = new SDFEndVertex();
-        endVertex.setName(edge.getSource().getName() + "_end_" + edge.getSourceInterface().getName());
+        endVertex.setName(edge.getSource().getName() + END_INFIX + edge.getSourceInterface().getName());
         final SDFSourceInterfaceVertex sourceEnd = new SDFSourceInterfaceVertex(null);
         sourceEnd.setName("end_in");
         endVertex.addSource(sourceEnd);
@@ -487,8 +490,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     }
 
     final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
-    for (int i = 0; i < vertices.size(); i++) {
-      final SDFAbstractVertex sdfAbstractVertex = vertices.get(i);
+    for (final SDFAbstractVertex sdfAbstractVertex : vertices) {
       sdfAbstractVertex.accept(this);
     }
     sdf.getPropertyBean().setValue("schedulable", true);
@@ -570,14 +572,10 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     }
 
     // We have to check for SDFEndVertex first as it inherits from SDFInitVertex
-    if (sdfVertex instanceof SDFEndVertex) {
-      // Setting the end reference
-      final SDFEndVertex sdfEndVertex = (SDFEndVertex) sdfVertex;
+    if (sdfVertex instanceof final SDFEndVertex sdfEndVertex) {
       final String endReferenceName = sdfEndVertex.getEndReference().getName();
       dagVertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, endReferenceName);
-    } else if (sdfVertex instanceof SDFInitVertex) {
-      // Setting the end reference
-      final SDFInitVertex sdfInitVertex = (SDFInitVertex) sdfVertex;
+    } else if (sdfVertex instanceof final SDFInitVertex sdfInitVertex) {
       final String endReferenceName = sdfInitVertex.getEndReference().getName();
       dagVertex.getPropertyBean().setValue(MapperDAGVertex.END_REFERENCE, endReferenceName);
       // Setting the init size property

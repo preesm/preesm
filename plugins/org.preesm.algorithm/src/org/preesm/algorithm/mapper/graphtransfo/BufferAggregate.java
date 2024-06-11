@@ -48,7 +48,7 @@ import java.util.ArrayList;
 public class BufferAggregate extends ArrayList<BufferProperties> {
 
   /** ID used to reference the element in a property bean. */
-  public static final String propertyBeanName = "bufferAggregate";
+  public static final String PROPERTY_BEAN_NAME = "bufferAggregate";
 
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = 1L;

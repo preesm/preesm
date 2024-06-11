@@ -37,6 +37,7 @@
  */
 package org.preesm.cli;
 
+import java.io.File;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -181,7 +182,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
           CLIWorkflowExecutor.SCENARIO_DIR);
     } else {
       // Otherwise, format the scenarioPath and execute it
-      scenarioPath = this.project.getName() + CLIWorkflowExecutor.SCENARIO_DIR + "/" + scenarioPath;
+      scenarioPath = this.project.getName() + CLIWorkflowExecutor.SCENARIO_DIR + File.separator + scenarioPath;
       if (!scenarioPath.endsWith(CLIWorkflowExecutor.SCENARIO_EXT)) {
         scenarioPath = scenarioPath + "." + CLIWorkflowExecutor.SCENARIO_EXT;
       }
@@ -201,7 +202,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     } else {
       // Otherwise, format the workflowPath and execute it
       if (!workflowPath.contains(projectName)) {
-        workflowPath = projectName + CLIWorkflowExecutor.WORKFLOW_DIR + "/" + workflowPath;
+        workflowPath = projectName + CLIWorkflowExecutor.WORKFLOW_DIR + File.separator + workflowPath;
       }
       if (!workflowPath.endsWith(CLIWorkflowExecutor.WORKFLOW_EXT)) {
         workflowPath = workflowPath + "." + CLIWorkflowExecutor.WORKFLOW_EXT;

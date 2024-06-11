@@ -52,9 +52,9 @@ import org.preesm.model.pisdf.PiGraph;
 
 /**
  * This class stores main metrics of a DSE point. (Design Space Exploration)
- * 
+ *
  * This class is intended to be used only through its provided comparators.
- * 
+ *
  * @author ahonorat
  */
 public class DSEpointIR implements Clusterable {
@@ -88,7 +88,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * New DSE point with heuristic delay informations.
-   * 
+   *
    * @param energy
    *          the energy
    * @param latency
@@ -143,7 +143,7 @@ public class DSEpointIR implements Clusterable {
   /**
    * Compare two DSE points with comparators in the same order as listed in the constructor arguments. If the first
    * comparator results in 0, the second comparator is called, and so on.
-   * 
+   *
    * @author ahonorat
    */
   public static class DSEpointGlobalComparator implements Comparator<DSEpointIR> {
@@ -156,16 +156,16 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Builds a global comparator calling successively the comparators in the arguments.
-     * 
+     *
      * @param comparators
      *          List of comparators to call.
      * @param paramsObjvs
      *          Map of parameters, as pair of (parentName, parameterName), and their objectives (min: - or max: +),
      *          evaluated in given order.
-     * 
+     *
      */
     public DSEpointGlobalComparator(final List<Comparator<DSEpointIR>> comparators,
-        final LinkedHashMap<Pair<String, String>, Character> paramsObjvs) {
+        final Map<Pair<String, String>, Character> paramsObjvs) {
       this.comparators = new ArrayList<>(comparators);
       this.delayAcceptance = computesDelayAcceptance(comparators);
       if (!delayAcceptance) {
@@ -193,7 +193,7 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Computes values of parameters in the current state of their graph.
-     * 
+     *
      * @param graph
      *          Graph with resolved parameters.
      * @return Map of parameter values of parameter objectives.
@@ -203,7 +203,7 @@ public class DSEpointIR implements Clusterable {
     }
 
     /**
-     * 
+     *
      * @return Whether or not this comparator has at least one threshold.
      */
     public boolean hasThresholds() {
@@ -212,16 +212,16 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Checks if all threshold comparators are met by the current point.
-     * 
+     *
      * @param point
      *          DSE point to check.
      * @return Whether or not the current point respect all thresholds. If no thresholds, returns true.
      */
     public boolean areAllThresholdMet(DSEpointIR point) {
       final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
-          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+          .filter(ThresholdComparator.class::isInstance).collect(Collectors.toList());
       for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
-        int res = comparator.compare(point, ZERO);
+        final int res = comparator.compare(point, ZERO);
         if (res != 0) {
           return false;
         }
@@ -233,14 +233,14 @@ public class DSEpointIR implements Clusterable {
     /**
      * Checks if all threshold except throughput and energy are met by the current point. If so it may be interesting to
      * add delays. If not, adding delays will worsen the current point result.
-     * 
+     *
      * @param point
      *          DSE point to check.
      * @return Whether or not the current point does not respect all other threshold than throughput and energy.
      */
     public boolean areAllNonThroughputAndEnergyThresholdsMet(DSEpointIR point) {
       final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
-          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+          .filter(ThresholdComparator.class::isInstance).collect(Collectors.toList());
       for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
         final int res = comparator.compare(point, ZERO);
         if (res != 0
@@ -253,7 +253,7 @@ public class DSEpointIR implements Clusterable {
     }
 
     /**
-     * 
+     *
      * @return Maximum latency if specified (greater than 0).
      */
     public int getMaximumLatency() {
@@ -262,13 +262,13 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Get the maximal latency if specified.
-     * 
+     *
      * @param comparators
      *          Comparators to check.
      * @return Minimal value of latency threshold, or LONG.MAX_VALUE if no threshold.
      */
     private static int computesMaxLatency(final List<Comparator<DSEpointIR>> comparators) {
-      final Optional<Integer> min = comparators.stream().filter(x -> x instanceof LatencyAtMostComparator)
+      final Optional<Integer> min = comparators.stream().filter(LatencyAtMostComparator.class::isInstance)
           .map(x -> ((LatencyAtMostComparator) x).threshold).min(Long::compare);
       if (min.isPresent()) {
         return min.get();
@@ -279,7 +279,7 @@ public class DSEpointIR implements Clusterable {
     /**
      * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
      * added. (Except to respect graph period, not taken into account here).
-     * 
+     *
      * @return Whether or not more delays can be added.
      */
     public boolean doesAcceptsMoreDelays() {
@@ -289,7 +289,7 @@ public class DSEpointIR implements Clusterable {
     /**
      * If minimization of latency or makespan objectives are more important than throughput, then, no delays must be
      * added. (Except to respect graph period, not taken into account here).
-     * 
+     *
      * @return Whether or not more delays can be added.
      */
     private static boolean computesDelayAcceptance(final List<Comparator<DSEpointIR>> comparators) {
@@ -303,12 +303,12 @@ public class DSEpointIR implements Clusterable {
       // same for minimization objectives of latency or makespan
       int indexFirstLMmin = comparators.size();
       final Optional<Comparator<DSEpointIR>> firstLmin = comparators.stream()
-          .filter(x -> x instanceof LatencyMinComparator).findFirst();
+          .filter(LatencyMinComparator.class::isInstance).findFirst();
       if (firstLmin.isPresent()) {
         indexFirstLMmin = comparators.indexOf(firstLmin.get());
       }
       final Optional<Comparator<DSEpointIR>> firstMmin = comparators.stream()
-          .filter(x -> x instanceof MakespanMinComparator).findFirst();
+          .filter(MakespanMinComparator.class::isInstance).findFirst();
       if (firstMmin.isPresent()) {
         indexFirstLMmin = Math.min(indexFirstLMmin, comparators.indexOf(firstMmin.get()));
       }
@@ -318,7 +318,7 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Computes a number of cuts to ask to improve the result.
-     * 
+     *
      * @param maxCuts
      *          Current maximum possible, see {@link getMaximumLatency}
      * @param nbCore
@@ -334,21 +334,19 @@ public class DSEpointIR implements Clusterable {
     public int computeCutsAmount(int maxCuts, int nbCore, long durationII, long totalLoad, long maxSingleLoad) {
       int res = Math.min(maxCuts, nbCore - 1);
       // cast to long/int == truncating == Math.floor if positive number
-      final long minAvgDuration = Math.max(maxSingleLoad, (totalLoad / (long) nbCore));
+      final long minAvgDuration = Math.max(maxSingleLoad, (totalLoad / nbCore));
       final int defaultDelayCut = (int) Math.ceil((double) durationII / minAvgDuration) - 1;
       res = Math.min(res, defaultDelayCut);
       // default value, now let's refine it with latency and makespan thresholds
       final List<Comparator<DSEpointIR>> thresholdComparators = comparators.stream()
-          .filter(x -> x instanceof ThresholdComparator).collect(Collectors.toList());
+          .filter(ThresholdComparator.class::isInstance).collect(Collectors.toList());
       for (final Comparator<DSEpointIR> comparator : thresholdComparators) {
         // LatencyAtMostComparator is not tested since it is already given by maxCuts input
-        if (comparator instanceof MakespanAtMostComparator) {
-          final MakespanAtMostComparator mamc = (MakespanAtMostComparator) comparator;
+        if (comparator instanceof final MakespanAtMostComparator mamc) {
           final int maxDelay = (int) (mamc.threshold / minAvgDuration);
           res = Math.min(res, maxDelay);
         }
-        if (comparator instanceof ThroughputAtLeastComparator) {
-          final ThroughputAtLeastComparator talc = (ThroughputAtLeastComparator) comparator;
+        if (comparator instanceof final ThroughputAtLeastComparator talc) {
           final int maxDelay = (int) Math.ceil((double) durationII / talc.threshold) - 1;
           res = Math.min(res, maxDelay);
         }
@@ -363,17 +361,17 @@ public class DSEpointIR implements Clusterable {
   /**
    * Compare two DSE points with comparators in the same order as listed in the constructor arguments. All comparators
    * are checked so that the Pareto front can be built.
-   * 
+   *
    * @author tbourgoi
    */
   public static class DSEpointParetoComparator extends DSEpointGlobalComparator {
 
     /**
      * Builds a global Pareto comparator calling successively the comparators in the arguments.
-     * 
+     *
      * @param comparators
      *          List of comparators to call.
-     * 
+     *
      */
     public DSEpointParetoComparator(List<Comparator<DSEpointIR>> comparators) {
       // TODO consider the paramsObjvs for Pareto front
@@ -412,22 +410,22 @@ public class DSEpointIR implements Clusterable {
 
   public static class ParameterComparator implements Comparator<DSEpointIR> {
 
-    public final LinkedHashMap<Pair<String, String>, Character> paramsMinOrMax;
+    public final Map<Pair<String, String>, Character> paramsMinOrMax;
 
     /**
      * Comparator of given parameters (minimization or maximization).
-     * 
+     *
      * @param paramsMinOrMax
      *          Parameters, as pair of (parentName, parameterName), to minimize or maximize (order is kept for
      *          comparisons).
      */
-    public ParameterComparator(final LinkedHashMap<Pair<String, String>, Character> paramsMinOrMax) {
+    public ParameterComparator(final Map<Pair<String, String>, Character> paramsMinOrMax) {
       this.paramsMinOrMax = paramsMinOrMax;
     }
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      for (Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
+      for (final Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
         final long p0 = arg0.paramsValues.get(en.getKey());
         final long p1 = arg1.paramsValues.get(en.getKey());
         final int cmp = Long.compare(p0, p1);
@@ -435,10 +433,9 @@ public class DSEpointIR implements Clusterable {
           if (en.getValue() == '+') {
             // maximization
             return -cmp;
-          } else {
-            // minimization
-            return cmp;
           }
+          // minimization
+          return cmp;
         }
       }
       return 0;
@@ -446,14 +443,14 @@ public class DSEpointIR implements Clusterable {
 
     /**
      * Compute map values of parameters
-     * 
+     *
      * @param graph
      *          Graph with resolved parameters.
      * @return Map of parameter values.
      */
     public Map<Pair<String, String>, Long> getParamsValues(final PiGraph graph) {
       final Map<Pair<String, String>, Long> paramsValues = new HashMap<>();
-      for (Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
+      for (final Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
         final Pair<String, String> p = en.getKey();
         final Parameter param = graph.lookupParameterGivenGraph(p.getValue(), p.getKey());
         paramsValues.put(p, param.getExpression().evaluate());
@@ -467,7 +464,7 @@ public class DSEpointIR implements Clusterable {
 
     public final T threshold;
 
-    public ThresholdComparator(final T threshold) {
+    protected ThresholdComparator(final T threshold) {
       this.threshold = threshold;
     }
 
@@ -475,7 +472,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower power than second.
-   * 
+   *
    * @author ahonorat
    */
   public static class PowerMinComparator implements Comparator<DSEpointIR> {
@@ -490,7 +487,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower power than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class PowerAtMostComparator extends ThresholdComparator<Double> {
@@ -501,8 +498,8 @@ public class DSEpointIR implements Clusterable {
 
     @Override
     public int compare(DSEpointIR arg0, DSEpointIR arg1) {
-      double power0 = (double) arg0.energy / (double) arg0.durationII;
-      double power1 = (double) arg1.energy / (double) arg1.durationII;
+      final double power0 = (double) arg0.energy / (double) arg0.durationII;
+      final double power1 = (double) arg1.energy / (double) arg1.durationII;
       if (power0 > threshold || power1 > threshold) {
         return Double.compare(power0, power1);
       }
@@ -513,7 +510,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower energy than second.
-   * 
+   *
    * @author ahonorat
    */
   public static class EnergyMinComparator implements Comparator<DSEpointIR> {
@@ -527,7 +524,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower energy than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class EnergyAtMostComparator extends ThresholdComparator<Long> {
@@ -548,7 +545,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower memory than second.
-   * 
+   *
    * @author tbourgoi
    */
   public static class MemoryMinComparator implements Comparator<DSEpointIR> {
@@ -562,7 +559,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower memory than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class MemoryAtMostComparator extends ThresholdComparator<Long> {
@@ -583,7 +580,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has latency lower than second.
-   * 
+   *
    * @author ahonorat
    */
   public static class LatencyMinComparator implements Comparator<DSEpointIR> {
@@ -597,7 +594,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower latency than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class LatencyAtMostComparator extends ThresholdComparator<Integer> {
@@ -618,7 +615,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has makespan lower than second (same as {@link LatencyMinComparator}.
-   * 
+   *
    * @author ahonorat
    */
   public static class MakespanMinComparator implements Comparator<DSEpointIR> {
@@ -632,7 +629,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower makespan than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class MakespanAtMostComparator extends ThresholdComparator<Long> {
@@ -653,7 +650,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower durationII than second.
-   * 
+   *
    * @author ahonorat
    */
   public static class ThroughputMaxComparator implements Comparator<DSEpointIR> {
@@ -667,7 +664,7 @@ public class DSEpointIR implements Clusterable {
 
   /**
    * Negative if first point has lower durationII than second. 0 if both are below the threshold.
-   * 
+   *
    * @author ahonorat
    */
   public static class ThroughputAtLeastComparator extends ThresholdComparator<Long> {

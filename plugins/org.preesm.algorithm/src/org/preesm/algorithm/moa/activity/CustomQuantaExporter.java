@@ -128,17 +128,17 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
   /**
    * Storing the graph vertices already explored
    */
-  private Set<MapperDAGVertex> visited = new LinkedHashSet<>();
+  private final Set<MapperDAGVertex> visited = new LinkedHashSet<>();
 
   /**
    * Currently retrieved activity
    */
-  private Activity activity = new Activity();
+  private final Activity activity = new Activity();
 
   /**
    * Number of custom quanta per actor and operator
    */
-  private CustomQuanta customQuanta = new CustomQuanta();
+  private final CustomQuanta customQuanta = new CustomQuanta();
 
   /**
    * Exporting in a CSV file custom quanta information
@@ -287,9 +287,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
       // Counting tokens and quanta for each elements in the route between 2 processors for an edge
       for (final SlamRouteStep step : route.getRouteSteps()) {
-        if (step instanceof SlamMessageRouteStep) {
-          // a step is internally composed of several communication nodes
-          final SlamMessageRouteStep mstep = (SlamMessageRouteStep) step;
+        if (step instanceof final SlamMessageRouteStep mstep) {
           for (final ComponentInstance node : mstep.getNodes()) {
             this.activity.addQuantaNumber(node.getInstanceName(), size);
           }
@@ -372,18 +370,17 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
     // we parse quanta for standard and special vertices
     for (final AbstractActor vertex : appli.getActors()) {
       // Handle connected graphs from hierarchical vertices
-      if (vertex instanceof PiGraph) {
-        parseQuantaForPISDFGraph(w, (PiGraph) vertex, operators);
-      } else if (vertex instanceof Actor) {
-        final Actor actor = (Actor) vertex;
+      if (vertex instanceof final PiGraph piGraph) {
+        parseQuantaForPISDFGraph(w, piGraph, operators);
+      } else if (vertex instanceof final Actor actor) {
 
         // Handle unconnected graphs from hierarchical vertices
         final Refinement refinement = actor.getRefinement();
         if (refinement != null) {
-          final AbstractActor subgraph = refinement.getAbstractActor();
+          final AbstractActor abstractActor = refinement.getAbstractActor();
 
-          if (subgraph instanceof PiGraph) {
-            parseQuantaForPISDFGraph(w, (PiGraph) subgraph, operators);
+          if (abstractActor instanceof final PiGraph subGraph) {
+            parseQuantaForPISDFGraph(w, subGraph, operators);
           } else {
             // If the actor is not hierarchical, parse its timing
             parseQuantaForVertex(w, vertex.getName(), operators);
@@ -415,7 +412,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
           String stringQuanta = timingCell.getContents();
           // Removing useless characters (spaces...)
-          stringQuanta = stringQuanta.replaceAll(" ", "");
+          stringQuanta = stringQuanta.replace(" ", "");
 
           try {
             // Testing the validity of the value as a Long number.
@@ -426,7 +423,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
             this.customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.getContents());
 
           } catch (final NumberFormatException e) {
-            PreesmLogger.getLogger().log(Level.SEVERE, "Problem importing quanta of " + vertexName + " on " + opDefId
+            PreesmLogger.getLogger().severe(() -> "Problem importing quanta of " + vertexName + " on " + opDefId
                 + ". Integer with no space or special character needed. Be careful on the special number formats.");
           }
         } else {
@@ -445,19 +442,17 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
 
             this.customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.getContents());
           } catch (final ParseException e) {
-            PreesmLogger.getLogger().log(Level.SEVERE, "Problem evaluating quanta expression of " + vertexName + " on "
+            PreesmLogger.getLogger().severe(() -> "Problem evaluating quanta expression of " + vertexName + " on "
                 + opDefId + ": " + timingCell.getContents());
           }
 
         }
-      } else {
-        if (vertexCell == null) {
-          final String msg = "No line found in custom quanta excel sheet for vertex: " + vertexName;
-          PreesmLogger.getLogger().log(Level.WARNING, msg);
-        } else if (operatorCell == null) {
-          final String msg = "No column found in custom quanta excel sheet for operator type: " + opDefId;
-          PreesmLogger.getLogger().log(Level.WARNING, msg);
-        }
+      } else if (vertexCell == null) {
+        final String msg = "No line found in custom quanta excel sheet for vertex: " + vertexName;
+        PreesmLogger.getLogger().log(Level.WARNING, msg);
+      } else if (operatorCell == null) {
+        final String msg = "No column found in custom quanta excel sheet for operator type: " + opDefId;
+        PreesmLogger.getLogger().log(Level.WARNING, msg);
       }
     }
   }

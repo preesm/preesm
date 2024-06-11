@@ -118,9 +118,8 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       if (sourceMappings.size() != 1) {
         // no supported
         throw new UnsupportedOperationException("Cannot insert communications for actors mapped on several operators");
-      } else {
-        res.addAll(insertActorOutputCommunications(mapping, scheduleOM, routeTable, sourceActor, sourceMappings));
       }
+      res.addAll(insertActorOutputCommunications(mapping, scheduleOM, routeTable, sourceActor, sourceMappings));
     }
 
     PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Communication insertion done");
@@ -139,7 +138,7 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       fifos.add(dap.getFifo());
     }
     for (final Fifo fifo : fifos) {
-      PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT] Handling fifo [" + fifo.getId() + "]");
+      PreesmLogger.getLogger().finer(() -> "[COMINSERT] Handling fifo [" + fifo.getId() + "]");
 
       final DataInputPort targetPort = fifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
@@ -148,17 +147,16 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
       if (targetMappings.size() != 1) {
         // no supported
         throw new PreesmRuntimeException("Cannot insert communications for actors mapped on several operators");
-      } else {
-        final ComponentInstance tgtComponent = targetMappings.get(0);
-        final ComponentInstance srcComponent = sourceMappings.get(0);
+      }
+      final ComponentInstance tgtComponent = targetMappings.get(0);
+      final ComponentInstance srcComponent = sourceMappings.get(0);
 
-        if (srcComponent != tgtComponent) {
-          // insert communication if operator is different only
-          final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
-          res.addAll(insertFifoCommunication(fifo, route, scheduleOrderManager, mapping));
-        } else {
-          PreesmLogger.getLogger().log(Level.FINER, "[COMINSERT]   >> mapped on same component - skipping");
-        }
+      if (srcComponent != tgtComponent) {
+        // insert communication if operator is different only
+        final SlamRoute route = routeTable.getRoute(srcComponent, tgtComponent);
+        res.addAll(insertFifoCommunication(fifo, route, scheduleOrderManager, mapping));
+      } else {
+        PreesmLogger.getLogger().finer("[COMINSERT]   >> mapped on same component - skipping");
       }
     }
     return res;
@@ -213,21 +211,19 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     final boolean isFirstRouteStep = sourceOperator == route.getSource();
 
     final AbstractActor sourceOperatorPeekActor = this.lastVisitedActor.get(sourceOperator);
-    if (isFirstRouteStep) {
-      if (sourceOperatorPeekActor == null) {
-        // should never happen since the source actor of the Fifo has been inserted in the map before reaching this
-        // method. But well ...
-        throw new PreesmRuntimeException("guru meditation");
-      } else {
-        // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
-        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd, false);
-        PreesmLogger.getLogger().log(Level.FINER,
-            "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
-      }
-    } else {
+    if (!isFirstRouteStep) {
       // TODO add proxy send
       throw new UnsupportedOperationException("Proxy send not supported yet");
     }
+    if (sourceOperatorPeekActor == null) {
+      // should never happen since the source actor of the Fifo has been inserted in the map before reaching this
+      // method. But well ...
+      throw new PreesmRuntimeException("guru meditation");
+    }
+    // insert after srcCmpLastActor (the "peek" ui.e. last visited) actor for source operator
+    scheduleOrderManager.insertComStEdAfterInSchedule(mapping, sourceOperatorPeekActor, sendStart, sendEnd, false);
+    PreesmLogger.getLogger()
+        .finer(() -> "[COMINSERT]  * send inserted after '" + sourceOperatorPeekActor.getName() + "'");
     this.lastVisitedActor.put(sourceOperator, sendEnd);
   }
 
@@ -245,32 +241,29 @@ public class DefaultCommunicationInserter implements ICommunicationInserter {
     final boolean isLastRouteStep = targetOperator == route.getTarget();
 
     final AbstractActor targetOperatorPeekActor = this.lastVisitedActor.get(targetOperator);
-    if (isLastRouteStep) {
-      if (targetOperatorPeekActor == null) {
-        // find appropriate schedule
-        final List<
-            AbstractActor> list = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping, targetOperator);
-        if (list.isEmpty()) {
-          // no actor is actually mapped on the target operator. Only happens when using proxy operator
-          // TODO: Schedule trees usually have a parallel root schedule. Insert a new schedule child there and add the
-          // receive nodes in it.
-          throw new UnsupportedOperationException(
-              "Proxy send/receive using operator on which no actor is mapped is not supported");
-        } else {
-          final AbstractActor abstractActor = list.get(0);
-          scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd, false);
-          PreesmLogger.getLogger().log(Level.FINER,
-              "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
-        }
-      } else {
-        scheduleOrderManager.insertComStEdAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd,
-            false);
-        PreesmLogger.getLogger().log(Level.FINER,
-            "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
-      }
-    } else {
+    if (!isLastRouteStep) {
       // TODO add proxy receive
       throw new UnsupportedOperationException("Proxy receive not supported yet");
+    }
+    if (targetOperatorPeekActor == null) {
+      // find appropriate schedule
+      final List<
+          AbstractActor> list = scheduleOrderManager.buildScheduleAndTopologicalOrderedList(mapping, targetOperator);
+      if (list.isEmpty()) {
+        // no actor is actually mapped on the target operator. Only happens when using proxy operator
+        // TODO: Schedule trees usually have a parallel root schedule. Insert a new schedule child there and add the
+        // receive nodes in it.
+        throw new UnsupportedOperationException(
+            "Proxy send/receive using operator on which no actor is mapped is not supported");
+      }
+      final AbstractActor abstractActor = list.get(0);
+      scheduleOrderManager.insertComStEdBeforeInSchedule(mapping, abstractActor, receiveStart, receiveEnd, false);
+      PreesmLogger.getLogger().finer(() -> "[COMINSERT]  * receive inserted before '" + abstractActor.getName() + "'");
+    } else {
+      scheduleOrderManager.insertComStEdAfterInSchedule(mapping, targetOperatorPeekActor, receiveStart, receiveEnd,
+          false);
+      PreesmLogger.getLogger()
+          .finer(() -> "[COMINSERT]  * receive inserted after '" + targetOperatorPeekActor.getName() + "'");
     }
     this.lastVisitedActor.put(targetOperator, receiveEnd);
   }

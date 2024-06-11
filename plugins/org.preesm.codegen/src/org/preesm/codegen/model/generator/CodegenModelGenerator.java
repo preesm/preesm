@@ -599,7 +599,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (dagVertex.outgoingEdges().isEmpty()) {
       final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
       for (final DAGEdge inEdge : incomingEdges) {
-        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
         for (final BufferProperties buffProperty : bufferAggregate) {
           final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
           if (buffer != null) {
@@ -1081,7 +1081,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.OUTPUT:
           final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
           for (final DAGEdge edge : outEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a receive vertex
               if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
@@ -1094,7 +1094,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.INPUT:
           final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
           for (final DAGEdge edge : inEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a send vertex
               if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
@@ -1228,7 +1228,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.OUTPUT:
           final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
           for (final DAGEdge edge : outEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a receive vertex
               if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
@@ -1241,7 +1241,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.INPUT:
           final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
           for (final DAGEdge edge : inEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a send vertex
               if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
@@ -1601,7 +1601,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           "DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
     }
 
-    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
     if (buffer == null) {
@@ -2170,7 +2170,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       // Find the corresponding BufferProperty
       BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties subBufferProperties : buffers) {
         // The source and target actor are the same, check that the
         // ports are corrects
@@ -2314,7 +2314,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           specialCall.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
-    final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     // there should be only one buffer in the aggregate
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
@@ -2367,7 +2367,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         }
 
         if (correspondingEdge == null) {
-          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
           if (buffAggr != null && !buffAggr.isEmpty()) {
             final BufferProperties bufferProperties = buffAggr.get(0);
             final String destInputPortID = bufferProperties.getDestInputPortID();
@@ -2404,7 +2404,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           }
         }
         if (correspondingEdge == null) {
-          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
           if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
             for (final BufferProperties bufferProperty : bufferAggregate) {
               final String sourceOutputPortID = bufferProperty.getSourceOutputPortID();
@@ -2440,7 +2440,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
-    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
 
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
@@ -2536,7 +2536,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
      */
     final Map<BufferProperties, Buffer> backUpOriginal = new LinkedHashMap<>();
 
-    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     for (final BufferProperties subBufferProperties : buffers) {
       final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
       backUpOriginal.put(subBufferProperties, buff);

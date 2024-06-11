@@ -38,7 +38,6 @@ package org.preesm.algorithm.mapper.abc.route;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.SimpleEdgeSched;
 import org.preesm.algorithm.mapper.abc.transaction.AddOverheadVertexTransaction;
@@ -112,77 +111,74 @@ public class DmaComRouterImplementer extends CommunicationRouterImplementer {
       final TransactionManager transactions, final int type, final int routeStepIndex,
       final Transaction lastTransaction, final List<MapperDAGVertex> alreadyCreatedVertices) {
 
-    if (routeStep instanceof SlamDMARouteStep) {
-      // Adding the transfers
-      final SlamDMARouteStep dmaStep = ((SlamDMARouteStep) routeStep);
-
-      // Adding the transfers of a dma route step
-      if (type == CommunicationRouter.TRANSFER_TYPE) {
-        // All the transfers along the path have the same time: the time
-        // to transfer the data on the slowest contention node
-        final long transferTime = (long) RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
-        final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
-        AddTransferVertexTransaction transaction = null;
-
-        for (final ComponentInstance node : nodes) {
-          final int nodeIndex = nodes.indexOf(node);
-          transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
-              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
-          transactions.add(transaction);
-        }
-
-        return transaction;
-      } else if (type == CommunicationRouter.OVERHEAD_TYPE) {
-        // Adding the overhead
-        MapperDAGEdge incomingEdge = null;
-
-        for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
-                && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
-              // Finding the edge where to add an overhead
-              incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
-            }
-
-          }
-        }
-
-        final ComponentInstance dmaDef = dmaStep.getDma();
-        final long overheadTime = ((Dma) dmaDef.getComponent()).getSetupTime();
-        if (incomingEdge != null) {
-          transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
-              getOrderManager()));
-        } else {
-          PreesmLogger.getLogger().log(Level.FINE,
-              "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
-        }
-
-      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
-
-        // Synchronizing the previously created transfers
-        final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
-
-        for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
-                && (v.getRouteStep() == routeStep)) {
-              toSynchronize.add(v);
-            }
-
-          }
-        }
-
-      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
-
-        final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
-            getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);
-
-        transactions.add(transaction);
-        return transaction;
-      }
+    if (!(routeStep instanceof final SlamDMARouteStep dmaStep)) {
+      return null;
     }
+
+    // Adding the transfers of a dma route step
+    if (type == CommunicationRouter.TRANSFER_TYPE) {
+      // All the transfers along the path have the same time: the time
+      // to transfer the data on the slowest contention node
+      final long transferTime = (long) RouteCostEvaluator.getTransferCost(dmaStep, edge.getInit().getDataSize());
+      final List<ComponentInstance> nodes = dmaStep.getContentionNodes();
+      AddTransferVertexTransaction transaction = null;
+
+      for (final ComponentInstance node : nodes) {
+        final int nodeIndex = nodes.indexOf(node);
+        transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
+            getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
+        transactions.add(transaction);
+      }
+
+      return transaction;
+    }
+    if (type == CommunicationRouter.OVERHEAD_TYPE) {
+      // Adding the overhead
+      MapperDAGEdge incomingEdge = null;
+
+      for (final MapperDAGVertex mDagVertex : alreadyCreatedVertices) {
+        if (mDagVertex instanceof final TransferVertex transferVertex
+            && transferVertex.getSource().equals(edge.getSource())
+            && transferVertex.getTarget().equals(edge.getTarget()) && (transferVertex.getRouteStep() == routeStep)
+            && (transferVertex.getNodeIndex() == 0)) {
+          // Finding the edge where to add an overhead
+          incomingEdge = (MapperDAGEdge) transferVertex.incomingEdges().toArray()[0];
+        }
+
+      }
+
+      final ComponentInstance dmaDef = dmaStep.getDma();
+      final long overheadTime = ((Dma) dmaDef.getComponent()).getSetupTime();
+      if (incomingEdge != null) {
+        transactions.add(new AddOverheadVertexTransaction(incomingEdge, getImplementation(), routeStep, overheadTime,
+            getOrderManager()));
+      } else {
+        PreesmLogger.getLogger().fine(
+            () -> "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
+      }
+
+    } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
+
+      // Synchronizing the previously created transfers
+      final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
+
+      for (final MapperDAGVertex mDagVertex : alreadyCreatedVertices) {
+        if (mDagVertex instanceof final TransferVertex transferVertex
+            && transferVertex.getSource().equals(edge.getSource())
+            && transferVertex.getTarget().equals(edge.getTarget()) && (transferVertex.getRouteStep() == routeStep)) {
+          toSynchronize.add(transferVertex);
+        }
+      }
+
+    } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
+
+      final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
+          getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);
+
+      transactions.add(transaction);
+      return transaction;
+    }
+
     return null;
   }
 

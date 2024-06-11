@@ -77,8 +77,8 @@ public class CommunicationOrderChecker {
    */
   private static ComponentInstance getVertexComponent(DAGVertex vertex) {
     final Object obj = vertex.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
-    if (obj instanceof ComponentInstance) {
-      return (ComponentInstance) obj;
+    if (obj instanceof final ComponentInstance componentInstance) {
+      return componentInstance;
     }
     return null;
   }

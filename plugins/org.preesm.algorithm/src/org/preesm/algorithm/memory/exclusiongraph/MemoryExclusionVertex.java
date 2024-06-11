@@ -210,7 +210,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
 
   private static long getSize(final DAGEdge inputEdge, final Scenario scenario) {
     // if datatype is defined, correct the vertex weight
-    final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = inputEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     long vertexWeight = 0;
     for (final BufferProperties properties : buffers) {
       final String dataType = properties.getDataType();
@@ -250,7 +250,7 @@ public class MemoryExclusionVertex extends AbstractVertex<MemoryExclusionGraph> 
     Long alignmentConstraint;
 
     if (this.getEdge() != null) {
-      final BufferAggregate buffers = this.getEdge().getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate buffers = this.getEdge().getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
 
       alignmentConstraint = buffers.stream()
           .mapToLong(p -> this.getScenario().getSimulationInfo().getDataTypeSizeInBit(p.getDataType()))

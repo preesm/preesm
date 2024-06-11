@@ -101,7 +101,7 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
       BufferProperties subBufferProperties) {
     Set<DAGEdge> outEdges = dag.outgoingEdgesOf(dagVertex);
     for (final DAGEdge edge : outEdges) {
-      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties buffProperty : bufferAggregate) {
         final String portHsdfName = graphPort.getName();
         if (buffProperty.getSourceOutputPortID().equals(portHsdfName) && edge.getTarget().getKind() != null) {
@@ -116,7 +116,7 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
       BufferProperties subBufferProperties) {
     Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
     for (final DAGEdge edge : inEdges) {
-      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties buffProperty : bufferAggregate) {
         final String portHsdfName = graphPort.getName();
         if (buffProperty.getDestInputPortID().equals(portHsdfName) && edge.getSource().getKind() != null) {

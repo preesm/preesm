@@ -52,7 +52,6 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -340,8 +339,8 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     try {
       frame = SWT_AWT.new_Frame(composite);
     } catch (UnsatisfiedLinkError | SWTError e) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+      PreesmLogger.getLogger()
+          .info(() -> "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
               + "or its associated shared object libswt-awt-gtk-4928+.so, "
               + "thus the cost diagram cannot be embedded in Eclipse. See error:\n" + e.getMessage());
       if (!composite.isDisposed()) {

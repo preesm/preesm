@@ -62,14 +62,14 @@ public class CLIWorkflowLogHandler extends Handler {
   }
 
   @Override
-  public synchronized void publish(LogRecord record) {
-    if (!debugMode && record.getThrown() != null) {
-      record.setThrown(null);
+  public synchronized void publish(LogRecord logRecord) {
+    if (!debugMode && logRecord.getThrown() != null) {
+      logRecord.setThrown(null);
     }
-    if (record.getLevel().intValue() >= Level.WARNING.intValue()) {
-      stderrStreamHandler.publish(record);
+    if (logRecord.getLevel().intValue() >= Level.WARNING.intValue()) {
+      stderrStreamHandler.publish(logRecord);
     } else {
-      stdoutStreamHandler.publish(record);
+      stdoutStreamHandler.publish(logRecord);
     }
     flush();
   }
