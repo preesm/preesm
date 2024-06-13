@@ -124,51 +124,56 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
   public void execute(final ICustomContext context) {
     final PictogramElement[] pes = context.getPictogramElements();
     // first check, if one Actor is selected
-    if ((pes != null) && (pes.length == 1)) {
-      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      RefinementContainer rc = null;
-      if (bo instanceof final Delay delay) {
-        rc = delay.getActor();
-      } else if (bo instanceof Actor || bo instanceof InitActor) {
-        rc = (RefinementContainer) bo;
+    if ((pes == null) || (pes.length != 1)) {
+      return; // Early exit
+    }
+
+    final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+    RefinementContainer rc = null;
+    if (bo instanceof final Delay delay) {
+      rc = delay.getActor();
+    } else if (bo instanceof Actor || bo instanceof InitActor) {
+      rc = (RefinementContainer) bo;
+    }
+
+    if (rc == null) {
+      return; // Early exit
+    }
+
+    // Check if the actor has a valid refinement
+    final IPath refinementPath = Optional.ofNullable(rc.getRefinement().getFilePath()).map(Path::new).orElse(null);
+    if (refinementPath == null) {
+      return; // Early exit
+    }
+
+    final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+
+    IResource refResource = ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath);
+
+    // If the refinement is a Pi file, open a diagram
+    // instead (if it exists)
+    final String extension = refResource.getFileExtension();
+    if ((extension != null) && extension.equals("pi")) {
+      final IPath diagramFile = refinementPath.removeFileExtension().addFileExtension("diagram");
+      final IResource diagResource = ResourcesPlugin.getWorkspace().getRoot().getFile(diagramFile);
+
+      // try to create the diagram file if it doesn't exist
+      if (!diagResource.exists()) {
+        PiMM2DiagramGenerator.generateDiagramFile(ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath));
       }
+      refResource = diagResource;
+    }
 
-      if (rc != null) {
-        // Check if the actor has a valid refinement
-        final IPath refinementPath = Optional.ofNullable(rc.getRefinement().getFilePath()).map(Path::new).orElse(null);
-        if (refinementPath != null) {
-          final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
-
-          IResource refResource = ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath);
-
-          // If the refinement is a Pi file, open a diagram
-          // instead (if it exists)
-          final String extension = refResource.getFileExtension();
-          if ((extension != null) && extension.equals("pi")) {
-            final IPath diagramFile = refinementPath.removeFileExtension().addFileExtension("diagram");
-            final IResource diagResource = ResourcesPlugin.getWorkspace().getRoot().getFile(diagramFile);
-
-            // try to create the diagram file if it doesn't exist
-            if (!diagResource.exists()) {
-              PiMM2DiagramGenerator
-                  .generateDiagramFile(ResourcesPlugin.getWorkspace().getRoot().getFile(refinementPath));
-            }
-            refResource = diagResource;
-          }
-
-          // Open the editor for the refinement
-          try {
-            if (dw != null) {
-              final IWorkbenchPage activePage = dw.getActivePage();
-              if (activePage != null) {
-                IDE.openEditor(activePage, (IFile) refResource, true);
-              }
-            }
-          } catch (final PartInitException e) {
-            MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
-          }
+    // Open the editor for the refinement
+    try {
+      if (dw != null) {
+        final IWorkbenchPage activePage = dw.getActivePage();
+        if (activePage != null) {
+          IDE.openEditor(activePage, (IFile) refResource, true);
         }
       }
+    } catch (final PartInitException e) {
+      MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
     }
   }
 

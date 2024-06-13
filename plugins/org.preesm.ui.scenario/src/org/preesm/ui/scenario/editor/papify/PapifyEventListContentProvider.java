@@ -76,8 +76,7 @@ public class PapifyEventListContentProvider implements IStructuredContentProvide
 
     Object[] elementTable = null;
 
-    if (inputElement instanceof PapiEventInfo) {
-      final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
+    if (inputElement instanceof final PapiEventInfo inputPapiEventInfo) {
       final PapiEvent timingEvent = ScenarioUserFactory.createTimingEvent();
       PapiComponent compAux = null;
       PapiEventSet eventSetAux = null;

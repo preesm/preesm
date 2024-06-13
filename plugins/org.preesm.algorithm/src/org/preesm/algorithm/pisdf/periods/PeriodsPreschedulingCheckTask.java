@@ -92,10 +92,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     description = "Check necessary condition to schedule graphs with periods (at top level or in actors). "
         + "Works only on flat graphs.",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = "Selection rate (%)", description = "Percentage of periodic actors to consider.",
         values = { @Value(name = "100", effect = "All periodic actors are checked.") }) }
@@ -132,8 +133,8 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
-    int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
-    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
+    final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
+    PreesmLogger.getLogger().info(() -> "Found " + nbCore + " cores.");
 
     final long time = System.nanoTime();
 
@@ -154,24 +155,21 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     final Map<Actor, Long> periodicActors = new LinkedHashMap<>();
     for (final AbstractActor absActor : graphCopy.getActors()) {
-      if ((absActor instanceof Actor) && (absActor instanceof PeriodicElement)) {
-        final Actor actor = (Actor) absActor;
-        if (!actor.isHierarchical() && !actor.isConfigurationActor()) {
-          final long period = actor.getPeriod().evaluate();
-          if (period > 0) {
-            periodicActors.put(actor, period);
-          }
+      if ((absActor instanceof final Actor actor) && (absActor instanceof PeriodicElement) && !actor.isHierarchical()
+          && !actor.isConfigurationActor()) {
+        final long period = actor.getPeriod().evaluate();
+        if (period > 0) {
+          periodicActors.put(actor, period);
         }
       }
-      if (absActor instanceof DelayActor) {
-        final DelayActor da = (DelayActor) absActor;
-        if (da.getSetterActor() != null || da.getGetterActor() != null) {
-          throw new PreesmRuntimeException("DelayActor with getter or setter are not supported in this task, abandon.");
-        }
+
+      if (absActor instanceof final DelayActor da && (da.getSetterActor() != null || da.getGetterActor() != null)) {
+        throw new PreesmRuntimeException("DelayActor with getter or setter are not supported in this task, abandon.");
       }
+
     }
 
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     // check that are all actor periods times brv are equal and set the graph period if needed
     PiMMHelper.checkPeriodicity(graphCopy, brv);
 
@@ -181,15 +179,14 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
       return output;
     }
 
-    Map<AbstractVertex, Long> wcets = new HashMap<>();
+    final Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
       final AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
-      if (actor instanceof AbstractActor) {
+      if (actor instanceof final AbstractActor aActor) {
         for (final Component operatorDefinitionID : architecture.getProcessingElements()) {
-          final long timing = scenario.getTimings().evaluateExecutionTimeOrDefault((AbstractActor) actor,
-              operatorDefinitionID);
+          final long timing = scenario.getTimings().evaluateExecutionTimeOrDefault(aActor, operatorDefinitionID);
           if (timing < wcetMin) {
             wcetMin = timing;
           }
@@ -204,17 +201,16 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     }
 
     // simply check sum of wcets and return.
-    long totC = 0L;
-    for (final Entry<AbstractVertex, Long> en : wcets.entrySet()) {
-      totC += en.getValue() * brv.get(en.getKey());
-    }
+    final long totC = wcets.entrySet().stream().map(en -> en.getValue() * brv.get(en.getKey())).reduce(0L,
+        (a, b) -> a + b);
+
     if (totC > nbCore * graphPeriod) {
       throw new PreesmRuntimeException("Utilization factor is greater than number of cores, not schedulable.");
     }
     if (periodicActors.isEmpty()) {
       // then there is no need for further analysis
-      PreesmLogger.getLogger().log(Level.INFO,
-          "Periodic prescheduling check : valid schedule *might* exist! (total load: " + totC + ")");
+      PreesmLogger.getLogger()
+          .info(() -> "Periodic prescheduling check : valid schedule *might* exist! (total load: " + totC + ")");
       return output;
     }
 
@@ -226,23 +222,23 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     // 1. log all actor w/o incoming edges and all others w/o outgoing edge
     final StringBuilder sources = new StringBuilder();
     heurFifoBreaks.allSourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.FINE, "Sources: " + sources.toString());
+    PreesmLogger.getLogger().fine(() -> "Sources: " + sources.toString());
     final StringBuilder sinks = new StringBuilder();
     heurFifoBreaks.allSinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.FINE, "Sinks: " + sinks.toString());
+    PreesmLogger.getLogger().fine(() -> "Sinks: " + sinks.toString());
 
     // 2. perform heuristic to select periodic nodes
     final StringBuilder sbNBFF = new StringBuilder();
     final Map<Actor, Double> actorsNBFF = HeuristicPeriodicActorSelection.selectActors(periodicActors, heurFifoBreaks,
         rate, wcets, false);
     actorsNBFF.keySet().forEach(a -> sbNBFF.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBFF: " + sbNBFF.toString());
+    PreesmLogger.getLogger().info(() -> "Periodic actor for NBFF: " + sbNBFF.toString());
 
     final StringBuilder sbNBLF = new StringBuilder();
     final Map<Actor, Double> actorsNBLF = HeuristicPeriodicActorSelection.selectActors(periodicActors, heurFifoBreaks,
         rate, wcets, true);
     actorsNBLF.keySet().forEach(a -> sbNBLF.append(a.getName() + " / "));
-    PreesmLogger.getLogger().log(Level.INFO, "Periodic actor for NBLF: " + sbNBLF.toString());
+    PreesmLogger.getLogger().info(() -> "Periodic actor for NBLF: " + sbNBLF.toString());
 
     // 3. for each selected periodic node for nblf:
     performAllNBF(actorsNBLF, periodicActors, false, heurFifoBreaks, wcets, nbCore);
@@ -251,18 +247,18 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     performAllNBF(actorsNBFF, periodicActors, true, heurFifoBreaks, wcets, nbCore);
 
     final long duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
+    PreesmLogger.getLogger().info(() -> "Time+ " + Math.round(duration / 1e6) + " ms.");
 
     // 5. greetings to the user
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Periodic prescheduling check succeeded: valid schedule *might* exist! (total load: " + totC + ")");
+    PreesmLogger.getLogger()
+        .info(() -> "Periodic prescheduling check succeeded: valid schedule *might* exist! (total load: " + totC + ")");
 
     return output;
   }
 
   /**
    * Compare actors per increasing period.
-   * 
+   *
    * @author ahonorat
    */
   private static class ActorPeriodComparator implements Comparator<Actor> {
@@ -289,7 +285,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
   /**
    * Call NBF on given actors plus extra smaller periods.
-   * 
+   *
    */
   private static void performAllNBF(Map<Actor, Double> actorsNBF, Map<Actor, Long> allPeriodicActors, boolean reverse,
       HeuristicLoopBreakingDelays hlbd, Map<AbstractVertex, Long> wcets, int nbCore) {
@@ -305,9 +301,9 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           FifoAbstraction> subgraph = AbstractGraph.subDAGFrom(absGraph, a, hlbd.breakingFifosAbs, reverse);
       totC += performNBFinternal(a, subgraph, wcets, nbf, nbCore, reverse, slack);
 
-      TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
+      final TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
       allPeriodicActors.keySet().forEach(e -> {
-        long ePeriod = e.getPeriod().evaluate();
+        final long ePeriod = e.getPeriod().evaluate();
         if (ePeriod <= slack && !nbf.containsKey(e)) {
           nbTimesDuringAperiod.put(e, slack / ePeriod);
         }
@@ -382,13 +378,11 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
           toVisit.add(dest);
           final long time = destTimeTo + wcets.get(dest) * Math.max(1L, nbfDest / nbCore);
           timeTo.put(dest, time);
-          if (subgraph.outDegreeOf(dest) == 0) {
-            if (time > slack) {
-              throw new PreesmRuntimeException(
-                  "Critical path from/to <" + start.getName() + "> is too long compared to its period (duration is "
-                      + time + " while slack time is " + slack + ").");
-            }
+          if (subgraph.outDegreeOf(dest) == 0 && time > slack) {
+            throw new PreesmRuntimeException("Critical path from/to <" + start.getName()
+                + "> is too long compared to its period (duration is " + time + " while slack time is " + slack + ").");
           }
+
         }
       }
 

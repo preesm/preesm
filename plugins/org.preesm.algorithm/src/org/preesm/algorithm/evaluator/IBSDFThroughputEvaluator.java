@@ -64,7 +64,7 @@ import org.preesm.model.slam.Component;
  */
 public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
 
-  private Scenario scenario;
+  private final Scenario scenario;
 
   public IBSDFThroughputEvaluator(Scenario scenario) {
     this.scenario = scenario;
@@ -103,7 +103,7 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
       }
 
       // adjust the precision
-      double eps = kMax / Math.pow(10, 6);
+      final double eps = kMax / Math.pow(10, 6);
       k = kMax;
       // Step 4 : Improve (minimize) K
       while (Math.abs(kMax - kMin) > eps) {
@@ -132,8 +132,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     double kMax = 0;
     for (final SDFAbstractVertex vertex : inputGraph.vertexSet()) {
       // if hierarchical vertex, go check its subgraph
-      if (vertex.getGraphDescription() instanceof SDFGraph) {
-        k = startingPeriod((SDFGraph) vertex.getGraphDescription());
+      if (vertex.getGraphDescription() instanceof final SDFGraph sdfGraph) {
+        k = startingPeriod(sdfGraph);
         if (k > kMax) {
           kMax = k;
         }
@@ -182,108 +182,107 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     final Set<SDFAbstractVertex> vertexSetCopy = new LinkedHashSet<>(g.vertexSet());
     for (final SDFAbstractVertex vertex : vertexSetCopy) {
       // For each hierarchical actor
-      if (vertex.getGraphDescription() instanceof SDFGraph) {
+      if (vertex.getGraphDescription() instanceof final SDFGraph sdfGraph) {
 
         // compute shortest paths between its in/out ports
-        dist = testPeriod(K, (SDFGraph) vertex.getGraphDescription());
+        dist = testPeriod(K, sdfGraph);
 
         // if null, then subgraph not alive, so the whole graph is not.
         if (dist == null) {
           return null;
-        } else {
-          // Create new nodes corresponding to the interfaces
-          for (final Entry<String, Map<String, Double>> entry : dist.entrySet()) {
-            final String input = entry.getKey();
-            final Map<String, Double> inputValue = entry.getValue();
-            // Create a new vertex for each new input interface
-            final SDFAbstractVertex vertexIn = new SDFVertex(null);
-            vertexIn.setName(input);
-            // Create a new port for the incoming edge
-            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
-            inPortIN.setName("in");
-            vertexIn.addSource(inPortIN);
-            // Add it to the graph
-            g.addVertex(vertexIn);
-            // Create the new incoming edge of this node
-            final SDFEdge edgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
-                vertexIn);
-            edgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
-            edgeToIn.setTargetInterface(inPortIN);
+        }
+        // Create new nodes corresponding to the interfaces
+        for (final Entry<String, Map<String, Double>> entry : dist.entrySet()) {
+          final String input = entry.getKey();
+          final Map<String, Double> inputValue = entry.getValue();
+          // Create a new vertex for each new input interface
+          final SDFAbstractVertex vertexIn = new SDFVertex(null);
+          vertexIn.setName(input);
+          // Create a new port for the incoming edge
+          final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
+          inPortIN.setName("in");
+          vertexIn.addSource(inPortIN);
+          // Add it to the graph
+          g.addVertex(vertexIn);
+          // Create the new incoming edge of this node
+          final SDFEdge edgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
+              vertexIn);
+          edgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
+          edgeToIn.setTargetInterface(inPortIN);
+          // Put the correct rates on the new edge
+          eIn = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
+          eOut = vertex.getAssociatedEdge(vertex.getSources().get(0)).getProd();
+          edgeToIn.setCons(eOut);
+          edgeToIn.setProd(eIn);
+          // Put it on the list for the BellmanFord algo, remove the ancient one
+          e.put(edgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
+
+          // New node for each output interface
+          for (final Entry<String, Double> entry2 : inputValue.entrySet()) {
+            final String output = entry2.getKey();
+            final double outputValue = entry2.getValue();
+            SDFAbstractVertex vertexOut = g.getVertex(output);
+            if (vertexOut == null) {
+              // Create vertex out only if it does not exist already
+              vertexOut = new SDFVertex(null);
+              vertexOut.setName(output);
+              // Create a new port port for the outgoing edge
+              final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
+              outPortOUT.setName("out");
+              vertexOut.addSink(outPortOUT);
+              g.addVertex(vertexOut);
+              // Create the edge going from the node out if it does not loop
+              if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
+                final SDFEdge edgeFromOut = g.addEdge(vertexOut,
+                    vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+                edgeFromOut
+                    .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+
+                // Put the correct rates on the new edge
+                eIn = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
+                eOut = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getCons();
+                edgeFromOut.setCons(eOut);
+                edgeFromOut.setProd(eIn);
+
+                edgeFromOut.setSourceInterface(outPortOUT);
+                // Put it on the list for the BellmanFord algo, remove the ancient one
+                e.put(edgeFromOut, e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
+              }
+            }
+            // Create the edge linking the new in and out
+            final SDFEdge edgeInOut = g.addEdge(vertexIn, vertexOut);
             // Put the correct rates on the new edge
             eIn = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
-            eOut = vertex.getAssociatedEdge(vertex.getSources().get(0)).getProd();
-            edgeToIn.setCons(eOut);
-            edgeToIn.setProd(eIn);
-            // Put it on the list for the BellmanFord algo, remove the ancient one
-            e.put(edgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
-
-            // New node for each output interface
-            for (final Entry<String, Double> entry2 : inputValue.entrySet()) {
-              final String output = entry2.getKey();
-              final double outputValue = entry2.getValue();
-              SDFAbstractVertex vertexOut = g.getVertex(output);
-              if (vertexOut == null) {
-                // Create vertex out only if it does not exist already
-                vertexOut = new SDFVertex(null);
-                vertexOut.setName(output);
-                // Create a new port port for the outgoing edge
-                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
-                outPortOUT.setName("out");
-                vertexOut.addSink(outPortOUT);
-                g.addVertex(vertexOut);
-                // Create the edge going from the node out if it does not loop
-                if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
-                  final SDFEdge edgeFromOut = g.addEdge(vertexOut,
-                      vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-                  edgeFromOut
-                      .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
-
-                  // Put the correct rates on the new edge
-                  eIn = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
-                  eOut = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getCons();
-                  edgeFromOut.setCons(eOut);
-                  edgeFromOut.setProd(eIn);
-
-                  edgeFromOut.setSourceInterface(outPortOUT);
-                  // Put it on the list for the BellmanFord algo, remove the ancient one
-                  e.put(edgeFromOut, e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
-                }
-              }
-              // Create the edge linking the new in and out
-              final SDFEdge edgeInOut = g.addEdge(vertexIn, vertexOut);
-              // Put the correct rates on the new edge
-              eIn = vertex.getAssociatedEdge(vertex.getSources().get(0)).getCons();
-              eOut = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
-              edgeInOut.setCons(eOut);
-              edgeInOut.setProd(eIn);
-              // port of origin of this edge
-              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
-              outPortIN.setName(output);
-              vertexIn.addSink(outPortIN);
-              edgeInOut.setSourceInterface(outPortIN);
-              // target port of this edge
-              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
-              inPortOUT.setName(vertexIn.getName());
-              vertexOut.addSource(inPortOUT);
-              edgeInOut.setTargetInterface(inPortOUT);
-              // new edge to use for BellmanFord
-              e.put(edgeInOut, outputValue);
-              // new vertices to consider for BellmanFord
-              v.put(vertexOut.getName(), Double.POSITIVE_INFINITY);
-            }
-            v.put(vertexIn.getName(), Double.POSITIVE_INFINITY);
-            // check if the incoming edge loops on the actor
-            if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
-              final SDFEdge loop = g.addEdge(
-                  g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName()),
-                  vertexIn);
-              loop.setTargetInterface(vertexIn.getInterface("in"));
-              loop.setSourceInterface(
-                  g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName())
-                      .getInterface("out"));
-              e.put(loop, e.get(edgeToIn));
-              e.remove(edgeToIn);
-            }
+            eOut = vertex.getAssociatedEdge(vertex.getSinks().get(0)).getProd();
+            edgeInOut.setCons(eOut);
+            edgeInOut.setProd(eIn);
+            // port of origin of this edge
+            final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
+            outPortIN.setName(output);
+            vertexIn.addSink(outPortIN);
+            edgeInOut.setSourceInterface(outPortIN);
+            // target port of this edge
+            final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
+            inPortOUT.setName(vertexIn.getName());
+            vertexOut.addSource(inPortOUT);
+            edgeInOut.setTargetInterface(inPortOUT);
+            // new edge to use for BellmanFord
+            e.put(edgeInOut, outputValue);
+            // new vertices to consider for BellmanFord
+            v.put(vertexOut.getName(), Double.POSITIVE_INFINITY);
+          }
+          v.put(vertexIn.getName(), Double.POSITIVE_INFINITY);
+          // check if the incoming edge loops on the actor
+          if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
+            final SDFEdge loop = g.addEdge(
+                g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName()),
+                vertexIn);
+            loop.setTargetInterface(vertexIn.getInterface("in"));
+            loop.setSourceInterface(
+                g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName())
+                    .getInterface("out"));
+            e.put(loop, e.get(edgeToIn));
+            e.remove(edgeToIn);
           }
         }
         // Remove the hierarchical actor from the graph
@@ -338,19 +337,17 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
         }
       }
       // while we are not at level zero, fill the shortest paths table
-      if (g.getParentVertex() != null) {
-        dist.put(input.getName(), new LinkedHashMap<String, Double>());
-        // distance from the input to all the outputs
-        for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
-          dist.get(input.getName()).put(output.getName(), v.get(output.getName()));
-        }
-        // reset weight on vertices
-        for (final SDFAbstractVertex ve : g.vertexSet()) {
-          v.put(ve.getName(), Double.POSITIVE_INFINITY);
-        }
-
-      } else {
+      if (g.getParentVertex() == null) {
         return dist;
+      }
+      dist.put(input.getName(), new LinkedHashMap<>());
+      // distance from the input to all the outputs
+      for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
+        dist.get(input.getName()).put(output.getName(), v.get(output.getName()));
+      }
+      // reset weight on vertices
+      for (final SDFAbstractVertex ve : g.vertexSet()) {
+        v.put(ve.getName(), Double.POSITIVE_INFINITY);
       }
     }
     return dist;
@@ -365,9 +362,8 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
         l = 0;
       } else {
         final AbstractVertex referencePiMMVertex = edge.getSource().getReferencePiVertex();
-        if (referencePiMMVertex instanceof AbstractActor) {
+        if (referencePiMMVertex instanceof final AbstractActor actor) {
           final Component component = scenario.getSimulationInfo().getMainOperator().getComponent();
-          final AbstractActor actor = (AbstractActor) referencePiMMVertex;
           l = this.getScenar().getTimings().evaluateExecutionTimeOrDefault(actor, component);
         } else {
           l = 0;
@@ -438,99 +434,94 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
     final Set<SDFAbstractVertex> vertexSetCopy = new LinkedHashSet<>(g.vertexSet());
     for (final SDFAbstractVertex vertex : vertexSetCopy) {
       // For each hierarchical actor
-      if (vertex.getGraphDescription() instanceof SDFGraph) {
+      if (vertex.getGraphDescription() instanceof final SDFGraph sdfGraph) {
 
         // compute shortest paths between its in/out ports
-        dist = isAlive((SDFGraph) vertex.getGraphDescription());
+        dist = isAlive(sdfGraph);
 
         // if null, then subgraph not alive, so the whole graph is not.
         if (dist == null) {
           return null;
-        } else {
-          // Create new nodes corresponding to the interfaces
-          for (final Entry<String, Map<String, Double>> entry : dist.entrySet()) {
-            final String input = entry.getKey();
-            final Map<String, Double> inputValue = entry.getValue();
-            // Create a new vertex for each new input interface
-            final SDFVertex vertexIn = new SDFVertex(null);
-            vertexIn.setName(input);
-            // Create a new port for the incoming edge
-            final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
-            inPortIN.setName("in");
-            vertexIn.addSource(inPortIN);
-            // Add it to the graph
-            g.addVertex(vertexIn);
-            // Create the new incoming edge of this node
-            final SDFEdge edgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
-                vertexIn);
-            edgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
-            edgeToIn.setTargetInterface(inPortIN);
-            // Put it on the list for the BellmanFord algo
-            e.put(edgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
+        }
+        // Create new nodes corresponding to the interfaces
+        for (final Entry<String, Map<String, Double>> entry : dist.entrySet()) {
+          final String input = entry.getKey();
+          final Map<String, Double> inputValue = entry.getValue();
+          // Create a new vertex for each new input interface
+          final SDFVertex vertexIn = new SDFVertex(null);
+          vertexIn.setName(input);
+          // Create a new port for the incoming edge
+          final SDFSourceInterfaceVertex inPortIN = new SDFSourceInterfaceVertex(null);
+          inPortIN.setName("in");
+          vertexIn.addSource(inPortIN);
+          // Add it to the graph
+          g.addVertex(vertexIn);
+          // Create the new incoming edge of this node
+          final SDFEdge edgeToIn = g.addEdge(vertex.getAssociatedEdge(vertex.getInterface(input)).getSource(),
+              vertexIn);
+          edgeToIn.setSourceInterface(vertex.getAssociatedEdge(vertex.getInterface(input)).getSourceInterface());
+          edgeToIn.setTargetInterface(inPortIN);
+          // Put it on the list for the BellmanFord algo
+          e.put(edgeToIn, e.get(vertex.getAssociatedEdge(vertex.getInterface(input))));
 
-            // New node for each output interface
-            for (final Entry<String, Double> entry2 : inputValue.entrySet()) {
-              final String output = entry2.getKey();
-              SDFAbstractVertex vertexOut = g.getVertex(output);
-              if (vertexOut == null) {
-                // Create vertex out only if it does not exist already
-                vertexOut = new SDFVertex(null);
-                vertexOut.setName(output);
-                // Create a new port port for the outgoing edge
-                final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
-                outPortOUT.setName("out");
-                vertexOut.addSink(outPortOUT);
-                g.addVertex(vertexOut);
-                // Create the edge going from the node out
-                if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
-                  final SDFEdge edgeFromOut = g.addEdge(vertexOut,
-                      vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
-                  edgeFromOut
-                      .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
-                  edgeFromOut.setSourceInterface(vertexOut.getSink("out"));
-                  // Put it on the list for the BellmanFord algo, remove the ancient one
-                  e.put(edgeFromOut, e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
-                }
+          // New node for each output interface
+          for (final Entry<String, Double> entry2 : inputValue.entrySet()) {
+            final String output = entry2.getKey();
+            SDFAbstractVertex vertexOut = g.getVertex(output);
+            if (vertexOut == null) {
+              // Create vertex out only if it does not exist already
+              vertexOut = new SDFVertex(null);
+              vertexOut.setName(output);
+              // Create a new port port for the outgoing edge
+              final SDFSinkInterfaceVertex outPortOUT = new SDFSinkInterfaceVertex(null);
+              outPortOUT.setName("out");
+              vertexOut.addSink(outPortOUT);
+              g.addVertex(vertexOut);
+              // Create the edge going from the node out
+              if (vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget() != vertex) {
+                final SDFEdge edgeFromOut = g.addEdge(vertexOut,
+                    vertex.getAssociatedEdge(vertex.getInterface(output)).getTarget());
+                edgeFromOut
+                    .setTargetInterface(vertex.getAssociatedEdge(vertex.getInterface(output)).getTargetInterface());
+                edgeFromOut.setSourceInterface(vertexOut.getSink("out"));
+                // Put it on the list for the BellmanFord algo, remove the ancient one
+                e.put(edgeFromOut, e.get(vertex.getAssociatedEdge(vertex.getInterface(output))));
               }
-              // Create the edge linking the new in and out
-              final SDFEdge edgeInOut = g.addEdge(vertexIn, vertexOut);
-              // port of origin of this edge
-              final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
-              outPortIN.setName(output);
-              vertexIn.addSink(outPortIN);
-              edgeInOut.setSourceInterface(outPortIN);
-              // target port of this edge
-              final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
-              inPortOUT.setName(vertexIn.getName());
-              vertexOut.addSource(inPortOUT);
-              edgeInOut.setTargetInterface(inPortOUT);
-              // new edge to use for BellmanFord
-              e.put(edgeInOut, entry2.getValue());
-              // new vertices to consider for BellmanFord
-              v.put(vertexOut.getName(), Double.POSITIVE_INFINITY);
             }
-            v.put(vertexIn.getName(), Double.POSITIVE_INFINITY);
-            // check if the incoming edge loops on the actor
-            if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
-              final SDFEdge loop = g.addEdge(
-                  g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName()),
-                  vertexIn);
-              loop.setTargetInterface(vertexIn.getInterface("in"));
-              loop.setSourceInterface(
-                  g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName())
-                      .getInterface("out"));
-              e.put(loop, e.get(edgeToIn));
-              e.remove(edgeToIn);
-            }
+            // Create the edge linking the new in and out
+            final SDFEdge edgeInOut = g.addEdge(vertexIn, vertexOut);
+            // port of origin of this edge
+            final SDFSinkInterfaceVertex outPortIN = new SDFSinkInterfaceVertex(null);
+            outPortIN.setName(output);
+            vertexIn.addSink(outPortIN);
+            edgeInOut.setSourceInterface(outPortIN);
+            // target port of this edge
+            final SDFSourceInterfaceVertex inPortOUT = new SDFSourceInterfaceVertex(null);
+            inPortOUT.setName(vertexIn.getName());
+            vertexOut.addSource(inPortOUT);
+            edgeInOut.setTargetInterface(inPortOUT);
+            // new edge to use for BellmanFord
+            e.put(edgeInOut, entry2.getValue());
+            // new vertices to consider for BellmanFord
+            v.put(vertexOut.getName(), Double.POSITIVE_INFINITY);
+          }
+          v.put(vertexIn.getName(), Double.POSITIVE_INFINITY);
+          // check if the incoming edge loops on the actor
+          if (vertex.getAssociatedEdge(vertex.getInterface(input)).getSource() == vertex) {
+            final SDFEdge loop = g.addEdge(
+                g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName()),
+                vertexIn);
+            loop.setTargetInterface(vertexIn.getInterface("in"));
+            loop.setSourceInterface(
+                g.getVertex(vertexIn.getAssociatedEdge(vertexIn.getInterface("in")).getSourceInterface().getName())
+                    .getInterface("out"));
+            e.put(loop, e.get(edgeToIn));
+            e.remove(edgeToIn);
           }
         }
         // Remove the hierarchical actor from the graph
-        for (final SDFInterfaceVertex inter : vertex.getSources()) {
-          e.remove(vertex.getAssociatedEdge(inter));
-        }
-        for (final SDFInterfaceVertex inter : vertex.getSinks()) {
-          e.remove(vertex.getAssociatedEdge(inter));
-        }
+        vertex.getSources().forEach(inter -> e.remove(vertex.getAssociatedEdge(inter)));
+        vertex.getSinks().forEach(inter -> e.remove(vertex.getAssociatedEdge(inter)));
         g.removeVertex(vertex);
       } else {
         // not a hierarchical actor
@@ -573,19 +564,17 @@ public class IBSDFThroughputEvaluator extends ThroughputEvaluator {
         }
       }
       // while we are not at level zero, fill the shortest paths table
-      if (g.getParentVertex() != null) {
-        dist.put(input.getName(), new LinkedHashMap<String, Double>());
-        // distance from the input to all the outputs
-        for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
-          dist.get(input.getName()).put(output.getName(), v.get(output.getName()));
-        }
-        // reset weight on vertices
-        for (final SDFAbstractVertex ve : g.vertexSet()) {
-          v.put(ve.getName(), Double.POSITIVE_INFINITY);
-        }
-
-      } else {
+      if (g.getParentVertex() == null) {
         return dist;
+      }
+      dist.put(input.getName(), new LinkedHashMap<>());
+      // distance from the input to all the outputs
+      for (final SDFAbstractVertex output : g.getParentVertex().getSinks()) {
+        dist.get(input.getName()).put(output.getName(), v.get(output.getName()));
+      }
+      // reset weight on vertices
+      for (final SDFAbstractVertex ve : g.vertexSet()) {
+        v.put(ve.getName(), Double.POSITIVE_INFINITY);
       }
     }
     return dist;

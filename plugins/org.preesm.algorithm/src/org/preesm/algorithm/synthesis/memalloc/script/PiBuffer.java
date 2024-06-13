@@ -535,9 +535,7 @@ public class PiBuffer {
     }
 
     // Do the match
-    if (!this.matchTable.containsKey(localBitIdx)) {
-      this.matchTable.put(localBitIdx, new ArrayList<>());
-    }
+    this.matchTable.computeIfAbsent(localBitIdx, k -> new ArrayList<>());
 
     final List<PiMatch> matchSet = this.matchTable.get(localBitIdx);
     final PiMatch localMatch = new PiMatch(this, localBitIdx, buffer, remoteBitIdx, bitSize);

@@ -110,27 +110,29 @@ public class OpenMemoryScriptFeature extends AbstractCustomFeature {
   public void execute(final ICustomContext context) {
     final PictogramElement[] pes = context.getPictogramElements();
     // first check, if one Actor is selected
-    if ((pes != null) && (pes.length == 1)) {
-      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof final Actor actor) {
-        // Check if the actor has a valid path to memory script
-        final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
-        if (memoryScriptPath != null) {
-          final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
+    if ((pes == null) || (pes.length != 1)) {
+      return; // Early exit
+    }
 
-          final IResource refResource = ResourcesPlugin.getWorkspace().getRoot().getFile(memoryScriptPath);
+    final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+    if (bo instanceof final Actor actor) {
+      // Check if the actor has a valid path to memory script
+      final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
+      if (memoryScriptPath != null) {
+        final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
 
-          // Open the editor for the memory script
-          try {
-            if (dw != null) {
-              final IWorkbenchPage activePage = dw.getActivePage();
-              if (activePage != null) {
-                IDE.openEditor(activePage, (IFile) refResource, true);
-              }
+        final IResource refResource = ResourcesPlugin.getWorkspace().getRoot().getFile(memoryScriptPath);
+
+        // Open the editor for the memory script
+        try {
+          if (dw != null) {
+            final IWorkbenchPage activePage = dw.getActivePage();
+            if (activePage != null) {
+              IDE.openEditor(activePage, (IFile) refResource, true);
             }
-          } catch (final PartInitException e) {
-            MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
           }
+        } catch (final PartInitException e) {
+          MessageDialog.openError(dw.getShell(), "Problem opening editor", e.getMessage());
         }
       }
     }

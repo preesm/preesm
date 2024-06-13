@@ -101,10 +101,11 @@ public class NumericalEdgePropertyTypeFactory implements PropertyFactory {
    */
   @Override
   public Object create(final Object value) {
-    if (value instanceof String) {
-      return getSDFEdgePropertyType((String) value);
-    } else if (value instanceof Long) {
-      return getSDFEdgePropertyType((Long) value);
+    if (value instanceof final String stringValue) {
+      return getSDFEdgePropertyType(stringValue);
+    }
+    if (value instanceof final Long longValue) {
+      return getSDFEdgePropertyType(longValue);
     }
     return null;
   }

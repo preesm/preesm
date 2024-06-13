@@ -61,10 +61,10 @@ import org.preesm.ui.scenario.editor.papify.PapifyListTreeElement.PAPIStatus;
 public class PapifyComponentListContentProvider2DMatrix implements ITreeContentProvider {
 
   /** Currently edited scenario. */
-  private Scenario                                          scenario           = null;
-  private Set<PapifyListTreeElement>                        componentConfig;
-  PapifyCheckStateListener                                  checkStateListener = null;
-  private Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
+  private Scenario                                                scenario           = null;
+  private Set<PapifyListTreeElement>                              componentConfig;
+  PapifyCheckStateListener                                        checkStateListener = null;
+  private final Set<PapifyComponentListContentProvider2DMatrixES> editingSupports    = new LinkedHashSet<>();
 
   public PapifyComponentListContentProvider2DMatrix(Scenario scenario) {
     this.scenario = scenario;
@@ -101,13 +101,13 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
   public void removePEfromComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
 
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
-      PapiComponent pc = papiData.getComponents().get(compName);
+      final PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      final PapiComponent pc = papiData.getComponents().get(compName);
       this.scenario.getPapifyConfig().removeComponent(peType, pc);
 
-      for (PapifyListTreeElement treeElement : this.componentConfig) {
+      for (final PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
-          final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
+          final Map<Component, PAPIStatus> statuses = treeElement.papiStatuses;
           statuses.put(peType, PAPIStatus.NO);
         }
       }
@@ -119,13 +119,13 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void addPEtoComp(final Component peType, final String compName) {
     if (peType != null && !compName.equals("")) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
-      PapiComponent pc = papiData.getComponents().get(compName);
+      final PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      final PapiComponent pc = papiData.getComponents().get(compName);
       this.scenario.getPapifyConfig().addComponent(peType, pc);
 
-      for (PapifyListTreeElement treeElement : this.componentConfig) {
+      for (final PapifyListTreeElement treeElement : this.componentConfig) {
         if (treeElement.label.equals(compName)) {
-          final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
+          final Map<Component, PAPIStatus> statuses = treeElement.papiStatuses;
           statuses.put(peType, PAPIStatus.YES);
         }
       }
@@ -137,14 +137,14 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void cleanPE(final Component peType) {
 
-    List<
+    final List<
         PapiComponent> corePapifyConfigGroupPE = this.scenario.getPapifyConfig().getPapifyConfigGroupsPEs().get(peType);
     if (peType != null && corePapifyConfigGroupPE != null) {
-      PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
+      final PapiEventInfo papiData = this.scenario.getPapifyConfig().getPapiData();
       corePapifyConfigGroupPE.removeAll(papiData.getComponents().values());
 
-      for (PapifyListTreeElement treeElement : this.componentConfig) {
-        final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
+      for (final PapifyListTreeElement treeElement : this.componentConfig) {
+        final Map<Component, PAPIStatus> statuses = treeElement.papiStatuses;
         statuses.put(peType, PAPIStatus.NO);
       }
     }
@@ -155,8 +155,8 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
    */
   public void updateView() {
 
-    for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyListTreeElement treeElement : this.componentConfig) {
+    for (final PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
+      for (final PapifyListTreeElement treeElement : this.componentConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -171,18 +171,18 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
     for (final Entry<Component, EList<PapiComponent>> papiConfig : papifyConfigGroupsPEs) {
       final Component peType = papiConfig.getKey();
-      for (PapiComponent compName : papiConfig.getValue()) {
-        String comp = compName.getId();
-        for (PapifyListTreeElement treeElement : this.componentConfig) {
+      for (final PapiComponent compName : papiConfig.getValue()) {
+        final String comp = compName.getId();
+        for (final PapifyListTreeElement treeElement : this.componentConfig) {
           if (treeElement.label.equals(comp)) {
-            final Map<Component, PAPIStatus> statuses = treeElement.PAPIStatuses;
+            final Map<Component, PAPIStatus> statuses = treeElement.papiStatuses;
             statuses.put(peType, PAPIStatus.YES);
           }
         }
       }
     }
-    for (PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
-      for (PapifyListTreeElement treeElement : this.componentConfig) {
+    for (final PapifyComponentListContentProvider2DMatrixES viewer : this.editingSupports) {
+      for (final PapifyListTreeElement treeElement : this.componentConfig) {
         viewer.getViewer().update(treeElement, null);
       }
     }
@@ -207,8 +207,7 @@ public class PapifyComponentListContentProvider2DMatrix implements ITreeContentP
 
     Object[] elementTable = null;
 
-    if (inputElement instanceof PapiEventInfo) {
-      final PapiEventInfo inputPapiEventInfo = (PapiEventInfo) inputElement;
+    if (inputElement instanceof final PapiEventInfo inputPapiEventInfo) {
       componentConfig = new LinkedHashSet<>();
       boolean componentAdded = false;
 

@@ -99,20 +99,18 @@ public class ChooseRefinementListDialog extends ListDialog {
     public void widgetSelected(final SelectionEvent e) {
       final TableViewer tableViewer = this.dialog.getTableViewer();
 
-      if (tableViewer.getSelection() instanceof IStructuredSelection) {
-        final IStructuredSelection tableSelection = (IStructuredSelection) tableViewer.getSelection();
+      if (tableViewer.getSelection() instanceof final IStructuredSelection tableSelection) {
         final Object[] tableSelections = tableSelection.toArray();
         if (this.type.equals("add")) {
           final IPath name = ChooseRefinementListDialog.this.policy
               .useExistingFile(ChooseRefinementListDialog.this.vertex, "slam");
           tableViewer.add(name);
-        } else if (this.type.equals("remove")) {
-          if ((tableSelections.length == 1) && (tableSelections[0] instanceof String)) {
-            final String name = (String) tableSelections[0];
-            tableViewer.remove(name);
-            ChooseRefinementListDialog.this.refinementList.removeName(name);
-          }
+        } else if (this.type.equals("remove") && (tableSelections.length == 1)
+            && (tableSelections[0] instanceof final String name)) {
+          tableViewer.remove(name);
+          ChooseRefinementListDialog.this.refinementList.removeName(name);
         }
+
       }
     }
 
@@ -173,8 +171,8 @@ public class ChooseRefinementListDialog extends ListDialog {
     setContentProvider(new WorkbenchContentProvider() {
       @Override
       public Object[] getChildren(final Object element) {
-        if (element instanceof RefinementList) {
-          return ((RefinementList) element).toStringArray();
+        if (element instanceof final RefinementList refList) {
+          return refList.toStringArray();
         }
         return super.getChildren(element);
       }
@@ -190,8 +188,8 @@ public class ChooseRefinementListDialog extends ListDialog {
   public void setInput(final Object input) {
     super.setInput(input);
 
-    if (input instanceof RefinementList) {
-      this.refinementList = (RefinementList) input;
+    if (input instanceof final RefinementList refList) {
+      this.refinementList = refList;
     }
   }
 

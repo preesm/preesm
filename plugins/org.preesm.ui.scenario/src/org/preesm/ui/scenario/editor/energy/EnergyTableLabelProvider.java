@@ -133,18 +133,16 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
-      final AbstractActor vertex = (AbstractActor) element;
-
+    if ((element instanceof final AbstractActor vertex) && (this.currentOpDefId != null)) {
       final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
       if (columnIndex == 3) {
         if (ExpressionEvaluator.canEvaluate(vertex, energy)) {
           return this.imageOk;
-        } else if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
-          return this.imageAlert;
-        } else {
-          return this.imageError;
         }
+        if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
+          return this.imageAlert;
+        }
+        return this.imageError;
       }
     }
     return null;
@@ -152,40 +150,41 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
 
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentOpDefId != null)) {
-      final AbstractActor vertex = (AbstractActor) element;
 
-      final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
-
-      switch (columnIndex) {
-        case 0:
-          return vertex.getVertexPath();
-        case 1: // Input Parameters
-          if (energy == null || vertex.getInputParameters().isEmpty()) {
-            return " - ";
-          } else {
-            return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
-          }
-        case 2: // Expression
-          if (energy != null) {
-            return energy;
-          }
-          break;
-        case 3: // Evaluation Status
-          return null;
-        case 4: // Value
-          if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
-            return Long
-                .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
-          } else if (energy != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
-            return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), energy,
-                this.scenario.getParameterValues().map()));
-          } else {
-            return "";
-          }
-        default:
-      }
+    if (!(element instanceof final AbstractActor vertex) || (this.currentOpDefId == null)) {
+      return "";
     }
+
+    final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertex, this.currentOpDefId);
+
+    switch (columnIndex) {
+      case 0:
+        return vertex.getVertexPath();
+      case 1: // Input Parameters
+        if (energy == null || vertex.getInputParameters().isEmpty()) {
+          return " - ";
+        } else {
+          return ExpressionEvaluator.lookupParameterValues(vertex, Collections.emptyMap()).keySet().toString();
+        }
+      case 2: // Expression
+        if (energy != null) {
+          return energy;
+        }
+        break;
+      case 3: // Evaluation Status
+        return null;
+      case 4: // Value
+        if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
+          return Long.toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
+        } else if (energy != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
+          return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), energy,
+              this.scenario.getParameterValues().map()));
+        } else {
+          return "";
+        }
+      default:
+    }
+
     return "";
   }
 
@@ -197,8 +196,7 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
+    if (e.getSource() instanceof final Combo combo) {
       final String item = combo.getItem(combo.getSelectionIndex());
       this.currentOpDefId = this.scenario.getDesign().getComponent(item);
       this.tableViewer.refresh();
@@ -220,24 +218,21 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
     final IInputValidator validator = newText -> null;
 
     final Object firstElement = selection.getFirstElement();
-    if (firstElement instanceof AbstractActor) {
-      final AbstractActor abstractActor = (AbstractActor) firstElement;
+    if (firstElement instanceof final AbstractActor abstractActor && this.currentOpDefId != null) {
+      final String title = Messages.getString("Energy.dialog.title");
+      final String message = Messages.getString("Energy.dialog.message") + abstractActor.getVertexPath();
+      final String init = this.scenario.getTimings().getExecutionTimeOrDefault(abstractActor, this.currentOpDefId);
 
-      if (this.currentOpDefId != null) {
-        final String title = Messages.getString("Energy.dialog.title");
-        final String message = Messages.getString("Energy.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimings().getExecutionTimeOrDefault(abstractActor, this.currentOpDefId);
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
+          message, init, validator);
+      if (dialog.open() == Window.OK) {
+        final String value = dialog.getValue();
 
-        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-            title, message, init, validator);
-        if (dialog.open() == Window.OK) {
-          final String value = dialog.getValue();
-
-          this.scenario.getEnergyConfig().setActorPeEnergy(abstractActor, this.currentOpDefId, value);
-          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-          this.tableViewer.refresh();
-        }
+        this.scenario.getEnergyConfig().setActorPeEnergy(abstractActor, this.currentOpDefId, value);
+        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+        this.tableViewer.refresh();
       }
     }
+
   }
 }

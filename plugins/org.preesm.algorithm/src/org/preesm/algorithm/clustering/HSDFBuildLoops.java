@@ -102,8 +102,7 @@ public class HSDFBuildLoops {
       // avoid cycles deadlock
       tmp.removeAll(l);
       l.addAll(tmp);
-      final List<SDFAbstractVertex> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
+      final List<SDFAbstractVertex> tmp1 = new ArrayList<>(tmp);
       if (tmp.isEmpty()) {
         exit = true;
       }
@@ -122,8 +121,7 @@ public class HSDFBuildLoops {
     do {
       tmp.removeAll(l); // avoid cycles deadlock
       l.addAll(tmp);
-      final List<SDFAbstractVertex> tmp1 = new ArrayList<>();
-      tmp1.addAll(tmp);
+      final List<SDFAbstractVertex> tmp1 = new ArrayList<>(tmp);
       if (tmp.isEmpty()) {
         exit = true;
       }
@@ -167,11 +165,10 @@ public class HSDFBuildLoops {
     for (final SDFEdge i : inEdge) {
       final SDFAbstractVertex vv = i.getSource();
       if (vv instanceof SDFVertex) {
-        if (vv != v) {
-          inV.add(vv);
-        } else {
+        if (vv == v) {
           throw new PreesmRuntimeException("HSDFBuildLoops Delays not supported when generating clustering");
         }
+        inV.add(vv);
       }
     }
     return inV;
@@ -183,11 +180,10 @@ public class HSDFBuildLoops {
     for (final SDFEdge i : outEdge) {
       final SDFAbstractVertex vv = i.getTarget();
       if (vv instanceof SDFVertex) {
-        if (vv != v) {
-          outV.add(vv);
-        } else {
+        if (vv == v) {
           throw new PreesmRuntimeException("HSDFBuildLoops Delays not supported when generating clustering");
         }
+        outV.add(vv);
       }
     }
     return outV;
@@ -212,8 +208,7 @@ public class HSDFBuildLoops {
       final SDFAbstractVertex a = vertexes.get(i);
       final List<SDFAbstractVertex> inA = getInVertexs(a);
       final List<SDFAbstractVertex> outA = getOutVertexs(a);
-      final List<SDFAbstractVertex> linkA = new ArrayList<>();
-      linkA.addAll(inA);
+      final List<SDFAbstractVertex> linkA = new ArrayList<>(inA);
       linkA.addAll(outA);
 
       // get first mergeable vertexes
@@ -270,13 +265,12 @@ public class HSDFBuildLoops {
     // get in edge of vertex
     final List<SDFEdge> inEdgeRight = getInEdges(right);
     final List<SDFEdge> inEdgeLeft = getInEdges(left);
-    final List<SDFEdge> inEdgeVertex = new ArrayList<>();
-    inEdgeVertex.addAll(inEdgeLeft); // all in edge from left go in vertex
+    final List<SDFEdge> inEdgeVertex = new ArrayList<>(inEdgeLeft);
     for (final SDFEdge e : inEdgeRight) { // all not from left in vertex (others are merged)
       if (e.getSource() != left) {
         inEdgeVertex.add(e);
-        long cons = 0;
-        long rvRight = 0;
+        long cons;
+        long rvRight;
         cons = e.getCons().longValue();
         rvRight = right.getNbRepeatAsLong();
         e.setCons(new LongEdgePropertyType((rvRight * cons) / pgcm));
@@ -286,13 +280,12 @@ public class HSDFBuildLoops {
     // get out edges of vertex
     final List<SDFEdge> outEdgeLeft = getOutEdges(left);
     final List<SDFEdge> outEdgeRight = getOutEdges(right);
-    final List<SDFEdge> outEdgeVertex = new ArrayList<>();
-    outEdgeVertex.addAll(outEdgeRight); // all out edge of right go out of vertex
+    final List<SDFEdge> outEdgeVertex = new ArrayList<>(outEdgeRight);
     for (final SDFEdge e : outEdgeLeft) {
       if (e.getTarget() != right) {
         outEdgeVertex.add(e);
-        long prod = 0;
-        long rvLeft = 0;
+        long prod;
+        long rvLeft;
         prod = e.getProd().longValue();
         rvLeft = left.getNbRepeatAsLong();
         e.setProd(new LongEdgePropertyType((rvLeft * prod) / pgcm));
@@ -348,12 +341,11 @@ public class HSDFBuildLoops {
   private String clustSchedString;
 
   private void recursivePrintClustSched(final AbstractClust seq) {
-    if (seq instanceof ClustVertex) {
-      this.clustSchedString += "(" + Long.toString(seq.getRepeat()) + "-" + ((ClustVertex) seq).getVertex().getName()
-          + ")";
-    } else if (seq instanceof ClustSequence) {
+    if (seq instanceof final ClustVertex clustVertex) {
+      this.clustSchedString += "(" + Long.toString(seq.getRepeat()) + "-" + clustVertex.getVertex().getName() + ")";
+    } else if (seq instanceof final ClustSequence clustSequence) {
       this.clustSchedString += seq.getRepeat() + "(";
-      for (final AbstractClust s : ((ClustSequence) seq).getSeq()) {
+      for (final AbstractClust s : clustSequence.getSeq()) {
         recursivePrintClustSched(s);
       }
       this.clustSchedString += ")";
@@ -389,12 +381,12 @@ public class HSDFBuildLoops {
         getLoopClusterList.add(seq);
         return seq;
       }
-    } else if (seq instanceof ClustSequence) {
-      if (!getLoopClusterList.contains(seq)) {
+    } else if (seq instanceof final ClustSequence clustSequence) {
+      if (!getLoopClusterList.contains(clustSequence)) {
         getLoopClusterList.add(seq);
         return seq;
       }
-      for (final AbstractClust s : ((ClustSequence) seq).getSeq()) {
+      for (final AbstractClust s : clustSequence.getSeq()) {
         final AbstractClust ret = recursiveGetLoopClustV2(s, getLoopClusterList);
         if (ret != null) {
           return ret;
@@ -450,7 +442,7 @@ public class HSDFBuildLoops {
         // existing sequences fusion here
         // create cluster vertex sequence
         final ClustSequence seq = new ClustSequence();
-        seq.setSeq(new ArrayList<AbstractClust>());
+        seq.setSeq(new ArrayList<>());
         // set new repeat for seqRight
         seqRight.setRepeat(repRight);
         // set new repeat for seqLeft
@@ -472,7 +464,7 @@ public class HSDFBuildLoops {
         seqLeft.setRepeat(repLeft);
         // create cluster vertex sequence
         final ClustSequence seq = new ClustSequence();
-        seq.setSeq(new ArrayList<AbstractClust>());
+        seq.setSeq(new ArrayList<>());
         // set sequence
         seq.setRepeat(pgcm);
         seq.getSeq().add(seqLeft);
@@ -489,7 +481,7 @@ public class HSDFBuildLoops {
         seqRight.setRepeat(repRight);
         // create cluster vertex sequence
         final ClustSequence seq = new ClustSequence();
-        seq.setSeq(new ArrayList<AbstractClust>());
+        seq.setSeq(new ArrayList<>());
         // set sequence
         seq.setRepeat(pgcm);
         seq.getSeq().add(vLeft);
@@ -507,7 +499,7 @@ public class HSDFBuildLoops {
         vRight.setVertex(current.get(1));
         // create cluster vertex sequence
         final ClustSequence seq = new ClustSequence();
-        seq.setSeq(new ArrayList<AbstractClust>());
+        seq.setSeq(new ArrayList<>());
         // set sequence
         seq.setRepeat(pgcm);
         seq.getSeq().add(vLeft);
@@ -570,8 +562,7 @@ public class HSDFBuildLoops {
 
   private long getBufSize(final List<SDFEdge> allocEdge, final List<SDFEdge> edgeUpperGraph,
       final SDFAbstractVertex v) {
-    final List<SDFEdge> edge = new ArrayList<>();
-    edge.addAll(getInEdges(v));
+    final List<SDFEdge> edge = new ArrayList<>(getInEdges(v));
     edge.addAll(getOutEdges(v));
     long bufSize = 0;
     for (final SDFEdge e : edge) {

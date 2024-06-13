@@ -140,11 +140,9 @@ public class GMLKey {
    */
   @Override
   public boolean equals(final Object key) {
-    if (key instanceof GMLKey) {
-      final GMLKey kKey = (GMLKey) key;
+    if (key instanceof final GMLKey kKey) {
       // Since when it exists, the id is always equal to the name, we
-      // remove
-      // the equality test for this.id
+      // removed the equality test for this.id
       // @author Karol Desnos
       // @date 2012.10.17
       return kKey.applyTo.equals(this.applyTo) && kKey.name.equals(this.name) && kKey.type.equals(this.type);

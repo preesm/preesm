@@ -50,7 +50,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -781,8 +780,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
     }
 
-    final String strPreSelected = String.join(", ",
-        preSelectedRanks.stream().map(i -> Integer.toString(i)).collect(Collectors.toList()));
+    final String strPreSelected = String.join(", ", preSelectedRanks.stream().map(i -> Integer.toString(i)).toList());
     PreesmLogger.getLogger().fine(() -> "Preselected cut ranks: " + strPreSelected);
     // select remaining cuts sorted by memory size
     final List<CutInformation> bestCuts = new ArrayList<>();

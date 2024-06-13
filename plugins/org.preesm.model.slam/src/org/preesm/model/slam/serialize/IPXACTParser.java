@@ -53,7 +53,7 @@ public abstract class IPXACTParser {
   /**
    * Instantiates a new IPXACT parser.
    */
-  public IPXACTParser() {
+  protected IPXACTParser() {
     super();
   }
 

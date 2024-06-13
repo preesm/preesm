@@ -145,49 +145,54 @@ public class AbstractGraph {
 
       final AbstractActor absSrc = dop.getContainingActor();
       final AbstractActor absTgt = dip.getContainingActor();
-      if ((absSrc instanceof ExecutableActor) && (absTgt instanceof ExecutableActor)) {
-        FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
-        final long srcRate = dop.getPortRateExpression().evaluate();
-        final long tgtRate = dip.getPortRateExpression().evaluate();
-        if (srcRate > 0 && tgtRate > 0) {
-          final long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
-          if (fa == null) {
-            fa = new FifoAbstraction();
-            fa.prodRate = srcRate / gcd;
-            fa.consRate = tgtRate / gcd;
-            final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
-            if (!res) {
-              throw new PreesmRuntimeException("Problem while creating graph copy.");
-            }
-          }
-          fa.fifos.add(f);
-          final Delay d = f.getDelay();
-          long delayRawSize = 0L;
-          long delay = 0L;
-          if (d != null) {
-            fa.nbNonZeroDelays++;
-            delayRawSize = d.getSizeExpression().evaluate();
-            delay = delayRawSize / gcd;
-          }
-          fa.delays.add(delay);
 
-          final long brvDest = brv.get(absTgt);
-          final long tgtPipelineCons = brvDest * tgtRate;
-          fa.pipelineValues.add(tgtPipelineCons);
-
-          final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / tgtPipelineCons);
-          fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
-
-          boolean fullyDelayed = true;
-          for (final long l : fa.delays) {
-            if (l == 0) {
-              fullyDelayed = false;
-              break;
-            }
-          }
-          fa.fullyDelayed = fullyDelayed;
-        }
+      if (!(absSrc instanceof ExecutableActor) || !(absTgt instanceof ExecutableActor)) {
+        continue;
       }
+
+      FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
+      final long srcRate = dop.getPortRateExpression().evaluate();
+      final long tgtRate = dip.getPortRateExpression().evaluate();
+      if (srcRate > 0 && tgtRate > 0) {
+        final long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
+        if (fa == null) {
+          fa = new FifoAbstraction();
+          fa.prodRate = srcRate / gcd;
+          fa.consRate = tgtRate / gcd;
+          final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
+          if (!res) {
+            throw new PreesmRuntimeException("Problem while creating graph copy.");
+          }
+        }
+        fa.fifos.add(f);
+        final Delay d = f.getDelay();
+        long delayRawSize = 0L;
+        long delay = 0L;
+        if (d != null) {
+          fa.nbNonZeroDelays++;
+          delayRawSize = d.getSizeExpression().evaluate();
+          delay = delayRawSize / gcd;
+        }
+        fa.delays.add(delay);
+
+        final long brvDest = brv.get(absTgt);
+        final long tgtPipelineCons = brvDest * tgtRate;
+        fa.pipelineValues.add(tgtPipelineCons);
+
+        final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / tgtPipelineCons);
+        fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
+
+        // boolean fullyDelayed = true;
+        // for (final long l : fa.delays) {
+        // if (l == 0) {
+        // fullyDelayed = false;
+        // break;
+        // }
+        // }
+
+        fa.fullyDelayed = fa.delays.stream().noneMatch(l -> l == 0);
+      }
+
     }
     return absGraph;
   }

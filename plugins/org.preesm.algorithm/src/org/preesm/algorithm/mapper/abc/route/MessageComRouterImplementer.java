@@ -40,7 +40,6 @@ package org.preesm.algorithm.mapper.abc.route;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.edgescheduling.IEdgeSched;
 import org.preesm.algorithm.mapper.abc.edgescheduling.SimpleEdgeSched;
 import org.preesm.algorithm.mapper.abc.transaction.AddInvolvementVertexTransaction;
@@ -113,12 +112,11 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       final TransactionManager transactions, final int type, final int routeStepIndex,
       final Transaction lastTransaction, final List<MapperDAGVertex> alreadyCreatedVertices) {
 
-    if (routeStep instanceof SlamMessageRouteStep) {
+    if (routeStep instanceof final SlamMessageRouteStep messageStep) {
       // Adding the transfers
-      final SlamMessageRouteStep messageStep = ((SlamMessageRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
-      long dataSize = edge.getInit().getDataSize();
+      final long dataSize = edge.getInit().getDataSize();
 
       long transferTime = (long) RouteCostEvaluator.getTransferCost(messageStep, dataSize);
       if (transferTime == 0) {
@@ -138,28 +136,26 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
+      }
+      if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvement
         MapperDAGEdge incomingEdge = null;
 
         for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
-                && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
-              // Finding the edge where to add an involvement
-              incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
-            }
-
+          if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
+              && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
+            // Finding the edge where to add an involvement
+            incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
           }
+
         }
 
         if (incomingEdge != null) {
           transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
               transferTime, getOrderManager()));
         } else {
-          PreesmLogger.getLogger().log(Level.FINER,
-              "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
+          PreesmLogger.getLogger().finer(
+              () -> "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
         }
 
       } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
@@ -168,18 +164,15 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
 
         for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
-            if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
-                && (v.getRouteStep() == routeStep)) {
-              toSynchronize.add(v);
+          if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
+              && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep)) {
+            toSynchronize.add(v);
 
-              if (v.getInvolvementVertex() != null) {
-                toSynchronize.add(v.getInvolvementVertex());
-              }
+            if (v.getInvolvementVertex() != null) {
+              toSynchronize.add(v.getInvolvementVertex());
             }
-
           }
+
         }
 
       } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {

@@ -60,9 +60,8 @@ public class ObjectiveContentProvider implements IStructuredContentProvider {
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof Scenario) {
+    if (inputElement instanceof final Scenario inputScenario) {
 
-      final Scenario inputScenario = (Scenario) inputElement;
       /**
        * Adding the row names
        */

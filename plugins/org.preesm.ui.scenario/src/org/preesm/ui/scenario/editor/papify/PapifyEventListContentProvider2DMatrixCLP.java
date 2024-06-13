@@ -64,29 +64,23 @@ class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
   @Override
   public String getText(final Object element) {
-    if (element instanceof PapifyEventListTreeElement) {
-      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
-      String actorName = treeElement.label;
-      if (this.eventName.equals("First_column")) {
-        return actorName;
-      }
-
-      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
-      if (!statuses.containsKey(this.eventName)) {
-        statuses.put(this.eventName, PAPIEventStatus.NO);
-      }
-      return statuses.get(this.eventName).toString();
-
-    } else {
+    if (!(element instanceof final PapifyEventListTreeElement treeElement)) {
       return "ERROR";
     }
+    final String actorName = treeElement.label;
+    if (this.eventName.equals("First_column")) {
+      return actorName;
+    }
+
+    final Map<String, PAPIEventStatus> statuses = treeElement.papiStatuses;
+
+    return statuses.computeIfAbsent(this.eventName, k -> PAPIEventStatus.NO).toString();
   }
 
   @Override
   public Image getImage(final Object element) {
-    if (element instanceof PapifyEventListTreeElement) {
-      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
-      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
+    if (element instanceof final PapifyEventListTreeElement treeElement) {
+      final Map<String, PAPIEventStatus> statuses = treeElement.papiStatuses;
       if (statuses.containsKey(this.eventName)) {
         return treeElement.getImage(this.eventName);
       }

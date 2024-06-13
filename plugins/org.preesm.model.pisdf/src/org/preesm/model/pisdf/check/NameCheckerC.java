@@ -54,7 +54,7 @@ public class NameCheckerC {
   /**
    * Valid names correspond to this regex, close to the C variables name policy.
    */
-  public static final String REGEX_C = "[a-zA-Z][a-zA-Z0-9_]*";
+  public static final String REGEX_C = "[a-zA-Z]\\w*";
 
   /**
    * CV-qualifiers to remove from types (PREESM does not need to know them).

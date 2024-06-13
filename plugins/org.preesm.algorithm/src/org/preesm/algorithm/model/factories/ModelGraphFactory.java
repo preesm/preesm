@@ -73,7 +73,7 @@ public class ModelGraphFactory {
    *           InvocationTargetException, NoSuchMethodException, SecurityException
    */
   @SuppressWarnings({ "rawtypes", "unchecked" })
-  public static AbstractGraph getModel(final String model) throws Exception {
+  public static AbstractGraph getModel(final String model) throws PreesmRuntimeException {
     Class modelClass = ModelGraphFactory.models.get(model);
     if (modelClass == null) {
       modelClass = GenericGraph.class;

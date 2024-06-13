@@ -86,11 +86,10 @@ public class ExpressionValue implements Value {
           final JEP jep = new JEP();
           final Node mainExpressionNode = jep.parse(this.expression);
           result = jep.evaluate(mainExpressionNode);
-          if (result instanceof Number) {
-            this.value = ((Number) result).longValue();
-          } else {
+          if (!(result instanceof final Number numberResult)) {
             throw (new ExpressionEvaluationException("Not a numeric expression"));
           }
+          this.value = numberResult.longValue();
         } catch (final ParseException e) {
           throw (new ExpressionEvaluationException("Can't parse expresion :" + this.expression));
         }

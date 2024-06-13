@@ -43,7 +43,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -249,7 +248,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
 
     final int nbCore = slamDesign.getProcessingElements().get(0).getInstances().size();
-    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
+    PreesmLogger.getLogger().info(() -> "Found " + nbCore + " cores.");
 
     graphPeriod = piGraph.getPeriod().evaluate();
     PreesmLogger.getLogger().info(() -> "Graph period is: " + graphPeriod);
@@ -327,7 +326,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
 
     final long duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
+    PreesmLogger.getLogger().info(() -> "Time+ " + Math.round(duration / 1e6) + " ms.");
 
     PreesmLogger.getLogger()
         .info("Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");

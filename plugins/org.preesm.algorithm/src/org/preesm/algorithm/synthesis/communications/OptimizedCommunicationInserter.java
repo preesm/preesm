@@ -114,7 +114,7 @@ public class OptimizedCommunicationInserter extends DefaultCommunicationInserter
 
     final List<ReceiveEndActor> reActorsToReorder = afterCurrentREA.stream()
         // keep receive vertices
-        .filter(v -> v instanceof ReceiveEndActor).map(ReceiveEndActor.class::cast)
+        .filter(ReceiveEndActor.class::isInstance).map(ReceiveEndActor.class::cast)
         // Keep only receiveVertex scheduled after the inserted one.
         // Keep only those with the same sender operator
         // Keep only those whose sender is scheduled before the current one

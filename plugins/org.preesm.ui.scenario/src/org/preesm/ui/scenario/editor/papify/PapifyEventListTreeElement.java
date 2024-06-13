@@ -54,7 +54,7 @@ import org.preesm.ui.PreesmUIPlugin;
 class PapifyEventListTreeElement {
   String                       label;
   AbstractActor                actorPath;
-  Map<String, PAPIEventStatus> PAPIStatuses;
+  Map<String, PAPIEventStatus> papiStatuses;
 
   /** The image ok. */
   private final Image imageOk;
@@ -75,24 +75,20 @@ class PapifyEventListTreeElement {
     NO;
 
     PAPIEventStatus next() {
-      switch (this) {
-        case YES:
-
-          return NO;
-        case NO:
-          return YES;
-        default:
-          return null;
-      }
+      return switch (this) {
+        case YES -> NO;
+        case NO -> YES;
+        default -> null;
+      };
     }
   }
 
   PapifyEventListTreeElement(final Object algorithmElement) {
-    if (algorithmElement instanceof AbstractActor) {
-      this.actorPath = ((AbstractActor) algorithmElement);
+    if (algorithmElement instanceof final AbstractActor aActor) {
+      this.actorPath = aActor;
       this.label = this.actorPath.getName();
     }
-    this.PAPIStatuses = new LinkedHashMap<>();
+    this.papiStatuses = new LinkedHashMap<>();
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
     ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
@@ -104,15 +100,14 @@ class PapifyEventListTreeElement {
   }
 
   public Image getImage(String name) {
-    if (this.PAPIStatuses.get(name).equals(PAPIEventStatus.YES)) {
+    if (this.papiStatuses.get(name).equals(PAPIEventStatus.YES)) {
       return this.imageOk;
-    } else {
-      return this.imageError;
     }
+    return this.imageError;
   }
 
   @Override
   public String toString() {
-    return this.actorPath.toString().concat(label).concat(this.PAPIStatuses.toString());
+    return this.actorPath.toString().concat(label).concat(this.papiStatuses.toString());
   }
 }

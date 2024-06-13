@@ -94,19 +94,16 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   public Object[] getChildren(final Object parentElement) {
     Object[] table = null;
 
-    if (parentElement instanceof PapifyEventListTreeElement) {
-      AbstractActor algorithmElement = ((PapifyEventListTreeElement) parentElement).actorPath;
-      if (algorithmElement instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) algorithmElement;
+    if (parentElement instanceof final PapifyEventListTreeElement treeElement) {
+      final AbstractActor algorithmElement = treeElement.actorPath;
+      if (algorithmElement instanceof final PiGraph graph) {
         // Some types of vertices are ignored in the constraints view
         table = filterPISDFChildren(graph.getActors()).toArray();
-      } else if (algorithmElement instanceof Actor) {
-        final Actor actor = (Actor) algorithmElement;
-        if (actor.isHierarchical()) {
-          final PiGraph subGraph = actor.getSubGraph();
-          table = filterPISDFChildren(subGraph.getActors()).toArray();
-        }
+      } else if (algorithmElement instanceof final Actor actor && actor.isHierarchical()) {
+        final PiGraph subGraph = actor.getSubGraph();
+        table = filterPISDFChildren(subGraph.getActors()).toArray();
       }
+
     }
 
     return table;
@@ -131,13 +128,11 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   public boolean hasChildren(final Object element) {
     boolean hasChildren = false;
 
-    if (element instanceof PapifyEventListTreeElement) {
-      AbstractActor algorithmElement = ((PapifyEventListTreeElement) element).actorPath;
-      if (algorithmElement instanceof PiGraph) {
-        final PiGraph graph = (PiGraph) algorithmElement;
+    if (element instanceof final PapifyEventListTreeElement treeElement) {
+      final AbstractActor algorithmElement = treeElement.actorPath;
+      if (algorithmElement instanceof final PiGraph graph) {
         hasChildren = !graph.getActors().isEmpty();
-      } else if (algorithmElement instanceof Actor) {
-        final Actor actor = (Actor) algorithmElement;
+      } else if (algorithmElement instanceof final Actor actor) {
         hasChildren = actor.getRefinement() != null;
       }
     }
@@ -154,8 +149,8 @@ public class PapifyEventListContentProvider2DMatrix implements ITreeContentProvi
   public Object[] getElements(final Object inputElement) {
     final Object[] table = new Object[1];
 
-    if (inputElement instanceof Scenario) {
-      this.scenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario inputScenario) {
+      this.scenario = inputScenario;
       // Opening algorithm from file
       final PiGraph currentPISDFGraph = scenario.getAlgorithm();
       final PapifyEventListTreeElement element = new PapifyEventListTreeElement(currentPISDFGraph);

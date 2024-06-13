@@ -73,7 +73,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Map PiMM SRDAG with new periodic scheduler.
- * 
+ *
  * @author ahonorat
  */
 @PreesmTask(id = "pisdf-mapper.periodic.DAG", name = "Periodic Scheduling from PiSDF to old DAG",
@@ -114,7 +114,7 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
 
     final Map<AbstractActor, DAGVertex> newTOold = new HashMap<>();
     final Set<DAGVertex> sourceActors = new HashSet<>();
-    for (DAGVertex vertex : dag.vertexSet()) {
+    for (final DAGVertex vertex : dag.vertexSet()) {
       if (vertex.incomingEdges().isEmpty()) {
         sourceActors.add(vertex);
       }
@@ -124,8 +124,7 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
     long nbScheduledActors = 0;
     final Map<ComponentInstance, List<DAGVertex>> schedByCI = new LinkedHashMap<>();
     for (final Schedule sd : scheduleAndMap.schedule.getChildren()) {
-      if (sd instanceof ActorSchedule) {
-        final ActorSchedule as = (ActorSchedule) sd;
+      if (sd instanceof final ActorSchedule as) {
         final List<AbstractActor> seqActors = as.getActorList();
         nbScheduledActors += seqActors.size();
         if (!seqActors.isEmpty()) {
@@ -153,7 +152,7 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
     while (!readyToSchedule.isEmpty()) {
       DAGVertex firingToMap = null;
       ComponentInstance ci = null;
-      for (Entry<ComponentInstance, List<DAGVertex>> e : schedByCI.entrySet()) {
+      for (final Entry<ComponentInstance, List<DAGVertex>> e : schedByCI.entrySet()) {
         final ComponentInstance componentInstance = e.getKey();
         final List<DAGVertex> list = e.getValue();
         if (list.isEmpty()) {
@@ -168,14 +167,13 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
         }
       }
 
-      if (firingToMap != null && ci != null) {
-        ExternalMappingFromDAG.mapVertex(abc, ci, firingToMap);
-
-        readyToSchedule.remove(firingToMap);
-        addReadyFirings(firingToMap, readyToSchedule, visitedInputsActors);
-      } else {
+      if ((firingToMap == null) || (ci == null)) {
         throw new PreesmRuntimeException("Unable to map next vertex.");
       }
+      ExternalMappingFromDAG.mapVertex(abc, ci, firingToMap);
+
+      readyToSchedule.remove(firingToMap);
+      addReadyFirings(firingToMap, readyToSchedule, visitedInputsActors);
     }
 
     return abc;
@@ -184,9 +182,9 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
   private static void addReadyFirings(DAGVertex firingToMap, List<DAGVertex> readyToSchedule,
       Map<DAGVertex, Integer> visitedInputsActors) {
 
-    for (DAGEdge outEdge : firingToMap.outgoingEdges()) {
-      DAGVertex dst = outEdge.getTarget();
-      int visitedEdges = visitedInputsActors.getOrDefault(dst, 0) + 1;
+    for (final DAGEdge outEdge : firingToMap.outgoingEdges()) {
+      final DAGVertex dst = outEdge.getTarget();
+      final int visitedEdges = visitedInputsActors.getOrDefault(dst, 0) + 1;
       visitedInputsActors.put(dst, visitedEdges);
       if (visitedEdges == dst.incomingEdges().size()) {
         visitedInputsActors.remove(dst);

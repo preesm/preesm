@@ -183,8 +183,8 @@ public abstract class LatencyAbc {
     this.taskScheduler = taskScheduler;
     this.taskScheduler.setOrderManager(this.orderManager);
 
-    if (this.taskScheduler instanceof TopologicalTaskSched) {
-      ((TopologicalTaskSched) this.taskScheduler).createTopology(this.implementation);
+    if (this.taskScheduler instanceof final TopologicalTaskSched topoTaskSched) {
+      topoTaskSched.createTopology(this.implementation);
     }
   }
 
@@ -267,9 +267,8 @@ public abstract class LatencyAbc {
             && effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
           // skip remapping if operator is already properly set
           return;
-        } else {
-          finalOperator = initEffectiveOperator;
         }
+        finalOperator = initEffectiveOperator;
       } else {
         finalOperator = specifiedOperator;
       }
@@ -522,21 +521,19 @@ public abstract class LatencyAbc {
 
     if (ECollections.indexOf(opList, preferedOperator, 0) != -1) {
       return preferedOperator;
-    } else {
-
-      // Search among the operators with same type than the prefered one
-      for (final ComponentInstance op : opList) {
-        if ((preferedOperator != null)
-            && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
-          return op;
-        }
+    }
+    // Search among the operators with same type than the prefered one
+    for (final ComponentInstance op : opList) {
+      if ((preferedOperator != null)
+          && op.getComponent().getVlnv().getName().equals(preferedOperator.getComponent().getVlnv().getName())) {
+        return op;
       }
+    }
 
-      // Search among the operators with other type than the prefered one
-      for (final ComponentInstance op : opList) {
-        if (isMapable(currentvertex, op, true)) {
-          return op;
-        }
+    // Search among the operators with other type than the prefered one
+    for (final ComponentInstance op : opList) {
+      if (isMapable(currentvertex, op, true)) {
+        return op;
       }
     }
 
@@ -744,7 +741,7 @@ public abstract class LatencyAbc {
    * @param scenario
    *          the scenario
    */
-  public LatencyAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
+  protected LatencyAbc(final AbcParameters params, final MapperDAG dag, final Design archi, final AbcType abcType,
       final Scenario scenario) {
 
     this.abcType = abcType;
@@ -971,7 +968,7 @@ public abstract class LatencyAbc {
 
   /**
    * Set the best latency of this LatencyAbc.
-   * 
+   *
    * @param bestLatency
    *          value to set.
    */

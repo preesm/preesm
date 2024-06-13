@@ -82,17 +82,17 @@ public class GanttComponent implements Comparable<GanttComponent> {
    */
   public boolean insertTask(final GanttTask task) {
 
-    boolean inserted = tasks.add(task);
+    final boolean inserted = tasks.add(task);
     if (!inserted) {
       final String message = "Gantt: Trying to add to the Gantt chart several identical tasks: " + task;
       PreesmLogger.getLogger().log(Level.SEVERE, message);
       return false;
     }
 
-    GanttTask prev = tasks.lower(task);
-    GanttTask next = tasks.higher(task);
-    long tss = task.getStartTime();
-    long dur = task.getDuration();
+    final GanttTask prev = tasks.lower(task);
+    final GanttTask next = tasks.higher(task);
+    final long tss = task.getStartTime();
+    final long dur = task.getDuration();
 
     if ((prev != null && (prev.getStartTime() + prev.getDuration() > tss || prev.getStartTime() == tss))
         || (next != null && (tss + dur > next.getStartTime() || next.getStartTime() == tss))) {
@@ -110,7 +110,7 @@ public class GanttComponent implements Comparable<GanttComponent> {
 
   @Override
   public boolean equals(final Object obj) {
-    return ((obj instanceof GanttComponent) && (((GanttComponent) obj).getId().equals(this.getId())));
+    return ((obj instanceof final GanttComponent ganttComp) && (ganttComp.getId().equals(this.getId())));
   }
 
   @Override
@@ -129,7 +129,7 @@ public class GanttComponent implements Comparable<GanttComponent> {
    * @return the end time
    */
   public long getEndTime() {
-    GanttTask last = tasks.last();
+    final GanttTask last = tasks.last();
     if (last != null) {
       return last.getStartTime() + last.getDuration();
     }
@@ -142,7 +142,7 @@ public class GanttComponent implements Comparable<GanttComponent> {
    * @return the start time
    */
   public long getStartTime() {
-    GanttTask first = tasks.first();
+    final GanttTask first = tasks.first();
     if (first != null) {
       return first.getStartTime();
     }

@@ -38,7 +38,6 @@
  */
 package org.preesm.algorithm.codegen.idl;
 
-import java.util.logging.Level;
 import org.jacorb.idl.ConstDecl;
 import org.jacorb.idl.GlobalInputStream;
 import org.jacorb.idl.IDLTreeVisitor;
@@ -79,7 +78,7 @@ public class IDLParser extends parser {
 
       new parser().parse();
     } catch (final Exception e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "IDL Parser internal exception: " + e.getMessage());
+      PreesmLogger.getLogger().warning(() -> "IDL Parser internal exception: " + e.getMessage());
     }
   }
 }

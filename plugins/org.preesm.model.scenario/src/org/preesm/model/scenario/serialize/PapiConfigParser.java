@@ -166,12 +166,12 @@ public class PapiConfigParser {
   }
 
   private void visitEvent(final Node node) {
-    final int index = Optional.ofNullable(node.getAttributes().getNamedItem("index")).map(Node::getTextContent)
-        .map(Integer::valueOf).orElse(null);
-    final String name = Optional.ofNullable(node.getAttributes().getNamedItem("name")).map(Node::getTextContent)
-        .orElse(null);
-    final String desc = Optional.ofNullable(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent)
-        .orElse(null);
+    final int index = Optional.of(node.getAttributes().getNamedItem("index")).map(Node::getTextContent)
+        .map(Integer::valueOf).orElseThrow(() -> new PreesmRuntimeException("Cannot get value from index field."));
+    final String name = Optional.of(node.getAttributes().getNamedItem("name")).map(Node::getTextContent)
+        .orElseThrow(() -> new PreesmRuntimeException("Cannot get value from name field."));
+    final String desc = Optional.of(node.getAttributes().getNamedItem("desc")).map(Node::getTextContent)
+        .orElseThrow(() -> new PreesmRuntimeException("Cannot get value from desc field."));
     this.modifiers = new ArrayList<>();
     visitChildrenSkippingTexts(node, this::switchEventChildren);
     final PapiEvent event = ScenarioFactory.eINSTANCE.createPapiEvent();

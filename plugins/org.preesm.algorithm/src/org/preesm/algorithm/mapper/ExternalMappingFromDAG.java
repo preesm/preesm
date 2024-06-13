@@ -131,7 +131,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final Map<DAGVertex, ScheduleEntry> entries = checkScheduleCompatibility(schedule, dag, architecture);
 
     checkStartTimePrecedences(entries);
-    PreesmLogger.getLogger().log(Level.INFO, "Successfully parsed " + entries.size() + " schedule entries.");
+    PreesmLogger.getLogger().info(() -> "Successfully parsed " + entries.size() + " schedule entries.");
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
@@ -143,9 +143,9 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     long nbActors = 0;
     final Map<DAGVertex, Long> actorsRank = new HashMap<>();
     final Set<DAGVertex> sourceActors = new HashSet<>();
-    TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
+    final TopologicalDAGIterator topologicalDAGIterator = new TopologicalDAGIterator(dag);
     while (topologicalDAGIterator.hasNext()) {
-      DAGVertex vertex = topologicalDAGIterator.next();
+      final DAGVertex vertex = topologicalDAGIterator.next();
       if (vertex.incomingEdges().isEmpty()) {
         sourceActors.add(vertex);
       }
@@ -155,13 +155,12 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     // 5.1 - build unordered lists of vertices per core ID
     final Map<Integer, List<DAGVertex>> orderedVertices = new HashMap<>();
-    Map<Integer, ComponentInstance> ciI = new HashMap<>();
+    final Map<Integer, ComponentInstance> ciI = new HashMap<>();
     // assumes hardwareId goes from 0 to ...
-    for (int i = 0; i < componentInstances.size(); i++) {
-      final ComponentInstance componentInstance = componentInstances.get(i);
+    for (final ComponentInstance componentInstance : componentInstances) {
       if (componentInstance.getComponent() instanceof ProcessingElement) {
-        int coreId = componentInstance.getHardwareId();
-        PreesmLogger.getLogger().log(Level.INFO, "Adding available core operator with id: " + coreId);
+        final int coreId = componentInstance.getHardwareId();
+        PreesmLogger.getLogger().info(() -> "Adding available core operator with id: " + coreId);
         orderedVertices.put(coreId, new ArrayList<>());
         ciI.put(coreId, componentInstance);
       }
@@ -194,13 +193,13 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final Set<DAGVertex> initVertices = new HashSet<>();
     final Set<DAGVertex> endVertices = new HashSet<>();
 
-    Set<DAGVertex> visitedNodes = new HashSet<>();
+    final Set<DAGVertex> visitedNodes = new HashSet<>();
     removeEndOrInit(unmappedVertices, initVertices, false);
 
     // inits
     while (!initVertices.isEmpty()) {
-      Iterator<DAGVertex> itv = initVertices.iterator();
-      DAGVertex vtx = itv.next();
+      final Iterator<DAGVertex> itv = initVertices.iterator();
+      final DAGVertex vtx = itv.next();
 
       visitedNodes.clear();
       visitedNodes.add(vtx);
@@ -213,8 +212,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         } while (associateVtx != null && unmappedVertices.contains(associateVtx));
       }
 
-      int coreId = vertexToCore.get(associateVtx).intValue();
-      for (DAGVertex vertex : visitedNodes) {
+      final int coreId = vertexToCore.get(associateVtx).intValue();
+      for (final DAGVertex vertex : visitedNodes) {
         vertexToCore.put(vertex, coreId);
         unmappedVertices.remove(vertex);
       }
@@ -228,16 +227,16 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       final String nodeKind = vtx.getKind();
       if (!entries.containsKey(vtx) && MapperDAGVertex.DAG_END_VERTEX.equals(nodeKind)) {
         final String oppositeINIT = vtx.getPropertyStringValue(MapperDAGVertex.END_REFERENCE);
-        DAGVertex associateVtx = dag.getVertex(oppositeINIT);
-        int coreId = vertexToCore.get(associateVtx);
+        final DAGVertex associateVtx = dag.getVertex(oppositeINIT);
+        final int coreId = vertexToCore.get(associateVtx);
         vertexToCore.put(vtx, coreId);
       }
     }
 
     // fork and joins
     while (!unmappedVertices.isEmpty()) {
-      Iterator<DAGVertex> itv = unmappedVertices.iterator();
-      DAGVertex vtx = itv.next();
+      final Iterator<DAGVertex> itv = unmappedVertices.iterator();
+      final DAGVertex vtx = itv.next();
 
       visitedNodes.clear();
       visitedNodes.add(vtx);
@@ -250,8 +249,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         }
       }
 
-      int coreId = vertexToCore.get(associateVtx).intValue();
-      for (DAGVertex vertex : visitedNodes) {
+      final int coreId = vertexToCore.get(associateVtx).intValue();
+      for (final DAGVertex vertex : visitedNodes) {
         vertexToCore.put(vertex, coreId);
         unmappedVertices.remove(vertex);
       }
@@ -262,8 +261,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);
     // 6- sort vertex lists following start dates from the schedule entries and apply schedule
 
-    for (Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
-      int i = e.getKey();
+    for (final Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
+      final int i = e.getKey();
       final List<DAGVertex> list = orderedVertices.get(i);
       list.sort(new ScheduleComparator(entries, actorsRank));
     }
@@ -274,8 +273,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     while (!readyToSchedule.isEmpty()) {
       DAGVertex firingToMap = null;
       ComponentInstance ci = null;
-      for (Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
-        int i = e.getKey();
+      for (final Entry<Integer, ComponentInstance> e : ciI.entrySet()) {
+        final int i = e.getKey();
         final ComponentInstance componentInstance = e.getValue();
         final List<DAGVertex> list = orderedVertices.get(i);
         if (list.isEmpty()) {
@@ -293,7 +292,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (firingToMap == null) {
         // This means that it is a special actor not scheduled by IBM
         firingToMap = readyToSchedule.get(0);
-        int coreId = vertexToCore.get(firingToMap);
+        final int coreId = vertexToCore.get(firingToMap);
         ci = ciI.get(coreId);
       }
 
@@ -310,20 +309,20 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   private static void checkStartTimePrecedences(Map<DAGVertex, ScheduleEntry> entries) {
-    for (Entry<DAGVertex, ScheduleEntry> e : entries.entrySet()) {
+    for (final Entry<DAGVertex, ScheduleEntry> e : entries.entrySet()) {
       // get all previous direct edges
-      DAGVertex vtx = e.getKey();
-      Set<DAGVertex> predecessorsWS = new HashSet<>();
+      final DAGVertex vtx = e.getKey();
+      final Set<DAGVertex> predecessorsWS = new HashSet<>();
       Set<DAGVertex> predecessorsWOS = new HashSet<>();
-      Set<DAGVertex> visited = new HashSet<>();
+      final Set<DAGVertex> visited = new HashSet<>();
       predecessorsWOS.add(vtx);
       visited.addAll(predecessorsWOS);
       while (!predecessorsWOS.isEmpty()) {
-        Set<DAGVertex> newNodes = new HashSet<>();
-        for (DAGVertex currentV : predecessorsWOS) {
+        final Set<DAGVertex> newNodes = new HashSet<>();
+        for (final DAGVertex currentV : predecessorsWOS) {
           visited.add(currentV);
-          for (DAGEdge edge : currentV.incomingEdges()) {
-            DAGVertex src = edge.getSource();
+          for (final DAGEdge edge : currentV.incomingEdges()) {
+            final DAGVertex src = edge.getSource();
             if (entries.containsKey(src)) {
               predecessorsWS.add(src);
             } else if (!visited.contains(src)) {
@@ -335,14 +334,14 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       }
 
-      ScheduleEntry se = e.getValue();
+      final ScheduleEntry se = e.getValue();
 
-      Integer core = se.getCore();
-      Long start = se.getStart();
-      for (DAGVertex vertex : predecessorsWS) {
-        ScheduleEntry predSE = entries.get(vertex);
-        Long predEnd = predSE.getEnd();
-        Integer predCore = predSE.getCore();
+      final Integer core = se.getCore();
+      final Long start = se.getStart();
+      for (final DAGVertex vertex : predecessorsWS) {
+        final ScheduleEntry predSE = entries.get(vertex);
+        final Long predEnd = predSE.getEnd();
+        final Integer predCore = predSE.getCore();
         if (start < predEnd && predCore.equals(core)) {
           throw new PreesmRuntimeException("Start time of firing " + vtx.getName() + " and end time of "
               + vertex.getName() + " do not resepct their precedence order.");
@@ -354,22 +353,21 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   static void mapVertex(final LatencyAbc abc, final ComponentInstance componentInstance, final DAGVertex v) {
     final MapperDAGVertex vertex = (MapperDAGVertex) v;
-    if (abc.isMapable(vertex, componentInstance, false)) {
-      abc.map(vertex, componentInstance, true, false);
-    } else {
+    if (!abc.isMapable(vertex, componentInstance, false)) {
       final String message = "The schedule is invalid: vertex [" + vertex.getName()
           + "] cannot be mapped on component [" + componentInstance.getInstanceName() + "].";
       throw new PreesmRuntimeException(message);
     }
+    abc.map(vertex, componentInstance, true, false);
   }
 
   private static void addReadyFirings(DAGVertex firingToMap, Map<DAGVertex, ScheduleEntry> entries,
       List<DAGVertex> readyToSchedule, Map<DAGVertex, Integer> visitedInputsActors, LatencyAbc abc,
       Map<DAGVertex, Integer> vertexToCore, Map<Integer, ComponentInstance> ciI) {
 
-    for (DAGEdge outEdge : firingToMap.outgoingEdges()) {
-      DAGVertex dst = outEdge.getTarget();
-      int visitedEdges = visitedInputsActors.getOrDefault(dst, 0) + 1;
+    for (final DAGEdge outEdge : firingToMap.outgoingEdges()) {
+      final DAGVertex dst = outEdge.getTarget();
+      final int visitedEdges = visitedInputsActors.getOrDefault(dst, 0) + 1;
       visitedInputsActors.put(dst, visitedEdges);
       if (visitedEdges == dst.incomingEdges().size()) {
         visitedInputsActors.remove(dst);
@@ -377,8 +375,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
           readyToSchedule.add(dst);
         } else {
           // we map directly the node
-          int coreId = vertexToCore.get(dst);
-          ComponentInstance ci = ciI.get(coreId);
+          final int coreId = vertexToCore.get(dst);
+          final ComponentInstance ci = ciI.get(coreId);
           mapVertex(abc, ci, dst);
           addReadyFirings(dst, entries, readyToSchedule, visitedInputsActors, abc, vertexToCore, ciI);
         }
@@ -388,14 +386,14 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
   }
 
   private static void removeEndOrInit(Set<DAGVertex> unscheduledVertices, Set<DAGVertex> removedVertices,
-      boolean EndOrInit) {
-    Iterator<DAGVertex> itv = unscheduledVertices.iterator();
+      boolean endOrInit) {
+    final Iterator<DAGVertex> itv = unscheduledVertices.iterator();
     while (itv.hasNext()) {
-      DAGVertex vtx = itv.next();
+      final DAGVertex vtx = itv.next();
       final String nodeKind = vtx.getKind();
 
-      if ((MapperDAGVertex.DAG_END_VERTEX.equals(nodeKind) && EndOrInit)
-          || (MapperDAGVertex.DAG_INIT_VERTEX.equals(nodeKind) && !EndOrInit)) {
+      if ((MapperDAGVertex.DAG_END_VERTEX.equals(nodeKind) && endOrInit)
+          || (MapperDAGVertex.DAG_INIT_VERTEX.equals(nodeKind) && !endOrInit)) {
         removedVertices.add(vtx);
         itv.remove();
       }
@@ -405,7 +403,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   /**
    * Indicates research direction for associate vertex.
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -420,8 +418,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
     if (dir == Direction.NONE) {
       final String nodeKind = vtx.getKind();
       switch (nodeKind) {
-        case MapperDAGVertex.DAG_END_VERTEX:
-        case MapperDAGVertex.DAG_FORK_VERTEX:
+        case MapperDAGVertex.DAG_END_VERTEX, MapperDAGVertex.DAG_FORK_VERTEX:
           edges = vtx.incomingEdges();
           if (edges.size() != 1) {
             throw new PreesmRuntimeException("Fork node should have only one incomming edge");
@@ -429,8 +426,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
           final DAGEdge inEdge = edges.iterator().next();
           associateVtx = inEdge.getSource();
           break;
-        case MapperDAGVertex.DAG_INIT_VERTEX:
-        case MapperDAGVertex.DAG_JOIN_VERTEX:
+        case MapperDAGVertex.DAG_INIT_VERTEX, MapperDAGVertex.DAG_JOIN_VERTEX:
           edges = vtx.outgoingEdges();
           if (edges.size() != 1) {
             throw new PreesmRuntimeException("Join node should have only one outgoing edge");
@@ -442,8 +438,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
           throw new PreesmRuntimeException("Regular firings are missing. As: " + vtx.getName());
       }
     } else if (dir == Direction.FORWARD) {
-      for (DAGEdge outEdge : vtx.outgoingEdges()) {
-        DAGVertex tgt = outEdge.getTarget();
+      for (final DAGEdge outEdge : vtx.outgoingEdges()) {
+        final DAGVertex tgt = outEdge.getTarget();
         if (tgt != vtx) {
           associateVtx = tgt;
           if (!unmappedVertices.contains(tgt)) {
@@ -456,8 +452,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
             "Found a loop while looking forward for associate vertex of: " + vtx.getName());
       }
     } else if (dir == Direction.BACKWARD) {
-      for (DAGEdge inEdge : vtx.incomingEdges()) {
-        DAGVertex src = inEdge.getSource();
+      for (final DAGEdge inEdge : vtx.incomingEdges()) {
+        final DAGVertex src = inEdge.getSource();
         if (src != vtx) {
           associateVtx = src;
           if (!unmappedVertices.contains(src)) {
@@ -475,7 +471,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   /**
    * Compare DGAVertex per name.
-   * 
+   *
    * @author ahonorat
    */
   private static class DAGVertexNameComparator implements Comparator<DAGVertex> {
@@ -525,11 +521,10 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         final String message = "The schedule entry for single rate actor [" + scheduleEntry.getActorName() + "] "
             + "has no corresponding actor in the single rate graph.";
         throw new PreesmRuntimeException(message);
-      } else {
-        entries.put(vertex, scheduleEntry);
-        scheduledDagVertexName.add(vertex.getName());
-        scheduleEntry.setFiringName(vertex.getName());
       }
+      entries.put(vertex, scheduleEntry);
+      scheduledDagVertexName.add(vertex.getName());
+      scheduleEntry.setFiringName(vertex.getName());
     }
 
     for (final AbstractActor actor : referencePiMMGraph.getActors()) {
@@ -545,15 +540,15 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
   private DAGVertex getMapperDagActor(String taskName, int nbInstance, MapperDAG dag) {
     DAGVertex res = null;
-    for (DAGVertex vertex : dag.vertexSet()) {
-      String kind = vertex.getKind();
+    for (final DAGVertex vertex : dag.vertexSet()) {
+      final String kind = vertex.getKind();
       if (MapperDAGVertex.DAG_INIT_VERTEX.equalsIgnoreCase(kind)
           || MapperDAGVertex.DAG_END_VERTEX.equalsIgnoreCase(kind)) {
         continue;
       }
-      String vname = vertex.getName();
-      Pattern p = Pattern.compile("(\\S+)_(\\d+)");
-      Matcher m = p.matcher(vname);
+      final String vname = vertex.getName();
+      final Pattern p = Pattern.compile("(\\S+)_(\\d+)");
+      final Matcher m = p.matcher(vname);
       String vshortName = null;
       String vnbInstance = null;
       while (m.find()) {
@@ -561,14 +556,12 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
         vnbInstance = m.group(2);
       }
       if (vshortName == null || vnbInstance == null) {
-        PreesmLogger.getLogger().log(Level.FINER,
-            "One SRDAG actor could not be parsed correctly: " + vname + " [" + kind);
-      } else if (vshortName.equals(taskName)) {
-        if (Integer.parseInt(vnbInstance) == nbInstance) {
-          res = vertex;
-          break;
-        }
+        PreesmLogger.getLogger().finer(() -> "One SRDAG actor could not be parsed correctly: " + vname + " [" + kind);
+      } else if (vshortName.equals(taskName) && Integer.parseInt(vnbInstance) == nbInstance) {
+        res = vertex;
+        break;
       }
+
     }
 
     return res;
@@ -604,15 +597,16 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
       if (o1 == o2) {
         return 0;
       }
-      long realOrder = topoOrder.get(o1) - topoOrder.get(o2);
+      final long realOrder = topoOrder.get(o1) - topoOrder.get(o2);
       final boolean bothKnown = this.entries.containsKey(o1) && this.entries.containsKey(o2);
       if (bothKnown) {
         final ScheduleEntry schedE1 = this.entries.get(o1);
         final ScheduleEntry schedE2 = this.entries.get(o2);
-        long res = (schedE1.getStart() - schedE2.getStart());
+        final long res = (schedE1.getStart() - schedE2.getStart());
         if (res > 0 /* && realOrder > 0 */) {
           return 1;
-        } else if (res < 0 /* && realOrder < 0 */) {
+        }
+        if (res < 0 /* && realOrder < 0 */) {
           return -1;
         }
         // else if (res != 0) {
@@ -623,7 +617,8 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
       if (realOrder > 0) {
         return 1;
-      } else if (realOrder < 0) {
+      }
+      if (realOrder < 0) {
         return -1;
       }
       return 0;

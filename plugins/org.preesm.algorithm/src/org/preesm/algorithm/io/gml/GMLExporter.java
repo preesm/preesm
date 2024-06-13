@@ -91,7 +91,7 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   /**
    * Creates a new Instance of GMLExporter.
    */
-  public GMLExporter() {
+  protected GMLExporter() {
     this.classKeySet = new LinkedHashMap<>();
     addKey(AbstractGraph.PARAMETERS_PROPERTY_LITERAL, AbstractGraph.PARAMETERS_PROPERTY_LITERAL, GRAPH_LITERAL, null,
         null);
@@ -127,10 +127,9 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    */
   private void addKey(final String id, final String name, final String elt, final String type, final Class<?> desc) {
     final GMLKey key = new GMLKey(name, elt, type, desc);
-    if (!this.classKeySet.containsKey(elt)) {
-      final ArrayList<GMLKey> keys = new ArrayList<>();
-      this.classKeySet.put(elt, keys);
-    }
+
+    this.classKeySet.computeIfAbsent(elt, k -> new ArrayList<>());
+
     key.setId(id);
     this.classKeySet.get(elt).add(key);
   }
@@ -145,9 +144,9 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
    */
   protected void addKey(final String eltType, final GMLKey key) {
     key.setId(key.getName());
-    if (!this.classKeySet.containsKey(eltType)) {
-      this.classKeySet.put(eltType, new ArrayList<GMLKey>());
-    }
+
+    classKeySet.computeIfAbsent(eltType, k -> new ArrayList<>());
+
     if (!this.classKeySet.get(eltType).contains(key)) {
       this.classKeySet.get(eltType).add(key);
       final Element newElt = this.domDocument.createElement("key");
@@ -458,10 +457,10 @@ public abstract class GMLExporter<V extends AbstractVertex<?>, E extends Abstrac
   protected void exportVariables(final VariableSet variables, final Element parentELement) {
     final Element dataElt = appendChild(parentELement, "data");
     dataElt.setAttribute("key", "variables");
-    for (final Variable var : variables.values()) {
+    for (final Variable variable : variables.values()) {
       final Element varElt = appendChild(dataElt, "variable");
-      varElt.setAttribute("name", var.getName());
-      varElt.setAttribute("value", var.getValue());
+      varElt.setAttribute("name", variable.getName());
+      varElt.setAttribute("value", variable.getValue());
     }
   }
 
