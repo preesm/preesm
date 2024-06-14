@@ -215,8 +215,7 @@ public class PiScriptRunner {
    * @return <code>true</code> if all checks were valid, <code>false</code> otherwise.
    */
   private boolean checkResult(final URL script, final Pair<List<PiBuffer>, List<PiBuffer>> result) {
-    final List<PiBuffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(result.getKey());
+    final List<PiBuffer> allBuffers = new ArrayList<>(result.getKey());
     allBuffers.addAll(result.getValue());
 
     // Check that all matches are reciprocal
@@ -351,8 +350,8 @@ public class PiScriptRunner {
         associateScriptToSpecialVertex(dagVertex, "roundbuffer", specialScriptFiles.get(PiScriptRunner.ROUNDBUFFER));
       } else if (dagVertex instanceof BroadcastActor) {
         associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(PiScriptRunner.BROADCAST));
-      } else if (dagVertex instanceof Actor) {
-        final String pathString = ((Actor) dagVertex).getMemoryScriptPath();
+      } else if (dagVertex instanceof final Actor actor) {
+        final String pathString = actor.getMemoryScriptPath();
         if (pathString != null) {
           // Retrieve the script path as a relative path to the graph
           URL scriptFile = scriptFiles.get(pathString);
@@ -385,9 +384,8 @@ public class PiScriptRunner {
       final String message = "Memory script [" + scriptFile + "] of [" + vertexName
           + "] vertices not found. Please contact Preesm developers.";
       throw new IllegalStateException(message);
-    } else {
-      this.scriptedVertices.put(dagVertex, scriptFile);
     }
+    this.scriptedVertices.put(dagVertex, scriptFile);
   }
 
   /**
@@ -539,9 +537,8 @@ public class PiScriptRunner {
       flatten.stream().forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
-        } else {
-          match.setType(MatchType.FORWARD);
         }
+        match.setType(MatchType.FORWARD);
       });
     });
 
@@ -551,9 +548,8 @@ public class PiScriptRunner {
       flatten.stream().forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
-        } else {
-          match.setType(MatchType.BACKWARD);
         }
+        match.setType(MatchType.BACKWARD);
       });
     });
 
@@ -563,8 +559,7 @@ public class PiScriptRunner {
    * Also fill the {@link Buffer#getDivisibilityRequiredMatches() divisibilityRequiredMatches} {@link List}.
    */
   private static void identifyDivisibleBuffers(final Pair<List<PiBuffer>, List<PiBuffer>> result) {
-    final List<PiBuffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(result.getKey());
+    final List<PiBuffer> allBuffers = new ArrayList<>(result.getKey());
     allBuffers.addAll(result.getValue());
 
     // A buffer is potentially divisible
@@ -674,7 +669,7 @@ public class PiScriptRunner {
     getBufferGroups().add(bufferList);
     this.nbBuffersBefore = this.nbBuffersBefore + buffers.size();
 
-    final long before = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long before = buffers.stream().map(PiBuffer::getBufferSize).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     this.sizeBefore = this.sizeBefore + before;
     if (isGenerateLog()) {
@@ -743,7 +738,7 @@ public class PiScriptRunner {
 
     } while ((step < 8) && !stop);
 
-    final long after = buffers.stream().map(buf -> buf.getBufferSize()).reduce((l1, l2) -> l1 + l2).orElse(0L);
+    final long after = buffers.stream().map(PiBuffer::getBufferSize).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
     if (isGenerateLog()) {
       this.log = this.log + "\n" + "### Tree summary:" + '\n';
@@ -1282,10 +1277,9 @@ public class PiScriptRunner {
       // Alphabetical order for buffers of equal size
       if (cmp != 0) {
         return cmp;
-      } else {
-        final int nameRes = a.getVertexName().compareTo(b.getVertexName());
-        return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       }
+      final int nameRes = a.getVertexName().compareTo(b.getVertexName());
+      return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
     });
 
     for (final PiBuffer candidate : buffers) {
@@ -1634,8 +1628,7 @@ public class PiScriptRunner {
       // Set as indivisible all buffers that are on the edge of the group.
       group.stream().forEach(it -> {
         final Pair<List<PiBuffer>, List<PiBuffer>> results = this.scriptResults.get(it);
-        final List<PiBuffer> flatten = new ArrayList<>();
-        flatten.addAll(results.getKey());
+        final List<PiBuffer> flatten = new ArrayList<>(results.getKey());
         flatten.addAll(results.getValue());
 
         flatten.stream().filter(buf -> !intraGroupBuffer.contains(buf))
@@ -1687,8 +1680,7 @@ public class PiScriptRunner {
 
     for (final ConfigInputPort p : dagVertex.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         parameters.put(p.getName(), param.getExpression().evaluate());
       }
     }
@@ -1848,8 +1840,7 @@ public class PiScriptRunner {
     for (final List<PiBuffer> buffers : getBufferGroups()) {
 
       // For each unmatched buffer that received matched buffers
-      for (final PiBuffer buffer : buffers.stream().filter(it -> (it.matched == null) && it.host)
-          .collect(Collectors.toList())) {
+      for (final PiBuffer buffer : buffers.stream().filter(it -> (it.matched == null) && it.host).toList()) {
 
         // Enlarge the corresponding mObject to the required size
         final PiMemoryExclusionVertex mObj = bufferAndMObjectMap.get(buffer);
@@ -1881,7 +1872,7 @@ public class PiScriptRunner {
       }
 
       // For each matched buffers
-      for (final PiBuffer buffer : buffers.stream().filter(it -> it.matched != null).collect(Collectors.toList())) {
+      for (final PiBuffer buffer : buffers.stream().filter(it -> it.matched != null).toList()) {
 
         // find the root buffer(s)
         // there might be several roots if the buffer was divided
@@ -1896,7 +1887,7 @@ public class PiScriptRunner {
         final PiMemoryExclusionVertex mObj = bufferAndMObjectMap.get(buffer);
 
         // For buffer receiving a part of the current buffer
-        for (final PiBuffer rootBuffer : rootBuffers.values().stream().map(Pair::getKey).collect(Collectors.toList())) {
+        for (final PiBuffer rootBuffer : rootBuffers.values().stream().map(Pair::getKey).toList()) {
           final PiMemoryExclusionVertex rootMObj = bufferAndMObjectMap.get(rootBuffer);
 
           // Update the meg hostList property
@@ -1907,12 +1898,10 @@ public class PiScriptRunner {
           final Set<PiMemoryExclusionVertex> adjacentVertexOfMObj = meg.getAdjacentVertexOf(mObj);
           final Set<PiMemoryExclusionVertex> adjacentVertexOfRootMObj = meg.getAdjacentVertexOf(rootMObj);
 
-          for (final PiMemoryExclusionVertex excludingMObj : adjacentVertexOfMObj) {
-            if (!(rootMObj.equals(excludingMObj)) && !adjacentVertexOfRootMObj.contains(excludingMObj)) {
+          adjacentVertexOfMObj.stream()
+              .filter(exMObj -> !(rootMObj.equals(exMObj)) && !adjacentVertexOfRootMObj.contains(exMObj))
+              .forEach(exMObj -> meg.addEdge(rootMObj, exMObj));
 
-              meg.addEdge(rootMObj, excludingMObj);
-            }
-          }
         }
         meg.removeVertex(mObj);
 
@@ -1945,20 +1934,17 @@ public class PiScriptRunner {
           // mObject in distributed memory to make sure that the
           // divided buffer remains accessible everywhere it is
           // needed, and otherwise forbid its division.
-          final List<PiBuffer> sourceAndDestBuffers = new ArrayList<>();
+          final List<PiBuffer> sourceAndDestBuffers = new ArrayList<>(
+              rootBuffers.values().stream().map(Pair::getKey).toList());
 
-          // buffers in which the divided buffer is mapped
-          sourceAndDestBuffers.addAll(rootBuffers.values().stream().map(Pair::getKey).collect(Collectors.toList()));
           // buffers mapped in the divided buffer
-          Stream<PiBuffer> stream1 = buffers.stream();
-          stream1 = stream1.filter(piBuff -> (piBuff.appliedMatches.values().stream().map(Pair::getKey)
-              .anyMatch(buf -> buf.equals(buffer))));
-          List<PiBuffer> ll = stream1.collect(Collectors.toList());
-          sourceAndDestBuffers.addAll(ll);
+          final Stream<PiBuffer> stream1 = buffers.stream().filter(piBuff -> (piBuff.appliedMatches.values().stream()
+              .map(Pair::getKey).anyMatch(buf -> buf.equals(buffer))));
+          sourceAndDestBuffers.addAll(stream1.toList());
 
           // Find corresponding mObjects
           final List<PiMemoryExclusionVertex> srcAndDestMObj = sourceAndDestBuffers.stream()
-              .map(bufferAndMObjectMap::get).collect(Collectors.toList());
+              .map(bufferAndMObjectMap::get).toList();
 
           // Save this list in the attributes of the divided buffer
           mObj.setPropertyValue(PiMemoryExclusionVertex.DIVIDED_PARTS_HOSTS, srcAndDestMObj);
@@ -1971,10 +1957,7 @@ public class PiScriptRunner {
     }
     //
     // List of the unused and pureout memobjects
-    final List<PiMemoryExclusionVertex> unusedMObjects = new ArrayList<>();
-
-    // Find unusedMObjects that were not processed by the scripts.
-    unusedMObjects.addAll(meg.vertexSet().stream().filter(mObj -> {
+    final List<PiMemoryExclusionVertex> unusedMObjects = new ArrayList<>(meg.vertexSet().stream().filter(mObj -> {
       if (mObj.getEdge() != null) {
 
         // Find unused write_only edges
@@ -1982,9 +1965,8 @@ public class PiScriptRunner {
         final boolean b1 = PortMemoryAnnotation.WRITE_ONLY.equals(aggregate.getSourcePort().getAnnotation());
         final boolean b2 = PortMemoryAnnotation.UNUSED.equals(aggregate.getTargetPort().getAnnotation());
         return b1 && b2;
-      } else {
-        return false;
       }
+      return false;
     }).filter(mObj -> {
       final List<PiBuffer> flatten = new ArrayList<>();
       getBufferGroups().stream().forEach(flatten::addAll);
@@ -1994,9 +1976,8 @@ public class PiScriptRunner {
           .filter(buf -> (mObj.getEdge().equals(buf.getLoggingEdgeName()))).findFirst().orElse(null);
       if (correspondingBuffer != null) {
         return !correspondingBuffer.host;
-      } else {
-        return true;
       }
+      return true;
     }).collect(Collectors.toList()));
 
     // Remove all exclusions between unused buffers
@@ -2013,8 +1994,7 @@ public class PiScriptRunner {
    * removed from the {@link #scriptResults}.
    */
   private static void simplifyResult(final List<PiBuffer> inputs, final List<PiBuffer> outputs) {
-    final List<PiBuffer> allBuffers = new ArrayList<>();
-    allBuffers.addAll(inputs);
+    final List<PiBuffer> allBuffers = new ArrayList<>(inputs);
     allBuffers.addAll(outputs);
 
     // Matches whose reciprocate has been processed

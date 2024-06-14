@@ -94,7 +94,7 @@ public class GanttTask implements Comparable<GanttTask> {
 
   @Override
   public boolean equals(final Object obj) {
-    return ((obj instanceof GanttTask) && (((GanttTask) obj).getId().equals(this.getId())));
+    return ((obj instanceof final GanttTask ganttTask) && (ganttTask.getId().equals(this.getId())));
   }
 
   @Override
@@ -109,7 +109,7 @@ public class GanttTask implements Comparable<GanttTask> {
 
   @Override
   public int compareTo(GanttTask o) {
-    int res = Long.compare(startTime, o.startTime);
+    final int res = Long.compare(startTime, o.startTime);
     if (res != 0) {
       return res;
     }

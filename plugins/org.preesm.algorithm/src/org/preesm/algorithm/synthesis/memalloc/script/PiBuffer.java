@@ -69,8 +69,7 @@ public class PiBuffer {
    * @return a {@link Map} containing the start end end of ranges matched multiple times.
    */
   List<PiRange> getMultipleMatchRange() {
-    return PiBuffer
-        .getOverlappingRanges(this.matchTable.values().stream().flatMap(List::stream).collect(Collectors.toList()));
+    return PiBuffer.getOverlappingRanges(this.matchTable.values().stream().flatMap(List::stream).toList());
   }
 
   /**
@@ -192,15 +191,10 @@ public class PiBuffer {
           // at most one candidate can satisfy the conditions
           remMatch = null;
           if (candidateSet != null) {
-            for (final PiMatch candidate : candidateSet) {
-              // same target
-              if (candidate.getRemoteBuffer().equals(match.getRemoteBuffer())
-                  && (candidate.getRemoteIndex() == (match.getRemoteIndex() + match.getLength()))) {
-                remMatch = candidate;
-                break;
-              }
-            }
+            remMatch = candidateSet.stream().filter(c -> (c.getRemoteBuffer().equals(match.getRemoteBuffer())
+                && (c.getRemoteIndex() == (match.getRemoteIndex() + match.getLength())))).findAny().orElse(null);
           }
+
           if (remMatch != null) {
 
             // Remove the consecutive match from matchTables
@@ -228,9 +222,7 @@ public class PiBuffer {
     }
 
     // Remove empty matchLists from matchTable
-    for (final long i : removedEntry) {
-      this.matchTable.remove(i);
-    }
+    removedEntry.forEach(this.matchTable::remove);
   }
 
   /**
@@ -541,9 +533,8 @@ public class PiBuffer {
     final PiMatch localMatch = new PiMatch(this, localBitIdx, buffer, remoteBitIdx, bitSize);
     matchSet.add(localMatch);
 
-    if (!buffer.matchTable.containsKey(remoteBitIdx)) {
-      buffer.matchTable.put(remoteBitIdx, new ArrayList<>());
-    }
+    buffer.matchTable.computeIfAbsent(remoteBitIdx, k -> new ArrayList<>());
+
     final List<PiMatch> remoteMatchSet = buffer.matchTable.get(remoteBitIdx);
 
     final PiMatch remoteMatch = new PiMatch(buffer, remoteBitIdx, this, localBitIdx, bitSize);
@@ -657,7 +648,7 @@ public class PiBuffer {
           .filter(it -> it.getType() == MatchType.BACKWARD).forEach(item -> {
             // Copy the forbiddenLocalRanges of the applied forward match
             final List<PiRange> newForbiddenRanges = forwardMatch.getForbiddenLocalRanges().stream().map(PiRange::copy)
-                .collect(Collectors.toList());
+                .toList();
             // translate to the backward match remoteBuffer indexes
             PiRange.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
             // Add it to the forward match (i.e. the reciprocate of the backward)
@@ -670,9 +661,9 @@ public class PiBuffer {
 
             // Copy the forbiddenLocalRanges and mergeableLocalRange of the applied backward match
             final List<PiRange> newForbiddenRanges = forwardMatch.getReciprocate().getForbiddenLocalRanges().stream()
-                .map(PiRange::copy).collect(Collectors.toList());
+                .map(PiRange::copy).toList();
             final List<PiRange> newMergeableRanges = forwardMatch.getReciprocate().getMergeableLocalRanges().stream()
-                .map(PiRange::copy).collect(Collectors.toList());
+                .map(PiRange::copy).toList();
             // translate to the forward match remoteBuffer indexes
             PiRange.translate(newForbiddenRanges, item.getRemoteIndex() - item.getLocalIndex());
             PiRange.translate(newMergeableRanges, item.getRemoteIndex() - item.getLocalIndex());
@@ -691,7 +682,7 @@ public class PiBuffer {
       // Move all third-party matches from the matched range of the merged buffer
       final List<PiMatch> ze = match.getLocalBuffer().matchTable.values().stream().flatMap(List::stream)
           .filter(it -> !it.equals(match) && PiRange.hasOverlap(it.getLocalRange(), match.getLocalIndivisibleRange()))
-          .collect(Collectors.toList());
+          .toList();
       for (final PiMatch movedMatch : ze) {
         // Remove old match from original match list
         final List<PiMatch> localList = match.getLocalBuffer().matchTable.get(movedMatch.getLocalIndex());
@@ -734,7 +725,7 @@ public class PiBuffer {
 
       // Update conflicting matches
       List<PiMatch> matchToUpdate = match.getRemoteBuffer().matchTable.values().stream().flatMap(List::stream)
-          .filter(it -> !it.equals(match.getReciprocate())).collect(Collectors.toList());
+          .filter(it -> !it.equals(match.getReciprocate())).toList();
       while (!matchToUpdate.isEmpty()) {
         matchToUpdate = PiBuffer.updateConflictingMatches(matchToUpdate);
       }
@@ -765,9 +756,8 @@ public class PiBuffer {
   private void unionBackwardMatchConflictCandidatesRanges(final List<PiRange> remoteMergeableRange,
       final List<PiRange> forbiddenRanges, final List<PiMatch> matches) {
     for (final PiMatch conflictMatch : matches) {
-      final List<
-          PiRange> newMergeableRanges = remoteMergeableRange.stream().map(PiRange::copy).collect(Collectors.toList());
-      final List<PiRange> newForbiddenRanges = forbiddenRanges.stream().map(PiRange::copy).collect(Collectors.toList());
+      final List<PiRange> newMergeableRanges = remoteMergeableRange.stream().map(PiRange::copy).toList();
+      final List<PiRange> newForbiddenRanges = forbiddenRanges.stream().map(PiRange::copy).toList();
       // translate it to localBuffer of conflictMatches indexes
       PiRange.translate(newMergeableRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
       PiRange.translate(newForbiddenRanges, conflictMatch.getLocalIndex() - conflictMatch.getRemoteIndex());
@@ -888,8 +878,7 @@ public class PiBuffer {
     });
 
     // Find redundant matches
-    final List<PiMatch> matches = match.getRemoteBuffer().matchTable.values().stream().flatMap(List::stream)
-        .collect(Collectors.toList());
+    final List<PiMatch> matches = match.getRemoteBuffer().matchTable.values().stream().flatMap(List::stream).toList();
     final Set<Integer> redundantMatches = new LinkedHashSet<>();
     int i = 0;
     while (i < (matches.size() - 1)) {
@@ -912,7 +901,7 @@ public class PiBuffer {
             List<PiMatch> transferredConflictCandidates = redundantMatch.getConflictCandidates().stream()
                 .filter(it -> !currentMatch.getConflictCandidates().contains(it)
                     && !currentMatch.getConflictingMatches().contains(it) && !it.equals(currentMatch))
-                .collect(Collectors.toList());
+                .toList();
             transferredConflictCandidates.forEach(it -> {
               it.getConflictCandidates().remove(redundantMatch);
               it.getConflictCandidates().add(currentMatch);
@@ -924,7 +913,7 @@ public class PiBuffer {
                 .filter(it -> !currentMatch.getReciprocate().getConflictCandidates().contains(it)
                     && !currentMatch.getReciprocate().getConflictingMatches().contains(it)
                     && !it.equals(currentMatch.getReciprocate()))
-                .collect(Collectors.toList());
+                .toList();
             transferredConflictCandidates.forEach(it -> {
               it.getConflictCandidates().remove(redundantMatch.getReciprocate());
               it.getConflictCandidates().add(currentMatch.getReciprocate());
@@ -933,8 +922,7 @@ public class PiBuffer {
 
             // Transfer conflictCandidates from the redundantMatch to the currentMatch
             List<PiMatch> transferredConflictingMatches = redundantMatch.getConflictingMatches().stream()
-                .filter(it -> !currentMatch.getConflictingMatches().contains(it) && !it.equals(currentMatch))
-                .collect(Collectors.toList());
+                .filter(it -> !currentMatch.getConflictingMatches().contains(it) && !it.equals(currentMatch)).toList();
             transferredConflictingMatches.forEach(it -> {
               // remove from conflict candidates if it was present
               it.getConflictCandidates().remove(currentMatch);
@@ -948,7 +936,7 @@ public class PiBuffer {
             transferredConflictingMatches = redundantMatch.getReciprocate().getConflictingMatches().stream()
                 .filter(it -> !currentMatch.getReciprocate().getConflictingMatches().contains(it)
                     && !it.equals(currentMatch.getReciprocate()))
-                .collect(Collectors.toList());
+                .toList();
             transferredConflictingMatches.forEach(it -> {
               // remove from conflict candidates if it was present
               it.getConflictCandidates().remove(currentMatch.getReciprocate());
@@ -987,7 +975,7 @@ public class PiBuffer {
 
     // do the removal :
     if (!redundantMatches.isEmpty()) {
-      final List<PiMatch> removedMatches = redundantMatches.stream().map(matches::get).collect(Collectors.toList());
+      final List<PiMatch> removedMatches = redundantMatches.stream().map(matches::get).toList();
       removedMatches.forEach(PiBuffer::unmatch);
     }
   }
@@ -1133,7 +1121,7 @@ public class PiBuffer {
     // range. For example, if the range includes virtual tokens
     // toList to make sure the map function is applied only once
     final List<PiRange> localIndivisibleRanges = match.getLocalBuffer().indivisibleRanges.stream()
-        .filter(it -> PiRange.hasOverlap(it, localRange)).map(PiRange::copy).collect(Collectors.toList());
+        .filter(it -> PiRange.hasOverlap(it, localRange)).map(PiRange::copy).toList();
 
     // Align them with the remote ranges
     PiRange.translate(localIndivisibleRanges, match.getRemoteIndex() - match.getLocalIndex());

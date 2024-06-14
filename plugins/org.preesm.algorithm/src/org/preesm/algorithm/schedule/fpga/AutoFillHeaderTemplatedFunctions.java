@@ -19,7 +19,7 @@ import org.preesm.model.pisdf.check.RefinementChecker.CorrespondingTemplateParam
 
 /**
  * This class provides helper to generate the code to call FPGA templated C++ functions.
- * 
+ *
  * @author ahonorat
  */
 public class AutoFillHeaderTemplatedFunctions {
@@ -30,7 +30,7 @@ public class AutoFillHeaderTemplatedFunctions {
 
   /**
    * Compute the templated suffix of templated C++ function calls of an actor.
-   * 
+   *
    * @param a
    *          The actor to consider.
    * @return A pair of suffixes, for init call as key, and for loop call as value.
@@ -69,13 +69,12 @@ public class AutoFillHeaderTemplatedFunctions {
       if (c == CorrespondingTemplateParameterType.NONE || c == CorrespondingTemplateParameterType.MULTIPLE) {
         templateParametersException(refinement, proto);
       }
-      if (o instanceof Parameter) {
-        final Long value = ((Parameter) o).getExpression().evaluate();
+      if (o instanceof final Parameter param) {
+        final Long value = param.getExpression().evaluate();
         evaluatedParams.add(value.toString());
-      } else if (o instanceof String) {
-        evaluatedParams.add((String) o);
-      } else if (o instanceof Fifo) {
-        final Fifo f = ((Fifo) o);
+      } else if (o instanceof final String s) {
+        evaluatedParams.add(s);
+      } else if (o instanceof final Fifo f) {
         if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
           evaluatedParams.add(f.getType());
         } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {

@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -349,8 +348,7 @@ public class EnergyAwarenessProvider {
   public static List<Entry<ComponentInstance, EList<AbstractActor>>> getConstraintsOfType(Scenario scenario,
       String peType) {
     return scenario.getConstraints().getGroupConstraints().stream()
-        .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType))
-        .collect(Collectors.toList());
+        .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType)).toList();
   }
 
   /**
@@ -358,7 +356,7 @@ public class EnergyAwarenessProvider {
    */
   public static Entry<ComponentInstance, EList<AbstractActor>> getConstraintByPeName(Scenario scenario, String peName) {
     return scenario.getConstraints().getGroupConstraints().stream()
-        .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).collect(Collectors.toList()).get(0);
+        .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).toList().get(0);
   }
 
   /**
@@ -605,7 +603,7 @@ public class EnergyAwarenessProvider {
     if (configsAlreadyUsed != null && configsAlreadyUsed.contains(coresUsedOfEachType)) {
       valid = false;
     }
-    if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList()).isEmpty()) {
+    if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).toList().isEmpty()) {
       valid = false;
     }
 
@@ -623,7 +621,7 @@ public class EnergyAwarenessProvider {
     for (final AbstractActor actor : scenarioMapping.getAlgorithm().getAllActors()) {
       if (actor != null && actor.getClass().equals(ActorImpl.class)) {
         final List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenarioMapping.getConstraints()
-            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).collect(Collectors.toList());
+            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).toList();
         if (constraints.size() == 1) {
           for (final Entry<ComponentInstance, EList<AbstractActor>> constraint : constraints) {
             imprescindiblePes.add(constraint.getKey().getInstanceName());

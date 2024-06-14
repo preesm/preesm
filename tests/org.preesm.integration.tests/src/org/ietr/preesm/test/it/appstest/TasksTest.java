@@ -19,4 +19,16 @@ public class TasksTest {
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
+
+  @Test
+  public void testEnergyAware() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.sobel";
+    final String scenario = "4core.scenario";
+    final String workflow = "CodegenEnergy.workflow";
+
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+  }
 }
