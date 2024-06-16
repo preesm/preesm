@@ -1,4 +1,4 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.codegen.fpga;
 
 import java.util.ArrayList;
 import java.util.List;

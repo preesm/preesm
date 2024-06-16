@@ -25,7 +25,7 @@ import org.preesm.model.pisdf.DataPort;
  *
  * @author ahonorat
  */
-class AdfgUtils {
+public class AdfgUtils {
 
   private AdfgUtils() {
     // forbid instantiation

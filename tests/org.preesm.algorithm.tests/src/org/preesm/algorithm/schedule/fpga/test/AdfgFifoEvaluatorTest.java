@@ -5,7 +5,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
-import org.preesm.algorithm.schedule.fpga.FpgaAnalysisMainTask;
+import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -121,7 +121,7 @@ public class AdfgFifoEvaluatorTest {
     setTimings(scenario, actorD, executionTimes.get(3), initiationIntervals.get(3));
 
     // Run buffer sizing
-    final AnalysisResultFPGA results = FpgaAnalysisMainTask.checkAndAnalyzeAlgorithm(graph, scenario,
+    final AnalysisResultFPGA results = FpgaAnalysis.checkAndAnalyzeAlgorithm(graph, scenario,
         AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT);
 
     // Extract fifo size
@@ -157,7 +157,7 @@ public class AdfgFifoEvaluatorTest {
     setTimings(scenario, actorB, executionTimes.get(1), initiationIntervals.get(1));
 
     // Run buffer sizing
-    final AnalysisResultFPGA results = FpgaAnalysisMainTask.checkAndAnalyzeAlgorithm(graph, scenario,
+    final AnalysisResultFPGA results = FpgaAnalysis.checkAndAnalyzeAlgorithm(graph, scenario,
         AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT);
 
     // Extract fifo size

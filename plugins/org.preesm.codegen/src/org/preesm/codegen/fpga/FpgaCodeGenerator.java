@@ -1,4 +1,4 @@
-package org.preesm.algorithm.schedule.fpga;
+package org.preesm.codegen.fpga;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +18,7 @@ import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking.TopoVisit;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
+import org.preesm.algorithm.schedule.fpga.AdfgUtils;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -845,7 +846,6 @@ public class FpgaCodeGenerator {
         topK.append(getPragmaAXIStream(ia));
       }
     }
-    topK.append("#pragma HLS interface ap_ctrl_none port=return\n#pragma HLS dataflow disable_start_propagation\n\n");
 
     // add fifo defs
     topK.append(generateAllFifoDefinitions(allFifoDepths));
@@ -869,7 +869,7 @@ public class FpgaCodeGenerator {
     for (final Entry<Integer, Set<AbstractActor>> actorSet : irRankActors.entrySet()) {
       for (final AbstractActor actor : actorSet.getValue()) {
         if (loopActorsCalls.containsKey(actor)) {
-          topK.append("  " + generateSimulationForLoop(loopActorsCalls.get(actor), analysisResult.flatBrv.get(actor)));
+          topK.append(loopActorsCalls.get(actor));
         }
       }
     }
@@ -893,11 +893,8 @@ public class FpgaCodeGenerator {
     final StringBuilder sb = new StringBuilder();
     allFifoDepths.forEach((x, y) -> {
       final String sizeValue = getFifoStreamSizeNameMacro(x);
-      final String sizeName = sizeValue.toLowerCase();
       sb.append(getFifoStreamDeclaration(x));
-      // Use const variable to store macro value, to be used in pragma
-      sb.append("  const int " + sizeName + " = " + sizeValue + ";\n");
-      sb.append("#pragma HLS stream variable=" + getFifoStreamName(x) + " depth=" + sizeName + "\n");
+      sb.append("#pragma HLS stream variable=" + getFifoStreamName(x) + " depth=" + sizeValue + "\n");
     });
     return sb.toString();
   }
@@ -985,7 +982,8 @@ public class FpgaCodeGenerator {
           + containerActor.getVertexPath() + ".");
     }
     // and otherwise we merge everything
-    return funcTemplatedName + "(" + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
+    return "hls_thread_local hls::task " + containerActor.getName() + "_task(" + funcTemplatedName + ","
+        + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
   }
 
   protected String generateInitWrapper(final Map<AbstractActor, String> actorCalls) {
@@ -1008,14 +1006,6 @@ public class FpgaCodeGenerator {
     final String funcFilledTemplate = AutoFillHeaderTemplatedFunctions.getFilledTemplatePrototypePart(cref, fp,
         correspondingArguments);
     return generateRegularActorCall(cref, new Pair<>(funcFilledTemplate, null), true);
-  }
-
-  protected String generateSimulationForLoop(final String actorCall, final long repetition) {
-    if (repetition > 1) {
-      return "#ifndef __SYNTHESIS__\n" + "  for(int i = 0; i < " + repetition + "; i++) {\n#endif\n    " + actorCall
-          + "#ifndef __SYNTHESIS__\n  }\n#endif\n";
-    }
-    return actorCall;
   }
 
   protected String generateForLoop(final String body, final String repetition) {
@@ -1238,7 +1228,7 @@ public class FpgaCodeGenerator {
   }
 
   public static final String getFifoStreamDeclaration(final Fifo fifo) {
-    return "  static hls::stream<" + fifo.getType() + "> " + getFifoStreamName(fifo) + ";\n";
+    return "hls_thread_local hls::stream<" + fifo.getType() + "> " + getFifoStreamName(fifo) + ";\n";
   }
 
   public static final String getFifoStreamSizeNameMacro(final Fifo fifo) {

@@ -76,7 +76,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     // computed stats for UI or other
     public IStatGenerator statGenerator = null;
 
-    protected AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
+    public AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
         final Map<InterfaceActor, Pair<Long, Long>> interfaceRates) {
       this.flatGraph = flatGraph;
       this.flatBrv = flatBrv;
