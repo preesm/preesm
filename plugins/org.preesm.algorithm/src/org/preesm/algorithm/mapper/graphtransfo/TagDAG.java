@@ -151,19 +151,19 @@ public class TagDAG {
       currentVertex = (MapperDAGVertex) iter.next();
       final PropertyBean bean = currentVertex.getPropertyBean();
 
-      if (currentVertex instanceof SendVertex) {
+      if (currentVertex instanceof final SendVertex currentSendVertex) {
 
-        final MapperDAGEdge incomingEdge = (MapperDAGEdge) ((SendVertex) currentVertex).incomingEdges().toArray()[0];
+        final MapperDAGEdge incomingEdge = (MapperDAGEdge) currentSendVertex.incomingEdges().toArray()[0];
 
         // Setting the vertex type
         bean.setValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE, VertexType.SEND);
 
         // Setting the operator on which vertex is executed
-        final ComponentInstance sender = ((SendVertex) currentVertex).getRouteStep().getSender();
+        final ComponentInstance sender = currentSendVertex.getRouteStep().getSender();
         bean.setValue(ImplementationPropertyNames.VERTEX_OPERATOR, sender);
 
         // Setting the medium transmitting the current data
-        final SlamRouteStep sendRs = ((SendVertex) currentVertex).getRouteStep();
+        final SlamRouteStep sendRs = currentSendVertex.getRouteStep();
         bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP, sendRs);
 
         // Setting the size of the transmitted data
@@ -180,19 +180,19 @@ public class TagDAG {
           bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_ADDRESS, baseAddress);
         }
 
-      } else if (currentVertex instanceof ReceiveVertex) {
+      } else if (currentVertex instanceof final ReceiveVertex currentRcvVertex) {
 
-        final MapperDAGEdge outgoingEdge = (MapperDAGEdge) ((ReceiveVertex) currentVertex).outgoingEdges().toArray()[0];
+        final MapperDAGEdge outgoingEdge = (MapperDAGEdge) currentRcvVertex.outgoingEdges().toArray()[0];
 
         // Setting the vertex type
         bean.setValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE, VertexType.RECEIVE);
 
         // Setting the operator on which vertex is executed
-        final ComponentInstance receiver = ((ReceiveVertex) currentVertex).getRouteStep().getReceiver();
+        final ComponentInstance receiver = currentRcvVertex.getRouteStep().getReceiver();
         bean.setValue(ImplementationPropertyNames.VERTEX_OPERATOR, receiver);
 
         // Setting the medium transmitting the current data
-        final SlamRouteStep rcvRs = ((ReceiveVertex) currentVertex).getRouteStep();
+        final SlamRouteStep rcvRs = currentRcvVertex.getRouteStep();
         bean.setValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP, rcvRs);
 
         // Setting the size of the transmitted data

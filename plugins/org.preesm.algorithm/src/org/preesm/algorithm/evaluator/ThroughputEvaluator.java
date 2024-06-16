@@ -78,15 +78,13 @@ public abstract class ThroughputEvaluator {
       // Hierarchical vertex, go look for its internal actors
       if (vertex.getGraphDescription() instanceof SDFGraph) {
         tmp = throughputComputation(period, (SDFGraph) vertex.getGraphDescription());
-      } else {
+      } else if (vertex.getInterfaces().get(0) instanceof SDFSourceInterfaceVertex) {
         // throughput actor = 1/(K*Z)
-        if (vertex.getInterfaces().get(0) instanceof SDFSourceInterfaceVertex) {
-          tmp = 1.0 / (period
-              * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getCons().getValue()));
-        } else {
-          tmp = 1.0 / (period
-              * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getProd().getValue()));
-        }
+        tmp = 1.0 / (period
+            * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getCons().getValue()));
+      } else {
+        tmp = 1.0 / (period
+            * (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getProd().getValue()));
       }
       // We are looking for the actor with the smallest throughput
       if (tmp < minThroughput) {

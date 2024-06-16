@@ -154,9 +154,9 @@ public class Variable implements CloneableProperty<Variable> {
    */
   @Override
   public Variable copy() {
-    final Variable var = new Variable(this.name);
-    var.setValue(this.value.getValue());
-    return var;
+    final Variable variable = new Variable(this.name);
+    variable.setValue(this.value.getValue());
+    return variable;
   }
 
 }

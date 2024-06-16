@@ -68,8 +68,8 @@ public class VertexType {
 
   @Override
   public boolean equals(final Object obj) {
-    if (obj instanceof VertexType) {
-      return (((VertexType) obj).type.equals(this.type));
+    if (obj instanceof final VertexType vertexType) {
+      return vertexType.type.equals(this.type);
     }
     return false;
   }

@@ -333,10 +333,7 @@ public class PiMatch {
     if (this == obj) {
       return true;
     }
-    if (obj == null) {
-      return false;
-    }
-    if (this.getClass() != obj.getClass()) {
+    if ((obj == null) || (this.getClass() != obj.getClass())) {
       return false;
     }
     final PiMatch other = (PiMatch) obj;
@@ -365,15 +362,13 @@ public class PiMatch {
     final boolean rangeEmpty = PiRange.intersection(getForbiddenLocalRanges(), impactedTokens).isEmpty();
     if (!rangeEmpty) {
       return false;
+    }
+    if (getType() == MatchType.FORWARD) {
+      return true;
     } else {
-      // And match only localMergeableRange are in fact mergeable
-      if (getType() == MatchType.FORWARD) {
-        return true;
-      } else {
-        final List<PiRange> mustBeMergeableRanges = PiRange.intersection(getMergeableLocalRanges(), impactedTokens);
-        final List<PiRange> mergeableRanges = PiRange.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
-        return PiRange.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
-      }
+      final List<PiRange> mustBeMergeableRanges = PiRange.intersection(getMergeableLocalRanges(), impactedTokens);
+      final List<PiRange> mergeableRanges = PiRange.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
+      return PiRange.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
     }
   }
 
@@ -398,7 +393,7 @@ public class PiMatch {
       // Else, recursive call
 
       final List<PiMatch> c = matched.stream()
-          .filter(m -> PiRange.hasOverlap(m.getLocalIndivisibleRange(), remoteRange)).collect(Collectors.toList());
+          .filter(m -> PiRange.hasOverlap(m.getLocalIndivisibleRange(), remoteRange)).toList();
 
       for (final PiMatch match : c) {
         final Map<PiRange, Pair<PiBuffer, PiRange>> recursiveResult = match.getRoot();

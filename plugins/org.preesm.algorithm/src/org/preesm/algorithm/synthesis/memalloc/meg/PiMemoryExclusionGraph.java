@@ -42,7 +42,6 @@ package org.preesm.algorithm.synthesis.memalloc.meg;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -208,20 +207,16 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     // Scan the dag vertices
     for (final AbstractActor vertex : dag.getAllActors()) {
 
-      if (vertex instanceof InitActor) {
-
-        final InitActor dagInitVertex = (InitActor) vertex;
+      if (vertex instanceof final InitActor dagInitVertex) {
 
         final AbstractActor endReference = dagInitVertex.getEndReference();
         // @farresti:
         // It may happens that there are no end vertex associated with an init
         // If a FIFO is ended using getter actors for instance
         // In that case, should we leave ?
-        if (!(endReference instanceof EndActor)) {
+        if (!(endReference instanceof final EndActor dagEndVertex)) {
           continue;
         }
-        final EndActor dagEndVertex = (EndActor) endReference;
-
         final DataPort dataPort = dagInitVertex.getDataPort();
         // Create the Head Memory Object. Get the typeSize
         final Fifo outgoingEdge = dataPort.getFifo();
@@ -294,8 +289,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     final List<AbstractActor> sort = helper.getTopologicallySortedActors();
 
     for (final AbstractActor v : sort) {
-      associatedMemExVertices.put(v, Pair.of(new LinkedHashSet<PiMemoryExclusionVertex>() /* predecessor */,
-          new LinkedHashSet<PiMemoryExclusionVertex>()) /* incoming */);
+      associatedMemExVertices.put(v, Pair.of(new LinkedHashSet<>() /* predecessor */,
+          new LinkedHashSet<>()) /* incoming */);
     }
 
     // Scan of the DAG in order to:
@@ -326,30 +321,29 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       for (final Fifo edge : outFifos) {
         // Add the node to the Exclusion Graph
         final PiMemoryExclusionVertex newNode = addNode(edge);
-        if (newNode != null) {
-          // Add Exclusions with all non-predecessors of the current vertex
-          final Set<PiMemoryExclusionVertex> inclusions = associatedMemExVertices.get(vertexDAG).getKey();
-          final Set<PiMemoryExclusionVertex> exclusions = new LinkedHashSet<>(vertexSet());
-          exclusions.remove(newNode);
-          exclusions.removeAll(inclusions);
-          for (final PiMemoryExclusionVertex exclusion : exclusions) {
-            this.addEdge(newNode, exclusion);
-          }
-
-          final AbstractActor target = edge.getTargetPort().getContainingActor();
-          // Add newNode to the incoming list of the consumer of this edge
-          associatedMemExVertices.get(target).getValue().add(newNode);
-
-          // Update the predecessor list of the consumer of this edge
-          Set<PiMemoryExclusionVertex> predecessor;
-          predecessor = associatedMemExVertices.get(target).getKey();
-          predecessor.addAll(inclusions);
-          predecessor.addAll(associatedMemExVertices.get(vertexDAG).getValue());
-        } else {
+        if (newNode == null) {
           // If the node was not added. Should never happen
           throw new PreesmRuntimeException(
               "The exclusion graph vertex corresponding to edge " + edge.toString() + " was not added to the graph.");
         }
+        // Add Exclusions with all non-predecessors of the current vertex
+        final Set<PiMemoryExclusionVertex> inclusions = associatedMemExVertices.get(vertexDAG).getKey();
+        final Set<PiMemoryExclusionVertex> exclusions = new LinkedHashSet<>(vertexSet());
+        exclusions.remove(newNode);
+        exclusions.removeAll(inclusions);
+        for (final PiMemoryExclusionVertex exclusion : exclusions) {
+          this.addEdge(newNode, exclusion);
+        }
+
+        final AbstractActor target = edge.getTargetPort().getContainingActor();
+        // Add newNode to the incoming list of the consumer of this edge
+        associatedMemExVertices.get(target).getValue().add(newNode);
+
+        // Update the predecessor list of the consumer of this edge
+        Set<PiMemoryExclusionVertex> predecessor;
+        predecessor = associatedMemExVertices.get(target).getKey();
+        predecessor.addAll(inclusions);
+        predecessor.addAll(associatedMemExVertices.get(vertexDAG).getValue());
       }
       // Save predecessor list, and include incoming to it.
       associatedMemExVertices.get(vertexDAG).getKey().addAll(associatedMemExVertices.get(vertexDAG).getValue());
@@ -683,8 +677,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
       });
 
       // ADJACENT_VERTICES_BACKUP property vertices
-      final Set<PiMemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new LinkedHashSet<>();
-      verticesWithAdjacentVerticesBackup.addAll(hosts.keySet());
+      final Set<PiMemoryExclusionVertex> verticesWithAdjacentVerticesBackup = new LinkedHashSet<>(hosts.keySet());
       for (final Set<PiMemoryExclusionVertex> hosted : hosts.values()) {
         verticesWithAdjacentVerticesBackup.addAll(hosted);
       }
@@ -732,9 +725,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   public List<PiMemoryExclusionVertex> getMemExVerticesInSchedulingOrder() {
     if (this.memExVerticesInSchedulingOrder == null) {
       return Collections.emptyList();
-    } else {
-      return new ArrayList<>(this.memExVerticesInSchedulingOrder);
     }
+    return new ArrayList<>(this.memExVerticesInSchedulingOrder);
   }
 
   @Override
@@ -784,9 +776,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * @return an equal {@link PiMemoryExclusionVertex} from the {@link #vertexSet()}, null if there is no such vertex.
    */
   public PiMemoryExclusionVertex getVertex(final PiMemoryExclusionVertex memObject) {
-    final Iterator<PiMemoryExclusionVertex> iter = vertexSet().iterator();
-    while (iter.hasNext()) {
-      final PiMemoryExclusionVertex vertex = iter.next();
+    for (PiMemoryExclusionVertex vertex : vertexSet()) {
       if (vertex.equals(memObject)) {
         return vertex;
       }
@@ -842,11 +832,9 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     for (final InitActor dagInitVertex : initVertices) {
       // Retrieve the corresponding EndVertex
       final AbstractActor endReference = dagInitVertex.getEndReference();
-      if (!(endReference instanceof EndActor)) {
+      if (!(endReference instanceof final EndActor dagEndVertex)) {
         continue;
       }
-      final EndActor dagEndVertex = (EndActor) endReference;
-
       // Compute the list of all edges between init and end
       final List<Fifo> predecessorEdgesOf = orderMngr.getAllPredecessorEdgesOf(dagEndVertex);
       final List<Fifo> successorEdgesOf = orderMngr.getAllSuccessorEdgesOf(dagInitVertex);

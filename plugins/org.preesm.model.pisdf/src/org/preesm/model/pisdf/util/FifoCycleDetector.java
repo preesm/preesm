@@ -200,9 +200,10 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
       if ((outgoingFifo != null)) {
         if (!this.ignoredFifos.contains(outgoingFifo)) {
           final DataInputPort dp = outgoingFifo.getTargetPort();
-          if (dp.eContainer() instanceof AbstractActor) {
-            successors.add((AbstractActor) dp.eContainer());
+          if (!(dp.eContainer() instanceof final AbstractActor abstractActor)) {
+            throw new PreesmRuntimeException("UNEXPECTED");
           }
+          successors.add(abstractActor);
         }
         // if there is a delay actor, it may also introduce a dependency by its setter or getter
         final Delay delay = outgoingFifo.getDelay();
@@ -406,7 +407,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
         final Fifo outgoingFifo = port.getOutgoingFifo();
         if (outgoingFifo != null) {
           final DataInputPort fifoTargetPort = outgoingFifo.getTargetPort();
-          final boolean equals = dstActor.equals(fifoTargetPort.eContainer());
+          final boolean equals = dstActor.equals(fifoTargetPort.getContainingActor());
           if (equals) {
             outFifos.add(outgoingFifo);
           }
@@ -421,9 +422,9 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
           final Fifo fGetter = dipGetter.getFifo();
           if (fGetter != null) {
             final DataOutputPort dop = fGetter.getSourcePort();
-            if (dop != null && dop.eContainer() instanceof DelayActor) {
-              final Fifo fDelay = ((DelayActor) dop.eContainer()).getLinkedDelay().getContainingFifo();
-              if (srcActor.equals(fDelay.getSourcePort().eContainer())) {
+            if (dop != null && dop.getContainingActor() instanceof final DelayActor delayActor) {
+              final Fifo fDelay = delayActor.getLinkedDelay().getContainingFifo();
+              if (srcActor.equals(fDelay.getSourcePort().getContainingActor())) {
                 outFifos.add(fGetter);
               }
             }
@@ -435,9 +436,9 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
           final Fifo fSetter = dopSetter.getFifo();
           if (fSetter != null) {
             final DataInputPort dip = fSetter.getTargetPort();
-            if (dip != null && dip.eContainer() instanceof DelayActor) {
-              final Fifo fDelay = ((DelayActor) dip.eContainer()).getLinkedDelay().getContainingFifo();
-              if (dstActor.equals(fDelay.getTargetPort().eContainer())) {
+            if (dip != null && dip.getContainingActor() instanceof final DelayActor delayActor) {
+              final Fifo fDelay = delayActor.getLinkedDelay().getContainingFifo();
+              if (dstActor.equals(fDelay.getTargetPort().getContainingActor())) {
                 outFifos.add(fSetter);
               }
             }

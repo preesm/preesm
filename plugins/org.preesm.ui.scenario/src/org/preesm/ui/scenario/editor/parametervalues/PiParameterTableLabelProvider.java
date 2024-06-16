@@ -38,7 +38,6 @@ package org.preesm.ui.scenario.editor.parametervalues;
 
 import java.net.URL;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
@@ -76,9 +75,9 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
    * @param _table
    *          the table
    */
-  PiParameterTableLabelProvider(final Table _table, final Scenario scenario) {
+  PiParameterTableLabelProvider(final Table table, final Scenario scenario) {
     super();
-    this.table = _table;
+    this.table = table;
     this.scenario = scenario;
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
@@ -96,15 +95,10 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
     final Entry<Parameter, String> paramValue = ((Entry<Parameter, String>) element);
     if (columnIndex == 5) { // Expression Value Column
       final String value = paramValue.getValue();
-      if (paramValue.getKey().isConfigurable()) {
+      if (paramValue.getKey().isConfigurable() || ExpressionEvaluator.canEvaluate(paramValue.getKey(), value)) {
         return this.imageOk;
-      } else {
-        if (ExpressionEvaluator.canEvaluate(paramValue.getKey(), value)) {
-          return this.imageOk;
-        } else {
-          return this.imageError;
-        }
       }
+      return this.imageError;
     }
     return null;
   }
@@ -121,7 +115,7 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
       case 1: // Type Column
         return parameter.isLocallyStatic() ? "STATIC" : "DYNAMIC";
       case 2: // Input Parameter Column
-        return parameter.getInputParameters().stream().map(Parameter::getName).collect(Collectors.toList()).toString();
+        return parameter.getInputParameters().stream().map(Parameter::getName).toList().toString();
       case 3: // Graph Expression Column
         return parameter.getExpression().getExpressionAsString();
       case 4: // Override Expression Column
@@ -135,9 +129,8 @@ public class PiParameterTableLabelProvider extends LabelProvider implements ITab
           if (ExpressionEvaluator.canEvaluate(parameter, overrideExpression)) {
             return Long.toString(
                 ExpressionEvaluator.evaluate(parameter, overrideExpression, this.scenario.getParameterValues().map()));
-          } else {
-            return overrideExpression;
           }
+          return overrideExpression;
         } else {
           return overrideExpression;
         }

@@ -49,8 +49,7 @@ public class WorkflowPropertyTester extends PropertyTester {
 
   @Override
   public boolean test(final Object receiver, final String property, final Object[] args, final Object expectedValue) {
-    if (property.equals("isWorkflow") && receiver instanceof IFile) {
-      final IFile file = (IFile) receiver;
+    if (property.equals("isWorkflow") && receiver instanceof final IFile file) {
       return file.getFileExtension().equals("workflow");
     }
     return false;

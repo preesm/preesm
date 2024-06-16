@@ -129,7 +129,7 @@ public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 
     final MapperDAG result;
     final Logger logger = PreesmLogger.getLogger();
-    logger.log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    logger.info(() -> "Computing Repetition Vector for graph [" + graph.getName() + "]");
     // Check the consistency of the PiGraph and compute the associated Basic Repetition Vector
     // We use Topology-Matrix based method by default
     final String consistencyMethod = parameters.get(StaticPiMM2SrDAGTask.CONSISTENCY_METHOD);

@@ -119,8 +119,7 @@ public class Timing {
   @Override
   public boolean equals(final Object obj) {
     boolean equals = false;
-    if (obj instanceof Timing) {
-      final Timing otherT = (Timing) obj;
+    if (obj instanceof final Timing otherT) {
       equals = this.component.equals(otherT.getComponent());
       equals &= this.actor.equals((otherT.getActor()));
       equals &= this.stringValue.equals((otherT.stringValue));

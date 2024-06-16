@@ -146,10 +146,10 @@ public class WorkflowValidator implements IValidator {
 
     if (parameterDefaults != null) {
 
-      final Object var = vertex.getValue("variable declaration");
-      final Class<?> clasz = var.getClass();
+      final Object variable = vertex.getValue("variable declaration");
+      final Class<?> clasz = variable.getClass();
       if (clasz == TreeMap.class) {
-        final TreeMap<String, String> varMap = (TreeMap<String, String>) var;
+        final TreeMap<String, String> varMap = (TreeMap<String, String>) variable;
 
         for (Entry<String, String> e : parameterDefaults.entrySet()) {
           final String key = e.getKey();

@@ -112,78 +112,81 @@ public class MessageComRouterImplementer extends CommunicationRouterImplementer 
       final TransactionManager transactions, final int type, final int routeStepIndex,
       final Transaction lastTransaction, final List<MapperDAGVertex> alreadyCreatedVertices) {
 
-    if (routeStep instanceof final SlamMessageRouteStep messageStep) {
-      // Adding the transfers
-      // All the transfers along the path have the same time: the time
-      // to transfer the data on the slowest contention node
-      final long dataSize = edge.getInit().getDataSize();
-
-      long transferTime = (long) RouteCostEvaluator.getTransferCost(messageStep, dataSize);
-      if (transferTime == 0) {
-        transferTime = 1;
-      }
-
-      // Adding the transfers of a message route step
-      if (type == CommunicationRouter.TRANSFER_TYPE) {
-        final List<ComponentInstance> nodes = messageStep.getContentionNodes();
-        AddTransferVertexTransaction transaction = null;
-
-        for (final ComponentInstance node : nodes) {
-          final int nodeIndex = nodes.indexOf(node);
-          transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
-              getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
-          transactions.add(transaction);
-        }
-
-        return transaction;
-      }
-      if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
-        // Adding the involvement
-        MapperDAGEdge incomingEdge = null;
-
-        for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
-              && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
-            // Finding the edge where to add an involvement
-            incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
-          }
-
-        }
-
-        if (incomingEdge != null) {
-          transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
-              transferTime, getOrderManager()));
-        } else {
-          PreesmLogger.getLogger().finer(
-              () -> "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
-        }
-
-      } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
-
-        // Synchronizing the previously created transfers
-        final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
-
-        for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
-              && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep)) {
-            toSynchronize.add(v);
-
-            if (v.getInvolvementVertex() != null) {
-              toSynchronize.add(v.getInvolvementVertex());
-            }
-          }
-
-        }
-
-      } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
-
-        final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
-            getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);
-
-        transactions.add(transaction);
-        return transaction;
-      }
+    if (!(routeStep instanceof final SlamMessageRouteStep messageStep)) {
+      return null;
     }
+
+    // Adding the transfers
+    // All the transfers along the path have the same time: the time
+    // to transfer the data on the slowest contention node
+    final long dataSize = edge.getInit().getDataSize();
+
+    long transferTime = (long) RouteCostEvaluator.getTransferCost(messageStep, dataSize);
+    if (transferTime == 0) {
+      transferTime = 1;
+    }
+
+    // Adding the transfers of a message route step
+    if (type == CommunicationRouter.TRANSFER_TYPE) {
+      final List<ComponentInstance> nodes = messageStep.getContentionNodes();
+      AddTransferVertexTransaction transaction = null;
+
+      for (final ComponentInstance node : nodes) {
+        final int nodeIndex = nodes.indexOf(node);
+        transaction = new AddTransferVertexTransaction("transfer", lastTransaction, getEdgeScheduler(), edge,
+            getImplementation(), getOrderManager(), routeStepIndex, nodeIndex, routeStep, transferTime, node, true);
+        transactions.add(transaction);
+      }
+
+      return transaction;
+    }
+    if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
+      // Adding the involvement
+      MapperDAGEdge incomingEdge = null;
+
+      for (final Object o : alreadyCreatedVertices) {
+        if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
+            && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
+          // Finding the edge where to add an involvement
+          incomingEdge = (MapperDAGEdge) v.incomingEdges().toArray()[0];
+        }
+
+      }
+
+      if (incomingEdge != null) {
+        transactions.add(new AddInvolvementVertexTransaction(true, incomingEdge, getImplementation(), routeStep,
+            transferTime, getOrderManager()));
+      } else {
+        PreesmLogger.getLogger().finer(
+            () -> "The transfer following vertex" + edge.getSource() + "was not found. We could not add overhead.");
+      }
+
+    } else if (type == CommunicationRouter.SYNCHRO_TYPE) {
+
+      // Synchronizing the previously created transfers
+      final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
+
+      for (final Object o : alreadyCreatedVertices) {
+        if (o instanceof final TransferVertex v && v.getSource().equals(edge.getSource())
+            && v.getTarget().equals(edge.getTarget()) && (v.getRouteStep() == routeStep)) {
+          toSynchronize.add(v);
+
+          if (v.getInvolvementVertex() != null) {
+            toSynchronize.add(v.getInvolvementVertex());
+          }
+        }
+
+      }
+
+    } else if (type == CommunicationRouter.SEND_RECEIVE_TYPE) {
+
+      final Transaction transaction = new AddSendReceiveTransaction(lastTransaction, edge, getImplementation(),
+          getOrderManager(), routeStepIndex, routeStep, TransferVertex.SEND_RECEIVE_COST);
+
+      transactions.add(transaction);
+      return transaction;
+    }
+
     return null;
   }
 

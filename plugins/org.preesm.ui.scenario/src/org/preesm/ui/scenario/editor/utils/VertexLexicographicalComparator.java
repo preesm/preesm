@@ -54,16 +54,15 @@ public class VertexLexicographicalComparator extends ViewerComparator {
 
   @Override
   public int compare(Viewer viewer, Object o1, Object o2) {
-    if ((o1 instanceof AbstractVertex) && (o2 instanceof AbstractVertex)) {
-      final AbstractVertex vertex1 = (AbstractVertex) o1;
-      final AbstractVertex vertex2 = (AbstractVertex) o2;
-      int nbSep1 = vertex1.getVertexPath().split(HIERARCHY_DELIMITER).length;
-      int nbSep2 = vertex2.getVertexPath().split(HIERARCHY_DELIMITER).length;
+    if ((o1 instanceof final AbstractVertex vertex1) && (o2 instanceof final AbstractVertex vertex2)) {
+      final int nbSep1 = vertex1.getVertexPath().split(HIERARCHY_DELIMITER).length;
+      final int nbSep2 = vertex2.getVertexPath().split(HIERARCHY_DELIMITER).length;
       if (nbSep1 != nbSep2) {
         return Integer.compare(nbSep1, nbSep2);
       }
       return vertex1.getVertexPath().compareTo(vertex2.getVertexPath());
-    } else if ((o1 instanceof Entry<?, ?>) && (o2 instanceof Entry<?, ?>)) {
+    }
+    if ((o1 instanceof Entry<?, ?>) && (o2 instanceof Entry<?, ?>)) {
       final Object key1 = ((Entry<?, ?>) o1).getKey();
       final Object key2 = ((Entry<?, ?>) o2).getKey();
       if (key1 instanceof AbstractVertex && key2 instanceof AbstractVertex) {

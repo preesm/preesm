@@ -61,33 +61,33 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
   public Buffer getOuterClusterBuffer(DataPort graphPort, Map<String, Object> input) {
 
     // Search corresponding port
-    BufferProperties subBufferProperties = searchBufferProperties(graphPort, input);
+    final BufferProperties subBufferProperties = searchBufferProperties(graphPort, input);
 
     // Is the buffer a DistributedBuffer ?
     @SuppressWarnings("unchecked")
-    Map<BufferProperties, Buffer> srSDFEdgeBuffers = (Map<BufferProperties, Buffer>) input.get("srSDFEdgeBuffers");
-    CoreBlock operatorBlock = (CoreBlock) input.get("coreBlock");
-    Buffer var = srSDFEdgeBuffers.get(subBufferProperties);
-    if (var instanceof DistributedBuffer) {
-      DistributedBuffer twinBuffer = (DistributedBuffer) var;
-      EList<Buffer> copies = twinBuffer.getDistributedCopies();
-      String coreBlockName = operatorBlock.getName();
-      for (Buffer bufferTwinChecker : copies) {
-        SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
-        SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
+    final Map<BufferProperties,
+        Buffer> srSDFEdgeBuffers = (Map<BufferProperties, Buffer>) input.get("srSDFEdgeBuffers");
+    final CoreBlock operatorBlock = (CoreBlock) input.get("coreBlock");
+    Buffer variable = srSDFEdgeBuffers.get(subBufferProperties);
+    if (variable instanceof final DistributedBuffer twinBuffer) {
+      final EList<Buffer> copies = twinBuffer.getDistributedCopies();
+      final String coreBlockName = operatorBlock.getName();
+      for (final Buffer bufferTwinChecker : copies) {
+        final SubBuffer subBufferChecker = (SubBuffer) bufferTwinChecker;
+        final SubBuffer twinContainer = (SubBuffer) subBufferChecker.getContainer();
         if (twinContainer.getContainer().getName().equals(coreBlockName)) {
-          var = subBufferChecker;
+          variable = subBufferChecker;
           break;
         }
       }
     }
 
-    return var;
+    return variable;
   }
 
   private BufferProperties searchBufferProperties(DataPort graphPort, Map<String, Object> input) {
-    DirectedAcyclicGraph dag = (DirectedAcyclicGraph) input.get("dag");
-    DAGVertex dagVertex = (DAGVertex) input.get("dagVertex");
+    final DirectedAcyclicGraph dag = (DirectedAcyclicGraph) input.get("dag");
+    final DAGVertex dagVertex = (DAGVertex) input.get("dagVertex");
     BufferProperties subBufferProperties = null;
     if (graphPort instanceof DataInputPort) {
       subBufferProperties = searchInputPort(graphPort, dag, dagVertex, subBufferProperties);
@@ -99,7 +99,7 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
 
   private BufferProperties searchOutputPort(DataPort graphPort, DirectedAcyclicGraph dag, DAGVertex dagVertex,
       BufferProperties subBufferProperties) {
-    Set<DAGEdge> outEdges = dag.outgoingEdgesOf(dagVertex);
+    final Set<DAGEdge> outEdges = dag.outgoingEdgesOf(dagVertex);
     for (final DAGEdge edge : outEdges) {
       final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties buffProperty : bufferAggregate) {
@@ -114,7 +114,7 @@ public class SrDAGOutsideFetcher implements IOutsideFetcher {
 
   private BufferProperties searchInputPort(DataPort graphPort, DirectedAcyclicGraph dag, DAGVertex dagVertex,
       BufferProperties subBufferProperties) {
-    Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
+    final Set<DAGEdge> inEdges = dag.incomingEdgesOf(dagVertex);
     for (final DAGEdge edge : inEdges) {
       final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties buffProperty : bufferAggregate) {

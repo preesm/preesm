@@ -149,8 +149,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
    */
   @Override
   public void launch(final IEditorPart editor, final String mode) {
-    if (editor.getEditorInput() instanceof FileEditorInput) {
-      final FileEditorInput fileEditorInput = (FileEditorInput) editor.getEditorInput();
+    if (editor.getEditorInput() instanceof final FileEditorInput fileEditorInput) {
 
       final IFile file = fileEditorInput.getFile();
 
@@ -171,12 +170,10 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
    */
   @Override
   public void launch(final ISelection selection, final String mode) {
-    if (selection instanceof IStructuredSelection) {
-      final IStructuredSelection sel = (IStructuredSelection) selection;
+    if (selection instanceof final IStructuredSelection sel) {
 
       final Object first = sel.getFirstElement();
-      if (first instanceof IFile) {
-        final IFile file = (IFile) first;
+      if (first instanceof final IFile file) {
 
         final ILaunchConfiguration configuration = WorkflowLaunchShortcut.createLaunchConfiguration(file);
         if (configuration != null) {

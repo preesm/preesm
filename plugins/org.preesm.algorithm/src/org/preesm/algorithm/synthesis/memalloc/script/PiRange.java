@@ -39,7 +39,6 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import org.preesm.commons.CloneableProperty;
 
@@ -107,7 +106,7 @@ public class PiRange implements CloneableProperty<PiRange> {
     // Copy the original list
     // to make sure the map function is applied only once
 
-    List<PiRange> result = new ArrayList<>(ranges.stream().map(PiRange::copy).collect(Collectors.toList()));
+    List<PiRange> result = new ArrayList<>(ranges.stream().map(PiRange::copy).toList());
 
     // Successively subtract all ranges from ranges2
     for (final PiRange range : ranges2) {
@@ -347,11 +346,10 @@ public class PiRange implements CloneableProperty<PiRange> {
 
   @Override
   public boolean equals(final Object o) {
-    if (!(o instanceof PiRange)) {
-      return false;
-    } else {
-      return (getStart() == ((PiRange) o).getStart()) && (getEnd() == ((PiRange) o).getEnd());
+    if (o instanceof final PiRange piRange) {
+      return (getStart() == piRange.getStart()) && (getEnd() == piRange.getEnd());
     }
+    return false;
   }
 
   @Override
