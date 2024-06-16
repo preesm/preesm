@@ -210,7 +210,7 @@ public class SpiderCodegen {
         throw new PreesmRuntimeException();
       }
       if (!this.timings.containsKey(actor)) {
-        this.timings.put(actor, new LinkedHashMap<Component, String>());
+        this.timings.put(actor, new LinkedHashMap<>());
       }
       if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
         final EMap<Component,
@@ -228,7 +228,7 @@ public class SpiderCodegen {
         throw new PreesmRuntimeException();
       }
       if (!this.energies.containsKey(actor)) {
-        this.energies.put(actor, new LinkedHashMap<Component, Double>());
+        this.energies.put(actor, new LinkedHashMap<>());
       }
       if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(actor)) {
         final EMap<Component, String> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(actor);
@@ -245,7 +245,7 @@ public class SpiderCodegen {
         .getGroupConstraints()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
-          this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
+          this.constraints.put(aa, new LinkedHashSet<>());
         }
         final ComponentInstance core = cg.getKey();
         this.constraints.get(aa).add(core);
@@ -255,7 +255,7 @@ public class SpiderCodegen {
     // Add Default timings if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.timings.containsKey(aa)) {
-        this.timings.put(aa, new LinkedHashMap<Component, String>());
+        this.timings.put(aa, new LinkedHashMap<>());
       }
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
@@ -267,7 +267,7 @@ public class SpiderCodegen {
     // Add Default energies if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.energies.containsKey(aa)) {
-        this.energies.put(aa, new LinkedHashMap<Component, Double>());
+        this.energies.put(aa, new LinkedHashMap<>());
       }
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.energies.get(aa).containsKey(coreType)) {
@@ -929,8 +929,7 @@ public class SpiderCodegen {
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 
     final Actor a = (Actor) aa;
-    if (a.getRefinement() instanceof CHeaderRefinement) {
-      final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
+    if (a.getRefinement() instanceof final CHeaderRefinement href) {
       final FunctionPrototype proto = href.getLoopPrototype();
 
       append("\t" + proto.getName() + "(\n");

@@ -54,10 +54,10 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.scenario.SimulationInfo;
 
 /**
- * 
+ *
  * Class regrouping pre-processed information of an edge between two actors for the spider 2 codegen. The main interest
  * here is the quick access to useful properties such as source port Ix, delay expression, etc.
- * 
+ *
  * @author farresti
  *
  */
@@ -112,7 +112,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Constructor of the class.
-   * 
+   *
    * @param fifo
    *          the fifo associated with the Edge.
    * @param simulationInfo
@@ -192,8 +192,7 @@ public class Spider2CodegenEdge {
   }
 
   private long getRealSourcePortIx(final AbstractActor actor, final DataOutputPort sourcePort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
+    if (actor instanceof final Actor a) {
       final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
       final FunctionPrototype proto = refinement.getLoopPrototype();
       if (proto == null) {
@@ -212,8 +211,7 @@ public class Spider2CodegenEdge {
   }
 
   private long getRealSinkPortIx(final AbstractActor actor, final DataInputPort targetPort) {
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
+    if (actor instanceof final Actor a) {
       final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
       final FunctionPrototype proto = refinement.getLoopPrototype();
       if (proto == null) {
@@ -245,7 +243,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Gets the source actor of the Edge.
-   * 
+   *
    * @return the AbstractActor source of the Edge.
    */
   public AbstractActor getSource() {
@@ -253,7 +251,7 @@ public class Spider2CodegenEdge {
   }
 
   /**
-   * 
+   *
    * @return index port in the source
    */
   public long getSourceIx() {
@@ -262,7 +260,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Get the source rate expression formated in format
-   * 
+   *
    * @return source rate expression
    */
   public String getSourceRateExpression() {
@@ -271,7 +269,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Get the name of the data source port of the Edge
-   * 
+   *
    * @return the name of the source port
    */
   public String getSourcePortName() {
@@ -280,7 +278,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Gets the sink actor of the Edge.
-   * 
+   *
    * @return the AbstractActor sink of the Edge.
    */
   public AbstractActor getSink() {
@@ -288,7 +286,7 @@ public class Spider2CodegenEdge {
   }
 
   /**
-   * 
+   *
    * @return index port in the sink
    */
   public long getSinkIx() {
@@ -297,7 +295,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Get the sink rate expression formated in format
-   * 
+   *
    * @return sink rate expression
    */
   public String getSinkRateExpression() {
@@ -306,7 +304,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Get the name of the data sink port of the Edge
-   * 
+   *
    * @return the name of the sink port
    */
   public String getSinkPortName() {
@@ -315,7 +313,7 @@ public class Spider2CodegenEdge {
 
   /**
    * Get the data size of the edge.
-   * 
+   *
    * @return string of the data size.
    */
   public String getSize() {
@@ -372,7 +370,7 @@ public class Spider2CodegenEdge {
   }
 
   /**
-   * 
+   *
    * @return index port in the setter of the delay (0 if no setter)
    */
   public long getSetterPortIx() {
@@ -404,7 +402,7 @@ public class Spider2CodegenEdge {
   }
 
   /**
-   * 
+   *
    * @return index port in the getter of the delay (0 if no getter)
    */
   public long getGetterPortIx() {

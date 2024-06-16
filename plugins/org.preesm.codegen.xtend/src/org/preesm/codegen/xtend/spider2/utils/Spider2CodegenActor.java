@@ -58,7 +58,7 @@ import org.preesm.model.slam.TimingType;
 /**
  * Class regrouping information related to an AbstractActor for the spider 2 codegen. Information such as timings,
  * mapping constraints, config input ports, etc.
- * 
+ *
  * @author farresti
  *
  */
@@ -92,7 +92,7 @@ public class Spider2CodegenActor {
 
   /**
    * Constructor of the class.
-   * 
+   *
    * @param type
    *          spider 2 type of the actor ("NORMAL", "REPEAT", "FORK", etc.)
    * @param actor
@@ -107,18 +107,14 @@ public class Spider2CodegenActor {
     this.type = type;
     this.actor = actor;
     this.scenario = scenario;
-    if (actor instanceof Actor) {
-      final Actor a = (Actor) (actor);
-      if (a.getRefinement() instanceof CHeaderRefinement) {
-        final CHeaderRefinement refinement = (CHeaderRefinement) (a.getRefinement());
-        if (refinement.getLoopPrototype() != null) {
-          this.refinementConfigInputPorts.addAll(refinement.getLoopConfigInputPorts());
-          this.refinementConfigOutputPorts.addAll(refinement.getLoopConfigOutputPorts());
-        }
-      }
+    if (actor instanceof final Actor a && a.getRefinement() instanceof final CHeaderRefinement refinement
+        && refinement.getLoopPrototype() != null) {
+      this.refinementConfigInputPorts.addAll(refinement.getLoopConfigInputPorts());
+      this.refinementConfigOutputPorts.addAll(refinement.getLoopConfigOutputPorts());
     }
-    this.rateConfigInputPorts.addAll(actor.getConfigInputPorts().stream()
-        .filter(x -> !this.refinementConfigInputPorts.contains(x)).collect(Collectors.toList()));
+
+    this.rateConfigInputPorts.addAll(
+        actor.getConfigInputPorts().stream().filter(x -> !this.refinementConfigInputPorts.contains(x)).toList());
 
     /* Get the timing of the actor */
     generateTimings();
@@ -181,13 +177,8 @@ public class Spider2CodegenActor {
           throw new PreesmRuntimeException("did not find operator " + operator.getInstanceName() + " in clusters.");
         }
         final String fullNameString = getFullNameMapping(cluster, operator);
-        boolean found = false;
-        for (final Pair<String, Boolean> entry : this.mappingConstraintList) {
-          if (entry.getKey().equals(fullNameString)) {
-            found = true;
-            break;
-          }
-        }
+        final boolean found = this.mappingConstraintList.stream().anyMatch(e -> e.getKey().equals(fullNameString));
+
         if (!found) {
           this.mappingConstraintList.add(new Pair<>(fullNameString, false));
         }
@@ -197,7 +188,7 @@ public class Spider2CodegenActor {
 
   /**
    * Get the full name of the mapping constraint (cluster + pe)
-   * 
+   *
    * @param cluster
    *          the cluster on which the actor is constrained
    * @param component
@@ -209,7 +200,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return spider 2 type of the actor
    */
   public String getType() {
@@ -217,7 +208,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the actor
    */
   public AbstractActor getActor() {
@@ -225,7 +216,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the list of ConfigInputPort used only in rate expressions
    */
   public List<ConfigInputPort> getRateConfigInputPorts() {
@@ -233,7 +224,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the list of ConfigInputPort used only in the refinement of the actor
    */
   public List<ConfigInputPort> getRefinementConfigInputPorts() {
@@ -241,7 +232,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the list of ConfigOutputPort used only in the refinement of the actor
    */
   public List<ConfigOutputPort> getRefinementConfigOutputPorts() {
@@ -249,7 +240,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the list of timing as pair (PE, Timing expression)
    */
   public List<Pair<String, String>> getTimings() {
@@ -257,7 +248,7 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return the list of mapping constraints (PE, mapping flag)
    */
   public List<Pair<String, Boolean>> getMappingConstraints() {
@@ -265,10 +256,10 @@ public class Spider2CodegenActor {
   }
 
   /**
-   * 
+   *
    * @return true if actor is mappable on all pe, false else
    */
   public boolean isMappableOnAll() {
-    return this.mappingConstraintList.stream().filter(p -> p.getValue()).count() == this.mappingConstraintList.size();
+    return this.mappingConstraintList.stream().filter(Pair::getValue).count() == this.mappingConstraintList.size();
   }
 }

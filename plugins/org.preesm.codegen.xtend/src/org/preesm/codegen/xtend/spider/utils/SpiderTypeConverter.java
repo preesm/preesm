@@ -97,11 +97,11 @@ public final class SpiderTypeConverter {
   public static PiSDFType getType(final AbstractVertex aa) {
     if (aa instanceof InterfaceActor) {
       return PiSDFType.PISDF_TYPE_IF;
-    } else if ((aa instanceof Actor) && ((Actor) aa).isConfigurationActor()) {
-      return PiSDFType.PISDF_TYPE_CONFIG;
-    } else {
-      return PiSDFType.PISDF_TYPE_BODY;
     }
+    if ((aa instanceof final Actor actor) && actor.isConfigurationActor()) {
+      return PiSDFType.PISDF_TYPE_CONFIG;
+    }
+    return PiSDFType.PISDF_TYPE_BODY;
   }
 
   /**
@@ -113,8 +113,7 @@ public final class SpiderTypeConverter {
    */
   public static PiSDFSubType getSubType(final AbstractVertex aa) {
     switch (SpiderTypeConverter.getType(aa)) {
-      case PISDF_TYPE_BODY:
-      case PISDF_TYPE_CONFIG:
+      case PISDF_TYPE_BODY, PISDF_TYPE_CONFIG:
         return PiSDFSubType.PISDF_SUBTYPE_NORMAL;
       case PISDF_TYPE_IF:
         if (!((AbstractActor) aa).getDataInputPorts().isEmpty()) {

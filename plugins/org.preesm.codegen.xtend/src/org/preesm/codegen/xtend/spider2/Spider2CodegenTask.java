@@ -204,11 +204,11 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
     folder.mkdirs();
     if (folder.isDirectory()) {
       // clean the folder
-      for (File file : folder.listFiles()) {
+      for (final File file : folder.listFiles()) {
         try {
           Files.delete(file.toPath());
-        } catch (IOException e) {
-          PreesmLogger.getLogger().log(Level.FINE, "Could not delete file [" + file.toPath().toString() + "].");
+        } catch (final IOException e) {
+          PreesmLogger.getLogger().fine(() -> "Could not delete file [" + file.toPath().toString() + "].");
         }
       }
     }
