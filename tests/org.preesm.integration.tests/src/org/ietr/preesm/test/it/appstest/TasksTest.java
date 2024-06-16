@@ -31,4 +31,16 @@ public class TasksTest {
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
+
+  @Test
+  public void testAutoDelayTask() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.stabilization";
+    final String scenario = "4coreX86.scenario";
+    final String workflow = "CodegenAutoDelay.workflow";
+
+    final String workflowFilePathStr = "/Workflows/" + workflow;
+    final String scenarioFilePathStr = "/Scenarios/" + scenario;
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+  }
 }

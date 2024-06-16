@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">computeBlockMotion</data>
+        <node id="width" kind="cfg_in_iface"/>
+        <node id="height" kind="cfg_in_iface"/>
+        <node id="blockWidth" kind="cfg_in_iface"/>
+        <node id="blockHeight" kind="cfg_in_iface"/>
+        <node id="maxDeltaX" kind="cfg_in_iface"/>
+        <node id="maxDeltaY" kind="cfg_in_iface"/>
+        <node id="nbVectors" kind="cfg_in_iface"/>
+        <node id="frame" kind="src">
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="frame"/>
+        </node>
+        <node id="vectors" kind="snk">
+            <port annotation="NONE" expr="nbVectors" kind="input" name="vectors"/>
+        </node>
+        <node id="previousFrame" kind="src">
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="previousFrame"/>
+        </node>
+        <node id="DivideBlocks" kind="actor" period="0">
+            <data key="graph_desc">Code/include/stabilization.h</data>
+            <loop name="divideBlocks">
+                <param direction="IN" isConfig="true"
+                    name="width" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="height" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="blockWidth" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="blockHeight" type="const int"/>
+                <param direction="IN" isConfig="false"
+                    name="frame" type="const unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="blocksCoord" type="coord "/>
+                <param direction="OUT" isConfig="false"
+                    name="blocksData" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="blockWidth"/>
+            <port kind="cfg_input" name="blockHeight"/>
+            <port kind="cfg_input" name="nbVectors"/>
+            <port annotation="NONE" expr="height*width"
+                kind="input" name="frame"/>
+            <port annotation="WRITE_ONLY" expr="nbVectors"
+                kind="output" name="blocksCoord"/>
+            <port annotation="NONE"
+                expr="nbVectors*blockWidth*blockHeight"
+                kind="output" name="blocksData"/>
+        </node>
+        <node id="ComputeBlockMotionVector" kind="actor" period="0">
+            <data key="graph_desc">Code/include/stabilization.h</data>
+            <loop name="computeBlockMotionVector">
+                <param direction="IN" isConfig="true"
+                    name="width" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="height" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="blockWidth" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="blockHeight" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="maxDeltaX" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="maxDeltaY" type="const int"/>
+                <param direction="IN" isConfig="false"
+                    name="blockCoord" type="const coord "/>
+                <param direction="IN" isConfig="false"
+                    name="blockData" type="const unsigned char "/>
+                <param direction="IN" isConfig="false"
+                    name="previousFrame" type="const unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="vector" type="coord "/>
+            </loop>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="blockWidth"/>
+            <port kind="cfg_input" name="blockHeight"/>
+            <port kind="cfg_input" name="maxDeltaX"/>
+            <port kind="cfg_input" name="maxDeltaY"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="blockCoord"/>
+            <port annotation="READ_ONLY"
+                expr="blockWidth*blockHeight" kind="input" name="blockData"/>
+            <port annotation="READ_ONLY" expr="width*height"
+                kind="input" name="previousFrame"/>
+            <port annotation="NONE" expr="1" kind="output" name="vector"/>
+        </node>
+        <node id="DuplicatePreviousFrame" kind="broadcast">
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="nbVectors"/>
+            <port annotation="READ_ONLY" expr="height*width"
+                kind="input" name="in"/>
+            <port annotation="NONE" expr="nbVectors*width*height"
+                kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="frame" sourceport="frame"
+            target="DivideBlocks" targetport="frame" type="uchar"/>
+        <edge kind="fifo" source="DivideBlocks"
+            sourceport="blocksCoord"
+            target="ComputeBlockMotionVector"
+            targetport="blockCoord" type="coord"/>
+        <edge kind="fifo" source="DivideBlocks"
+            sourceport="blocksData"
+            target="ComputeBlockMotionVector"
+            targetport="blockData" type="uchar"/>
+        <edge kind="fifo" source="previousFrame"
+            sourceport="previousFrame"
+            target="DuplicatePreviousFrame" targetport="in" type="uchar"/>
+        <edge kind="fifo" source="ComputeBlockMotionVector"
+            sourceport="vector" target="vectors"
+            targetport="vectors" type="coord"/>
+        <edge kind="fifo" source="DuplicatePreviousFrame"
+            sourceport="out" target="ComputeBlockMotionVector"
+            targetport="previousFrame" type="uchar"/>
+        <edge kind="dependency" source="width" target="frame"/>
+        <edge kind="dependency" source="width" target="previousFrame"/>
+        <edge kind="dependency" source="height" target="frame"/>
+        <edge kind="dependency" source="height" target="previousFrame"/>
+        <edge kind="dependency" source="nbVectors" target="vectors"/>
+        <edge kind="dependency" source="width"
+            target="DivideBlocks" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="DivideBlocks" targetport="height"/>
+        <edge kind="dependency" source="blockWidth"
+            target="DivideBlocks" targetport="blockWidth"/>
+        <edge kind="dependency" source="blockHeight"
+            target="DivideBlocks" targetport="blockHeight"/>
+        <edge kind="dependency" source="nbVectors"
+            target="DivideBlocks" targetport="nbVectors"/>
+        <edge kind="dependency" source="width"
+            target="ComputeBlockMotionVector" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="ComputeBlockMotionVector" targetport="height"/>
+        <edge kind="dependency" source="blockWidth"
+            target="ComputeBlockMotionVector" targetport="blockWidth"/>
+        <edge kind="dependency" source="blockHeight"
+            target="ComputeBlockMotionVector" targetport="blockHeight"/>
+        <edge kind="dependency" source="maxDeltaX"
+            target="ComputeBlockMotionVector" targetport="maxDeltaX"/>
+        <edge kind="dependency" source="maxDeltaY"
+            target="ComputeBlockMotionVector" targetport="maxDeltaY"/>
+        <edge kind="dependency" source="width"
+            target="DuplicatePreviousFrame" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="DuplicatePreviousFrame" targetport="height"/>
+        <edge kind="dependency" source="nbVectors"
+            target="DuplicatePreviousFrame" targetport="nbVectors"/>
+    </graph>
+</graphml>

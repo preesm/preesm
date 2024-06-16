@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.stabilization/Algo/top.pi"/>
+        <architecture url="/org.ietr.preesm.stabilization/Archi/8CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.stabilization/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="top/ReadYUV"/>
+            <task name="top/DisplayYUV"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/AccumulateMotion"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+            <task name="top/WriteYUV"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core5"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core6"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core7"/>
+            <task name="top/WriteYUV"/>
+            <task name="top/Stabilization/FindDominatingMotion"/>
+            <task name="top/Stabilization/renderFrame"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/DivideBlocks"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss/ComputeBlockMotionVector"/>
+            <task name="top/Stabilization/ComputeBlockMotionVectorss"/>
+            <task name="top/Stabilization"/>
+            <task name="top"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="/org.ietr.preesm.stabilization/Scenarios/timingJaguar.xls">
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="1.0E-7"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="coordf" size="64"/>
+            <dataType name="coord" size="64"/>
+            <dataType name="uchar" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>
