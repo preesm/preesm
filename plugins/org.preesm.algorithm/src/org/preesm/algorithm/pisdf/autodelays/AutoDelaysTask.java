@@ -734,17 +734,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   private static List<CutInformation> selectBestCuts(SortedMap<Integer, Set<CutInformation>> cuts, final int nbSelec,
       final SortedMap<Integer, Long> rankWCETs, final long totC, final Scenario scenar) {
     final Set<Integer> preSelectedRanks = new LinkedHashSet<>();
-    int maxParallelActors = 0;
-    for (final Set<CutInformation> cis : cuts.values()) {
-      for (final CutInformation ci : cis) {
-        final int nbActorsInCut = ci.edgeCut.size();
-        if (nbActorsInCut > maxParallelActors) {
-          maxParallelActors = nbActorsInCut;
-        }
-      }
-    }
 
-    PreesmLogger.getLogger().log(Level.FINE, "Max Actors in Parallel: " + maxParallelActors);
+    final int maxParallelActors = cuts.values().stream()
+        .flatMapToInt(cis -> cis.stream().mapToInt(ci -> ci.edgeCut.size())).max().orElse(0);
+
+    PreesmLogger.getLogger().fine(() -> "Max Actors in Parallel: " + maxParallelActors);
 
     // we divide by the number of maxii
     final long avgCutLoad = totC / (nbSelec + 1);

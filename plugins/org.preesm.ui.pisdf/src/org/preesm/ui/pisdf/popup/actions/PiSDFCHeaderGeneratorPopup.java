@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -57,7 +56,7 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
         return (cref.getLoopPrototype() == null);
       }
       return false;
-    }).collect(Collectors.toList());
+    }).toList();
 
     // if no actor needs new refinement, then do nothing
     if (actorsWithoutRefinement.isEmpty()) {

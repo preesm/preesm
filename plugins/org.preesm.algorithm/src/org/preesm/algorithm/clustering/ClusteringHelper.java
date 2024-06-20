@@ -88,7 +88,7 @@ public class ClusteringHelper {
    *
    */
   public static final List<DataInputPort> getExternalyConnectedPorts(final Schedule cluster) {
-    List<DataInputPort> res = new ArrayList<>();
+    final List<DataInputPort> res = new ArrayList<>();
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(cluster);
     for (final AbstractActor actor : actors) {
       final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
@@ -115,7 +115,7 @@ public class ClusteringHelper {
    */
   public static final boolean isActorDelayed(AbstractActor actor) {
     // Retrieve every Fifo with delay connected to actor
-    for (DataPort dp : actor.getAllDataPorts()) {
+    for (final DataPort dp : actor.getAllDataPorts()) {
       if (dp.getFifo().getDelay() != null) {
         return true;
       }
@@ -132,11 +132,10 @@ public class ClusteringHelper {
    */
   public static final long getParallelismDepth(Schedule schedule, long iterator) {
 
-    if (schedule instanceof HierarchicalSchedule) {
-      HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
+    if (schedule instanceof final HierarchicalSchedule hierSchedule) {
       long maxDepth = iterator;
       long tmpIterator;
-      for (Schedule child : hierSchedule.getChildren()) {
+      for (final Schedule child : hierSchedule.getChildren()) {
         tmpIterator = getParallelismDepth(child, iterator);
         if (tmpIterator > maxDepth) {
           maxDepth = tmpIterator;
@@ -162,20 +161,20 @@ public class ClusteringHelper {
     long result = 0;
     if (schedule instanceof HierarchicalSchedule) {
       // Add memory space needed for children in result
-      for (Schedule child : schedule.getChildren()) {
+      for (final Schedule child : schedule.getChildren()) {
         result += getMemorySpaceNeededFor(child);
       }
       // If it is a parallel hierarchical schedule with no attached actor, multiply child memory space result by the
       // repetition of it
       if (!schedule.hasAttachedActor()) {
-        long rep = schedule.getRepetition();
+        final long rep = schedule.getRepetition();
         result *= rep;
       } else {
         // Estimate every internal buffer size
-        PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
-        List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
-        Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-        for (Fifo fifo : fifos) {
+        final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
+        final List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
+        final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+        for (final Fifo fifo : fifos) {
           result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluate();
         }
       }
@@ -197,8 +196,8 @@ public class ClusteringHelper {
     } else {
       // Retrieve timing from actors
       final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
-      AbstractActor actor = actors.get(0);
-      long actorTiming = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, component);
+      final AbstractActor actor = actors.get(0);
+      final long actorTiming = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, component);
       timing = schedule.getRepetition() * actorTiming;
     }
 
@@ -210,15 +209,15 @@ public class ClusteringHelper {
     // If schedule is sequential
     if (schedule instanceof SequentialSchedule) {
       // Sum timings of all childrens together
-      for (Schedule child : schedule.getChildren()) {
+      for (final Schedule child : schedule.getChildren()) {
         timing += getExecutionTimeOf(child, scenario, component);
       }
     } else {
       // If schedule is parallel
       // Search for the maximun time taken by childrens
       long max = 0;
-      for (Schedule child : schedule.getChildren()) {
-        long result = getExecutionTimeOf(child, scenario, component);
+      for (final Schedule child : schedule.getChildren()) {
+        final long result = getExecutionTimeOf(child, scenario, component);
         if (result > max) {
           max = result;
         }
@@ -264,10 +263,9 @@ public class ClusteringHelper {
     final AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
     if (sourceActor instanceof DataInputInterface) {
       return ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
-    } else {
-      throw new PreesmRuntimeException(
-          "ClusteringHelper: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
     }
+    throw new PreesmRuntimeException(
+        "ClusteringHelper: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
   }
 
   /**
@@ -281,10 +279,9 @@ public class ClusteringHelper {
     final AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
     if (targetActor instanceof DataOutputInterface) {
       return ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
-    } else {
-      throw new PreesmRuntimeException(
-          "ClusteringHelper: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
     }
+    throw new PreesmRuntimeException(
+        "ClusteringHelper: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
   }
 
   /**
@@ -298,9 +295,8 @@ public class ClusteringHelper {
     final ISetter setter = port.getIncomingDependency().getSetter();
     if (setter instanceof ConfigInputInterface) {
       return getSetterParameter(((ConfigInputInterface) port.getIncomingDependency().getSetter()).getGraphPort());
-    } else {
-      return (Parameter) setter;
     }
+    return (Parameter) setter;
   }
 
   /**
@@ -314,7 +310,7 @@ public class ClusteringHelper {
    */
   public static List<Pair<AbstractActor, AbstractActor>> getClusterizableCouples(final PiGraph graph,
       final Map<AbstractVertex, Long> brv, Scenario scenario) {
-    List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
+    final List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
     // Remove couples of actors that are not in the same constraints
     ClusteringHelper.removeConstrainedCouples(couples, scenario);
     return couples;
@@ -327,11 +323,10 @@ public class ClusteringHelper {
    *          scenario
    */
   public static void removeConstrainedCouples(List<Pair<AbstractActor, AbstractActor>> couples, Scenario scenario) {
-    List<Pair<AbstractActor, AbstractActor>> tmpCouples = new LinkedList<>();
-    tmpCouples.addAll(couples);
+    final List<Pair<AbstractActor, AbstractActor>> tmpCouples = new LinkedList<>(couples);
     couples.clear();
-    for (Pair<AbstractActor, AbstractActor> couple : tmpCouples) {
-      List<ComponentInstance> componentList = getListOfCommonComponent(
+    for (final Pair<AbstractActor, AbstractActor> couple : tmpCouples) {
+      final List<ComponentInstance> componentList = getListOfCommonComponent(
           Arrays.asList(couple.getLeft(), couple.getRight()), scenario);
       if (!componentList.isEmpty()) {
         couples.add(couple);
@@ -347,10 +342,9 @@ public class ClusteringHelper {
    * @return List of components
    */
   public static List<ComponentInstance> getListOfCommonComponent(List<AbstractActor> actorList, Scenario scenario) {
-    List<ComponentInstance> globalList = new LinkedList<>();
-    globalList.addAll(scenario.getPossibleMappings(actorList.get(0)));
-    for (AbstractActor actor : actorList) {
-      List<ComponentInstance> componentList = scenario.getPossibleMappings(actor);
+    final List<ComponentInstance> globalList = new LinkedList<>(scenario.getPossibleMappings(actorList.get(0)));
+    for (final AbstractActor actor : actorList) {
+      final List<ComponentInstance> componentList = scenario.getPossibleMappings(actor);
       globalList.retainAll(componentList);
     }
     return globalList;
