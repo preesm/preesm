@@ -4,7 +4,8 @@ on:
   #pull_request:
   schedule:
     - cron:  '0 7 * * MON'
-    
+  workflow_dispatch:
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -28,42 +29,59 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
+
       - name: Git Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.6.3
+
+      - name: Restore M2 cache # Only trigger on feature branch
+        if: github.ref != 'refs/heads/develop'
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ matrix.os }}-maven-m2
+
       - name: Build & Test
         shell: bash
         run: releng/build_and_test.sh --ci
+
+      - name: Save M2 cache # Only trigger on develop unscheduled
+        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ matrix.os }}-maven-m2
+
       - name: Analyze with SONAR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
-      # - name: Archive production artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: preesm-products
-      #     path: releng/org.preesm.product/target/org.preesm.product-*.zip
+
       - name: Archive Linux product
         uses: actions/upload-artifact@v4
         with:
           name: linux-products
           path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
+
       - name: Archive macOS aarch64 product
         uses: actions/upload-artifact@v4
         with:
           name: mac-aarch64-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.aarch64.zip
+
       - name: Archive macOS x86_64 product
         uses: actions/upload-artifact@v4
         with:
           name: mac-x86-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
+
       - name: Archive Windows product
         uses: actions/upload-artifact@v4
         with:
@@ -92,14 +110,17 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: linux-products
+
       - name: Download Mac aarch64 artifacts
         uses: actions/download-artifact@v4
         with:
           name: mac-aarch64-products
+
       - name: Download Mac x86 artifacts
         uses: actions/download-artifact@v4
         with:
           name: mac-x86-products
+
       - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
@@ -110,12 +131,11 @@ jobs:
         with:
           name: changelog
 
-      # - name: Display structure of downloaded files
-      #   run: ls -R
       - name: Generate release tag
         id: tag
         run: |
           echo "release_tag=DevBuild_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
+
       - name: Release
         uses: softprops/action-gh-release@v2
         with:
