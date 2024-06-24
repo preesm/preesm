@@ -1,7 +1,7 @@
 name: Build & Test
 on:
   push:
-  #pull_request:
+  pull_request:
   schedule:
     - cron:  '0 7 * * MON'
   workflow_dispatch:
@@ -12,11 +12,8 @@ concurrency:
 
 jobs:
   build:
-    # Prevent workflow from running twice when push to PR from main repo,
-    # maintains workflow run when PR from forked repo
-    #if: github.event_name != 'pull_request' ||
-    #  github.event.pull_request.head.repo.full_name !=
-    #  github.event.pull_request.base.repo.full_name
+    # Prevent workflow from running twice when push to PR from main repo, maintains workflow run when PR from forked repo
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: Build & Test
     strategy:
       matrix:
@@ -40,23 +37,24 @@ jobs:
         with:
           maven-version: 3.6.3
 
-      - name: Restore M2 cache # Only trigger on feature branch
+      - name: Restore m2 cache # Only trigger on feature branch
         if: github.ref != 'refs/heads/develop'
         uses: actions/cache/restore@v4
         with:
+          key: ${{ matrix.os }}-maven-m2- # This lookup will fail, the restore-keys entry will be used, falling back on the most recent cache
           path: ~/.m2/repository
-          key: ${{ matrix.os }}-maven-m2
+          restore-keys: ${{ matrix.os }}-maven-m2-
 
       - name: Build & Test
         shell: bash
         run: releng/build_and_test.sh --ci
 
-      - name: Save M2 cache # Only trigger on develop unscheduled
+      - name: Save m2 cache # Only trigger on develop unscheduled
         if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
         uses: actions/cache/save@v4
         with:
           path: ~/.m2/repository
-          key: ${{ matrix.os }}-maven-m2
+          key: ${{ matrix.os }}-maven-m2-${{ github.run_id }}
 
       - name: Analyze with SONAR
         env:
@@ -89,6 +87,7 @@ jobs:
           path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
 
       - name: Generate changelog
+        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
         shell: bash
         run: git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate > dev-changelog.txt
 
