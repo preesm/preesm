@@ -41,11 +41,16 @@ import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.preesm.algorithm.io.gml.GMLGenericExporter;
 import org.preesm.algorithm.io.gml.GMLSDFImporter;
 import org.preesm.algorithm.model.AbstractEdge;
@@ -56,7 +61,35 @@ import org.preesm.commons.exceptions.PreesmException;
 
 /**
  */
+@RunWith(Parameterized.class)
 public class GMLSDFImporterTest {
+
+  final String fileName;
+
+  private static final String GRAPHML_EXT = ".graphml";
+
+  public GMLSDFImporterTest(String fileName) {
+    this.fileName = fileName;
+  }
+
+  @Parameters(name = "Test Import {0}.graphml")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    final String[] fileNames = new String[] { "stereo_top", "yuv_stereo_top", "flatten" };
+
+    for (final String fileName : fileNames) {
+      params.add(new Object[] { fileName });
+    }
+
+    return params;
+  }
+
+  @Test
+  public void test() throws IOException, PreesmException {
+    testImport("./resources/" + this.fileName + GRAPHML_EXT);
+  }
 
   private void testImport(final String filePath) throws FileNotFoundException, IOException, PreesmException {
     final GMLSDFImporter importer = new GMLSDFImporter();
@@ -66,9 +99,9 @@ public class GMLSDFImporterTest {
     if (SystemUtils.IS_OS_UNIX) {
       final FileAttribute<Set<PosixFilePermission>> attr = PosixFilePermissions
           .asFileAttribute(PosixFilePermissions.fromString("rw-------"));
-      createTempFile = Files.createTempFile("export_test_", ".graphml", attr).toFile();
+      createTempFile = Files.createTempFile("export_test_", GRAPHML_EXT, attr).toFile();
     } else {
-      createTempFile = Files.createTempFile("export_test_", ".graphml").toFile();
+      createTempFile = Files.createTempFile("export_test_", GRAPHML_EXT).toFile();
 
       boolean success = true;
 
@@ -90,29 +123,4 @@ public class GMLSDFImporterTest {
     Assert.assertNotNull(readAllLines);
     Assert.assertNotEquals(0, readAllLines.size());
   }
-
-  /**
-   */
-  @Test
-  public void testImportStereo() throws PreesmException, IOException {
-    final String filePath = "./resources/stereo_top.graphml";
-    testImport(filePath);
-  }
-
-  /**
-   */
-  @Test
-  public void testImportStereoYUV() throws PreesmException, IOException {
-    final String filePath = "./resources/yuv_stereo_top.graphml";
-    testImport(filePath);
-  }
-
-  /**
-   */
-  @Test
-  public void testImportFlatten() throws PreesmException, IOException {
-    final String filePath = "./resources/flatten.graphml";
-    testImport(filePath);
-  }
-
 }

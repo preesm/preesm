@@ -81,8 +81,7 @@ public class GanttEditor extends EditorPart {
       setInput(input);
       setPartName(input.getName());
 
-      if (input instanceof GanttEditorInput) {
-        final GanttEditorInput implinput = (GanttEditorInput) input;
+      if (input instanceof final GanttEditorInput implinput) {
         this.ganttData = implinput.getGanttData();
       }
 

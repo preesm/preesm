@@ -51,6 +51,10 @@ import org.preesm.algorithm.throughput.sdf.tools.GraphStructureHelper;
  */
 public class PeriodicSchedulerSDFTest {
 
+  private static final String NORMALIZED_RATE       = "normalizedRate";
+  private static final String EXECUTION_PERIOD      = "executionPeriod";
+  private static final String FIRST_EXEC_START_DATE = "firstExecutionStartDate";
+
   @Test
   public void testPeriodicScheduleShouldBeComputed() {
     // generate a SDF graph
@@ -62,11 +66,11 @@ public class PeriodicSchedulerSDFTest {
 
     // check the normalized rate of actors
     // Z=[t1=3, t2=2, t3=6, t4=6, t5=18]
-    Assert.assertEquals(3, (double) sdf.getVertex("t1").getPropertyBean().getValue("normalizedRate"), 0);
-    Assert.assertEquals(2, (double) sdf.getVertex("t2").getPropertyBean().getValue("normalizedRate"), 0);
-    Assert.assertEquals(6, (double) sdf.getVertex("t3").getPropertyBean().getValue("normalizedRate"), 0);
-    Assert.assertEquals(6, (double) sdf.getVertex("t4").getPropertyBean().getValue("normalizedRate"), 0);
-    Assert.assertEquals(18, (double) sdf.getVertex("t5").getPropertyBean().getValue("normalizedRate"), 0);
+    Assert.assertEquals(3, (double) sdf.getVertex("t1").getPropertyBean().getValue(NORMALIZED_RATE), 0);
+    Assert.assertEquals(2, (double) sdf.getVertex("t2").getPropertyBean().getValue(NORMALIZED_RATE), 0);
+    Assert.assertEquals(6, (double) sdf.getVertex("t3").getPropertyBean().getValue(NORMALIZED_RATE), 0);
+    Assert.assertEquals(6, (double) sdf.getVertex("t4").getPropertyBean().getValue(NORMALIZED_RATE), 0);
+    Assert.assertEquals(18, (double) sdf.getVertex("t5").getPropertyBean().getValue(NORMALIZED_RATE), 0);
 
     // check the value of the normalized period of the graph
     final double k = ((Fraction) sdf.getPropertyBean().getValue("normalizedPeriod")).doubleValue();
@@ -78,19 +82,19 @@ public class PeriodicSchedulerSDFTest {
 
     // check the execution period of actors
     // W(t1)=39, W(t2)=26, W(t3)=78, W(t4)=78, W(t5)=234
-    Assert.assertEquals(39, (double) sdf.getVertex("t1").getPropertyBean().getValue("executionPeriod"), 0);
-    Assert.assertEquals(26, (double) sdf.getVertex("t2").getPropertyBean().getValue("executionPeriod"), 0);
-    Assert.assertEquals(78, (double) sdf.getVertex("t3").getPropertyBean().getValue("executionPeriod"), 0);
-    Assert.assertEquals(78, (double) sdf.getVertex("t4").getPropertyBean().getValue("executionPeriod"), 0);
-    Assert.assertEquals(234, (double) sdf.getVertex("t5").getPropertyBean().getValue("executionPeriod"), 0);
+    Assert.assertEquals(39, (double) sdf.getVertex("t1").getPropertyBean().getValue(EXECUTION_PERIOD), 0);
+    Assert.assertEquals(26, (double) sdf.getVertex("t2").getPropertyBean().getValue(EXECUTION_PERIOD), 0);
+    Assert.assertEquals(78, (double) sdf.getVertex("t3").getPropertyBean().getValue(EXECUTION_PERIOD), 0);
+    Assert.assertEquals(78, (double) sdf.getVertex("t4").getPropertyBean().getValue(EXECUTION_PERIOD), 0);
+    Assert.assertEquals(234, (double) sdf.getVertex("t5").getPropertyBean().getValue(EXECUTION_PERIOD), 0);
 
     // check the starting time of actors
     // s(t1)=0, s(t2)=0, s(t3)=54, s(t4)=56, s(t5)=222
-    Assert.assertEquals(0, (double) sdf.getVertex("t1").getPropertyBean().getValue("firstExecutionStartDate"), 0);
-    Assert.assertEquals(0, (double) sdf.getVertex("t2").getPropertyBean().getValue("firstExecutionStartDate"), 0);
-    Assert.assertEquals(54, (double) sdf.getVertex("t3").getPropertyBean().getValue("firstExecutionStartDate"), 0);
-    Assert.assertEquals(56, (double) sdf.getVertex("t4").getPropertyBean().getValue("firstExecutionStartDate"), 0);
-    Assert.assertEquals(222, (double) sdf.getVertex("t5").getPropertyBean().getValue("firstExecutionStartDate"), 0);
+    Assert.assertEquals(0, (double) sdf.getVertex("t1").getPropertyBean().getValue(FIRST_EXEC_START_DATE), 0);
+    Assert.assertEquals(0, (double) sdf.getVertex("t2").getPropertyBean().getValue(FIRST_EXEC_START_DATE), 0);
+    Assert.assertEquals(54, (double) sdf.getVertex("t3").getPropertyBean().getValue(FIRST_EXEC_START_DATE), 0);
+    Assert.assertEquals(56, (double) sdf.getVertex("t4").getPropertyBean().getValue(FIRST_EXEC_START_DATE), 0);
+    Assert.assertEquals(222, (double) sdf.getVertex("t5").getPropertyBean().getValue(FIRST_EXEC_START_DATE), 0);
 
   }
 

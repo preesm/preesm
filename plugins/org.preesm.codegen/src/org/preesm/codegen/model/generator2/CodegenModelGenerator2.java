@@ -173,9 +173,7 @@ public class CodegenModelGenerator2 {
 
   private void generateBuffers(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     final List<Buffer> buffers = this.memoryLinker.getCodegenBuffers();
-    for (Buffer buffer : buffers) {
-      generateBuffer(coreBlocks, buffer);
-    }
+    buffers.forEach(buffer -> generateBuffer(coreBlocks, buffer));
   }
 
   private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
@@ -191,8 +189,7 @@ public class CodegenModelGenerator2 {
     final String correspondingOperatorID;
 
     if (memoryBank.equalsIgnoreCase("shared_mem")) {
-      // If the memory bank is shared, let the main operator
-      // declare the Buffer.
+      // If the memory bank is shared, let the main operator declare the Buffer.
       correspondingOperatorID = this.scenario.getSimulationInfo().getMainOperator().getInstanceName();
       isLocal = false;
 
@@ -215,8 +212,7 @@ public class CodegenModelGenerator2 {
       }
 
     } else {
-      // else, the operator corresponding to the memory bank will
-      // do the work
+      // else, the operator corresponding to the memory bank will do the work
       correspondingOperatorID = memoryBank;
       isLocal = true;
     }
@@ -227,8 +223,7 @@ public class CodegenModelGenerator2 {
         correspondingOperatorBlock = componentEntry.getValue();
       }
     }
-    // Recursively set the creator for the current Buffer and all its
-    // subBuffer
+    // Recursively set the creator for the current Buffer and all its subBuffer
     recursiveSetBufferCreator(mainBuffer, correspondingOperatorBlock, isLocal);
     sortDefinitions(correspondingOperatorBlock);
   }
@@ -244,8 +239,7 @@ public class CodegenModelGenerator2 {
       final boolean isLocal) {
     // Set the creator for the current buffer
     variable.reaffectCreator(correspondingOperatorBlock);
-    if (variable instanceof Buffer) {
-      final Buffer buffer = (Buffer) variable;
+    if (variable instanceof final Buffer buffer) {
       buffer.setLocal(isLocal);
       // Do the same recursively for all its children subbuffers
       for (final SubBuffer subBuffer : buffer.getChildrens()) {
@@ -263,14 +257,14 @@ public class CodegenModelGenerator2 {
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
 
-      if (actor instanceof Actor) {
-        generateActorFiring((Actor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
-      } else if (actor instanceof UserSpecialActor) {
-        generateSpecialActor((UserSpecialActor) actor, this.memoryLinker.getPortToVariableMap(), coreBlock);
-      } else if (actor instanceof SrdagActor) {
-        generateInitEndFifoCall((SrdagActor) actor, coreBlock);
-      } else if (actor instanceof CommunicationActor) {
-        generateCommunication((CommunicationActor) actor, coreBlock);
+      if (actor instanceof final Actor normalActor) {
+        generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
+      } else if (actor instanceof final UserSpecialActor userSpecialActor) {
+        generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
+      } else if (actor instanceof final SrdagActor srdagActor) {
+        generateInitEndFifoCall(srdagActor, coreBlock);
+      } else if (actor instanceof final CommunicationActor commActor) {
+        generateCommunication(commActor, coreBlock);
       } else {
         throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
@@ -281,20 +275,20 @@ public class CodegenModelGenerator2 {
     // Create the communication
     final SharedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE.createSharedMemoryCommunication();
 
-    final Direction dir;
+    final Direction direction;
     final Delimiter delimiter;
-    final PortDirection direction;
+    final PortDirection portDirection;
     if (actor instanceof SendActor) {
-      dir = Direction.SEND;
-      direction = PortDirection.NONE;
+      direction = Direction.SEND;
+      portDirection = PortDirection.NONE;
       if (actor instanceof SendStartActor) {
         delimiter = Delimiter.START;
       } else {
         delimiter = Delimiter.END;
       }
     } else {
-      dir = Direction.RECEIVE;
-      direction = PortDirection.NONE;
+      direction = Direction.RECEIVE;
+      portDirection = PortDirection.NONE;
       if (actor instanceof ReceiveStartActor) {
         delimiter = Delimiter.START;
       } else {
@@ -302,49 +296,47 @@ public class CodegenModelGenerator2 {
       }
     }
 
-    newComm.setDirection(dir);
+    newComm.setDirection(direction);
     newComm.setDelimiter(delimiter);
     final SlamRouteStep routeStep = actor.getRouteStep();
-    if (routeStep instanceof SlamMessageRouteStep) {
-      final SlamMessageRouteStep msgRouteStep = (SlamMessageRouteStep) routeStep;
-      for (final ComponentInstance comp : msgRouteStep.getNodes()) {
-        final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
-        comNode.setName(comp.getInstanceName());
-        comNode.setType(comp.getComponent().getVlnv().getName());
-        newComm.getNodes().add(comNode);
-      }
-
-      final Buffer buffer;
-
-      // Find the corresponding DAGEdge buffer(s)
-      final Fifo fifo = actor.getFifo();
-      final FifoAllocation fifoAllocation = memAlloc.getFifoAllocations().get(fifo);
-
-      if (actor instanceof SendActor) {
-        final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getSourceBuffer();
-        buffer = memoryLinker.getCodegenBuffer(allocBuffer);
-      } else {
-        final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getTargetBuffer();
-        buffer = memoryLinker.getCodegenBuffer(allocBuffer);
-      }
-      newComm.setData(buffer);
-      newComm.getParameters().clear();
-
-      newComm.addParameter(buffer, direction);
-
-      // Set the name of the communication
-      // SS <=> Start Send
-      // RE <=> Receive End
-      String commName = "__" + buffer.getName();
-      commName += "__" + coreBlock.getName();
-      newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "S" : "R")
-          + ((newComm.getDelimiter().equals(Delimiter.START)) ? "S" : "E") + commName);
-
-      registerCommunication(newComm, fifo, actor, routeStep);
-      coreBlock.getLoopBlock().getCodeElts().add(newComm);
-    } else {
+    if (!(routeStep instanceof final SlamMessageRouteStep msgRouteStep)) {
       throw new UnsupportedOperationException();
     }
+    for (final ComponentInstance comp : msgRouteStep.getNodes()) {
+      final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
+      comNode.setName(comp.getInstanceName());
+      comNode.setType(comp.getComponent().getVlnv().getName());
+      newComm.getNodes().add(comNode);
+    }
+
+    final Buffer buffer;
+
+    // Find the corresponding DAGEdge buffer(s)
+    final Fifo fifo = actor.getFifo();
+    final FifoAllocation fifoAllocation = memAlloc.getFifoAllocations().get(fifo);
+
+    if (actor instanceof SendActor) {
+      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getSourceBuffer();
+      buffer = memoryLinker.getCodegenBuffer(allocBuffer);
+    } else {
+      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getTargetBuffer();
+      buffer = memoryLinker.getCodegenBuffer(allocBuffer);
+    }
+    newComm.setData(buffer);
+    newComm.getParameters().clear();
+
+    newComm.addParameter(buffer, portDirection);
+
+    // Set the name of the communication
+    // SS <=> Start Send
+    // RE <=> Receive End
+    String commName = "__" + buffer.getName();
+    commName += "__" + coreBlock.getName();
+    newComm.setName(((newComm.getDirection().equals(Direction.SEND)) ? "S" : "R")
+        + ((newComm.getDelimiter().equals(Delimiter.START)) ? "S" : "E") + commName);
+
+    registerCommunication(newComm, fifo, actor, routeStep);
+    coreBlock.getLoopBlock().getCodeElts().add(newComm);
   }
 
   private final Map<String, List<Communication>> communications = new LinkedHashMap<>();
@@ -424,8 +416,7 @@ public class CodegenModelGenerator2 {
       fifoCall.setOperation(FifoOperation.POP);
       dir = PortDirection.OUTPUT;
 
-    } else if (actor instanceof EndActor) {
-      final EndActor endActor = (EndActor) actor;
+    } else if (actor instanceof final EndActor endActor) {
       initActor = (InitActor) endActor.getInitReference();
       fifoCall.setOperation(FifoOperation.PUSH);
       dir = PortDirection.INPUT;
@@ -515,14 +506,14 @@ public class CodegenModelGenerator2 {
 
   protected void registerCallVariableToCoreBlock(final CoreBlock operatorBlock, final Call call) {
     // Register the core Block as a user of the function variable
-    for (final Variable var : call.getParameters()) {
+    for (final Variable variable : call.getParameters()) {
       // Currently, constants do not need to be declared nor
       // have creator since their value is directly used.
       // Consequently the used block can also be declared as the creator
-      if (var instanceof Constant) {
-        var.reaffectCreator(operatorBlock);
+      if (variable instanceof Constant) {
+        variable.reaffectCreator(operatorBlock);
       }
-      var.getUsers().add(operatorBlock);
+      variable.getUsers().add(operatorBlock);
     }
   }
 
@@ -539,14 +530,14 @@ public class CodegenModelGenerator2 {
     }
 
     final Refinement refinement = actor.getRefinement();
-    if (refinement instanceof CHeaderRefinement) {
-      final FunctionPrototype initPrototype = ((CHeaderRefinement) refinement).getInitPrototype();
+    if (refinement instanceof final CHeaderRefinement cHeaderRef) {
+      final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {
         final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, initPrototype,
             portToVariable);
         coreBlock.getInitBlock().getCodeElts().add(init);
       }
-      final FunctionPrototype loopPrototype = ((CHeaderRefinement) refinement).getLoopPrototype();
+      final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
       final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);

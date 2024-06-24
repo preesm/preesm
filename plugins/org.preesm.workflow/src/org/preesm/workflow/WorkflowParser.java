@@ -115,7 +115,7 @@ public class WorkflowParser extends DefaultHandler2 {
       reader.setContentHandler(this);
       reader.parse(new InputSource(file.getContents()));
     } catch (SAXException | IOException | CoreException | ParserConfigurationException e) {
-      throw new PreesmFrameworkException("Could not parse workflow", e);
+      throw new PreesmFrameworkException("Could not parse workflow: " + e.getMessage(), e);
     }
     return this.workflow;
   }
@@ -123,53 +123,64 @@ public class WorkflowParser extends DefaultHandler2 {
   @Override
   public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
 
-    if (qName.equals("dftools:workflow")) {
-      final String eow = attributes.getValue("errorOnWarning");
-      boolean valueOfeow = true;
-      if (eow != null) {
-        try {
-          valueOfeow = Boolean.valueOf(eow);
-        } catch (final Exception e) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "Could not parse vaule of 'Error on Warning', using defalt value ('true').", e);
-          valueOfeow = true;
+    switch (qName) {
+      case "dftools:workflow" -> {
+        final String eow = attributes.getValue("errorOnWarning");
+        boolean valueOfeow = true;
+        if (eow != null) {
+          try {
+            valueOfeow = Boolean.valueOf(eow);
+          } catch (final Exception e) {
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "Could not parse vaule of 'Error on Warning', using defalt value ('true').", e);
+            valueOfeow = true;
+          }
+        }
+        final String verboseLevel = attributes.getValue("verboseLevel");
+        Level valueOfvl = Level.INFO;
+        if (verboseLevel != null) {
+          try {
+            valueOfvl = Level.parse(verboseLevel.toUpperCase());
+          } catch (final Exception e) {
+            PreesmLogger.getLogger().log(Level.WARNING,
+                "Could not parse vaule of 'Verbose Level', using defalt value ('INFO').", e);
+            valueOfvl = Level.INFO;
+          }
+        }
+        this.workflow.setErrorOnWarning(valueOfeow);
+        this.workflow.setOutputLevel(valueOfvl);
+      }
+      case "dftools:scenario" -> {
+        final String pluginId = attributes.getValue("pluginId");
+        final ScenarioNode node = new ScenarioNode(pluginId);
+        this.workflow.addVertex(node);
+        this.nodes.put("scenario", node);
+      }
+      case "dftools:task" -> {
+        final String taskId = attributes.getValue("taskId");
+        final String pluginId = attributes.getValue("pluginId");
+        this.lastTransformationNode = new TaskNode(pluginId, taskId);
+        final AbstractWorkflowNode<?> node = this.lastTransformationNode;
+        this.workflow.addVertex(node);
+        this.nodes.put(taskId, node);
+      }
+      case "dftools:dataTransfer" -> {
+        final AbstractWorkflowNode<?> source = this.nodes.get(attributes.getValue("from"));
+        final AbstractWorkflowNode<?> target = this.nodes.get(attributes.getValue("to"));
+        final String sourcePort = attributes.getValue("sourceport");
+        final String targetPort = attributes.getValue("targetport");
+        final WorkflowEdge edge = this.workflow.addEdge(source, target);
+        edge.setSourcePort(sourcePort);
+        edge.setTargetPort(targetPort);
+      }
+      case "dftools:variable" -> {
+        if (this.lastTransformationNode != null) {
+          this.lastTransformationNode.addParameter(attributes.getValue("name"), attributes.getValue("value"));
         }
       }
-      final String verboseLevel = attributes.getValue("verboseLevel");
-      Level valueOfvl = Level.INFO;
-      if (verboseLevel != null) {
-        try {
-          valueOfvl = Level.parse(verboseLevel.toUpperCase());
-        } catch (final Exception e) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "Could not parse vaule of 'Verbose Level', using defalt value ('INFO').", e);
-          valueOfvl = Level.INFO;
-        }
+      default -> {
+        // empty
       }
-      this.workflow.setErrorOnWarning(valueOfeow);
-      this.workflow.setOutputLevel(valueOfvl);
-    } else if (qName.equals("dftools:scenario")) {
-      final String pluginId = attributes.getValue("pluginId");
-      final ScenarioNode node = new ScenarioNode(pluginId);
-      this.workflow.addVertex(node);
-      this.nodes.put("scenario", node);
-    } else if (qName.equals("dftools:task")) {
-      final String taskId = attributes.getValue("taskId");
-      final String pluginId = attributes.getValue("pluginId");
-      this.lastTransformationNode = new TaskNode(pluginId, taskId);
-      final AbstractWorkflowNode<?> node = this.lastTransformationNode;
-      this.workflow.addVertex(node);
-      this.nodes.put(taskId, node);
-    } else if (qName.equals("dftools:dataTransfer")) {
-      final AbstractWorkflowNode<?> source = this.nodes.get(attributes.getValue("from"));
-      final AbstractWorkflowNode<?> target = this.nodes.get(attributes.getValue("to"));
-      final String sourcePort = attributes.getValue("sourceport");
-      final String targetPort = attributes.getValue("targetport");
-      final WorkflowEdge edge = this.workflow.addEdge(source, target);
-      edge.setSourcePort(sourcePort);
-      edge.setTargetPort(targetPort);
-    } else if (qName.equals("dftools:variable") && this.lastTransformationNode != null) {
-      this.lastTransformationNode.addParameter(attributes.getValue("name"), attributes.getValue("value"));
     }
   }
 

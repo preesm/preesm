@@ -140,9 +140,9 @@ public class TimingsPage extends ScenarioPage {
     }
 
     private static TimingColumn[] safeValuesByIndex() {
-      int length = TimingColumn.values().length;
-      TimingColumn[] orderedValues = new TimingColumn[length];
-      for (TimingColumn tc : TimingColumn.values()) {
+      final int length = TimingColumn.values().length;
+      final TimingColumn[] orderedValues = new TimingColumn[length];
+      for (final TimingColumn tc : TimingColumn.values()) {
         orderedValues[tc.columnIndex] = tc;
       }
       return orderedValues;
@@ -150,7 +150,7 @@ public class TimingsPage extends ScenarioPage {
 
     private static int getSumColWidth() {
       int sum = 0;
-      for (TimingColumn tc : TimingColumn.values()) {
+      for (final TimingColumn tc : TimingColumn.values()) {
         sum += tc.width;
       }
       return sum;
@@ -290,8 +290,7 @@ public class TimingsPage extends ScenarioPage {
     newTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
@@ -333,11 +332,11 @@ public class TimingsPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof MemoryInfoImpl) {
-          final MemoryInfoImpl memInfo = (MemoryInfoImpl) element;
+        if (element instanceof final MemoryInfoImpl memInfo) {
           if (SETUP_TIME_TITLE.equals(property)) {
             return Long.toString(memInfo.getValue().getSetupTime());
-          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+          }
+          if (TIME_PER_UNIT_TITLE.equals(property)) {
             return Double.toString(1. / memInfo.getValue().getTimePerUnit());
           }
         }
@@ -474,8 +473,8 @@ public class TimingsPage extends ScenarioPage {
     combocps.setVisible(true);
     final Combo combo = new Combo(combocps, SWT.DROP_DOWN | SWT.READ_ONLY);
     combo.setToolTipText(Messages.getString("Timings.timingTypeSelectionTooltip"));
-    String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
-    ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
+    final String peName = coreCombo.getItem(coreCombo.getSelectionIndex());
+    final ProcessingElement pe = this.scenario.getDesign().getProcessingElement(peName);
     comboTimingTypeDataInit(combo, pe);
     return combo;
   }
@@ -535,7 +534,7 @@ public class TimingsPage extends ScenarioPage {
     // Create columns
     final TableColumn[] columns = new TableColumn[TimingColumn.values().length];
     final String[] columnNames = new String[TimingColumn.values().length];
-    for (TimingColumn timingColumn : columnTypes) {
+    for (final TimingColumn timingColumn : columnTypes) {
       final TableColumn column = new TableColumn(table, SWT.NONE, timingColumn.columnIndex);
       columnNames[timingColumn.columnIndex] = timingColumn.name;
       column.setText(timingColumn.name);
@@ -553,8 +552,7 @@ public class TimingsPage extends ScenarioPage {
     this.tableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final AbstractActor actor = (AbstractActor) ti.getData();
           final String componentType = coreCombo.getText();
           final ProcessingElement proc = TimingsPage.this.scenario.getDesign().getProcessingElement(componentType);
@@ -573,8 +571,7 @@ public class TimingsPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof AbstractActor) {
-          final AbstractActor actor = (AbstractActor) element;
+        if (element instanceof final AbstractActor actor) {
           final String componentType = coreCombo.getText();
           final Component component = TimingsPage.this.scenario.getDesign().getComponent(componentType);
           final TimingType timingType = TimingType.get(timingTypeCombo.getText());
@@ -604,7 +601,7 @@ public class TimingsPage extends ScenarioPage {
           final Point vBarSize = vBar.getSize();
           width -= vBarSize.x;
         }
-        float ratio = width / (float) SUM_COL_WIDTH;
+        final float ratio = width / (float) SUM_COL_WIDTH;
         for (final TimingColumn tc : columnTypes) {
           columns[tc.columnIndex].setWidth((int) Math.floor(ratio * tc.width) - 1);
         }

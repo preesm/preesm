@@ -128,8 +128,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     final TreeIterator<EObject> eAllContents = diagram.eAllContents();
     while (eAllContents.hasNext()) {
       final EObject child = eAllContents.next();
-      if (child instanceof PictogramElement) {
-        final PictogramElement node = (PictogramElement) child;
+      if (child instanceof final PictogramElement node) {
         final PictogramLink link = node.getLink();
         if (link != null) {
           final EList<EObject> businessObjects = link.getBusinessObjects();
@@ -151,8 +150,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
               MessageDialog.openWarning(null, title, sb.toString());
 
               final IFeatureProvider featureProvider = diagramTypeProvider.getFeatureProvider();
-              if (featureProvider instanceof PiMMFeatureProvider) {
-                final PiMMFeatureProvider pfp = (PiMMFeatureProvider) featureProvider;
+              if (featureProvider instanceof final PiMMFeatureProvider pfp) {
                 pfp.setEditable(false);
               }
               return;
@@ -175,55 +173,53 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     final IDecorator[] existingDecorators = this.decoratorAdapter.getPesAndDecorators().get(pe);
     if (existingDecorators != null) {
       return existingDecorators;
-    } else {
-      final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
-      IDecorator[] result = null;
-      if (bo instanceof ExecutableActor) {
-        result = decorateActor(pe, bo);
-      }
-
-      if ((bo instanceof Parameter) && !((Parameter) bo).isConfigurationInterface()) {
-
-        result = ParameterDecorators.getDecorators((Parameter) bo, pe);
-        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
-      }
-
-      if (bo instanceof Delay) {
-        result = DelayDecorators.getDecorators((Delay) bo, pe);
-        this.decoratorAdapter.getPesAndDecorators().put(pe, result);
-      }
-
-      if (result == null) {
-        result = super.getDecorators(pe);
-      }
-
-      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
-      return result;
     }
+    final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
+    IDecorator[] result = null;
+    if (bo instanceof ExecutableActor) {
+      result = decorateActor(pe, bo);
+    }
+
+    if (bo instanceof final Parameter param && !param.isConfigurationInterface()) {
+      result = ParameterDecorators.getDecorators(param, pe);
+      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+    }
+
+    if (bo instanceof final Delay delayPo) {
+      result = DelayDecorators.getDecorators(delayPo, pe);
+      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+    }
+
+    if (result == null) {
+      result = super.getDecorators(pe);
+    }
+
+    this.decoratorAdapter.getPesAndDecorators().put(pe, result);
+    return result;
   }
 
   private IDecorator[] decorateActor(final PictogramElement pe, final Object bo) {
-    IDecorator[] result;
+
     // Add decorators for each ports of the actor
     final List<IDecorator> decorators = new ArrayList<>();
     for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
       for (final Object pbo : a.getLink().getBusinessObjects()) {
-        if (pbo instanceof Port) {
-          for (final IDecorator d : PortDecorators.getDecorators((Port) pbo, a)) {
+        if (pbo instanceof final Port port) {
+          for (final IDecorator d : PortDecorators.getDecorators(port, a)) {
             decorators.add(d);
           }
         }
       }
     }
 
-    if (bo instanceof Actor) {
+    if (bo instanceof final Actor actorBo) {
       // Add decorators to the actor itself
-      for (final IDecorator d : ActorDecorators.getDecorators((Actor) bo, pe)) {
+      for (final IDecorator d : ActorDecorators.getDecorators(actorBo, pe)) {
         decorators.add(d);
       }
     }
 
-    result = new IDecorator[decorators.size()];
+    final IDecorator[] result = new IDecorator[decorators.size()];
     decorators.toArray(result);
     this.decoratorAdapter.getPesAndDecorators().put(pe, result);
     return result;
@@ -312,9 +308,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   @Override
   public boolean equalsBusinessObjects(final Object o1, final Object o2) {
     boolean equalsBusinessObjects = super.equalsBusinessObjects(o1, o2);
-    if ((o1 instanceof ConfigInputPort) && (o2 instanceof ConfigInputPort)) {
-      final ConfigInputPort cip1 = (ConfigInputPort) o1;
-      final ConfigInputPort cip2 = (ConfigInputPort) o2;
+    if ((o1 instanceof final ConfigInputPort cip1) && (o2 instanceof final ConfigInputPort cip2)) {
       equalsBusinessObjects &= super.equalsBusinessObjects(cip1.eContainer(), cip2.eContainer());
     }
     return equalsBusinessObjects;

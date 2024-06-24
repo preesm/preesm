@@ -55,14 +55,18 @@ import org.preesm.model.pisdf.PiGraph;
 
 /**
  * To ease the analysis, the PiGraph is transformed into JGraphT graph thanks to this abstract graph class.
- * 
+ *
  * @author ahonorat
  */
 public class AbstractGraph {
 
+  private AbstractGraph() {
+    // Forbids instantiation
+  }
+
   /**
    * Fifo abstraction to get used in the analysis of this package.
-   * 
+   *
    * @author ahonorat
    */
   public static class FifoAbstraction {
@@ -119,7 +123,7 @@ public class AbstractGraph {
 
   /**
    * Creates an abstract graph from the given PiGraph.
-   * 
+   *
    * @param graph
    *          PiGraph to abstract. Fifo with rates equal to 0 are ignored.
    * @param brv
@@ -141,56 +145,61 @@ public class AbstractGraph {
 
       final AbstractActor absSrc = dop.getContainingActor();
       final AbstractActor absTgt = dip.getContainingActor();
-      if ((absSrc instanceof ExecutableActor) && (absTgt instanceof ExecutableActor)) {
-        FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
-        final long srcRate = dop.getPortRateExpression().evaluate();
-        final long tgtRate = dip.getPortRateExpression().evaluate();
-        if (srcRate > 0 && tgtRate > 0) {
-          long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
-          if (fa == null) {
-            fa = new FifoAbstraction();
-            fa.prodRate = srcRate / gcd;
-            fa.consRate = tgtRate / gcd;
-            final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
-            if (!res) {
-              throw new PreesmRuntimeException("Problem while creating graph copy.");
-            }
-          }
-          fa.fifos.add(f);
-          final Delay d = f.getDelay();
-          long delayRawSize = 0L;
-          long delay = 0L;
-          if (d != null) {
-            fa.nbNonZeroDelays++;
-            delayRawSize = d.getSizeExpression().evaluate();
-            delay = delayRawSize / gcd;
-          }
-          fa.delays.add(delay);
 
-          final long brvDest = brv.get(absTgt);
-          final long tgtPipelineCons = brvDest * tgtRate;
-          fa.pipelineValues.add(tgtPipelineCons);
-
-          final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / tgtPipelineCons);
-          fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
-
-          boolean fullyDelayed = true;
-          for (final long l : fa.delays) {
-            if (l == 0) {
-              fullyDelayed = false;
-              break;
-            }
-          }
-          fa.fullyDelayed = fullyDelayed;
-        }
+      if (!(absSrc instanceof ExecutableActor) || !(absTgt instanceof ExecutableActor)) {
+        continue;
       }
+
+      FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
+      final long srcRate = dop.getPortRateExpression().evaluate();
+      final long tgtRate = dip.getPortRateExpression().evaluate();
+      if (srcRate > 0 && tgtRate > 0) {
+        final long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
+        if (fa == null) {
+          fa = new FifoAbstraction();
+          fa.prodRate = srcRate / gcd;
+          fa.consRate = tgtRate / gcd;
+          final boolean res = absGraph.addEdge(absSrc, absTgt, fa);
+          if (!res) {
+            throw new PreesmRuntimeException("Problem while creating graph copy.");
+          }
+        }
+        fa.fifos.add(f);
+        final Delay d = f.getDelay();
+        long delayRawSize = 0L;
+        long delay = 0L;
+        if (d != null) {
+          fa.nbNonZeroDelays++;
+          delayRawSize = d.getSizeExpression().evaluate();
+          delay = delayRawSize / gcd;
+        }
+        fa.delays.add(delay);
+
+        final long brvDest = brv.get(absTgt);
+        final long tgtPipelineCons = brvDest * tgtRate;
+        fa.pipelineValues.add(tgtPipelineCons);
+
+        final int nbIterDelayed = (int) Math.ceil((double) delayRawSize / tgtPipelineCons);
+        fa.nbIterationDelayed = Math.max(fa.nbIterationDelayed, nbIterDelayed);
+
+        // boolean fullyDelayed = true;
+        // for (final long l : fa.delays) {
+        // if (l == 0) {
+        // fullyDelayed = false;
+        // break;
+        // }
+        // }
+
+        fa.fullyDelayed = fa.delays.stream().noneMatch(l -> l == 0);
+      }
+
     }
     return absGraph;
   }
 
   /**
    * Computes a subpart of an abstract graph.
-   * 
+   *
    * @param absGraph
    *          The given abstract graph.
    * @param start
@@ -229,34 +238,35 @@ public class AbstractGraph {
     }
 
     for (final FifoAbstraction fa : edges) {
-      if (!fifosToIgnore.contains(fa)) {
-        AbstractActor opposite = null;
-        if (reverse) {
-          opposite = absGraph.getEdgeSource(fa);
-        } else {
-          opposite = absGraph.getEdgeTarget(fa);
-        }
-        if (visitPathStack.contains(opposite)) {
-          throw new PreesmRuntimeException("SubGraph is not a DAG, abandon.");
-        }
-        final boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
-        if (mustGoDeeper) {
-          subGraph.addVertex(opposite);
-          visitPathStack.add(0, opposite);
-        }
-        subGraph.addEdge(currentNode, opposite, fa);
-        if (mustGoDeeper) {
-          subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, visitPathStack);
-        }
-
+      if (fifosToIgnore.contains(fa)) {
+        continue;
       }
+      AbstractActor opposite = null;
+      if (reverse) {
+        opposite = absGraph.getEdgeSource(fa);
+      } else {
+        opposite = absGraph.getEdgeTarget(fa);
+      }
+      if (visitPathStack.contains(opposite)) {
+        throw new PreesmRuntimeException("SubGraph is not a DAG, abandon.");
+      }
+      final boolean mustGoDeeper = !subGraph.vertexSet().contains(opposite);
+      if (mustGoDeeper) {
+        subGraph.addVertex(opposite);
+        visitPathStack.add(0, opposite);
+      }
+      subGraph.addEdge(currentNode, opposite, fa);
+      if (mustGoDeeper) {
+        subGraphDFS(absGraph, subGraph, fifosToIgnore, reverse, visitPathStack);
+      }
+
     }
     visitPathStack.remove(currentNode);
   }
 
   /**
    * Shallow copy of a graph.
-   * 
+   *
    * @param absGraph
    *          Graph to be copied.
    * @return Shallow copy of the input.
@@ -282,7 +292,7 @@ public class AbstractGraph {
    * <p>
    * If two FifoAbstracttion are present in the original graph (going in opposite directions by construction), then only
    * the first encountered one is copied.
-   * 
+   *
    * @param absGraph
    *          Graph to be copied with undirected edges.
    * @return Shallow copy of the input as an undirected graph.

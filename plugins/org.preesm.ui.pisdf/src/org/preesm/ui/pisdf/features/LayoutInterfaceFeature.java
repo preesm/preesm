@@ -87,9 +87,8 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     }
 
     final EList<EObject> businessObjects = pe.getLink().getBusinessObjects();
-    return (businessObjects.size() == 1)
-        && ((businessObjects.get(0) instanceof InterfaceActor) || ((businessObjects.get(0) instanceof Parameter)
-            && ((Parameter) businessObjects.get(0)).isConfigurationInterface()));
+    return (businessObjects.size() == 1) && ((businessObjects.get(0) instanceof InterfaceActor)
+        || ((businessObjects.get(0) instanceof final Parameter param) && param.isConfigurationInterface()));
   }
 
   /*
@@ -108,13 +107,13 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
     IDimension size = GraphitiUi.getGaService().calculateSize(containerShape.getGraphicsAlgorithm());
     for (final Shape shape : containerShape.getChildren()) {
       final GraphicsAlgorithm ga = shape.getGraphicsAlgorithm();
-      if (ga instanceof Text) {
-        size = GraphitiUi.getUiLayoutService().calculateTextSize(vertex.getName(), ((Text) ga).getFont());
+      if (ga instanceof final Text text) {
+        size = GraphitiUi.getUiLayoutService().calculateTextSize(vertex.getName(), text.getFont());
       }
     }
 
-    if (vertex instanceof InterfaceActor) {
-      layoutInterfaceActor(containerShape, containerGa, (InterfaceActor) vertex, size);
+    if (vertex instanceof final InterfaceActor iActor) {
+      layoutInterfaceActor(containerShape, containerGa, iActor, size);
     }
 
     if (vertex instanceof Parameter) {
@@ -150,8 +149,7 @@ public class LayoutInterfaceFeature extends AbstractLayoutFeature {
             ga.setWidth(size.getWidth());
             Graphiti.getGaService().setLocation(ga, 0, 0);
             break;
-          case DATA_OUTPUT:
-          case CFG_OUTPUT:
+          case DATA_OUTPUT, CFG_OUTPUT:
             ga.setWidth(size.getWidth());
             Graphiti.getGaService().setLocation(ga, 16 + 3, 0);
             break;

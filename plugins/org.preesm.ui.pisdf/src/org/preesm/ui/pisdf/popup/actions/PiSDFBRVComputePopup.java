@@ -54,7 +54,7 @@ public class PiSDFBRVComputePopup extends AbstractGenericMultiplePiHandler {
 
   @Override
   public void processPiSDF(final PiGraph pigraph, final IProject iProject, final Shell shell) {
-    PreesmLogger.getLogger().log(Level.INFO, "Computing BRV for " + pigraph.getName());
+    PreesmLogger.getLogger().info(() -> "Computing BRV for " + pigraph.getName());
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {

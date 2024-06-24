@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed" period="1000000">
+        <data key="name">top</data>
+        <node expr="360" id="width" kind="param"/>
+        <node expr="202" id="height" kind="param"/>
+        <node expr="0" id="id" kind="param"/>
+        <node expr="100" id="border" kind="param"/>
+        <node expr="width+2*border" id="displayWidth" kind="param"/>
+        <node expr="height+2*border" id="displayHeight" kind="param"/>
+        <node expr="displayHeight*displayWidth" id="displaySize" kind="param"/>
+        <node id="ReadYUV" kind="actor">
+            <data key="graph_desc">Code/include/yuvRead.h</data>
+            <loop name="readYUV">
+                <param direction="IN" isConfig="true"
+                    name="width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="height" type="int"/>
+                <param direction="OUT" isConfig="false" name="y" type="unsigned char "/>
+                <param direction="OUT" isConfig="false" name="u" type="unsigned char "/>
+                <param direction="OUT" isConfig="false" name="v" type="unsigned char "/>
+            </loop>
+            <init name="initReadYUV">
+                <param direction="IN" isConfig="true"
+                    name="width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="height" type="int"/>
+            </init>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="y"/>
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="output" name="u"/>
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="output" name="v"/>
+        </node>
+        <node id="DisplayYUV" kind="actor">
+            <data key="graph_desc">Code/include/yuvDisplay.h</data>
+            <loop name="yuvDisplay">
+                <param direction="IN" isConfig="true" name="id" type="int"/>
+                <param direction="IN" isConfig="false" name="y" type="unsigned char "/>
+                <param direction="IN" isConfig="false" name="u" type="unsigned char "/>
+                <param direction="IN" isConfig="false" name="v" type="unsigned char "/>
+            </loop>
+            <init name="yuvDisplayInit">
+                <param direction="IN" isConfig="true" name="id" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="width" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="height" type="int"/>
+            </init>
+            <port kind="cfg_input" name="id"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="border"/>
+            <port annotation="READ_ONLY" expr="height*width"
+                kind="input" name="y"/>
+            <port annotation="READ_ONLY" expr="height/2*width/2"
+                kind="input" name="u"/>
+            <port annotation="READ_ONLY" expr="height/2*width/2"
+                kind="input" name="v"/>
+        </node>
+        <node id="Stabilization" kind="actor">
+            <data key="graph_desc">Algo/stabilization.pi</data>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="border"/>
+            <port annotation="NONE" expr="height*width"
+                kind="input" name="y"/>
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="input" name="u"/>
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="input" name="v"/>
+            <port annotation="NONE"
+                expr="(height+2*border)*(width+2*border)"
+                kind="output" name="rY"/>
+            <port annotation="NONE"
+                expr="(height+2*border)/2*(width+2*border)/2"
+                kind="output" name="rU"/>
+            <port annotation="NONE"
+                expr="(height+2*border)/2*(width+2*border)/2"
+                kind="output" name="rV"/>
+        </node>
+        <edge kind="fifo" source="ReadYUV" sourceport="y"
+            target="Stabilization" targetport="y" type="uchar"/>
+        <edge kind="fifo" source="ReadYUV" sourceport="u"
+            target="Stabilization" targetport="u" type="uchar"/>
+        <edge kind="fifo" source="ReadYUV" sourceport="v"
+            target="Stabilization" targetport="v" type="uchar"/>
+        <edge kind="fifo" source="Stabilization" sourceport="rY"
+            target="DisplayYUV" targetport="y" type="uchar"/>
+        <edge kind="fifo" source="Stabilization" sourceport="rU"
+            target="DisplayYUV" targetport="u" type="uchar"/>
+        <edge kind="fifo" source="Stabilization" sourceport="rV"
+            target="DisplayYUV" targetport="v" type="uchar"/>
+        <edge kind="dependency" source="width" target="ReadYUV" targetport="width"/>
+        <edge kind="dependency" source="height" target="ReadYUV" targetport="height"/>
+        <edge kind="dependency" source="displayHeight"
+            target="DisplayYUV" targetport="height"/>
+        <edge kind="dependency" source="displayWidth"
+            target="DisplayYUV" targetport="width"/>
+        <edge kind="dependency" source="id" target="DisplayYUV" targetport="id"/>
+        <edge kind="dependency" source="width"
+            target="Stabilization" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="Stabilization" targetport="height"/>
+        <edge kind="dependency" source="border"
+            target="Stabilization" targetport="border"/>
+        <edge kind="dependency" source="border" target="displayWidth"/>
+        <edge kind="dependency" source="border" target="displayHeight"/>
+        <edge kind="dependency" source="width" target="displayWidth"/>
+        <edge kind="dependency" source="height" target="displayHeight"/>
+        <edge kind="dependency" source="width" target="displayWidth"/>
+        <edge kind="dependency" source="border"
+            target="DisplayYUV" targetport="border"/>
+        <edge kind="dependency" source="displayHeight" target="displaySize"/>
+        <edge kind="dependency" source="displayWidth" target="displaySize"/>
+    </graph>
+</graphml>

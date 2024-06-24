@@ -38,8 +38,11 @@ package org.ietr.dftools.algorithm.test;
 
 import java.security.SecureRandom;
 import java.util.Random;
+import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.algorithm.generator.DirectedAcyclicGraphGenerator;
+import org.preesm.algorithm.model.sdf.SDFGraph;
+import org.preesm.algorithm.model.sdf.visitors.ConsistencyChecker;
 
 /**
  */
@@ -51,9 +54,12 @@ public class DirectedAcyclicGraphGeneratorTest {
   @Test
   public void testDAGGen() {
     final DirectedAcyclicGraphGenerator generator = new DirectedAcyclicGraphGenerator();
+    final ConsistencyChecker checker = new ConsistencyChecker();
+
     final Random rand = new SecureRandom();
     for (int i = 0; i < 5; i++) {
-      generator.createAcyclicRandomGraph(100, 1, 3, 1, 3, rand.nextInt(5));
+      final SDFGraph graph = generator.createAcyclicRandomGraph(100, 1, 3, 1, 3, rand.nextInt(5));
+      Assert.assertTrue(checker.verifyGraph(graph));
     }
   }
 

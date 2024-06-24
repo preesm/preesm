@@ -120,8 +120,7 @@ public class AddDependencyFeature extends AbstractAddFeature {
     // Return true if the given Business object is a Dependency and the
     // context is an instance of IAddConnectionContext
     final Object ctxtNewObject = context.getNewObject();
-    final boolean newObjectIsDependency = ctxtNewObject instanceof Dependency;
-    return newObjectIsDependency;
+    return ctxtNewObject instanceof Dependency;
   }
 
   /**

@@ -39,21 +39,13 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.func.ICreate;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.util.VertexNameValidator;
-import org.preesm.ui.utils.DialogUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class CreateJoinActorFeature.
  */
-public class CreateJoinActorFeature extends AbstractCreateFeature {
+public class CreateJoinActorFeature extends AbstractCreateConfigurableFeature {
 
   /** The Constant FEATURE_NAME. */
   private static final String FEATURE_NAME = "Join Actor";
@@ -61,8 +53,9 @@ public class CreateJoinActorFeature extends AbstractCreateFeature {
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Create Join Actor";
 
-  /** The has done changes. */
-  protected Boolean hasDoneChanges;
+  private static final String DEFAULT_NAME = "JoinActorName";
+
+  private static final String QUESTION = "Enter new join actor name";
 
   /**
    * Default constructor.
@@ -72,65 +65,28 @@ public class CreateJoinActorFeature extends AbstractCreateFeature {
    */
   public CreateJoinActorFeature(final IFeatureProvider fp) {
     // Set name and description of the creation feature
-    super(fp, CreateJoinActorFeature.FEATURE_NAME, CreateJoinActorFeature.FEATURE_DESCRIPTION);
+    super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
     this.hasDoneChanges = false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public boolean canCreate(final ICreateContext context) {
-    return context.getTargetContainer() instanceof Diagram;
+  String getFeatureDescription() {
+    return FEATURE_DESCRIPTION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public Object[] create(final ICreateContext context) {
-    // Retrieve the graph
-    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-
-    // Ask user for Actor name until a valid name is entered.
-    final String question = "Enter new join actor name";
-    String newActorName = "JoinActorName";
-
-    newActorName = DialogUtil.askString("Create Join Actor", question, newActorName,
-        new VertexNameValidator(graph, null));
-    if ((newActorName == null) || (newActorName.trim().length() == 0)) {
-      this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
-      return ICreate.EMPTY;
-    }
-
-    // create Actor
-    final JoinActor newActor = PiMMUserFactory.instance.createJoinActor();
-    newActor.setName(newActorName);
-
-    // Add new actor to the graph.
-    if (graph.addActor(newActor)) {
-      this.hasDoneChanges = true;
-    }
-
-    // do the add to the Diagram
-    addGraphicalRepresentation(context, newActor);
-
-    // return newly created business object(s)
-    return new Object[] { newActor };
+  String getDefaultName() {
+    return DEFAULT_NAME;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.features.impl.AbstractFeature#hasDoneChanges()
-   */
   @Override
-  public boolean hasDoneChanges() {
-    return this.hasDoneChanges;
+  String getQuestion() {
+    return QUESTION;
+  }
+
+  @Override
+  JoinActor createConfigurable(final String newJoinName) {
+    return PiMMUserFactory.instance.createJoinActor(newJoinName);
   }
 
 }

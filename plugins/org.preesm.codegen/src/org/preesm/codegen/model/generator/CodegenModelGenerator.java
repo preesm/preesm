@@ -55,7 +55,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
@@ -332,7 +331,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
         final boolean isFifo = sourceName.startsWith("FIFO");
         if (isFifo) {
-          sourceName = sourceName.substring(10, sourceName.length());
+          sourceName = sourceName.substring(10);
         }
 
         final DAGVertex sourceVertex = dag.getVertex(sourceName);
@@ -423,10 +422,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
-      if (!this.coreBlocks.containsKey(cmp)) {
-        CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
-        this.coreBlocks.put(cmp, operatorBlock);
-      }
+      // if (!this.coreBlocks.containsKey(cmp)) {
+      // final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
+      // this.coreBlocks.put(cmp, operatorBlock);
+      // }
+
+      this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
     }
 
     // 1 - iterate over dag vertices in SCHEDULING Order !
@@ -436,18 +437,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // 1.0 - Identify the core used.
       // This call can not fail as checks were already performed in
       // the constructor
-      ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
+      final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
-      CoreBlock operatorBlock = this.coreBlocks.get(operator);
+      final CoreBlock operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
-      final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .toString();
       final DAGEdge dagEdge = vert.getPropertyBean()
-          .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
+          .getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE);
       final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
       switch (vertexType) {
         case VertexType.TYPE_TASK:
@@ -458,13 +459,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             case DAGVertex.DAG_VERTEX:
               generateActorFiring(operatorBlock, vert);
               break;
-            case MapperDAGVertex.DAG_FORK_VERTEX:
-            case MapperDAGVertex.DAG_JOIN_VERTEX:
-            case MapperDAGVertex.DAG_BROADCAST_VERTEX:
+            case MapperDAGVertex.DAG_FORK_VERTEX, MapperDAGVertex.DAG_JOIN_VERTEX, MapperDAGVertex.DAG_BROADCAST_VERTEX:
               generateSpecialCall(operatorBlock, vert);
               break;
-            case MapperDAGVertex.DAG_INIT_VERTEX:
-            case MapperDAGVertex.DAG_END_VERTEX:
+            case MapperDAGVertex.DAG_INIT_VERTEX, MapperDAGVertex.DAG_END_VERTEX:
               generateInitEndFifoCall(operatorBlock, vert);
               break;
             default:
@@ -473,8 +471,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           }
           break;
 
-        case VertexType.TYPE_SEND:
-        case VertexType.TYPE_RECEIVE:
+        case VertexType.TYPE_SEND, VertexType.TYPE_RECEIVE:
           if (buffer instanceof DistributedBuffer) {
             generateDistributedCommunication(operatorBlock, vert, vertexType);
           } else {
@@ -500,81 +497,84 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   }
 
   void compactPapifyUsage(List<Block> allBlocks) {
-    for (Block cluster : allBlocks) {
-      if (cluster instanceof CoreBlock) {
-        int usingPapify = 0;
-        EList<Variable> definitions = cluster.getDefinitions();
-        EList<CodeElt> loopBlockElts = ((CoreBlock) cluster).getLoopBlock().getCodeElts();
-        EList<CodeElt> initBlockElts = ((CoreBlock) cluster).getInitBlock().getCodeElts();
-        int iterator = 0;
-        boolean closed = false;
-        /*
-         * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
-         * consecutively (AS CONSTANTS ARE NOT PRINTED, THIS IS USUALLY TRUE)
-         */
-        if (!definitions.isEmpty()) {
-          for (iterator = 0; iterator < definitions.size(); iterator++) {
-            if (definitions.get(iterator) instanceof PapifyAction && usingPapify == 0) {
-              usingPapify = 1;
-              ((PapifyAction) definitions.get(iterator)).setOpening(true);
-            }
-          }
-          for (iterator = definitions.size() - 1; iterator >= 0; iterator--) {
-            if (definitions.get(iterator) instanceof PapifyAction && !closed) {
-              closed = true;
-              ((PapifyAction) definitions.get(iterator)).setClosing(true);
-            }
+    for (final Block cluster : allBlocks) {
+
+      if (!(cluster instanceof final CoreBlock coreBlock)) {
+        continue;
+      }
+
+      int usingPapify = 0;
+      final EList<Variable> definitions = coreBlock.getDefinitions();
+      final EList<CodeElt> loopBlockElts = coreBlock.getLoopBlock().getCodeElts();
+      final EList<CodeElt> initBlockElts = coreBlock.getInitBlock().getCodeElts();
+      int iterator = 0;
+      boolean closed = false;
+      /*
+       * Only one #ifdef _PREESM_MONITORING_INIT in the definition code Assumption: All the PapifyActions are printed
+       * consecutively (AS CONSTANTS ARE NOT PRINTED, THIS IS USUALLY TRUE)
+       */
+      if (!definitions.isEmpty()) {
+        for (iterator = 0; iterator < definitions.size(); iterator++) {
+          if (definitions.get(iterator) instanceof final PapifyAction papifyAction && usingPapify == 0) {
+            usingPapify = 1;
+            papifyAction.setOpening(true);
           }
         }
-        /*
-         * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
-         */
-        if (!loopBlockElts.isEmpty()) {
-          if (loopBlockElts.get(0) instanceof PapifyFunctionCall) {
-            ((PapifyFunctionCall) loopBlockElts.get(0)).setOpening(true);
-            if (!(loopBlockElts.get(1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) loopBlockElts.get(0)).setClosing(true);
-            }
-          }
-          for (iterator = 1; iterator < loopBlockElts.size() - 1; iterator++) {
-            if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
-                && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) loopBlockElts.get(iterator)).setOpening(true);
-            }
-            if (loopBlockElts.get(iterator) instanceof PapifyFunctionCall
-                && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) loopBlockElts.get(iterator)).setClosing(true);
-            }
-          }
-          if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof PapifyFunctionCall) {
-            ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setClosing(true);
-            if (!(loopBlockElts.get(loopBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) loopBlockElts.get(loopBlockElts.size() - 1)).setOpening(true);
-            }
+        for (iterator = definitions.size() - 1; iterator >= 0; iterator--) {
+          if (definitions.get(iterator) instanceof final PapifyAction papifyAction && !closed) {
+            closed = true;
+            papifyAction.setClosing(true);
           }
         }
-        if (!initBlockElts.isEmpty()) {
-          if (initBlockElts.get(0) instanceof PapifyFunctionCall) {
-            ((PapifyFunctionCall) initBlockElts.get(0)).setOpening(true);
-            if (!(initBlockElts.get(1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) initBlockElts.get(0)).setClosing(true);
-            }
+      }
+      /*
+       * Minimizing the number of #ifdef _PREESM_MONITORING_INIT in the loop
+       */
+      if (!loopBlockElts.isEmpty()) {
+        if (loopBlockElts.get(0) instanceof final PapifyFunctionCall papifyFctCall) {
+          papifyFctCall.setOpening(true);
+          if (!(loopBlockElts.get(1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setClosing(true);
           }
-          for (iterator = 1; iterator < initBlockElts.size() - 1; iterator++) {
-            if (initBlockElts.get(iterator) instanceof PapifyFunctionCall
-                && !(initBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) initBlockElts.get(iterator)).setOpening(true);
-            }
-            if (initBlockElts.get(iterator) instanceof PapifyFunctionCall
-                && !(initBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) initBlockElts.get(iterator)).setClosing(true);
-            }
+        }
+        for (iterator = 1; iterator < loopBlockElts.size() - 1; iterator++) {
+          if (loopBlockElts.get(iterator) instanceof final PapifyFunctionCall papifyFctCall
+              && !(loopBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setOpening(true);
           }
-          if (initBlockElts.get(initBlockElts.size() - 1) instanceof PapifyFunctionCall) {
-            ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setClosing(true);
-            if (!(initBlockElts.get(initBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
-              ((PapifyFunctionCall) initBlockElts.get(initBlockElts.size() - 1)).setOpening(true);
-            }
+          if (loopBlockElts.get(iterator) instanceof final PapifyFunctionCall papifyFctCall
+              && !(loopBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setClosing(true);
+          }
+        }
+        if (loopBlockElts.get(loopBlockElts.size() - 1) instanceof final PapifyFunctionCall papifyFctCall) {
+          papifyFctCall.setClosing(true);
+          if (!(loopBlockElts.get(loopBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setOpening(true);
+          }
+        }
+      }
+      if (!initBlockElts.isEmpty()) {
+        if (initBlockElts.get(0) instanceof final PapifyFunctionCall papifyFctCall) {
+          papifyFctCall.setOpening(true);
+          if (!(initBlockElts.get(1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setClosing(true);
+          }
+        }
+        for (iterator = 1; iterator < initBlockElts.size() - 1; iterator++) {
+          if (initBlockElts.get(iterator) instanceof final PapifyFunctionCall papifyFctCall
+              && !(initBlockElts.get(iterator - 1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setOpening(true);
+          }
+          if (initBlockElts.get(iterator) instanceof final PapifyFunctionCall papifyFctCall
+              && !(initBlockElts.get(iterator + 1) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setClosing(true);
+          }
+        }
+        if (initBlockElts.get(initBlockElts.size() - 1) instanceof final PapifyFunctionCall papifyFctCall) {
+          papifyFctCall.setClosing(true);
+          if (!(initBlockElts.get(initBlockElts.size() - 2) instanceof PapifyFunctionCall)) {
+            papifyFctCall.setOpening(true);
           }
         }
       }
@@ -599,7 +599,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     if (dagVertex.outgoingEdges().isEmpty()) {
       final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
       for (final DAGEdge inEdge : incomingEdges) {
-        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        final BufferAggregate bufferAggregate = inEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
         for (final BufferProperties buffProperty : bufferAggregate) {
           final Buffer buffer = srSDFEdgeBuffers.get(buffProperty);
           if (buffer != null) {
@@ -618,7 +618,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // If the actor is hierarchical
     if (dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER) != null) {
       // try to generate for loop on a hierarchical actor
-      PreesmLogger.getLogger().log(Level.FINE, "tryGenerateRepeatActorFiring " + dagVertex.getName());
+      PreesmLogger.getLogger().fine(() -> "tryGenerateRepeatActorFiring " + dagVertex.getName());
 
       // prepare option for SrDAGOutsideFetcher
       final Map<String, Object> outsideFetcherOption = new LinkedHashMap<>();
@@ -628,167 +628,165 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
 
       // Retrieve original cluster actor
-      AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_REFERENCE_ACTOR);
-      AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(actor);
-      if (this.scheduleMapping.containsKey(originalActor)) {
-
-        new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
-            new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
-      } else {
+      final AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_REFERENCE_ACTOR);
+      final AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(actor);
+      if (!this.scheduleMapping.containsKey(originalActor)) {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
       }
+      new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
+          new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
 
     } else {
       ActorPrototypes prototypes = null;
       // If the actor has an IDL refinement
-      if ((refinement instanceof CodeRefinement) && (((CodeRefinement) refinement).getLanguage() == Language.IDL)) {
+      if ((refinement instanceof final CodeRefinement cRef) && (cRef.getLanguage() == Language.IDL)) {
         // Retrieve the prototypes associated to the actor
         prototypes = getActorPrototypes(dagVertex);
-      } else if (refinement instanceof ActorPrototypes) {
+      } else if (refinement instanceof final ActorPrototypes actorProto) {
         // Or if we already extracted prototypes from a .h refinement
-        prototypes = (ActorPrototypes) refinement;
+        prototypes = actorProto;
       }
 
-      if (prototypes != null) {
-        // Generate the loop functionCall
-        final Prototype loopPrototype = prototypes.getLoopPrototype();
-        if (loopPrototype == null) {
-          throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
-        } else if (!loopPrototype.getIsStandardC()) {
-          throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
-        }
-        // adding the call to the FPGA load functions only once. The printFpgaLoad will
-        // return a no-null string only with the right printer and nothing for the others
-        // Visit all codeElements already present in the InitBlock
-        final EList<CodeElt> codeElts = operatorBlock.getInitBlock().getCodeElts();
-        if (codeElts.isEmpty()) {
-          final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex, loopPrototype,
-              false);
-          // Add the function call to load the hardware accelerators into the FPGA (when needed)
-          operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
-          // Add also the GlobalBufferDeclaration just after the fpga load, before the loop
-          final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
-              loopPrototype, false);
-          operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
-        }
-        final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
-            loopPrototype, false);
-        final FreeDataTransferBuffer freeDataTransferBufferFunctionCall = generateFreeDataTransferBuffer(dagVertex,
-            loopPrototype, false);
-        final DataTransferAction dataTransferActionFunctionCall = generateDataTransferFunctionCall(dagVertex,
-            loopPrototype, false);
-        final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
-            loopPrototype, false);
-        final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
-
-        boolean monitoringTiming = false;
-        boolean monitoringEvents = false;
-        PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
-        Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
-        // Check if this actor has a monitoring configuration
-        PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
-        AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-        if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
-          // Add the papify action variable
-          papifyActionS.setName("papify_actions_".concat(dagVertex.getName()));
-          papifyActionS.setType("papify_action_s");
-          papifyActionS.setComment("papify configuration variable");
-          operatorBlock.getDefinitions().add(papifyActionS);
-
-          // Add the function to configure the monitoring in this PE (operatorBlock)
-          papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
-
-          // Add the function to configure the monitoring in this PE (operatorBlock)
-          if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
-            this.papifiedPEs.add(operatorBlock.getName());
-            // Create the variable associated to the PE id
-            papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-            final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
-                papifyConfig, papifyPEId);
-            operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
-          } else {
-            // Create the variable associated to the PE id
-            papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-          }
-
-          // Add the function to configure the monitoring of this actor (dagVertex)
-          final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(
-              dagVertex, papifyConfig, papifyActionS);
-          operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
-
-          // What are we monitoring?
-          monitoringEvents = papifyConfig.isMonitoringEvents(referencePiVertex);
-          monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
-          if (monitoringEvents) {
-            // Generate Papify start function for events
-            final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
-                papifyActionS);
-            // Add the Papify start function for events to the loop
-            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
-          }
-
-          if (monitoringTiming) {
-            // Generate Papify start timing function
-            final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
-                papifyPEId, papifyActionS);
-            // Add the Papify start timing function to the loop
-            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-          }
-        }
-        // Add the function call for RegisterSetUp to the loopBlock just before the function call
-        operatorBlock.getLoopBlock().getCodeElts().add(registerSetUpActionFunctionCall);
-        // Add the function call for DataTransfer to the loopBlock just before the function call
-        operatorBlock.getLoopBlock().getCodeElts().add(dataTransferActionFunctionCall);
-
-        registerCallVariableToCoreBlock(operatorBlock, functionCall);
-        // Add the function call to the operatorBlock
-        operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
-        // Free buffer data transfer that may be used freeDataTransferBufferFunctionCall
-        operatorBlock.getLoopBlock().getCodeElts().add(freeDataTransferBufferFunctionCall);
-        // Add the function call for OutputDataTransfer to the loopBlock just after the function call
-        operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
-
-        if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
-          if (monitoringTiming) {
-            // Generate Papify stop timing function
-            final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
-                papifyPEId, papifyActionS);
-            // Add the Papify stop timing function to the loop
-            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
-          }
-          if (monitoringEvents) {
-            // Generate Papify stop function for events
-            final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
-                papifyActionS);
-            // Add the Papify stop function for events to the loop
-            operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
-          }
-          // Generate Papify writing function
-          final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, papifyPEId,
-              papifyActionS);
-          // Add the Papify writing function to the loop
-          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
-        }
-        // Save the functionCall in the dagvertexFunctionCall Map
-        this.dagVertexCalls.put(dagVertex, functionCall);
-
-        // Generate the init FunctionCall (if any)
-        final Prototype initPrototype = prototypes.getInitPrototype();
-        if (initPrototype != null) {
-          if (!initPrototype.getIsStandardC()) {
-            throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
-          }
-
-          final FunctionCall functionCall2 = generateFunctionCall(dagVertex, initPrototype, true);
-
-          registerCallVariableToCoreBlock(operatorBlock, functionCall2);
-          // Add the function call to the operatorBlock
-          operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
-        }
-      } else {
+      if (prototypes == null) {
         // If the actor has no refinement
         throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
             + " Associate a refinement to this actor before generating code.");
+      }
+      // Generate the loop functionCall
+      final Prototype loopPrototype = prototypes.getLoopPrototype();
+      if (loopPrototype == null) {
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
+      }
+      if (!loopPrototype.getIsStandardC()) {
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+      }
+      // adding the call to the FPGA load functions only once. The printFpgaLoad will
+      // return a no-null string only with the right printer and nothing for the others
+      // Visit all codeElements already present in the InitBlock
+      final EList<CodeElt> codeElts = operatorBlock.getInitBlock().getCodeElts();
+      if (codeElts.isEmpty()) {
+        final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex, loopPrototype,
+            false);
+        // Add the function call to load the hardware accelerators into the FPGA (when needed)
+        operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
+        // Add also the GlobalBufferDeclaration just after the fpga load, before the loop
+        final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
+            loopPrototype, false);
+        operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
+      }
+      final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
+          loopPrototype, false);
+      final FreeDataTransferBuffer freeDataTransferBufferFunctionCall = generateFreeDataTransferBuffer(dagVertex,
+          loopPrototype, false);
+      final DataTransferAction dataTransferActionFunctionCall = generateDataTransferFunctionCall(dagVertex,
+          loopPrototype, false);
+      final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
+          loopPrototype, false);
+      final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
+
+      boolean monitoringTiming = false;
+      boolean monitoringEvents = false;
+      final PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
+      final Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
+      // Check if this actor has a monitoring configuration
+      final PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
+      final AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
+      if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
+        // Add the papify action variable
+        papifyActionS.setName("papify_actions_".concat(dagVertex.getName()));
+        papifyActionS.setType("papify_action_s");
+        papifyActionS.setComment("papify configuration variable");
+        operatorBlock.getDefinitions().add(papifyActionS);
+
+        // Add the function to configure the monitoring in this PE (operatorBlock)
+        papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+
+        // Add the function to configure the monitoring in this PE (operatorBlock)
+        if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
+          this.papifiedPEs.add(operatorBlock.getName());
+          // Create the variable associated to the PE id
+          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
+          final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
+              papifyConfig, papifyPEId);
+          operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
+        } else {
+          // Create the variable associated to the PE id
+          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
+        }
+
+        // Add the function to configure the monitoring of this actor (dagVertex)
+        final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(dagVertex,
+            papifyConfig, papifyActionS);
+        operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
+
+        // What are we monitoring?
+        monitoringEvents = papifyConfig.isMonitoringEvents(referencePiVertex);
+        monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
+        if (monitoringEvents) {
+          // Generate Papify start function for events
+          final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
+              papifyActionS);
+          // Add the Papify start function for events to the loop
+          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
+        }
+
+        if (monitoringTiming) {
+          // Generate Papify start timing function
+          final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
+              papifyPEId, papifyActionS);
+          // Add the Papify start timing function to the loop
+          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
+        }
+      }
+      // Add the function call for RegisterSetUp to the loopBlock just before the function call
+      operatorBlock.getLoopBlock().getCodeElts().add(registerSetUpActionFunctionCall);
+      // Add the function call for DataTransfer to the loopBlock just before the function call
+      operatorBlock.getLoopBlock().getCodeElts().add(dataTransferActionFunctionCall);
+
+      registerCallVariableToCoreBlock(operatorBlock, functionCall);
+      // Add the function call to the operatorBlock
+      operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
+      // Free buffer data transfer that may be used freeDataTransferBufferFunctionCall
+      operatorBlock.getLoopBlock().getCodeElts().add(freeDataTransferBufferFunctionCall);
+      // Add the function call for OutputDataTransfer to the loopBlock just after the function call
+      operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
+
+      if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
+        if (monitoringTiming) {
+          // Generate Papify stop timing function
+          final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
+              papifyPEId, papifyActionS);
+          // Add the Papify stop timing function to the loop
+          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
+        }
+        if (monitoringEvents) {
+          // Generate Papify stop function for events
+          final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
+              papifyActionS);
+          // Add the Papify stop function for events to the loop
+          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
+        }
+        // Generate Papify writing function
+        final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, papifyPEId,
+            papifyActionS);
+        // Add the Papify writing function to the loop
+        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
+      }
+      // Save the functionCall in the dagvertexFunctionCall Map
+      this.dagVertexCalls.put(dagVertex, functionCall);
+
+      // Generate the init FunctionCall (if any)
+      final Prototype initPrototype = prototypes.getInitPrototype();
+      if (initPrototype != null) {
+        if (!initPrototype.getIsStandardC()) {
+          throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+        }
+
+        final FunctionCall functionCall2 = generateFunctionCall(dagVertex, initPrototype, true);
+
+        registerCallVariableToCoreBlock(operatorBlock, functionCall2);
+        // Add the function call to the operatorBlock
+        operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
       }
     }
 
@@ -946,8 +944,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             // dagEdgeBuffer.setSize(dagEdgeSize);
             dagEdgeBuffer
                 .setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTokenTypeSizeInBit()));
-            DistributedBuffer duplicatedBuffer = generateDistributedBuffer(this.dagEdgeBuffers.get(originalDagEdge),
-                dagEdgeBuffer);
+            final DistributedBuffer duplicatedBuffer = generateDistributedBuffer(
+                this.dagEdgeBuffers.get(originalDagEdge), dagEdgeBuffer);
             this.dagEdgeBuffers.put(originalDagEdge, duplicatedBuffer);
             /**
              * Notes for future development of this feature If you are reading this because you want to adapt the code
@@ -1023,9 +1021,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           this.dagFifoBuffers.put(key, value);
         }
         if (source.startsWith(MemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
-          this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(fifoBuffer, value.getValue()));
+          this.dagFifoBuffers.put(key, new Pair<>(fifoBuffer, value.getValue()));
         } else {
-          this.dagFifoBuffers.put(key, new Pair<Buffer, Buffer>(value.getKey(), fifoBuffer));
+          this.dagFifoBuffers.put(key, new Pair<>(value.getKey(), fifoBuffer));
         }
       }
     }
@@ -1083,7 +1081,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.OUTPUT:
           final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
           for (final DAGEdge edge : outEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a receive vertex
               if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
@@ -1096,7 +1094,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.INPUT:
           final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
           for (final DAGEdge edge : inEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a send vertex
               if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
@@ -1122,13 +1120,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Variable
       final Variable varFirstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
       Variable var = null;
-      if (varFirstFound instanceof DistributedBuffer) {
-        DistributedBuffer distributedBuffer = (DistributedBuffer) varFirstFound;
-        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
-        String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
-        for (Buffer bufferRepeatedChecker : repeatedBuffers) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
-          SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+      if (varFirstFound instanceof final DistributedBuffer distributedBuffer) {
+        final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+        final String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
+        for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
+          final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+          final SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
           if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
             var = subBufferChecker;
             break;
@@ -1231,7 +1228,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.OUTPUT:
           final Set<DAGEdge> outEdges = this.algo.outgoingEdgesOf(dagVertex);
           for (final DAGEdge edge : outEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a receive vertex
               if (buffProperty.getSourceOutputPortID().equals(arg.getName()) && edge.getTarget().getKind() != null) {
@@ -1244,7 +1241,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         case CodeGenArgument.INPUT:
           final Set<DAGEdge> inEdges = this.algo.incomingEdgesOf(dagVertex);
           for (final DAGEdge edge : inEdges) {
-            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+            final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
             for (final BufferProperties buffProperty : bufferAggregate) {
               // check that this edge is not connected to a send vertex
               if (buffProperty.getDestInputPortID().equals(arg.getName()) && edge.getSource().getKind() != null) {
@@ -1270,13 +1267,12 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Variable
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
       Buffer buffer = null;
-      String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
-      if (firstFound instanceof DistributedBuffer) {
-        DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
-        for (Buffer repeatedBufferChecker : repeatedBuffers) {
-          SubBuffer repeatedSubBuffer = (SubBuffer) repeatedBufferChecker;
-          SubBuffer repeatedContainer = (SubBuffer) repeatedSubBuffer.getContainer();
+      final String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
+      if (firstFound instanceof final DistributedBuffer distributedBuffer) {
+        final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+        for (final Buffer repeatedBufferChecker : repeatedBuffers) {
+          final SubBuffer repeatedSubBuffer = (SubBuffer) repeatedBufferChecker;
+          final SubBuffer repeatedContainer = (SubBuffer) repeatedSubBuffer.getContainer();
           if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
             buffer = repeatedSubBuffer;
             break;
@@ -1375,7 +1371,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
     final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+        .getValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
@@ -1385,16 +1381,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // Find the corresponding DAGEdge buffer(s)
     final DAGEdge dagEdge = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
+        .getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE);
     final Buffer buffer = this.dagEdgeBuffers.get(dagEdge);
     if (buffer == null) {
       throw new PreesmRuntimeException("No buffer found for edge" + dagEdge);
     }
     newComm.setData(buffer);
     newComm.getParameters().clear();
-    if (buffer != null) {
-      newComm.addParameter(buffer, PortDirection.NONE);
-    }
+    newComm.addParameter(buffer, PortDirection.NONE);
 
     // Set the name of the communication
     // SS <=> Start Send
@@ -1419,9 +1413,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
     newCommZoneComplement.setData(buffer);
     newCommZoneComplement.getParameters().clear();
-    if (buffer != null) {
-      newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
-    }
+    newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
 
     newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
     for (final ComponentInstance comp : routeStep.getNodes()) {
@@ -1470,7 +1462,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     newComm.setDirection(dir);
     newComm.setDelimiter(delimiter);
     final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+        .getValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP);
     for (final ComponentInstance comp : routeStep.getNodes()) {
       final CommunicationNode comNode = CodegenModelUserFactory.eINSTANCE.createCommunicationNode();
       comNode.setName(comp.getInstanceName());
@@ -1480,14 +1472,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // Find the corresponding DAGEdge buffer(s)
     final DAGEdge dagEdge = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_correspondingDagEdge);
+        .getValue(ImplementationPropertyNames.SEND_RECEIVE_CORRESPONDING_DAG_EDGE);
     final DistributedBuffer distributedBuffer = (DistributedBuffer) this.dagEdgeBuffers.get(dagEdge);
     final String coreBlockName = operatorBlock.getName();
 
     final List<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
     Buffer buffer = null;
-    for (Buffer bufferRepeatedChecker : repeatedBuffers) {
-      SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+    for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
+      final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
       if (subBufferChecker.getContainer().getName().equals(coreBlockName)) {
         buffer = subBufferChecker;
         break;
@@ -1499,9 +1491,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     newComm.setData(buffer);
     newComm.getParameters().clear();
-    if (buffer != null) {
-      newComm.addParameter(buffer, PortDirection.NONE);
-    }
+    newComm.addParameter(buffer, PortDirection.NONE);
 
     // Set the name of the communication
     // SS <=> Start Send
@@ -1526,9 +1516,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     newCommZoneComplement.setDelimiter((delimiter.equals(Delimiter.START)) ? Delimiter.END : Delimiter.START);
     newCommZoneComplement.setData(buffer);
     newCommZoneComplement.getParameters().clear();
-    if (buffer != null) {
-      newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
-    }
+    newCommZoneComplement.addParameter(buffer, PortDirection.NONE);
 
     newCommZoneComplement.setName(((newComm.getDirection().equals(Direction.SEND)) ? "SE" : "RS") + commName);
     for (final ComponentInstance comp : routeStep.getNodes()) {
@@ -1597,13 +1585,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
     // There might be more than one edge, if one is connected to a
     // send/receive
-    Buffer buffer = null;
+    Buffer buffer;
     DAGEdge edge = null;
     for (final DAGEdge currentEdge : edges) {
       final DAGVertex source = currentEdge.getSource();
       final DAGVertex target = currentEdge.getTarget();
-      if (source.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
-          && target.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)) {
+      if (source.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)
+          && target.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
+              .equals(VertexType.TASK)) {
         edge = currentEdge;
       }
     }
@@ -1612,7 +1601,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           "DAGVertex " + dagVertex + " is not connected to any " + VertexType.TYPE_TASK + " vertex.");
     }
 
-    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate aggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     final BufferProperties bufferProperty = aggregate.get(0);
     buffer = this.srSDFEdgeBuffers.get(bufferProperty);
     if (buffer == null) {
@@ -1881,13 +1870,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final PapifyFunctionCall configurePapifyPE = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     configurePapifyPE.setName("configure_papify_PE");
     // Create the variable associated to the PE name
-    ConstantString papifyPEName = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final ConstantString papifyPEName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyPEName.setValue(operatorBlock.getName());
     // Create the variable associated to the PAPI component
     String componentsSupported = "";
-    ConstantString papifyComponentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final ConstantString papifyComponentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     final Component component = scenario.getDesign().getComponent(operatorBlock.getCoreType());
-    for (PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
+    for (final PapiComponent papiComponent : papifyConfig.getSupportedPapiComponents(component)) {
       if (componentsSupported.equals("")) {
         componentsSupported = papiComponent.getId();
       } else {
@@ -1926,61 +1915,61 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     func.setName("configure_papify_actor");
 
     // Add the PAPI component name
-    AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-    EList<String> compsWithConfig = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
+    final AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
+    final EList<String> compsWithConfig = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
     String compNames = "";
-    for (String compName : compsWithConfig) {
+    for (final String compName : compsWithConfig) {
       if (compNames.equals("")) {
         compNames = compName;
       } else {
         compNames = compNames.concat(",").concat(compName);
       }
     }
-    ConstantString componentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final ConstantString componentName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     componentName.setName("component_name".concat(dagVertex.getName()));
     componentName.setValue(compNames);
     componentName.setComment("PAPI component name");
 
     // Add the size of the configs
-    Constant numConfigs = CodegenModelUserFactory.eINSTANCE.createConstant();
+    final Constant numConfigs = CodegenModelUserFactory.eINSTANCE.createConstant();
     numConfigs.setName("numConfigs");
     numConfigs.setValue(compsWithConfig.size());
 
     // Add the actor name
-    String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
-    ConstantString actorName = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final String actorOriginalIdentifier = papifyConfig.getActorOriginalIdentifier(referencePiVertex);
+    final ConstantString actorName = CodegenModelUserFactory.eINSTANCE.createConstantString();
     actorName.setName("actor_name".concat(actorOriginalIdentifier));
     actorName.setValue(actorOriginalIdentifier);
     actorName.setComment("Actor name");
 
     // Add the PAPI event names
-    EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
+    final EList<PapiEvent> actorEvents = papifyConfig.getActorAssociatedEvents(referencePiVertex);
     String eventNames = "";
-    for (PapiEvent oneEvent : actorEvents) {
+    for (final PapiEvent oneEvent : actorEvents) {
       if (eventNames.equals("")) {
         eventNames = oneEvent.getName();
       } else {
         eventNames = eventNames.concat(",").concat(oneEvent.getName());
       }
     }
-    ConstantString eventSetNames = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final ConstantString eventSetNames = CodegenModelUserFactory.eINSTANCE.createConstantString();
     eventSetNames.setName("allEventNames");
     eventSetNames.setValue(eventNames);
     eventSetNames.setComment("Papify events");
 
     // Add the size of the CodeSet
-    Constant codeSetSize = CodegenModelUserFactory.eINSTANCE.createConstant();
+    final Constant codeSetSize = CodegenModelUserFactory.eINSTANCE.createConstant();
     codeSetSize.setName("CodeSetSize");
     codeSetSize.setValue(actorEvents.size());
 
     // Set the id associated to the Papify configuration
-    EList<String> actorSupportedComps = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
+    final EList<String> actorSupportedComps = papifyConfig.getActorAssociatedPapiComponents(referencePiVertex);
     String configIds = "";
-    for (String papiComponent : actorSupportedComps) {
-      EList<PapiEvent> oneConfig = papifyConfig.getActorComponentEvents(referencePiVertex, papiComponent);
+    for (final String papiComponent : actorSupportedComps) {
+      final EList<PapiEvent> oneConfig = papifyConfig.getActorComponentEvents(referencePiVertex, papiComponent);
       boolean found = false;
       int positionConfig = -1;
-      for (EList<PapiEvent> storedConfig : this.configsAdded) {
+      for (final EList<PapiEvent> storedConfig : this.configsAdded) {
         if (EcoreUtil.equals(storedConfig, oneConfig)) {
           found = true;
           positionConfig = this.configsAdded.indexOf(storedConfig);
@@ -1996,19 +1985,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         configIds = configIds.concat(",").concat(Integer.toString(positionConfig));
       }
     }
-    ConstantString papifyConfigNumber = CodegenModelUserFactory.eINSTANCE.createConstantString();
+    final ConstantString papifyConfigNumber = CodegenModelUserFactory.eINSTANCE.createConstantString();
     papifyConfigNumber.setName("PAPIFY_configs_".concat(dagVertex.getName()));
     papifyConfigNumber.setValue(configIds);
     papifyConfigNumber.setComment("PAPIFY actor configs");
 
     // Add the function parameters
-    func.addParameter((Variable) papifyActionS, PortDirection.OUTPUT);
-    func.addParameter((Variable) componentName, PortDirection.INPUT);
-    func.addParameter((Variable) actorName, PortDirection.INPUT);
-    func.addParameter((Variable) codeSetSize, PortDirection.INPUT);
-    func.addParameter((Variable) eventSetNames, PortDirection.INPUT);
-    func.addParameter((Variable) papifyConfigNumber, PortDirection.INPUT);
-    func.addParameter((Variable) numConfigs, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.OUTPUT);
+    func.addParameter(componentName, PortDirection.INPUT);
+    func.addParameter(actorName, PortDirection.INPUT);
+    func.addParameter(codeSetSize, PortDirection.INPUT);
+    func.addParameter(eventSetNames, PortDirection.INPUT);
+    func.addParameter(papifyConfigNumber, PortDirection.INPUT);
+    func.addParameter(numConfigs, PortDirection.INPUT);
 
     // Add the function comment
     func.setActorName("Papify --> configure papification of ".concat(dagVertex.getName()));
@@ -2036,7 +2025,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start");
     // Add the function parameters
-    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
 
     // Add the function actor name
@@ -2063,7 +2052,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Create the corresponding FunctionCall
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_start_papify_timing");
-    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
     // Add the function actor name
     func.setActorName(dagVertex.getName());
@@ -2090,7 +2079,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop");
     // Add the function parameters
-    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
 
     // Add the function actor name
@@ -2118,7 +2107,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_stop_papify_timing");
     // Add the function parameters
-    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
 
     // Add the function actor name
@@ -2146,7 +2135,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final PapifyFunctionCall func = CodegenModelUserFactory.eINSTANCE.createPapifyFunctionCall();
     func.setName("event_write_file");
     // Add the function parameters
-    func.addParameter((Variable) papifyActionS, PortDirection.INPUT);
+    func.addParameter(papifyActionS, PortDirection.INPUT);
     func.addParameter(papifyPEId, PortDirection.INPUT);
 
     // Add the function actor name
@@ -2168,8 +2157,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         continue;
       }
       // If neither source nor target is a task then return
-      if (!source.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType).equals(VertexType.TASK)
-          || !target.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      if (!source.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)
+          || !target.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
               .equals(VertexType.TASK)) {
         return;
       }
@@ -2181,7 +2170,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       // Find the corresponding BufferProperty
       BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       for (final BufferProperties subBufferProperties : buffers) {
         // The source and target actor are the same, check that the
         // ports are corrects
@@ -2199,18 +2188,17 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Buffer
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
       Buffer buffer = null;
-      if (firstFound instanceof DistributedBuffer) {
+      if (firstFound instanceof final DistributedBuffer distributedBuffer) {
         String coreBlockName = "";
         if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
           coreBlockName = source.getPropertyStringValue(OPERATOR_LITERAL);
         } else {
           coreBlockName = target.getPropertyStringValue(OPERATOR_LITERAL);
         }
-        DistributedBuffer distributedBuffer = (DistributedBuffer) firstFound;
-        EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
-        for (Buffer bufferRepeatedChecker : repeatedBuffers) {
-          SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
-          SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+        final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+        for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
+          final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+          final SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
           if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
             buffer = subBufferChecker;
             break;
@@ -2311,9 +2299,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           + direction + "edge. Check the exported DAG.");
     }
     for (final DAGEdge edge : candidates) {
-      if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+      if (edge.getSource().getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
           .equals(VertexType.TASK)
-          && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
+          && edge.getTarget().getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
               .equals(VertexType.TASK)) {
         lastEdge = edge;
       }
@@ -2326,18 +2314,17 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           specialCall.getType().getName() + " vertex " + dagVertex + "is not properly connected.");
     }
 
-    final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate bufferAggregate = lastEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     // there should be only one buffer in the aggregate
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
     Buffer lastBuffer = null;
-    if (lastBufferFirstFound instanceof DistributedBuffer) {
-      String coreBlockName = operatorBlock.getName();
-      DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
-      EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
-      for (Buffer bufferRepeatedChecker : repeatedBuffers) {
-        SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
-        SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+    if (lastBufferFirstFound instanceof final DistributedBuffer distributedBuffer) {
+      final String coreBlockName = operatorBlock.getName();
+      final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+      for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
+        final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+        final SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
         if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
           lastBuffer = subBufferChecker;
           break;
@@ -2357,8 +2344,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     operatorBlock.getLoopBlock().getCodeElts().add(specialCall);
     this.dagVertexCalls.put(dagVertex, specialCall);
 
-    identifyMergedInputRange(new AbstractMap.SimpleEntry<List<Variable>, List<PortDirection>>(
-        specialCall.getParameters(), specialCall.getParameterDirections()));
+    identifyMergedInputRange(
+        new AbstractMap.SimpleEntry<>(specialCall.getParameters(), specialCall.getParameterDirections()));
     registerCallVariableToCoreBlock(operatorBlock, specialCall);
   }
 
@@ -2380,7 +2367,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         }
 
         if (correspondingEdge == null) {
-          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
           if (buffAggr != null && !buffAggr.isEmpty()) {
             final BufferProperties bufferProperties = buffAggr.get(0);
             final String destInputPortID = bufferProperties.getDestInputPortID();
@@ -2393,9 +2380,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
       if (correspondingEdge == null) {
         throw new PreesmRuntimeException("No corresponding edge found for source port " + source);
-      } else {
-        orderedList.add(correspondingEdge);
       }
+      orderedList.add(correspondingEdge);
     }
     return orderedList;
   }
@@ -2418,7 +2404,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           }
         }
         if (correspondingEdge == null) {
-          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
           if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
             for (final BufferProperties bufferProperty : bufferAggregate) {
               final String sourceOutputPortID = bufferProperty.getSourceOutputPortID();
@@ -2432,9 +2418,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
       if (correspondingEdge == null) {
         throw new PreesmRuntimeException("No corresponding edge found for sink port " + sink);
-      } else {
-        orderedList.add(correspondingEdge);
       }
+      orderedList.add(correspondingEdge);
     }
     return orderedList;
   }
@@ -2455,7 +2440,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected long generateSubBuffers(final Buffer parentBuffer, final DAGEdge dagEdge) {
 
-    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
 
     // Retrieve the corresponding memory object from the MEG
     final MemoryExclusionVertex memObject = findMObject(dagEdge);
@@ -2549,9 +2534,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     /*
      * Backup original
      */
-    Map<BufferProperties, Buffer> backUpOriginal = new LinkedHashMap<>();
+    final Map<BufferProperties, Buffer> backUpOriginal = new LinkedHashMap<>();
 
-    BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+    final BufferAggregate buffers = dagEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
     for (final BufferProperties subBufferProperties : buffers) {
       final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
       backUpOriginal.put(subBufferProperties, buff);
@@ -2564,7 +2549,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     /*
      * Get new buffers
      */
-    Map<BufferProperties, Buffer> newBuffers = new LinkedHashMap<>();
+    final Map<BufferProperties, Buffer> newBuffers = new LinkedHashMap<>();
     for (final BufferProperties subBufferProperties : buffers) {
       final Buffer buff = this.srSDFEdgeBuffers.get(subBufferProperties);
       newBuffers.put(subBufferProperties, buff);
@@ -2573,7 +2558,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
      * Generate and store repeated buffers
      */
     for (final BufferProperties subBufferProperties : buffers) {
-      DistributedBuffer duplicatedBuffer = generateDistributedBuffer(backUpOriginal.get(subBufferProperties),
+      final DistributedBuffer duplicatedBuffer = generateDistributedBuffer(backUpOriginal.get(subBufferProperties),
           newBuffers.get(subBufferProperties));
       this.srSDFEdgeBuffers.put(subBufferProperties, duplicatedBuffer);
     }
@@ -2592,9 +2577,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
 
-    DistributedBuffer duplicatedBuffer = CodegenModelUserFactory.eINSTANCE.createDistributedBuffer();
-    if (originalBuffer instanceof DistributedBuffer) {
-      duplicatedBuffer.getDistributedCopies().addAll(((DistributedBuffer) originalBuffer).getDistributedCopies());
+    final DistributedBuffer duplicatedBuffer = CodegenModelUserFactory.eINSTANCE.createDistributedBuffer();
+    if (originalBuffer instanceof final DistributedBuffer distributedBuffer) {
+      duplicatedBuffer.getDistributedCopies().addAll(distributedBuffer.getDistributedCopies());
     } else {
       duplicatedBuffer.getDistributedCopies().add(originalBuffer);
     }
@@ -2641,7 +2626,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // Check that it has an IDL refinement.
-    if (!(refinement instanceof CodeRefinement) || (((CodeRefinement) refinement).getLanguage() != Language.IDL)) {
+    if (!(refinement instanceof final CodeRefinement cRef) || (cRef.getLanguage() != Language.IDL)) {
       throw new PreesmRuntimeException("generateFunctionCall was called with a DAG Vertex withoud IDL");
     }
 
@@ -2649,17 +2634,16 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
 
-    IPath path = ((CodeRefinement) refinement).getPath();
-    IFile idlFile = root.getFile(path);
+    final IPath path = ((CodeRefinement) refinement).getPath();
+    final IFile idlFile = root.getFile(path);
 
     // Retrieve the ActorPrototype
     if (idlFile != null) {
       final IPath rawPath = idlFile.getRawLocation();
       final String rawLocation = rawPath.toOSString();
       return IDLPrototypeFactory.INSTANCE.create(rawLocation);
-    } else {
-      throw new NullPointerException();
     }
+    throw new NullPointerException();
   }
 
   /**
@@ -2690,14 +2674,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final List<Pair<Buffer, Range>> outputRanges = new ArrayList<>();
     for (final Buffer output : outputs) {
       // If the input is not a NullBufer
-      if (!(output instanceof NullBuffer)) {
+      if (!(output instanceof final NullBuffer nullBuffer)) {
         // Find the parent Buffer container b
         // and the offset within b.
         int start = 0;
         Buffer b = output;
-        while (b instanceof SubBuffer) {
-          start += ((SubBuffer) b).getOffsetInBit();
-          b = ((SubBuffer) b).getContainer();
+        while (b instanceof final SubBuffer subBuffer) {
+          start += subBuffer.getOffsetInBit();
+          b = subBuffer.getContainer();
         }
         final long end = start + (output.getNbToken() * output.getTokenTypeSizeInBit());
 
@@ -2706,7 +2690,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       } else {
         // The output is a NullBuffer (i.e. it is divided)
         // Find the allocation of its ranges
-        final DAGEdge dagEdge = this.dagEdgeBuffers.inverse().get(((NullBuffer) output).getContainer());
+        final DAGEdge dagEdge = this.dagEdgeBuffers.inverse().get(nullBuffer.getContainer());
 
         // Get the real ranges from the memObject
         final MemoryExclusionVertex mObject = findMObject(dagEdge);
@@ -2724,9 +2708,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           // Get the allocated range
           long start = realRange.getValue().getValue().getStart();
           Buffer b = hostBuffer;
-          while (b instanceof SubBuffer) {
-            start += ((SubBuffer) b).getOffsetInBit();
-            b = ((SubBuffer) b).getContainer();
+          while (b instanceof final SubBuffer subBuffer) {
+            start += subBuffer.getOffsetInBit();
+            b = subBuffer.getContainer();
           }
           final long end = start + realRange.getValue().getValue().getLength();
           // Save allocated range
@@ -2738,38 +2722,42 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Find if an inputBuffer has an overlap with an outputRange
     // For each input find the allocated range
     for (final Buffer input : inputs) {
+
+      if (input instanceof NullBuffer) {
+        continue;
+      }
+
       // If the input is not a NullBufer
-      if (!(input instanceof NullBuffer)) {
-        // Find the parent Buffer container b
-        // and the offset within b.
-        int start = 0;
-        Buffer b = input;
-        while (b instanceof SubBuffer) {
-          start += ((SubBuffer) b).getOffsetInBit();
-          b = ((SubBuffer) b).getContainer();
-        }
-        final long end = start + (input.getNbToken() * input.getTokenTypeSizeInBit());
 
-        // Find the input range that are also covered by the output
-        // ranges
-        List<Range> inRanges = new ArrayList<>();
-        inRanges.add(new Range(start, end));
+      // Find the parent Buffer container b
+      // and the offset within b.
+      int start = 0;
+      Buffer b = input;
+      while (b instanceof final SubBuffer subBuffer) {
+        start += subBuffer.getOffsetInBit();
+        b = subBuffer.getContainer();
+      }
+      final long end = start + (input.getNbToken() * input.getTokenTypeSizeInBit());
 
-        // Check output ranges one by one
-        for (final Pair<Buffer, Range> outputRange : outputRanges) {
-          if (outputRange.getKey() == b) {
-            inRanges = Range.difference(inRanges, outputRange.getValue());
-          }
-        }
-        List<Range> mergedRanges = new ArrayList<>();
-        mergedRanges.add(new Range(start, end));
-        mergedRanges = Range.difference(mergedRanges, inRanges);
+      // Find the input range that are also covered by the output
+      // ranges
+      List<Range> inRanges = new ArrayList<>();
+      inRanges.add(new Range(start, end));
 
-        // Save only if a part of the input buffer is merged
-        if (!mergedRanges.isEmpty()) {
-          Range.translate(mergedRanges, -start);
-          input.setMergedRange(new BasicEList<>(mergedRanges));
+      // Check output ranges one by one
+      for (final Pair<Buffer, Range> outputRange : outputRanges) {
+        if (outputRange.getKey() == b) {
+          inRanges = Range.difference(inRanges, outputRange.getValue());
         }
+      }
+      List<Range> mergedRanges = new ArrayList<>();
+      mergedRanges.add(new Range(start, end));
+      mergedRanges = Range.difference(mergedRanges, inRanges);
+
+      // Save only if a part of the input buffer is merged
+      if (!mergedRanges.isEmpty()) {
+        Range.translate(mergedRanges, -start);
+        input.setMergedRange(new BasicEList<>(mergedRanges));
       }
     }
 
@@ -2866,14 +2854,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    */
   protected void registerCallVariableToCoreBlock(final CoreBlock operatorBlock, final Call call) {
     // Register the core Block as a user of the function variable
-    for (final Variable var : call.getParameters()) {
+    for (final Variable variable : call.getParameters()) {
       // Currently, constants do not need to be declared nor
       // have creator since their value is directly used.
       // Consequently the used block can also be declared as the creator
-      if (var instanceof Constant) {
-        var.reaffectCreator(operatorBlock);
+      if (variable instanceof Constant) {
+        variable.reaffectCreator(operatorBlock);
       }
-      var.getUsers().add(operatorBlock);
+      variable.getUsers().add(operatorBlock);
     }
   }
 
@@ -2901,7 +2889,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // way to retrieve the target and source of the communication
     // corresponding to the current Send/ReceiveVertex
     final SlamMessageRouteStep routeStep = dagVertex.getPropertyBean()
-        .getValue(ImplementationPropertyNames.SendReceive_routeStep);
+        .getValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP);
 
     String commID = routeStep.getSender().getInstanceName();
     commID += "__" + dagEdge.getSource().getName();

@@ -75,9 +75,8 @@ public class WorkspaceUtils {
 
     if (relative.startsWith("/" + projectName)) {
       return relative;
-    } else {
-      absolute = "/" + projectName + "/" + relative;
     }
+    absolute = "/" + projectName + "/" + relative;
 
     return absolute;
   }
@@ -204,8 +203,8 @@ public class WorkspaceUtils {
       WorkspaceUtils.createMissingFolders(resource.getParent());
     }
     // If resource is a folder, create it
-    if (resource instanceof IFolder) {
-      ((IFolder) resource).create(IResource.NONE, true, null);
+    if (resource instanceof final IFolder folder) {
+      folder.create(IResource.NONE, true, null);
     }
   }
 
@@ -228,8 +227,8 @@ public class WorkspaceUtils {
       final IProgressMonitor monitor) throws CoreException {
     if (!folder.exists()) {
       final IContainer parent = folder.getParent();
-      if (parent instanceof IFolder) {
-        WorkspaceUtils.createFolder((IFolder) parent, force, local, null);
+      if (parent instanceof final IFolder parentFolder) {
+        WorkspaceUtils.createFolder(parentFolder, force, local, null);
       }
       folder.create(force, local, monitor);
     }

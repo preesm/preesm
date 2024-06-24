@@ -38,7 +38,6 @@
  */
 package org.preesm.ui.pisdf.properties;
 
-import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.ecore.EObject;
@@ -129,6 +128,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
   /** The first column width. */
   private static final int FIRST_COLUMN_WIDTH = 150;
+
+  private static final String NONE = "(none)";
 
   /*
    * (non-Javadoc)
@@ -533,130 +534,126 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
    */
   @Override
   public void refresh() {
-    final PictogramElement pe = getSelectedPictogramElement();
 
-    if (pe != null) {
-      final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-      if (bo == null) {
-        return;
+    final PictogramElement pe = getSelectedPictogramElement();
+    if (pe == null) {
+      return;
+    }
+
+    final Object bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+    if ((bo == null) || (!(bo instanceof ExecutableActor) && !(bo instanceof Delay))) {
+      return;
+    }
+
+    AbstractActor executableActor = null;
+    if (bo instanceof final Delay delay) {
+      executableActor = delay.getActor();
+    } else {
+      executableActor = (AbstractActor) bo;
+    }
+    this.txtNameObj.setEnabled(false);
+    if ((executableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
+      this.txtNameObj.setText("");
+    } else if (this.txtNameObj.getText().compareTo(executableActor.getName()) != 0) {
+      this.txtNameObj.setText(executableActor.getName());
+    }
+    this.txtNameObj.setEnabled(!(bo instanceof Delay));
+
+    if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
+
+      Refinement refinement = null;
+      boolean enabled = true;
+      if (bo instanceof final Delay delay) {
+        enabled = delay.getLevel() == PersistenceLevel.PERMANENT;
+        refinement = delay.getActor().getRefinement();
+      } else {
+        refinement = ((RefinementContainer) bo).getRefinement();
+      }
+      if ((refinement == null) || (refinement.getFilePath() == null)) {
+        this.lblRefinementObj.setText(NONE);
+        this.lblRefinementView.setText(NONE);
+        this.butRefinementClear.setEnabled(false);
+        this.butRefinementBrowse.setEnabled(enabled);
+        this.butRefinementOpen.setEnabled(false);
+      } else {
+        final IPath path = new Path(refinement.getFilePath());
+        final String text = path.lastSegment();
+        this.lblRefinementObj.setText(text);
+
+        String view = "";
+
+        if (refinement instanceof final CHeaderRefinement cHeaderRefinement) {
+          String tooltip = "";
+          // Max length
+          int maxLength = (int) ((this.composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
+          maxLength = Math.max(maxLength, 40);
+          if (cHeaderRefinement.getLoopPrototype() != null) {
+            final String loop = "loop: " + PrototypeFormatter.format(cHeaderRefinement.getLoopPrototype());
+            view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
+            tooltip = loop;
+          }
+          if (cHeaderRefinement.getInitPrototype() != null) {
+            final String init = "\ninit: " + PrototypeFormatter.format(cHeaderRefinement.getInitPrototype());
+            view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
+            tooltip += init;
+          }
+          this.lblRefinementView.setToolTipText(tooltip);
+        }
+        this.lblRefinementView.setText(view);
+        this.butRefinementClear.setEnabled(true);
+        this.butRefinementBrowse.setEnabled(enabled);
+        this.butRefinementOpen.setEnabled(true);
       }
 
-      if (bo instanceof ExecutableActor || bo instanceof Delay) {
+      this.lblRefinement.setVisible(true);
+      this.lblRefinementObj.setVisible(true);
+      this.lblRefinementView.setVisible(true);
+      this.butRefinementClear.setVisible(true);
+      this.butRefinementBrowse.setVisible(true);
+      this.butRefinementOpen.setVisible(true);
 
-        AbstractActor executableActor = null;
-        if (bo instanceof Delay) {
-          executableActor = ((Delay) bo).getActor();
+      if (bo instanceof final Actor actor) {
+        if (actor.getMemoryScriptPath() == null) {
+          this.lblMemoryScriptObj.setText(NONE);
+          this.butMemoryScriptClear.setEnabled(false);
+          this.butMemoryScriptBrowse.setEnabled(true);
+          this.butMemoryScriptOpen.setEnabled(false);
         } else {
-          executableActor = (AbstractActor) bo;
+          final IPath path = new Path(actor.getMemoryScriptPath());
+          final String text = path.lastSegment();
+
+          this.lblMemoryScriptObj.setText(text);
+          this.butMemoryScriptClear.setEnabled(true);
+          this.butMemoryScriptBrowse.setEnabled(true);
+          this.butMemoryScriptOpen.setEnabled(true);
         }
-        this.txtNameObj.setEnabled(false);
-        if ((executableActor.getName() == null) && (!this.txtNameObj.getText().isEmpty())) {
-          this.txtNameObj.setText("");
-        } else if (this.txtNameObj.getText().compareTo(executableActor.getName()) != 0) {
-          this.txtNameObj.setText(executableActor.getName());
-        }
-        this.txtNameObj.setEnabled(!(bo instanceof Delay));
+        this.lblMemoryScript.setVisible(true);
+        this.lblMemoryScriptObj.setVisible(true);
+        this.butMemoryScriptClear.setVisible(true);
+        this.butMemoryScriptBrowse.setVisible(true);
+        this.butMemoryScriptOpen.setVisible(true);
+      } else {
+        this.lblMemoryScript.setVisible(false);
+        this.lblMemoryScriptObj.setVisible(false);
+        this.butMemoryScriptClear.setVisible(false);
+        this.butMemoryScriptBrowse.setVisible(false);
+        this.butMemoryScriptOpen.setVisible(false);
+      }
 
-        if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
-
-          Refinement refinement = null;
-          boolean enabled = true;
-          if (bo instanceof Delay) {
-            enabled = ((Delay) bo).getLevel() == PersistenceLevel.PERMANENT;
-            refinement = ((Delay) bo).getActor().getRefinement();
-          } else {
-            refinement = ((RefinementContainer) bo).getRefinement();
-          }
-          if ((refinement == null) || (refinement.getFilePath() == null)) {
-            this.lblRefinementObj.setText("(none)");
-            this.lblRefinementView.setText("(none)");
-            this.butRefinementClear.setEnabled(false);
-            this.butRefinementBrowse.setEnabled(enabled);
-            this.butRefinementOpen.setEnabled(false);
-          } else {
-            final IPath path = Optional.ofNullable(refinement.getFilePath()).map(Path::new).orElse(null);
-            final String text = path.lastSegment();
-            this.lblRefinementObj.setText(text);
-
-            String view = "";
-
-            if (refinement instanceof CHeaderRefinement) {
-              String tooltip = "";
-              // Max length
-              int maxLength = (int) ((this.composite.getBounds().width - FIRST_COLUMN_WIDTH) * 0.17);
-              maxLength = Math.max(maxLength, 40);
-              if (((CHeaderRefinement) refinement).getLoopPrototype() != null) {
-                final String loop = "loop: "
-                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getLoopPrototype());
-                view += (loop.length() <= maxLength) ? loop : loop.substring(0, maxLength) + "...";
-                tooltip = loop;
-              }
-              if (((CHeaderRefinement) refinement).getInitPrototype() != null) {
-                final String init = "\ninit: "
-                    + PrototypeFormatter.format(((CHeaderRefinement) refinement).getInitPrototype());
-                view += (init.length() <= maxLength) ? init : init.substring(0, maxLength) + "...";
-                tooltip += init;
-              }
-              this.lblRefinementView.setToolTipText(tooltip);
-            }
-            this.lblRefinementView.setText(view);
-            this.butRefinementClear.setEnabled(true);
-            this.butRefinementBrowse.setEnabled(enabled);
-            this.butRefinementOpen.setEnabled(true);
-          }
-
-          this.lblRefinement.setVisible(true);
-          this.lblRefinementObj.setVisible(true);
-          this.lblRefinementView.setVisible(true);
-          this.butRefinementClear.setVisible(true);
-          this.butRefinementBrowse.setVisible(true);
-          this.butRefinementOpen.setVisible(true);
-
-          if (bo instanceof Actor) {
-            final Actor actor = (Actor) bo;
-            if (actor.getMemoryScriptPath() == null) {
-              this.lblMemoryScriptObj.setText("(none)");
-              this.butMemoryScriptClear.setEnabled(false);
-              this.butMemoryScriptBrowse.setEnabled(true);
-              this.butMemoryScriptOpen.setEnabled(false);
-            } else {
-              final IPath path = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
-              final String text = path.lastSegment();
-
-              this.lblMemoryScriptObj.setText(text);
-              this.butMemoryScriptClear.setEnabled(true);
-              this.butMemoryScriptBrowse.setEnabled(true);
-              this.butMemoryScriptOpen.setEnabled(true);
-            }
-            this.lblMemoryScript.setVisible(true);
-            this.lblMemoryScriptObj.setVisible(true);
-            this.butMemoryScriptClear.setVisible(true);
-            this.butMemoryScriptBrowse.setVisible(true);
-            this.butMemoryScriptOpen.setVisible(true);
-          } else {
-            this.lblMemoryScript.setVisible(false);
-            this.lblMemoryScriptObj.setVisible(false);
-            this.butMemoryScriptClear.setVisible(false);
-            this.butMemoryScriptBrowse.setVisible(false);
-            this.butMemoryScriptOpen.setVisible(false);
-          }
-
-        } else {
-          this.lblRefinement.setVisible(false);
-          this.lblRefinementObj.setVisible(false);
-          this.lblRefinementView.setVisible(false);
-          this.butRefinementClear.setVisible(false);
-          this.butRefinementBrowse.setVisible(false);
-          this.butRefinementOpen.setVisible(false);
-          this.lblMemoryScript.setVisible(false);
-          this.lblMemoryScriptObj.setVisible(false);
-          this.butMemoryScriptClear.setVisible(false);
-          this.butMemoryScriptBrowse.setVisible(false);
-          this.butMemoryScriptOpen.setVisible(false);
-        }
-
-      } // end ExecutableActor
-
+    } else {
+      this.lblRefinement.setVisible(false);
+      this.lblRefinementObj.setVisible(false);
+      this.lblRefinementView.setVisible(false);
+      this.butRefinementClear.setVisible(false);
+      this.butRefinementBrowse.setVisible(false);
+      this.butRefinementOpen.setVisible(false);
+      this.lblMemoryScript.setVisible(false);
+      this.lblMemoryScriptObj.setVisible(false);
+      this.butMemoryScriptClear.setVisible(false);
+      this.butMemoryScriptBrowse.setVisible(false);
+      this.butMemoryScriptOpen.setVisible(false);
     }
-  }
+
+  } // end ExecutableActor
+
 }

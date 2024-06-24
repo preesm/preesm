@@ -140,15 +140,15 @@ public class PiIdentifiers {
 
   /** The Constant PARAMETER. */
   // PARAMETERS
-  public static final String PARAMETER           = "param";
-  public static final String MALLEABLE_PARAMETER = "malleable_" + PiIdentifiers.PARAMETER;
+  public static final String PARAMETER          = "param";
+  public static final String MOLDABLE_PARAMETER = "moldable_" + PiIdentifiers.PARAMETER;
 
   /** The Constant PARAMETER_NAME. */
   public static final String PARAMETER_NAME = PiIdentifiers.ID;
 
   /** The Constant PARAMETER_EXPRESSION. */
   public static final String PARAMETER_EXPRESSION           = PiIdentifiers.EXPR;
-  public static final String MALLEABLE_PARAMETER_EXPRESSION = "malleable_" + PiIdentifiers.EXPR;
+  public static final String MOLDABLE_PARAMETER_EXPRESSION = "moldable_" + PiIdentifiers.EXPR;
 
   /** The Constant CONFIGURATION_INPUT_INTERFACE_NAME. */
   public static final String CONFIGURATION_INPUT_INTERFACE_NAME = PiIdentifiers.ID;

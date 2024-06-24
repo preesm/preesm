@@ -53,7 +53,7 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
   /**
    * Instantiates a new abstract edge sched.
    */
-  public AbstractEdgeSched(final OrderManager orderManager) {
+  protected AbstractEdgeSched(final OrderManager orderManager) {
     super();
     this.orderManager = orderManager;
   }
@@ -69,18 +69,12 @@ public abstract class AbstractEdgeSched implements IEdgeSched {
    */
   public static IEdgeSched getInstance(final EdgeSchedType edgeSchedType, final OrderManager orderManager) {
 
-    final IEdgeSched edgeSched;
+    return switch (edgeSchedType) {
+      case SIMPLE -> new SimpleEdgeSched(orderManager);
+      case SWITCHER -> new SwitcherEdgeSched(orderManager);
+      default -> new SimpleEdgeSched(orderManager);
+    };
 
-    if (edgeSchedType == EdgeSchedType.SIMPLE) {
-      edgeSched = new SimpleEdgeSched(orderManager);
-    } else if (edgeSchedType == EdgeSchedType.SWITCHER) {
-      edgeSched = new SwitcherEdgeSched(orderManager);
-    } else {
-      // Default scheduler
-      edgeSched = new SimpleEdgeSched(orderManager);
-    }
-
-    return edgeSched;
   }
 
   @Override

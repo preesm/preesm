@@ -42,9 +42,13 @@ package org.preesm.algorithm.throughput.sdf.tools;
  */
 public abstract class Identifier {
 
-  private static int SDFGraphId   = 0;
-  private static int InputPortId  = 0;
-  private static int OutputPortId = 0;
+  private Identifier() {
+    // Forbids instantiation
+  }
+
+  private static int sdfGraphId   = 0;
+  private static int inputPortId  = 0;
+  private static int outputPortId = 0;
   private static int edgeId       = 0;
 
   /**
@@ -53,8 +57,8 @@ public abstract class Identifier {
    * @return id
    */
   public static String generateSDFGraphId() {
-    final String id = "g" + Identifier.SDFGraphId;
-    Identifier.SDFGraphId++;
+    final String id = "g" + sdfGraphId;
+    sdfGraphId++;
     return id;
   }
 
@@ -64,8 +68,8 @@ public abstract class Identifier {
    * @return id
    */
   public static String generateEdgeId() {
-    final String id = "e" + Identifier.edgeId;
-    Identifier.edgeId++;
+    final String id = "e" + edgeId;
+    edgeId++;
     return id;
   }
 
@@ -75,8 +79,8 @@ public abstract class Identifier {
    * @return id
    */
   public static String generateInputPortId() {
-    final String id = "inP" + Identifier.InputPortId;
-    Identifier.InputPortId++;
+    final String id = "inP" + inputPortId;
+    inputPortId++;
     return id;
   }
 
@@ -86,8 +90,8 @@ public abstract class Identifier {
    * @return id
    */
   public static String generateOutputPortId() {
-    final String id = "OutP" + Identifier.OutputPortId;
-    Identifier.OutputPortId++;
+    final String id = "OutP" + outputPortId;
+    outputPortId++;
     return id;
   }
 

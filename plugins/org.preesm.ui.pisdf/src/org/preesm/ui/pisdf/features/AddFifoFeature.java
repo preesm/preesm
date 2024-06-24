@@ -129,10 +129,8 @@ public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBen
   public boolean canAdd(final IAddContext context) {
     // Return true if the given Business object is a Fifo and the context is
     // an instance of IAddConnectionContext
-    if ((context instanceof IAddConnectionContext) && (context.getNewObject() instanceof Fifo)) {
-      return true;
-    }
-    return false;
+    return ((context instanceof IAddConnectionContext) && (context.getNewObject() instanceof Fifo));
+
   }
 
   /**
@@ -170,7 +168,7 @@ public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBen
     ContainerShape cs;
     if (referencedGraphicsAlgorithm != null) {
       cs = (ContainerShape) referencedGraphicsAlgorithm.getPictogramElement();
-      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
+      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<>());
     }
 
     // Move target
@@ -178,7 +176,7 @@ public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBen
     final GraphicsAlgorithm referencedGraphicsAlgorithm2 = end.getReferencedGraphicsAlgorithm();
     if (referencedGraphicsAlgorithm2 != null) {
       cs = (ContainerShape) referencedGraphicsAlgorithm2.getPictogramElement();
-      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
+      layoutShapeConnectedToBendpoints(cs, this, new ArrayList<>());
     }
 
     // Create the associated Polyline
@@ -187,8 +185,8 @@ public class AddFifoFeature extends AbstractAddFeature implements LayoutActorBen
     polyline.setLineWidth(2);
     polyline.setForeground(manageColor(AddFifoFeature.FIFO_FOREGROUND));
 
-    Object src = getBusinessObjectForPictogramElement(addContext.getSourceAnchor().getParent());
-    Object dst = getBusinessObjectForPictogramElement(addContext.getTargetAnchor().getParent());
+    final Object src = getBusinessObjectForPictogramElement(addContext.getSourceAnchor().getParent());
+    final Object dst = getBusinessObjectForPictogramElement(addContext.getTargetAnchor().getParent());
 
     if (src instanceof Delay || dst instanceof Delay) {
       polyline.setLineStyle(LineStyle.DASHDOT);

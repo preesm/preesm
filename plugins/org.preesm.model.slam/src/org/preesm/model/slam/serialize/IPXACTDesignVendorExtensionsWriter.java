@@ -169,16 +169,16 @@ public class IPXACTDesignVendorExtensionsWriter {
     componentElt.setAttribute("slam:refinement", refinementPath);
 
     // Managing specific component properties
-    if (component instanceof ComNode) {
-      componentElt.setAttribute("slam:speed", Float.toString(((ComNode) component).getSpeed()));
-    } else if (component instanceof Mem) {
-      componentElt.setAttribute("slam:size", Long.toString(((Mem) component).getSize()));
-    } else if (component instanceof Dma) {
-      componentElt.setAttribute("slam:setupTime", Integer.toString(((Dma) component).getSetupTime()));
-    } else if (component instanceof FPGA) {
-      componentElt.setAttribute("slam:frequency", Integer.toString(((FPGA) component).getFrequency()));
-      componentElt.setAttribute("slam:part", ((FPGA) component).getPart());
-      componentElt.setAttribute("slam:board", ((FPGA) component).getBoard());
+    if (component instanceof final ComNode comNode) {
+      componentElt.setAttribute("slam:speed", Float.toString(comNode.getSpeed()));
+    } else if (component instanceof final Mem mem) {
+      componentElt.setAttribute("slam:size", Long.toString(mem.getSize()));
+    } else if (component instanceof final Dma dma) {
+      componentElt.setAttribute("slam:setupTime", Integer.toString(dma.getSetupTime()));
+    } else if (component instanceof final FPGA fpga) {
+      componentElt.setAttribute("slam:frequency", Integer.toString(fpga.getFrequency()));
+      componentElt.setAttribute("slam:part", fpga.getPart());
+      componentElt.setAttribute("slam:board", fpga.getBoard());
     }
   }
 

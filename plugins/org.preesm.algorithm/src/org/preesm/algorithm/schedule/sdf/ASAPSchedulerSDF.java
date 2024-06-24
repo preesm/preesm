@@ -35,6 +35,7 @@
  */
 package org.preesm.algorithm.schedule.sdf;
 
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -76,12 +77,7 @@ public class ASAPSchedulerSDF {
 
     while (!this.executions.isEmpty()) {
       // pick the execution list with the earliest finish date
-      double t = Double.MAX_VALUE;
-      for (final double keyT : this.executions.keySet()) {
-        if (t >= keyT) {
-          t = keyT;
-        }
-      }
+      final double t = Collections.min(this.executions.keySet());
 
       // update the duration of the iteration
       if (dur1Iter < t) {
@@ -126,7 +122,7 @@ public class ASAPSchedulerSDF {
                 listExec.put(targetActor, n);
               }
             } else {
-              this.executions.put(finishDate, new LinkedHashMap<SDFAbstractVertex, Long>());
+              this.executions.put(finishDate, new LinkedHashMap<>());
               this.executions.get(finishDate).put(targetActor, n);
             }
           }
@@ -170,7 +166,7 @@ public class ASAPSchedulerSDF {
         if (this.executions.containsKey(finishDate)) {
           this.executions.get(finishDate).put(actor, n);
         } else {
-          this.executions.put(finishDate, new Hashtable<SDFAbstractVertex, Long>());
+          this.executions.put(finishDate, new Hashtable<>());
           this.executions.get(finishDate).put(actor, n);
         }
       }

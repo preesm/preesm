@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">stabilization</data>
+        <node id="width" kind="cfg_in_iface"/>
+        <node id="height" kind="cfg_in_iface"/>
+        <node id="border" kind="cfg_in_iface"/>
+        <node expr="32" id="blockWidth" kind="param"/>
+        <node expr="32" id="blockHeight" kind="param"/>
+        <node expr="21" id="maxDeltaY" kind="param"/>
+        <node expr="38" id="maxDeltaX" kind="param"/>
+        <node
+            expr="floor(height/blockHeight)*floor(width/blockWidth)"
+            id="nbVectors" kind="param"/>
+        <node expr="width+2*border" id="displayWidth" kind="param"/>
+        <node expr="height+2*border" id="displayHeight" kind="param"/>
+        <node id="y" kind="src">
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="y"/>
+        </node>
+        <node id="rY" kind="snk">
+            <port annotation="NONE"
+                expr="displayHeight*displayWidth" kind="input" name="rY"/>
+        </node>
+        <node id="u" kind="src">
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="output" name="u"/>
+        </node>
+        <node id="v" kind="src">
+            <port annotation="NONE" expr="height/2*width/2"
+                kind="output" name="v"/>
+        </node>
+        <node id="rU" kind="snk">
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="input" name="rU"/>
+        </node>
+        <node id="rV" kind="snk">
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="input" name="rV"/>
+        </node>
+        <node id="DuplicateFrame" kind="broadcast">
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port annotation="NONE" expr="height*width"
+                kind="input" name="in"/>
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="out_0"/>
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="out_1"/>
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="out_2"/>
+        </node>
+        <node id="FindDominatingMotion" kind="actor">
+            <data key="graph_desc">Code/include/stabilization.h</data>
+            <loop name="findDominatingMotionVector">
+                <param direction="IN" isConfig="true"
+                    name="nbVectors" type="const int"/>
+                <param direction="IN" isConfig="false"
+                    name="vectors" type="const coord "/>
+                <param direction="OUT" isConfig="false"
+                    name="dominatingVector" type="coordf "/>
+            </loop>
+            <port kind="cfg_input" name="nbVectors"/>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port annotation="NONE" expr="nbVectors" kind="input" name="vectors"/>
+            <port annotation="NONE" expr="1" kind="output" name="dominatingVector"/>
+        </node>
+        <node id="renderFrame" kind="actor">
+            <data key="graph_desc">Code/include/stabilization.h</data>
+            <loop name="renderFrame">
+                <param direction="IN" isConfig="true"
+                    name="frameWidth" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="frameHeight" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="dispWidth" type="const int"/>
+                <param direction="IN" isConfig="true"
+                    name="dispHeight" type="const int"/>
+                <param direction="IN" isConfig="false"
+                    name="delta" type="const coordf "/>
+                <param direction="IN" isConfig="false"
+                    name="deltaPrev" type="const coordf "/>
+                <param direction="IN" isConfig="false" name="yIn" type="const unsigned char "/>
+                <param direction="IN" isConfig="false" name="uIn" type="const unsigned char "/>
+                <param direction="IN" isConfig="false" name="vIn" type="const unsigned char "/>
+                <param direction="IN" isConfig="false"
+                    name="yPrev" type="const unsigned char "/>
+                <param direction="IN" isConfig="false"
+                    name="uPrev" type="const unsigned char "/>
+                <param direction="IN" isConfig="false"
+                    name="vPrev" type="const unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="yOut" type="unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="uOut" type="unsigned char "/>
+                <param direction="OUT" isConfig="false"
+                    name="vOut" type="unsigned char "/>
+            </loop>
+            <port kind="cfg_input" name="frameWidth"/>
+            <port kind="cfg_input" name="frameHeight"/>
+            <port kind="cfg_input" name="dispWidth"/>
+            <port kind="cfg_input" name="dispHeight"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="delta"/>
+            <port annotation="NONE" expr="1" kind="input" name="deltaPrev"/>
+            <port annotation="READ_ONLY"
+                expr="frameHeight*frameWidth" kind="input" name="yIn"/>
+            <port annotation="NONE"
+                expr="frameHeight/2*frameWidth/2" kind="input" name="uIn"/>
+            <port annotation="NONE"
+                expr="frameHeight/2*frameWidth/2" kind="input" name="vIn"/>
+            <port annotation="READ_ONLY"
+                expr="dispHeight*dispWidth" kind="input" name="yPrev"/>
+            <port annotation="READ_ONLY"
+                expr="dispHeight/2*dispWidth/2" kind="input" name="uPrev"/>
+            <port annotation="READ_ONLY"
+                expr="dispHeight/2*dispWidth/2" kind="input" name="vPrev"/>
+            <port annotation="NONE" expr="dispHeight*dispWidth"
+                kind="output" name="yOut"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="uOut"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="vOut"/>
+        </node>
+        <node id="AccumulateMotion" kind="actor">
+            <data key="graph_desc">Code/include/stabilization.h</data>
+            <loop name="accumulateMotion">
+                <param direction="IN" isConfig="false"
+                    name="motionVector" type="const coordf "/>
+                <param direction="IN" isConfig="false"
+                    name="accumulatedMotionIn" type="const coordf "/>
+                <param direction="IN" isConfig="false"
+                    name="filteredMotionIn" type="coordf "/>
+                <param direction="OUT" isConfig="false"
+                    name="filteredMotionOut" type="coordf "/>
+                <param direction="OUT" isConfig="false"
+                    name="accumulatedMotionOut" type="coordf "/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="motionVector"/>
+            <port annotation="READ_ONLY" expr="1" kind="input" name="accumulatedMotionIn"/>
+            <port annotation="NONE" expr="1" kind="input" name="filteredMotionIn"/>
+            <port annotation="NONE" expr="1" kind="output" name="accumulatedMotionOut"/>
+            <port annotation="NONE" expr="1" kind="output" name="filteredMotionOut"/>
+        </node>
+        <node id="DuplicateAccumulatedMotion" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+        </node>
+        <node id="ComputeBlockMotionVectorss" kind="actor">
+            <data key="graph_desc">Algo/computeBlockMotion.pi</data>
+            <port kind="cfg_input" name="width"/>
+            <port kind="cfg_input" name="height"/>
+            <port kind="cfg_input" name="blockWidth"/>
+            <port kind="cfg_input" name="blockHeight"/>
+            <port kind="cfg_input" name="maxDeltaX"/>
+            <port kind="cfg_input" name="maxDeltaY"/>
+            <port kind="cfg_input" name="nbVectors"/>
+            <port annotation="READ_ONLY" expr="height*width"
+                kind="input" name="frame"/>
+            <port annotation="READ_ONLY" expr="height*width"
+                kind="input" name="previousFrame"/>
+            <port annotation="NONE" expr="nbVectors"
+                kind="output" name="vectors"/>
+        </node>
+        <node id="BrY" kind="broadcast">
+            <port kind="cfg_input" name="dispWidth"/>
+            <port kind="cfg_input" name="dispHeight"/>
+            <port annotation="NONE" expr="dispHeight*dispWidth"
+                kind="input" name="in"/>
+            <port annotation="NONE" expr="dispHeight*dispWidth"
+                kind="output" name="out_0"/>
+            <port annotation="NONE" expr="dispHeight*dispWidth"
+                kind="output" name="out_1"/>
+        </node>
+        <node id="BrU" kind="broadcast">
+            <port kind="cfg_input" name="dispWidth"/>
+            <port kind="cfg_input" name="dispHeight"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="input" name="in"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="out_0"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="out_1"/>
+        </node>
+        <node id="BrV" kind="broadcast">
+            <port kind="cfg_input" name="dispWidth"/>
+            <port kind="cfg_input" name="dispHeight"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="input" name="in"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="out_0"/>
+            <port annotation="NONE"
+                expr="dispHeight/2*dispWidth/2" kind="output" name="out_1"/>
+        </node>
+        <node id="brFilteredMotion" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="1" kind="output" name="out_1"/>
+        </node>
+        <node expr="height*width" getter=""
+            id="delay_DuplicateFrame_out_1__ComputeBlockMotionVectorss_previousFrame"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="height*width"
+                kind="input" name="set"/>
+            <port annotation="NONE" expr="height*width"
+                kind="output" name="get"/>
+        </node>
+        <node expr="1" getter=""
+            id="delay_DuplicateAccumulatedMotion_out_1__AccumulateMotion_accumulatedMotionIn"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <node expr="displayHeight*displayWidth" getter=""
+            id="delay_BrY_out_1__renderFrame_yPrev" kind="delay"
+            level="permanent" setter="">
+            <port annotation="NONE"
+                expr="displayHeight*displayWidth" kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="displayHeight*displayWidth" kind="output" name="get"/>
+        </node>
+        <node expr="displayHeight/2*displayWidth/2" getter=""
+            id="delay_BrU_out_1__renderFrame_uPrev" kind="delay"
+            level="permanent" setter="">
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="output" name="get"/>
+        </node>
+        <node expr="displayHeight/2*displayWidth/2" getter=""
+            id="delay_BrV_out_1__renderFrame_vPrev" kind="delay"
+            level="permanent" setter="">
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="input" name="set"/>
+            <port annotation="NONE"
+                expr="displayHeight/2*displayWidth/2"
+                kind="output" name="get"/>
+        </node>
+        <node expr="1" getter=""
+            id="delay_brFilteredMotion_out_1__AccumulateMotion_filteredMotionIn"
+            kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <edge expr="height*width" kind="fifo"
+            source="DuplicateFrame" sourceport="out_1"
+            target="ComputeBlockMotionVectorss"
+            targetport="previousFrame" type="uchar">
+            <data key="delay">delay_DuplicateFrame_out_1__ComputeBlockMotionVectorss_previousFrame</data>
+        </edge>
+        <edge expr="1" kind="fifo"
+            source="DuplicateAccumulatedMotion"
+            sourceport="out_1" target="AccumulateMotion"
+            targetport="accumulatedMotionIn" type="coordf">
+            <data key="delay">delay_DuplicateAccumulatedMotion_out_1__AccumulateMotion_accumulatedMotionIn</data>
+        </edge>
+        <edge expr="displayHeight*displayWidth" kind="fifo"
+            source="BrY" sourceport="out_1" target="renderFrame"
+            targetport="yPrev" type="uchar">
+            <data key="delay">delay_BrY_out_1__renderFrame_yPrev</data>
+        </edge>
+        <edge expr="displayHeight/2*displayWidth/2" kind="fifo"
+            source="BrU" sourceport="out_1" target="renderFrame"
+            targetport="uPrev" type="uchar">
+            <data key="delay">delay_BrU_out_1__renderFrame_uPrev</data>
+        </edge>
+        <edge expr="displayHeight/2*displayWidth/2" kind="fifo"
+            source="BrV" sourceport="out_1" target="renderFrame"
+            targetport="vPrev" type="uchar">
+            <data key="delay">delay_BrV_out_1__renderFrame_vPrev</data>
+        </edge>
+        <edge expr="1" kind="fifo" source="brFilteredMotion"
+            sourceport="out_1" target="AccumulateMotion"
+            targetport="filteredMotionIn" type="coordf">
+            <data key="delay">delay_brFilteredMotion_out_1__AccumulateMotion_filteredMotionIn</data>
+        </edge>
+        <edge kind="fifo" source="DuplicateFrame"
+            sourceport="out_0"
+            target="ComputeBlockMotionVectorss"
+            targetport="frame" type="uchar"/>
+        <edge kind="fifo" source="u" sourceport="u"
+            target="renderFrame" targetport="uIn" type="uchar"/>
+        <edge kind="fifo" source="v" sourceport="v"
+            target="renderFrame" targetport="vIn" type="uchar"/>
+        <edge kind="fifo" source="ComputeBlockMotionVectorss"
+            sourceport="vectors" target="FindDominatingMotion"
+            targetport="vectors" type="coord"/>
+        <edge kind="fifo" source="y" sourceport="y"
+            target="DuplicateFrame" targetport="in" type="uchar"/>
+        <edge kind="fifo" source="BrY" sourceport="out_0"
+            target="rY" targetport="rY" type="uchar"/>
+        <edge kind="fifo" source="DuplicateFrame"
+            sourceport="out_2" target="renderFrame"
+            targetport="yIn" type="uchar"/>
+        <edge kind="fifo" source="FindDominatingMotion"
+            sourceport="dominatingVector"
+            target="AccumulateMotion" targetport="motionVector" type="coordf"/>
+        <edge kind="fifo" source="BrU" sourceport="out_0"
+            target="rU" targetport="rU" type="uchar"/>
+        <edge kind="fifo" source="BrV" sourceport="out_0"
+            target="rV" targetport="rV" type="uchar"/>
+        <edge kind="fifo" source="DuplicateAccumulatedMotion"
+            sourceport="out_0" target="renderFrame"
+            targetport="delta" type="coordf"/>
+        <edge kind="fifo" source="AccumulateMotion"
+            sourceport="accumulatedMotionOut"
+            target="DuplicateAccumulatedMotion" targetport="in" type="coordf"/>
+        <edge kind="fifo" source="renderFrame" sourceport="yOut"
+            target="BrY" targetport="in" type="uchar"/>
+        <edge kind="fifo" source="renderFrame" sourceport="uOut"
+            target="BrU" targetport="in" type="uchar"/>
+        <edge kind="fifo" source="renderFrame" sourceport="vOut"
+            target="BrV" targetport="in" type="uchar"/>
+        <edge kind="fifo" source="AccumulateMotion"
+            sourceport="filteredMotionOut"
+            target="brFilteredMotion" targetport="in" type="coordf"/>
+        <edge kind="fifo" source="brFilteredMotion"
+            sourceport="out_0" target="renderFrame"
+            targetport="deltaPrev" type="coordf"/>
+        <edge kind="dependency" source="width"
+            target="ComputeBlockMotionVectorss" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="ComputeBlockMotionVectorss" targetport="height"/>
+        <edge kind="dependency" source="blockWidth"
+            target="ComputeBlockMotionVectorss" targetport="blockWidth"/>
+        <edge kind="dependency" source="blockHeight"
+            target="ComputeBlockMotionVectorss" targetport="blockHeight"/>
+        <edge kind="dependency" source="maxDeltaX"
+            target="ComputeBlockMotionVectorss" targetport="maxDeltaX"/>
+        <edge kind="dependency" source="maxDeltaY"
+            target="ComputeBlockMotionVectorss" targetport="maxDeltaY"/>
+        <edge kind="dependency" source="width" target="y"/>
+        <edge kind="dependency" source="height" target="y"/>
+        <edge kind="dependency" source="width" target="u"/>
+        <edge kind="dependency" source="height" target="u"/>
+        <edge kind="dependency" source="width" target="v"/>
+        <edge kind="dependency" source="height" target="v"/>
+        <edge kind="dependency" source="width"
+            target="DuplicateFrame" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="DuplicateFrame" targetport="height"/>
+        <edge kind="dependency" source="width" target="delay_DuplicateFrame_out_1__ComputeBlockMotionVectorss_previousFrame"/>
+        <edge kind="dependency" source="height" target="delay_DuplicateFrame_out_1__ComputeBlockMotionVectorss_previousFrame"/>
+        <edge kind="dependency" source="height" target="nbVectors"/>
+        <edge kind="dependency" source="width" target="nbVectors"/>
+        <edge kind="dependency" source="blockWidth" target="nbVectors"/>
+        <edge kind="dependency" source="blockHeight" target="nbVectors"/>
+        <edge kind="dependency" source="nbVectors"
+            target="FindDominatingMotion" targetport="nbVectors"/>
+        <edge kind="dependency" source="width"
+            target="FindDominatingMotion" targetport="width"/>
+        <edge kind="dependency" source="height"
+            target="FindDominatingMotion" targetport="height"/>
+        <edge kind="dependency" source="nbVectors"
+            target="ComputeBlockMotionVectorss" targetport="nbVectors"/>
+        <edge kind="dependency" source="border" target="displayHeight"/>
+        <edge kind="dependency" source="border" target="displayWidth"/>
+        <edge kind="dependency" source="height" target="displayHeight"/>
+        <edge kind="dependency" source="width" target="displayWidth"/>
+        <edge kind="dependency" source="displayWidth" target="rU"/>
+        <edge kind="dependency" source="displayWidth" target="rV"/>
+        <edge kind="dependency" source="displayWidth" target="rY"/>
+        <edge kind="dependency" source="displayHeight" target="rU"/>
+        <edge kind="dependency" source="displayHeight" target="rV"/>
+        <edge kind="dependency" source="displayHeight" target="rY"/>
+        <edge kind="dependency" source="displayHeight"
+            target="renderFrame" targetport="dispHeight"/>
+        <edge kind="dependency" source="displayWidth"
+            target="renderFrame" targetport="dispWidth"/>
+        <edge kind="dependency" source="width"
+            target="renderFrame" targetport="frameWidth"/>
+        <edge kind="dependency" source="height"
+            target="renderFrame" targetport="frameHeight"/>
+        <edge kind="dependency" source="displayWidth"
+            target="BrY" targetport="dispWidth"/>
+        <edge kind="dependency" source="displayWidth"
+            target="BrU" targetport="dispWidth"/>
+        <edge kind="dependency" source="displayWidth"
+            target="BrV" targetport="dispWidth"/>
+        <edge kind="dependency" source="displayHeight"
+            target="BrY" targetport="dispHeight"/>
+        <edge kind="dependency" source="displayHeight"
+            target="BrU" targetport="dispHeight"/>
+        <edge kind="dependency" source="displayHeight"
+            target="BrV" targetport="dispHeight"/>
+        <edge kind="dependency" source="displayWidth" target="delay_BrY_out_1__renderFrame_yPrev"/>
+        <edge kind="dependency" source="displayHeight" target="delay_BrY_out_1__renderFrame_yPrev"/>
+        <edge kind="dependency" source="displayWidth" target="delay_BrU_out_1__renderFrame_uPrev"/>
+        <edge kind="dependency" source="displayWidth" target="delay_BrV_out_1__renderFrame_vPrev"/>
+        <edge kind="dependency" source="displayHeight" target="delay_BrU_out_1__renderFrame_uPrev"/>
+        <edge kind="dependency" source="displayHeight" target="delay_BrV_out_1__renderFrame_vPrev"/>
+    </graph>
+</graphml>

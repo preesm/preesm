@@ -39,7 +39,6 @@ package org.preesm.algorithm.pisdf.pimm2sdf;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -103,11 +102,11 @@ public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
     timer.start();
 
     final StaticPiMM2SDFLauncher launcher = new StaticPiMM2SDFLauncher(scenario, graph);
-    SDFGraph result = null;
+    SDFGraph result;
     result = launcher.launch();
 
     timer.stop();
-    PreesmLogger.getLogger().log(Level.INFO, "PiMM2SDF transformation: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().info(() -> "PiMM2SDF transformation: " + timer.toString() + "s.");
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, result);
     return output;

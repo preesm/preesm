@@ -182,39 +182,37 @@ public class ExcelTimingParser {
     // For each kind of processing elements, we look for a timing for given
     // vertex
     for (final Component component : opDefIds) {
-      if (component != null && actor != null) {
-        // Get row and column for the timing we are looking for
-        final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
-        final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
+      if (component == null || actor == null) {
+        return;
+      }
 
-        if ((vertexCell != null) && (operatorCell != null)) {
-          // Get the cell containing the timing
-          final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
+      // Get row and column for the timing we are looking for
+      final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
+      final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
 
-          final String expression = timingCell.getContents();
+      if ((vertexCell != null) && (operatorCell != null)) {
+        // Get the cell containing the timing
+        final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
-          try {
-            this.scenario.getTimings().setExecutionTime(actor, component, expression);
-            final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
-                + " takes " + expression;
-            PreesmLogger.getLogger().log(Level.INFO, msg);
-          } catch (final NumberFormatException e) {
-            final String message = "Problem importing timing of " + actor + " on " + component
-                + ". Integer with no space or special character needed. Be careful on the special number formats.";
-            throw new PreesmRuntimeException(message);
+        final String expression = timingCell.getContents();
 
-          }
-        } else {
-          if ((vertexCell == null) && !missingVertices.contains(actor)) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "No line found in excel sheet for vertex: " + actor.getVertexPath());
-            missingVertices.add(actor);
-          } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                () -> "No column found in excel sheet for operator type: " + component);
-            missingOperatorTypes.add(component);
-          }
+        try {
+          this.scenario.getTimings().setExecutionTime(actor, component, expression);
+          final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+              + " takes " + expression;
+          PreesmLogger.getLogger().log(Level.INFO, msg);
+        } catch (final NumberFormatException e) {
+          final String message = "Problem importing timing of " + actor + " on " + component
+              + ". Integer with no space or special character needed. Be careful on the special number formats.";
+          throw new PreesmRuntimeException(message);
+
         }
+      } else if ((vertexCell == null) && !missingVertices.contains(actor)) {
+        PreesmLogger.getLogger().warning(() -> "No line found in excel sheet for vertex: " + actor.getVertexPath());
+        missingVertices.add(actor);
+      } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
+        PreesmLogger.getLogger().warning(() -> "No column found in excel sheet for operator type: " + component);
+        missingOperatorTypes.add(component);
       }
     }
   }

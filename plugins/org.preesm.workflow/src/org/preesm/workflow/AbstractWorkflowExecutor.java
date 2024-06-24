@@ -231,7 +231,8 @@ public abstract class AbstractWorkflowExecutor {
    *          the monitor
    * @return true, if successful
    */
-  public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor) {
+  public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor,
+      final boolean printLog) {
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
 
     boolean result = initAndCheck(workflowPath, monitor, workflow);
@@ -242,13 +243,17 @@ public abstract class AbstractWorkflowExecutor {
     final Level oldLevel = Optional.ofNullable(this.logger.getLevel()).orElse(Level.INFO);
     try {
       // read and apply workflow parameters
-      this.logger.setLevel(workflow.getOutputLevel());
+      if (printLog) {
+        this.logger.setLevel(workflow.getOutputLevel());
+      } else {
+        this.logger.setLevel(Level.OFF);
+      }
       WorkspaceUtils.updateWorkspace();
 
       final Iterator<AbstractWorkflowNode<?>> iterator = workflow.vertexTopologicalList().iterator();
 
       while (result && iterator.hasNext()) {
-        AbstractWorkflowNode<?> node = iterator.next();
+        final AbstractWorkflowNode<?> node = iterator.next();
         result = executeNode(scenarioPath, monitor, workflow, node);
       }
 
@@ -310,10 +315,8 @@ public abstract class AbstractWorkflowExecutor {
             outputs = scenario.extractData(scenarioPath);
 
             // Filter only outputs required in the workflow
-            final Map<String, Object> outs = outputs; // final
-            // reference
-            // for
-            // predicate
+            final Map<String, Object> outs = outputs;
+            // final reference for predicate
             final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(scenarioNode));
             edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 
@@ -394,9 +397,7 @@ public abstract class AbstractWorkflowExecutor {
 
                 // Filter only outputs required in the workflow
                 final Map<String, Object> outs = outputs; // final
-                // reference
-                // for
-                // predicate
+                // reference for predicate
                 final Set<WorkflowEdge> edges = new LinkedHashSet<>(workflow.outgoingEdgesOf(taskNode));
                 edges.removeIf(edge -> !outs.containsKey(edge.getSourcePort()));
 
@@ -576,7 +577,7 @@ public abstract class AbstractWorkflowExecutor {
    *          the variables
    */
   protected void log(Level level, String msgKey, String... variables) {
-    getLogger().log(level, PreesmMessages.getString(msgKey, variables));
+    getLogger().log(level, () -> PreesmMessages.getString(msgKey, variables));
   }
 
 }

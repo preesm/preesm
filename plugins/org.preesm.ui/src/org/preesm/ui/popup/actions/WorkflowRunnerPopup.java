@@ -49,11 +49,11 @@ import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.handlers.HandlerUtil;
 import org.eclipse.ui.ide.ResourceUtil;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertySheetPageContributor;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.workflow.launch.WorkflowLaunchShortcut;
 
 /**
@@ -67,26 +67,22 @@ public class WorkflowRunnerPopup extends AbstractHandler {
     final ISelection activeSelection = HandlerUtil.getActiveMenuSelection(event);
 
     IFile workflowFile = null;
-    if (activeSelection instanceof ITreeSelection) {
-      final ITreeSelection treeSelection = (ITreeSelection) activeSelection;
+    if (activeSelection instanceof final ITreeSelection treeSelection) {
       final Object firstElement = treeSelection.getFirstElement();
-      if (firstElement instanceof IFile) {
+      if (firstElement instanceof final IFile iFile) {
         // get there when right clicking on a workflow file in the file tree explorer:
         // that is a TreeSelection and active element is an IFile
-        workflowFile = (IFile) firstElement;
+        workflowFile = iFile;
       }
-    } else if (activeSelection instanceof StructuredSelection) {
-      final StructuredSelection structuredSelection = (StructuredSelection) activeSelection;
+    } else if (activeSelection instanceof final StructuredSelection structuredSelection) {
       final Object firstElement = structuredSelection.getFirstElement();
-      if (firstElement instanceof ITabbedPropertySheetPageContributor) {
-        final ITabbedPropertySheetPageContributor graph = (ITabbedPropertySheetPageContributor) firstElement;
+      if (firstElement instanceof final ITabbedPropertySheetPageContributor graph) {
         final String contributorId = graph.getContributorId();
         if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from
           // Graphiti package.
           // this is one way to make sure the command is triggered from Graphiti editor
-          final PreesmUIPlugin default1 = PreesmUIPlugin.getDefault();
-          final IWorkbench workbench = default1.getWorkbench();
+          final IWorkbench workbench = PlatformUI.getWorkbench();
           final IWorkbenchWindow activeWorkbenchWindow = workbench.getActiveWorkbenchWindow();
           final IWorkbenchPage page = activeWorkbenchWindow.getActivePage();
           final IEditorPart activeEditor = page.getActiveEditor();

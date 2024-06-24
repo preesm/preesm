@@ -78,8 +78,7 @@ public class BestCostEditor extends EditorPart {
       setInput(input);
       setPartName(input.getName());
 
-      if (input instanceof BestCostEditorInput) {
-        final BestCostEditorInput implinput = (BestCostEditorInput) input;
+      if (input instanceof final BestCostEditorInput implinput) {
         this.plotter = implinput.getPlotter();
       }
 

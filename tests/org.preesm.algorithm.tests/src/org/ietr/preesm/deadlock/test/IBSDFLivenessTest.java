@@ -58,8 +58,10 @@ public class IBSDFLivenessTest {
   public void testLivenessShouldReturnTrue() {
     // generate the IBSDF graph AB[DEF]C
     final SDFGraph ibsdf = generateIBSDFGraph();
-    // check the liveness of the ibsdf graph
+
+    // check the liveness of the ibsdf graph, is supposed to NOT throw.
     IBSDFLiveness.evaluate(ibsdf);
+    Assert.assertTrue(true);
   }
 
   @Test
@@ -72,13 +74,8 @@ public class IBSDFLivenessTest {
       e.setDelay(new LongEdgePropertyType(0));
     }
 
-    // check the liveness of the ibsdf graph
-    try {
-      IBSDFLiveness.evaluate(ibsdf);
-      Assert.fail();
-    } catch (PreesmException e) {
-      // success
-    }
+    // check the liveness of the ibsdf graph, is supposed to throw.
+    Assert.assertThrows(PreesmException.class, () -> IBSDFLiveness.evaluate(ibsdf));
   }
 
   /**

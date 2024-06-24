@@ -52,7 +52,6 @@ import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -230,14 +229,13 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
   public void update(final Observable o, final Object arg) {
 
     // FAST
-    if (o instanceof FastAlgorithm) {
-      final FastAlgorithm fast = (FastAlgorithm) o;
+    if (o instanceof final FastAlgorithm fast) {
       fast.countObservers();
 
-      if (arg instanceof Long) {
+      if (arg instanceof final Long l) {
 
         final int i = 0;
-        this.lastValue[i] = ((Long) arg).doubleValue();
+        this.lastValue[i] = l.doubleValue();
 
         final Millisecond milli = new Millisecond();
 
@@ -247,14 +245,13 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     }
 
     // PFAST
-    if (o instanceof PFastAlgorithm) {
-      final PFastAlgorithm pfast = (PFastAlgorithm) o;
+    if (o instanceof final PFastAlgorithm pfast) {
       pfast.countObservers();
 
-      if (arg instanceof Long) {
+      if (arg instanceof final Long l) {
 
         final int i = 0;
-        this.lastValue[i] = ((Long) arg).doubleValue();
+        this.lastValue[i] = l.doubleValue();
         this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
 
       }
@@ -342,8 +339,8 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     try {
       frame = SWT_AWT.new_Frame(composite);
     } catch (UnsatisfiedLinkError | SWTError e) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+      PreesmLogger.getLogger()
+          .info(() -> "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
               + "or its associated shared object libswt-awt-gtk-4928+.so, "
               + "thus the cost diagram cannot be embedded in Eclipse. See error:\n" + e.getMessage());
       if (!composite.isDisposed()) {

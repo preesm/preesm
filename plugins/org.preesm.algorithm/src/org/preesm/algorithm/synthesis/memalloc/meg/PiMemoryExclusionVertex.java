@@ -270,15 +270,14 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    */
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof PiMemoryExclusionVertex) {
-      final Fifo otherEdge = ((PiMemoryExclusionVertex) o).edge;
+    if (o instanceof final PiMemoryExclusionVertex piMemExVertex) {
+      final Fifo otherEdge = piMemExVertex.edge;
       final boolean sameEdge = this.edge == otherEdge;
-      final boolean sameSource = this.getSource().equals(((PiMemoryExclusionVertex) o).getSource());
-      final boolean sameSink = this.getSink().equals(((PiMemoryExclusionVertex) o).getSink());
+      final boolean sameSource = this.getSource().equals(piMemExVertex.getSource());
+      final boolean sameSink = this.getSink().equals(piMemExVertex.getSink());
       return sameSink && sameSource && sameEdge;
-    } else {
-      return false;
     }
+    return false;
   }
 
   @Override

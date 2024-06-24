@@ -39,14 +39,11 @@ package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.context.IAddContext;
-import org.eclipse.graphiti.features.impl.AbstractAddFeature;
 import org.eclipse.graphiti.mm.algorithms.Polygon;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
-import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
-import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
@@ -56,13 +53,12 @@ import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 
-// TODO: Auto-generated Javadoc
 /**
  * Add feature to add a {@link Parameter} to the Diagram.
  *
  * @author kdesnos
  */
-public class AddParameterFeature extends AbstractAddFeature {
+public class AddParameterFeature extends AbstractAddConfigurableFeature {
 
   /** The Constant PARAMETER_TEXT_FOREGROUND. */
   public static final IColorConstant PARAMETER_TEXT_FOREGROUND = IColorConstant.BLACK;
@@ -72,6 +68,9 @@ public class AddParameterFeature extends AbstractAddFeature {
 
   /** The Constant PARAMETER_BACKGROUND. */
   public static final IColorConstant PARAMETER_BACKGROUND = new ColorConstant(187, 218, 247);
+
+  /** The Constant PARAM_HEIGHT. */
+  public static final int PARAM_WIDTH = 80;
 
   /** The Constant PARAM_HEIGHT. */
   public static final int PARAM_HEIGHT = 40;
@@ -97,73 +96,85 @@ public class AddParameterFeature extends AbstractAddFeature {
     return (context.getNewObject() instanceof Parameter) && (context.getTargetContainer() instanceof Diagram);
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
-   */
   @Override
-  public PictogramElement add(final IAddContext context) {
+  void createConfigurableShape(IAddContext context, ContainerShape containerShape) {
+
     final Parameter addedParameter = (Parameter) context.getNewObject();
-    final Diagram targetDiagram = (Diagram) context.getTargetContainer();
-
-    // CONTAINER SHAPE WITH Triangle
-    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
-    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
-
-    // define a default size for the shape
-    final int width = 80;
-    final int height = 40;
     final IGaService gaService = Graphiti.getGaService();
 
-    Polygon house;
-    {
-      // Create a house shaped polygon
-      final int[] xy = new int[] { 12, 0, 24, 26, 24, AddParameterFeature.PARAM_HEIGHT, 0,
-          AddParameterFeature.PARAM_HEIGHT, 0, 26 };
-      house = gaService.createPolygon(containerShape, xy);
+    final int width = getDefaultWidth();
+    final int height = getDefaultHeight();
 
-      house.setBackground(manageColor(AddParameterFeature.PARAMETER_BACKGROUND));
-      house.setForeground(manageColor(AddParameterFeature.PARAMETER_FOREGROUND));
-      house.setLineWidth(2);
-      gaService.setLocationAndSize(house, context.getX(), context.getY(), width, height);
+    // Create a house shaped polygon
+    final int[] xy = new int[] { 12, 0, 24, 26, 24, height, 0, height, 0, 26 };
+    final Polygon house = gaService.createPolygon(containerShape, xy);
 
-      // if added Class has no resource we add it to the resource
-      // of the graph
-      if (addedParameter.eResource() == null) {
-        final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
-        graph.addParameter(addedParameter);
-      }
+    house.setBackground(manageColor(getBackgroundColor()));
+    house.setForeground(manageColor(getForegroundColor()));
+    house.setLineWidth(2);
+    gaService.setLocationAndSize(house, context.getX(), context.getY(), width, height);
 
-      // create link and wire it
-      link(containerShape, addedParameter);
+    // if added Class has no resource we add it to the resource
+    // of the graph
+    if (addedParameter.eResource() == null) {
+      final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+      graph.addParameter(addedParameter);
     }
 
-    // Name of the actor - SHAPE WITH TEXT
-    {
-      // create shape for text
-      final Shape shape = peCreateService.createShape(containerShape, false);
+    // create link and wire it
+    link(containerShape, addedParameter);
+  }
 
-      // create and set text graphics algorithm
-      final Text text = gaService.createText(shape, addedParameter.getName());
-      text.setForeground(manageColor(AddParameterFeature.PARAMETER_TEXT_FOREGROUND));
-      text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+  @Override
+  void createConfigurableText(IAddContext context, ContainerShape containerShape) {
 
-      // vertical alignment has as default value "center"
-      text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
-      text.getWidth();
-      gaService.setLocationAndSize(text, 0, height - 18, width, 20);
+    final Parameter addedParameter = (Parameter) context.getNewObject();
 
-      // create link and wire it
-      link(shape, addedParameter);
-    }
+    final IGaService gaService = Graphiti.getGaService();
+    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
 
-    // Add a ChopBoxAnchor for the parameter
-    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-    link(cba, addedParameter);
+    final int width = getDefaultWidth();
+    final int height = getDefaultHeight();
 
-    layoutPictogramElement(containerShape);
-    return containerShape;
+    // create shape for text
+    final Shape shape = peCreateService.createShape(containerShape, false);
+
+    // create and set text graphics algorithm
+    final Text text = gaService.createText(shape, addedParameter.getName());
+    text.setForeground(manageColor(getTextForegroundColor()));
+    text.setHorizontalAlignment(Orientation.ALIGNMENT_CENTER);
+
+    // vertical alignment has as default value "center"
+    text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+    gaService.setLocationAndSize(text, 0, height - 18, width, 20);
+
+    // create link and wire it
+    link(shape, addedParameter);
+  }
+
+  @Override
+  int getDefaultWidth() {
+    return PARAM_WIDTH;
+  }
+
+  @Override
+  int getDefaultHeight() {
+    return PARAM_HEIGHT;
+  }
+
+  @Override
+  IColorConstant getForegroundColor() {
+    return PARAMETER_FOREGROUND;
+  }
+
+  @Override
+  IColorConstant getBackgroundColor() {
+    return PARAMETER_BACKGROUND;
+  }
+
+  @Override
+  IColorConstant getTextForegroundColor() {
+    return PARAMETER_TEXT_FOREGROUND;
   }
 
 }

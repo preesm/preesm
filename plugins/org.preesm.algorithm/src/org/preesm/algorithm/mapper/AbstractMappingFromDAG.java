@@ -129,37 +129,35 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     final LatencyAbc simu = new InfiniteHomogeneousAbc(abcParams, dag, architecture,
         abcParams.getSimulatorType().getTaskSchedType(), scenario);
     final long bestLatency = simu.getFinalLatency();
-    PreesmLogger.getLogger().log(Level.INFO, "Latency of the graph is: " + Long.toString(simu.getFinalLatency()));
+    PreesmLogger.getLogger().info(() -> "Latency of the graph is: " + bestLatency);
 
     final InitialLists initial = new InitialLists();
     final boolean couldConstructInitialLists = initial.constructInitialLists(dag, simu);
     if (!couldConstructInitialLists) {
       final String msg = "Error in scheduling";
       throw new PreesmRuntimeException(msg);
-    } else {
-
-      // Using topological task scheduling in list scheduling: the t-level
-      // order of the infinite homogeneous simulation
-      final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
-      simu.resetDAG();
-
-      final String msg = "Mapping " + dag.vertexSet().size() + " tasks.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-      final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
-          taskSched);
-      resSimu.setBestLatency(bestLatency);
-      PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
-
-      final MapperDAG resDag = resSimu.getDAG();
-      final TagDAG tagSDF = new TagDAG();
-      tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
-      outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
-
-      PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
-      removeRedundantSynchronization(parameters, dag);
-      checkSchedulingResult(parameters, resDag);
     }
+    // Using topological task scheduling in list scheduling: the t-level
+    // order of the infinite homogeneous simulation
+    final TopologicalTaskSched taskSched = new TopologicalTaskSched(simu.getTotalOrder());
+    simu.resetDAG();
+
+    final String msg = "Mapping " + dag.vertexSet().size() + " tasks.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
+    final LatencyAbc resSimu = schedule(outputs, parameters, initial, scenario, abcParams, dag, architecture,
+        taskSched);
+    resSimu.setBestLatency(bestLatency);
+    PreesmLogger.getLogger().log(Level.INFO, "Mapping finished, now add communications tasks.");
+
+    final MapperDAG resDag = resSimu.getDAG();
+    final TagDAG tagSDF = new TagDAG();
+    tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+
+    PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
+    removeRedundantSynchronization(parameters, dag);
+    checkSchedulingResult(parameters, resDag);
     return outputs;
   }
 

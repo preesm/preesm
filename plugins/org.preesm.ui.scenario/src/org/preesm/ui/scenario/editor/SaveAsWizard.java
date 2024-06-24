@@ -46,9 +46,9 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.preesm.ui.PreesmUIPlugin;
 
 /**
  * This class provides a save as excel sheet wizard.
@@ -67,7 +67,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
   /**
    * What is saved (Timings, Variables, ...)
    */
-  private final String _savedObject;
+  private final String savedObject;
 
   /**
    * Constructor for {@link SaveAsWizard}.
@@ -80,9 +80,9 @@ public class SaveAsWizard extends Wizard implements INewWizard {
   public SaveAsWizard(final ExcelWriter writer, final String savedObject) {
     super();
     this.writer = writer;
-    this._savedObject = savedObject;
+    this.savedObject = savedObject;
     setNeedsProgressMonitor(true);
-    setWindowTitle("Save " + this._savedObject + " As...");
+    setWindowTitle("Save " + this.savedObject + " As...");
   }
 
   /*
@@ -92,9 +92,9 @@ public class SaveAsWizard extends Wizard implements INewWizard {
    */
   @Override
   public void addPages() {
-    final WizardSaveExcelPage page = new WizardSaveExcelPage(this._savedObject);
+    final WizardSaveExcelPage page = new WizardSaveExcelPage(this.savedObject);
     page.setWriter(this.writer);
-    page.setDescription("Save " + this._savedObject + " As...");
+    page.setDescription("Save " + this.savedObject + " As...");
     addPage(page);
   }
 
@@ -125,7 +125,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
    */
   @Override
   public boolean performFinish() {
-    final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("save" + this._savedObject);
+    final WizardSaveExcelPage page = (WizardSaveExcelPage) getPage("save" + this.savedObject);
 
     final InputStream in = page.getInitialContents();
     if (in == null) {
@@ -138,7 +138,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
     }
 
     // Open editor on new file.
-    final IWorkbenchWindow dw = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    final IWorkbenchWindow dw = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
     try {
       if (dw != null) {
         BasicNewResourceWizard.selectAndReveal(file, dw);

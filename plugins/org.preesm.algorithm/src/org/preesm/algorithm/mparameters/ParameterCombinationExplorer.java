@@ -45,34 +45,34 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * This class is dedicated to explore combination of MalleableParameterIR.
- * 
+ * This class is dedicated to explore combination of MoldableParameterIR.
+ *
  * @author ahonorat
  */
 public class ParameterCombinationExplorer {
 
-  protected List<MalleableParameterIR> mparamsIR;           // mparamsIR having more than 1 possible value
-  protected Scenario                   scenario;
-  protected Map<Parameter, Parameter>  mparamTOscenarParam; // map from mparam to corresponding scenario parameter
+  protected List<MoldableParameterIR> mparamsIR;           // mparamsIR having more than 1 possible value
+  protected Scenario                  scenario;
+  protected Map<Parameter, Parameter> mparamTOscenarParam; // map from mparam to corresponding scenario parameter
 
   /**
    * Builds a new explorer.
-   * 
+   *
    * @param mparamsIR
-   *          MalleableParameterIR.
+   *          MoldableParameterIR.
    * @param scenario
    *          Scenario containing the parameters.
    */
-  public ParameterCombinationExplorer(List<MalleableParameterIR> mparamsIR, Scenario scenario) {
+  public ParameterCombinationExplorer(List<MoldableParameterIR> mparamsIR, Scenario scenario) {
     this.scenario = scenario;
     mparamTOscenarParam = new HashMap<>();
     final PiGraph algoScenar = scenario.getAlgorithm();
-    for (MalleableParameterIR mpir : mparamsIR) {
-      String name = mpir.mp.getName();
-      String parentName = mpir.mp.getContainingPiGraph().getName();
-      Parameter ps = algoScenar.lookupParameterGivenGraph(name, parentName);
+    for (final MoldableParameterIR mpir : mparamsIR) {
+      final String name = mpir.mp.getName();
+      final String parentName = mpir.mp.getContainingPiGraph().getName();
+      final Parameter ps = algoScenar.lookupParameterGivenGraph(name, parentName);
       if (ps == null) {
-        throw new PreesmRuntimeException("Unable to find malleable parameter in scenario.");
+        throw new PreesmRuntimeException("Unable to find moldable parameter in scenario.");
       }
       mparamTOscenarParam.put(mpir.mp, ps);
     }
@@ -90,7 +90,7 @@ public class ParameterCombinationExplorer {
   }
 
   protected void resetIndex(int index) {
-    MalleableParameterIR mpir = mparamsIR.get(index);
+    final MoldableParameterIR mpir = mparamsIR.get(index);
     mpir.currentExprIndex = 1;
     if (mpir.values.isEmpty()) {
       final String expr = mpir.exprs.get(0);
@@ -105,7 +105,7 @@ public class ParameterCombinationExplorer {
 
   /**
    * Set the next combination to visit. If false, all combinations have been visited and a new object must be create.
-   * 
+   *
    * @return True if some combinations have not yet been visited.
    */
   public boolean setNext() {
@@ -116,7 +116,7 @@ public class ParameterCombinationExplorer {
     if (mparamsIR.isEmpty()) {
       return false;
     }
-    MalleableParameterIR lmpir = mparamsIR.get(index);
+    final MoldableParameterIR lmpir = mparamsIR.get(index);
     if (lmpir.nbValues == lmpir.currentExprIndex) {
       resetIndex(index);
       if (mparamsIR.size() - 1 == index) {
@@ -124,25 +124,24 @@ public class ParameterCombinationExplorer {
       } else {
         return setNext(index + 1);
       }
-    } else {
-      if (lmpir.values.isEmpty()) {
-        final String expr = lmpir.exprs.get(lmpir.currentExprIndex);
-        lmpir.mp.setExpression(expr);
-        scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), expr);
-      } else {
-        final Long value = lmpir.values.get(lmpir.currentExprIndex);
-        lmpir.mp.setExpression(value);
-        scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), value.toString());
-      }
-      lmpir.currentExprIndex += 1;
     }
+    if (lmpir.values.isEmpty()) {
+      final String expr = lmpir.exprs.get(lmpir.currentExprIndex);
+      lmpir.mp.setExpression(expr);
+      scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), expr);
+    } else {
+      final Long value = lmpir.values.get(lmpir.currentExprIndex);
+      lmpir.mp.setExpression(value);
+      scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), value.toString());
+    }
+    lmpir.currentExprIndex += 1;
     return true;
   }
 
   /**
-   * Records the index of the current expression set for each malleable parameter having several possible values. To be
+   * Records the index of the current expression set for each moldable parameter having several possible values. To be
    * used only with the original {@link ParameterCombinationExplorer} that created this configuration.
-   * 
+   *
    * @return A list of index (each from 0 to mparamIR.nbValues - 1 included) to later set back this configuration.
    */
   protected List<Integer> recordConfiguration() {
@@ -150,8 +149,8 @@ public class ParameterCombinationExplorer {
   }
 
   /**
-   * Set the default expression of each malleable parameters as recorded in the given configuration.
-   * 
+   * Set the default expression of each moldable parameters as recorded in the given configuration.
+   *
    * @param config
    *          Configuration to set, as returned per {@link ParameterCombinationExplorer#recordConfiguration}.
    * @return True if the configuration is valid.
@@ -159,10 +158,10 @@ public class ParameterCombinationExplorer {
   protected boolean setConfiguration(List<Integer> config) {
     final int size = mparamsIR.size();
     if (config.size() != size) {
-      throw new PreesmRuntimeException("Wrong number of malleable parameters in configuration record.");
+      throw new PreesmRuntimeException("Wrong number of moldable parameters in configuration record.");
     }
     for (int i = 0; i < size; i++) {
-      final MalleableParameterIR mpir = mparamsIR.get(i);
+      final MoldableParameterIR mpir = mparamsIR.get(i);
       final int index = config.get(i);
       if (index < 0 || index >= mpir.nbValues) {
         return false;

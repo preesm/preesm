@@ -138,9 +138,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         doSwitch(innerGraph);
 
         final ActorByGraphReplacement replacement = new ActorByGraphReplacement(a, innerGraph);
-        if (!this.graphReplacements.containsKey(this.currentGraph)) {
-          this.graphReplacements.put(this.currentGraph, new ArrayList<ActorByGraphReplacement>());
-        }
+        this.graphReplacements.putIfAbsent(this.currentGraph, new ArrayList<>());
+
         this.graphReplacements.get(this.currentGraph).add(replacement);
       }
     }
@@ -181,12 +180,11 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
             cop2.setAnnotation(cop1.getAnnotation());
           }
           final List<Dependency> depsToReconnect = new ArrayList<>(cop1.getOutgoingDependencies());
-          for (final Dependency dep : depsToReconnect) {
-            // this will also automatically set the setter of the dep to cop2
-            // and remove the dep from the list of outgoing deps of cop1
-            // (this is why we need to copy the list first)
-            cop2.getOutgoingDependencies().add(dep);
-          }
+
+          // this will also automatically set the setter of the dep to cop2
+          // and remove the dep from the list of outgoing deps of cop1
+          // (this is why we need to copy the list first)
+          depsToReconnect.forEach(dep -> cop2.getOutgoingDependencies().add(dep));
 
           found = true;
           notFoundInSubGraph.remove(cop2);
@@ -197,11 +195,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, cop1);
       }
     }
-    // on the contrary, there might be ports in the subgraph which are not present
-    // in the hierarchical actor
-    for (final ConfigOutputPort cop2 : notFoundInSubGraph) {
-      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, cop2);
-    }
+    // on the contrary, there might be ports in the subgraph which are not present in the hierarchical actor
+    notFoundInSubGraph.forEach(cop2 -> SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, cop2));
   }
 
   private static void reconnectConfigInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
@@ -226,12 +221,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, topGraphActorConfigInputPort);
       }
     }
-    // on the contrary, there might be ports in the subgraph which are not present
-    // in the hierarchical actor
-    for (final ConfigInputPort subGraphConfigInputPorts : notFoundInSubGraph) {
-      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, subGraphConfigInputPorts);
-    }
-
+    // on the contrary, there might be ports in the subgraph which are not present in the hierarchical actor
+    notFoundInSubGraph.forEach(subCIP -> SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, subCIP));
   }
 
   private static void reconnectDataOutputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
@@ -259,12 +250,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, dop1);
       }
     }
-    // on the contrary, there might be ports in the subgraph which are not present
-    // in the hierarchical actor
-    for (final DataOutputPort dop2 : notFoundInSubGraph) {
-      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dop2);
-    }
-
+    // on the contrary, there might be ports in the subgraph which are not present in the hierarchical actor
+    notFoundInSubGraph.forEach(dop2 -> SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dop2));
   }
 
   private static void reconnectDataInputPorts(final Actor hierarchicalActor, final PiGraph subGraph) {
@@ -292,12 +279,8 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
         SubgraphReconnector.warningPortHierarchical(hierarchicalActor, subGraph, dip1);
       }
     }
-    // on the contrary, there might be ports in the subgraph which are not present
-    // in the hierarchical actor
-    for (final DataInputPort dip2 : notFoundInSubGraph) {
-      SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dip2);
-    }
-
+    // on the contrary, there might be ports in the subgraph which are not present in the hierarchical actor
+    notFoundInSubGraph.forEach(dip2 -> SubgraphReconnector.warningPortSubGraph(hierarchicalActor, subGraph, dip2));
   }
 
   private static void warningPortHierarchical(final Actor hierarchicalActor, final PiGraph subGraph, final Port port) {

@@ -54,7 +54,7 @@ public class NameCheckerC {
   /**
    * Valid names correspond to this regex, close to the C variables name policy.
    */
-  public static final String REGEX_C = "[a-zA-Z][a-zA-Z0-9_]*";
+  public static final String REGEX_C = "[a-zA-Z]\\w*";
 
   /**
    * CV-qualifiers to remove from types (PREESM does not need to know them).
@@ -123,7 +123,8 @@ public class NameCheckerC {
   public static boolean checkValidName(String componentName, String name) {
     if (!matchCvariableRegex(name)) {
       throw new PreesmRuntimeException(componentName + " <" + name + MESSAGE_VARIABLE_NAME_ERROR);
-    } else if (isCkeyword(name)) {
+    }
+    if (isCkeyword(name)) {
       throw new PreesmRuntimeException(componentName + " <" + name + MESSAGE_C_KEYWORD_NAME_ERROR);
     }
     return true;
@@ -131,7 +132,7 @@ public class NameCheckerC {
 
   /**
    * Remove the const, restrict, volatile and _Atomic type qualifiers and harmonize whitespaces.
-   * 
+   *
    * @param input
    *          Where to remove the qualifiers.
    * @return The input without qualifiers.

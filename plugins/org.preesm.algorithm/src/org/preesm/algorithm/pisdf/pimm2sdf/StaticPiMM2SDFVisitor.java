@@ -173,8 +173,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
   private void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
       final String evaluate = Long.toString(p.getValueExpression().evaluate());
-      final Variable var = new Variable(p.getName(), evaluate);
-      sdf.addVariable(var);
+      final Variable variable = new Variable(p.getName(), evaluate);
+      sdf.addVariable(variable);
     }
   }
 
@@ -194,17 +194,15 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       final ISetter setter = incomingDependency.getSetter();
       // Setter of an incoming dependency into a ConfigInputInterface must
       // be a parameter
-      if (setter instanceof Parameter) {
-        final Expression setterParam = ((Parameter) setter).getValueExpression();
+      if (setter instanceof final Parameter param) {
+        final Expression setterParam = param.getValueExpression();
         cii.setExpression(setterParam.getExpressionAsString());
       }
-    } else {
-      // If there is only one value available for Parameter p, we can set
-      // its
-      if (this.execution.hasValue(p)) {
-        final Long value = this.execution.getValue(p);
-        p.setExpression(value.longValue());
-      }
+    } else if (this.execution.hasValue(p)) {
+      // If there is only one value available for Parameter p, we can set it
+
+      final Long value = this.execution.getValue(p);
+      p.setExpression(value.longValue());
     }
     return true;
   }
@@ -223,8 +221,8 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     final ISetter setter = incomingDependency.getSetter();
     // Setter of an incoming dependency into a ConfigInputInterface must be
     // a parameter
-    if (setter instanceof Parameter) {
-      cii.setExpression(((Parameter) setter).getValueExpression().getExpressionAsString());
+    if (setter instanceof final Parameter param) {
+      cii.setExpression(param.getValueExpression().getExpressionAsString());
     }
     return true;
   }
@@ -352,8 +350,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
             new NullPointerException());
       }
       final ISetter setter = incomingDependency.getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue(param.getName());
         v.getArguments().addArgument(arg);
@@ -579,8 +576,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ba.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue(param.getName());
         bv.getArguments().addArgument(arg);
@@ -605,8 +601,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : ja.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue(param.getName());
         jv.getArguments().addArgument(arg);
@@ -631,8 +626,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : fa.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue(param.getName());
         fv.getArguments().addArgument(arg);
@@ -657,8 +651,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
     // Handle input parameters as instance arguments
     for (final ConfigInputPort p : rba.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
-      if (setter instanceof Parameter) {
-        final Parameter param = (Parameter) setter;
+      if (setter instanceof final Parameter param) {
         final Argument arg = new Argument(p.getName());
         arg.setValue(param.getName());
         rbv.getArguments().addArgument(arg);

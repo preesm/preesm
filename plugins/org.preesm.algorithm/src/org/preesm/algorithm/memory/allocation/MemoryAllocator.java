@@ -120,7 +120,7 @@ public abstract class MemoryAllocator {
         continue;
       }
 
-      final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+      final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
       final List<Long> interBufferSpaces = new ArrayList<>();
       long largestTypeSize = 1;
       long internalOffset = 0; // In Bits
@@ -605,7 +605,7 @@ public abstract class MemoryAllocator {
       // operation
       final DAGEdge edge = memObj.getEdge();
       if ((edge != null) && !isMerged) {
-        final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.propertyBeanName);
+        final BufferAggregate buffers = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
         final List<
             Long> interBufferSpaces = memObj.getPropertyBean().getValue(MemoryExclusionVertex.INTER_BUFFER_SPACES);
 

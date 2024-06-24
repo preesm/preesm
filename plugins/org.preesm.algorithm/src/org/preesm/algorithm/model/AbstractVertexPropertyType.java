@@ -53,7 +53,7 @@ public abstract class AbstractVertexPropertyType<T> implements CloneableProperty
   /**
    * Creates a new AbstractVertexPropertyType without specifying any value.
    */
-  public AbstractVertexPropertyType() {
+  protected AbstractVertexPropertyType() {
     this.value = null;
   }
 
@@ -63,7 +63,7 @@ public abstract class AbstractVertexPropertyType<T> implements CloneableProperty
    * @param val
    *          the val
    */
-  public AbstractVertexPropertyType(final T val) {
+  protected AbstractVertexPropertyType(final T val) {
     this.value = val;
   }
 

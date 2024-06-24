@@ -94,7 +94,7 @@ public class TcpCPrinter extends CPrinter {
       generateStandardLibFiles.put("tcp_communication.c", tcpcomc);
       generateStandardLibFiles.put("tcp_communication.h", tcpcomh);
       generateStandardLibFiles.put("preesm_gen_tcp.h", preesmgenh);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not override communication files", e);
     }
     return generateStandardLibFiles;
@@ -108,7 +108,7 @@ public class TcpCPrinter extends CPrinter {
   @Override
   public CharSequence printCoreInitBlockHeader(CallBlock callBlock) {
     final int coreID = ((CoreBlock) callBlock.eContainer()).getCoreID();
-    StringBuilder ff = new StringBuilder();
+    final StringBuilder ff = new StringBuilder();
 
     final int nbCores = getEngine().getCodeBlocks().size();
     receivingCalls.add(coreID, new ArrayList<>(nbCores));
@@ -187,7 +187,7 @@ public class TcpCPrinter extends CPrinter {
       ff.append("int* socketFileDescriptors = (int*)arg;\n");
       ff.append("  while (1) {\n");
       ff.append("    pthread_barrier_wait(&receiveCore" + coreID + "Barrier);\n");
-      for (String s : l) {
+      for (final String s : l) {
         ff.append("    " + s);
       }
       ff.append("  }\n" + "  return NULL;\n" + "}\n\n");
@@ -202,7 +202,7 @@ public class TcpCPrinter extends CPrinter {
     final CoreBlock eContainer = (CoreBlock) block2.eContainer();
 
     final int coreID = eContainer.getCoreID();
-    StringBuilder res = new StringBuilder();
+    final StringBuilder res = new StringBuilder();
     res.append("  int iterationCount = 0;\n");
 
     res.append("#ifdef PREESM_LOOP_SIZE\n");
@@ -312,12 +312,12 @@ public class TcpCPrinter extends CPrinter {
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not locate main template [" + templateLocalPath + "].", e);
     }
 
     // 4- init output writer
-    StringWriter writer = new StringWriter();
+    final StringWriter writer = new StringWriter();
 
     engine.evaluate(context, writer, "org.apache.velocity", reader);
 

@@ -44,7 +44,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -59,23 +58,23 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
- * 
+ *
  * @author dmadronal
  *
  */
 public class EnergyAwarenessProvider {
 
   /** The original scenario **/
-  private Scenario scenarioOriginal;
+  private final Scenario scenarioOriginal;
 
   /** The mapping scenario **/
-  private Scenario scenarioMapping;
+  private final Scenario scenarioMapping;
 
   /** The solution if the FPS objective is not reached **/
-  private Map<String, Object> mappingFPS = new LinkedHashMap<>();
+  private final Map<String, Object> mappingFPS = new LinkedHashMap<>();
 
   /** The solution if the FPS objective is reached **/
-  private Map<String, Object> mappingBest = new LinkedHashMap<>();
+  private final Map<String, Object> mappingBest = new LinkedHashMap<>();
 
   /** The best configuration (Type of PE - Number of PEs of that type) **/
   Map<String, Integer> bestConfig = new LinkedHashMap<>();
@@ -120,7 +119,7 @@ public class EnergyAwarenessProvider {
     this.coresOfEachType = getCoresOfEachType(this.scenarioMapping);
     this.pesAlwaysAdded = getImprescindiblePes(this.scenarioMapping);
 
-    String messageLogger = "Imprescindible PEs = " + this.pesAlwaysAdded.toString();
+    final String messageLogger = "Imprescindible PEs = " + this.pesAlwaysAdded.toString();
     PreesmLogger.getLogger().log(Level.INFO, messageLogger);
     /** Save the searching parameters **/
     this.startingPoint = startingPoint;
@@ -151,7 +150,7 @@ public class EnergyAwarenessProvider {
     this.configToAdd = getCoresOfEachType(this.scenarioMapping);
 
     /** Check whether we have tested everything or not */
-    String messageLogger = this.configToAdd.toString() + " is being checked";
+    final String messageLogger = this.configToAdd.toString() + " is being checked";
     PreesmLogger.getLogger().log(Level.INFO, messageLogger);
     if (!configValid(this.configToAdd, this.configsAlreadyUsed)) {
       this.finished = true;
@@ -174,17 +173,17 @@ public class EnergyAwarenessProvider {
    */
   public void evaluateMapping(Map<String, Object> mapping) {
     /** Check the energy **/
-    double powerPlatform = computePlatformPower(this.configToAdd, this.scenarioMapping);
-    MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
-    double energyDynamic = computeDynamicEnergy(dagMapping, this.scenarioMapping);
+    final double powerPlatform = computePlatformPower(this.configToAdd, this.scenarioMapping);
+    final MapperDAG dagMapping = (MapperDAG) mapping.get("DAG");
+    final double energyDynamic = computeDynamicEnergy(dagMapping, this.scenarioMapping);
 
-    LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
+    final LatencyAbc abcMapping = (LatencyAbc) mapping.get("ABC");
     // We consider that timing tab is filled with us (extracted with PAPIFY timing, for example)
-    double fps = 1000000.0 / abcMapping.getFinalLatency();
+    final double fps = 1000000.0 / abcMapping.getFinalLatency();
     // We consider that energy tab is filled with uJ
-    double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
-    double energyThisOne = powerPlatform + totalDynamicEnergy;
-    String messageLogger = this.configToAdd.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
+    final double totalDynamicEnergy = (energyDynamic / 1000000.0) * fps;
+    final double energyThisOne = powerPlatform + totalDynamicEnergy;
+    final String messageLogger = this.configToAdd.toString() + " reaches " + fps + " FPS consuming " + energyThisOne
         + " joules per second";
     PreesmLogger.getLogger().log(Level.INFO, messageLogger);
 
@@ -220,16 +219,14 @@ public class EnergyAwarenessProvider {
   public void computeNextConfig() {
     if (this.coresUsedOfEachType.isEmpty()) {
       this.coresUsedOfEachType = getFirstConfig(this.coresOfEachType, this.startingPoint);
+    } else if (this.searchingMode.equalsIgnoreCase("halves")) {
+      getNextConditionalConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange,
+          this.configsAlreadyUsed);
+    } else if (this.searchingMode.equalsIgnoreCase("thorough")) {
+      getNextConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange);
     } else {
-      if (this.searchingMode.equalsIgnoreCase("halves")) {
-        getNextConditionalConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange,
-            this.configsAlreadyUsed);
-      } else if (this.searchingMode.equalsIgnoreCase("thorough")) {
-        getNextConfig(this.coresUsedOfEachType, this.coresOfEachType, this.nextChange);
-      } else {
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            "Searching mode in energy-aware mapping/scheduling may be either 'halves' or 'thorough'");
-      }
+      PreesmLogger.getLogger().log(Level.SEVERE,
+          "Searching mode in energy-aware mapping/scheduling may be either 'halves' or 'thorough'");
     }
   }
 
@@ -246,7 +243,7 @@ public class EnergyAwarenessProvider {
     } else {
       finalMapping = this.mappingBest;
     }
-    String messageLogger = "";
+    String messageLogger;
     messageLogger = "The best one is " + this.bestConfig.toString() + ". Retrieving its result";
     PreesmLogger.getLogger().log(Level.INFO, messageLogger);
     messageLogger = "Performance reached =  " + this.closestFPS + " FPS with an energy consumption of " + this.minEnergy
@@ -269,7 +266,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param original
    *          original {@link Scenario}
    * @param copy
@@ -284,14 +281,14 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param scenario
    *          original {@link Scenario}
    */
   public static Map<String, Integer> getCoresOfEachType(Scenario scenario) {
-    Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
-    for (Component component : scenario.getDesign().getProcessingElements()) {
-      int numOfConstrainedComps = scenario.getConstraints().nbConstrainsWithComp(component.getVlnv().getName());
+    final Map<String, Integer> coresOfEachType = new LinkedHashMap<>();
+    for (final Component component : scenario.getDesign().getProcessingElements()) {
+      final int numOfConstrainedComps = scenario.getConstraints().nbConstrainsWithComp(component.getVlnv().getName());
       if (numOfConstrainedComps > 0) {
         coresOfEachType.put(component.getVlnv().getName(), numOfConstrainedComps);
       } else {
@@ -302,17 +299,17 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param coresOfEachType
    *          cores available of each type
    * @param typeOfSearch
    *          String to select the type of search we will do
    */
   public static Map<String, Integer> getFirstConfig(Map<String, Integer> coresOfEachType, String typeOfSearch) {
-    Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
+    final Map<String, Integer> coresUsedOfEachType = new LinkedHashMap<>();
     switch (typeOfSearch.toLowerCase()) {
       case "first":
-        for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
+        for (final Entry<String, Integer> instance : coresOfEachType.entrySet()) {
           if (coresUsedOfEachType.isEmpty()) {
             coresUsedOfEachType.put(instance.getKey(), 1);
           } else {
@@ -324,15 +321,15 @@ public class EnergyAwarenessProvider {
         coresUsedOfEachType.putAll(coresOfEachType);
         break;
       case "middle":
-        for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
-          int value = ((Double) Math.ceil(instance.getValue() / 2.0)).intValue();
+        for (final Entry<String, Integer> instance : coresOfEachType.entrySet()) {
+          final int value = ((Double) Math.ceil(instance.getValue() / 2.0)).intValue();
           coresUsedOfEachType.put(instance.getKey(), value);
         }
         break;
       case "random":
         do {
-          for (Entry<String, Integer> instance : coresOfEachType.entrySet()) {
-            int value = ((Double) (Math.random() * instance.getValue())).intValue();
+          for (final Entry<String, Integer> instance : coresOfEachType.entrySet()) {
+            final int value = ((Double) (Math.random() * instance.getValue())).intValue();
             coresUsedOfEachType.put(instance.getKey(), value);
           }
         } while (!configValid(coresUsedOfEachType, null));
@@ -346,25 +343,24 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    */
   public static List<Entry<ComponentInstance, EList<AbstractActor>>> getConstraintsOfType(Scenario scenario,
       String peType) {
     return scenario.getConstraints().getGroupConstraints().stream()
-        .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType))
-        .collect(Collectors.toList());
+        .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType)).toList();
   }
 
   /**
-   * 
+   *
    */
   public static Entry<ComponentInstance, EList<AbstractActor>> getConstraintByPeName(Scenario scenario, String peName) {
     return scenario.getConstraints().getGroupConstraints().stream()
-        .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).collect(Collectors.toList()).get(0);
+        .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).toList().get(0);
   }
 
   /**
-   * 
+   *
    * @param scenario
    *          original {@link Scenario}
    * @param scenarioMapping
@@ -376,13 +372,14 @@ public class EnergyAwarenessProvider {
    */
   public static void updateConfigConstrains(Scenario scenario, Scenario scenarioMapping, Set<String> pesAlwaysAdded,
       Map<String, Integer> coresUsedOfEachType) {
-    for (String peName : pesAlwaysAdded) {
-      Entry<ComponentInstance, EList<AbstractActor>> constraint = getConstraintByPeName(scenario, peName);
+    for (final String peName : pesAlwaysAdded) {
+      final Entry<ComponentInstance, EList<AbstractActor>> constraint = getConstraintByPeName(scenario, peName);
       scenarioMapping.getConstraints().getGroupConstraints().add(constraint);
     }
-    Map<String, Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessProvider.getCoresOfEachType(scenarioMapping);
-    for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-      List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = getConstraintsOfType(scenario,
+    final Map<String,
+        Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessProvider.getCoresOfEachType(scenarioMapping);
+    for (final Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+      final List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = getConstraintsOfType(scenario,
           instance.getKey());
       int coresLeft = 0;
       if (coresOfEachTypeAlreadyAdded.containsKey(instance.getKey())) {
@@ -398,7 +395,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param scenario
    *          original {@link Scenario}
    * @param scenarioMapping
@@ -408,7 +405,7 @@ public class EnergyAwarenessProvider {
     scenarioMapping.getSimulationInfo().setMainOperator(null);
     if (!scenarioMapping.getConstraints()
         .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
-      ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
+      final ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
       scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
     } else {
       scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
@@ -416,7 +413,7 @@ public class EnergyAwarenessProvider {
     scenarioMapping.getSimulationInfo().setMainComNode(scenario.getSimulationInfo().getMainComNode());
     boolean needToUpdate = true;
     scenarioMapping.getSimulationInfo().getSpecialVertexOperators().clear();
-    for (ComponentInstance specialVertex : scenario.getSimulationInfo().getSpecialVertexOperators()) {
+    for (final ComponentInstance specialVertex : scenario.getSimulationInfo().getSpecialVertexOperators()) {
       if (scenarioMapping.getConstraints().isCoreContained(specialVertex.getInstanceName())) {
         scenarioMapping.getSimulationInfo().addSpecialVertexOperator(specialVertex);
         needToUpdate = false;
@@ -430,7 +427,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param coresUsedOfEachType
    *          cores used of each type
    * @param scenarioMapping
@@ -439,15 +436,15 @@ public class EnergyAwarenessProvider {
    */
   public static double computePlatformPower(Map<String, Integer> coresUsedOfEachType, Scenario scenarioMapping) {
     double powerPlatform = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault("Base");
-    for (Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-      double powerPe = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault(instance.getKey());
+    for (final Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
+      final double powerPe = scenarioMapping.getEnergyConfig().getPeTypePowerOrDefault(instance.getKey());
       powerPlatform = powerPlatform + (powerPe * instance.getValue());
     }
     return powerPlatform;
   }
 
   /**
-   * 
+   *
    * @param mapping
    *          mapping done
    * @param scenarioMapping
@@ -456,12 +453,12 @@ public class EnergyAwarenessProvider {
    */
   public static long computeDynamicEnergy(Mapping mapping, Scenario scenarioMapping) {
     long energyDynamic = 0;
-    for (Entry<AbstractActor, EList<ComponentInstance>> coreMapping : mapping.getMappings()) {
-      for (ComponentInstance compInstance : coreMapping.getValue()) {
-        AbstractActor actor = coreMapping.getKey();
-        Component component = compInstance.getComponent();
+    for (final Entry<AbstractActor, EList<ComponentInstance>> coreMapping : mapping.getMappings()) {
+      for (final ComponentInstance compInstance : coreMapping.getValue()) {
+        final AbstractActor actor = coreMapping.getKey();
+        final Component component = compInstance.getComponent();
         if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-          long energyActor = scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
+          final long energyActor = scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
           energyDynamic = energyDynamic + energyActor;
         }
       }
@@ -470,7 +467,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param dagMapping
    *          mapping done
    * @param scenarioMapping
@@ -479,12 +476,12 @@ public class EnergyAwarenessProvider {
    */
   public static double computeDynamicEnergy(MapperDAG dagMapping, Scenario scenarioMapping) {
     double energyDynamic = 0.0;
-    for (DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
-      ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
-      Component component = componentInstance.getComponent();
-      AbstractActor actor = vertex.getReferencePiVertex();
+    for (final DAGVertex vertex : dagMapping.getHierarchicalVertexSet()) {
+      final ComponentInstance componentInstance = vertex.getPropertyBean().getValue("Operator");
+      final Component component = componentInstance.getComponent();
+      final AbstractActor actor = vertex.getReferencePiVertex();
       if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-        double energyActor = (double) scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
+        final double energyActor = scenarioMapping.getEnergyConfig().evaluateEnergyActorOrDefault(actor, component);
         energyDynamic = energyDynamic + energyActor;
       }
     }
@@ -492,7 +489,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param coresUsedOfEachType
    *          cores used of each type
    * @param coresOfEachType
@@ -504,23 +501,21 @@ public class EnergyAwarenessProvider {
       String typeOfSearch) {
     switch (typeOfSearch.toLowerCase()) {
       case "oneMore":
-        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+        for (final Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           peType.setValue(peType.getValue() + 1);
-          if (peType.getValue() > coresOfEachType.get(peType.getKey())) {
-            peType.setValue(0);
-          } else {
+          if (peType.getValue() <= coresOfEachType.get(peType.getKey())) {
             break;
           }
+          peType.setValue(0);
         }
         break;
       case "oneLess":
-        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+        for (final Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
           peType.setValue(peType.getValue() - 1);
-          if (peType.getValue() < 0) {
-            peType.setValue(coresOfEachType.get(peType.getKey()));
-          } else {
+          if (peType.getValue() >= 0) {
             break;
           }
+          peType.setValue(coresOfEachType.get(peType.getKey()));
         }
         break;
       default:
@@ -531,7 +526,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param coresUsedOfEachType
    *          cores used of each type
    * @param coresOfEachType
@@ -541,19 +536,18 @@ public class EnergyAwarenessProvider {
    */
   public static void getNextConditionalConfig(Map<String, Integer> coresUsedOfEachType,
       Map<String, Integer> coresOfEachType, String typeOfSearch, Set<Map<String, Integer>> configsAlreadyUsed) {
-    Map<String, Integer> previousConfig = new LinkedHashMap<>();
-    previousConfig.putAll(coresUsedOfEachType);
+    final Map<String, Integer> previousConfig = new LinkedHashMap<>(coresUsedOfEachType);
     boolean foundSomething = false;
     String messageLogger = "";
     switch (typeOfSearch.toLowerCase()) {
       case "up":
         messageLogger = "FPS below the required ones, increasing number of PEs ...";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-          int valueUsedBefore = peType.getValue();
+        for (final Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          final int valueUsedBefore = peType.getValue();
           int valueToMakeAverage = coresOfEachType.get(peType.getKey());
-          for (Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
-            int valueThisConfig = alreadyUsed.get(peType.getKey());
+          for (final Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
+            final int valueThisConfig = alreadyUsed.get(peType.getKey());
             if (valueThisConfig < valueToMakeAverage && valueThisConfig > valueUsedBefore) {
               valueToMakeAverage = valueThisConfig;
               foundSomething = true;
@@ -562,19 +556,19 @@ public class EnergyAwarenessProvider {
           if (!foundSomething) {
             valueToMakeAverage = coresOfEachType.get(peType.getKey());
           }
-          int valueUsedNext = (int) Math.ceil((valueToMakeAverage + valueUsedBefore) / 2.0);
+          final int valueUsedNext = (int) Math.ceil((valueToMakeAverage + valueUsedBefore) / 2.0);
           peType.setValue(valueUsedNext);
         }
         break;
       case "down":
         messageLogger = "FPS above the required ones, decreasing number of PEs ...";
         PreesmLogger.getLogger().log(Level.INFO, messageLogger);
-        for (Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
-          int valueUsedBefore = peType.getValue();
+        for (final Entry<String, Integer> peType : coresUsedOfEachType.entrySet()) {
+          final int valueUsedBefore = peType.getValue();
           int valueToMakeAverage = 0;
-          for (Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
+          for (final Map<String, Integer> alreadyUsed : configsAlreadyUsed) {
             if (alreadyUsed.containsKey(peType.getKey())) {
-              int valueThisConfig = alreadyUsed.get(peType.getKey());
+              final int valueThisConfig = alreadyUsed.get(peType.getKey());
               if (valueThisConfig > valueToMakeAverage && valueThisConfig < valueUsedBefore) {
                 valueToMakeAverage = valueThisConfig;
                 foundSomething = true;
@@ -584,7 +578,7 @@ public class EnergyAwarenessProvider {
           if (!foundSomething) {
             valueToMakeAverage = 0;
           }
-          int valueUsedNext = (int) Math.floor((valueToMakeAverage + valueUsedBefore) / 2.0);
+          final int valueUsedNext = (int) Math.floor((valueToMakeAverage + valueUsedBefore) / 2.0);
           peType.setValue(valueUsedNext);
         }
         break;
@@ -596,7 +590,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param coresUsedOfEachType
    *          cores used of each type
    * @param configsAlreadyUsed
@@ -609,7 +603,7 @@ public class EnergyAwarenessProvider {
     if (configsAlreadyUsed != null && configsAlreadyUsed.contains(coresUsedOfEachType)) {
       valid = false;
     }
-    if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).collect(Collectors.toList()).isEmpty()) {
+    if (coresUsedOfEachType.entrySet().stream().filter(e -> e.getValue() != 0).toList().isEmpty()) {
       valid = false;
     }
 
@@ -617,19 +611,19 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
    * @return Set of imprescindible PEs.
    */
   public static Set<String> getImprescindiblePes(Scenario scenarioMapping) {
-    Set<String> imprescindiblePes = new LinkedHashSet<>();
-    for (AbstractActor actor : scenarioMapping.getAlgorithm().getAllActors()) {
+    final Set<String> imprescindiblePes = new LinkedHashSet<>();
+    for (final AbstractActor actor : scenarioMapping.getAlgorithm().getAllActors()) {
       if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-        List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenarioMapping.getConstraints()
-            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).collect(Collectors.toList());
+        final List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenarioMapping.getConstraints()
+            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).toList();
         if (constraints.size() == 1) {
-          for (Entry<ComponentInstance, EList<AbstractActor>> constraint : constraints) {
+          for (final Entry<ComponentInstance, EList<AbstractActor>> constraint : constraints) {
             imprescindiblePes.add(constraint.getKey().getInstanceName());
           }
         }
@@ -639,7 +633,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * 
+   *
    * @param scenarioMapping
    *          {@link Scenario} used in the mapping
    * @param coresOfEachType
@@ -649,8 +643,8 @@ public class EnergyAwarenessProvider {
    */
   public static void removeImprescindibleFromAvailableCores(Scenario scenarioMapping,
       Map<String, Integer> coresOfEachType, Set<String> pesAlwaysAdded) {
-    for (String peName : pesAlwaysAdded) {
-      String peType = getConstraintByPeName(scenarioMapping, peName).getKey().getComponent().getVlnv().getName();
+    for (final String peName : pesAlwaysAdded) {
+      final String peType = getConstraintByPeName(scenarioMapping, peName).getKey().getComponent().getVlnv().getName();
       coresOfEachType.put(peType, coresOfEachType.get(peType) - 1);
     }
   }

@@ -129,8 +129,8 @@ public class AddSendReceiveTransaction implements Transaction {
 
     MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
-    if (this.precedingTransaction instanceof AddSendReceiveTransaction) {
-      currentSource = ((AddSendReceiveTransaction) this.precedingTransaction).receiveVertex;
+    if (this.precedingTransaction instanceof final AddSendReceiveTransaction asrt) {
+      currentSource = asrt.receiveVertex;
 
       ((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
     } else {
@@ -230,7 +230,7 @@ public class AddSendReceiveTransaction implements Transaction {
     final Stream<MapperDAGVertex> verticesOnRecivingOperator2 = this.orderManager.getVertexList(receiverOperator)
         .stream()
         // Keep only receive vertices
-        .filter(vertex -> vertex instanceof ReceiveVertex)
+        .filter(ReceiveVertex.class::isInstance)
         // Keep only receiveVertex scheduled after the inserted one.
         .filter(vertex -> this.orderManager.totalIndexOf(vertex) > this.orderManager.totalIndexOf(this.receiveVertex))
         // Keep only those with the same sender

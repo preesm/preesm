@@ -118,27 +118,21 @@ public class PiDistributor {
     // Each entry of this map associate a memory to the set
     // of vertices of its MemEx. This map will be differently
     // depending on the policy chosen.
-    Map<String, Set<PiMemoryExclusionVertex>> memExesVerticesSet;
-    switch (valuePolicy) {
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED:
+    final Map<String, Set<PiMemoryExclusionVertex>> memExesVerticesSet = switch (valuePolicy) {
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED -> {
         // Split merged buffers (! modifies the memEx !)
         PiDistributor.splitMergedBuffersMixed(memEx, alignment, mapping);
-        memExesVerticesSet = PiDistributor.distributeMegMixed(memEx, mapping);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED:
-        memExesVerticesSet = PiDistributor.distributeMegMixedMerged(memEx, mapping);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY:
-        memExesVerticesSet = PiDistributor.distributeMegDistributedOnly(memEx, mapping);
-        break;
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY:
-      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT:
-        memExesVerticesSet = PiDistributor.distributeMegSharedOnly(memEx);
-        break;
-      default:
-        throw new PreesmRuntimeException("Unexpected distribution policy: " + valuePolicy + ".\n Allowed values are "
-            + MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
-    }
+        yield PiDistributor.distributeMegMixed(memEx, mapping);
+      }
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED ->
+        PiDistributor.distributeMegMixedMerged(memEx, mapping);
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY ->
+        PiDistributor.distributeMegDistributedOnly(memEx, mapping);
+      case MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY, MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT ->
+        PiDistributor.distributeMegSharedOnly(memEx);
+      default -> throw new PreesmRuntimeException("Unexpected distribution policy: " + valuePolicy
+          + ".\n Allowed values are " + MemoryAllocatorTask.VALUE_DISTRIBUTION_DEFAULT);
+    };
 
     // Update the memExexVerticesSet to include hosted mObjects
     // (splitMergedBuffers ensured that all mObjects hosted by another do
@@ -153,7 +147,7 @@ public class PiDistributor {
         // addAll: Add these memory objects to the entry sets of mObject
         entry.getValue()
             .addAll(hosts.entrySet().stream().filter(mapEntry -> entry.getValue().contains(mapEntry.getKey()))
-                .map(Entry::getValue).flatMap(Collection::stream).collect(Collectors.toList()));
+                .map(Entry::getValue).flatMap(Collection::stream).toList());
       }
     }
 
@@ -367,7 +361,7 @@ public class PiDistributor {
     // into this memory bank.
     final LinkedHashSet<PiMemoryExclusionVertex> newHostsMObjs = new LinkedHashSet<>();
     for (final Entry<String, Set<PiMemoryExclusionVertex>> bankEntry : mobjByBank.entrySet().stream()
-        .filter(mapEntry -> banks.contains(mapEntry.getKey())).collect(Collectors.toList())) {
+        .filter(mapEntry -> banks.contains(mapEntry.getKey())).toList()) {
       createHostRange(mobjByBank, alignment, hosts, bankByMobj, mObjsToUndivide, newHostsMObjs, bankEntry);
     }
 
@@ -559,16 +553,14 @@ public class PiDistributor {
             // as a host in the next step
             mObjInCurrentRange.add(0, mObj);
           }
-        } else {
           // Buffer is divided, check if *any* of its range
           // intersects with the current range in bank
           // (i.e. check if *not* none of its range intersect with the range)
-          if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
-            // Add divided object at the end of the list
-            // to make sure that no divided object will ever be selected
-            // as a host in the next step
-            mObjInCurrentRange.add(mObj);
-          }
+        } else if (ranges.stream().anyMatch(range -> range.getValue().getValue().intersection(currentRange) != null)) {
+          // Add divided object at the end of the list
+          // to make sure that no divided object will ever be selected
+          // as a host in the next step
+          mObjInCurrentRange.add(mObj);
         }
       }
       rangesInBankAndMObjs.put(currentRange, mObjInCurrentRange);
@@ -594,7 +586,7 @@ public class PiDistributor {
       // all stored in the same memory bank
       final List<PiMemoryExclusionVertex> dividedPartsHosts = mobj.getPropertyBean()
           .getValue(PiMemoryExclusionVertex.DIVIDED_PARTS_HOSTS);
-      final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).collect(Collectors.toList());
+      final List<String> partsHostsSet = dividedPartsHosts.stream().map(bankByMobj::get).toList();
       if ((partsHostsSet.size() == 1) && partsHostsSet.get(0).equals(bankEntry.getKey())) {
         // All hosts were allocated in the same bank
         // And this bank is the current bankEntry
@@ -771,7 +763,7 @@ public class PiDistributor {
     for (int i = 0; i < 2; i++) {
       // Retrieve the component on which the DAG Vertex is mapped
       final Fifo edge = mObj.getEdge();
-      AbstractActor dagVertex = retriveDagVertex(mObj, memEx, i, edge);
+      final AbstractActor dagVertex = retriveDagVertex(mObj, memEx, i, edge);
 
       final ComponentInstance component = mapping.getSimpleMapping(dagVertex);
 
@@ -885,12 +877,9 @@ public class PiDistributor {
           bank = it.next();
         }
         // Put the mObj in the verticesSet
-        Set<PiMemoryExclusionVertex> verticesSet = memExesVerticesSet.get(bank);
-        if (verticesSet == null) {
-          // If the component is not yet in the map, add it
-          verticesSet = new LinkedHashSet<>();
-          memExesVerticesSet.put(bank, verticesSet);
-        }
+        final Set<
+            PiMemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, k -> new LinkedHashSet<>());
+
         verticesSet.add(memExVertex);
       }
     }

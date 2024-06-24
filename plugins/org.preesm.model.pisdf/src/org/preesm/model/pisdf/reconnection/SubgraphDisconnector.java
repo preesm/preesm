@@ -143,8 +143,7 @@ public class SubgraphDisconnector {
     for (final T port : existingPorts) {
       final T copy = suplier.get();
       copy.setName(port.getName());
-      if (port instanceof DataPort) {
-        final DataPort dataPort = (DataPort) port;
+      if (port instanceof final DataPort dataPort) {
         final DataPort dataPortCopy = (DataPort) copy;
         dataPortCopy.setAnnotation(dataPort.getAnnotation());
         dataPortCopy.setExpression(dataPort.getExpression().getExpressionAsString());

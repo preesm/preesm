@@ -146,8 +146,8 @@ public class NewPreesmProjectCreator {
    */
   private static void createFolder(final IFolder folder) throws CoreException {
     final IContainer parent = folder.getParent();
-    if (parent instanceof IFolder) {
-      NewPreesmProjectCreator.createFolder((IFolder) parent);
+    if (parent instanceof final IFolder iFolder) {
+      NewPreesmProjectCreator.createFolder(iFolder);
     }
     if (!folder.exists()) {
       folder.create(false, true, null);

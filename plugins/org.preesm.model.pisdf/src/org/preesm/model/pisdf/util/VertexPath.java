@@ -66,11 +66,10 @@ public class VertexPath {
       @SuppressWarnings("unchecked")
       final T res = (T) graph;
       return res;
-    } else {
-      // graph name is removed from path /!\ /!\
-      // we use replaceAll method instead of replace to benefit from regex
-      safePath = safePath.replaceAll("^" + graph.getName() + "/", "");
     }
+    // graph name is removed from path /!\ /!\
+    // we use replaceAll method instead of replace to benefit from regex
+    safePath = safePath.replaceAll("^" + graph.getName() + "/", "");
     final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
     final String firstFragment = pathFragments.remove(0);
     final AbstractVertex current = graph.getActors().stream().filter(a -> firstFragment.equals(a.getName())).findFirst()
@@ -80,26 +79,20 @@ public class VertexPath {
       @SuppressWarnings("unchecked")
       final T res = (T) current;
       return res;
-    } else {
-      // we are NOT at the end of the path, so what we found is the next child to visit
-      // we must reintroduce the graph name in case of the subgraph having the same name
-      // of the first fragment name
-      final String remainingPathFragments = String.join("/", pathFragments);
-      if (current instanceof PiGraph) {
-        String recursionPath = current.getName() + "/" + remainingPathFragments;
-        return VertexPath.lookup((PiGraph) current, recursionPath);
-      } else if (current instanceof Actor) {
-        final Actor actor = (Actor) current;
-        if (actor.isHierarchical()) {
-          PiGraph refinementGraph = actor.getSubGraph();
-          String recursionPath = refinementGraph.getName() + "/" + remainingPathFragments;
-          return VertexPath.lookup(refinementGraph, recursionPath);
-        } else {
-          return null;
-        }
-      } else {
-        return null;
-      }
     }
+    // we are NOT at the end of the path, so what we found is the next child to visit
+    // we must reintroduce the graph name in case of the subgraph having the same name
+    // of the first fragment name
+    final String remainingPathFragments = String.join("/", pathFragments);
+    if (current instanceof final PiGraph piGraph) {
+      final String recursionPath = piGraph.getName() + "/" + remainingPathFragments;
+      return VertexPath.lookup(piGraph, recursionPath);
+    }
+    if ((current instanceof final Actor actor) && actor.isHierarchical()) {
+      final PiGraph refinementGraph = actor.getSubGraph();
+      final String recursionPath = refinementGraph.getName() + "/" + remainingPathFragments;
+      return VertexPath.lookup(refinementGraph, recursionPath);
+    }
+    return null;
   }
 }

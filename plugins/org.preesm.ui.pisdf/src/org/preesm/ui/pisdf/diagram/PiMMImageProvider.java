@@ -60,7 +60,7 @@ public class PiMMImageProvider extends AbstractImageProvider {
   public static final String IMG_WHITE_DOT_GREY_LINE = PiMMImageProvider.PREFIX + "whitedotgreyline";
 
   /** Image for curly braces. */
-  public static final String IMG_CURLY_BRACES = PiMMImageProvider.PREFIX + "malleable3_24x20";
+  public static final String IMG_CURLY_BRACES = PiMMImageProvider.PREFIX + "moldable3_24x20";
 
   /**
    * Default constructor of {@link PiMMImageProvider}.
@@ -79,7 +79,7 @@ public class PiMMImageProvider extends AbstractImageProvider {
     // register the path for each image identifier
     addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_BLUE_LINE, "resources/icons/whitedotblueline.gif");
     addImageFilePath(PiMMImageProvider.IMG_WHITE_DOT_GREY_LINE, "resources/icons/whitedotgreyline.gif");
-    addImageFilePath(PiMMImageProvider.IMG_CURLY_BRACES, "resources/icons/malleable3_24x20.gif");
+    addImageFilePath(PiMMImageProvider.IMG_CURLY_BRACES, "resources/icons/moldable3_24x20.gif");
   }
 
 }

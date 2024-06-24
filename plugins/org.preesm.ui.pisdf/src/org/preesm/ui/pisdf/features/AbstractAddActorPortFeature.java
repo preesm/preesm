@@ -43,6 +43,7 @@ import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
+import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Font;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.BoxRelativeAnchor;
@@ -72,7 +73,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
 
   /**
    * Force the name of the new port, bypassing the dialog box if not null.
-   * 
+   *
    * @param forcedName
    *          Name of the port, overriding the default.
    */
@@ -100,7 +101,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
   public static final IColorConstant PORT_BACKGROUND = IColorConstant.BLACK;
 
   /** The port font height. */
-  protected static int PORT_FONT_HEIGHT;
+  protected static int portFontHeight;
 
   /** Size of the space between the label of a port and the GA. */
   public static final int PORT_LABEL_GA_SPACE = 2;
@@ -123,7 +124,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    * @param fp
    *          the fp
    */
-  public AbstractAddActorPortFeature(final IFeatureProvider fp) {
+  protected AbstractAddActorPortFeature(final IFeatureProvider fp) {
     super(fp);
   }
 
@@ -146,7 +147,22 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
    *          the port name
    * @return the graphics algorithm
    */
-  public abstract GraphicsAlgorithm addPortLabel(GraphicsAlgorithm containerShape, String portName);
+  public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
+    // Get the GaService
+    final IGaService gaService = Graphiti.getGaService();
+
+    // Create the text
+    final Text text = gaService.createText(containerShape);
+    text.setValue(portName);
+    text.setFont(getPortFont());
+    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
+
+    // Layout the text
+    final int thisPortFontHeight = AbstractAddActorPortFeature.portFontHeight;
+    gaService.setHeight(text, thisPortFontHeight);
+
+    return text;
+  }
 
   /*
    * (non-Javadoc)
@@ -316,7 +332,7 @@ public abstract class AbstractAddActorPortFeature extends AbstractCustomFeature 
     final IGaService gaService = Graphiti.getGaService();
     final Font font = gaService.manageDefaultFont(getDiagram(), false, false);
 
-    AbstractAddActorPortFeature.PORT_FONT_HEIGHT = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font)
+    AbstractAddActorPortFeature.portFontHeight = GraphitiUi.getUiLayoutService().calculateTextSize("Abcq", font)
         .getHeight();
 
     return font;

@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.preesm.algorithm.model.IGraphVisitor;
@@ -329,18 +328,15 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         }
 
         // Associate the interfaces to the new edge
-        if ((targetCopies.get((int) targetIndex) instanceof SDFVertex)
-            && (((SDFVertex) targetCopies.get((int) targetIndex))
-                .getSource(edge.getTargetInterface().getName()) != null)) {
-          inputVertex = ((SDFVertex) targetCopies.get((int) targetIndex))
-              .getSource(edge.getTargetInterface().getName());
-          ((SDFVertex) targetCopies.get((int) targetIndex)).setInterfaceVertexExternalLink(newEdge, inputVertex);
+        if ((targetCopies.get((int) targetIndex) instanceof final SDFVertex tgtSdfVertex)
+            && (tgtSdfVertex.getSource(edge.getTargetInterface().getName()) != null)) {
+          inputVertex = tgtSdfVertex.getSource(edge.getTargetInterface().getName());
+          tgtSdfVertex.setInterfaceVertexExternalLink(newEdge, inputVertex);
         }
-        if ((sourceCopies.get((int) sourceIndex) instanceof SDFVertex)
-            && (((SDFVertex) sourceCopies.get((int) sourceIndex))
-                .getSink(edge.getSourceInterface().getName()) != null)) {
-          outputVertex = ((SDFVertex) sourceCopies.get((int) sourceIndex)).getSink(edge.getSourceInterface().getName());
-          ((SDFVertex) sourceCopies.get((int) sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
+        if ((sourceCopies.get((int) sourceIndex) instanceof final SDFVertex srcSdfVertex)
+            && (srcSdfVertex.getSink(edge.getSourceInterface().getName()) != null)) {
+          outputVertex = srcSdfVertex.getSink(edge.getSourceInterface().getName());
+          srcSdfVertex.setInterfaceVertexExternalLink(newEdge, outputVertex);
         }
 
         // Set the properties of the new edge
@@ -485,47 +481,46 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
     // instances in the output graph
     this.matchCopies = new LinkedHashMap<>();
 
-    if (graph.isSchedulable()) {
-      // Scan the vertices of the input graph
-      for (final SDFAbstractVertex vertex : graph.vertexSet()) {
-        final List<SDFAbstractVertex> copies = new ArrayList<>();
-        this.matchCopies.put(vertex, copies);
-
-        // If the vertex is an interface, it will not be duplicated,
-        // simply copy it in the output graph
-        if (vertex instanceof SDFInterfaceVertex) {
-          final SDFAbstractVertex copy = vertex.copy();
-          copies.add(copy);
-          output.addVertex(copy);
-        } else {
-          // If the vertex is not an interface, duplicate it as many
-          // times as needed to obtain single rates edges
-          PreesmLogger.getLogger().log(Level.INFO, vertex.getName() + " x" + vertex.getNbRepeat());
-          // If the vertex does not need to be duplicated
-          if (vertex.getNbRepeatAsLong() == 1) {
-            final SDFAbstractVertex copy = vertex.copy();
-            copy.setName(copy.getName());
-            output.addVertex(copy);
-            copies.add(copy);
-          } else {
-            // If the vertex needs to be duplicated
-            for (long i = 0; i < vertex.getNbRepeatAsLong(); i++) {
-              final SDFAbstractVertex copy = vertex.copy();
-              copy.setName(copy.getName() + "_" + i);
-              copy.setNbRepeat(1L);
-              output.addVertex(copy);
-              copies.add(copy);
-            }
-          }
-
-        }
-      }
-      // The output graph has all its vertices, now deal with the edges
-      linkVerticesTop(graph, this.matchCopies, output);
-      output.getPropertyBean().setValue("schedulable", true);
-    } else {
+    if (!graph.isSchedulable()) {
       throw new PreesmRuntimeException("Graph " + graph.getName() + " is not schedulable");
     }
+    // Scan the vertices of the input graph
+    for (final SDFAbstractVertex vertex : graph.vertexSet()) {
+      final List<SDFAbstractVertex> copies = new ArrayList<>();
+      this.matchCopies.put(vertex, copies);
+
+      // If the vertex is an interface, it will not be duplicated,
+      // simply copy it in the output graph
+      if (vertex instanceof SDFInterfaceVertex) {
+        final SDFAbstractVertex copy = vertex.copy();
+        copies.add(copy);
+        output.addVertex(copy);
+      } else {
+        // If the vertex is not an interface, duplicate it as many
+        // times as needed to obtain single rates edges
+        PreesmLogger.getLogger().info(() -> vertex.getName() + " x" + vertex.getNbRepeat());
+        // If the vertex does not need to be duplicated
+        if (vertex.getNbRepeatAsLong() == 1) {
+          final SDFAbstractVertex copy = vertex.copy();
+          copy.setName(copy.getName());
+          output.addVertex(copy);
+          copies.add(copy);
+        } else {
+          // If the vertex needs to be duplicated
+          for (long i = 0; i < vertex.getNbRepeatAsLong(); i++) {
+            final SDFAbstractVertex copy = vertex.copy();
+            copy.setName(copy.getName() + "_" + i);
+            copy.setNbRepeat(1L);
+            output.addVertex(copy);
+            copies.add(copy);
+          }
+        }
+
+      }
+    }
+    // The output graph has all its vertices, now deal with the edges
+    linkVerticesTop(graph, this.matchCopies, output);
+    output.getPropertyBean().setValue("schedulable", true);
   }
 
   /*
@@ -536,15 +531,9 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
   @Override
   public void visit(final SDFGraph sdf) {
     this.outputGraph = sdf.copy();
-    boolean isHSDF = true;
-    for (final SDFAbstractVertex vertex : this.outputGraph.vertexSet()) {
 
-      if ((vertex instanceof SDFVertex) && (vertex.getNbRepeatAsLong() > 1)) {
-        isHSDF = false;
-        break;
-      }
-
-    }
+    boolean isHSDF = this.outputGraph.vertexSet().stream()
+        .noneMatch(v -> (v instanceof SDFVertex) && (v.getNbRepeatAsLong() > 1));
 
     if (isHSDF) {
       for (final SDFEdge edge : this.outputGraph.edgeSet()) {
@@ -553,8 +542,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
         nbDelay = edge.getDelay().longValue();
         final long prod = edge.getProd().longValue();
 
-        // No need to get the cons, if this code is reached cons ==
-        // prod
+        // No need to get the cons, if this code is reached cons == prod
         // If the number of delay on the edge is not a multiplier of
         // prod, the hsdf transformation is needed
         if ((nbDelay % prod) != 0) {
@@ -568,9 +556,9 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
       this.outputGraph.clean();
 
       final ArrayList<SDFAbstractVertex> vertices = new ArrayList<>(sdf.vertexSet());
-      for (int i = 0; i < vertices.size(); i++) {
-        if (vertices.get(i) instanceof SDFVertex) {
-          vertices.get(i).accept(this);
+      for (final SDFAbstractVertex element : vertices) {
+        if (element instanceof SDFVertex) {
+          element.accept(this);
         }
       }
       transformsTop(sdf, this.outputGraph);

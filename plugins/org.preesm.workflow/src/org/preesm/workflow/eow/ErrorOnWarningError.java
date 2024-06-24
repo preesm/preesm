@@ -41,14 +41,14 @@ import java.util.logging.LogRecord;
  */
 public class ErrorOnWarningError extends Error {
 
-  private final LogRecord record;
+  private final LogRecord logRecord;
 
-  public ErrorOnWarningError(LogRecord record) {
-    this.record = record;
+  public ErrorOnWarningError(LogRecord logRecord) {
+    this.logRecord = logRecord;
   }
 
   public LogRecord getRecord() {
-    return record;
+    return logRecord;
   }
 
   private static final long serialVersionUID = 6841709901022748942L;

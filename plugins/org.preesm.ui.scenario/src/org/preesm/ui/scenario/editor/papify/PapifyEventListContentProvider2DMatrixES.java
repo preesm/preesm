@@ -89,7 +89,7 @@ class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
     if (element instanceof PapifyEventListTreeElement) {
       final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
       AbstractActor actorInstance = treeElement.actorPath;
-      final Map<String, PAPIEventStatus> statuses = treeElement.PAPIStatuses;
+      final Map<String, PAPIEventStatus> statuses = treeElement.papiStatuses;
 
       final PAPIEventStatus actorStatus = statuses.get(this.eventName);
       if (actorStatus.next().equals(PAPIEventStatus.NO)) {

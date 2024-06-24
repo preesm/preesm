@@ -48,7 +48,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 
 /**
  * Filter data ports
- * 
+ *
  * @author ahonorat
  */
 public class PiMMDataPortFilter extends AbstractPropertySectionFilter {
@@ -56,34 +56,22 @@ public class PiMMDataPortFilter extends AbstractPropertySectionFilter {
   @Override
   protected boolean accept(PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
-    if (eObject == null) {
-      return false;
-    }
-
     // ConfigOutputPort contained in the Actor.
-    if (eObject instanceof ConfigOutputPort) {
+    if ((eObject == null) || (eObject instanceof ConfigOutputPort)) {
       return false;
     }
 
     // OutputPort contained in the SourceInterface and Actor
     final EObject container = eObject.eContainer();
-    if (eObject instanceof DataOutputPort) {
-      if (container instanceof DataInputInterface) {
-        return true;
-      }
-      if (container instanceof ExecutableActor) {
-        return true;
-      }
+    if (eObject instanceof DataOutputPort
+        && ((container instanceof DataInputInterface) || (container instanceof ExecutableActor))) {
+      return true;
     }
 
     // InputPort contained in the SinkInterface and Actor
-    if (eObject instanceof DataInputPort) {
-      if (container instanceof DataOutputInterface) {
-        return true;
-      }
-      if (container instanceof ExecutableActor) {
-        return true;
-      }
+    if (eObject instanceof DataInputPort
+        && ((container instanceof DataOutputInterface) || (container instanceof ExecutableActor))) {
+      return true;
     }
 
     return false;

@@ -50,6 +50,9 @@ import org.w3c.dom.Node;
  */
 public class IPXACTDesignVendorExtensionsParser {
 
+  private static final String COM_NODE        = "ComNode";
+  private static final String SLAM_SETUP_TIME = "slam:setupTime";
+
   /**
    * Class storing a component description in vendor extensions.
    */
@@ -464,7 +467,7 @@ public class IPXACTDesignVendorExtensionsParser {
       final String name = attributeMap.item(j).getNodeName();
       final String value = attributeMap.item(j).getNodeValue();
 
-      if (name.equals("slam:setupTime")) {
+      if (name.equals(SLAM_SETUP_TIME)) {
         description.addSpecificParameter(name, value);
       }
     }
@@ -506,9 +509,9 @@ public class IPXACTDesignVendorExtensionsParser {
     // Specific case of com nodes for which the contention property
     // is contatenated with the type
     String parallelOrContentionNode = "";
-    if (componentType.contains("ComNode")) {
-      parallelOrContentionNode = componentType.replace("ComNode", "");
-      componentType = "ComNode";
+    if (componentType.contains(COM_NODE)) {
+      parallelOrContentionNode = componentType.replace(COM_NODE, "");
+      componentType = COM_NODE;
     }
 
     // Mutation to convert Component using a generic Operator to a default CPU type
@@ -518,12 +521,12 @@ public class IPXACTDesignVendorExtensionsParser {
 
     final ComponentDescription description = new ComponentDescription(componentRef, componentType, refinement);
 
-    if (componentType.contains("ComNode")) {
+    if (componentType.contains(COM_NODE)) {
       description.addSpecificParameter("ComNodeType", parallelOrContentionNode);
     } else if (componentType.contains("Mem")) {
       description.addSpecificParameter("slam:size", parent.getAttribute("slam:size"));
     } else if (componentType.contains("Dma")) {
-      description.addSpecificParameter("slam:setupTime", parent.getAttribute("slam:setupTime"));
+      description.addSpecificParameter(SLAM_SETUP_TIME, parent.getAttribute(SLAM_SETUP_TIME));
     } else if (componentType.contains("FPGA")) {
       description.addSpecificParameter("slam:frequency", parent.getAttribute("slam:frequency"));
       description.addSpecificParameter("slam:part", parent.getAttribute("slam:part"));

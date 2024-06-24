@@ -61,8 +61,7 @@ public class PapifyEnergyModelContentProvider implements IStructuredContentProvi
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario inputScenario) {
       final Design design = inputScenario.getDesign();
       final EMap<Component,
           EMap<PapiEvent, Double>> energyModels = inputScenario.getPapifyConfig().getPapifyEnergyKPIModels();

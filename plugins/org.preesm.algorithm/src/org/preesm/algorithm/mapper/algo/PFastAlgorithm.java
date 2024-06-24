@@ -155,9 +155,7 @@ public class PFastAlgorithm extends Observable {
       final Set<Set<String>> subSet) {
 
     // initialization
-    final List<MapperDAGVertex> blockingNodelist = new ArrayList<>();
-    blockingNodelist.addAll(initialLists.getBlockingNodes());
-
+    final List<MapperDAGVertex> blockingNodelist = new ArrayList<>(initialLists.getBlockingNodes());
     // find number of thread possible
     final int nbsubsets = setThreadNumber(blockingNodelist, nboperator, nodesmin);
 
@@ -168,11 +166,11 @@ public class PFastAlgorithm extends Observable {
 
     // find number of nodes per thread
     final int nbnodes = nbnodes(blockingNodelist, nbsubsets, nodesmin);
-    subSet.add(new LinkedHashSet<String>());
+    subSet.add(new LinkedHashSet<>());
 
     // Put the nodes of the BlockingNodes List in the Sublist
     for (int i = 0; i < nbsubsets; i++) {
-      subSet.add(new LinkedHashSet<String>());
+      subSet.add(new LinkedHashSet<>());
       final Iterator<Set<String>> itera = subSet.iterator();
       final Set<String> tempSet = itera.next();
       for (int j = 0; j < nbnodes; j++) {
@@ -181,7 +179,6 @@ public class PFastAlgorithm extends Observable {
           final MapperDAGVertex currentvertex = riter.next();
           tempSet.add(currentvertex.getName());
           blockingNodelist.remove(currentvertex);
-
         }
       }
     }
@@ -364,11 +361,7 @@ public class PFastAlgorithm extends Observable {
       // step 10
       try {
 
-        final Iterator<FutureTask<MapperDAG>> it = futureTasks.iterator();
-
-        while (it.hasNext()) {
-
-          final FutureTask<MapperDAG> task = it.next();
+        for (final FutureTask<MapperDAG> task : futureTasks) {
 
           final MapperDAG currentOutDAG = task.get();
           mappedDAGSet.add(currentOutDAG);

@@ -428,7 +428,7 @@
                value="up">
          </parameter>
       </key>
-      <!-- Ctrl + up => Keyboard shortcut to move down port -->
+      <!-- Ctrl + down => Keyboard shortcut to move down port -->
       <key
             commandId="org.eclipse.graphiti.ui.featureExecutionCommand"
             contextId="org.ietr.preesm.experiment.ui.pimm"

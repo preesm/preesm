@@ -53,7 +53,7 @@ import org.preesm.algorithm.model.types.LongVertexPropertyType;
 public class SendVertex extends TransferVertex {
 
   static {
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.SendReceive_OperatorDef);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.SEND_RECEIVE_OPERATOR_DEF);
   }
 
   /**

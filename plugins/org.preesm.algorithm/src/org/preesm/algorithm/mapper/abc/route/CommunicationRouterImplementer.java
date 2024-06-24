@@ -60,7 +60,7 @@ public abstract class CommunicationRouterImplementer {
    * @param router
    *          the user
    */
-  public CommunicationRouterImplementer(final CommunicationRouter router) {
+  protected CommunicationRouterImplementer(final CommunicationRouter router) {
     super();
     this.router = router;
   }

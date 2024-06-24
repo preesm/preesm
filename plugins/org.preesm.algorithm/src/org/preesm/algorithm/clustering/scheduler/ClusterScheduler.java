@@ -48,9 +48,13 @@ import org.preesm.model.scenario.Scenario;
  */
 public class ClusterScheduler {
 
+  private ClusterScheduler() {
+    // Forbid instantiation
+  }
+
   /**
    * Schedule all clusters of input graph.
-   * 
+   *
    * @param inputGraph
    *          Input graph.
    * @return Map of Cluster Schedule.
@@ -58,18 +62,15 @@ public class ClusterScheduler {
   public static Map<AbstractActor, Schedule> schedule(final PiGraph inputGraph, final Scenario scenario,
       final boolean optimizePerformance, final boolean parallelism) {
     // Build a map for Cluster Schedule
-    Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
+    final Map<AbstractActor, Schedule> schedulesMap = new HashMap<>();
 
     // Build a PGAN scheduler
-    PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
+    final PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
 
     // Compute a schedule for every cluster
-    for (AbstractActor actor : inputGraph.getAllActors()) {
-      if (actor instanceof PiGraph) {
-        PiGraph subgraph = (PiGraph) actor;
-        if (subgraph.isCluster()) {
-          registerClusterSchedule(schedulesMap, scheduler, inputGraph, subgraph);
-        }
+    for (final AbstractActor actor : inputGraph.getAllActors()) {
+      if (actor instanceof final PiGraph subgraph && subgraph.isCluster()) {
+        registerClusterSchedule(schedulesMap, scheduler, inputGraph, subgraph);
       }
     }
 
@@ -79,7 +80,7 @@ public class ClusterScheduler {
   private static void registerClusterSchedule(Map<AbstractActor, Schedule> scheduleMap, PGANScheduler scheduler,
       final PiGraph inputGraph, final PiGraph subgraph) {
     // Schedule subgraph
-    Schedule clusterSchedule = scheduler.scheduleCluster(subgraph);
+    final Schedule clusterSchedule = scheduler.scheduleCluster(subgraph);
 
     // Register the schedule in the map
     scheduleMap.put(subgraph, clusterSchedule);

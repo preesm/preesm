@@ -60,8 +60,7 @@ public class MemCopySpeedContentProvider implements IStructuredContentProvider {
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario inputScenario) {
 
       /**
        * Memcopy speeds are added for all operator types if non present

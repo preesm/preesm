@@ -61,8 +61,7 @@ public class CustomQuanta {
 
     @Override
     public boolean equals(final Object o) {
-      if (o instanceof MapKeyPair) {
-        final MapKeyPair m = (MapKeyPair) o;
+      if (o instanceof final MapKeyPair m) {
         return m.actor.equals(this.actor) && m.operator.equals(this.operator);
       }
       return false;

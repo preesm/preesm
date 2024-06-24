@@ -108,8 +108,7 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
 
       @Override
       public void run() {
-        if (element instanceof ComponentInstance) {
-          final ComponentInstance componentInstance = (ComponentInstance) element;
+        if (element instanceof final ComponentInstance componentInstance) {
 
           if (isChecked) {
             OperatorCheckStateListener.this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);

@@ -114,8 +114,8 @@ public class SetPortMemoryAnnotationFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof DataPort) {
-        ((DataPort) bo).setAnnotation(this.currentPMA);
+      if (bo instanceof final DataPort dataPort) {
+        dataPort.setAnnotation(this.currentPMA);
         this.currentPMA = null;
         // Call the layout feature
         layoutPictogramElement(pes[0]);

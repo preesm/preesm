@@ -181,42 +181,39 @@ public class ExcelEnergyParser {
    */
   private void parseEnergyForVertex(final Workbook w, final AbstractActor actor, final List<ProcessingElement> opDefIds,
       final List<AbstractVertex> missingVertices, final List<Component> missingOperatorTypes) {
-    // For each kind of processing elements, we look for an energy for given
-    // vertex
+    // For each kind of processing elements, we look for an energy for given vertex
     for (final Component component : opDefIds) {
-      if (component != null && actor != null) {
-        // Get row and column for the energy we are looking for
-        final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
-        final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
+      if (component == null || actor == null) {
+        return;
+      }
 
-        if ((vertexCell != null) && (operatorCell != null)) {
-          // Get the cell containing the timing
-          final Cell energyCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
+      // Get row and column for the energy we are looking for
+      final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
+      final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
 
-          final String expression = energyCell.getContents();
+      if ((vertexCell != null) && (operatorCell != null)) {
+        // Get the cell containing the timing
+        final Cell energyCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
-          try {
-            this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
-            final String msg = "Importing Energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
-                + " takes " + expression;
-            PreesmLogger.getLogger().log(Level.INFO, msg);
-          } catch (final NumberFormatException e) {
-            final String message = "Problem importing energy of " + actor + " on " + component
-                + ". Double with no space or special character needed. Be careful on the special number formats.";
-            throw new PreesmRuntimeException(message);
+        final String expression = energyCell.getContents();
 
-          }
-        } else {
-          if ((vertexCell == null) && !missingVertices.contains(actor)) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                "No line found in excel sheet for vertex: " + actor.getVertexPath());
-            missingVertices.add(actor);
-          } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
-            PreesmLogger.getLogger().log(Level.WARNING,
-                () -> "No column found in excel sheet for operator type: " + component);
-            missingOperatorTypes.add(component);
-          }
+        try {
+          this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
+          final String msg = "Importing Energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
+              + " takes " + expression;
+          PreesmLogger.getLogger().log(Level.INFO, msg);
+        } catch (final NumberFormatException e) {
+          final String message = "Problem importing energy of " + actor + " on " + component
+              + ". Double with no space or special character needed. Be careful on the special number formats.";
+          throw new PreesmRuntimeException(message);
+
         }
+      } else if ((vertexCell == null) && !missingVertices.contains(actor)) {
+        PreesmLogger.getLogger().warning(() -> "No line found in excel sheet for vertex: " + actor.getVertexPath());
+        missingVertices.add(actor);
+      } else if ((operatorCell == null) && !missingOperatorTypes.contains(component)) {
+        PreesmLogger.getLogger().warning(() -> "No column found in excel sheet for operator type: " + component);
+        missingOperatorTypes.add(component);
       }
     }
   }

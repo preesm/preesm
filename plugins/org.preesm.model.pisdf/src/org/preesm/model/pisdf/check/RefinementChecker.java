@@ -38,6 +38,7 @@ package org.preesm.model.pisdf.check;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,6 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
@@ -77,7 +77,7 @@ import org.preesm.model.pisdf.Refinement;
 public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /** All accepted header file extensions. */
-  public static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
+  private static final String[] acceptedHeaderExtensions = { "h", "hpp", "hxx", "h++", "hh", "H" };
 
   /** In templates, the FIFO_TYPE can be replaced automatically only if starting with this prefix. */
   public static final String FIFO_TYPE_TEMPLATED_PREFIX = "FIFO_TYPE_";
@@ -90,7 +90,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check if the given C/C++ header file extension is supported.
-   * 
+   *
    * @param extension
    *          The extension to check (as "hxx" for "MyHeader.hxx").
    * @return Whether or not the file extension is supported.
@@ -99,17 +99,21 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     return Arrays.asList(acceptedHeaderExtensions).stream().anyMatch(x -> x.equals(extension));
   }
 
+  public static List<String> getAcceptedHeaderExtensions() {
+    return Collections.unmodifiableList(Arrays.asList(acceptedHeaderExtensions));
+  }
+
   /**
    * Check if the templated type of a FunctionArgument is an hls stream.
-   * 
+   *
    * @param argType
    *          The templated argument type to check.
    * @return The parameter name of the stream type and the parameter name of the stream depth (optional). {@code null}
    *         if not a valid hls stream type.
    */
   public static Pair<String, String> isHlsStreamTemplated(final String argType) {
-    final String argTypeWithoutWhiteSpaces = argType.replaceAll("\\s+", "");
-    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?(\\w|[<>])+)>$";
+    final String argTypeWithoutWhiteSpaces = argType.trim();
+    final String regex1 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?([\\w\\s])+(<[\\w,]+>)?)>$";
     final Pattern pattern1 = Pattern.compile(regex1);
     final Matcher matcher1 = pattern1.matcher(argTypeWithoutWhiteSpaces);
     if (matcher1.find()) {
@@ -117,15 +121,15 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       return new Pair<>(match, null);
     }
 
-    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?(\\\\w|[<>])+),(("
-        + FIFO_DEPTH_TEMPLATED_PREFIX + ")?\\w+)>$";
+    final String regex2 = "^hls::stream<((" + FIFO_TYPE_TEMPLATED_PREFIX + ")?([\\w\\s])+(<[\\w,]+>)?),\\s?(("
+        + FIFO_TYPE_TEMPLATED_PREFIX + ")?\\w+)>$";
     final Pattern pattern2 = Pattern.compile(regex2);
     final Matcher matcher2 = pattern2.matcher(argTypeWithoutWhiteSpaces);
     if (matcher2.find()) {
       // first group is the full type param name and second is only its optional prefix
       final String matchType = matcher2.group(1);
-      // third group is the full depth param name and fourth is only its optional prefix
-      final String matchDepth = matcher2.group(3);
+      // fifth group is the full depth param name and fourth is only its optional prefix
+      final String matchDepth = matcher2.group(5);
       return new Pair<>(matchType, matchDepth);
     }
     return null;
@@ -140,7 +144,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Instantiates a new refinement checker.
-   * 
+   *
    * @param throwExceptionLevel
    *          The maximum level of error throwing exceptions.
    * @param loggerLevel
@@ -156,11 +160,11 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     for (final AbstractActor aa : graph.getActors()) {
       if (aa instanceof Actor) {
         ok &= doSwitch(aa);
-      } else if (aa instanceof PiGraph) {
+      } else if (aa instanceof final PiGraph piGraph) {
         // PiGraph as direct children means that a reconnection already occurred
         // but we don't want a recursive pattern and it needs a different check
         // Indeed, the SubgraphReconnector already checked the ports so we only need to check the fifo types.
-        ok &= checkReconnectedSubGraphFifoTypes((PiGraph) aa);
+        ok &= checkReconnectedSubGraphFifoTypes(piGraph);
       }
     }
     return ok;
@@ -246,7 +250,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check if all the ports of the actor are present in the refinement, and vice versa.
-   * 
+   *
    * @param a
    *          the Actor for which we want to check the Refinement
    * @param correspondingPorts
@@ -314,7 +318,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check if all the fifo connected to the actor and its refinement have the same type.
-   * 
+   *
    * @param a
    *          the Actor for which we want to check the Refinement
    * @param correspondingPorts
@@ -385,7 +389,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check if the template parameters of an actor with C/C++ refinement can be found in its containing actor or graph..
-   * 
+   *
    * @param actor
    *          The actor to check.
    * @param correspondingArguments
@@ -395,9 +399,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   private boolean checkRefinementTemplateParams(final Actor actor,
       final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
     final Refinement ref = actor.getRefinement();
-    if (ref instanceof CHeaderRefinement) {
+    if (ref instanceof final CHeaderRefinement cref) {
       boolean validity = true;
-      final CHeaderRefinement cref = (CHeaderRefinement) ref;
       if (cref.getInitPrototype() != null) {
         validity &= checkRefinementTemplateParamsAux(actor, correspondingArguments.getKey(), cref,
             cref.getInitPrototype());
@@ -453,7 +456,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * While checking a template parameter, we can categorize it depending on the object it refers to.
-   * 
+   *
    * @author ahonorat
    */
   public enum CorrespondingTemplateParameterType {
@@ -462,7 +465,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Associates templated parameter names with their related Parameter or DataPort (if fifo info).
-   * 
+   *
    * @param refinement
    *          The refinement to consider.
    * @param proto
@@ -507,8 +510,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       Object relatedObject = null;
       CorrespondingTemplateParameterType relatedObjectCat = CorrespondingTemplateParameterType.NONE;
       // look for a parameter of the actor first
-      if (containerActor instanceof DelayActor) {
-        for (final Parameter inputParam : ((DelayActor) containerActor).getInputParameters()) {
+      if (containerActor instanceof final DelayActor delayActor) {
+        for (final Parameter inputParam : delayActor.getInputParameters()) {
           if (inputParam.getName().equals(prefix + paramName)) {
             relatedObject = inputParam;
             relatedObjectCat = CorrespondingTemplateParameterType.ACTOR_PARAM;
@@ -546,9 +549,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         final Pair<CorrespondingTemplateParameterType,
             List<FunctionArgument>> correspondingFAs = hlsStreamParamsToFA.get(paramName);
         if (correspondingFAs != null) {
-          if (containerActor instanceof DelayActor) {
+          if (containerActor instanceof final DelayActor delayActor) {
             // in this case, there is only one fifo and one corresponding function argument
-            relatedObject = ((DelayActor) containerActor).getLinkedDelay().getContainingFifo();
+            relatedObject = delayActor.getLinkedDelay().getContainingFifo();
             relatedObjectCat = correspondingFAs.getKey();
           } else {
             // then we got at least one matching fifo, but we need to retrieve it
@@ -556,8 +559,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
               for (final Pair<Port, FunctionArgument> portToFA : correspondingArguments) {
                 if (fa.equals(portToFA.getValue())) {
                   final Port relatedPort = portToFA.getKey();
-                  if (relatedPort instanceof DataPort) {
-                    final Fifo relatedFifo = ((DataPort) relatedPort).getFifo();
+                  if (relatedPort instanceof final DataPort dataPort) {
+                    final Fifo relatedFifo = dataPort.getFifo();
                     if (relatedFifo != null) {
                       relatedObject = relatedFifo;
                       relatedObjectCat = correspondingFAs.getKey();
@@ -594,7 +597,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    * After a flattening transformation {@link org.preesm.model.pisdf.statictools.PiSDFFlattener}, inner element names
    * have been prefixed with the top graph names, so this function retrieves the prefix. This is risky if other
    * transformations are coded but not having the same prefix convention.
-   * 
+   *
    * @param aa
    *          Current actor (after transformation).
    * @return Prefix of current actor name obtained by comparison with the original actor name.
@@ -643,8 +646,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   private boolean checkReconnectedSubGraphFifoTypes(final PiGraph graph) {
     boolean validity = true;
     for (final AbstractActor aa : graph.getActors()) {
-      if (aa instanceof InterfaceActor) {
-        final InterfaceActor ia = (InterfaceActor) aa;
+      if (aa instanceof final InterfaceActor ia) {
         final DataPort iaPort = ia.getDataPort();
         final DataPort graphPort = ia.getGraphPort();
         if (iaPort == null || graphPort == null) {
@@ -667,7 +669,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Fetch the {@link FunctionArgument} related to each port of an actor.
-   * 
+   *
    * @param a
    *          List of Pair with {@link Port} as value and {@link FunctionArgument} as key.
    * @return First key is for init refinement, second one for loop refinement. Each entry of the list contains as value
@@ -698,7 +700,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Create a list of port linked to function arguments.
-   * 
+   *
    * @param a
    *          The actor to consider.
    * @param proto
@@ -741,24 +743,19 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       return new ArrayList<>();
     }
 
-    List<Port> noRefCorrespondingPort = new ArrayList<>();
+    final List<Port> noRefCorrespondingPort = new ArrayList<>();
     // Then we try to perform a sort of reconnection ...
     // but with the subgraph interface actors instead of the subgraph ports (except for Config Input ports).
     for (final AbstractActor aa : subGraph.getActors()) {
-      if (aa instanceof InterfaceActor) {
-        final InterfaceActor ia = (InterfaceActor) aa;
+      if (aa instanceof final InterfaceActor ia) {
         final Port iaPort = ia.getDataPort();
         if (iaPort != null) {
           noRefCorrespondingPort.add(iaPort);
         }
       }
     }
-    for (final ConfigInputInterface cii : subGraph.getConfigInputInterfaces()) {
-      final Port graphPort = cii.getGraphPort();
-      if (graphPort != null) {
-        noRefCorrespondingPort.add(graphPort);
-      }
-    }
+    subGraph.getConfigInputInterfaces().stream().filter(cii -> cii.getGraphPort() != null)
+        .forEach(cii -> noRefCorrespondingPort.add(cii.getGraphPort()));
 
     final List<Pair<Port, Port>> result = new ArrayList<>();
     // now we can try to match the ports
@@ -775,9 +772,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     }
 
     // Ports in refinement without top corresponding port
-    for (final Port p2 : noRefCorrespondingPort) {
-      result.add(new Pair<>(null, p2));
-    }
+    noRefCorrespondingPort.forEach(p2 -> result.add(new Pair<>(null, p2)));
 
     return result;
   }

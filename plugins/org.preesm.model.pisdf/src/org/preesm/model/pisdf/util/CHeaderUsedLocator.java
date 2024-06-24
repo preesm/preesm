@@ -38,7 +38,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -60,9 +59,8 @@ public class CHeaderUsedLocator {
   public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
     final List<IPath> result = new ArrayList<>();
     graph.eAllContents().forEachRemaining(element -> {
-      if (element instanceof CHeaderRefinement) {
-        final IPath filePath = Optional.ofNullable(((CHeaderRefinement) element).getFilePath()).map(Path::new)
-            .orElse(null);
+      if (element instanceof final CHeaderRefinement cHeaderRef) {
+        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
         if ((filePath != null) && !(result.contains(filePath))) {
           result.add(filePath);
         }
@@ -72,6 +70,6 @@ public class CHeaderUsedLocator {
   }
 
   public static final List<String> findAllCHeaderFileNamesUsed(final PiGraph graph) {
-    return findAllCHeadersUsed(graph).stream().map(IPath::toFile).map(File::getName).collect(Collectors.toList());
+    return findAllCHeadersUsed(graph).stream().map(IPath::toFile).map(File::getName).toList();
   }
 }

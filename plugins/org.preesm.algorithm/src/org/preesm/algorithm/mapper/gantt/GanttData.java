@@ -81,11 +81,7 @@ public class GanttData {
    * @return the component
    */
   private GanttComponent getComponent(final String id) {
-    if (!this.components.containsKey(id)) {
-      final GanttComponent cmp = new GanttComponent(id);
-      this.components.put(id, cmp);
-    }
-    return this.components.get(id);
+    return this.components.computeIfAbsent(id, GanttComponent::new);
   }
 
   /**
@@ -141,7 +137,7 @@ public class GanttData {
 
   /**
    * Fills GanntData with new synthesis results.
-   * 
+   *
    * @param mapping
    *          Mapping of actors.
    * @param execTimings
@@ -151,10 +147,10 @@ public class GanttData {
   public boolean insertSchedulerMapping(final Mapping mapping,
       final Map<AbstractActor, ActorExecutionTiming> execTimings) {
     final TaskColorSelector tcs = new TaskColorSelector();
-    for (Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
-      AbstractActor aa = e.getKey();
-      ActorExecutionTiming aet = e.getValue();
-      for (ComponentInstance ci : mapping.getMapping(aa)) {
+    for (final Entry<AbstractActor, ActorExecutionTiming> e : execTimings.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final ActorExecutionTiming aet = e.getValue();
+      for (final ComponentInstance ci : mapping.getMapping(aa)) {
         if (!insertTask(aa.getName(), ci.getInstanceName(), aet.getStartTime(), aet.getDuration(), tcs.doSwitch(aa))) {
           return false;
         }

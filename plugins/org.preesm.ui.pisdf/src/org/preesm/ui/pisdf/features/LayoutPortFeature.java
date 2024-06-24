@@ -107,9 +107,9 @@ public class LayoutPortFeature extends AbstractLayoutFeature {
     final GraphicsAlgorithm graphicsAlgorithm = bra.getGraphicsAlgorithm();
     IDimension size = gaService.calculateSize(graphicsAlgorithm);
     for (final GraphicsAlgorithm ga : graphicsAlgorithm.getGraphicsAlgorithmChildren()) {
-      if (ga instanceof Text) {
+      if (ga instanceof final Text text) {
         final IDimension calculateTextSize = GraphitiUi.getUiLayoutService().calculateTextSize(port.getName(),
-            ((Text) ga).getFont());
+            text.getFont());
         size = calculateTextSize == null ? size : calculateTextSize;
       }
     }

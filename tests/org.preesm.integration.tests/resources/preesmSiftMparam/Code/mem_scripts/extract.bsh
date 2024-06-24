@@ -1,0 +1,12 @@
+/**
+ * Extract memory script
+ * Input buffers: i_keypoints_in, i_nbKeypoints_in
+ * Output buffers: o__keypoints_out, o_nbKeypoints_out
+ * Parameters: nLocalKptMax, parallelismLevel, nBlurs, totSizeWithoutLayers
+ * 
+ * Two ports should regrouped in only one structure
+ * o_nbKeypoints_out.matchWith(0, i_nbKeypoints_in, 0, 1);
+ */
+
+long chunckSize = nLocalKptMax+1;
+o_keypoints_out.matchWith(0, i_keypoints_in, 0, chunckSize);

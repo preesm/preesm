@@ -89,7 +89,7 @@ public abstract class AbstractCodegenModelGenerator {
    * @param scenario
    *          See {@link AbstractCodegenPrinter#scenario}
    */
-  public AbstractCodegenModelGenerator(final Design archi, final MapperDAG algo,
+  protected AbstractCodegenModelGenerator(final Design archi, final MapperDAG algo,
       final Map<String, MemoryExclusionGraph> megs, final Scenario scenario) {
     this.archi = archi;
     this.algo = algo;

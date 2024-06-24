@@ -105,13 +105,7 @@ public class ASAPSchedulerDAGTest {
     GraphStructureHelper.addActor(graph, "C5", null, 1L, 1., 0, null);
     GraphStructureHelper.addActor(graph, "C6", null, 1L, 1., 0, null);
 
-    // add edges
-
-    // these edges are removed since we return a DAG not a srSDF
-    // GraphStructureHelper.addEdge(graph, "A1", null, "B1", null, 1, 1, 1, null);
-    // GraphStructureHelper.addEdge(graph, "A2", null, "B1", null, 1, 1, 1, null);
-    // GraphStructureHelper.addEdge(graph, "A2", null, "B2", null, 1, 1, 1, null);
-    // GraphStructureHelper.addEdge(graph, "A3", null, "B2", null, 1, 1, 1, null);
+    // Add edges. These edges are removed since we return a DAG not a srSDF
     GraphStructureHelper.addEdge(graph, "B1", null, "C1", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(graph, "B1", null, "C2", null, 1, 1, 0, null);
     GraphStructureHelper.addEdge(graph, "B1", null, "C3", null, 1, 1, 0, null);

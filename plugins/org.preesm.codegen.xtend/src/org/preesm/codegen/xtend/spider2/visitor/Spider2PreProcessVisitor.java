@@ -142,7 +142,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Constructor of the class.
-   * 
+   *
    * @param scenario
    *          the scenario of the application.
    */
@@ -158,7 +158,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
    */
 
   /**
-   * 
+   *
    * @return set of unique graph refinement
    */
   public Set<PiGraph> getUniqueGraphSet() {
@@ -166,7 +166,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @return set of unique graph names
    */
   public Set<String> getUniqueGraphNameSet() {
@@ -174,7 +174,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return list of static parameters of a given graph
@@ -184,7 +184,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return list of static dependent parameters of a given graph
@@ -194,7 +194,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return list of dynamic parameters of a given graph
@@ -204,7 +204,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return list of dynamic dependent parameters of a given graph
@@ -214,7 +214,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return set of Spider2CodegenEdge of the graph
@@ -224,7 +224,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return set of unique subgraphs
@@ -234,7 +234,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @param graph
    *          the graph to evaluate
    * @return set of Spider2CodegenActor
@@ -248,7 +248,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @return list of all unique loop Spider2CodegenPrototype
    */
   public List<Spider2CodegenPrototype> getUniqueLoopPrototypeList() {
@@ -256,7 +256,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @return list of all unique loop CHeaderRefinement
    */
   public List<String> getUniqueHeaderFileNameList() {
@@ -268,7 +268,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @return list of all Spider2CodegenCluster
    */
   public List<Spider2CodegenCluster> getClusterList() {
@@ -276,7 +276,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * 
+   *
    * @return name of the main processing element
    */
   public String getMainPEName() {
@@ -310,14 +310,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       final ComponentInstance source = link.getSourceComponentInstance();
       final ComponentInstance target = link.getDestinationComponentInstance();
       if (source.getComponent() instanceof ComNode) {
-        if (!clusters.containsKey(source)) {
-          clusters.put(source, new ArrayList<>());
-        }
+        clusters.computeIfAbsent(source, k -> new ArrayList<>());
         clusters.get(source).add(target);
       } else if (target.getComponent() instanceof ComNode) {
-        if (!clusters.containsKey(target)) {
-          clusters.put(target, new ArrayList<>());
-        }
+        clusters.computeIfAbsent(target, k -> new ArrayList<>());
         clusters.get(target).add(source);
       }
     }
@@ -332,7 +328,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Build an ordered Set of Parameter enforcing the dependency tree structure of the PiMM.
-   * 
+   *
    * @param initList
    *          Seed list corresponding to root parameters.
    * @param paramPoolList
@@ -343,10 +339,9 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     final Set<Parameter> dependentParametersSet = new LinkedHashSet<>(initList);
     while (!paramPoolList.isEmpty()) {
       /* Get only the parameter that can be added to the current stage due to their dependencies */
-      final List<Parameter> nextParamsToAddList = paramPoolList
-          .stream().filter(x -> x.getInputDependentParameters().stream()
-              .filter(in -> dependentParametersSet.contains(in)).count() == x.getInputDependentParameters().size())
-          .collect(Collectors.toList());
+      final List<
+          Parameter> nextParamsToAddList = paramPoolList.stream().filter(x -> x.getInputDependentParameters().stream()
+              .filter(dependentParametersSet::contains).count() == x.getInputDependentParameters().size()).toList();
       dependentParametersSet.addAll(nextParamsToAddList);
       paramPoolList.removeAll(nextParamsToAddList);
     }
@@ -357,7 +352,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Extracts the parameters of the Graph in the different maps.
-   * 
+   *
    * @param graph
    *          The graph to evaluate
    */
@@ -400,13 +395,13 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Insert one dynamic parameter if a config vertex set multiple parameters with one output port
-   * 
+   *
    * @param graph
    *          The graph to evaluate
    */
   private void insertDynamicParameters(final PiGraph graph) {
     for (final AbstractActor actor : graph.getActors().stream().filter(x -> !x.getConfigOutputPorts().isEmpty())
-        .collect(Collectors.toList())) {
+        .toList()) {
       for (final ConfigOutputPort cop : actor.getConfigOutputPorts()) {
         if (cop.getOutgoingDependencies().size() > 1) {
           /* Instantiate the new parameter */
@@ -436,7 +431,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Extracts the edges of the Graph in the edgeMap.
-   * 
+   *
    * @param graph
    *          The graph to evaluate
    */
@@ -444,7 +439,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     if (edgeMap.containsKey(graph)) {
       return;
     }
-    Set<Spider2CodegenEdge> edgeSet = new LinkedHashSet<>();
+    final Set<Spider2CodegenEdge> edgeSet = new LinkedHashSet<>();
     for (final Fifo fifo : graph.getFifos()) {
       /* Add the edge to the edge Set */
       final Spider2CodegenEdge edge = new Spider2CodegenEdge(fifo, this.scenario.getSimulationInfo());
@@ -507,7 +502,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     if (!(actor.getRefinement() instanceof CHeaderRefinement)) {
       PreesmLogger.getLogger().warning("Actor [" + actor.getName() + "] doesn't have correct refinement.");
     } else {
-      CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
+      final CHeaderRefinement refinement = (CHeaderRefinement) (actor.getRefinement());
       if (!this.uniqueLoopHeaderList.contains(refinement)) {
         this.uniqueLoopHeaderList.add(refinement);
       }
@@ -527,19 +522,19 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
 
   /**
    * Convert broadcast actor that are not perfect broadcast to a repeat + fork pattern for spider2.
-   * 
+   *
    * {@literal text
    * Example:
    * in preesm:    IN[10] -> BR -> 5
-   *                            -> 8 
+   *                            -> 8
    *                            -> 10
    * will be converted in spider to:
    *      IN[10] -> REPEAT -> [23] -> IN[23] -> FORK -> 5
-   *                                                 -> 8 
-   *                                                 -> 10                           
-   * 
+   *                                                 -> 8
+   *                                                 -> 10
+   *
    *  }
-   * 
+   *
    * @param graph
    *          The graph
    * @param ba
@@ -558,26 +553,26 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     }
 
     /* = Creates a repeat actor = */
-    AbstractActor repeat = PiMMUserFactory.instance.createBroadcastActor();
+    final AbstractActor repeat = PiMMUserFactory.instance.createBroadcastActor();
     graph.addActor(repeat);
     final DataInputPort ipBroadcast = ba.getDataInputPorts().get(0);
-    DataInputPort ipRepeat = PiMMUserFactory.instance.createDataInputPort();
+    final DataInputPort ipRepeat = PiMMUserFactory.instance.createDataInputPort();
     ipRepeat.setName(ipBroadcast.getName());
     ipRepeat.setExpression(ipBroadcast.getExpression().getExpressionAsString());
     repeat.getDataInputPorts().add(ipRepeat);
-    DataOutputPort opRepeat = PiMMUserFactory.instance.createDataOutputPort();
+    final DataOutputPort opRepeat = PiMMUserFactory.instance.createDataOutputPort();
     opRepeat.setName("out");
     opRepeat.setExpression(repeatExpression);
     repeat.getDataOutputPorts().add(opRepeat);
     repeat.setName("repeat_" + ba.getName());
 
     /* = Creates a fork actor = */
-    AbstractActor fork = PiMMUserFactory.instance.createForkActor();
+    final AbstractActor fork = PiMMUserFactory.instance.createForkActor();
     graph.addActor(fork);
     fork.setName("fork_" + ba.getName());
 
     /* = Connect the repeat to the fork = */
-    DataInputPort ipFork = PiMMUserFactory.instance.createDataInputPort();
+    final DataInputPort ipFork = PiMMUserFactory.instance.createDataInputPort();
     ipFork.setName("in");
     ipFork.setExpression(repeatExpression);
     fork.getDataInputPorts().add(ipFork);
@@ -587,7 +582,7 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
     /* = Disconnect broadcast and connect everything to the repeat / fork = */
     ipBroadcast.getIncomingFifo().setTargetPort(ipRepeat);
     for (final DataOutputPort dop : ba.getDataOutputPorts()) {
-      DataOutputPort opFork = PiMMUserFactory.instance.createDataOutputPort();
+      final DataOutputPort opFork = PiMMUserFactory.instance.createDataOutputPort();
       opFork.setName(dop.getName());
       opFork.setExpression(dop.getExpression().getExpressionAsString());
       dop.getOutgoingFifo().setSourcePort(opFork);
@@ -609,11 +604,11 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       this.actorsMap.get(graph).add(new Spider2CodegenActor("REPEAT", ba, this.scenario, this.clusterList));
     } else {
       final Expression inputExpr = ba.getDataInputPorts().get(0).getExpression();
-      final String inputExprString = new String(inputExpr.getExpressionAsString()).replace(" ", "");
+      final String inputExprString = inputExpr.getExpressionAsString().replace(" ", "");
       Boolean isPerfectBroadcast = true;
       for (final DataOutputPort dop : ba.getDataOutputPorts()) {
         final Expression expr = dop.getExpression();
-        final String exprString = new String(expr.getExpressionAsString()).replace(" ", "");
+        final String exprString = expr.getExpressionAsString().replace(" ", "");
         if (!exprString.equalsIgnoreCase(inputExprString)) {
           isPerfectBroadcast = false;
           break;

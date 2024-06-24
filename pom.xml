@@ -75,13 +75,13 @@
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <jacoco-version>0.8.9</jacoco-version>
+      <jacoco-version>0.8.12</jacoco-version>
       <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
-      <sonar-version>3.9.1.2184</sonar-version>
-      <checkstyle-version>10.4</checkstyle-version>
+      <sonar-version>3.11.0.3922</sonar-version>
+      <checkstyle-version>10.14.2</checkstyle-version>
       <rcptt-version>2.4.3</rcptt-version>
-      <rcptt-runner-version>2.4.3</rcptt-runner-version>
+      <rcptt-runner-version>2.5.4</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.1</preesm.coding.policy.version>
       <maven.compiler.release>17</maven.compiler.release>
       <maven.compiler.source>${maven.compiler.release}</maven.compiler.source>
@@ -96,8 +96,8 @@
       <emf-version>2.27.0</emf-version>
       <emf-common-version>2.25.0</emf-common-version>
       <emf-codegen-version>2.30.0</emf-codegen-version>
-      <xtext-version>2.30.0</xtext-version>
-      <ecore-xtext-version>1.7.0</ecore-xtext-version>
+      <xtext-version>2.33.0</xtext-version>
+      <ecore-xtext-version>1.8.0</ecore-xtext-version>
       <ecore-xcore-version>1.24.0</ecore-xcore-version>
       <ecore-xcore-lib-version>1.6.0</ecore-xcore-lib-version>
 
@@ -351,7 +351,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-clean-plugin</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.2</version>
             <configuration>
                <filesets>
                   <fileset>
@@ -380,7 +380,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.1</version>
             <configuration>
                <configLocation>releng/org.preesm.target-platform/VAADER_checkstyle.xml</configLocation>
                <failsOnError>true</failsOnError>
@@ -421,7 +421,7 @@
          <plugin>
             <groupId>com.mycila</groupId>
             <artifactId>license-maven-plugin</artifactId>
-            <version>4.2</version>
+            <version>4.3</version>
             <configuration>
                <!-- Indicate the path to a file containing the license header -->
                <header>releng/copyright_template.txt</header>
@@ -471,7 +471,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-dependency-plugin</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.1</version>
          </plugin>
          <plugin>
             <groupId>org.codehaus.mojo</groupId>
@@ -487,7 +487,7 @@
          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-enforcer-plugin</artifactId>
-            <version>3.3.0</version>
+            <version>3.4.1</version>
             <configuration>
                <rules>
                   <bannedPlugins>

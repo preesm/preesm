@@ -45,7 +45,7 @@ import org.eclipse.jface.dialogs.IInputValidator;
  */
 public class NbCoresValidator implements IInputValidator {
 
-  public static final String errorInput = "/!\\ You must enter a strictly positive integer. /!\\";
+  public static final String ERROR_INPUT = "/!\\ You must enter a strictly positive integer. /!\\";
 
   @Override
   public String isValid(String newText) {
@@ -55,10 +55,10 @@ public class NbCoresValidator implements IInputValidator {
     try {
       int a = Integer.parseInt(newText);
       if (a < 1) {
-        return errorInput;
+        return ERROR_INPUT;
       }
     } catch (NumberFormatException e) {
-      return errorInput;
+      return ERROR_INPUT;
     }
     return null;
   }

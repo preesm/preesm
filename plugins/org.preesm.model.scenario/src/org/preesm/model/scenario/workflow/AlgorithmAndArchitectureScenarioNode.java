@@ -171,8 +171,12 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
         throw new FileNotFoundException("Target generation folder [" + folder.getAbsolutePath() + "] does not exist");
       }
     } catch (CoreException | IOException e) {
-      throw new PreesmRuntimeException("Could not access target directory [" + codegenPath + "] during code generation",
-          e);
+      throw new PreesmRuntimeException(
+          "Could not access target directory [" + codegenPath + "] during code generation. " + e.getMessage(), e);
+    } catch (final IllegalArgumentException e) {
+      throw new PreesmRuntimeException("Codegen path: " + codegenPath + " is not valid."
+          + "\nPlease update the code generation directory in the \"Codegen\" tab of the scenario editor "
+          + "(e.g. \"/<project>/Code/generated/\").", e);
     }
   }
 

@@ -35,10 +35,10 @@
  */
 package org.preesm.ui.pisdf.features;
 
+import java.util.Arrays;
 import org.eclipse.graphiti.features.IFeatureProvider;
 import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ISetter;
@@ -63,7 +63,7 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
    * @param visible
    *          the visible
    */
-  public AbstractSetVisibleDependencyFeature(final IFeatureProvider fp, final boolean visible) {
+  protected AbstractSetVisibleDependencyFeature(final IFeatureProvider fp, final boolean visible) {
     super(fp);
     this.fp = fp;
     this.visible = visible;
@@ -78,11 +78,8 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
   protected void setVisible(final Dependency d) {
     final PictogramElement[] depPes = this.fp.getAllPictogramElementsForBusinessObject(d);
     if (depPes != null) {
-      for (final PictogramElement pe : depPes) {
-        if (pe.isVisible() != this.visible) {
-          pe.setVisible(this.visible);
-        }
-      }
+      // isn't it just equivalent to setting every pe from desPes to this.visible and remove the branch ?
+      Arrays.stream(depPes).filter(pe -> pe.isVisible() != this.visible).forEach(pe -> pe.setVisible(this.visible));
     }
   }
 
@@ -93,9 +90,7 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
    *          the new visible outgoing dependencies
    */
   protected void setVisibleOutgoingDependencies(final ISetter setter) {
-    for (final Dependency d : setter.getOutgoingDependencies()) {
-      setVisible(d);
-    }
+    setter.getOutgoingDependencies().forEach(this::setVisible);
   }
 
   /**
@@ -105,8 +100,6 @@ public abstract class AbstractSetVisibleDependencyFeature extends AbstractCustom
    *          the new visible ingoing dependencies
    */
   protected void setVisibleIngoingDependencies(final Configurable param) {
-    for (final ConfigInputPort p : param.getConfigInputPorts()) {
-      setVisible(p.getIncomingDependency());
-    }
+    param.getConfigInputPorts().forEach(p -> setVisible(p.getIncomingDependency()));
   }
 }

@@ -148,19 +148,18 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
 
   @Override
   public Image getColumnImage(final Object element, final int columnIndex) {
-    if ((element instanceof AbstractActor) && (this.currentPE != null) && (this.currentTimingType != null)) {
-      final AbstractActor vertex = (AbstractActor) element;
-
+    if ((element instanceof final AbstractActor vertex) && (this.currentPE != null)
+        && (this.currentTimingType != null)) {
       final String timing = this.scenario.getTimings().getTiming(vertex, this.currentPE, this.currentTimingType);
       final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
       if (indexCol == TimingColumn.STATUS) {
         if (ExpressionEvaluator.canEvaluate(vertex, timing)) {
           return this.imageOk;
-        } else if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
-          return this.imageAlert;
-        } else {
-          return this.imageError;
         }
+        if (ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
+          return this.imageAlert;
+        }
+        return this.imageError;
       }
     }
     return null;
@@ -168,14 +167,11 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
 
   @Override
   public String getColumnText(final Object element, final int columnIndex) {
-    if (!(element instanceof AbstractActor)) {
-      return "";
-    }
-    if ((this.currentPE == null) || (this.currentTimingType == null)) {
+    if (!(element instanceof final AbstractActor vertex) || (this.currentPE == null)
+        || (this.currentTimingType == null)) {
       return "";
     }
 
-    final AbstractActor vertex = (AbstractActor) element;
     final String timing = this.scenario.getTimings().getTiming(vertex, this.currentPE, this.currentTimingType);
     final TimingColumn indexCol = TimingsPage.getTimingColumnTypeFromIndex(columnIndex);
 
@@ -218,11 +214,10 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
+    if (e.getSource() instanceof final Combo combo) {
       final String item = combo.getItem(combo.getSelectionIndex());
       if (combo == coreCombo) {
-        ProcessingElement pe = this.scenario.getDesign().getProcessingElement(item);
+        final ProcessingElement pe = this.scenario.getDesign().getProcessingElement(item);
         this.currentPE = pe;
         TimingsPage.comboTimingTypeDataInit(timingTypeCombo, pe);
       } else if (combo == timingTypeCombo) {
@@ -247,24 +242,22 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
     final IInputValidator validator = newText -> null;
 
     final Object firstElement = selection.getFirstElement();
-    if (firstElement instanceof AbstractActor) {
-      final AbstractActor abstractActor = (AbstractActor) firstElement;
+    if (firstElement instanceof final AbstractActor abstractActor && (this.currentPE != null)
+        && (this.currentTimingType != null)) {
+      final String title = Messages.getString("Timings.dialog.title");
+      final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
+      final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, currentPE, currentTimingType);
 
-      if ((this.currentPE != null) && (this.currentTimingType != null)) {
-        final String title = Messages.getString("Timings.dialog.title");
-        final String message = Messages.getString("Timings.dialog.message") + abstractActor.getVertexPath();
-        final String init = this.scenario.getTimings().getTimingOrDefault(abstractActor, currentPE, currentTimingType);
+      final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(), title,
+          message, init, validator);
+      if (dialog.open() == Window.OK) {
+        final String value = dialog.getValue();
 
-        final InputDialog dialog = new InputDialog(PlatformUI.getWorkbench().getActiveWorkbenchWindow().getShell(),
-            title, message, init, validator);
-        if (dialog.open() == Window.OK) {
-          final String value = dialog.getValue();
-
-          this.scenario.getTimings().setTiming(abstractActor, this.currentPE, this.currentTimingType, value);
-          this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
-          this.tableViewer.refresh();
-        }
+        this.scenario.getTimings().setTiming(abstractActor, this.currentPE, this.currentTimingType, value);
+        this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
+        this.tableViewer.refresh();
       }
     }
+
   }
 }

@@ -208,8 +208,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element element = (Element) node;
+      if (node instanceof final Element element) {
         final String type = element.getTagName();
         if (type.equals("spirit:componentInstance")) {
           parseComponentInstance(element, design);
@@ -266,8 +265,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if ("spirit:configurableElementValues".equals(type)) {
           parseParameters(elt, instance);
@@ -305,18 +303,18 @@ public class IPXACTDesignParser extends IPXACTParser {
       }
       try {
         // Special component cases
-        if (component instanceof ComNode) {
-          ((ComNode) component).setSpeed(Float.valueOf(description.getSpecificParameter("slam:speed")));
+        if (component instanceof final ComNode comNode) {
+          comNode.setSpeed(Float.valueOf(description.getSpecificParameter("slam:speed")));
           final boolean equals = "contention".equals(description.getSpecificParameter("ComNodeType"));
-          ((ComNode) component).setParallel(!equals);
-        } else if (component instanceof Mem) {
-          ((Mem) component).setSize(Integer.valueOf(description.getSpecificParameter("slam:size")));
-        } else if (component instanceof Dma) {
-          ((Dma) component).setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
-        } else if (component instanceof FPGA) {
-          ((FPGA) component).setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
-          ((FPGA) component).setPart(description.getSpecificParameter("slam:part"));
-          ((FPGA) component).setBoard(description.getSpecificParameter("slam:board"));
+          comNode.setParallel(!equals);
+        } else if (component instanceof final Mem mem) {
+          mem.setSize(Integer.valueOf(description.getSpecificParameter("slam:size")));
+        } else if (component instanceof final Dma dma) {
+          dma.setSetupTime(Integer.valueOf(description.getSpecificParameter("slam:setupTime")));
+        } else if (component instanceof final FPGA fpga) {
+          fpga.setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
+          fpga.setPart(description.getSpecificParameter("slam:part"));
+          fpga.setBoard(description.getSpecificParameter("slam:board"));
         }
       } catch (final NumberFormatException e) {
         throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"
@@ -387,8 +385,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     String name = "";
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:instanceName")) {
           name = elt.getTextContent();
@@ -405,8 +402,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     int id = -1;
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:hardwareId")) {
           final String textContent = elt.getTextContent();
@@ -443,8 +439,7 @@ public class IPXACTDesignParser extends IPXACTParser {
     Node node = parent.getFirstChild();
 
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:configurableElementValue")) {
           final String name = elt.getAttribute("spirit:referenceId");
@@ -472,14 +467,11 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:name")) {
           linkUuid = elt.getTextContent();
-        } else if (type.equals("spirit:displayName")) {
-          // nothing
-        } else if (type.equals("spirit:description")) {
+        } else if (type.equals("spirit:displayName") || type.equals("spirit:description")) {
           // nothing
         } else if (type.equals("spirit:activeInterface")) {
           comItfs.add(elt.getAttribute("spirit:busRef"));
@@ -492,48 +484,49 @@ public class IPXACTDesignParser extends IPXACTParser {
     // Retrieving parameters from vendor extensions
     final LinkDescription linkDescription = this.vendorExtensions.getLinkDescription(linkUuid);
 
-    if (linkDescription != null) {
-
-      String linkType = "DataLink";
-
-      if (!linkDescription.getType().isEmpty()) {
-        linkType = linkDescription.getType();
-      }
-
-      final EPackage eLinkPackage = SlamPackage.eINSTANCE;
-      final EClass linkEclass = (EClass) eLinkPackage.getEClassifier(linkType);
-
-      // Creating the link with appropriate type
-      final Link link = (Link) SlamFactory.eINSTANCE.create(linkEclass);
-
-      link.setDirected(linkDescription.isDirected());
-      link.setUuid(linkUuid);
-      final ComponentInstance sourceInstance = design.getComponentInstance(componentInstanceRefs.get(0));
-      link.setSourceComponentInstance(sourceInstance);
-      ComInterface sourceInterface = sourceInstance.getComponent().getInterface(comItfs.get(0));
-
-      // Creating source interface if necessary
-      if (sourceInterface == null) {
-        sourceInterface = SlamFactory.eINSTANCE.createComInterface();
-        sourceInterface.setName(comItfs.get(0));
-        sourceInstance.getComponent().getInterfaces().add(sourceInterface);
-      }
-      link.setSourceInterface(sourceInterface);
-
-      final ComponentInstance destinationInstance = design.getComponentInstance(componentInstanceRefs.get(1));
-      link.setDestinationComponentInstance(destinationInstance);
-      ComInterface destinationInterface = destinationInstance.getComponent().getInterface(comItfs.get(1));
-
-      // Creating destination interface if necessary
-      if (destinationInterface == null) {
-        destinationInterface = SlamFactory.eINSTANCE.createComInterface();
-        destinationInterface.setName(comItfs.get(1));
-        destinationInstance.getComponent().getInterfaces().add(destinationInterface);
-      }
-      link.setDestinationInterface(destinationInterface);
-
-      design.getLinks().add(link);
+    if (linkDescription == null) {
+      return;
     }
+
+    String linkType = "DataLink";
+
+    if (!linkDescription.getType().isEmpty()) {
+      linkType = linkDescription.getType();
+    }
+
+    final EPackage eLinkPackage = SlamPackage.eINSTANCE;
+    final EClass linkEclass = (EClass) eLinkPackage.getEClassifier(linkType);
+
+    // Creating the link with appropriate type
+    final Link link = (Link) SlamFactory.eINSTANCE.create(linkEclass);
+
+    link.setDirected(linkDescription.isDirected());
+    link.setUuid(linkUuid);
+    final ComponentInstance sourceInstance = design.getComponentInstance(componentInstanceRefs.get(0));
+    link.setSourceComponentInstance(sourceInstance);
+    ComInterface sourceInterface = sourceInstance.getComponent().getInterface(comItfs.get(0));
+
+    // Creating source interface if necessary
+    if (sourceInterface == null) {
+      sourceInterface = SlamFactory.eINSTANCE.createComInterface();
+      sourceInterface.setName(comItfs.get(0));
+      sourceInstance.getComponent().getInterfaces().add(sourceInterface);
+    }
+    link.setSourceInterface(sourceInterface);
+
+    final ComponentInstance destinationInstance = design.getComponentInstance(componentInstanceRefs.get(1));
+    link.setDestinationComponentInstance(destinationInstance);
+    ComInterface destinationInterface = destinationInstance.getComponent().getInterface(comItfs.get(1));
+
+    // Creating destination interface if necessary
+    if (destinationInterface == null) {
+      destinationInterface = SlamFactory.eINSTANCE.createComInterface();
+      destinationInterface.setName(comItfs.get(1));
+      destinationInstance.getComponent().getInterfaces().add(destinationInterface);
+    }
+    link.setDestinationInterface(destinationInterface);
+
+    design.getLinks().add(link);
 
   }
 
@@ -548,8 +541,7 @@ public class IPXACTDesignParser extends IPXACTParser {
   private void parseLinks(final Element parent, final Design design) {
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:interconnection")) {
           parseLink(elt, design);
@@ -585,14 +577,9 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
-        if (type.equals("spirit:name")) {
-          // nothing
-        } else if (type.equals("spirit:displayName")) {
-          // nothing
-        } else if (type.equals("spirit:description")) {
+        if (type.equals("spirit:name") || type.equals("spirit:displayName") || type.equals("spirit:description")) {
           // nothing
         } else if (type.equals("spirit:activeInterface")) {
           internalInterfaceName = elt.getAttribute("spirit:busRef");
@@ -628,8 +615,7 @@ public class IPXACTDesignParser extends IPXACTParser {
   private void parseHierarchicalPorts(final Element parent, final Design design) {
     Node node = parent.getFirstChild();
     while (node != null) {
-      if (node instanceof Element) {
-        final Element elt = (Element) node;
+      if (node instanceof final Element elt) {
         final String type = elt.getTagName();
         if (type.equals("spirit:hierConnection")) {
           parseHierarchicalPort(elt, design);

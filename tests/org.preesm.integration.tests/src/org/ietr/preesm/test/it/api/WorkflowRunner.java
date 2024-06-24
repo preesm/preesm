@@ -40,6 +40,8 @@ import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.util.Comparator;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -61,6 +63,21 @@ import org.preesm.workflow.AbstractWorkflowExecutor;
  */
 public class WorkflowRunner {
 
+  private static ConcurrentHashMap<String, ReentrantLock> mutexMap = new ConcurrentHashMap<>();
+
+  private static void acquireMutex(String mutexName) {
+    // check if lock exist, create it if not
+    mutexMap.putIfAbsent(mutexName, new ReentrantLock());
+
+    // acquire lock with lock()
+    mutexMap.get(mutexName).lock();
+  }
+
+  private static void releaseMutex(String mutexName) {
+    // release lock
+    mutexMap.get(mutexName).unlock();
+  }
+
   /**
    * Executes a workflow on a given scenario. Exclusively used for unit tests. The project can be in the resources
    * folder or at a specific location.
@@ -77,6 +94,9 @@ public class WorkflowRunner {
    */
   public static final boolean runWorkFlow(final String projectRoot, final String projectName,
       final String workflowFilePathStr, final String scenarioFilePathStr) throws CoreException, IOException {
+
+    acquireMutex(projectName);
+
     // init workspace and project
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();
@@ -107,7 +127,7 @@ public class WorkflowRunner {
       final String workflowPath = "/" + projectName + workflowFilePathStr;
       final String scenarioPath = "/" + projectName + scenarioFilePathStr;
 
-      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null);
+      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null, false);
 
       return success;
     } finally {
@@ -117,6 +137,8 @@ public class WorkflowRunner {
       walk.sorted(Comparator.reverseOrder()).map(java.nio.file.Path::toFile).forEach(File::delete);
       walk.close();
       project.delete(true, null);
+
+      releaseMutex(projectName);
     }
   }
 }

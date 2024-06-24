@@ -1,17 +1,19 @@
 name: Build & Test
 on:
   push:
-  #pull_request:
+  pull_request:
   schedule:
     - cron:  '0 7 * * MON'
-    
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
-    # Prevent workflow from running twice when push to PR from main repo,
-    # maintains workflow run when PR from forked repo
-    #if: github.event_name != 'pull_request' ||
-    #  github.event.pull_request.head.repo.full_name !=
-    #  github.event.pull_request.base.repo.full_name
+    # Prevent workflow from running twice when push to PR from main repo, maintains workflow run when PR from forked repo
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     name: Build & Test
     strategy:
       matrix:
@@ -20,58 +22,78 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
+
       - name: Git Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v4.5
+        uses: stCarolas/setup-maven@v5
         with:
           maven-version: 3.6.3
+
+      - name: Restore m2 cache # Only trigger on feature branch
+        if: github.ref != 'refs/heads/develop'
+        uses: actions/cache/restore@v4
+        with:
+          key: ${{ matrix.os }}-maven-m2- # This lookup will fail, the restore-keys entry will be used, falling back on the most recent cache
+          path: ~/.m2/repository
+          restore-keys: ${{ matrix.os }}-maven-m2-
+
       - name: Build & Test
         shell: bash
         run: releng/build_and_test.sh --ci
+
+      - name: Save m2 cache # Only trigger on develop unscheduled
+        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ matrix.os }}-maven-m2-${{ github.run_id }}
+
       - name: Analyze with SONAR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: mvn -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
-      # - name: Archive production artifacts
-      #   uses: actions/upload-artifact@v3
-      #   with:
-      #     name: preesm-products
-      #     path: releng/org.preesm.product/target/org.preesm.product-*.zip
+
       - name: Archive Linux product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: linux-products
           path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
+
       - name: Archive macOS aarch64 product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mac-aarch64-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.aarch64.zip
+
       - name: Archive macOS x86_64 product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mac-x86-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
+
       - name: Archive Windows product
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: windows-products
           path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
 
       - name: Generate changelog
+        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
         shell: bash
         run: git log $(git describe --tags --abbrev=0)..HEAD --oneline --no-decorate > dev-changelog.txt
 
       - name: Upload changelog
-        uses: actions/upload-artifact@v3
+        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
+        uses: actions/upload-artifact@v4
         with:
           name: changelog
           path: dev-changelog.txt
@@ -85,38 +107,41 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: linux-products
+
       - name: Download Mac aarch64 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mac-aarch64-products
+
       - name: Download Mac x86 artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: mac-x86-products
+
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: windows-products
 
       - name: Download changelog
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: changelog
 
-      # - name: Display structure of downloaded files
-      #   run: ls -R
       - name: Generate release tag
         id: tag
         run: |
           echo "release_tag=DevBuild_$(date +"%Y.%m.%d_%H-%M")" >> $GITHUB_OUTPUT
+
       - name: Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           fail_on_unmatched_files: true
-          prerelease: true
+          draft: true
+          prerelease: false
           tag_name: ${{ steps.tag.outputs.release_tag }}
           #body: Check commit history for detailled changes.
           body_path: dev-changelog.txt

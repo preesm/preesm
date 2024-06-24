@@ -35,11 +35,10 @@
 package org.preesm.algorithm.model.sdf;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import org.math.array.DoubleArray;
 import org.preesm.algorithm.model.sdf.esdf.SDFSinkInterfaceVertex;
 import org.preesm.algorithm.model.sdf.esdf.SDFSourceInterfaceVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -94,11 +93,7 @@ public interface SDFMath {
       final SDFGraph graph) {
 
     final List<SDFAbstractVertex> subgraphWOInterfaces = new ArrayList<>();
-    for (final SDFAbstractVertex vertex : subgraph) {
-      if (!(vertex instanceof SDFInterfaceVertex)) {
-        subgraphWOInterfaces.add(vertex);
-      }
-    }
+    subgraph.stream().filter(v -> !(v instanceof SDFInterfaceVertex)).forEach(subgraphWOInterfaces::add);
 
     final Map<SDFAbstractVertex, Long> vrb = SDFMath.computeRationnalVRB(subgraphWOInterfaces, graph);
 
@@ -123,7 +118,10 @@ public interface SDFMath {
         if (vertex instanceof SDFSinkInterfaceVertex) {
           for (final SDFEdge edge : graph.incomingEdgesOf(vertex)) {
             if (!(edge.getSource() instanceof SDFInterfaceVertex)) {
-              final double[] line = DoubleArray.fill(nbInterfaceEdges + 1, 0);
+
+              final double[] line = new double[nbInterfaceEdges + 1];
+              Arrays.fill(line, 0);
+
               line[decal] = -edge.getCons().longValue();
               line[nbInterfaceEdges] = (edge.getProd().longValue() * (vrb.get(edge.getSource())));
               interfaceTopology.add(line);
@@ -133,7 +131,10 @@ public interface SDFMath {
         } else if (vertex instanceof SDFSourceInterfaceVertex) {
           for (final SDFEdge edge : graph.outgoingEdgesOf(vertex)) {
             if (!(edge.getTarget() instanceof SDFInterfaceVertex)) {
-              final double[] line = DoubleArray.fill(nbInterfaceEdges + 1, 0);
+
+              final double[] line = new double[nbInterfaceEdges + 1];
+              Arrays.fill(line, 0);
+
               line[decal] = edge.getProd().longValue();
               line[nbInterfaceEdges] = (-edge.getCons().longValue() * (vrb.get(edge.getTarget())));
               interfaceTopology.add(line);
@@ -158,9 +159,7 @@ public interface SDFMath {
 
     final List<LongFraction> nullSpace = MathFunctionsHelper.computeRationnalNullSpace(interfaceArrayTopology);
     final List<Long> result = MathFunctionsHelper.toNatural(nullSpace);
-    for (final Entry<SDFAbstractVertex, Long> e : vrb.entrySet()) {
-      vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1));
-    }
+    vrb.entrySet().forEach(e -> vrb.put(e.getKey(), e.getValue() * result.get(result.size() - 1)));
 
     return vrb;
   }

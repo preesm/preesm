@@ -48,7 +48,7 @@ public abstract class AbstractTaskSched {
   /** Contains the rank list of all the vertices in an implementation. */
   protected OrderManager orderManager = null;
 
-  public AbstractTaskSched() {
+  protected AbstractTaskSched() {
     super();
   }
 

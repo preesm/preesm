@@ -40,7 +40,6 @@ import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -97,7 +96,7 @@ public class BRVExporter extends AbstractTaskImplementation {
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    PreesmLogger.getLogger().log(Level.INFO, "Computing Repetition Vector for graph [" + graph.getName() + "]");
+    PreesmLogger.getLogger().info(() -> "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
     // Check consistency of the graph (throw exception if fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
@@ -108,7 +107,7 @@ public class BRVExporter extends AbstractTaskImplementation {
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PiMMHelper.resolveAllParameters(graph);
     // 2. Compute BRV following the chosen method
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     String folderPath = parameters.get("path");
 
@@ -129,7 +128,7 @@ public class BRVExporter extends AbstractTaskImplementation {
 
     generateXML(graph, brv, file);
 
-    Map<String, Object> res = new LinkedHashMap<>();
+    final Map<String, Object> res = new LinkedHashMap<>();
     res.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
     return res;
   }
@@ -161,28 +160,28 @@ public class BRVExporter extends AbstractTaskImplementation {
       fullRV.put(av, actorFullRV);
     }
 
-    DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+    final DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
     dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     dbFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
     DocumentBuilder dBuilder;
     try {
       dBuilder = dbFactory.newDocumentBuilder();
-    } catch (ParserConfigurationException e) {
+    } catch (final ParserConfigurationException e) {
       throw new PreesmRuntimeException(e);
     }
-    Document content = dBuilder.newDocument();
+    final Document content = dBuilder.newDocument();
 
     // Generate the stats to write in an xml file
     generateXMLStats(content, graph.getName(), brv, fullRV);
 
     // Write the file
-    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+    final TransformerFactory transformerFactory = TransformerFactory.newInstance();
     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
     transformerFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
     try {
-      Transformer transformer = transformerFactory.newTransformer();
-      DOMSource source = new DOMSource(content);
-      StreamResult result = new StreamResult(file);
+      final Transformer transformer = transformerFactory.newTransformer();
+      final DOMSource source = new DOMSource(content);
+      final StreamResult result = new StreamResult(file);
       transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
       transformer.setOutputProperty(OutputKeys.INDENT, "yes");
       transformer.transform(source, result);
@@ -195,7 +194,7 @@ public class BRVExporter extends AbstractTaskImplementation {
   private static void generateXMLStats(Document doc, String graphName, Map<AbstractVertex, Long> brv,
       Map<AbstractVertex, Long> fullRV) {
 
-    Element root = doc.createElement("brv");
+    final Element root = doc.createElement("brv");
     root.setAttribute("graphName", graphName);
     doc.appendChild(root);
 
@@ -204,10 +203,10 @@ public class BRVExporter extends AbstractTaskImplementation {
       final long actorRV = en.getValue();
       final long actorFullRV = fullRV.get(av);
 
-      String fullName = av.getVertexPath();
-      String shortName = av.getName();
+      final String fullName = av.getVertexPath();
+      final String shortName = av.getName();
 
-      Element nbRepeat = doc.createElement("nbRepeat");
+      final Element nbRepeat = doc.createElement("nbRepeat");
       root.appendChild(nbRepeat);
 
       nbRepeat.setAttribute("fullName", fullName);

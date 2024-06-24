@@ -301,7 +301,7 @@ public class ConstraintsPage extends ScenarioPage {
 
       @Override
       public void keyReleased(final KeyEvent e) {
-
+        // empty
       }
 
     });

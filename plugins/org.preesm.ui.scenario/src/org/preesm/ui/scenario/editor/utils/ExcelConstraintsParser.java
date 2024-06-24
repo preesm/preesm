@@ -113,10 +113,10 @@ public class ExcelConstraintsParser {
 
       final PiGraph currentPiGraph = scenario.getAlgorithm();
       for (final AbstractActor vertex : currentPiGraph.getAllActors()) {
-        if (vertex instanceof Actor) {
+        if (vertex instanceof final Actor actor) {
           final Design design = this.scenario.getDesign();
           for (final ComponentInstance operatorId : design.getOperatorComponentInstances()) {
-            checkOpPiConstraint(w, operatorId, (Actor) vertex, missingVertices, missingOperators);
+            checkOpPiConstraint(w, operatorId, actor, missingVertices, missingOperators);
           }
         }
       }
@@ -144,35 +144,37 @@ public class ExcelConstraintsParser {
       final Set<AbstractActor> missingVertices, final Set<ComponentInstance> missingOperators) {
     final String vertexName = vertex.getName();
 
-    if (operatorId != null && !vertexName.isEmpty()) {
-      final Cell vertexCell = w.getSheet(0).findCell(vertexName);
-      final Cell operatorCell = w.getSheet(0).findCell(operatorId.getInstanceName());
+    if (operatorId == null || vertexName.isEmpty()) {
+      return; // Early exit
+    }
 
-      if ((vertexCell != null) && (operatorCell != null)) {
-        final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
+    final Cell vertexCell = w.getSheet(0).findCell(vertexName);
+    final Cell operatorCell = w.getSheet(0).findCell(operatorId.getInstanceName());
 
-        if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
+    if ((vertexCell != null) && (operatorCell != null)) {
+      final Cell timingCell = w.getSheet(0).getCell(operatorCell.getColumn(), vertexCell.getRow());
 
-          this.scenario.getConstraints().addConstraint(operatorId, vertex);
+      if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
+        this.scenario.getConstraints().addConstraint(operatorId, vertex);
 
-        } else {
-          PreesmLogger.getLogger().log(Level.FINE, "Importing constraint: {" + operatorId + "," + vertex + ",no}");
-        }
-      } else if ((vertexCell == null) && !missingVertices.contains(vertex)) {
-        if (vertex.getRefinement() == null) {
-          final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
-          throw new PreesmRuntimeException(message);
-        }
-        PreesmLogger.getLogger().log(Level.WARNING,
-            "No line found in excel sheet for hierarchical vertex: " + vertexName);
-        missingVertices.add(vertex);
-      } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
-        final String message = "No column found in excel sheet for operator: " + operatorId;
+        PreesmLogger.getLogger().fine(() -> "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
+
+      } else {
+        PreesmLogger.getLogger().fine(() -> "Importing constraint: {" + operatorId + "," + vertex + ",no}");
+      }
+    } else if ((vertexCell == null) && !missingVertices.contains(vertex)) {
+      if (vertex.getRefinement() == null) {
+        final String message = "No line found in excel sheet for atomic vertex: " + vertexName;
         throw new PreesmRuntimeException(message);
       }
+      PreesmLogger.getLogger().warning(() -> "No line found in excel sheet for hierarchical vertex: " + vertexName);
+      missingVertices.add(vertex);
+    } else if ((operatorCell == null) && !missingOperators.contains(operatorId)) {
+      final String message = "No column found in excel sheet for operator: " + operatorId;
+      throw new PreesmRuntimeException(message);
     }
+
   }
 
 }

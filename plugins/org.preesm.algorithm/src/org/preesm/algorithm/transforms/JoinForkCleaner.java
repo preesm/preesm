@@ -415,21 +415,18 @@ public class JoinForkCleaner {
       }
 
       // Associate the interfaces to the new edge
-      if (targetCopies.get(targetIndex) instanceof SDFVertex) {
-        if (((SDFVertex) targetCopies.get(targetIndex))
-            .getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
-          final SDFInterfaceVertex inputVertex = ((SDFVertex) targetCopies.get(targetIndex))
-              .getSource(targetEdges.get(targetIndex).getTargetInterface().getName());
-          ((SDFVertex) targetCopies.get(targetIndex)).setInterfaceVertexExternalLink(newEdge, inputVertex);
-        }
+      if (targetCopies.get(targetIndex) instanceof final SDFVertex sdfVertex
+          && sdfVertex.getSource(targetEdges.get(targetIndex).getTargetInterface().getName()) != null) {
+        final SDFInterfaceVertex inputVertex = sdfVertex
+            .getSource(targetEdges.get(targetIndex).getTargetInterface().getName());
+        sdfVertex.setInterfaceVertexExternalLink(newEdge, inputVertex);
       }
-      if (sourceCopies.get(sourceIndex) instanceof SDFVertex) {
-        if (((SDFVertex) sourceCopies.get(sourceIndex))
-            .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
-          final SDFInterfaceVertex outputVertex = ((SDFVertex) sourceCopies.get(sourceIndex))
-              .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName());
-          ((SDFVertex) sourceCopies.get(sourceIndex)).setInterfaceVertexExternalLink(newEdge, outputVertex);
-        }
+
+      if (sourceCopies.get(sourceIndex) instanceof final SDFVertex sdfVertex
+          && sdfVertex.getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName()) != null) {
+        final SDFInterfaceVertex outputVertex = sdfVertex
+            .getSink(sourceEdges.get(sourceIndex).getSourceInterface().getName());
+        sdfVertex.setInterfaceVertexExternalLink(newEdge, outputVertex);
       }
 
       // Set the properties of the new edge

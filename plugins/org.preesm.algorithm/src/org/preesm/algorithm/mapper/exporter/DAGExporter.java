@@ -95,32 +95,19 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
   protected Element exportNode(final DAGVertex vertex, final Element parentELement) {
 
     final Element vertexElt = createNode(parentELement, vertex.getName());
-    String kind;
+    final String kind;
     if (vertex.getKind() == null) {
       kind = VERTEX_LITTERAL;
     } else {
-      switch (vertex.getKind()) {
-        case DAGVertex.DAG_VERTEX:
-          kind = VERTEX_LITTERAL;
-          break;
-        case MapperDAGVertex.DAG_BROADCAST_VERTEX:
-          kind = SDFBroadcastVertex.BROADCAST;
-          break;
-        case MapperDAGVertex.DAG_END_VERTEX:
-          kind = SDFEndVertex.END;
-          break;
-        case MapperDAGVertex.DAG_FORK_VERTEX:
-          kind = SDFForkVertex.FORK;
-          break;
-        case MapperDAGVertex.DAG_INIT_VERTEX:
-          kind = SDFInitVertex.INIT;
-          break;
-        case MapperDAGVertex.DAG_JOIN_VERTEX:
-          kind = SDFJoinVertex.JOIN;
-          break;
-        default:
-          kind = VERTEX_LITTERAL;
-      }
+      kind = switch (vertex.getKind()) {
+        case DAGVertex.DAG_VERTEX -> VERTEX_LITTERAL;
+        case MapperDAGVertex.DAG_BROADCAST_VERTEX -> SDFBroadcastVertex.BROADCAST;
+        case MapperDAGVertex.DAG_END_VERTEX -> SDFEndVertex.END;
+        case MapperDAGVertex.DAG_FORK_VERTEX -> SDFForkVertex.FORK;
+        case MapperDAGVertex.DAG_INIT_VERTEX -> SDFInitVertex.INIT;
+        case MapperDAGVertex.DAG_JOIN_VERTEX -> SDFJoinVertex.JOIN;
+        default -> VERTEX_LITTERAL;
+      };
     }
     vertexElt.setAttribute(AbstractVertex.KIND_LITERAL, kind);
 
@@ -200,12 +187,11 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     if (myGraph.getVariables() != null) {
       exportVariables(myGraph.getVariables(), graphElt);
     }
-    for (final DAGVertex child : myGraph.vertexSet()) {
-      exportNode(child, graphElt);
-    }
-    for (final DAGEdge edge : myGraph.edgeSet()) {
-      exportEdge(edge, graphElt);
-    }
+
+    myGraph.vertexSet().forEach(child -> exportNode(child, graphElt));
+
+    myGraph.edgeSet().forEach(edge -> exportEdge(edge, graphElt));
+
     return null;
   }
 
@@ -254,12 +240,11 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IFile iGraphMLFile = workspace.getRoot().getFile(path);
 
-    if (iGraphMLFile.getLocation() != null) {
-      export(clone, iGraphMLFile.getLocation().toOSString());
-    } else {
+    if (iGraphMLFile.getLocation() == null) {
       final String msg = "The output file " + path + " can not be written.";
       throw new PreesmRuntimeException(msg);
     }
+    export(clone, iGraphMLFile.getLocation().toOSString());
   }
 
   /**
@@ -270,9 +255,9 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
    * @return the out port name
    */
   private String getOutPortName(final DAGVertex vertex) {
-    if (!(this.outPortNb.containsKey(vertex))) {
-      this.outPortNb.put(vertex, 0);
-    }
+
+    this.outPortNb.computeIfAbsent(vertex, k -> 0);
+
     int nb = this.outPortNb.get(vertex);
     final String result = "out" + nb;
     nb++;
@@ -288,9 +273,9 @@ public class DAGExporter extends GMLExporter<DAGVertex, DAGEdge> {
    * @return the in port name
    */
   private String getInPortName(final DAGVertex vertex) {
-    if (!(this.inPortNb.containsKey(vertex))) {
-      this.inPortNb.put(vertex, 0);
-    }
+
+    this.inPortNb.computeIfAbsent(vertex, k -> 0);
+
     int nb = this.inPortNb.get(vertex);
     final String result = "in" + nb;
     nb++;

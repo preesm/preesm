@@ -135,51 +135,54 @@ public class ExcelTimingWriter extends ExcelWriter {
    */
   @Override
   protected void addCells(final WritableSheet sheet) throws FileNotFoundException, CoreException {
-    if (sheet != null) {
 
-      Integer maxOpAbscissa = 1;
-      Integer maxVOrdinate = 1;
+    if (sheet == null) {
+      return;
+    }
 
-      // top left cell to be compliant with csv importer
-      try {
-        sheet.addCell(new Label(0, 0, "Actors"));
-      } catch (final WriteException e) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
-      }
+    Integer maxOpAbscissa = 1;
+    Integer maxVOrdinate = 1;
 
-      final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
+    // top left cell to be compliant with csv importer
+    try {
+      sheet.addCell(new Label(0, 0, "Actors"));
+    } catch (final WriteException e) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
+    }
 
-      final Design design = this.scenario.getDesign();
-      for (final Component opDefId : design.getProcessingElements()) {
-        for (final AbstractActor vertexName : vSet) {
+    final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
-          final String timing = this.scenario.getTimings().getExecutionTimeOrDefault(vertexName, opDefId);
+    final Design design = this.scenario.getDesign();
+    for (final Component opDefId : design.getProcessingElements()) {
+      for (final AbstractActor vertexName : vSet) {
 
-          WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
-          WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
+        final String timing = this.scenario.getTimings().getExecutionTimeOrDefault(vertexName, opDefId);
 
-          try {
-            if (opCell == null) {
-              opCell = new Label(maxOpAbscissa, 0, opDefId.getVlnv().getName());
-              sheet.addCell(opCell);
-              maxOpAbscissa++;
-            }
+        WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
+        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
 
-            if (vCell == null) {
-              vCell = new Label(0, maxVOrdinate, vertexName.getVertexPath());
-              sheet.addCell(vCell);
-              maxVOrdinate++;
-            }
-
-            WritableCell timeCell;
-            timeCell = new Label(opCell.getColumn(), vCell.getRow(), timing);
-
-            sheet.addCell(timeCell);
-          } catch (final WriteException e) {
-            PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
+        try {
+          if (opCell == null) {
+            opCell = new Label(maxOpAbscissa, 0, opDefId.getVlnv().getName());
+            sheet.addCell(opCell);
+            maxOpAbscissa++;
           }
+
+          if (vCell == null) {
+            vCell = new Label(0, maxVOrdinate, vertexName.getVertexPath());
+            sheet.addCell(vCell);
+            maxVOrdinate++;
+          }
+
+          WritableCell timeCell;
+          timeCell = new Label(opCell.getColumn(), vCell.getRow(), timing);
+
+          sheet.addCell(timeCell);
+        } catch (final WriteException e) {
+          PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
         }
       }
     }
   }
+
 }

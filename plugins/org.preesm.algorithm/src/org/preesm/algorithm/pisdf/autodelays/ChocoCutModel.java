@@ -52,7 +52,7 @@ import org.preesm.model.pisdf.AbstractActor;
 
 /**
  * Computes one stage pipeline in a graph
- * 
+ *
  * @author ahonorat
  */
 public class ChocoCutModel {
@@ -72,7 +72,7 @@ public class ChocoCutModel {
 
   /**
    * Initializes the Choco model.
-   * 
+   *
    * @param hlbd
    *          Abstract graph, breaking fifos and cycles informations.
    */
@@ -97,7 +97,7 @@ public class ChocoCutModel {
     edgeDelays = new IntVar[nbFifos];
 
     // initialize actor delays
-    for (AbstractActor aa : dag.vertexSet()) {
+    for (final AbstractActor aa : dag.vertexSet()) {
       final int index = mapVertices.size();
       mapVertices.put(aa, index);
       if (dag.inDegreeOf(aa) == 0) {
@@ -107,7 +107,7 @@ public class ChocoCutModel {
       }
     }
     // initialize fifo delays
-    for (FifoAbstraction fa : dag.edgeSet()) {
+    for (final FifoAbstraction fa : dag.edgeSet()) {
       final int index = mapEdges.size();
       mapEdges.put(fa, index);
       if (fixedFifos.contains(fa)) {
@@ -117,13 +117,13 @@ public class ChocoCutModel {
       }
     }
     // main equation per incoming fifo
-    for (AbstractActor aa : dag.vertexSet()) {
+    for (final AbstractActor aa : dag.vertexSet()) {
       final int inDegree = dag.inDegreeOf(aa);
       if (inDegree > 0) {
         final IntVar[] actorInConstraints = new IntVar[1 + inDegree];
         actorInConstraints[0] = vertexDelays[mapVertices.get(aa)];
         int i = 1;
-        for (FifoAbstraction fa : dag.incomingEdgesOf(aa)) {
+        for (final FifoAbstraction fa : dag.incomingEdgesOf(aa)) {
           final IntVar dst = model.intVar(0, nbStages);
           actorInConstraints[i++] = dst;
           final IntVar src = vertexDelays[mapVertices.get(dag.getEdgeSource(fa))];
@@ -158,13 +158,13 @@ public class ChocoCutModel {
         PreesmLogger.getLogger().warning("Reached TIME OUT: " + TIMEOUT + " ms");
       }
     }
-    PreesmLogger.getLogger().info("Number of cuts found by Choco: " + solutions.size());
+    PreesmLogger.getLogger().info(() -> "Number of cuts found by Choco: " + solutions.size());
 
     final List<Map<FifoAbstraction, Integer>> result = new ArrayList<>();
 
-    for (Solution sol : solutions) {
-      Map<FifoAbstraction, Integer> delays = new HashMap<>();
-      for (FifoAbstraction fa : dag.edgeSet()) {
+    for (final Solution sol : solutions) {
+      final Map<FifoAbstraction, Integer> delays = new HashMap<>();
+      for (final FifoAbstraction fa : dag.edgeSet()) {
         final int delay = sol.getIntVal(edgeDelays[mapEdges.get(fa)]);
         if (delay > 0) {
           delays.put(fa, delay);
@@ -187,15 +187,14 @@ public class ChocoCutModel {
       return null;
     }
 
-    Solution sol = null;
-    if (found) {
-      sol = new Solution(model).record();
-    } else {
+    Solution sol;
+    if (!found) {
       return null; // all solutions have been found
     }
+    sol = new Solution(model).record();
 
-    Map<FifoAbstraction, Integer> cut = new HashMap<>();
-    for (FifoAbstraction fa : dag.edgeSet()) {
+    final Map<FifoAbstraction, Integer> cut = new HashMap<>();
+    for (final FifoAbstraction fa : dag.edgeSet()) {
       final int delay = sol.getIntVal(edgeDelays[mapEdges.get(fa)]);
       if (delay > 0) {
         cut.put(fa, delay);

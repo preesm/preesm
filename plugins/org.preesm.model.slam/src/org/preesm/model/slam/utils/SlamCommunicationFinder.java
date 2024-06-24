@@ -52,6 +52,10 @@ import org.preesm.model.slam.impl.MemImpl;
  */
 public class SlamCommunicationFinder {
 
+  private SlamCommunicationFinder() {
+    // Forbids instantiation
+  }
+
   /**
    * Gets the dma corresponding to the step if any exists. The Dma must have a setup link with the source.
    *

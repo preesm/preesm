@@ -55,7 +55,7 @@ public abstract class GroupProperty implements CloneableProperty<GroupProperty> 
   /** IDs of the vertices that share the property. */
   protected final Set<String> vertexIDs;
 
-  public GroupProperty() {
+  protected GroupProperty() {
     this.vertexIDs = new LinkedHashSet<>();
   }
 

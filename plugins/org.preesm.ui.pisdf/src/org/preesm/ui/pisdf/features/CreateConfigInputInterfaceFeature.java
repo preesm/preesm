@@ -39,24 +39,16 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICreateContext;
-import org.eclipse.graphiti.features.impl.AbstractCreateFeature;
-import org.eclipse.graphiti.func.ICreate;
-import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.preesm.model.pisdf.ConfigInputInterface;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.ui.pisdf.util.VertexNameValidator;
-import org.preesm.ui.utils.DialogUtil;
 
-// TODO: Auto-generated Javadoc
 /**
  * Create feature for Configuration Input Interface.
  *
  * @author kdesnos
  *
  */
-public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
+public class CreateConfigInputInterfaceFeature extends AbstractCreateConfigurableFeature {
 
   /** The Constant FEATURE_NAME. */
   private static final String FEATURE_NAME = "Config. Input Interface";
@@ -64,8 +56,9 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
   /** The Constant FEATURE_DESCRIPTION. */
   private static final String FEATURE_DESCRIPTION = "Create Config. Input Interface";
 
-  /** The has done changes. */
-  protected Boolean hasDoneChanges;
+  private static final String DEFAULT_NAME = "iCfgName";
+
+  private static final String QUESTION = "Enter new configuration input interface name";
 
   /**
    * Default constructor for the {@link CreateConfigInputInterfaceFeature}.
@@ -74,57 +67,28 @@ public class CreateConfigInputInterfaceFeature extends AbstractCreateFeature {
    *          the feature provider
    */
   public CreateConfigInputInterfaceFeature(final IFeatureProvider fp) {
-    super(fp, CreateConfigInputInterfaceFeature.FEATURE_NAME, CreateConfigInputInterfaceFeature.FEATURE_DESCRIPTION);
+    super(fp, FEATURE_NAME, FEATURE_DESCRIPTION);
     this.hasDoneChanges = false;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#canCreate(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public boolean canCreate(final ICreateContext context) {
-    return context.getTargetContainer() instanceof Diagram;
+  String getFeatureDescription() {
+    return FEATURE_DESCRIPTION;
   }
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see org.eclipse.graphiti.func.ICreate#create(org.eclipse.graphiti.features.context.ICreateContext)
-   */
   @Override
-  public Object[] create(final ICreateContext context) {
-    // Retrieve the graph
-    final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+  String getDefaultName() {
+    return DEFAULT_NAME;
+  }
 
-    // Ask user for Parameter name until a valid name is entered.
-    final String question = "Enter new configuration input interface name";
-    String newCfgInIfName = "iCfgName";
+  @Override
+  String getQuestion() {
+    return QUESTION;
+  }
 
-    // TODO create a parameter name validator
-    newCfgInIfName = DialogUtil.askString("Create Config. Input Interface", question, newCfgInIfName,
-        new VertexNameValidator(graph, null));
-    if ((newCfgInIfName == null) || (newCfgInIfName.trim().length() == 0)) {
-      this.hasDoneChanges = false; // If this is not done, the graph is
-      // considered modified.
-      return ICreate.EMPTY;
-    }
-
-    // create Configuration Input Interface (i.e. a Parameter)
-    final ConfigInputInterface newParameter = PiMMUserFactory.instance.createConfigInputInterface();
-    newParameter.setName(newCfgInIfName);
-
-    // Add new parameter to the graph.
-    if (graph.addParameter(newParameter)) {
-      this.hasDoneChanges = true;
-    }
-
-    // do the add to the Diagram
-    addGraphicalRepresentation(context, newParameter);
-
-    // return newly created business object(s)
-    return new Object[] { newParameter };
+  @Override
+  ConfigInputInterface createConfigurable(String newCiiName) {
+    return PiMMUserFactory.instance.createConfigInputInterface(newCiiName);
   }
 
 }

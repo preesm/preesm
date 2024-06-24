@@ -40,16 +40,15 @@
 package org.preesm.ui.pisdf.features;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.graphiti.datatypes.ILocation;
 import org.eclipse.graphiti.features.IFeatureProvider;
-import org.eclipse.graphiti.features.context.ICustomContext;
-import org.eclipse.graphiti.features.custom.AbstractCustomFeature;
+import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.mm.algorithms.Ellipse;
 import org.eclipse.graphiti.mm.algorithms.Polyline;
 import org.eclipse.graphiti.mm.algorithms.styles.LineStyle;
 import org.eclipse.graphiti.mm.algorithms.styles.Point;
+import org.eclipse.graphiti.mm.pictograms.AnchorContainer;
 import org.eclipse.graphiti.mm.pictograms.ChopboxAnchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
@@ -57,12 +56,12 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
-import org.eclipse.graphiti.services.IPeCreateService;
 import org.eclipse.graphiti.services.IPeLayoutService;
+import org.eclipse.graphiti.ui.services.GraphitiUi;
+import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
  * Add feature responsible for creating and adding a delay to a {@link Fifo}.
@@ -71,16 +70,26 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  * @author jheulot
  *
  */
-public class AddDelayFeature extends AbstractCustomFeature {
+public class AddDelayFeature extends AbstractAddConfigurableFeature {
 
   /** The Constant DELAY_SIZE. */
   public static final int DELAY_SIZE = 16;
 
-  /**
-   * XXX Hack to keep track of created PEs in order to link them with the proper delay (not the one created in the
-   * execute() method...)
-   */
-  private List<PictogramElement> createdPEs;
+  /** The Constant FEATURE_NAME. */
+  private static final String FEATURE_NAME = "Add Delay";
+
+  /** The Constant FEATURE_DESCRIPTION. */
+  private static final String FEATURE_DESCRIPTION = "Add a Delay to the Fifo";
+
+  /** The Constant JOIN_ACTOR_FOREGROUND. */
+  public static final IColorConstant DELAY_FOREGROUND = AddActorFeature.ACTOR_FOREGROUND;
+
+  /** The Constant JOIN_ACTOR_BACKGROUND. */
+  public static final IColorConstant DELAY_BACKGROUND = AddActorFeature.ACTOR_FOREGROUND;
+
+  private static final int DEFAULT_WIDTH = DELAY_SIZE;
+
+  private static final int DEFAULT_HEIGHT = DELAY_SIZE;
 
   /**
    * The default constructor for {@link AddDelayFeature}.
@@ -99,7 +108,7 @@ public class AddDelayFeature extends AbstractCustomFeature {
    */
   @Override
   public String getName() {
-    return "Add Delay";
+    return FEATURE_NAME;
   }
 
   /*
@@ -109,93 +118,104 @@ public class AddDelayFeature extends AbstractCustomFeature {
    */
   @Override
   public String getDescription() {
-    return "Add a Delay to the Fifo";
+    return FEATURE_DESCRIPTION;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
-   * ICustomContext)
+   * @see org.eclipse.graphiti.func.IAdd#canAdd(org.eclipse.graphiti.features.context.IAddContext)
    */
   @Override
-  public boolean canExecute(final ICustomContext context) {
-    // allow if exactly one pictogram element
-    // representing an Fifo is selected
-    boolean ret = false;
-    final PictogramElement[] pes = context.getPictogramElements();
-    if ((pes != null) && (pes.length == 1)) {
-      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if (bo instanceof Fifo && ((Fifo) bo).getDelay() == null) {
-        // Check that the Fifo has no existing delay
-        ret = true;
-      }
-    }
-    return ret;
+  public boolean canAdd(final IAddContext context) {
+    // Check that the user wants to add a Delay to the Diagram
+    return (context.getNewObject() instanceof Delay) && (context.getTargetContainer() instanceof Diagram);
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.eclipse.graphiti.features.custom.ICustomFeature#execute(org.eclipse.graphiti.features.context.ICustomContext)
+   * @see org.eclipse.graphiti.func.IAdd#add(org.eclipse.graphiti.features.context.IAddContext)
    */
   @Override
-  public void execute(final ICustomContext context) {
-    // Recheck if the execution is possible (probably useless)
-    if (!canExecute(context)) {
-      return;
+  public PictogramElement add(final IAddContext context) {
+
+    final PictogramElement containerShape = super.add(context);
+
+    final ChopboxAnchor cba = (ChopboxAnchor) GraphitiUi.getPeService()
+        .getChopboxAnchor((AnchorContainer) containerShape);
+    final Delay addedDelay = (Delay) context.getNewObject();
+    final FreeFormConnection connection = (FreeFormConnection) context.getTargetConnection();
+
+    if (connection != null) {
+
+      final int posX = context.getX();
+      final int posY = context.getY();
+
+      // Connect the polyline to the delay appropriately
+      connectDelayToFifo(connection, addedDelay.getContainingFifo(), cba, posX, posY);
     }
-    this.createdPEs = new LinkedList<>();
-    // Get the Fifo
-    final PictogramElement[] pes = context.getPictogramElements();
-    final FreeFormConnection connection = (FreeFormConnection) pes[0];
-    final Fifo fifo = (Fifo) getBusinessObjectForPictogramElement(connection);
 
-    // Create the Delay and add it to the Fifo
-    final Delay delay = PiMMUserFactory.instance.createDelay();
-    fifo.setDelay(delay);
-    delay.setName(delay.getId());
-    delay.getActor().setName(delay.getId());
+    return containerShape;
+  }
 
-    final PiGraph graph = fifo.getContainingPiGraph();
-    graph.addDelay(delay);
+  @Override
+  void createConfigurableShape(IAddContext context, ContainerShape containerShape) {
 
-    // Get the GaService
+    final Delay addedDelay = (Delay) context.getNewObject();
     final IGaService gaService = Graphiti.getGaService();
-    // Get the PeCreateService
-    final IPeCreateService peCreateService = Graphiti.getPeCreateService();
 
-    // Get the target Diagram
-    final Diagram targetDiagram = getDiagram();
-    final ContainerShape containerShape = peCreateService.createContainerShape(targetDiagram, true);
+    final int width = getDefaultWidth();
+    final int height = getDefaultHeight();
 
-    // Create a graphical representation for the Delay
-    Ellipse ellipse;
-    ellipse = gaService.createEllipse(containerShape);
+    final Ellipse ellipse = gaService.createEllipse(containerShape);
     ellipse.setBackground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
     ellipse.setForeground(manageColor(AddActorFeature.ACTOR_FOREGROUND));
     ellipse.setLineWidth(1);
     ellipse.setLineVisible(false);
     gaService.setLocationAndSize(ellipse, context.getX() - (AddDelayFeature.DELAY_SIZE / 2),
-        context.getY() - (AddDelayFeature.DELAY_SIZE / 2), AddDelayFeature.DELAY_SIZE, AddDelayFeature.DELAY_SIZE);
-    link(containerShape, delay);
-    this.createdPEs.add(containerShape);
+        context.getY() - (AddDelayFeature.DELAY_SIZE / 2), width, height);
 
-    // Add a ChopBoxAnchor for the Delay
-    final ChopboxAnchor cba = peCreateService.createChopboxAnchor(containerShape);
-    link(cba, delay);
-    this.createdPEs.add(cba);
+    // if added Class has no resource we add it to the resource
+    // of the graph
+    if (addedDelay.eResource() == null) {
+      final PiGraph graph = (PiGraph) getBusinessObjectForPictogramElement(getDiagram());
+      graph.addDelay(addedDelay);
+    }
 
-    final int posX = context.getX();
-    final int posY = context.getY();
+    // create link and wire it
+    link(containerShape, addedDelay);
+  }
 
-    // Connect the polyline to the delay appropriately
-    connectDelayToFifo(connection, fifo, cba, posX, posY);
+  @Override
+  void createConfigurableText(IAddContext context, ContainerShape containerShape) {
+    // No actor text
+  }
 
-    // Select the whole fifo
-    getDiagramBehavior().getDiagramContainer().setPictogramElementForSelection(containerShape);
+  @Override
+  int getDefaultWidth() {
+    return DEFAULT_WIDTH;
+  }
 
+  @Override
+  int getDefaultHeight() {
+    return DEFAULT_HEIGHT;
+  }
+
+  @Override
+  IColorConstant getForegroundColor() {
+    return DELAY_FOREGROUND;
+  }
+
+  @Override
+  IColorConstant getBackgroundColor() {
+    return DELAY_BACKGROUND;
+  }
+
+  @Override
+  IColorConstant getTextForegroundColor() {
+    // No text for delay
+    return null;
   }
 
   /**
@@ -285,7 +305,4 @@ public class AddDelayFeature extends AbstractCustomFeature {
     connection.setStart(cba);
   }
 
-  public List<PictogramElement> getCreatedPEs() {
-    return this.createdPEs;
-  }
 }

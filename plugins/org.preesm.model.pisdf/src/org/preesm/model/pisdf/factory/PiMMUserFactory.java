@@ -39,7 +39,6 @@ package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -47,6 +46,7 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
@@ -61,12 +61,15 @@ import org.preesm.model.pisdf.DelayLinkedExpression;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
+import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.LongExpression;
-import org.preesm.model.pisdf.MalleableParameter;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
@@ -84,44 +87,27 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     // forbid instantiation
   }
 
+  @Override
   public <T extends EObject> T copyWithHistory(final T eObject) {
     final T copy = PreesmUserFactory.super.copyWithHistory(eObject);
 
-    if (copy instanceof PiGraph) {
+    if (copy instanceof final PiGraph piGraph) {
 
       // Check if the PiGraph has an observer
-      boolean hasAnObserver = false;
-      for (Adapter adapt : ((PiGraph) copy).eAdapters()) {
-        if (adapt instanceof GraphObserver) {
-          hasAnObserver = true;
-        }
-      }
-      if (!hasAnObserver) {
+      if (piGraph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
         copy.eAdapters().add(GraphObserver.getInstance());
       }
 
       // Check for all subgraph in this PiGraph and its subgraph
-      for (PiGraph graph : ((PiGraph) copy).getAllChildrenGraphs()) {
-        hasAnObserver = false;
-        for (Adapter adapt : graph.eAdapters()) {
-          if (adapt instanceof GraphObserver) {
-            hasAnObserver = true;
-          }
-        }
-        if (!hasAnObserver) {
+      for (final PiGraph graph : piGraph.getAllChildrenGraphs()) {
+        if (graph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
           graph.eAdapters().add(GraphObserver.getInstance());
         }
       }
 
       // Check for all fifos in this PiGraph and its subgraph
-      for (Fifo fifo : ((PiGraph) copy).getAllFifos()) {
-        hasAnObserver = false;
-        for (Adapter adapt : fifo.eAdapters()) {
-          if (adapt instanceof GraphObserver) {
-            hasAnObserver = true;
-          }
-        }
-        if (!hasAnObserver) {
+      for (final Fifo fifo : piGraph.getAllFifos()) {
+        if (fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
           fifo.eAdapters().add(GraphObserver.getInstance());
         }
       }
@@ -138,10 +124,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final PiGraph copyGraph = this.copyWithHistory(origGraph);
 
     // we copy all known observer to all relevant objects (here for PiGraph)
-    List<PiGraph> allPiGraph = new ArrayList<>();
+    final List<PiGraph> allPiGraph = new ArrayList<>();
     allPiGraph.add(copyGraph);
     while (!allPiGraph.isEmpty()) {
-      PiGraph pg = allPiGraph.remove(0);
+      final PiGraph pg = allPiGraph.remove(0);
       allPiGraph.addAll(pg.getChildrenGraphs());
     }
 
@@ -229,6 +215,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return createParameter(null, 0);
   }
 
+  public Parameter createParameter(final String name) {
+    return createParameter(name, 0);
+  }
+
   /**
    *
    */
@@ -241,15 +231,19 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   @Override
-  public MalleableParameter createMalleableParameter() {
-    return createMalleableParameter(null, 0);
+  public MoldableParameter createMoldableParameter() {
+    return createMoldableParameter(null, 0);
+  }
+
+  public MoldableParameter createMoldableParameter(final String name) {
+    return createMoldableParameter(name, 0);
   }
 
   /**
-   * 
+   *
    */
-  public MalleableParameter createMalleableParameter(final String name, final long evaluate) {
-    final MalleableParameter res = super.createMalleableParameter();
+  public MoldableParameter createMoldableParameter(final String name, final long evaluate) {
+    final MoldableParameter res = super.createMoldableParameter();
     final Expression createExpression = createExpression(evaluate);
     res.setExpression(createExpression);
     res.setName(name);
@@ -387,6 +381,30 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public BroadcastActor createBroadcastActor(final String name) {
+    final BroadcastActor res = super.createBroadcastActor();
+    res.setName(name);
+    return res;
+  }
+
+  public ForkActor createForkActor(final String name) {
+    final ForkActor res = super.createForkActor();
+    res.setName(name);
+    return res;
+  }
+
+  public JoinActor createJoinActor(final String name) {
+    final JoinActor res = super.createJoinActor();
+    res.setName(name);
+    return res;
+  }
+
+  public RoundBufferActor createRoundBufferActor(final String name) {
+    final RoundBufferActor res = super.createRoundBufferActor();
+    res.setName(name);
+    return res;
+  }
+
   public Expression createExpression() {
     return createExpression(0L);
   }
@@ -422,11 +440,23 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public DataInputInterface createDataInputInterface(final String name) {
+    final DataInputInterface res = createDataInputInterface();
+    res.setName(name);
+    return res;
+  }
+
   @Override
   public DataOutputInterface createDataOutputInterface() {
     final DataOutputInterface res = super.createDataOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  public DataOutputInterface createDataOutputInterface(final String name) {
+    final DataOutputInterface res = createDataOutputInterface();
+    res.setName(name);
     return res;
   }
 
@@ -438,12 +468,24 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
+  public ConfigInputInterface createConfigInputInterface(final String name) {
+    final ConfigInputInterface res = createConfigInputInterface();
+    res.setName(name);
+    return res;
+  }
+
   @Override
   public ConfigOutputInterface createConfigOutputInterface() {
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
     port.setExpression(1L);
     res.getDataInputPorts().add(port);
+    return res;
+  }
+
+  public ConfigOutputInterface createConfigOutputInterface(final String name) {
+    final ConfigOutputInterface res = createConfigOutputInterface();
+    res.setName(name);
     return res;
   }
 

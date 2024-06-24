@@ -74,17 +74,14 @@ public class UpdateActorFeature extends UpdateAbstractVertexFeature {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.ui.pisdf.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
+   * @see org.preesm.ui.pisdf.features.UpdateAbstractVertexFeature#updateNeeded(org.eclipse.graphiti.features.context.
    * IUpdateContext)
    */
   @Override
   public IReason updateNeeded(final IUpdateContext context) {
 
     // Check if a name update is required
-    final IReason ret = super.updateNeeded(context);
-
-    return ret;
+    return super.updateNeeded(context);
   }
 
   /*

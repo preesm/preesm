@@ -135,7 +135,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
       parentVertex.setId(vtxBeans.getValue("originalId").toString());
     }
 
-    final String vtxType = vtxBeans.getValue(ImplementationPropertyNames.Vertex_vertexType).toString();
+    final String vtxType = vtxBeans.getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).toString();
     vertex.setKind(vtxType);
 
     final Element vertexElt = createNode(parentELement, vertex.getId());
@@ -143,7 +143,7 @@ public class ImplementationExporter extends GMLExporter<DAGVertex, DAGEdge> {
 
     if (vertex instanceof TransferVertex) {
       // Adding route step to the node
-      final SlamRouteStep routeStep = vtxBeans.getValue(ImplementationPropertyNames.SendReceive_routeStep);
+      final SlamRouteStep routeStep = vtxBeans.getValue(ImplementationPropertyNames.SEND_RECEIVE_ROUTE_STEP);
       // Add the Operator_address key
       if (routeStep != null) {
         String memAddress = null;

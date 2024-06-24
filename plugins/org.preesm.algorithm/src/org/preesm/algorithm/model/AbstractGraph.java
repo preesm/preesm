@@ -85,7 +85,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
    * Creates a new Instance of Abstract graph with the given factory.
    *
    */
-  public AbstractGraph(final Supplier<E> edgeSupplier) {
+  protected AbstractGraph(final Supplier<E> edgeSupplier) {
     super(null, edgeSupplier, false);
     this.properties = new PropertyBean();
     this.observers = new ArrayList<>();
@@ -152,15 +152,15 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   /**
    * Add the given variable to his graph parameter set.
    *
-   * @param var
+   * @param variable
    *          The variable to add
    */
-  public void addVariable(final Variable var) {
+  public void addVariable(final Variable variable) {
     if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
       setVariableSet(new VariableSet());
     }
-    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).addVariable(var);
-    var.setExpressionSolver(this);
+    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).addVariable(variable);
+    variable.setExpressionSolver(this);
   }
 
   @Override
@@ -187,7 +187,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     this.hasChanged = true;
   }
 
-  public ArgumentFactory getArgumentFactory(final V v) {
+  public ArgumentFactory getArgumentFactory() {
     return new ArgumentFactory();
   }
 
@@ -358,12 +358,11 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       if (this.getVariables() != null /*
                                        * && !(caller instanceof Argument)
                                        */) {
-        for (final String var : this.getVariables().keySet()) {
-          if ((this.getVariable(var) == caller) || this.getVariable(var).getValue().equals(expression)) {
+        for (final String variable : this.getVariables().keySet()) {
+          if ((this.getVariable(variable) == caller) || this.getVariable(variable).getValue().equals(expression)) {
             break;
-          } else {
-            jep.addVariable(var, this.getVariable(var).longValue());
           }
+          jep.addVariable(variable, this.getVariable(variable).longValue());
         }
       }
       if ((this.getParameters() != null) && (this.getParentVertex() != null)) {
@@ -371,11 +370,10 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       }
       final Node expressionMainNode = jep.parse(expression);
       final Object result = jep.evaluate(expressionMainNode);
-      if (result instanceof Number) {
-        resultValue = ((Number) result).longValue();
-      } else {
+      if (!(result instanceof Number)) {
         throw (new ExpressionEvaluationException("Not a numerical expression"));
       }
+      resultValue = ((Number) result).longValue();
     } catch (final Exception e) {
       throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }

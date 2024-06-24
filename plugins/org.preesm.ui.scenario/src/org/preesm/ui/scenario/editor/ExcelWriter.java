@@ -56,7 +56,7 @@ public abstract class ExcelWriter implements SelectionListener {
   /**
    * Instantiates a new excel writer.
    */
-  public ExcelWriter() {
+  protected ExcelWriter() {
     super();
   }
 

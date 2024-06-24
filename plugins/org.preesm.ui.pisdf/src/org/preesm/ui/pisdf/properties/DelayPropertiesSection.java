@@ -60,7 +60,7 @@ import org.preesm.ui.pisdf.features.SetPersistenceLevelFeature;
 
 /**
  * GUI properties section of Delays.
- * 
+ *
  * @author ahonorat
  */
 public class DelayPropertiesSection extends ParameterizablePropertiesSection {
@@ -87,7 +87,7 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
     }
 
     data = new FormData();
-    data.left = new FormAttachment(0, this.FIRST_COLUMN_WIDTH);
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(25, 0);
     data.top = new FormAttachment(this.lblValueObj);
     this.persistenceComboLevel.setLayoutData(data);
@@ -111,25 +111,16 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
             .getCustomFeatures(context);
 
         for (final ICustomFeature feature : setDelayPersistenceFeature) {
-          if (feature instanceof SetPersistenceLevelFeature) {
-            PersistenceLevel pl = null;
-            switch (((CCombo) e.getSource()).getSelectionIndex()) {
-              case PersistenceLevel.PERMANENT_VALUE:
-                pl = PersistenceLevel.PERMANENT;
-                break;
-              case PersistenceLevel.LOCAL_VALUE:
-                pl = PersistenceLevel.LOCAL;
-                break;
-              case PersistenceLevel.NONE_VALUE:
-                pl = PersistenceLevel.NONE;
-                break;
-              default:
-                break;
+          if (feature instanceof final SetPersistenceLevelFeature setPLFeature) {
+            final PersistenceLevel pl = switch (((CCombo) e.getSource()).getSelectionIndex()) {
+              case PersistenceLevel.PERMANENT_VALUE -> PersistenceLevel.PERMANENT;
+              case PersistenceLevel.LOCAL_VALUE -> PersistenceLevel.LOCAL;
+              case PersistenceLevel.NONE_VALUE -> PersistenceLevel.NONE;
+              default -> null;
+            };
+            setPLFeature.setCurrentPL(pl);
 
-            }
-            ((SetPersistenceLevelFeature) feature).setCurrentPL(pl);
-
-            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(setPLFeature, context);
             // final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             // final ILayoutFeature layoutFeature =
             // getDiagramTypeProvider().getFeatureProvider().getLayoutFeature(contextLayout);
@@ -142,6 +133,7 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
 
       @Override
       public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
       }
     });
 
@@ -157,13 +149,12 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
     final PictogramElement pe = getSelectedPictogramElement();
 
     if (pe != null) {
-      EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
+      final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
       if (bo == null) {
         return;
       }
 
-      if (bo instanceof Delay) {
-        final Delay delay = (Delay) bo;
+      if (bo instanceof final Delay delay) {
         if (!delay.getSizeExpression().getExpressionAsString().equals(txtExpression.getText())) {
           setNewExpression(delay, txtExpression.getText());
         }
@@ -183,61 +174,64 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
   @Override
   public void refresh() {
     final PictogramElement pictogramElement = getSelectedPictogramElement();
-    String elementName = null;
-    Expression elementValueExpression = null;
+    String elementName;
+    Expression elementValueExpression;
     final boolean expressionHasFocus = txtExpression.isFocusControl();
     final Point selelection = txtExpression.getSelection();
     txtExpression.setEnabled(false);
 
-    if (pictogramElement != null) {
-      final Object businessObject = Graphiti.getLinkService()
-          .getBusinessObjectForLinkedPictogramElement(pictogramElement);
-      if (businessObject == null) {
-        return;
-      }
+    if (pictogramElement == null) {
+      return;
+    }
 
-      if (businessObject instanceof Delay) {
-        final Fifo fifo = ((Delay) businessObject).getContainingFifo();
-        elementName = fifo.getId();
-        elementValueExpression = fifo.getDelay().getSizeExpression();
+    final Object businessObject = Graphiti.getLinkService()
+        .getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-        this.persistenceComboLevel.select(((Delay) businessObject).getLevel().getValue());
-        this.persistenceComboLevel.setVisible(true);
-        this.persistenceComboLevel.setEnabled(true);
-        this.persistenceLabelLevel.setVisible(true);
-        this.persistenceLabelLevel.setEnabled(true);
+    if (businessObject == null) {
+      return;
+    }
 
-        lblNameObj.setText(elementName == null ? " " : elementName);
+    if (!(businessObject instanceof final Delay delay)) {
+      throw new UnsupportedOperationException();
+    }
 
-        if (elementValueExpression != null) {
-          this.txtExpression.setEnabled(true);
+    final Fifo fifo = delay.getContainingFifo();
+    elementName = fifo.getId();
+    elementValueExpression = fifo.getDelay().getSizeExpression();
 
-          final String eltExprString = elementValueExpression.getExpressionAsString();
-          if (txtExpression.getText().compareTo(eltExprString) != 0) {
-            txtExpression.setText(eltExprString);
-          }
+    this.persistenceComboLevel.select(delay.getLevel().getValue());
+    this.persistenceComboLevel.setVisible(true);
+    this.persistenceComboLevel.setEnabled(true);
+    this.persistenceLabelLevel.setVisible(true);
+    this.persistenceLabelLevel.setEnabled(true);
 
-          try {
-            // try out evaluating the expression
-            final long evaluate = elementValueExpression.evaluate();
-            lblValueObj.setText(Long.toString(evaluate));
-            txtExpression.setBackground(new Color(null, 255, 255, 255));
-          } catch (final ExpressionEvaluationException e) {
-            // otherwise print error message and put red background
-            lblValueObj.setText("Error : " + e.getMessage());
-            txtExpression.setBackground(new Color(null, 240, 150, 150));
-          }
+    lblNameObj.setText(elementName == null ? " " : elementName);
 
-          if (expressionHasFocus) {
-            txtExpression.setFocus();
-            txtExpression.setSelection(selelection);
-          }
-        }
+    if (elementValueExpression == null) {
+      return;
+    }
 
-      } else {
-        throw new UnsupportedOperationException();
-      }
+    this.txtExpression.setEnabled(true);
 
+    final String eltExprString = elementValueExpression.getExpressionAsString();
+    if (txtExpression.getText().compareTo(eltExprString) != 0) {
+      txtExpression.setText(eltExprString);
+    }
+
+    try {
+      // try out evaluating the expression
+      final long evaluate = elementValueExpression.evaluate();
+      lblValueObj.setText(Long.toString(evaluate));
+      txtExpression.setBackground(new Color(null, 255, 255, 255));
+    } catch (final ExpressionEvaluationException e) {
+      // otherwise print error message and put red background
+      lblValueObj.setText("Error : " + e.getMessage());
+      txtExpression.setBackground(new Color(null, 240, 150, 150));
+    }
+
+    if (expressionHasFocus) {
+      txtExpression.setFocus();
+      txtExpression.setSelection(selelection);
     }
   }
 

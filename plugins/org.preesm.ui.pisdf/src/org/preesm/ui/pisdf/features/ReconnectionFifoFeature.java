@@ -46,7 +46,6 @@ import org.eclipse.graphiti.features.context.impl.ReconnectionContext;
 import org.eclipse.graphiti.features.impl.DefaultReconnectionFeature;
 import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.ContainerShape;
-import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -94,22 +93,18 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature implemen
     final Port oldPort = getPort(context.getOldAnchor());
     if ((newPort != null) && newPort.getClass().equals(oldPort.getClass())) {
       // Check that no Fifo is connected to the ports
-      if (newPort instanceof DataOutputPort) {
-        return ((DataOutputPort) newPort).getOutgoingFifo() == null;
+      if (newPort instanceof final DataOutputPort dop) {
+        return dop.getOutgoingFifo() == null;
       }
 
-      if (newPort instanceof DataInputPort) {
-        return ((DataInputPort) newPort).getIncomingFifo() == null;
+      if (newPort instanceof final DataInputPort dip) {
+        return dip.getIncomingFifo() == null;
       }
     }
 
-    // Also true if the TargetPictogramElement is a vertex that can create
-    // ports
-    if (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(),
-        oldPort.getKind()) != null) {
-      return true;
-    }
-    return false;
+    // Also true if the TargetPictogramElement is a vertex that can create ports
+    return (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(), getFeatureProvider(),
+        oldPort.getKind()) != null);
   }
 
   /**
@@ -122,8 +117,8 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature implemen
   protected Port getPort(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof Port) {
-        return (Port) obj;
+      if (obj instanceof final Port port) {
+        return port;
       }
     }
     return null;
@@ -158,19 +153,19 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature implemen
     final Port newPort = getPort(context.getNewAnchor());
     final Port oldPort = getPort(context.getOldAnchor());
 
-    if (oldPort instanceof DataOutputPort) {
-      final Fifo fifo = ((DataOutputPort) oldPort).getOutgoingFifo();
+    if (oldPort instanceof final DataOutputPort oldDop) {
+      final Fifo fifo = oldDop.getOutgoingFifo();
       fifo.setSourcePort((DataOutputPort) newPort);
     }
-    if (oldPort instanceof DataInputPort) {
-      final Fifo fifo = ((DataInputPort) oldPort).getIncomingFifo();
+    if (oldPort instanceof final DataInputPort oldDip) {
+      final Fifo fifo = oldDip.getIncomingFifo();
       fifo.setTargetPort((DataInputPort) newPort);
     }
 
     // Call the move feature of the anchor owner to layout the connection
     final ContainerShape cs = (ContainerShape) context.getNewAnchor().getReferencedGraphicsAlgorithm()
         .getPictogramElement();
-    layoutShapeConnectedToBendpoints(cs, this, new ArrayList<FreeFormConnection>());
+    layoutShapeConnectedToBendpoints(cs, this, new ArrayList<>());
 
     this.hasDoneChanges = true;
   }
@@ -212,7 +207,6 @@ public class ReconnectionFifoFeature extends DefaultReconnectionFeature implemen
     if (newPort == null) {
       ((ReconnectionContext) context).setNewAnchor(context.getOldAnchor());
     }
-    return;
   }
 
 }

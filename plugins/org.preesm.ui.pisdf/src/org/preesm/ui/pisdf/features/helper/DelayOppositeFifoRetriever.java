@@ -46,7 +46,7 @@ import org.preesm.model.pisdf.Fifo;
 
 /**
  * This interface provides a way to retrieve Fifo opposite connection when there is a delay on it.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -54,7 +54,7 @@ public interface DelayOppositeFifoRetriever {
 
   /**
    * Retrieve the target connection when fifo contains a delay
-   * 
+   *
    * @param delay
    *          Delay object.
    * @param delayFeature
@@ -70,10 +70,10 @@ public interface DelayOppositeFifoRetriever {
     Connection targetConnection = null;
     for (final Connection connection : outgoingConnections) {
       // copy of AbstractFeatureImpl code since getBusinessObjectForPictogramElement is protected
-      Object obj = af.getFeatureProvider().getBusinessObjectForPictogramElement(connection);
+      final Object obj = af.getFeatureProvider().getBusinessObjectForPictogramElement(connection);
       // With setter delay, there can be multiple FIFOs
       // We have to choose the correct one
-      if (obj instanceof Fifo && (((Fifo) obj).getDelay() == delay) && connection != connec) {
+      if (obj instanceof final Fifo fifo && (fifo.getDelay() == delay) && connection != connec) {
         targetConnection = connection;
         break;
       }
@@ -83,7 +83,7 @@ public interface DelayOppositeFifoRetriever {
 
   /**
    * Retrieve the source connection when fifo contains a delay
-   * 
+   *
    * @param delay
    *          Delay object.
    * @param delayFeature
@@ -99,10 +99,10 @@ public interface DelayOppositeFifoRetriever {
     Connection sourceConnection = null;
     for (final Connection connection : incomingConnections) {
       // copy of AbstractFeatureImpl code since getBusinessObjectForPictogramElement is protected
-      Object obj = af.getFeatureProvider().getBusinessObjectForPictogramElement(connection);
+      final Object obj = af.getFeatureProvider().getBusinessObjectForPictogramElement(connection);
       // With setter delay, there can be multiple FIFOs
       // We have to choose the correct one
-      if (obj instanceof Fifo && (((Fifo) obj).getDelay() == delay) && connection != connec) {
+      if (obj instanceof final Fifo fifo && (fifo.getDelay() == delay) && connection != connec) {
         sourceConnection = connection;
         break;
       }

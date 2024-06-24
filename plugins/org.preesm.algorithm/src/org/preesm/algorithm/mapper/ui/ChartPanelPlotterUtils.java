@@ -10,14 +10,18 @@ import org.jfree.ui.RefineryUtilities;
 
 /**
  * Group simple methods to plot a ChartPanel.
- * 
+ *
  * @author ahonorat
  */
 public abstract class ChartPanelPlotterUtils {
 
+  private ChartPanelPlotterUtils() {
+    // Forbids instantiation
+  }
+
   /**
    * Adds the ChartPanel to the frame
-   * 
+   *
    * @param frame
    *          the window frame
    * @param cp
@@ -32,7 +36,7 @@ public abstract class ChartPanelPlotterUtils {
 
   /**
    * Listener in order to plot a ChartPanel in an external window if a click occurred on a SWT widget.
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -42,7 +46,7 @@ public abstract class ChartPanelPlotterUtils {
 
     /**
      * Builds the listener.
-     * 
+     *
      * @param cp
      *          The chart panel to plot in an external window, if click.
      */
@@ -52,7 +56,7 @@ public abstract class ChartPanelPlotterUtils {
 
     @Override
     public void widgetSelected(final SelectionEvent e) {
-      Frame frame = new JFrame("Gantt Chart Plotter");
+      final Frame frame = new JFrame("Gantt Chart Plotter");
       ((JFrame) frame).setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
       RefineryUtilities.centerFrameOnScreen(frame);
 

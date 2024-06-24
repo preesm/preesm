@@ -13,15 +13,17 @@ import org.preesm.model.pisdf.util.FifoCycleDetector;
 
 /**
  * Class to provide a popup checking if a PiSDF graph is live, that is when the SRSDF is acyclic.
- * 
+ *
  * @author ahonorat
  */
 public class PiSDFLivenessCheckerPopup extends AbstractGenericMultiplePiHandler {
 
+  private static final String POPUP_TITLE = "Checker of PiGraph liveness";
+
   @Override
   public void processPiSDF(PiGraph pigraph, IProject iProject, Shell shell) {
 
-    PreesmLogger.getLogger().log(Level.INFO, "Checking liveness for " + pigraph.getName());
+    PreesmLogger.getLogger().info(() -> "Checking liveness for " + pigraph.getName());
 
     final boolean locallyStatic = pigraph.isLocallyStatic();
     if (!locallyStatic) {
@@ -34,7 +36,7 @@ public class PiSDFLivenessCheckerPopup extends AbstractGenericMultiplePiHandler 
     final FifoCycleDetector fcdFlat = new FifoCycleDetector(true);
     fcdFlat.doSwitch(flatOptimized);
     if (!fcdFlat.cyclesDetected()) {
-      MessageDialog.openInformation(shell, "Checker of PiGraph liveness", "The graph is acyclic, so always live.");
+      MessageDialog.openInformation(shell, POPUP_TITLE, "The graph is acyclic, so always live.");
       return;
     }
     // if flat graph is not acyclic, check the srdag
@@ -42,10 +44,10 @@ public class PiSDFLivenessCheckerPopup extends AbstractGenericMultiplePiHandler 
     final FifoCycleDetector fcdSrdag = new FifoCycleDetector(true);
     fcdSrdag.doSwitch(srdag);
     if (!fcdSrdag.cyclesDetected()) {
-      MessageDialog.openInformation(shell, "Checker of PiGraph liveness",
+      MessageDialog.openInformation(shell, POPUP_TITLE,
           "The corresponding SRSDF graph is acyclic, so current PiGraph is live.");
     } else {
-      MessageDialog.openInformation(shell, "Checker of PiGraph liveness",
+      MessageDialog.openInformation(shell, POPUP_TITLE,
           "The corresponding SRSDF graph contains cycles, so current PiGraph is NOT live!");
     }
 

@@ -47,98 +47,102 @@ import org.preesm.algorithm.model.dag.DAGEdge;
  */
 public final class ImplementationPropertyNames {
 
+  private ImplementationPropertyNames() {
+    // Forbids instantiation
+  }
+
   // Graph properties
   /**
    * See AbcType for available ABC types.
    */
-  public static final String Graph_AbcReferenceType = "AbcReferenceType";
+  public static final String GRAPH_ABC_REFERENCE_TYPE = "AbcReferenceType";
 
   /**
    * See EdgeSchedType for available edge scheduling types.
    */
-  public static final String Graph_EdgeSchedReferenceType = "EdgeSchedReferenceType";
+  public static final String GRAPH_EDGE_SCHED_REFERENCE_TYPE = "EdgeSchedReferenceType";
 
   /**
    * SDFGraph object containing the reference graph for this dag graph.
    */
-  public static final String Graph_SdfReferenceGraph = "SdfReferenceGraph";
+  public static final String GRAPH_SDF_REFERENCE_GRAPH = "SdfReferenceGraph";
 
   // Vertex properties
   /**
    * See {@link VertexType} for available vertex types.
    */
-  public static final String Vertex_vertexType = "vertexType";
+  public static final String VERTEX_VERTEX_TYPE = "vertexType";
 
   /**
    * Operator on which the vertex is mapped.
    */
-  public static final String Vertex_Operator = "Operator";
+  public static final String VERTEX_OPERATOR = "Operator";
 
   /**
    * Operator on which the vertex can be mapped.
    */
-  public static final String Vertex_Available_Operators = "availableOperators";
+  public static final String VERTEX_AVAILABLE_OPERATORS = "availableOperators";
 
   /**
    * OperatorDefinition of the vertex operator.
    */
-  public static final String Vertex_OperatorDef = "OperatorDef";
+  public static final String VERTEX_OPERATOR_DEF = "OperatorDef";
 
   /**
    * integer equal to the total order of the vertex.
    */
-  public static final String Vertex_schedulingOrder = "schedulingOrder";
+  public static final String VERTEX_SCHEDULING_ORDER = "schedulingOrder";
 
   // Vertex of type task properties
   /**
    * integer equal to duration of the task.
    */
-  public static final String Task_duration = "duration";
+  public static final String TASK_DURATION = "duration";
 
   /**
    * Id of the original vertex with no hierarchy info.
    */
-  public static final String Vertex_originalVertexId = "originalId";
+  public static final String VERTEX_ORIGINAL_VERTEX_ID = "originalId";
 
   /**
    * Starting Time of the Task in the simulation.
    */
-  public static final String Start_time = "TaskStartTime";
+  public static final String START_TIME = "TaskStartTime";
 
   // Vertex of type send or receive properties
   /** {@link DAGEdge} that corresponds to a Transfer Vertex. */
-  public static final String SendReceive_correspondingDagEdge = "correspondingDagEdge";
+  public static final String SEND_RECEIVE_CORRESPONDING_DAG_EDGE = "correspondingDagEdge";
 
   /**
    * Route step transfering the data.
    */
-  public static final String SendReceive_routeStep = "routeStep";
+  public static final String SEND_RECEIVE_ROUTE_STEP = "routeStep";
 
   /**
    * integer with the data size.
    */
-  public static final String SendReceive_dataSize = "dataSize";
+  public static final String SEND_RECEIVE_DATA_SIZE = "dataSize";
 
   /**
    * String with the operator address.
    */
-  public static final String SendReceive_Operator_address = "Operator_address";
+  public static final String SEND_RECEIVE_OPERATOR_ADDRESS = "Operator_address";
 
   /**
    * {@link OperatorDefinition} of the operator executing the send or receive.
    */
-  public static final String SendReceive_OperatorDef = "OperatorDef";
+  public static final String SEND_RECEIVE_OPERATOR_DEF = "OperatorDef";
 
   // Vertex of type send properties
   /**
    * Name of the sender vertex.
    */
-  public static final String Send_senderGraphName = "senderGraphName";
+  public static final String SEND_SENDER_GRAPH_NAME = "senderGraphName";
 
   // Vertex of type receive properties
   /**
    * Name of the receiver vertex.
    */
-  public static final String Receive_receiverGraphName = "receiverGraphName";
+  public static final String RECEIVE_RECEIVER_GRAPH_NAME = "receiverGraphName";
 
 }

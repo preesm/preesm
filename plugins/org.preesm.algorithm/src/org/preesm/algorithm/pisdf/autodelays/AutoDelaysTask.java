@@ -36,6 +36,7 @@
 package org.preesm.algorithm.pisdf.autodelays;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -49,7 +50,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.ui.IEditorInput;
@@ -113,10 +113,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Works only on homogeneous architectures. The heuristic will perform a search of all simple cycles,"
         + " so the task may take a long time to run if many cycles are present.",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = {
         @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
@@ -162,7 +163,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
-    int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
+    final int nbCore = architecture.getProcessingElements().get(0).getInstances().size();
     if (!graph.getChildrenGraphs().isEmpty()) {
       throw new PreesmRuntimeException("This task must be called with a flatten PiMM graph, abandon.");
     }
@@ -171,29 +172,29 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
-    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
+    PreesmLogger.getLogger().info(() -> "Found " + nbCore + " cores.");
 
     final String selecStr = parameters.get(SELEC_PARAM_NAME);
     int selec = nbCore;
     try {
-      int parse = Integer.parseInt(selecStr);
+      final int parse = Integer.parseInt(selecStr);
       if (parse < 1) {
         throw new PreesmRuntimeException(GENERIC_MAXII_ERROR + selecStr);
       }
       selec = parse;
-    } catch (NumberFormatException e) {
+    } catch (final NumberFormatException e) {
       throw new PreesmRuntimeException(GENERIC_MAXII_ERROR + selecStr, e);
     }
 
     final String maxiiStr = parameters.get(MAXII_PARAM_NAME);
     int maxii = nbCore - 1;
     try {
-      int parse = Integer.parseInt(maxiiStr);
+      final int parse = Integer.parseInt(maxiiStr);
       if (parse < 0) {
         throw new PreesmRuntimeException(GENERIC_MAXII_ERROR + maxiiStr);
       }
       maxii = Math.min(parse, maxii);
-    } catch (NumberFormatException e) {
+    } catch (final NumberFormatException e) {
       throw new PreesmRuntimeException(GENERIC_MAXII_ERROR + maxiiStr, e);
     }
 
@@ -222,7 +223,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
   /**
    * Add delays on a flat graph, only if architecture is homogeneous.
-   * 
+   *
    * @param graph
    *          Graph to add delays on.
    * @param architecture
@@ -259,19 +260,18 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     // BRV and timings
 
-    PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
 
-    Map<AbstractVertex, Long> wcets = new HashMap<>();
+    final Map<AbstractVertex, Long> wcets = new HashMap<>();
     for (final Entry<AbstractVertex, Long> en : brv.entrySet()) {
       final AbstractVertex a = en.getKey();
-      AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
+      final AbstractVertex actor = PreesmCopyTracker.getOriginalSource(a);
       long wcetMin = Long.MAX_VALUE;
-      if (actor instanceof AbstractActor) {
+      if (actor instanceof final AbstractActor abstractActor) {
         for (final Component operatorDefinitionID : architecture.getProcessingElements()) {
-          final long timing = scenario.getTimings().evaluateExecutionTimeOrDefault((AbstractActor) actor,
-              operatorDefinitionID);
+          final long timing = scenario.getTimings().evaluateExecutionTimeOrDefault(abstractActor, operatorDefinitionID);
           if (timing < wcetMin) {
             wcetMin = timing;
           }
@@ -281,11 +281,12 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
       wcets.put(a, wcetMin);
     }
-    DescriptiveStatistics ds = new DescriptiveStatistics();
+
+    final DescriptiveStatistics ds = new DescriptiveStatistics();
     for (final Entry<AbstractVertex, Long> en : wcets.entrySet()) {
-      AbstractVertex av = en.getKey();
-      Long wcet = en.getValue();
-      Long rv = brv.get(av);
+      final AbstractVertex av = en.getKey();
+      final Long wcet = en.getValue();
+      final Long rv = brv.get(av);
       for (long i = 0; i < rv; i++) {
         ds.addValue(wcet);
       }
@@ -309,7 +310,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final Set<FifoAbstraction> forbiddenFifos = hlbd.getForbiddenFifos();
 
-    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalASAPranking(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanks = TopologicalRanking.topologicalAsapRanking(hlbd);
     // build intermediate list of actors per rank
     final SortedMap<Integer, Set<AbstractActor>> irRankActors = TopologicalRanking.mapRankActors(topoRanks, false, 0);
     // offset of one to ease some computations
@@ -322,51 +323,51 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final int selec = Math.min(nbPreCuts, maxRank - 1);
     final int maxii = Math.min(nbMaxCuts, maxRank - 1);
 
-    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalASAPrankingT(hlbd);
+    final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalAsapRankingT(hlbd);
     // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
     // beginning
     hlbd.allSourceActors.stream().forEach(x -> {
-      TopoVisit tv = topoRanksT.get(x);
+      final TopoVisit tv = topoRanksT.get(x);
       tv.rank = maxRank - 1;
     });
     final SortedMap<Integer,
         Set<AbstractActor>> irRankActorsT = TopologicalRanking.mapRankActors(topoRanksT, true, maxRank);
 
     final SortedMap<Integer, Long> rankWCETs = new TreeMap<>();
-    for (Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
-      AbstractActor aa = e.getKey();
-      TopoVisit tv = e.getValue();
-      long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
-      long prev = rankWCETs.getOrDefault(tv.rank, 0L);
+    for (final Entry<AbstractActor, TopoVisit> e : topoRanks.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final TopoVisit tv = e.getValue();
+      final long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
+      final long prev = rankWCETs.getOrDefault(tv.rank, 0L);
       rankWCETs.put(tv.rank, tWCET + prev);
     }
     // reorder topoRanksT with same order as topoRanks
-    for (Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
-      AbstractActor aa = e.getKey();
-      TopoVisit tv = e.getValue();
-      long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
-      int rank = maxRank - tv.rank;
-      long prev = rankWCETs.getOrDefault(rank, 0L);
+    for (final Entry<AbstractActor, TopoVisit> e : topoRanksT.entrySet()) {
+      final AbstractActor aa = e.getKey();
+      final TopoVisit tv = e.getValue();
+      final long tWCET = (long) Math.ceil((double) hlbd.minCycleBrv.get(aa) / nbCore) * wcets.get(aa);
+      final int rank = maxRank - tv.rank;
+      final long prev = rankWCETs.getOrDefault(rank, 0L);
       rankWCETs.put(rank, tWCET + prev);
 
     }
     // as loads are counted 2 times if one same rank, divide by 2
     // scale by the number of actors per rank (in order to expose parallelism)
     long totC = 0L;
-    for (Entry<Integer, Long> e : rankWCETs.entrySet()) {
-      int rank = e.getKey();
+    for (final Entry<Integer, Long> e : rankWCETs.entrySet()) {
+      final int rank = e.getKey();
       long load = e.getValue() / 2;
-      int size = (irRankActors.get(rank).size() + irRankActorsT.get(rank).size()) / 2;
+      final int size = (irRankActors.get(rank).size() + irRankActorsT.get(rank).size()) / 2;
       load = (long) Math.ceil((double) load / size);
       totC += load;
       rankWCETs.put(rank, load);
     }
 
     // compute possible cuts
-    SortedMap<Integer, Set<CutInformation>> possibleCuts = computePossibleCuts(irRankActors, irRankActorsT, topoRanks,
-        topoRanksT, forbiddenFifos, maxRank, hlbd);
+    final SortedMap<Integer, Set<CutInformation>> possibleCuts = computePossibleCuts(irRankActors, irRankActorsT,
+        topoRanks, topoRanksT, forbiddenFifos, maxRank, hlbd);
 
-    List<CutInformation> bestCuts = selectBestCuts(possibleCuts, selec, rankWCETs, totC, scenario);
+    final List<CutInformation> bestCuts = selectBestCuts(possibleCuts, selec, rankWCETs, totC, scenario);
 
     duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info("Total heuristic time " + Math.round(duration / 1e6) + " ms.");
@@ -374,31 +375,28 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     // set the cuts
     final int nbCuts = Math.min(bestCuts.size(), maxii);
     for (int index = 0; index < nbCuts; index++) {
-      CutInformation ci = bestCuts.get(index);
-      PreesmLogger.getLogger().log(Level.INFO,
-          "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " bits.");
+      final CutInformation ci = bestCuts.get(index);
+      PreesmLogger.getLogger()
+          .info(() -> "Setting cut from rank " + ci.getRankStr() + " using " + ci.memSize + " bits.");
       // set the graph
-      Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
-      for (FifoAbstraction fa : ci.edgeCut) {
-        cutMap.put(fa, 1);
-      }
+      final Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
+      ci.edgeCut.forEach(fa -> cutMap.put(fa, 1));
+
       setCut(cutMap, false);
     }
 
     if (choco && maxii > 0) {
       // compute latency of heuristic
-      long heuristicLatency = computeLatency(graphCopy, scenario, architecture, false);
+      final long heuristicLatency = computeLatency(graphCopy, scenario, architecture, false);
       // reset heuristic delays
       for (int index = 0; index < nbCuts; index++) {
-        CutInformation ci = bestCuts.get(index);
-        Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
-        for (FifoAbstraction fa : ci.edgeCut) {
-          cutMap.put(fa, 1);
-        }
+        final CutInformation ci = bestCuts.get(index);
+        final Map<FifoAbstraction, Integer> cutMap = new HashMap<>();
+        ci.edgeCut.forEach(fa -> cutMap.put(fa, 1));
         setCut(cutMap, true);
       }
       // call choco
-      DescriptiveStatistics dsc = executeChocoModel(graphCopy, architecture, scenario, maxii, hlbd);
+      final DescriptiveStatistics dsc = executeChocoModel(graphCopy, architecture, scenario, maxii, hlbd);
       printChocoStatistics(heuristicLatency, dsc);
     }
 
@@ -415,32 +413,27 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info("Best latency found by choco cut: " + dsc.getMin());
     PreesmLogger.getLogger().info("Mean latency found by choco cut: " + dsc.getMean());
 
-    int counterAboveLat = 0;
     final double[] chocoLatencies = dsc.getValues();
-    for (final double cl : chocoLatencies) {
-      if (heuristicLatency <= cl) {
-        counterAboveLat++;
-      }
-    }
+    final int counterAboveLat = (int) Arrays.stream(chocoLatencies).filter(cl -> heuristicLatency <= cl).count();
+
     final int percent = (counterAboveLat * 100) / chocoLatencies.length;
     PreesmLogger.getLogger()
-        .info("Heuristic latency is better (or equal) than " + counterAboveLat + " cuts, i.e. " + percent + "%");
+        .info(() -> "Heuristic latency is better (or equal) than " + counterAboveLat + " cuts, i.e. " + percent + "%");
 
   }
 
   private static void printWCETstatistics(DescriptiveStatistics ds) {
     final long maxWCET = Math.round(ds.getMax());
     final long percentMax = Math.round((ds.getMax() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Max WCET is " + maxWCET + " and represents " + percentMax + "% of the total.");
+    PreesmLogger.getLogger().fine(() -> "Max WCET is " + maxWCET + " and represents " + percentMax + "% of the total.");
     final long meanWCET = Math.round(ds.getMean());
     final long percentMean = Math.round((ds.getMean() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
+    PreesmLogger.getLogger()
+        .fine(() -> "Mean WCET is " + meanWCET + " and represents " + percentMean + "% of the total.");
     final long standardDeviation = Math.round(ds.getStandardDeviation());
     final long percentSD = Math.round((ds.getStandardDeviation() / ds.getSum()) * 100);
-    PreesmLogger.getLogger().log(Level.FINE,
-        "Standard deviation of WCET is " + standardDeviation + " and represents " + percentSD + "% of the total.");
+    PreesmLogger.getLogger().fine(() -> "Standard deviation of WCET is " + standardDeviation + " and represents "
+        + percentSD + "% of the total.");
   }
 
   private static DescriptiveStatistics executeChocoModel(final PiGraph graphCopy, final Design architecture,
@@ -455,7 +448,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final long time2 = System.nanoTime();
     Map<FifoAbstraction, Integer> bestDelays = null;
     long bestLatency = Long.MAX_VALUE;
-    long bestMemory = Long.MAX_VALUE;
+    final long bestMemory = Long.MAX_VALUE;
     final Level backupLevel = PreesmLogger.getLogger().getLevel();
     PreesmLogger.getLogger().setLevel(Level.SEVERE);
     // for (Map<FifoAbstraction, Integer> delays : chocoCuts) {
@@ -470,7 +463,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         bestLatency = latency;
         bestDelays = delays;
       } else if (latency == bestLatency) {
-        long memCost = getCutMemoryCost(delays.keySet(), scenario);
+        final long memCost = getCutMemoryCost(delays.keySet(), scenario);
         if (memCost < bestMemory) {
           bestLatency = latency;
           bestDelays = delays;
@@ -478,17 +471,17 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
       setCut(delays, true);
       if (nbCutsTested % 1000 == 0) {
-        System.err.println("1000 cuts tested.");
+        PreesmLogger.getLogger().fine(() -> "1000 cuts tested.");
       }
     }
-    long duration = System.nanoTime() - time2;
+    final long duration = System.nanoTime() - time2;
     PreesmLogger.getLogger().setLevel(backupLevel);
     PreesmLogger.getLogger().info("Number of cuts tested: " + nbCutsTested);
-    PreesmLogger.getLogger().info("Time of choco tests " + Math.round(duration / 1e6) + " ms.");
+    PreesmLogger.getLogger().info(() -> "Time of choco tests " + Math.round(duration / 1e6) + " ms.");
     if (bestDelays != null) {
       setCut(bestDelays, false);
       final StringBuilder sb = new StringBuilder("\nAdded delays by choco:\n");
-      for (Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
+      for (final Entry<FifoAbstraction, Integer> e : bestDelays.entrySet()) {
         final FifoAbstraction fa = e.getKey();
         final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
         final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
@@ -496,14 +489,14 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName() + "\n");
       }
 
-      PreesmLogger.getLogger().info("Best Choco cut: " + sb.toString());
+      PreesmLogger.getLogger().info(() -> "Best Choco cut: " + sb.toString());
     }
     return dsc;
   }
 
   private static void setCut(final Map<FifoAbstraction, Integer> delays, final boolean reset) {
 
-    for (Entry<FifoAbstraction, Integer> e : delays.entrySet()) {
+    for (final Entry<FifoAbstraction, Integer> e : delays.entrySet()) {
       final FifoAbstraction fa = e.getKey();
       final int delayMultiplier = e.getValue();
       final List<Long> pipelineValues = fa.pipelineValues;
@@ -520,11 +513,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           delay.getActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
-          PreesmLogger.getLogger().log(Level.INFO, "Set fifo delay size and type of: " + f.getId());
+          PreesmLogger.getLogger().info(() -> "Set fifo delay size and type of: " + f.getId());
         } else if (delay != null) {
           if (!reset) {
             pipeSize += delay.getExpression().evaluate();
-            PreesmLogger.getLogger().log(Level.WARNING, "Reset fifo delay size and type of: " + f.getId());
+            PreesmLogger.getLogger().warning(() -> "Reset fifo delay size and type of: " + f.getId());
           } else {
             pipeSize = delay.getExpression().evaluate() - pipeSize;
           }
@@ -545,7 +538,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     SynthesisResult scheduleAndMap = null;
     try {
       scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
-    } catch (PreesmSchedulingException e) {
+    } catch (final PreesmSchedulingException e) {
       PreesmLogger.getLogger().log(Level.WARNING, "Scheudling was impossible.", e);
       return Long.MAX_VALUE;
     }
@@ -553,7 +546,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(dag, scheduleAndMap.schedule);
     final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(dag, architecture, scenario,
         scheduleAndMap.mapping, scheduleOM);
-    PreesmLogger.getLogger().log(Level.INFO, "Latency of graph with added delays: " + evaluate.getValue());
+    PreesmLogger.getLogger().info(() -> "Latency of graph with added delays: " + evaluate.getValue());
 
     if (printGantt) {
       final IStatGenerator statGen = new StatGeneratorSynthesis(architecture, scenario, scheduleAndMap.mapping, null,
@@ -565,7 +558,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         // Run statistic editor
         PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
       } catch (final IllegalStateException e) {
-        PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
+        PreesmLogger.getLogger().info("Gantt display is impossible in this context."
             + " Ignore this log entry if you are running the command line version of Preesm.");
       }
     }
@@ -592,15 +585,15 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           delay.getActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
-          PreesmLogger.getLogger().log(Level.INFO, "[in Cycle] Set fifo delay size and type of: " + f.getId());
+          PreesmLogger.getLogger().info(() -> "[in Cycle] Set fifo delay size and type of: " + f.getId());
         } else {
           final long prevSize = delay.getExpression().evaluate();
           pipeSize = Math.max(pipeSize, prevSize);
           if (pipeSize != prevSize) {
-            PreesmLogger.getLogger().log(Level.WARNING, "[in Cycle] Reset fifo delay size and type of: " + f.getId());
+            PreesmLogger.getLogger().warning(() -> "[in Cycle] Reset fifo delay size and type of: " + f.getId());
           } else {
-            PreesmLogger.getLogger().log(Level.INFO,
-                "[in Cycle] Fiifo delay size of: " + f.getId() + " is already correct.");
+            PreesmLogger.getLogger()
+                .info(() -> "[in Cycle] Fiifo delay size of: " + f.getId() + " is already correct.");
           }
         }
         delay.setLevel(PersistenceLevel.PERMANENT);
@@ -618,7 +611,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final SortedMap<Integer,
         Set<FifoAbstraction>> crossingFifos = computeCrossingFifos(false, topoRanks, hlbd, maxRank, forbiddenFifos);
-    for (Entry<Integer, Set<AbstractActor>> e : irRankActors.entrySet()) {
+    for (final Entry<Integer, Set<AbstractActor>> e : irRankActors.entrySet()) {
       final int rank = e.getKey();
       final Set<AbstractActor> aas = e.getValue();
       final Set<FifoAbstraction> fas = computeIncomingCut(aas, forbiddenFifos, hlbd);
@@ -639,7 +632,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final SortedMap<Integer,
         Set<FifoAbstraction>> crossingFifosT = computeCrossingFifos(true, topoRanksT, hlbd, maxRank, forbiddenFifos);
 
-    for (Entry<Integer, Set<AbstractActor>> e : irRankActorsT.entrySet()) {
+    for (final Entry<Integer, Set<AbstractActor>> e : irRankActorsT.entrySet()) {
       final int rank = e.getKey();
       final Set<AbstractActor> aas = e.getValue();
       final Set<FifoAbstraction> fas = computeIncomingCut(aas, forbiddenFifos, hlbd);
@@ -658,15 +651,15 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     }
 
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
-      for (Entry<Integer, Set<CutInformation>> e : result.entrySet()) {
+      for (final Entry<Integer, Set<CutInformation>> e : result.entrySet()) {
         final int rank = e.getKey();
-        PreesmLogger.getLogger().log(Level.FINE, "=====> Rank " + rank);
-        for (CutInformation ci : e.getValue()) {
-          Set<FifoAbstraction> fas = ci.edgeCut;
+        PreesmLogger.getLogger().fine(() -> "=====> Rank " + rank);
+        for (final CutInformation ci : e.getValue()) {
+          final Set<FifoAbstraction> fas = ci.edgeCut;
           final StringBuilder sb = new StringBuilder("Cut: \n");
-          for (FifoAbstraction fa : fas) {
-            AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
-            AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
+          for (final FifoAbstraction fa : fas) {
+            final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
+            final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
             sb.append(src.getName() + " --> " + tgt.getName() + "\n");
           }
           PreesmLogger.getLogger().log(Level.FINE, sb.toString());
@@ -685,7 +678,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       result.put(i, new HashSet<>());
     }
     final DefaultDirectedGraph<AbstractActor, FifoAbstraction> graph = hlbd.getAbsGraph();
-    for (FifoAbstraction fa : graph.edgeSet()) {
+    for (final FifoAbstraction fa : graph.edgeSet()) {
       final AbstractActor src = graph.getEdgeSource(fa);
       final AbstractActor tgt = graph.getEdgeTarget(fa);
       int rankSrc = topoRanks.get(src).rank;
@@ -696,7 +689,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
       rankSrc += 1;
       if (rankTgt > rankSrc) {
-        boolean isForbidden = forbiddenFifos.contains(fa);
+        final boolean isForbidden = forbiddenFifos.contains(fa);
         for (int i = rankSrc; i <= rankTgt; i++) {
           if (isForbidden) {
             result.put(i, null);
@@ -716,11 +709,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       final Set<FifoAbstraction> forbiddenFifos, final HeuristicLoopBreakingDelays hlbd) {
     final Set<FifoAbstraction> fas = new HashSet<>();
     boolean isOK = true;
-    for (AbstractActor aa : aas) {
-      for (FifoAbstraction fa : hlbd.absGraph.incomingEdgesOf(aa)) {
-        AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
-        boolean selfLoop = src == aa;
-        boolean forbiddenFifo = forbiddenFifos.contains(fa);
+    for (final AbstractActor aa : aas) {
+      for (final FifoAbstraction fa : hlbd.absGraph.incomingEdgesOf(aa)) {
+        final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
+        final boolean selfLoop = src == aa;
+        final boolean forbiddenFifo = forbiddenFifos.contains(fa);
         if (!forbiddenFifo && !selfLoop) {
           fas.add(fa);
         } else if (hlbd.breakingFifosAbs.contains(fa)) {
@@ -741,26 +734,21 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
   private static List<CutInformation> selectBestCuts(SortedMap<Integer, Set<CutInformation>> cuts, final int nbSelec,
       final SortedMap<Integer, Long> rankWCETs, final long totC, final Scenario scenar) {
     final Set<Integer> preSelectedRanks = new LinkedHashSet<>();
-    int maxParallelActors = 0;
-    for (Set<CutInformation> cis : cuts.values()) {
-      for (CutInformation ci : cis) {
-        int nbActorsInCut = ci.edgeCut.size();
-        if (nbActorsInCut > maxParallelActors) {
-          maxParallelActors = nbActorsInCut;
-        }
-      }
-    }
-    PreesmLogger.getLogger().log(Level.FINE, "Max Actors in Parallel: " + maxParallelActors);
+
+    final int maxParallelActors = cuts.values().stream()
+        .flatMapToInt(cis -> cis.stream().mapToInt(ci -> ci.edgeCut.size())).max().orElse(0);
+
+    PreesmLogger.getLogger().fine(() -> "Max Actors in Parallel: " + maxParallelActors);
 
     // we divide by the number of maxii
     final long avgCutLoad = totC / (nbSelec + 1);
     final long maxLoad = totC - avgCutLoad;
-    PreesmLogger.getLogger().log(Level.FINE, "Average cut load: " + avgCutLoad);
+    PreesmLogger.getLogger().fine(() -> "Average cut load: " + avgCutLoad);
     int lastLoadIndex = 1;
     long currentLoad = 0;
-    for (Entry<Integer, Long> e : rankWCETs.entrySet()) {
+    for (final Entry<Integer, Long> e : rankWCETs.entrySet()) {
       if (currentLoad >= avgCutLoad * lastLoadIndex && (currentLoad <= maxLoad || preSelectedRanks.isEmpty())) {
-        int rank = e.getKey();
+        final int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
           lastLoadIndex += 1;
@@ -775,10 +763,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     rankWCETsT.putAll(rankWCETs);
     lastLoadIndex = 1;
     currentLoad = 0;
-    for (Entry<Integer, Long> e : rankWCETsT.entrySet()) {
+    for (final Entry<Integer, Long> e : rankWCETsT.entrySet()) {
       currentLoad += e.getValue();
       if (currentLoad >= avgCutLoad * lastLoadIndex && (currentLoad <= maxLoad || preSelectedRanks.size() < 2)) {
-        int rank = e.getKey();
+        final int rank = e.getKey();
         if (!cuts.getOrDefault(rank, new HashSet<>()).isEmpty()) {
           preSelectedRanks.add(rank);
           lastLoadIndex += 1;
@@ -786,12 +774,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       }
     }
 
-    String strPreSelected = String.join(", ",
-        preSelectedRanks.stream().map(i -> Integer.toString(i)).collect(Collectors.toList()));
-    PreesmLogger.getLogger().log(Level.FINE, "Preselected cut ranks: " + strPreSelected);
+    final String strPreSelected = String.join(", ", preSelectedRanks.stream().map(i -> Integer.toString(i)).toList());
+    PreesmLogger.getLogger().fine(() -> "Preselected cut ranks: " + strPreSelected);
     // select remaining cuts sorted by memory size
     final List<CutInformation> bestCuts = new ArrayList<>();
-    for (int i : preSelectedRanks) {
+    for (final int i : preSelectedRanks) {
       final List<CutInformation> twoPossibilities = new ArrayList<>(cuts.get(i));
       if (twoPossibilities.size() == 1) {
         final CutInformation cut0 = twoPossibilities.get(0);
@@ -816,8 +803,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       // selects cut which is closer to the middle
       CutInformation bestCut = null;
       long bestCutValue = 0;
-      for (CutInformation ci : bestCuts) {
-        long wcetDiff = Math.abs(avgCutLoad - getIntermediateWeightedWCET(1, ci.rank, rankWCETs));
+      for (final CutInformation ci : bestCuts) {
+        final long wcetDiff = Math.abs(avgCutLoad - getIntermediateWeightedWCET(1, ci.rank, rankWCETs));
         if (bestCut == null || wcetDiff < bestCutValue) {
           bestCut = ci;
           bestCutValue = wcetDiff;
@@ -829,11 +816,11 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     } else if (!bestCuts.isEmpty()) {
       // remove cuts that are too close from each other
       // may happen between cuts from topo and cuts from topoT
-      CutSizeComparator csc = new CutSizeComparator();
-      Set<CutInformation> cisToRemove = new HashSet<>();
+      final CutSizeComparator csc = new CutSizeComparator();
+      final Set<CutInformation> cisToRemove = new HashSet<>();
       final int bcSize = bestCuts.size();
       for (int i = bcSize - 1; i >= 0; i--) {
-        CutInformation ci1 = bestCuts.get(i);
+        final CutInformation ci1 = bestCuts.get(i);
         if (bcSize - cisToRemove.size() <= nbSelec) {
           break;
         }
@@ -843,10 +830,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           if (bcSize - cisToRemove.size() <= nbSelec) {
             break;
           }
-          CutInformation ci2 = bestCuts.get(j);
-          long wcetDiff = getIntermediateWeightedWCET(ci1.rank, ci2.rank, rankWCETs);
+          final CutInformation ci2 = bestCuts.get(j);
+          final long wcetDiff = getIntermediateWeightedWCET(ci1.rank, ci2.rank, rankWCETs);
           if (wcetDiff < avgCutLoad) {
-            int memComparison = csc.compare(ci1, ci2);
+            final int memComparison = csc.compare(ci1, ci2);
             if (memComparison < 0) {
               cisToRemove.add(ci2);
             } else if (memComparison > 0) {
@@ -854,7 +841,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
             } else {
               // breaks tie with lower rank
               // (otherwise it is not fully transitive, and we might remove all ci ...)
-              int rankComparison = Integer.compare(ci1.rank, ci2.rank);
+              final int rankComparison = Integer.compare(ci1.rank, ci2.rank);
               if (rankComparison < 0) {
                 cisToRemove.add(ci2);
               } else {
@@ -864,9 +851,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           }
         }
       }
-      String strRemovedClose = String.join(", ",
-          cisToRemove.stream().map(x -> x.getRankStr()).collect(Collectors.toList()));
-      PreesmLogger.getLogger().log(Level.FINE, "Removed too close cut ranks: " + strRemovedClose);
+      final String strRemovedClose = String.join(", ", cisToRemove.stream().map(x -> x.getRankStr()).toList());
+      PreesmLogger.getLogger().fine(() -> "Removed too close cut ranks: " + strRemovedClose);
 
       bestCuts.removeAll(cisToRemove);
     }
@@ -886,8 +872,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
   private static long getCutMemoryCost(Set<FifoAbstraction> fas, Scenario scenar) {
     long totalSize = 0L;
-    SimulationInfo si = scenar.getSimulationInfo();
-    for (FifoAbstraction fa : fas) {
+    final SimulationInfo si = scenar.getSimulationInfo();
+    for (final FifoAbstraction fa : fas) {
       final List<Long> pipelineValues = fa.pipelineValues;
       final List<Fifo> fifos = fa.fifos;
       final int size = fifos.size();
@@ -904,7 +890,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
   /**
    * Stores main information about a cut, the memory size is computed after the call to the constructor.
-   * 
+   *
    * @author ahonorat
    */
   public static class CutInformation {
@@ -921,14 +907,13 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     }
 
     public String getRankStr() {
-      String reverseInfo = wasReversed ? "T" : "";
+      final String reverseInfo = wasReversed ? "T" : "";
       return rank + reverseInfo;
     }
 
     @Override
     public boolean equals(Object o) {
-      if (o instanceof CutInformation) {
-        CutInformation ci = (CutInformation) o;
+      if (o instanceof final CutInformation ci) {
         return edgeCut.equals(ci.edgeCut);
       }
       return false;
@@ -943,7 +928,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
   /**
    * Comparator of graph cuts, in ascending order of memory size
-   * 
+   *
    * @author ahonorat
    */
   public static class CutSizeComparator implements Comparator<CutInformation> {
@@ -953,8 +938,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     @Override
     public int compare(CutInformation arg0, CutInformation arg1) {
-      long size0 = arg0.memSize;
-      long size1 = arg1.memSize;
+      final long size0 = arg0.memSize;
+      final long size1 = arg1.memSize;
       return Long.compare(size0, size1);
     }
 

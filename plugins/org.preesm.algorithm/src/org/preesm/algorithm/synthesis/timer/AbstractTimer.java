@@ -68,7 +68,7 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
   /**
    */
-  public AbstractTimer() {
+  protected AbstractTimer() {
   }
 
   /**
@@ -84,13 +84,11 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
           .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
 
       // refine the startTime of periodic actors from firing instance number
-      if (actor instanceof PeriodicElement) {
-        PeriodicElement pe = (PeriodicElement) actor;
-        long period = pe.getPeriod().evaluate();
-        if (period > 0 && pe instanceof Actor) {
-          Actor a = (Actor) pe;
-          long firingInstance = a.getFiringInstance();
-          long ns = firingInstance * period;
+      if (actor instanceof final PeriodicElement pe) {
+        final long period = pe.getPeriod().evaluate();
+        if (period > 0 && pe instanceof final Actor a) {
+          final long firingInstance = a.getFiringInstance();
+          final long ns = firingInstance * period;
           startTime = Math.max(startTime, ns);
         }
       }

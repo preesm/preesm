@@ -37,12 +37,12 @@
  */
 package org.preesm.ui.pisdf.properties;
 
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.platform.AbstractPropertySectionFilter;
 import org.preesm.model.pisdf.Fifo;
 
-// TODO: Auto-generated Javadoc
 /**
  * The Class PiMMFifoFilter.
  */
@@ -56,10 +56,9 @@ public class PiMMFifoFilter extends AbstractPropertySectionFilter {
    */
   @Override
   protected boolean accept(final PictogramElement pictogramElement) {
-    if (Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement) instanceof Fifo) {
-      return true;
-    }
-    return false;
-  }
+    final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
+    // instanceof returns false in case of null
+    return eObject instanceof Fifo;
+  }
 }

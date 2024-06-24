@@ -73,13 +73,13 @@ public class AddRefinementFeature extends AbstractAddFeature {
    */
   @Override
   public boolean canAdd(final IAddContext context) {
-    if (!(context.getNewObject() instanceof IFile)) {
-      return false;
-    } else {
-      final String fileExtension = ((IFile) context.getNewObject()).getFileExtension();
+    if (context.getNewObject() instanceof final IFile iFile) {
+      final String fileExtension = iFile.getFileExtension();
       return fileExtension.equals("pi") || fileExtension.equals("idl")
           || RefinementChecker.isAsupportedHeaderFileExtension(fileExtension);
     }
+    return false;
+
   }
 
   /*

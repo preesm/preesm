@@ -103,8 +103,8 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
     }
     // Apply the same to the lower levels of hierarchy
     for (final SDFAbstractVertex v : g.vertexSet()) {
-      if (v.getGraphDescription() instanceof SDFGraph) {
-        prepareNorm((SDFGraph) v.getGraphDescription());
+      if (v.getGraphDescription() instanceof final SDFGraph sdfGraph) {
+        prepareNorm(sdfGraph);
       }
     }
   }
@@ -140,21 +140,19 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
       edge.setCons(new SDFDoubleEdgePropertyType(m));
       edge.setDelay(new SDFDoubleEdgePropertyType(
           ((double) edge.getProd().getValue() / in) * (double) edge.getDelay().getValue()));
-    } else {
+    } else if (edge.getSource().getKind().equals(PORT_LITERAL)) {
       // source port
-      if (edge.getSource().getKind().equals(PORT_LITERAL)) {
-        in = (double) edge.getCons().getValue();
-        edge.setCons(new SDFDoubleEdgePropertyType(m / edge.getTarget().getNbRepeatAsLong()));
-        edge.setProd(new SDFDoubleEdgePropertyType(m));
-        edge.setDelay(new SDFDoubleEdgePropertyType(
-            ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
-      } else {
-        in = (double) edge.getProd().getValue();
-        edge.setProd(new SDFDoubleEdgePropertyType(m / edge.getSource().getNbRepeatAsLong()));
-        edge.setCons(new SDFDoubleEdgePropertyType(m / edge.getTarget().getNbRepeatAsLong()));
-        edge.setDelay(new SDFDoubleEdgePropertyType(
-            ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
-      }
+      in = (double) edge.getCons().getValue();
+      edge.setCons(new SDFDoubleEdgePropertyType(m / edge.getTarget().getNbRepeatAsLong()));
+      edge.setProd(new SDFDoubleEdgePropertyType(m));
+      edge.setDelay(new SDFDoubleEdgePropertyType(
+          ((double) edge.getCons().getValue() / in) * (double) edge.getDelay().getValue()));
+    } else {
+      in = (double) edge.getProd().getValue();
+      edge.setProd(new SDFDoubleEdgePropertyType(m / edge.getSource().getNbRepeatAsLong()));
+      edge.setCons(new SDFDoubleEdgePropertyType(m / edge.getTarget().getNbRepeatAsLong()));
+      edge.setDelay(new SDFDoubleEdgePropertyType(
+          ((double) edge.getProd().getValue() / in) * (double) (edge.getDelay().getValue())));
     }
   }
 
@@ -164,9 +162,9 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
     double out;
     z = 1;
     if (!vertex.getKind().equals(PORT_LITERAL)) {
-      if (vertex.getGraphDescription() instanceof SDFGraph) {
+      if (vertex.getGraphDescription() instanceof final SDFGraph sdfGraph) {
         // If it's a hierarchical actor, normalize its subgraph to obtain the z
-        z = normalizeup((SDFGraph) vertex.getGraphDescription());
+        z = normalizeup(sdfGraph);
 
         // Retrieve the values on the output edges, used to compute M (ppcm (N_t * in_a))
         m = updateM(m, vertex);
@@ -213,7 +211,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
    *          the z
    */
   private void normalizeDown(final SDFGraph g, final double z) {
-    double m = 1;
+    final double m = 1;
     double zUp;
 
     // if Z == 0, it is the level zero of hierarchy, nothing to do here
@@ -223,7 +221,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
 
     for (final SDFAbstractVertex vertex : g.vertexSet()) {
       // For each hierarchic actor
-      if (vertex.getGraphDescription() instanceof SDFGraph) {
+      if (vertex.getGraphDescription() instanceof final SDFGraph sdfGraph) {
         // Retrieve the normalization value of the actor (Z)
         if (vertex.getInterfaces().get(0).getDirection().toString().equals(INPUT_LITERAL)) {
           zUp = (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getCons().getValue());
@@ -231,7 +229,7 @@ public class NormalizeVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVert
           zUp = (double) (((SDFEdge) vertex.getAssociatedEdge(vertex.getInterfaces().get(0))).getProd().getValue());
         }
         // Continue the normalization in the lower levels
-        normalizeDown((SDFGraph) vertex.getGraphDescription(), zUp);
+        normalizeDown(sdfGraph, zUp);
       }
     }
   }

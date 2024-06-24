@@ -19,6 +19,11 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 
 public abstract class ActorConstructTransform {
+
+  protected ActorConstructTransform() {
+    // Forbids instantiation
+  }
+
   protected static DataInputPort createDataInputPort(final Actor actor, long rate) {
     final DataInputPort inputPort = PiMMUserFactory.instance.createDataInputPort("input");
     inputPort.setExpression(rate);

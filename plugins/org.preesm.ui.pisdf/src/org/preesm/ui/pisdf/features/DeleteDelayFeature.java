@@ -143,7 +143,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
       final Object obj = getBusinessObjectForPictogramElement(connection);
       // With setter delay, there can be multiple FIFOs
       // We have to choose the correct one
-      if (obj instanceof Fifo && ((Fifo) obj).getDelay() == delay) {
+      if (obj instanceof final Fifo fifo && fifo.getDelay() == delay) {
         preConnection = connection;
         break;
       }
@@ -156,7 +156,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     Connection postConnection = null;
     for (final Connection connection : outgoingConnections) {
       final Object obj = getBusinessObjectForPictogramElement(connection);
-      if (obj instanceof Fifo && ((Fifo) obj).getDelay() == delay) {
+      if (obj instanceof final Fifo fifo && fifo.getDelay() == delay) {
         postConnection = connection;
         break;
       }
@@ -176,11 +176,10 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     // Remove the preConnection (but not the associated Fifo)
     final IRemoveContext rmCtxt = new RemoveContext(preConnection);
     final IRemoveFeature rmFeature = getFeatureProvider().getRemoveFeature(rmCtxt);
-    if (rmFeature.canRemove(rmCtxt)) {
-      rmFeature.remove(rmCtxt);
-    } else {
+    if (!rmFeature.canRemove(rmCtxt)) {
       throw new PreesmRuntimeException("Could not delete Delay because a Connection could not be removed.");
     }
+    rmFeature.remove(rmCtxt);
   }
 
 }

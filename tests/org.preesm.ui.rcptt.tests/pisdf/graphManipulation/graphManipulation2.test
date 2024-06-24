@@ -1,0 +1,429 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Element-Name: graphManipulation2
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _ZM_KIBQ7Ee-9HvDJ3pRsng
+Runtime-Version: 2.5.4.202210020716
+Save-Time: 5/28/24, 4:04 PM
+Testcase-Type: ecl
+Verifications: _Wu3lEBQ_Ee-9HvDJ3pRsng
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+get-menu -path "File/New/Project..." | click
+with [get-window "New Project"] {
+    get-button "Next >" | click
+    get-editbox -after [get-label "Project name:"] | set-text graphManipulation2
+    get-button Finish | click
+}
+get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo" | get-menu 
+    -path "New/Preesm Algorithm (PiSDF)" | click
+get-window "New Algorithm (PiMM)" | get-button Finish | click
+with [get-editor NewGraph] {
+    with [get-palette | get-palette-entry Actor] {
+        mouse-move 16 14 button1 -height 24 -width 130
+        mouse-press 16 14 button1 -height 24 -width 130
+        mouse-release 16 14 button1 -height 24 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 243 134 button1 -height 387 -width 630
+        mouse-press 243 134 button1 -height 387 -width 630
+        mouse-release 243 134 button1 -height 387 -width 630
+    }
+}
+with [get-window "Create Actor"] {
+    get-editbox -after [get-label "Enter new actor name"] | set-text actor
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 8 18 button3 -height 23 -width 57
+        mouse-press 8 18 button3 -height 23 -width 57
+    }
+    get-menu -path "Add Data Input Port" | click
+}
+with [get-window "Add Data Input Port"] {
+    get-editbox -after [get-label "Add a data input port to the Actor"] | set-text in1
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 4 19 -height 38 -width 57
+        mouse-move 33 31 button3 -height 38 -width 57
+        mouse-press 33 31 button3 -height 38 -width 57
+    }
+    get-menu -path "Add Data Input Port" | click
+}
+with [get-window "Add Data Input Port"] {
+    get-editbox -after [get-label "Add a data input port to the Actor"] | set-text in2
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text in2] {
+        mouse-move 19 8 button3 -height 13 -width 24
+        mouse-press 19 8 button3 -height 13 -width 24
+    }
+    get-menu -path "Move up Port (Ctrl+Arrow Up)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text in2] {
+        mouse-move 19 7 button3 -height 13 -width 24
+        mouse-press 19 7 button3 -height 13 -width 24
+    }
+    get-menu -path "Move down Port (Ctrl+Arrow Down)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text in2] {
+        mouse-move 14 4 button3 -height 13 -width 24
+        mouse-press 14 4 button3 -height 13 -width 24
+    }
+    get-menu -path Delete | click
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 43 28 button3 -height 53 -width 57
+        mouse-press 43 28 button3 -height 53 -width 57
+    }
+    get-menu -path "Add Data Output Port" | click
+}
+with [get-window "Add Data Output Port"] {
+    get-editbox -after [get-label "Add a data output port to the Actor"] | set-text out1
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 54 12 button3 -height 38 -width 63
+        mouse-press 54 12 button3 -height 38 -width 63
+    }
+    get-menu -path "Add Data Output Port" | click
+}
+with [get-window "Add Data Output Port"] {
+    get-editbox -after [get-label "Add a data output port to the Actor"] | set-text out2
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text out2] {
+        mouse-move 16 4 button3 -height 13 -width 31
+        mouse-press 16 4 button3 -height 13 -width 31
+    }
+    get-menu -path "Move up Port (Ctrl+Arrow Up)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text out2] {
+        mouse-move 10 3 button3 -height 13 -width 31
+        mouse-press 10 3 button3 -height 13 -width 31
+    }
+    get-menu -path "Move down Port (Ctrl+Arrow Down)" | click
+    mouse-hover 290 187 -height 387 -width 630
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 49 46 button3 -height 53 -width 63
+        mouse-press 49 46 button3 -height 53 -width 63
+    }
+    get-menu -path "Add Config. Input Port" | click
+}
+with [get-window "Add Config. Input Port"] {
+    get-editbox -after [get-label "Add a configuration input port to the Actor"] | set-text cin1
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 40 26 button3 -height 53 -width 68
+        mouse-press 40 26 button3 -height 53 -width 68
+    }
+    get-menu -path "Add Config. Input Port" | click
+}
+with [get-window "Add Config. Input Port"] {
+    get-editbox -after [get-label "Add a configuration input port to the Actor"] | set-text cin2
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 47 20 button3 -height 68 -width 68
+        mouse-press 47 20 button3 -height 68 -width 68
+    }
+    get-menu -path "Add Config. Output Port" | click
+}
+with [get-window "Add Config. Output Port"] {
+    get-editbox -after [get-label "Add a configuration output port to the Actor"] | set-text cout1
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+        mouse-move 52 39 button3 -height 68 -width 73
+        mouse-press 52 39 button3 -height 68 -width 73
+    }
+    get-menu -path "Add Config. Output Port" | click
+}
+with [get-window "Add Config. Output Port"] {
+    get-editbox -after [get-label "Add a configuration output port to the Actor"] | set-text cout2
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cin2] {
+        mouse-move 26 1 button3 -height 13 -width 29
+        mouse-press 26 1 button3 -height 13 -width 29
+    }
+    get-menu -path "Move up Port (Ctrl+Arrow Up)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cin2] {
+        mouse-move 14 3 button3 -height 13 -width 29
+        mouse-press 14 3 button3 -height 13 -width 29
+    }
+    get-menu -path "Move down Port (Ctrl+Arrow Down)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cout2] {
+        mouse-move 28 6 button3 -height 13 -width 36
+        mouse-press 28 6 button3 -height 13 -width 36
+    }
+    get-menu -path "Move up Port (Ctrl+Arrow Up)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cout2] {
+        mouse-move 17 7 button3 -height 13 -width 36
+        mouse-press 17 7 button3 -height 13 -width 36
+    }
+    get-menu -path "Move down Port (Ctrl+Arrow Down)" | click
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cout2] {
+        mouse-move 15 0 button1 -height 13 -width 36
+        mouse-press 15 0 button1 -height 13 -width 36
+        mouse-release 15 0 button1 -height 13 -width 36
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cout1] {
+        mouse-move 15 9 button1 -height 13 -width 36
+        mouse-press 15 9 button1 -height 13 -width 36
+        mouse-release 15 9 button1 -height 13 -width 36
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cin1] {
+        mouse-move 28 2 button1 -height 13 -width 29
+        mouse-press 28 2 button1 -height 13 -width 29
+        mouse-release 28 2 button1 -height 13 -width 29
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text cin2] {
+        mouse-move 16 4 button1 -height 13 -width 29
+        mouse-press 16 4 button1 -height 13 -width 29
+        mouse-release 16 4 button1 -height 13 -width 29
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph] {
+    with [get-palette | get-palette-entry Fifo] {
+        mouse-move 34 14 button1 -height 24 -width 130
+        mouse-press 34 14 button1 -height 24 -width 130
+        mouse-release 34 14 button1 -height 24 -width 130
+    }
+    with [get-diagram -index 1] {
+        with [get-edit-part -name NewGraph | get-edit-part -text actor] {
+            with [get-edit-part -text out1] {
+                mouse-move 25 1 button1 -height 13 -width 31
+                mouse-press 25 1 button1 -height 13 -width 31
+                mouse-release 25 1 button1 -height 13 -width 31
+            }
+            with [get-edit-part -text in1] {
+                mouse-move 8 8 button1 -height 13 -width 24
+                mouse-press 8 8 button1 -height 13 -width 24
+                mouse-release 8 8 button1 -height 13 -width 24
+            }
+        }
+        key-type "M1+M2+f"
+        key-type ESC
+        with [get-edit-part -name NewGraph | get-edit-part -text actor | get-edit-part -text in1 | get-target-connection -path 0] {
+            mouse-move 54 28 button3 -height 30 -width 106
+            mouse-press 54 28 button3 -height 30 -width 106
+        }
+        get-menu -path "Add Delay" | click
+    }
+}
+get-view Properties | get-combo -after [get-label "Default Value:"] | select none
+with [get-editor NewGraph] {
+    with [get-palette | get-palette-entry Actor] {
+        mouse-move 39 11 button1 -height 24 -width 130
+        mouse-press 39 11 button1 -height 24 -width 130
+        mouse-release 39 11 button1 "" -height 24 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 259 162 button1 -height 387 -width 630
+        mouse-press 259 162 button1 -height 387 -width 630
+        mouse-release 259 162 button1 -height 387 -width 630
+    }
+}
+with [get-window "Create Actor"] {
+    get-editbox -after [get-label "Enter new actor name"] | set-text setter
+    get-button OK | click
+}
+with [get-editor NewGraph] {
+    with [get-palette | get-palette-entry Actor] {
+        mouse-move 28 13 button1 -height 24 -width 130
+        mouse-press 28 13 button1 -height 24 -width 130
+        mouse-release 28 13 button1 -height 24 -width 130
+    }
+    with [get-diagram -index 1] {
+        mouse-move 501 187 -height 387 -width 630
+        mouse-press 501 187 button1 -height 387 -width 630
+        mouse-release 501 187 button1 -height 387 -width 630
+    }
+}
+with [get-window "Create Actor"] {
+    get-editbox -after [get-label "Enter new actor name"] | set-text getter
+    get-button OK | click
+}
+with [get-editor NewGraph] {
+    with [get-palette | get-palette-entry Fifo] {
+        mouse-move 24 3 button1 -height 24 -width 130
+        mouse-press 24 3 button1 -height 24 -width 130
+        mouse-release 24 3 button1 -height 24 -width 130
+    }
+    with [get-diagram -index 1 | get-edit-part -name NewGraph] {
+        with [get-edit-part -text setter] {
+            mouse-move 49 10 button1 -height 23 -width 60
+            mouse-press 49 10 button1 -height 23 -width 60
+            mouse-release 49 10 button1 -height 23 -width 60
+        }
+        with [get-edit-part -className ContainerShapeEditPart -index 1] {
+            mouse-move 12 9 -height 16 -width 16
+            mouse-move 12 9 button1 -height 16 -width 16
+            mouse-press 12 9 button1 -height 16 -width 16
+        }
+    }
+}
+with [get-window "Add Data Output Port"] {
+    get-editbox -after [get-label "Add a data output port to the Actor"] | set-text out
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1 | get-edit-part -name NewGraph] {
+    with [get-edit-part -className ContainerShapeEditPart -index 1] {
+        mouse-move 6 10 button1 -height 16 -width 16
+        mouse-press 6 10 button1 -height 16 -width 16
+        mouse-release 6 10 button1 -height 16 -width 16
+    }
+    with [get-edit-part -text getter] {
+        mouse-move 26 16 button1 -height 23 -width 61
+        mouse-press 26 16 button1 -height 23 -width 61
+    }
+}
+with [get-window "Add Data Input Port"] {
+    get-editbox -after [get-label "Add a data input port to the Actor"] | set-text in
+    get-button OK | click
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    key-type "M1+M2+f"
+    key-type ESC
+    with [get-edit-part -name NewGraph | get-edit-part -className ContainerShapeEditPart -index 1 | get-target-connection -path 0] {
+        mouse-move 25 1 button1 -height 26 -width 125
+        mouse-press 25 1 button1 -height 26 -width 125
+        mouse-release 25 1 button1 -height 26 -width 125
+    }
+}
+with [get-view Properties] {
+    get-editbox | set-text char
+    get-editbox -after [get-label "Data type:"] | set-text 1
+    get-editbox -after [get-label "Default Value:"] | set-text 1
+}
+with [get-editor NewGraph | get-diagram -index 1 | get-edit-part -name NewGraph | get-edit-part -text actor 
+    | get-edit-part -text in1 | get-target-connection -path 0] {
+    mouse-move 7 28 button1 -height 30 -width 45
+    mouse-press 7 28 button1 -height 30 -width 45
+    mouse-release 7 28 button1 -height 30 -width 45
+}
+with [get-view Properties] {
+    get-editbox | set-text char
+    get-editbox -after [get-label "Data type:"] | set-text 1
+    get-editbox -after [get-label "Default Value:"] | set-text 1
+}
+with [get-editor NewGraph | get-diagram -index 1 | get-edit-part -name NewGraph] {
+    with [get-edit-part -className ContainerShapeEditPart -index 1] {
+        with [get-target-connection -path 1] {
+            mouse-move "-1" 25 button1 -height 26 -width 48
+            mouse-press "-1" 25 button1 -height 26 -width 48
+            mouse-release "-1" 25 button1 -height 26 -width 48
+            get-handle GFConnectionEndpointHandle -index 1 | mouse-hover 1 5 -height 6 -width 6
+        }
+        mouse-move 12 10 button1 -height 16 -width 16
+        mouse-press 12 10 button1 -height 16 -width 16
+        mouse-release 12 10 button1 -height 16 -width 16
+    }
+    with [get-edit-part -text getter | get-edit-part -text in | get-target-connection -path 0] {
+        mouse-move 85 11 button1 -height 28 -width 127
+        mouse-press 85 11 button1 -height 28 -width 127
+        mouse-release 85 11 button1 -height 28 -width 127
+    }
+}
+with [get-view Properties] {
+    get-editbox | set-text char
+    get-editbox -after [get-label "Default Value:"] | set-text 1
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    mouse-move 344 323 button1 -height 387 -width 630
+    mouse-press 344 323 button1 -height 387 -width 630
+    mouse-release 344 323 button1 -height 387 -width 630
+    key-type "M1+s"
+}
+//get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph.pi" | get-menu 
+//    -path "Preesm/Compute PiSDF SRDAG (Single Rate)" | click
+//with [get-window "Select result location"] {
+//    get-tree | select "graphManipulation2/Algo"
+//    get-button OK | click
+//}
+//get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph_srdag.pi" | get-menu 
+//    -path "Preesm/Generate .diagram" | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text setter] {
+        mouse-move 29 26 button1 -height 38 -width 60
+        mouse-press 29 26 button1 -height 38 -width 60
+        mouse-release 29 26 button1 -height 38 -width 60
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1] {
+    with [get-edit-part -name NewGraph | get-edit-part -text getter] {
+        mouse-move 30 16 button1 -height 38 -width 61
+        mouse-press 30 16 button1 -height 38 -width 61
+        mouse-release 30 16 button1 -height 38 -width 61
+    }
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor NewGraph | get-diagram -index 1 | get-edit-part -name NewGraph] {
+    with [get-edit-part -className ContainerShapeEditPart -index 1] {
+        mouse-move 9 8 button1 -height 16 -width 16
+        mouse-press 9 8 button1 -height 16 -width 16
+        mouse-release 9 8 button1 -height 16 -width 16
+    }
+}
+with [get-view Properties] {
+    get-editbox -after [get-label "Name:"] | set-text 1
+    get-combo -after [get-label "Default Value:"] | select permanent
+}
+with [get-editor NewGraph | get-diagram -index 1] {
+    mouse-move 380 306 button1 -height 387 -width 630
+    mouse-press 380 306 button1 -height 387 -width 630
+    mouse-release 380 306 button1 -height 387 -width 630
+    key-type "M1+M2+f"
+    key-type "M1+s"
+}
+//with [get-view "Project Explorer" | get-tree] {
+//    select "graphManipulation2/Algo/NewGraph_srdag.pi" "graphManipulation2/Algo/NewGraph_srdag.diagram"
+//    key-type Del
+//}
+//get-window "Delete Resources" | get-button OK | click
+get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph.pi" | get-menu 
+    -path "Preesm/Compute PiSDF SRDAG (Single Rate)" | click
+with [get-window "Select result location"] {
+    get-tree | select "graphManipulation2/Algo"
+    get-button OK | click
+}
+get-view "Project Explorer" | get-tree | select "graphManipulation2/Algo/NewGraph_srdag.pi" | get-menu 
+    -path "Preesm/Generate .diagram" | click
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

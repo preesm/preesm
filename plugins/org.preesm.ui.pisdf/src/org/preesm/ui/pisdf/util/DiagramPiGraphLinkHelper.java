@@ -45,6 +45,7 @@ import org.eclipse.graphiti.mm.pictograms.FreeFormConnection;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.ILinkService;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
@@ -61,6 +62,10 @@ import org.preesm.model.pisdf.PiGraph;
  *
  */
 public class DiagramPiGraphLinkHelper {
+
+  private DiagramPiGraphLinkHelper() {
+    // Prevents instaniation
+  }
 
   /**
    * Clear all the bendpoints of the {@link Fifo} and {@link Dependency} in the diagram passed as a parameter.
@@ -82,30 +87,21 @@ public class DiagramPiGraphLinkHelper {
    * @param actor
    *          the {@link AbstractActor} whose {@link PictogramElement} is searched.
    * @return the {@link PictogramElement} of the {@link AbstractActor}.
-   * @throws RuntimeException
+   * @throws PreesmRuntimeException
    *           if no {@link PictogramElement} could be found in this {@link Diagram} for this {@link AbstractActor}.
    */
-  public static PictogramElement getActorPE(final Diagram diagram, final AbstractActor actor) throws RuntimeException {
+  public static PictogramElement getActorPE(final Diagram diagram, final AbstractActor actor)
+      throws PreesmRuntimeException {
     // Get the PE
     final List<PictogramElement> pes;
-    if (actor instanceof DelayActor) {
-      pes = Graphiti.getLinkService().getPictogramElements(diagram, ((DelayActor) actor).getLinkedDelay());
+    if (actor instanceof final DelayActor delayActor) {
+      pes = Graphiti.getLinkService().getPictogramElements(diagram, delayActor.getLinkedDelay());
     } else {
       pes = Graphiti.getLinkService().getPictogramElements(diagram, actor);
     }
 
-    PictogramElement actorPE = null;
-    for (final PictogramElement pe : pes) {
-      if (pe instanceof ContainerShape) {
-        actorPE = pe;
-        break;
-      }
-    }
-
-    if (actorPE == null) {
-      throw new RuntimeException("No PE was found for actor: " + actor.getName());
-    }
-    return actorPE;
+    return pes.stream().filter(ContainerShape.class::isInstance).findAny()
+        .orElseThrow(() -> new PreesmRuntimeException("No PE was found for actor: " + actor.getName()));
   }
 
   /**
@@ -116,10 +112,10 @@ public class DiagramPiGraphLinkHelper {
    * @param fifo
    *          the {@link Fifo} whose {@link PictogramElement} is searched.
    * @return the {@link PictogramElement} of the {@link Fifo}.
-   * @throws RuntimeException
+   * @throws PreesmRuntimeException
    *           if no {@link PictogramElement} could be found in this {@link Diagram} for this {@link Fifo}.
    */
-  public static ContainerShape getDelayPE(final Diagram diagram, final Fifo fifo) throws RuntimeException {
+  public static ContainerShape getDelayPE(final Diagram diagram, final Fifo fifo) throws PreesmRuntimeException {
     // Get all delays with identical attributes (may not be the
     // right delay is several delays have the same properties.)
     final Delay delay = fifo.getDelay();
@@ -132,10 +128,9 @@ public class DiagramPiGraphLinkHelper {
         pe = p;
       }
     }
-    // if PE is still null.. something is deeply wrong with this
-    // graph !
+    // if PE is still null.. something is deeply wrong with this graph !
     if (pe == null) {
-      throw new RuntimeException(
+      throw new PreesmRuntimeException(
           "Pictogram element associated to delay of Fifo " + fifo.getId() + " could not be found.");
     }
     return (ContainerShape) pe;
@@ -150,24 +145,23 @@ public class DiagramPiGraphLinkHelper {
    * @param edge
    *          the {@link Fifo} or the {@link Dependency} whose {@link FreeFormConnection} is searched.
    * @return the searched {@link FreeFormConnection}.
-   * @throws RuntimeException
-   *           if not {@link FreeFormConnection} could be found, a {@link RuntimeException} is thrown
+   * @throws PreesmRuntimeException
+   *           if not {@link FreeFormConnection} could be found, a {@link PreesmRuntimeException} is thrown
    */
   public static FreeFormConnection getFreeFormConnectionOfEdge(final Diagram diagram, final EObject edge)
-      throws RuntimeException {
+      throws PreesmRuntimeException {
     final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, edge);
     FreeFormConnection ffc = null;
     for (final PictogramElement pe : pes) {
       if ((Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe) == edge)
-          && (pe instanceof FreeFormConnection)) {
-        ffc = (FreeFormConnection) pe;
+          && (pe instanceof final FreeFormConnection freeFromConn)) {
+        ffc = freeFromConn;
       }
     }
 
-    // if PE is still null.. something is deeply wrong with this
-    // graph !
+    // if PE is still null.. something is deeply wrong with this graph !
     if (ffc == null) {
-      throw new RuntimeException("Pictogram element associated to edge " + edge + " could not be found.");
+      throw new PreesmRuntimeException("Pictogram element associated to edge " + edge + " could not be found.");
     }
     return ffc;
   }

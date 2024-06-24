@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -39,7 +38,7 @@ import org.preesm.ui.utils.FileUtils;
 /**
  * Popup menu action to generate the missing C header refinements of a PiGraph. Only one file is created, and only for
  * refinements of the top level.
- * 
+ *
  * @author ahonorat
  */
 public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler {
@@ -52,12 +51,12 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
       final Refinement ref = it.getRefinement();
       if (ref == null) {
         return true;
-      } else if (ref instanceof CHeaderRefinement) {
-        final CHeaderRefinement cref = (CHeaderRefinement) ref;
+      }
+      if (ref instanceof final CHeaderRefinement cref) {
         return (cref.getLoopPrototype() == null);
       }
       return false;
-    }).collect(Collectors.toList());
+    }).toList();
 
     // if no actor needs new refinement, then do nothing
     if (actorsWithoutRefinement.isEmpty()) {
@@ -83,7 +82,7 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
       try (final OutputStream outStream = new FileOutputStream(osString);) {
         // compute and write the result
         createAndPrintMissingRefinements(outStream, pigraph, actorsWithoutRefinement);
-      } catch (IOException e) {
+      } catch (final IOException e) {
         throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
       }
 
@@ -141,14 +140,14 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
         fA.setIsConfigurationParameter(true);
         fA.setDirection(Direction.OUT);
         fA.setType("int"); // or should we check the fifo type ?
-      } else if (p instanceof DataPort) {
+      } else if (p instanceof final DataPort dataPort) {
         fA.setIsConfigurationParameter(false);
         if (p instanceof DataInputPort) {
           fA.setDirection(Direction.IN);
         } else {
           fA.setDirection(Direction.OUT);
         }
-        final Fifo f = ((DataPort) p).getFifo();
+        final Fifo f = dataPort.getFifo();
         if (f != null) {
           fA.setType(f.getType());
         } else {

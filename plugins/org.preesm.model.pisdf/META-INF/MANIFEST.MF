@@ -12,7 +12,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore.xmi;bundle-version="2.16.0",
  org.apache.commons.io;bundle-version="2.8.0",
  org.jgrapht.core;bundle-version="1.5.1",
- wrapped.com.github.yannrichet.JMathArray;bundle-version="1.0.0",
  org.preesm.commons;visibility:=reexport,
  org.preesm.workflow,
  org.eclipse.cdt.core

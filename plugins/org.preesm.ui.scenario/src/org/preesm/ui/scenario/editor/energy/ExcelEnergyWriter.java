@@ -137,44 +137,46 @@ public class ExcelEnergyWriter extends ExcelWriter {
    */
   @Override
   protected void addCells(final WritableSheet sheet) throws FileNotFoundException, CoreException {
-    if (sheet != null) {
+    if (sheet == null) {
+      return;
+    }
 
-      Integer maxOpAbscissa = 1;
-      Integer maxVOrdinate = 1;
+    Integer maxOpAbscissa = 1;
+    Integer maxVOrdinate = 1;
 
-      final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
+    final List<AbstractActor> vSet = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
 
-      final Design design = this.scenario.getDesign();
-      for (final Component opDefId : design.getProcessingElements()) {
-        for (final AbstractActor vertexName : vSet) {
+    final Design design = this.scenario.getDesign();
+    for (final Component opDefId : design.getProcessingElements()) {
+      for (final AbstractActor vertexName : vSet) {
 
-          final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);
+        final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);
 
-          WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
-          WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
+        WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
+        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
 
-          try {
-            if (opCell == null) {
-              opCell = new Label(maxOpAbscissa, 0, opDefId.getVlnv().getName());
-              sheet.addCell(opCell);
-              maxOpAbscissa++;
-            }
-
-            if (vCell == null) {
-              vCell = new Label(0, maxVOrdinate, vertexName.getVertexPath());
-              sheet.addCell(vCell);
-              maxVOrdinate++;
-            }
-
-            WritableCell energyCell;
-            energyCell = new Label(opCell.getColumn(), vCell.getRow(), energy);
-
-            sheet.addCell(energyCell);
-          } catch (final WriteException e) {
-            PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
+        try {
+          if (opCell == null) {
+            opCell = new Label(maxOpAbscissa, 0, opDefId.getVlnv().getName());
+            sheet.addCell(opCell);
+            maxOpAbscissa++;
           }
+
+          if (vCell == null) {
+            vCell = new Label(0, maxVOrdinate, vertexName.getVertexPath());
+            sheet.addCell(vCell);
+            maxVOrdinate++;
+          }
+
+          WritableCell energyCell;
+          energyCell = new Label(opCell.getColumn(), vCell.getRow(), energy);
+
+          sheet.addCell(energyCell);
+        } catch (final WriteException e) {
+          PreesmLogger.getLogger().log(Level.WARNING, "Could not add cell", e);
         }
       }
     }
   }
+
 }

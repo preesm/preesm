@@ -241,8 +241,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
       int level = 0;
       for (final ConfigInputPort port : p.getConfigInputPorts()) {
-        if (port.getIncomingDependency().getSetter() instanceof Parameter) {
-          final Parameter incomingParameter = (Parameter) port.getIncomingDependency().getSetter();
+        if (port.getIncomingDependency().getSetter() instanceof final Parameter incomingParameter) {
           if (!this.parameterLevels.containsKey(incomingParameter)) {
             getLevelParameter(incomingParameter);
           }
@@ -278,8 +277,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
 
     definition.append(prototype.toString());
 
-    final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getParameters());
+    final List<Parameter> l = new LinkedList<>(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
 
     for (final Parameter p : l) {
@@ -436,7 +434,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor aa) {
     String vertexName;
 
-    if ((aa instanceof Actor) && ((Actor) aa).isConfigurationActor()) {
+    if ((aa instanceof final Actor actor) && actor.isConfigurationActor()) {
       vertexName = generateConfigVertex(aa);
     } else {
       vertexName = generateBodyVertex(aa);
@@ -691,15 +689,13 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         }
       }
       append("});\n");
+    } else if (p.isConfigurationInterface()) {
+      /* INHERITED */
+      append("addInheritedParam(graph, " + "\"" + p.getName() + "\", "
+          + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
     } else {
-      if (p.isConfigurationInterface()) {
-        /* INHERITED */
-        append("addInheritedParam(graph, " + "\"" + p.getName() + "\", "
-            + this.portMap.get(((ConfigInputInterface) p).getGraphPort()) + ");\n");
-      } else {
-        /* STATIC */
-        append("addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
-      }
+      /* STATIC */
+      append("addStaticParam(graph, " + "\"" + p.getName() + "\", " + p.getName() + ");\n");
     }
     return true;
   }

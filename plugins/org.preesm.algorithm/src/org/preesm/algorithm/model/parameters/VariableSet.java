@@ -39,7 +39,7 @@ package org.preesm.algorithm.model.parameters;
 import java.util.LinkedHashMap;
 
 /**
- * Class o represent sets of variable.
+ * Class to represent sets of variable.
  *
  * @author jpiat
  */
@@ -76,8 +76,8 @@ public class VariableSet extends LinkedHashMap<String, Variable> {
    *          the new expression solver
    */
   public void setExpressionSolver(final IExpressionSolver solver) {
-    for (final Variable var : values()) {
-      var.setExpressionSolver(solver);
+    for (final Variable variable : values()) {
+      variable.setExpressionSolver(solver);
     }
   }
 }

@@ -53,7 +53,7 @@ import org.preesm.algorithm.model.types.LongVertexPropertyType;
 public class ReceiveVertex extends TransferVertex {
 
   static {
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Receive_receiverGraphName);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.RECEIVE_RECEIVER_GRAPH_NAME);
   }
 
   /**

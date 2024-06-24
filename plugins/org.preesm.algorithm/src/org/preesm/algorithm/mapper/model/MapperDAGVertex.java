@@ -105,12 +105,12 @@ public class MapperDAGVertex extends DAGVertex {
   public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
 
   static {
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_OperatorDef);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Available_Operators);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_originalVertexId);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Task_duration);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_schedulingOrder);
-    AbstractVertex.public_properties.add(ImplementationPropertyNames.Vertex_Operator);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR_DEF);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.TASK_DURATION);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER);
+    AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR);
   }
 
   /**
@@ -151,9 +151,8 @@ public class MapperDAGVertex extends DAGVertex {
       @SuppressWarnings("unchecked")
       final T lookupVertex = (T) referencePiMMGraph.lookupVertex(this.getName());
       return lookupVertex;
-    } else {
-      return referencePiVertex;
     }
+    return referencePiVertex;
   }
 
   /*
@@ -168,16 +167,13 @@ public class MapperDAGVertex extends DAGVertex {
 
     if (this instanceof OverheadVertex) {
       result = new OverheadVertex(getId(), origVertex);
-    } else if (this instanceof SendVertex) {
-      result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
-          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex(),
-          origVertex);
-    } else if (this instanceof ReceiveVertex) {
-      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
-          ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
-          ((ReceiveVertex) this).getNodeIndex(), origVertex);
-    } else if (this instanceof TransferVertex) {
-      final TransferVertex t = (TransferVertex) this;
+    } else if (this instanceof final SendVertex thisSendVertex) {
+      result = new SendVertex(getId(), (MapperDAG) getBase(), thisSendVertex.getSource(), thisSendVertex.getTarget(),
+          thisSendVertex.getRouteStepIndex(), thisSendVertex.getNodeIndex(), origVertex);
+    } else if (this instanceof final ReceiveVertex thisRcvVerex) {
+      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), thisRcvVerex.getSource(), thisRcvVerex.getTarget(),
+          thisRcvVerex.getRouteStepIndex(), thisRcvVerex.getNodeIndex(), origVertex);
+    } else if (this instanceof final TransferVertex t) {
       result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
           t.getNodeIndex(), origVertex);
     } else {
@@ -218,8 +214,7 @@ public class MapperDAGVertex extends DAGVertex {
   @Override
   public boolean equals(final Object obj) {
 
-    if (obj instanceof MapperDAGVertex) {
-      final MapperDAGVertex v = (MapperDAGVertex) obj;
+    if (obj instanceof final MapperDAGVertex v) {
       return (getName().compareTo(v.getName()) == 0);
     }
 
@@ -318,17 +313,20 @@ public class MapperDAGVertex extends DAGVertex {
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {
-    if (propertyName.equals(ImplementationPropertyNames.Vertex_OperatorDef)) {
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR_DEF)) {
       return getEffectiveOperator().getComponent().getVlnv().getName();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
       return getInit().getInitialOperatorList().toString();
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
       return getInit().getParentVertex().getId();
-    } else if (propertyName.equals(ImplementationPropertyNames.Task_duration)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
       return String.valueOf(getTiming().getCost());
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_schedulingOrder)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
       return String.valueOf(getTiming().getTotalOrder(this));
-    } else if (propertyName.equals(ImplementationPropertyNames.Vertex_Operator)) {
+    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
       return getEffectiveComponent().getInstanceName();
     }
     return super.getPropertyStringValue(propertyName);
@@ -379,9 +377,8 @@ public class MapperDAGVertex extends DAGVertex {
   public ComponentInstance getEffectiveOperator() {
     if ((this.effectiveComponent != null) && (this.effectiveComponent.getComponent() instanceof ProcessingElement)) {
       return this.effectiveComponent;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**

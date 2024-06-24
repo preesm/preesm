@@ -86,9 +86,9 @@ class PapifyComponentListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof PapifyListTreeElement) {
-      String elementName = ((PapifyListTreeElement) element).label;
-      final Map<Component, PAPIStatus> statuses = ((PapifyListTreeElement) element).PAPIStatuses;
+    if (element instanceof final PapifyListTreeElement listTreeElement) {
+      final String elementName = listTreeElement.label;
+      final Map<Component, PAPIStatus> statuses = listTreeElement.papiStatuses;
 
       final PAPIStatus componentStatus = statuses.get(this.peType);
       if (componentStatus.next().equals(PAPIStatus.NO)) {

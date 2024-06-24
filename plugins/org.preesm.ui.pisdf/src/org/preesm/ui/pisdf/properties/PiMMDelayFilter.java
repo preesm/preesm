@@ -43,7 +43,7 @@ import org.preesm.model.pisdf.Delay;
 
 /**
  * Filter delays.
- * 
+ *
  * @author ahonorat
  */
 public class PiMMDelayFilter extends AbstractPropertySectionFilter {
@@ -51,15 +51,8 @@ public class PiMMDelayFilter extends AbstractPropertySectionFilter {
   @Override
   protected boolean accept(PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
-    if (eObject == null) {
-      return false;
-    }
 
-    if (eObject instanceof Delay) {
-      return true;
-    }
-
-    return false;
+    // instanceof returns false in case of null
+    return eObject instanceof Delay;
   }
-
 }

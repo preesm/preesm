@@ -17,34 +17,32 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.serialize.PiParser;
-import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
 
 /**
  * Class to trigger execution of the command on each PiGraph of the selection.
- * 
+ *
  * @author ahonorat
  */
 public abstract class AbstractGenericMultiplePiHandler extends AbstractHandler {
 
   @Override
   public Object execute(ExecutionEvent event) throws ExecutionException {
-    final IWorkbenchWindow wwindow = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow();
+    final IWorkbenchWindow wwindow = PlatformUI.getWorkbench().getActiveWorkbenchWindow();
     final IWorkbenchPage page = wwindow.getActivePage();
 
     final ISelection activeSelection = page.getSelection();
     try {
-      if (activeSelection instanceof TreeSelection) {
+      if (activeSelection instanceof final TreeSelection selection) {
         // in the resource explorer, compute for all selected .pi files
-        final TreeSelection selection = (TreeSelection) activeSelection;
         final Iterator<?> iterator = selection.iterator();
         while (iterator.hasNext()) {
           final Object next = iterator.next();
-          if (next instanceof IFile) {
-            final IFile file = (IFile) next;
+          if (next instanceof final IFile file) {
             final PiGraph piGraphWithReconnection = PiParser.getPiGraphWithReconnection(file.getFullPath().toString());
 
             processPiSDF(piGraphWithReconnection, file.getProject(), wwindow.getShell());
@@ -65,7 +63,7 @@ public abstract class AbstractGenericMultiplePiHandler extends AbstractHandler {
         ErrorWithExceptionDialog.errorDialogWithStackTrace("Unsupported selection : " + activeSelection.getClass(),
             new UnsupportedOperationException());
       }
-    } catch (PreesmRuntimeException e) {
+    } catch (final PreesmRuntimeException e) {
       ErrorWithExceptionDialog.errorDialogWithStackTrace("Error during operation.", e);
     }
     return null;
@@ -73,7 +71,7 @@ public abstract class AbstractGenericMultiplePiHandler extends AbstractHandler {
 
   /**
    * Command to perform on each selected PiGraph.
-   * 
+   *
    * @param pigraph
    *          Input graph.
    * @param iProject

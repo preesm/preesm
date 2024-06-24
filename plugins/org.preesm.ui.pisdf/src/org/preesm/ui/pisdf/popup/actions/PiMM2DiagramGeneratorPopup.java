@@ -53,9 +53,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IEditorReference;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
-import org.preesm.ui.PreesmUIPlugin;
+import org.eclipse.ui.PlatformUI;
 import org.preesm.ui.pisdf.diagram.PiMMDiagramEditor;
 import org.preesm.ui.pisdf.util.PiMM2DiagramGenerator;
 import org.preesm.ui.utils.ErrorWithExceptionDialog;
@@ -65,7 +66,7 @@ import org.preesm.ui.utils.ErrorWithExceptionDialog;
  */
 public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
 
-  private static final IWorkbench     WORKBENCH      = PreesmUIPlugin.getDefault().getWorkbench();
+  private static final IWorkbench     WORKBENCH      = PlatformUI.getWorkbench();
   private static final Shell          SHELL          = PiMM2DiagramGeneratorPopup.WORKBENCH
       .getModalDialogShellProvider().getShell();
   private static final IWorkspace     WORKSPACE      = ResourcesPlugin.getWorkspace();
@@ -87,7 +88,7 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
     return null;
   }
 
-  private void generateDiagramFile(final IFile piFile) throws ExecutionException {
+  private void generateDiagramFile(final IFile piFile) {
     try {
       final IPath fullPath = piFile.getFullPath();
       final IPath diagramFilePath = fullPath.removeFileExtension().addFileExtension("diagram");
@@ -119,7 +120,8 @@ public class PiMM2DiagramGeneratorPopup extends AbstractHandler {
   private void closeEditorIfOpen(final IPath diagramFilePath) {
     final IWorkbench workbench = PiMM2DiagramGeneratorPopup.WORKBENCH;
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
-    for (final IEditorPart activeEditor : page.getEditors()) {
+    for (final IEditorReference activeEditorReference : page.getEditorReferences()) {
+      final IEditorPart activeEditor = activeEditorReference.getEditor(true);
       if (activeEditor instanceof final PiMMDiagramEditor diagEditor) {
         // check if current diagram editor targets the diagram file we want to overwrite
         final IDiagramEditorInput diagramEditorInput = diagEditor.getDiagramEditorInput();

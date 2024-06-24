@@ -126,18 +126,18 @@ public class SpecialActorPortsIndexer {
           boolean isSource = true;
           long modulo = 0L;
           final List<SDFEdge> fifos;
-          if (actor instanceof SDFJoinVertex) {
+          if (actor instanceof final SDFJoinVertex joinVertex) {
             isSource = false;
-            fifos = ((SDFJoinVertex) actor).getIncomingConnections();
-          } else if (actor instanceof SDFRoundBufferVertex) {
+            fifos = joinVertex.getIncomingConnections();
+          } else if (actor instanceof final SDFRoundBufferVertex rbVertex) {
             isSource = false;
             modulo = graph.outgoingEdgesOf(actor).iterator().next().getProd().longValue();
-            fifos = ((SDFRoundBufferVertex) actor).getIncomingConnections();
-          } else if (actor instanceof SDFForkVertex) {
-            fifos = ((SDFForkVertex) actor).getOutgoingConnections();
-          } else if (actor instanceof SDFBroadcastVertex) {
+            fifos = rbVertex.getIncomingConnections();
+          } else if (actor instanceof final SDFForkVertex forkVertex) {
+            fifos = forkVertex.getOutgoingConnections();
+          } else if (actor instanceof final SDFBroadcastVertex brdVertex) {
             modulo = graph.incomingEdgesOf(actor).iterator().next().getCons().longValue();
-            fifos = ((SDFBroadcastVertex) actor).getOutgoingConnections();
+            fifos = brdVertex.getOutgoingConnections();
           } else {
             fifos = new ArrayList<>();
           }
@@ -204,16 +204,16 @@ public class SpecialActorPortsIndexer {
     boolean isSource = true;
 
     final List<SDFEdge> fifos;
-    if (actor instanceof SDFJoinVertex) {
+    if (actor instanceof final SDFJoinVertex sdfJoinVertex) {
       isSource = false;
-      fifos = ((SDFJoinVertex) actor).getIncomingConnections();
-    } else if (actor instanceof SDFRoundBufferVertex) {
+      fifos = sdfJoinVertex.getIncomingConnections();
+    } else if (actor instanceof final SDFRoundBufferVertex sdfRbVertex) {
       isSource = false;
-      fifos = ((SDFRoundBufferVertex) actor).getIncomingConnections();
-    } else if (actor instanceof SDFForkVertex) {
-      fifos = ((SDFForkVertex) actor).getOutgoingConnections();
-    } else if (actor instanceof SDFBroadcastVertex) {
-      fifos = ((SDFBroadcastVertex) actor).getOutgoingConnections();
+      fifos = sdfRbVertex.getIncomingConnections();
+    } else if (actor instanceof final SDFForkVertex sdfForkVertex) {
+      fifos = sdfForkVertex.getOutgoingConnections();
+    } else if (actor instanceof final SDFBroadcastVertex sdfBrdVertex) {
+      fifos = sdfBrdVertex.getOutgoingConnections();
     } else {
       fifos = new ArrayList<>();
     }
@@ -263,16 +263,16 @@ public class SpecialActorPortsIndexer {
           boolean isSource = true;
 
           final List<SDFEdge> fifos;
-          if (actor instanceof SDFJoinVertex) {
+          if (actor instanceof final SDFJoinVertex joinVertex) {
             isSource = false;
-            fifos = ((SDFJoinVertex) actor).getIncomingConnections();
-          } else if (actor instanceof SDFRoundBufferVertex) {
+            fifos = joinVertex.getIncomingConnections();
+          } else if (actor instanceof final SDFRoundBufferVertex rbVertex) {
             isSource = false;
-            fifos = ((SDFRoundBufferVertex) actor).getIncomingConnections();
-          } else if (actor instanceof SDFForkVertex) {
-            fifos = ((SDFForkVertex) actor).getOutgoingConnections();
-          } else if (actor instanceof SDFBroadcastVertex) {
-            fifos = ((SDFBroadcastVertex) actor).getOutgoingConnections();
+            fifos = rbVertex.getIncomingConnections();
+          } else if (actor instanceof final SDFForkVertex forkVertex) {
+            fifos = forkVertex.getOutgoingConnections();
+          } else if (actor instanceof final SDFBroadcastVertex brdVertex) {
+            fifos = brdVertex.getOutgoingConnections();
           } else {
             fifos = new ArrayList<>();
           }
@@ -287,8 +287,8 @@ public class SpecialActorPortsIndexer {
             for (final SDFEdge fifo : fifos) {
               if ((fifo.getSourceInterface() == iface) || (fifo.getTargetInterface() == iface)) {
                 // Switch and implicit cast for each type
-                if (actor instanceof SDFAbstractSpecialVertex) {
-                  ((SDFAbstractSpecialVertex) actor).setEdgeIndex(fifo, order);
+                if (actor instanceof final SDFAbstractSpecialVertex specialVertex) {
+                  specialVertex.setEdgeIndex(fifo, order);
                 }
 
                 order++;
@@ -306,36 +306,37 @@ public class SpecialActorPortsIndexer {
    */
   public static void sortFifoList(final List<SDFEdge> fifos, final boolean valIsSource) {
     // Check that all fifos have an index
-    if (SpecialActorPortsIndexer.checkIndexes(fifos, valIsSource)) {
-      // If indexes are valid, do the sort
-      fifos.sort((fifo0, fifo1) -> {
-        // Get the port names
-        final String p0Name = (valIsSource) ? fifo0.getSourceInterface().getName()
-            : fifo0.getTargetInterface().getName();
-        final String p1Name = (valIsSource) ? fifo1.getSourceInterface().getName()
-            : fifo1.getTargetInterface().getName();
-
-        // Compile and apply the pattern
-        final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
-        final Matcher m0 = pattern.matcher(p0Name);
-        final Matcher m1 = pattern.matcher(p1Name);
-        m0.find();
-        m1.find();
-
-        // Retrieve the indexes
-        final long yy0 = (m0.group(SpecialActorPortsIndexer.GROUP_YY) != null)
-            ? Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_YY))
-            : 0L;
-        final long yy1 = (m1.group(SpecialActorPortsIndexer.GROUP_YY) != null)
-            ? Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_YY))
-            : 0L;
-        final long xx0 = Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_XX));
-        final long xx1 = Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_XX));
-
-        // Sort according to yy indexes if they are different,
-        // and according to xx indexes otherwise
-        return (int) ((yy0 != yy1) ? (yy0 - yy1) : (xx0 - xx1));
-      });
+    if (!SpecialActorPortsIndexer.checkIndexes(fifos, valIsSource)) {
+      return;
     }
+
+    // If indexes are valid, do the sort
+    fifos.sort((fifo0, fifo1) -> {
+      // Get the port names
+      final String p0Name = (valIsSource) ? fifo0.getSourceInterface().getName() : fifo0.getTargetInterface().getName();
+      final String p1Name = (valIsSource) ? fifo1.getSourceInterface().getName() : fifo1.getTargetInterface().getName();
+
+      // Compile and apply the pattern
+      final Pattern pattern = Pattern.compile(SpecialActorPortsIndexer.INDEX_REGEX);
+      final Matcher m0 = pattern.matcher(p0Name);
+      final Matcher m1 = pattern.matcher(p1Name);
+      m0.find();
+      m1.find();
+
+      // Retrieve the indexes
+      final long yy0 = (m0.group(SpecialActorPortsIndexer.GROUP_YY) != null)
+          ? Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_YY))
+          : 0L;
+      final long yy1 = (m1.group(SpecialActorPortsIndexer.GROUP_YY) != null)
+          ? Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_YY))
+          : 0L;
+      final long xx0 = Long.parseLong(m0.group(SpecialActorPortsIndexer.GROUP_XX));
+      final long xx1 = Long.parseLong(m1.group(SpecialActorPortsIndexer.GROUP_XX));
+
+      // Sort according to yy indexes if they are different,
+      // and according to xx indexes otherwise
+      return (int) ((yy0 != yy1) ? (yy0 - yy1) : (xx0 - xx1));
+    });
+
   }
 }

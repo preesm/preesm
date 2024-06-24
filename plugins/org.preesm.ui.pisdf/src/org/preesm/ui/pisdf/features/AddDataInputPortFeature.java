@@ -39,18 +39,24 @@
 package org.preesm.ui.pisdf.features;
 
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.ICustomContext;
 import org.eclipse.graphiti.mm.algorithms.GraphicsAlgorithm;
 import org.eclipse.graphiti.mm.algorithms.Rectangle;
 import org.eclipse.graphiti.mm.algorithms.Text;
 import org.eclipse.graphiti.mm.algorithms.styles.Orientation;
+import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.services.IGaService;
 import org.eclipse.graphiti.util.ColorConstant;
 import org.eclipse.graphiti.util.IColorConstant;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.ui.pisdf.util.PiMMUtil;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -72,6 +78,10 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
 
   /** The Constant DATA_INPUT_PORT_KIND. */
   public static final String DATA_INPUT_PORT_KIND = "input";
+
+  private static final String BRD_INPUT_ERR_MESSAGE = "A Broadcast Actor can have only 1 data input port.";
+
+  private static final String FORK_INPUT_ERR_MESSAGE = "A Fork Actor can have only 1 data output port.";
 
   /**
    * Default constructor.
@@ -116,6 +126,32 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
   /*
    * (non-Javadoc)
    *
+   * @see org.eclipse.graphiti.features.custom.AbstractCustomFeature#canExecute(org.eclipse.graphiti.features.context.
+   * ICustomContext)
+   */
+  @Override
+  public boolean canExecute(final ICustomContext context) {
+    // allow if exactly one pictogram element representing an Actor is selected
+    boolean ret = false;
+    final PictogramElement[] pes = context.getPictogramElements();
+    if ((pes != null) && (pes.length == 1)) {
+      final Object bo = getBusinessObjectForPictogramElement(pes[0]);
+      if (bo instanceof final BroadcastActor brdActor && !brdActor.getDataInputPorts().isEmpty()) {
+        PiMMUtil.setToolTip(getFeatureProvider(), pes[0].getGraphicsAlgorithm(), getDiagramBehavior(),
+            BRD_INPUT_ERR_MESSAGE);
+      } else if (bo instanceof final ForkActor forkActor && !forkActor.getDataInputPorts().isEmpty()) {
+        PiMMUtil.setToolTip(getFeatureProvider(), pes[0].getGraphicsAlgorithm(), getDiagramBehavior(),
+            FORK_INPUT_ERR_MESSAGE);
+      } else if (bo instanceof ExecutableActor) {
+        ret = true;
+      }
+    }
+    return ret;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
    * @see org.preesm.ui.pisdf.features.AbstractAddActorPortFeature#addPortGA(org.eclipse.graphiti.mm.algorithms.
    * GraphicsAlgorithm)
    */
@@ -128,7 +164,7 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
     rectangle.setForeground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_FOREGROUND));
     rectangle.setBackground(manageColor(AddDataInputPortFeature.DATA_INPUT_PORT_BACKGROUND));
     rectangle.setLineWidth(1);
-    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    final int portFontHeight = AbstractAddActorPortFeature.portFontHeight;
     gaService.setSize(rectangle, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
         AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE);
     gaService.setLocation(rectangle, 0, 1 + ((portFontHeight - AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE) / 2));
@@ -143,19 +179,9 @@ public class AddDataInputPortFeature extends AbstractAddActorPortFeature {
    */
   @Override
   public GraphicsAlgorithm addPortLabel(final GraphicsAlgorithm containerShape, final String portName) {
-    // Get the GaService
-    final IGaService gaService = Graphiti.getGaService();
 
-    // Create the text
-    final Text text = gaService.createText(containerShape);
-    text.setValue(portName);
-    text.setFont(getPortFont());
-    text.setForeground(manageColor(AbstractAddActorPortFeature.PORT_TEXT_FOREGROUND));
-
-    // Layout the text
-    final int portFontHeight = AbstractAddActorPortFeature.PORT_FONT_HEIGHT;
+    final Text text = (Text) super.addPortLabel(containerShape, portName);
     text.setHorizontalAlignment(Orientation.ALIGNMENT_RIGHT);
-    gaService.setHeight(text, portFontHeight);
 
     return text;
   }

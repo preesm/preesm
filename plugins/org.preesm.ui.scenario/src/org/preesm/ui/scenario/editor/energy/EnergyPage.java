@@ -85,6 +85,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.osgi.framework.FrameworkUtil;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.impl.PEPowerImpl;
@@ -105,8 +106,16 @@ import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
  */
 public class EnergyPage extends ScenarioPage {
 
+  private static final String COMMS_HEADER         = Messages.getString("Energy.commsHeader");
   private static final String OP_DEF_TITLE         = Messages.getString("Energy.opDefColumn");
   private static final String POWER_PLATFORM_TITLE = Messages.getString("Energy.powerPlatformColumn");
+
+  private static final String ERROR_DIALOG_TITLE = "Wrong number format";
+  private static final String ERROR_DIALOG_MSG   = "Power PE values are Double typed.";
+
+  private static final String ERROR_STATUS_MSG = "Could not parse double. ";
+
+  private static final String PLUGIN_ID = FrameworkUtil.getBundle(EnergyPage.class).getSymbolicName();
 
   private static final String[] POWER_PLATFORM_NAMES = { OP_DEF_TITLE, POWER_PLATFORM_TITLE };
 
@@ -265,16 +274,16 @@ public class EnergyPage extends ScenarioPage {
         operatorTypes.add(opDefId.getVlnv().getName());
       }
     }
-    Collections.sort(operatorTypes, (o1, o2) -> o1.compareTo(o2));
+    Collections.sort(operatorTypes, Comparable::compareTo);
     newTableViewer.setContentProvider(new CommsEnergyContentProvider());
     newTableViewer.setLabelProvider(new CommsEnergyLabelProvider(operatorTypes, this.scenario));
 
-    String[] columnNames = new String[operatorTypes.size() + 1];
+    final String[] columnNames = new String[operatorTypes.size() + 1];
     final TableColumn[] columns = new TableColumn[operatorTypes.size() + 1];
     final TableColumn columnBase = new TableColumn(table, SWT.NONE, 0);
-    columnBase.setText(Messages.getString("Energy.commsHeader"));
+    columnBase.setText(COMMS_HEADER);
     columns[0] = columnBase;
-    columnNames[0] = Messages.getString("Energy.commsHeader");
+    columnNames[0] = COMMS_HEADER;
     for (int i = 1; i < operatorTypes.size() + 1; i++) {
       final TableColumn columni = new TableColumn(table, SWT.NONE, i);
       columnNames[i] = operatorTypes.get(i - 1);
@@ -285,13 +294,12 @@ public class EnergyPage extends ScenarioPage {
     newTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final PeCommsEnergyImpl commsEnergyPe = (PeCommsEnergyImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
           double parseDouble = 0.0;
-          if (!property.equals(Messages.getString("Energy.commsHeader"))) {
+          if (!property.equals(COMMS_HEADER)) {
             final double oldpowerPE = EnergyPage.this.scenario.getEnergyConfig()
                 .getCommValueOrDefault(commsEnergyPe.getKey(), property);
             try {
@@ -300,9 +308,8 @@ public class EnergyPage extends ScenarioPage {
                 dirty = true;
               }
             } catch (final NumberFormatException e) {
-              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Power PE values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), ERROR_DIALOG_TITLE, ERROR_DIALOG_MSG,
+                  new Status(IStatus.ERROR, PLUGIN_ID, ERROR_STATUS_MSG + e.getMessage()));
             }
           }
 
@@ -316,19 +323,17 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof PeCommsEnergyImpl) {
-          final PeCommsEnergyImpl commsEnergyPe = (PeCommsEnergyImpl) element;
-          if (!property.equals(Messages.getString("Energy.commsHeader"))) {
-            return Double.toString(
-                EnergyPage.this.scenario.getEnergyConfig().getCommValueOrDefault(commsEnergyPe.getKey(), property));
-          }
+        if (element instanceof final PeCommsEnergyImpl commsEnergyPe && !property.equals(COMMS_HEADER)) {
+          return Double.toString(
+              EnergyPage.this.scenario.getEnergyConfig().getCommValueOrDefault(commsEnergyPe.getKey(), property));
         }
+
         return "";
       }
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return !property.contentEquals(Messages.getString("Energy.commsHeader"));
+        return !property.contentEquals(COMMS_HEADER);
       }
     });
 
@@ -403,8 +408,7 @@ public class EnergyPage extends ScenarioPage {
     newTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final PEPowerImpl powerPe = (PEPowerImpl) ti.getData();
           final String newValue = (String) value;
           boolean dirty = false;
@@ -417,9 +421,8 @@ public class EnergyPage extends ScenarioPage {
                 powerPe.setValue(parseDouble);
               }
             } catch (final NumberFormatException e) {
-              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Power PE values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), ERROR_DIALOG_TITLE, ERROR_DIALOG_MSG,
+                  new Status(IStatus.ERROR, PLUGIN_ID, ERROR_STATUS_MSG + e.getMessage()));
             }
           }
 
@@ -433,12 +436,10 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof PEPowerImpl) {
-          final PEPowerImpl powerPe = (PEPowerImpl) element;
-          if (POWER_PLATFORM_TITLE.equals(property)) {
-            return Double.toString(powerPe.getValue());
-          }
+        if (element instanceof final PEPowerImpl powerPe && POWER_PLATFORM_TITLE.equals(property)) {
+          return Double.toString(powerPe.getValue());
         }
+
         return "";
       }
 
@@ -596,8 +597,7 @@ public class EnergyPage extends ScenarioPage {
     this.tableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final AbstractActor actor = (AbstractActor) ti.getData();
 
           final String componentType = coreCombo.getText();
@@ -616,8 +616,7 @@ public class EnergyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof AbstractActor) {
-          final AbstractActor actor = (AbstractActor) element;
+        if (element instanceof final AbstractActor actor) {
           final String componentType = coreCombo.getText();
           final Component component = EnergyPage.this.scenario.getDesign().getComponent(componentType);
           return EnergyPage.this.scenario.getEnergyConfig().getEnergyActorOrDefault(actor, component);
@@ -882,8 +881,7 @@ public class EnergyPage extends ScenarioPage {
     newTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           @SuppressWarnings("unchecked")
           final Entry<String, Double> objective = (Entry<String, Double>) ti.getData();
           final String newValue = (String) value;
@@ -897,9 +895,8 @@ public class EnergyPage extends ScenarioPage {
                 dirty = true;
               }
             } catch (final NumberFormatException e) {
-              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Power PE values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+              ErrorDialog.openError(EnergyPage.this.getEditorSite().getShell(), ERROR_DIALOG_TITLE, ERROR_DIALOG_MSG,
+                  new Status(IStatus.ERROR, PLUGIN_ID, ERROR_STATUS_MSG + e.getMessage()));
             }
           }
 

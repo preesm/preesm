@@ -48,7 +48,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -135,11 +134,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
      */
     @Override
     public boolean equals(final Object obj) {
-      if (obj instanceof Range) {
-        return ((((Range) obj).start == this.start) && (((Range) obj).end == this.end));
-      } else {
-        return false;
+      if (obj instanceof final Range range) {
+        return ((range.start == this.start) && (range.end == this.end));
       }
+      return false;
     }
 
     @Override
@@ -482,7 +480,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // 0. Disconnect all delays from FIFOs
     final List<Fifo> fifos = graph.getFifos();
     for (final Fifo fifo : fifos) {
-      Delay delay = fifo.getDelay();
+      final Delay delay = fifo.getDelay();
       if (delay != null) {
         final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
 
@@ -651,17 +649,17 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Fifo fifo = iter.next();
       final FreeFormConnection ffc = fifoFfcMap.get(fifo);
 
-      AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
+      final AbstractActor containingActor = fifo.getTargetPort().getContainingActor();
 
       final EList<Point> bendpoints = ffc.getBendpoints();
       if (bendpoints.isEmpty()) {
         continue;
       }
 
-      if (containingActor instanceof DelayActor) {
+      if (containingActor instanceof final DelayActor delayActor) {
         final int currentX = bendpoints.get(0).getX();
         final int currentY = bendpoints.get(0).getY();
-        layoutFifoToDelay(diagram, currentY, currentX, ffc, ((DelayActor) containingActor).getLinkedDelay());
+        layoutFifoToDelay(diagram, currentY, currentX, ffc, delayActor.getLinkedDelay());
       }
 
       final int index = bendpoints.size() < 2 ? 0 : bendpoints.size() - 2;
@@ -741,8 +739,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    */
   private void layoutFeedbackFifos(final Diagram diagram, final List<Fifo> feedbackFifos,
       final List<List<AbstractActor>> stagedActors, final List<List<Range>> stagesGaps, final List<Range> stageWidth) {
-    // Sort FIFOs according to the number of stages through which they're
-    // going
+    // Sort FIFOs according to the number of stages through which they're going
     final List<Fifo> sortedFifos = new ArrayList<>(feedbackFifos);
     sortedFifos.sort((f1, f2) -> {
       final int srcStage1 = getActorStage((AbstractActor) f1.getSourcePort().eContainer(), stagedActors);
@@ -755,9 +752,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     });
 
     // Add new gap on top of all stages
-    for (final List<Range> gaps : stagesGaps) {
-      gaps.add(new Range(0, AutoLayoutFeature.X_INIT));
-    }
+    stagesGaps.forEach(g -> g.add(new Range(0, AutoLayoutFeature.X_INIT)));
 
     // Layout feedback FIFOs one by one, from short to long distances
     for (final Fifo fifo : sortedFifos) {
@@ -769,7 +764,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       // Do the layout for each stage
       for (int stageIdx = srcStage; stageIdx >= dstStage; stageIdx--) {
         // Find the closest gap to the feedback fifo
-        int fccBpsize = ffc.getBendpoints().size();
+        final int fccBpsize = ffc.getBendpoints().size();
         if (fccBpsize < 2) {
           break;
         }
@@ -975,7 +970,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     // Retrieve the last bendpoint of the ffc (added when
     // the
     // actor was moved.)
-    int fccBpSize = ffc.getBendpoints().size();
+    final int fccBpSize = ffc.getBendpoints().size();
     if (fccBpSize > 0) {
       final Point lastBp = ffc.getBendpoints().get(fccBpSize - 1);
       // Move it
@@ -1021,7 +1016,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
    * @return the {@link List} of roots.
    */
   private static List<Parameter> findRootParameters(final List<Parameter> params) {
-    return params.stream().filter(x -> !x.isDependent()).collect(Collectors.toList());
+    return params.stream().filter(x -> !x.isDependent()).toList();
   }
 
   /**
@@ -1048,8 +1043,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     while (!paramPoolList.isEmpty()) {
       /* Get only the parameter that can be added to the current stage due to their dependencies */
       final List<Parameter> nextStageParamList = paramPoolList.stream().filter(x -> x.getInputDependentParameters()
-          .stream().filter(in -> processedParams.contains(in)).count() == x.getInputDependentParameters().size())
-          .collect(Collectors.toList());
+          .stream().filter(processedParams::contains).count() == x.getInputDependentParameters().size()).toList();
       processedParams.addAll(nextStageParamList);
       stages.add(nextStageParamList);
       paramPoolList.removeAll(nextStageParamList);

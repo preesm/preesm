@@ -865,13 +865,11 @@ public class Distributor {
           final Iterator<String> it = mobjByBank.keySet().iterator();
           bank = it.next();
         }
-        // Put the mObj in the verticesSet
-        Set<MemoryExclusionVertex> verticesSet = memExesVerticesSet.get(bank);
-        if (verticesSet == null) {
-          // If the component is not yet in the map, add it
-          verticesSet = new LinkedHashSet<>();
-          memExesVerticesSet.put(bank, verticesSet);
-        }
+
+        // Put the mObj in the verticesSet, if the component is not yet in the map, add it
+        final Set<
+            MemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, k -> new LinkedHashSet<>());
+
         verticesSet.add(memExVertex);
       }
     }

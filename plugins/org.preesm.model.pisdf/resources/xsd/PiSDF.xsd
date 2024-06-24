@@ -90,7 +90,7 @@
       <xs:attribute type="xs:string" name="init_end_ref" use="optional" />
 		<!--  Properties for specific types of params -->
       <xs:attribute type="xs:string" name="defaultValue" use="optional" />
-      <xs:attribute type="xs:string" name="malleable_expr" use="optional" />
+      <xs:attribute type="xs:string" name="moldable_expr" use="optional" />
    </xs:complexType>
 
    <xs:complexType name="Port">

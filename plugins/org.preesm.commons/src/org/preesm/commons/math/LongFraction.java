@@ -191,8 +191,8 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
    * @return -1 if this is less than {@code object}, +1 if this is greater than {@code object}, 0 if they are equal.
    */
   public int compareTo(LongFraction object) {
-    long nOd = numerator * object.denominator;
-    long dOn = denominator * object.numerator;
+    final long nOd = numerator * object.denominator;
+    final long dOn = denominator * object.numerator;
     final int tmpResult = (nOd > dOn) ? +1 : 0;
     return (nOd < dOn) ? -1 : tmpResult;
   }
@@ -221,10 +221,9 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     if (this == other) {
       return true;
     }
-    if (other instanceof LongFraction) {
+    if (other instanceof final LongFraction rhs) {
       // since fractions are always in lowest terms, numerators and
       // denominators can be compared directly for equality.
-      LongFraction rhs = (LongFraction) other;
       return (numerator == rhs.numerator) && (denominator == rhs.denominator);
     }
     return false;
@@ -392,27 +391,27 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     }
     // if denominators are randomly distributed, d1 will be 1 about 61%
     // of the time.
-    long d1 = ArithmeticUtils.gcd(denominator, fraction.denominator);
+    final long d1 = ArithmeticUtils.gcd(denominator, fraction.denominator);
     if (d1 == 1) {
       // result is ( (u*v' +/- u'v) / u'v')
-      long uvp = ArithmeticUtils.mulAndCheck(numerator, fraction.denominator);
-      long upv = ArithmeticUtils.mulAndCheck(fraction.numerator, denominator);
+      final long uvp = ArithmeticUtils.mulAndCheck(numerator, fraction.denominator);
+      final long upv = ArithmeticUtils.mulAndCheck(fraction.numerator, denominator);
       return new LongFraction(isAdd ? ArithmeticUtils.addAndCheck(uvp, upv) : ArithmeticUtils.subAndCheck(uvp, upv),
           ArithmeticUtils.mulAndCheck(denominator, fraction.denominator));
     }
     // the quantity 't' requires 65 bits of precision; see knuth 4.5.1
     // exercise 7. we're going to use a BigInteger.
     // t = u(v'/d1) +/- v(u'/d1)
-    BigInteger uvp = BigInteger.valueOf(numerator).multiply(BigInteger.valueOf(fraction.denominator / d1));
-    BigInteger upv = BigInteger.valueOf(fraction.numerator).multiply(BigInteger.valueOf(denominator / d1));
-    BigInteger t = isAdd ? uvp.add(upv) : uvp.subtract(upv);
+    final BigInteger uvp = BigInteger.valueOf(numerator).multiply(BigInteger.valueOf(fraction.denominator / d1));
+    final BigInteger upv = BigInteger.valueOf(fraction.numerator).multiply(BigInteger.valueOf(denominator / d1));
+    final BigInteger t = isAdd ? uvp.add(upv) : uvp.subtract(upv);
     // but d2 doesn't need extra precision because
     // d2 = gcd(t,d1) = gcd(t mod d1, d1)
-    long tmodd1 = t.mod(BigInteger.valueOf(d1)).longValue();
-    long d2 = (tmodd1 == 0) ? d1 : ArithmeticUtils.gcd(tmodd1, d1);
+    final long tmodd1 = t.mod(BigInteger.valueOf(d1)).longValue();
+    final long d2 = (tmodd1 == 0) ? d1 : ArithmeticUtils.gcd(tmodd1, d1);
 
     // result is (t/d2) / (u'/d1)(v'/d2)
-    BigInteger w = t.divide(BigInteger.valueOf(d2));
+    final BigInteger w = t.divide(BigInteger.valueOf(d2));
     if (w.bitLength() > 63) {
       throw new MathArithmeticException(LocalizedFormats.NUMERATOR_OVERFLOW_AFTER_MULTIPLY, w);
     }
@@ -441,8 +440,8 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
     }
     // knuth 4.5.1
     // make sure we don't overflow unless the result *must* overflow.
-    long d1 = ArithmeticUtils.gcd(numerator, fraction.denominator);
-    long d2 = ArithmeticUtils.gcd(fraction.numerator, denominator);
+    final long d1 = ArithmeticUtils.gcd(numerator, fraction.denominator);
+    final long d2 = ArithmeticUtils.gcd(fraction.numerator, denominator);
     return getReducedFraction(ArithmeticUtils.mulAndCheck(numerator / d1, fraction.numerator / d2),
         ArithmeticUtils.mulAndCheck(denominator / d2, fraction.denominator / d1));
   }
@@ -549,7 +548,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
       denominator = -denominator;
     }
     // simplify fraction.
-    long gcd = ArithmeticUtils.gcd(numerator, denominator);
+    final long gcd = ArithmeticUtils.gcd(numerator, denominator);
     numerator /= gcd;
     denominator /= gcd;
     return new LongFraction(numerator, denominator);
@@ -557,7 +556,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
 
   /**
    * Returns an approximated ceiled version of the Fraction.
-   * 
+   *
    * @param maxBinaryPrecision
    *          Maximal number of bits.
    * @return A ceiled fraction of the original with no more bits than the given precision on both the numerator and the
@@ -585,7 +584,7 @@ public class LongFraction extends Number implements FieldElement<LongFraction>, 
 
   /**
    * Returns an approximated floored version of the Fraction.
-   * 
+   *
    * @param maxBinaryPrecision
    *          Maximal number of bits.
    * @return A floored fraction of the original with no more bits than the given precision on both the numerator and the

@@ -42,10 +42,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.util.FifoBreakingCycleDetector.CycleNodeType;
 
 /**
  * This class provides helper functions to compute the breaking fifo in a cycle.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -189,7 +190,7 @@ public class FifoBreakingCycleDetector {
 
   /**
    * Compute entry and exit actor in a cycle, in the same order as in the cycle (if appearing).
-   * 
+   *
    * @param cycle
    *          List of nodes forming a cycle.
    * @param cyclesFifos
@@ -204,12 +205,12 @@ public class FifoBreakingCycleDetector {
   public static void computeExitAndEntries(final List<AbstractActor> cycle, final List<List<Fifo>> cyclesFifos,
       final List<AbstractActor> actorsWithEntries, final List<AbstractActor> actorsWithExits) {
 
-    Iterator<AbstractActor> it = cycle.iterator();
-    Iterator<List<Fifo>> itL = cyclesFifos.iterator();
+    final Iterator<AbstractActor> it = cycle.iterator();
+    final Iterator<List<Fifo>> itL = cyclesFifos.iterator();
     AbstractActor current = it.next();
     while (it.hasNext()) {
       final AbstractActor next = it.next();
-      List<Fifo> fifos = itL.next();
+      final List<Fifo> fifos = itL.next();
       final int nbCommonPorts = fifos.size();
       if (current.getDataOutputPorts().size() > nbCommonPorts) {
         actorsWithExits.add(current);
@@ -219,7 +220,7 @@ public class FifoBreakingCycleDetector {
       }
       current = next;
     }
-    List<Fifo> fifos = itL.next();
+    final List<Fifo> fifos = itL.next();
     final int nbCommonPorts = fifos.size();
     if (current.getDataOutputPorts().size() > nbCommonPorts) {
       actorsWithExits.add(current);

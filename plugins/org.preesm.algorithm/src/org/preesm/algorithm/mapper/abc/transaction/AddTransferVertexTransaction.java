@@ -170,8 +170,8 @@ public class AddTransferVertexTransaction implements Transaction {
     // transfers with
     // the ones from previous transaction
     if (this.precedingTransaction != null) {
-      if (this.precedingTransaction instanceof AddTransferVertexTransaction) {
-        this.currentSource = ((AddTransferVertexTransaction) this.precedingTransaction).getTransfer();
+      if (this.precedingTransaction instanceof final AddTransferVertexTransaction atvt) {
+        this.currentSource = atvt.getTransfer();
         ((MapperDAG) this.currentSource.getBase()).removeAllEdges(this.currentSource, currentTarget);
       }
     } else {

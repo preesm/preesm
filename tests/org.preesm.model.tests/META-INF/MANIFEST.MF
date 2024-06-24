@@ -8,6 +8,7 @@ Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Require-Bundle: org.junit;bundle-version="4.13.2",
  org.mockito.mockito-core,
+ org.eclipse.xtext.xbase.lib,
  org.preesm.model.pisdf,
  org.preesm.model.slam,
  org.preesm.model.scenario,
@@ -16,3 +17,6 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
 Export-Package: org.ietr.preesm.architecture.test,
  org.preesm.model.pisdf.test,
  org.preesm.model.slam.test
+Import-Package: org.junit.jupiter.api;version="5.8.1",
+ org.junit.jupiter.api.function;version="5.8.1",
+ org.junit.platform.commons.annotation;version="1.8.1"

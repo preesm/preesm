@@ -49,11 +49,11 @@ public class ErrorOnWarningLogHandler extends Handler {
   private final Set<LogRecord> recordedLogs = new LinkedHashSet<>();
 
   @Override
-  public void publish(final LogRecord record) {
-    if (record.getLevel().intValue() >= Level.WARNING.intValue() && !recordedLogs.contains(record)) {
-      record.setLevel(Level.SEVERE);
-      recordedLogs.add(record);
-      throw new ErrorOnWarningError(record);
+  public void publish(final LogRecord logRecord) {
+    if (logRecord.getLevel().intValue() >= Level.WARNING.intValue() && !recordedLogs.contains(logRecord)) {
+      logRecord.setLevel(Level.SEVERE);
+      recordedLogs.add(logRecord);
+      throw new ErrorOnWarningError(logRecord);
     }
   }
 

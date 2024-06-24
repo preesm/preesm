@@ -222,7 +222,7 @@ public class CodegenPage extends ScenarioPage {
       FieldUtils.colorRedOnCondition(text, true);
       return;
     }
-    final String codegenDirPath = text.getText().replaceAll("//", "/");
+    final String codegenDirPath = text.getText().replace("//", "/");
     final String sanitizedPath;
     if (codegenDirPath.startsWith("/")) {
       sanitizedPath = codegenDirPath.substring(1);

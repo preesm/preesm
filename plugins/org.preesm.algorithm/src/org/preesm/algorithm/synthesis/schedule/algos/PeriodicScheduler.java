@@ -43,7 +43,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.ECollections;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -77,13 +76,13 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * <p>
  * For more details, see conference paper "Scheduling of Synchronous Dataflow Graphs with Partially Periodic Real-Time
  * Constraints", published at RTNS 2020 (DOI 10.1145/3394810.3394820).
- * 
+ *
  * @author ahonorat
  */
 public class PeriodicScheduler extends AbstractScheduler {
 
   /**
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -128,7 +127,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   /**
-   * 
+   *
    * @author ahonorat
    *
    */
@@ -141,12 +140,12 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   /**
-   * 
+   *
    * @author ahonorat
    *
    * @throws PreesmSchedulingException
    *           If scheduling fails.
-   * 
+   *
    */
   protected static class CoreAbstraction {
 
@@ -181,8 +180,8 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected CoreAbstraction                 defaultCore;         // default component operator in SLAM design
 
   protected long horizon;            // deadline of the whole schedule
-  protected long Ctot;               // total load
-  protected long Cmax;               // maximum load of a single firing
+  protected long cTot;               // total load
+  protected long cMax;               // maximum load of a single firing
   protected long graphPeriod;        // period of the graph
   protected int  nbFiringsAllocated; // index for allocation check
 
@@ -192,33 +191,33 @@ public class PeriodicScheduler extends AbstractScheduler {
    * Init public values (reset by {@link exec} method).
    */
   public PeriodicScheduler() {
-    Ctot = 0L;
-    Cmax = 0L;
+    cTot = 0L;
+    cMax = 0L;
     graphPeriod = 0L;
     cores = null;
   }
 
   /**
    * Total load of the last schedule attempt.
-   * 
+   *
    * @return Sum of all firing execution times (except special actors).
    */
   public long getTotalLoad() {
-    return Ctot;
+    return cTot;
   }
 
   /**
    * Maximal load of a single firing in the last schedule attempt.
-   * 
+   *
    * @return Maximum firing execution time (except special actors).
    */
   public long getMaximalFiringLoad() {
-    return Cmax;
+    return cMax;
   }
 
   /**
    * Finish time of the last firing.
-   * 
+   *
    * @return Finish time of the last firing, or 0 if not yet computed.
    */
   public long getLastEndTime() {
@@ -226,7 +225,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       return 0;
     }
     long maxEnd = 0;
-    for (CoreAbstraction ca : cores) {
+    for (final CoreAbstraction ca : cores) {
       maxEnd = Math.max(maxEnd, ca.implTime);
     }
     return maxEnd;
@@ -234,7 +233,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Period of the graph (as in the input graph).
-   * 
+   *
    * @return Graph period or 0 if no graph period.
    */
   public long getGraphPeriod() {
@@ -248,11 +247,11 @@ public class PeriodicScheduler extends AbstractScheduler {
       throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");
     }
 
-    int nbCore = slamDesign.getProcessingElements().get(0).getInstances().size();
-    PreesmLogger.getLogger().log(Level.INFO, "Found " + nbCore + " cores.");
+    final int nbCore = slamDesign.getProcessingElements().get(0).getInstances().size();
+    PreesmLogger.getLogger().info(() -> "Found " + nbCore + " cores.");
 
     graphPeriod = piGraph.getPeriod().evaluate();
-    PreesmLogger.getLogger().log(Level.INFO, "Graph period is: " + graphPeriod);
+    PreesmLogger.getLogger().info(() -> "Graph period is: " + graphPeriod);
 
     final long time = System.nanoTime();
 
@@ -269,10 +268,10 @@ public class PeriodicScheduler extends AbstractScheduler {
     possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
     topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
-    for (ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
+    for (final ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
       final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
       topParallelSchedule.getScheduleTree().add(createActorSchedule);
-      CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);
+      final CoreAbstraction ca = new CoreAbstraction(ci, createActorSchedule);
       cores.add(ca);
       ciTOca.put(ci, ca);
       if (ci.equals(scenario.getSimulationInfo().getMainOperator())) {
@@ -283,17 +282,16 @@ public class PeriodicScheduler extends AbstractScheduler {
     // create abstraction of the input SRDAG, and initializes min/maxStartTime of periodic actors
     createAbsGraph();
 
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Starting to schedule and map " + absGraph.vertexSet().size() + " actors.");
+    PreesmLogger.getLogger().info(() -> "Starting to schedule and map " + absGraph.vertexSet().size() + " actors.");
 
     // initializes total load, source and sinks nodes
-    Ctot = 0;
-    Cmax = 0;
+    cTot = 0;
+    cMax = 0;
     firstNodes = new ArrayList<>();
     lastNodes = new ArrayList<>();
-    for (VertexAbstraction va : absGraph.vertexSet()) {
-      Ctot += va.load;
-      Cmax = Math.max(Cmax, va.load);
+    for (final VertexAbstraction va : absGraph.vertexSet()) {
+      cTot += va.load;
+      cMax = Math.max(cMax, va.load);
       if (absGraph.incomingEdgesOf(va).isEmpty()) {
         firstNodes.add(va);
       }
@@ -305,13 +303,13 @@ public class PeriodicScheduler extends AbstractScheduler {
     // initializes and check horizon
     horizon = graphPeriod;
     if (horizon <= 0) {
-      horizon = Ctot;
-      PreesmLogger.getLogger().log(Level.INFO,
-          "No period found: scheduling performed with sequential worst case: " + Ctot + " time unit.");
-    } else if (Ctot / (double) nbCore > horizon) {
+      horizon = cTot;
+      PreesmLogger.getLogger()
+          .info(() -> "No period found: scheduling performed with sequential worst case: " + cTot + " time unit.");
+    } else if (cTot / (double) nbCore > horizon) {
       throw new PreesmSchedulingException(
           "Your graph is clearly not schedulable: utilization factor is higher than number of cores. Total load: "
-              + Ctot);
+              + cTot);
     }
     // initializes min/max/averageStartTime of all actors (and updates the periodic one)
     setAbsGraph(absGraph, horizon, firstNodes, lastNodes);
@@ -321,17 +319,17 @@ public class PeriodicScheduler extends AbstractScheduler {
 
     // get the implementation end time
     long maxImpl = 0;
-    for (CoreAbstraction ca : cores) {
+    for (final CoreAbstraction ca : cores) {
       if (ca.implTime > maxImpl) {
         maxImpl = ca.implTime;
       }
     }
 
-    long duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Time+ " + Math.round(duration / 1e6) + " ms.");
+    final long duration = System.nanoTime() - time;
+    PreesmLogger.getLogger().info(() -> "Time+ " + Math.round(duration / 1e6) + " ms.");
 
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
+    PreesmLogger.getLogger()
+        .info("Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
 
     return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
@@ -339,7 +337,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   /**
    * Compute abstract graph from the PiGraph SRDAG input. Also, initializes the load, the possible mapping, and the
    * min/maxStartTime of actors.
-   * 
+   *
    * @return New abstract graph of the SRADG.
    * @throws PreesmSchedulingException
    *           If remaining idle time is greater than maximum allowed.
@@ -347,18 +345,18 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> createAbsGraph() {
     absGraph = new DefaultDirectedGraph<>(EdgeAbstraction.class);
 
-    Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new AbstractActorNameComparator());
-    Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new AbstractActorNameComparator());
+    final Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new AbstractActorNameComparator());
+    final Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new AbstractActorNameComparator());
     // copy actors of input PiGraph
     for (final AbstractActor aa : piGraph.getActors()) {
-      VertexAbstraction va = new VertexAbstraction(aa);
+      final VertexAbstraction va = new VertexAbstraction(aa);
       absGraph.addVertex(va);
       aaTOva.put(aa, va);
 
       // store load, with memoization over original actors
-      AbstractActor originalActor = va.ori;
+      final AbstractActor originalActor = va.ori;
       if (!loadMemoization.containsKey(originalActor)) {
-        long load = st.doSwitch(originalActor);
+        final long load = st.doSwitch(originalActor);
         // long load = getLoad(originalActor, slamDesign, scenario);
         loadMemoization.put(originalActor, load);
         va.load = load;
@@ -367,25 +365,22 @@ public class PeriodicScheduler extends AbstractScheduler {
       }
       // store allowed mappings, with memoization over original actors
       if (!possibleMappings.containsKey(originalActor)) {
-        List<ComponentInstance> cis = scenario.getPossibleMappings(originalActor);
-        List<CoreAbstraction> cas = new ArrayList<>();
-        for (ComponentInstance ci : cis) {
-          cas.add(ciTOca.get(ci));
-        }
+        final List<ComponentInstance> cis = scenario.getPossibleMappings(originalActor);
+        final List<CoreAbstraction> cas = new ArrayList<>();
+
+        cis.forEach(ci -> cas.add(ciTOca.get(ci)));
         if (cas.isEmpty()) {
           cas.add(defaultCore);
         }
         possibleMappings.put(originalActor, cas);
       }
       // initializes the min/maxStartTime of periodic actors from firing instance number
-      if (aa instanceof PeriodicElement) {
-        PeriodicElement pe = (PeriodicElement) aa;
-        long period = pe.getPeriod().evaluate();
-        if (period > 0 && pe instanceof Actor) {
+      if (aa instanceof final PeriodicElement pe) {
+        final long period = pe.getPeriod().evaluate();
+        if (period > 0 && pe instanceof final Actor a) {
           va.isPeriodic = true;
-          Actor a = (Actor) pe;
-          long firingInstance = a.getFiringInstance();
-          long ns = firingInstance * period;
+          final long firingInstance = a.getFiringInstance();
+          final long ns = firingInstance * period;
           va.minStartTime = ns;
           va.maxStartTime = (firingInstance + 1) * period;
         }
@@ -421,7 +416,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Get execution time from scenario (cores are considered as homogeneous).
-   * 
+   *
    * @param actor
    *          Actor to consider (from SRDAG or original PiGraph).
    * @param slamDesign
@@ -433,14 +428,14 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long getLoad(AbstractActor actor, Design slamDesign, Scenario scenario) {
     long wcet = ScenarioConstants.DEFAULT_TIMING_TASK.getValue();
     for (final Component operatorDefinitionID : slamDesign.getProcessingElements()) {
-      wcet = scenario.getTimings().evaluateExecutionTimeOrDefault((AbstractActor) actor, operatorDefinitionID);
+      wcet = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, operatorDefinitionID);
     }
     return wcet;
   }
 
   /**
-   * 
-   * 
+   *
+   *
    * @param absGraph
    *          Graph abstraction of SRDAG.
    * @param horizon
@@ -454,7 +449,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    */
   protected static void setAbsGraph(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph, long horizon,
       List<VertexAbstraction> firstNodes, List<VertexAbstraction> lastNodes) {
-    for (VertexAbstraction va : absGraph.vertexSet()) {
+    for (final VertexAbstraction va : absGraph.vertexSet()) {
       if (!va.isPeriodic) {
         va.maxStartTime = horizon;
       }
@@ -462,10 +457,10 @@ public class PeriodicScheduler extends AbstractScheduler {
     // set min start time
     List<VertexAbstraction> toVisit = new LinkedList<>(firstNodes);
     while (!toVisit.isEmpty()) {
-      VertexAbstraction va = toVisit.remove(0);
-      long succns = va.minStartTime + va.load;
-      for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
-        VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
+      final VertexAbstraction va = toVisit.remove(0);
+      final long succns = va.minStartTime + va.load;
+      for (final EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+        final VertexAbstraction oppositeva = absGraph.getEdgeTarget(ea);
         oppositeva.minStartTime = Math.max(oppositeva.minStartTime, succns);
         updateNbVisits(absGraph, oppositeva, false, toVisit);
       }
@@ -473,7 +468,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     // set max and average start time
     toVisit = new LinkedList<>(lastNodes);
     while (!toVisit.isEmpty()) {
-      VertexAbstraction va = toVisit.remove(0);
+      final VertexAbstraction va = toVisit.remove(0);
       va.predFinishTime = va.minStartTime;
       va.maxStartTime -= va.load;
       if (va.minStartTime > va.maxStartTime) {
@@ -481,9 +476,9 @@ public class PeriodicScheduler extends AbstractScheduler {
             "Cannot schedule following firing, min start time > max start time: " + va.aa.getName());
       }
       va.averageStartTime = (va.minStartTime + va.maxStartTime) / 2;
-      long predxs = va.maxStartTime;
-      for (EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
-        VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
+      final long predxs = va.maxStartTime;
+      for (final EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
+        final VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
         oppositeva.maxStartTime = Math.min(oppositeva.maxStartTime, predxs);
         updateNbVisits(absGraph, oppositeva, true, toVisit);
       }
@@ -495,7 +490,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    * Updates number of visits of a node, and adds it to the queue if all its predecessors have also been visited.
    * <p>
    * The nbVisits attribute is reset to 0 if added to the queue.
-   * 
+   *
    * @param absGraph
    *          Graph to consider.
    * @param va
@@ -524,22 +519,22 @@ public class PeriodicScheduler extends AbstractScheduler {
    * Schedule the abstract graph of SRDAG.
    */
   protected void schedule() {
-    long dualCtot = horizon * cores.size() - Ctot;
+    final long dualCtot = horizon * cores.size() - cTot;
     long emptyTime = 0;
 
     // first add all source nodes in the queue
-    List<VertexAbstraction> queue = new LinkedList<>();
-    for (VertexAbstraction va : firstNodes) {
+    final List<VertexAbstraction> queue = new LinkedList<>();
+    for (final VertexAbstraction va : firstNodes) {
       insertTaskInScheduleQueue(va, queue);
     }
 
     // empty the queue
     while (!queue.isEmpty()) {
-      VertexAbstraction va = queue.get(0);
-      int previousAllocations = nbFiringsAllocated;
+      final VertexAbstraction va = queue.get(0);
+      final int previousAllocations = nbFiringsAllocated;
       if (isThereACoreIdlingBefore(cores, va.predFinishTime)) {
         // manage empty space
-        for (VertexAbstraction vab : possibleAllocationBefore(queue, cores, va.predFinishTime)) {
+        for (final VertexAbstraction vab : possibleAllocationBefore(queue, cores, va.predFinishTime)) {
           emptyTime = allocateAndRemoveIfBefore(vab, queue, emptyTime, dualCtot, va.predFinishTime);
         }
         if (nbFiringsAllocated > previousAllocations) {
@@ -553,7 +548,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Computes if idle time will occur if next execution fires at deadline.
-   * 
+   *
    * @param cores
    *          List of cores, sorted by least implTime first.
    * @param deadline
@@ -566,7 +561,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Compute list of nodes that could be executed before the one at deadline.
-   * 
+   *
    * @param queue
    *          Current nodes ready for execution.
    * @param cores
@@ -577,17 +572,17 @@ public class PeriodicScheduler extends AbstractScheduler {
    */
   protected static List<VertexAbstraction> possibleAllocationBefore(List<VertexAbstraction> queue,
       List<CoreAbstraction> cores, long deadline) {
-    List<VertexAbstraction> res = new LinkedList<>();
+    final List<VertexAbstraction> res = new LinkedList<>();
     // compute idle time
     long emptyLoad = 0;
-    for (CoreAbstraction ca : cores) {
+    for (final CoreAbstraction ca : cores) {
       if (ca.implTime < deadline) {
         emptyLoad += deadline - ca.implTime;
       }
     }
     // select all tasks that could fit without exceeding idle time nor deadline
     long currentLoad = 0;
-    for (VertexAbstraction va : queue) {
+    for (final VertexAbstraction va : queue) {
       if (va.predFinishTime + va.load < deadline) {
         insertTaskInScheduleQueue(va, res);
         currentLoad += va.load;
@@ -602,7 +597,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Allocate node and remove it from queue.
-   * 
+   *
    * @param va
    *          Node to consider.
    * @param queue
@@ -621,7 +616,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    * Allocate node and remove it from queue.
    * <p>
    * Allocates only if finish time is before deadline.
-   * 
+   *
    * @param va
    *          Node to consider.
    * @param queue
@@ -632,7 +627,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    *          Maximum idle time until horizon.
    * @param deadline
    *          Maximum finish time, or 0 if no limit.
-   * 
+   *
    * @return Remaining idle time until horizon.
    * @throws PreesmSchedulingException
    *           If remaining idle time is greater than maximum allowed.
@@ -640,14 +635,14 @@ public class PeriodicScheduler extends AbstractScheduler {
   protected long allocateAndRemoveIfBefore(VertexAbstraction va, List<VertexAbstraction> queue, long emptyTime,
       long loadDual, long deadline) {
 
-    CoreAbstraction ca = popFirstPossibleCore(va, cores, possibleMappings);
+    final CoreAbstraction ca = popFirstPossibleCore(va, cores, possibleMappings);
     // check start time
     if (ca == null || ca.implTime > va.maxStartTime) {
       throw new PreesmSchedulingException(
           "Could not allocate the following task, no component or start time is overdue:  " + va.aa.getName());
     }
     // check deadline
-    long startTime = Math.max(va.predFinishTime, ca.implTime);
+    final long startTime = Math.max(va.predFinishTime, ca.implTime);
     if (deadline > 0 && startTime + va.load > deadline) {
       insertCoreInImplOrder(ca, cores);
       return emptyTime;
@@ -655,10 +650,10 @@ public class PeriodicScheduler extends AbstractScheduler {
     // update attributes
     nbFiringsAllocated++;
     ca.coreSched.getActorList().add(va.aa);
-    if (va.aa instanceof InitActor) {
+    if (va.aa instanceof final InitActor initActor) {
       // once init actor is mapped, we force the opposite end to be mapped on the same core
-      final AbstractActor endReference = ((InitActor) va.aa).getEndReference();
-      List<CoreAbstraction> uniqueEndMapping = new ArrayList<>();
+      final AbstractActor endReference = initActor.getEndReference();
+      final List<CoreAbstraction> uniqueEndMapping = new ArrayList<>();
       uniqueEndMapping.add(ca);
       possibleMappings.put(endReference, uniqueEndMapping);
     }
@@ -675,7 +670,7 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   /**
    * Selects the least loaded core which can execute the node.
-   * 
+   *
    * @param va
    *          Node to consider.
    * @param cores
@@ -686,10 +681,10 @@ public class PeriodicScheduler extends AbstractScheduler {
    */
   protected static CoreAbstraction popFirstPossibleCore(VertexAbstraction va, List<CoreAbstraction> cores,
       Map<AbstractActor, List<CoreAbstraction>> possibleMappings) {
-    List<CoreAbstraction> posmaps = possibleMappings.get(va.ori);
-    ListIterator<CoreAbstraction> it = cores.listIterator();
+    final List<CoreAbstraction> posmaps = possibleMappings.get(va.ori);
+    final ListIterator<CoreAbstraction> it = cores.listIterator();
     while (it.hasNext()) {
-      CoreAbstraction ca = it.next();
+      final CoreAbstraction ca = it.next();
       if (posmaps.contains(ca)) {
         it.remove();
         return ca;
@@ -702,7 +697,7 @@ public class PeriodicScheduler extends AbstractScheduler {
    * Updates number of visits of a node, and adds it to the queue if all its predecessors have also been visited.
    * <p>
    * The nbVisits attribute is reset to 0 if added to the queue.
-   * 
+   *
    * @param absGraph
    *          Graph to consider.
    * @param va
@@ -718,11 +713,11 @@ public class PeriodicScheduler extends AbstractScheduler {
     // to be on the same core as their direct predecessor va
     // and inserts it first in ready queue
     // --> it has been tested, and results are actually worse
-    for (EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
-      VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
+    for (final EdgeAbstraction ea : absGraph.outgoingEdgesOf(va)) {
+      final VertexAbstraction tgt = absGraph.getEdgeTarget(ea);
       tgt.nbVisits += 1;
       tgt.predFinishTime = Math.max(finishTime, tgt.predFinishTime);
-      Set<EdgeAbstraction> seteas = absGraph.incomingEdgesOf(tgt);
+      final Set<EdgeAbstraction> seteas = absGraph.incomingEdgesOf(tgt);
       if (tgt.nbVisits == seteas.size()) {
         insertTaskInScheduleQueue(tgt, queue);
         tgt.nbVisits = 0;
@@ -732,13 +727,14 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   // ascending as, and ascending ns if equality of as
   protected static void insertTaskInScheduleQueue(VertexAbstraction va, List<VertexAbstraction> queue) {
-    ListIterator<VertexAbstraction> it = queue.listIterator();
+    final ListIterator<VertexAbstraction> it = queue.listIterator();
     while (it.hasNext()) {
-      VertexAbstraction next = it.next();
+      final VertexAbstraction next = it.next();
       if (next.averageStartTime < va.averageStartTime) {
         // performance trick, since this test is shorter in time, we do it first
         continue;
-      } else if (next.averageStartTime > va.averageStartTime
+      }
+      if (next.averageStartTime > va.averageStartTime
           || (next.averageStartTime == va.averageStartTime && next.minStartTime > va.minStartTime)) {
         it.previous();
         break;
@@ -749,9 +745,9 @@ public class PeriodicScheduler extends AbstractScheduler {
 
   // ascending implTime order
   protected static void insertCoreInImplOrder(CoreAbstraction ca, List<CoreAbstraction> order) {
-    ListIterator<CoreAbstraction> it = order.listIterator();
+    final ListIterator<CoreAbstraction> it = order.listIterator();
     while (it.hasNext()) {
-      CoreAbstraction next = it.next();
+      final CoreAbstraction next = it.next();
       if (next.implTime > ca.implTime) {
         it.previous();
         break;
@@ -772,12 +768,12 @@ public class PeriodicScheduler extends AbstractScheduler {
    * @param previousEmptyTime
    *          Idle time prior to the last allocation.
    * @return Current idle time until last allocation.
-   * 
+   *
    * @throws PreesmSchedulingException
    *           If remaining idle time is greater than maximum allowed.
    */
   protected static long casRemainingLoad(long extraIdleTime, long loadDual, long previousEmptyTime) {
-    long res = previousEmptyTime + extraIdleTime;
+    final long res = previousEmptyTime + extraIdleTime;
     if (res > loadDual) {
       throw new PreesmSchedulingException("Impossible schedule: there are too much unccupied space.");
     }

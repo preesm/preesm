@@ -2,7 +2,9 @@ package org.preesm.ui.pisdf.features;
 
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.features.IFeatureProvider;
+import org.eclipse.graphiti.features.context.IContext;
 import org.eclipse.graphiti.features.context.IDeleteContext;
+import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.preesm.model.pisdf.AbstractActor;
@@ -20,7 +22,7 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
  * Common implementation for all deletion features.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -35,6 +37,15 @@ public class DeletePiMMelementFeature extends DefaultDeleteFeature {
     pe = null;
     pimmObject = null;
     containingPiGraph = null;
+  }
+
+  /*
+   * Disable the Delete feature if the selected pictogram element is the diagram itself.
+   */
+  @Override
+  public boolean isAvailable(IContext context) {
+    return !(context instanceof final IDeleteContext delContext
+        && (delContext.getPictogramElement() instanceof Diagram));
   }
 
   /*

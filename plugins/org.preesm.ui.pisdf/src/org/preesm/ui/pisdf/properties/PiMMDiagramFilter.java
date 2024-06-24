@@ -61,11 +61,7 @@ public class PiMMDiagramFilter extends AbstractPropertySectionFilter {
   protected boolean accept(final PictogramElement pictogramElement) {
     final EObject eObject = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pictogramElement);
 
-    if (eObject instanceof PiGraph) {
-      return true;
-    }
-
-    return false;
+    // instanceof returns false in case of null
+    return eObject instanceof PiGraph;
   }
-
 }

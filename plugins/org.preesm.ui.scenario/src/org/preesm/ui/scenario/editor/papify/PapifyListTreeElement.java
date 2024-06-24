@@ -60,7 +60,7 @@ import org.preesm.ui.PreesmUIPlugin;
 
 class PapifyListTreeElement {
   String                     label;
-  Map<Component, PAPIStatus> PAPIStatuses;
+  Map<Component, PAPIStatus> papiStatuses;
 
   /** The image ok. */
   private final Image imageOk;
@@ -81,21 +81,17 @@ class PapifyListTreeElement {
     NO;
 
     PAPIStatus next() {
-      switch (this) {
-        case YES:
-
-          return NO;
-        case NO:
-          return YES;
-        default:
-          return null;
-      }
+      return switch (this) {
+        case YES -> NO;
+        case NO -> YES;
+        default -> null;
+      };
     }
   }
 
   PapifyListTreeElement(final String label) {
     this.label = label;
-    this.PAPIStatuses = new LinkedHashMap<>();
+    this.papiStatuses = new LinkedHashMap<>();
 
     final URL errorIconURL = PreesmResourcesHelper.getInstance().resolve("icons/error.png", PreesmUIPlugin.class);
     ImageDescriptor imageDcr = ImageDescriptor.createFromURL(errorIconURL);
@@ -107,11 +103,10 @@ class PapifyListTreeElement {
   }
 
   public Image getImage(final Component name) {
-    if (this.PAPIStatuses.get(name).equals(PAPIStatus.YES)) {
+    if (this.papiStatuses.get(name).equals(PAPIStatus.YES)) {
       return this.imageOk;
-    } else {
-      return this.imageError;
     }
+    return this.imageError;
   }
 
   @Override

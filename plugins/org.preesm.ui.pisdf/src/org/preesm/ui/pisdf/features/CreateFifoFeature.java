@@ -96,8 +96,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
    */
   @Override
   public boolean canCreate(final ICreateConnectionContext context) {
-    // This function is called when selecting the end of a created
-    // connection.
+    // This function is called when selecting the end of a created connection.
     // We assume that the canStartConnection is already true
 
     // Refresh to remove all remaining tooltip
@@ -107,7 +106,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final Port target = getTargetPort(context, context.getTargetAnchor());
 
     // False if the target is an outputPort
-    if ((target != null) && (target instanceof DataOutputPort)) {
+    if (target instanceof DataOutputPort) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A FIFO cannot end at an output port");
@@ -115,14 +114,14 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     }
 
     // False if the target is a config input port
-    if ((target != null) && (target instanceof ConfigInputPort)) {
+    if (target instanceof ConfigInputPort) {
       // Create tooltip message
       PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetAnchor().getGraphicsAlgorithm(), getDiagramBehavior(),
           "A FIFO cannot end at an config. input port");
       return false;
     }
 
-    final boolean targetOK = ((target != null) && (target instanceof DataInputPort));
+    final boolean targetOK = target instanceof DataInputPort;
     if (targetOK) {
       // Check that no Fifo is connected to the ports
       if (((DataInputPort) target).getIncomingFifo() != null) {
@@ -135,7 +134,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       // Same check that the one in the canStartConnection
       final DataInputPort targetPort = (DataInputPort) target;
       final AbstractActor targetActor = targetPort.getContainingActor();
-      if (targetActor instanceof DelayActor) {
+      if (targetActor instanceof final DelayActor delayActor) {
         final DataOutputPort source = (DataOutputPort) getSourcePort(context, context.getSourceAnchor());
         if (source != null) {
           final AbstractActor sourceActor = source.getContainingActor();
@@ -145,7 +144,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
             return false;
           }
         }
-        final Delay delay = ((DelayActor) targetActor).getLinkedDelay();
+        final Delay delay = delayActor.getLinkedDelay();
         if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
           PiMMUtil.setToolTip(getFeatureProvider(), context.getTargetPictogramElement().getGraphicsAlgorithm(),
               getDiagramBehavior(),
@@ -161,13 +160,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final boolean targetCanCreatePort = (CreateFifoFeature.canCreatePort(context.getTargetPictogramElement(),
         getFeatureProvider(), PortKind.DATA_INPUT) != null);
 
-    // The method also returns true if the the target can
-    // create a new port.
-    if ((targetCanCreatePort || targetOK)) {
-      return true;
-    }
-
-    return false;
+    // The method also returns true if the the target can create a new port.
+    return targetCanCreatePort || targetOK;
   }
 
   /**
@@ -190,21 +184,20 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
 
     // Create the FeatureProvider
     final CustomContext sourceContext = new CustomContext(new PictogramElement[] { peSource });
-    AbstractAddActorPortFeature addPortFeature = null;
-    if (direction.equals(PortKind.DATA_INPUT)) {
-      addPortFeature = new AddDataInputPortFeature(fp);
-    }
-    if (direction.equals(PortKind.DATA_OUTPUT)) {
-      addPortFeature = new AddDataOutputPortFeature(fp);
-    }
+
+    final AbstractAddActorPortFeature addPortFeature = switch (direction) {
+      case DATA_INPUT -> new AddDataInputPortFeature(fp);
+      case DATA_OUTPUT -> new AddDataOutputPortFeature(fp);
+      default -> null;
+    };
+
     if (addPortFeature != null) {
       canCreatePort = addPortFeature.canExecute(sourceContext);
     }
     if (canCreatePort) {
       return addPortFeature;
-    } else {
-      return null;
     }
+    return null;
   }
 
   /**
@@ -217,8 +210,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getPort(final Anchor anchor) {
     if (anchor != null) {
       final Object obj = getBusinessObjectForPictogramElement(anchor);
-      if (obj instanceof Port) {
-        return (Port) obj;
+      if (obj instanceof final Port port) {
+        return port;
       }
     }
     return null;
@@ -227,8 +220,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getSourcePort(final ICreateConnectionContext context, Anchor sourceAnchor) {
     final PictogramElement sourcePe = context.getSourcePictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(sourcePe);
-    if (obj instanceof Delay) {
-      final DelayActor actor = ((Delay) obj).getActor();
+    if (obj instanceof final Delay delay) {
+      final DelayActor actor = delay.getActor();
       return actor.getDataOutputPort();
     }
     return getPort(sourceAnchor);
@@ -237,8 +230,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   protected Port getTargetPort(final ICreateConnectionContext context, Anchor targetAnchor) {
     final PictogramElement targetPe = context.getTargetPictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(targetPe);
-    if (obj instanceof Delay) {
-      final DelayActor actor = ((Delay) obj).getActor();
+    if (obj instanceof final Delay delay) {
+      final DelayActor actor = delay.getActor();
       return actor.getDataInputPort();
     }
     return getPort(targetAnchor);
@@ -286,10 +279,10 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       }
     }
 
-    if ((source != null) && (target != null) && (source instanceof DataOutputPort)
-        && (target instanceof DataInputPort)) {
+    if ((source != null) && (target != null) && (source instanceof final DataOutputPort dopSource)
+        && (target instanceof final DataInputPort dipTarget)) {
       // create new business object
-      final Fifo fifo = createFifo((DataOutputPort) source, (DataInputPort) target);
+      final Fifo fifo = createFifo(dopSource, dipTarget);
 
       // add connection for business object
       final AddConnectionContext addContext = new AddConnectionContext(sourceAnchor, targetAnchor);
@@ -321,9 +314,8 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
   @Override
   public boolean canStartConnection(final ICreateConnectionContext context) {
 
-    // Return true if the connection starts at an output port (config or
-    // not)
-    Anchor sourceAnchor = context.getSourceAnchor();
+    // Return true if the connection starts at an output port (config or not)
+    final Anchor sourceAnchor = context.getSourceAnchor();
     final Port source = getSourcePort(context, sourceAnchor);
 
     if ((source != null) && ((source instanceof DataInputPort) || (source instanceof ConfigInputPort))) {
@@ -339,39 +331,35 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
       return true;
     }
 
-    if ((source != null) && (source instanceof DataOutputPort)) {
+    if (source instanceof final DataOutputPort sourcePort) {
       // Check that no Fifo is connected to the ports
-      if (((DataOutputPort) source).getOutgoingFifo() == null) {
-        // Check if the outputPort is a configurationOutputPort wit no
-        // outgoing dependency
-        if ((source instanceof ConfigOutputPort) && !((ConfigOutputPort) source).getOutgoingDependencies().isEmpty()) {
-          // Karol: I deliberately left the possibility for a
-          // ConfigOutputPort to be connected both with a Fifo and
-          // dependencies.
-          // Indeed, it seems to me that the coexistence of a unique
-          // fifo and one or several dependencies is not a problem
-          // since each connection has a very precise semantics.
-        }
-
-        // we need to check if we start from a delay that it is allowed
-        final DataOutputPort sourcePort = (DataOutputPort) source;
-        final AbstractActor sourceActor = sourcePort.getContainingActor();
-        if (sourceActor instanceof DelayActor) {
-          final Delay delay = ((DelayActor) sourceActor).getLinkedDelay();
-          if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
-            PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
-                getDiagramBehavior(),
-                "A delay with local or permanent data tokens persistence can not have a getter actor.");
-            return false;
-          }
-        }
-        return true;
-      } else {
+      if (sourcePort.getOutgoingFifo() != null) {
         // Create tooltip message
         PiMMUtil.setToolTip(getFeatureProvider(), context.getSourceAnchor().getGraphicsAlgorithm(),
             getDiagramBehavior(), "A port cannot be connected to several FIFOs");
         return false;
       }
+      // Check if the outputPort is a configurationOutputPort wit no
+      // outgoing dependency
+      if ((source instanceof final ConfigOutputPort cop) && !cop.getOutgoingDependencies().isEmpty()) {
+        // Karol: I deliberately left the possibility for a ConfigOutputPort to be connected both with a Fifo and
+        // dependencies.
+        // Indeed, it seems to me that the coexistence of a unique fifo and one or several dependencies is not a problem
+        // since each connection has a very precise semantics.
+      }
+
+      // we need to check if we start from a delay that it is allowed
+      final AbstractActor sourceActor = sourcePort.getContainingActor();
+      if (sourceActor instanceof final DelayActor delayActor) {
+        final Delay delay = delayActor.getLinkedDelay();
+        if (delay.getLevel().equals(PersistenceLevel.LOCAL) || delay.getLevel().equals(PersistenceLevel.PERMANENT)) {
+          PiMMUtil.setToolTip(getFeatureProvider(), context.getSourcePictogramElement().getGraphicsAlgorithm(),
+              getDiagramBehavior(),
+              "A delay with local or permanent data tokens persistence can not have a getter actor.");
+          return false;
+        }
+      }
+      return true;
     }
 
     return false;

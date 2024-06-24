@@ -62,7 +62,7 @@ public class RouteCostEvaluator {
    * @return the long
    */
   public static final double evaluateTransferCost(final SlamRoute route, final long transferSize) {
-    return new SlamRouteStepCostFactorEvaluator().doSwitch(route) * (double) transferSize;
+    return new SlamRouteStepCostFactorEvaluator().doSwitch(route) * transferSize;
   }
 
   /**
@@ -73,7 +73,7 @@ public class RouteCostEvaluator {
    * @return the transfer cost
    */
   public static final double getTransferCost(final SlamRouteStep routeStep, final long transferSize) {
-    return new SlamRouteStepCostFactorEvaluator().doSwitch(routeStep) * (double) transferSize;
+    return new SlamRouteStepCostFactorEvaluator().doSwitch(routeStep) * transferSize;
   }
 
   /**
@@ -132,13 +132,12 @@ public class RouteCostEvaluator {
       double time = 0;
       for (final ComponentInstance node : msg.getNodes()) {
         final Component def = node.getComponent();
-        if (def instanceof ComNode) {
-          final ComNode comNode = (ComNode) def;
+        if (def instanceof final ComNode comNode) {
           time = Math.max(time, (1d / comNode.getSpeed()));
         }
       }
 
-      // No zero transfer time is alloweds
+      // No zero transfer time is allowed
       if (time <= 0) {
         time = 1;
       }

@@ -187,7 +187,7 @@ public class SpiderCodegen {
     }
 
     this.coreIds = new LinkedHashMap<>();
-    ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
+    final ComponentInstance mainOperator = this.scenario.getSimulationInfo().getMainOperator();
     final List<ComponentInstance> orderedOperators = design.getOrderedOperatorComponentInstances();
     if (mainOperator == null) {
       /* Warning */
@@ -206,38 +206,36 @@ public class SpiderCodegen {
     this.timings = new LinkedHashMap<>();
     final Map<String, AbstractActor> actorsByNames = this.preprocessor.getActorNames();
     for (final AbstractActor actor : actorsByNames.values()) {
-      if (actor != null) {
-        if (!this.timings.containsKey(actor)) {
-          this.timings.put(actor, new LinkedHashMap<Component, String>());
-        }
-        if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
-          final EMap<Component,
-              EMap<TimingType, String>> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
-          for (Entry<Component, EMap<TimingType, String>> e : listTimings) {
-            this.timings.get(actor).put(e.getKey(), e.getValue().get(TimingType.EXECUTION_TIME));
-          }
-        }
-      } else {
+      if (actor == null) {
         throw new PreesmRuntimeException();
+      }
+      if (!this.timings.containsKey(actor)) {
+        this.timings.put(actor, new LinkedHashMap<>());
+      }
+      if (this.scenario.getTimings().getActorTimings().containsKey(actor)) {
+        final EMap<Component,
+            EMap<TimingType, String>> listTimings = this.scenario.getTimings().getActorTimings().get(actor);
+        for (final Entry<Component, EMap<TimingType, String>> e : listTimings) {
+          this.timings.get(actor).put(e.getKey(), e.getValue().get(TimingType.EXECUTION_TIME));
+        }
       }
     }
 
     // Generate energies
     this.energies = new LinkedHashMap<>();
     for (final AbstractActor actor : actorsByNames.values()) {
-      if (actor != null) {
-        if (!this.energies.containsKey(actor)) {
-          this.energies.put(actor, new LinkedHashMap<Component, Double>());
-        }
-        if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(actor)) {
-          final EMap<Component, String> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(actor);
-          for (Component cp : listEnergies.keySet()) {
-            this.energies.get(actor).put(cp,
-                (double) this.scenario.getEnergyConfig().evaluateEnergyActorOrDefault(actor, cp));
-          }
-        }
-      } else {
+      if (actor == null) {
         throw new PreesmRuntimeException();
+      }
+      if (!this.energies.containsKey(actor)) {
+        this.energies.put(actor, new LinkedHashMap<>());
+      }
+      if (this.scenario.getEnergyConfig().getAlgorithmEnergy().containsKey(actor)) {
+        final EMap<Component, String> listEnergies = this.scenario.getEnergyConfig().getAlgorithmEnergy().get(actor);
+        for (final Component cp : listEnergies.keySet()) {
+          this.energies.get(actor).put(cp,
+              (double) this.scenario.getEnergyConfig().evaluateEnergyActorOrDefault(actor, cp));
+        }
       }
     }
 
@@ -247,7 +245,7 @@ public class SpiderCodegen {
         .getGroupConstraints()) {
       for (final AbstractActor aa : cg.getValue()) {
         if (this.constraints.get(aa) == null) {
-          this.constraints.put(aa, new LinkedHashSet<ComponentInstance>());
+          this.constraints.put(aa, new LinkedHashSet<>());
         }
         final ComponentInstance core = cg.getKey();
         this.constraints.get(aa).add(core);
@@ -257,7 +255,7 @@ public class SpiderCodegen {
     // Add Default timings if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.timings.containsKey(aa)) {
-        this.timings.put(aa, new LinkedHashMap<Component, String>());
+        this.timings.put(aa, new LinkedHashMap<>());
       }
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.timings.get(aa).containsKey(coreType)) {
@@ -269,7 +267,7 @@ public class SpiderCodegen {
     // Add Default energies if needed
     for (final AbstractActor aa : actorsByNames.values()) {
       if (!this.energies.containsKey(aa)) {
-        this.energies.put(aa, new LinkedHashMap<Component, Double>());
+        this.energies.put(aa, new LinkedHashMap<>());
       }
       for (final Component coreType : this.coreTypesIds.keySet()) {
         if (!this.energies.get(aa).containsKey(coreType)) {
@@ -332,8 +330,7 @@ public class SpiderCodegen {
 
     /* Declare Fcts */
     append("void init_" + pg.getName() + "(");
-    final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getParameters());
+    final List<Parameter> l = new LinkedList<>(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
@@ -468,7 +465,7 @@ public class SpiderCodegen {
     append("#include <spider.h>\n");
     append("#include \"" + pg.getName() + ".h\"\n\n");
     // Papify pre-processing
-    PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
+    final PapifyConfig papifyConfigManager = scenario.getPapifyConfig();
 
     final Map<EList<PapiEvent>, Integer> uniqueEventSets = new LinkedHashMap<>();
     int eventSetID = 0;
@@ -544,19 +541,20 @@ public class SpiderCodegen {
 
   private boolean generateActorComponentEnergyModel(AbstractActor actor) {
     boolean canEstimateEnergy = false;
-    PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
-    EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
-    Map<Component, String> componentsWithMode = new LinkedHashMap<>();
+    final PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
+    final EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
+    final Map<Component, String> componentsWithMode = new LinkedHashMap<>();
     if (papifyConfigManager.hasValidPapifyConfig() && papifyConfigManager.hasPapifyConfig(actor)) {
-      for (Component coreType : this.coresFromCoreType.keySet()) {
+      for (final Component coreType : this.coresFromCoreType.keySet()) {
         if (energyModels.containsKey(coreType)) {
-          EList<PapiComponent> componentPAPIComponents = papifyConfigManager.getSupportedPapiComponents(coreType);
-          for (PapiComponent singleComponent : componentPAPIComponents) {
-            for (String compName : papifyConfigManager.getActorAssociatedPapiComponents(actor)) {
+          final EList<PapiComponent> componentPAPIComponents = papifyConfigManager.getSupportedPapiComponents(coreType);
+          for (final PapiComponent singleComponent : componentPAPIComponents) {
+            for (final String compName : papifyConfigManager.getActorAssociatedPapiComponents(actor)) {
               if (singleComponent.getId().equalsIgnoreCase(compName)) {
-                EMap<PapiEvent, Double> energyModel = energyModels.get(coreType);
-                List<PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor, compName);
-                Set<PapiEvent> actorEventsOnComponentAsSet = new LinkedHashSet<>(actorEventsOnComponent);
+                final EMap<PapiEvent, Double> energyModel = energyModels.get(coreType);
+                final List<
+                    PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor, compName);
+                final Set<PapiEvent> actorEventsOnComponentAsSet = new LinkedHashSet<>(actorEventsOnComponent);
                 if (actorEventsOnComponentAsSet.containsAll(energyModel.keySet())) {
                   componentsWithMode.put(coreType, compName);
                 }
@@ -574,24 +572,24 @@ public class SpiderCodegen {
   }
 
   private void addEnergyModelEntry(AbstractActor actor, Map<Component, String> componentsWithMode) {
-    PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
-    EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
+    final PapifyConfig papifyConfigManager = this.scenario.getPapifyConfig();
+    final EMap<Component, EMap<PapiEvent, Double>> energyModels = papifyConfigManager.getPapifyEnergyKPIModels();
     append("\nstatic std::map<const char *, std::map<int, double>> " + "create_"
         + SpiderNameGenerator.getFunctionName(actor) + "_EnergyModel() {\n");
     append("\t// Setting the EnergyModels for actor: " + SpiderNameGenerator.getFunctionName(actor) + "\n");
     append("\tstd::map<const char *, std::map<int, double>> energyModelsMap;\n");
     append("\tstd::map<int, double> columnToParamValueMap;\n");
-    for (Entry<Component, String> componentToPrint : componentsWithMode.entrySet()) {
+    for (final Entry<Component, String> componentToPrint : componentsWithMode.entrySet()) {
       append("\t// Inserting energy model for " + componentToPrint.getKey().getVlnv().getName() + "\n");
-      EMap<PapiEvent, Double> energyModel = energyModels.get(componentToPrint.getKey());
-      List<PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor,
+      final EMap<PapiEvent, Double> energyModel = energyModels.get(componentToPrint.getKey());
+      final List<PapiEvent> actorEventsOnComponent = papifyConfigManager.getActorComponentEvents(actor,
           componentToPrint.getValue());
-      for (PapiEvent singleEvent : energyModel.keySet()) {
+      for (final PapiEvent singleEvent : energyModel.keySet()) {
         append("\tcolumnToParamValueMap.insert(std::make_pair("
             + ECollections.indexOf(actorEventsOnComponent, singleEvent, 0) + ", " + energyModel.get(singleEvent)
             + "));\n");
       }
-      for (ComponentInstance compInst : this.coresFromCoreType.get(componentToPrint.getKey())) {
+      for (final ComponentInstance compInst : this.coresFromCoreType.get(componentToPrint.getKey())) {
         append("\tenergyModelsMap.insert(std::make_pair(\"LRT_" + this.coreIds.get(compInst)
             + "\", columnToParamValueMap));\n");
       }
@@ -629,8 +627,8 @@ public class SpiderCodegen {
     }
     // Build the event variables to be printed
     if (papifyConfigManager.isMonitoringEvents(actor)) {
-      EList<String> actorCompsSupported = papifyConfigManager.getActorAssociatedPapiComponents(actor);
-      for (String compName : actorCompsSupported) {
+      final EList<String> actorCompsSupported = papifyConfigManager.getActorAssociatedPapiComponents(actor);
+      for (final String compName : actorCompsSupported) {
         associatedEvents.put(compName, papifyConfigManager.getActorComponentEvents(actor, compName));
         compNames.add(compName);
       }
@@ -644,8 +642,8 @@ public class SpiderCodegen {
     for (final Entry<String, EList<PapiEvent>> entry : associatedEvents.entrySet()) {
       final String compName = entry.getKey();
       found = false;
-      EList<PapiEvent> eventSetChecking = entry.getValue();
-      for (Map.Entry<EList<PapiEvent>, Integer> eventSet : uniqueEventSets.entrySet()) {
+      final EList<PapiEvent> eventSetChecking = entry.getValue();
+      for (final Map.Entry<EList<PapiEvent>, Integer> eventSet : uniqueEventSets.entrySet()) {
         final EList<PapiEvent> eventSetStored = eventSet.getKey();
         final Integer eventSetStoredID = eventSet.getValue();
         if (EcoreUtil.equals(eventSetStored, eventSetChecking)) {
@@ -664,7 +662,7 @@ public class SpiderCodegen {
         + "_PapifyConfig() {\n");
     append("\t// Setting the PapifyConfigs for actor: " + SpiderNameGenerator.getFunctionName(actor) + "\n");
     append("\tstd::map<const char *, PapifyConfig*> configMap;\n");
-    for (String compNameGen : compNames) {
+    for (final String compNameGen : compNames) {
       append("\n\tPapifyConfig* config_" + compNameGen + "  = new PapifyConfig;\n");
       append("\tconfig_" + compNameGen + "->peID_            = \"\";\n");
       append("\tconfig_" + compNameGen + "->peType_          = \"" + compNameGen + "\";\n");
@@ -680,7 +678,7 @@ public class SpiderCodegen {
         append("\tconfig_" + compNameGen + "->monitoredEvents_ = std::vector<const char*>("
             + Integer.toString(associatedEvents.get(compNameGen).size()) + ");\n");
         int i = 0;
-        for (PapiEvent papiEvent : associatedEvents.get(compNameGen)) {
+        for (final PapiEvent papiEvent : associatedEvents.get(compNameGen)) {
           append("\tconfig_" + compNameGen + "->monitoredEvents_[" + Integer.toString(i++) + "] = \""
               + papiEvent.getName() + "\";\n");
         }
@@ -704,7 +702,7 @@ public class SpiderCodegen {
     for (final Entry<Component, EList<ComponentInstance>> entry : this.coresFromCoreType.entrySet()) {
       final Component coreType = entry.getKey();
       final EList<ComponentInstance> eList = entry.getValue();
-      for (ComponentInstance compInst : eList) {
+      for (final ComponentInstance compInst : eList) {
         configAssociated = false;
         final EList<PapiComponent> corePapifyConfigGroupPE = papifyConfigManager.getSupportedPapiComponents(coreType);
         for (final PapiComponent compType : corePapifyConfigGroupPE) {
@@ -755,7 +753,7 @@ public class SpiderCodegen {
     append("\t/* === Create Archi === */\n\n");
     append("\tauto *archi = Spider::createArchi(config);\n\n");
     if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
-      double basePower = this.scenario.getEnergyConfig().getPePowerOrDefault("Base");
+      final double basePower = this.scenario.getEnergyConfig().getPePowerOrDefault("Base");
       append("\t/* === Add base energy === */\n\n");
       append("\tSpider::setBasePower(" + basePower + ");\n\n");
     }
@@ -781,7 +779,7 @@ public class SpiderCodegen {
             + c.getInstanceName() + "\",\n" + "\t\tSpiderPEType::LRT_PE,\n" + "\t\tSpiderHWType::PHYS_PE);\n");
         append("\tSpider::setPEMemoryUnit(" + peName + ", shMem);\n");
         if (!this.scenario.getEnergyConfig().getPlatformPower().isEmpty()) {
-          double pePower = this.scenario.getEnergyConfig().getPePowerOrDefault(coreType.getVlnv().getName());
+          final double pePower = this.scenario.getEnergyConfig().getPePowerOrDefault(coreType.getVlnv().getName());
           append("\tSpider::setPEPower(" + peName + ", " + pePower + ");\n");
         }
       }
@@ -847,7 +845,7 @@ public class SpiderCodegen {
     }
     append("};\n\n");
 
-    for (Parameter parameter : pg.getAllParameters()) {
+    for (final Parameter parameter : pg.getAllParameters()) {
       if (parameter.isConfigurable() || parameter.isDependent()) {
         this.dynamicParams.add(parameter);
       }
@@ -878,8 +876,7 @@ public class SpiderCodegen {
     append("void init_" + pg.getName() + "(");
 
     final StringBuilder params = new StringBuilder();
-    final List<Parameter> l = new LinkedList<>();
-    l.addAll(pg.getParameters());
+    final List<Parameter> l = new LinkedList<>(pg.getParameters());
     Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
@@ -932,8 +929,7 @@ public class SpiderCodegen {
     append("(void* inputFIFOs[], void* outputFIFOs[], Param inParams[], Param outParams[]){\n");
 
     final Actor a = (Actor) aa;
-    if (a.getRefinement() instanceof CHeaderRefinement) {
-      final CHeaderRefinement href = (CHeaderRefinement) a.getRefinement();
+    if (a.getRefinement() instanceof final CHeaderRefinement href) {
       final FunctionPrototype proto = href.getLoopPrototype();
 
       append("\t" + proto.getName() + "(\n");

@@ -526,9 +526,10 @@ public class Buffer {
     }
 
     // Do the match
-    if (!this.matchTable.containsKey(localBitIdx)) {
-      this.matchTable.put(localBitIdx, new ArrayList<>());
-    }
+    // if (!this.matchTable.containsKey(localBitIdx)) {
+    // this.matchTable.put(localBitIdx, new ArrayList<>());
+    // }
+    this.matchTable.computeIfAbsent(localBitIdx, k -> new ArrayList<>());
 
     final List<Match> matchSet = this.matchTable.get(localBitIdx);
     final Match localMatch = new Match(this, localBitIdx, buffer, remoteBitIdx, bitSize);

@@ -133,12 +133,10 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     final boolean isChecked = event.getChecked();
 
     BusyIndicator.showWhile(this.section.getDisplay(), () -> {
-      if (element instanceof PiGraph) {
-        final PiGraph graph2 = (PiGraph) element;
-        fireOnCheck(graph2, isChecked);
+      if (element instanceof final PiGraph piGraph) {
+        fireOnCheck(piGraph, isChecked);
         updateCheck();
-      } else if (element instanceof AbstractActor) {
-        final AbstractActor actor = (AbstractActor) element;
+      } else if (element instanceof final AbstractActor actor) {
         fireOnCheck(actor, isChecked);
         updateCheck();
       }
@@ -158,8 +156,8 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if (this.currentOpId != null) {
       // Checks the children of the current graph
       for (final AbstractActor v : this.contentProvider.filterPISDFChildren(graph.getActors())) {
-        if (v instanceof PiGraph) {
-          fireOnCheck(((PiGraph) v), isChecked);
+        if (v instanceof final PiGraph piGraph) {
+          fireOnCheck(piGraph, isChecked);
         }
         fireOnCheck(v, isChecked);
       }
@@ -185,15 +183,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     }
 
     // Checks the children of the current vertex
-    if (abstractActor instanceof Actor) {
-      final Actor actor = (Actor) abstractActor;
-      if (actor.isHierarchical()) {
-        final PiGraph subGraph = actor.getSubGraph();
-        for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
-          fireOnCheck(v, isChecked);
-        }
+    if (abstractActor instanceof final Actor actor && actor.isHierarchical()) {
+      final PiGraph subGraph = actor.getSubGraph();
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
+        fireOnCheck(v, isChecked);
       }
     }
+
   }
 
   /*
@@ -214,8 +210,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
    */
   @Override
   public void widgetSelected(final SelectionEvent e) {
-    if (e.getSource() instanceof Combo) {
-      final Combo combo = ((Combo) e.getSource());
+    if (e.getSource() instanceof final Combo combo) {
       final String item = combo.getItem(combo.getSelectionIndex());
 
       this.currentOpId = this.scenario.getDesign().getComponentInstance(item);
