@@ -40,8 +40,7 @@ import java.util.Map;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -62,7 +61,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
   private final int       clusterId;
   private final ScapeMode scapeMode;
-  private final PiGraph   graph;
+  private final Boolean   memoryOptim;
   Boolean                 isOnGPU = false;
 
   /**
@@ -78,14 +77,16 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    *          repetition vector
    * @param clusterId
    *          List of non clusterable actors
+   * @param memoryOptim
+   *          Enable memory optimization to foster memory script
    */
   public ClusterPartitionerSRV(PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode, Boolean memoryOptim) {
     super(graph, scenario, numberOfPEs);
+    this.memoryOptim = memoryOptim;
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
-    this.graph = graph;
   }
 
   /**
@@ -102,30 +103,41 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphSRVs, "srv_" + clusterId).build();
 
-      subGraph.setClusterValue(true);
-      // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
-      }
       // compute mapping
       final Long nPE = ClusterPartitionerURC.mapping(graphSRVs, scenario, numberOfPEs, isOnGPU, brv);
 
       // apply scaling
       final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
           brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
-      for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-        din.getGraphPort().setExpression(
-            din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
+
+      for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+        iActor.getGraphPort().setExpression(
+            iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
+
       }
-      for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-        dout.getGraphPort().setExpression(
-            dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+
+      if (memoryOptim.equals(Boolean.TRUE)) {
+        // reduce memory exclusion graph matches
+        ClusterPartitionerURC.reduceMemExMatches(subGraph, scale, brv);
+
       }
+
+      // remove empty introduced fifo
+      subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
+      subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
+
+      subGraph.setClusterValue(true);
+      // Add constraints of the cluster in the scenario.
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
+      }
+
     }
+
     // map the cluster on the CPU or GPU according to timing
     this.graph.setOnGPU(isOnGPU);
+
     return this.graph;
   }
 

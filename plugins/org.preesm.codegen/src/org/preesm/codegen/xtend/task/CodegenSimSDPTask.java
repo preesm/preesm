@@ -197,7 +197,7 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
     engine.registerPrintersAndBlocks(selectedPrinter);
     engine.preprocessPrinters();
-    engine.print();
+    // engine.print();
 
     headerPrint(codegenPath, scenario.getAlgorithm(), codeBlocks);
 

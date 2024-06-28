@@ -146,7 +146,7 @@ public class PipelineCycleInfo {
 
         delay.setContainingGraph(graph);
         delay.getActor().setContainingGraph(graph);
-        ClusteringScape.cluster(subGraph, scenario, 100000000000000L);
+        ClusteringScape.cluster(subGraph, scenario, 100000000000000L, false);
       }
 
     }

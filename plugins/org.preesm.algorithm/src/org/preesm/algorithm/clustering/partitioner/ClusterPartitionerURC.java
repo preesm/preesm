@@ -35,20 +35,26 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
@@ -69,11 +75,11 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  */
 public class ClusterPartitionerURC extends ClusterPartitioner {
 
-  private Map<AbstractVertex, Long> brv;
-  private final int                 clusterId;
-  private final ScapeMode           scapeMode;
-  private final PiGraph             graph;
-  Boolean                           isOnGPU = false;
+  private final Map<AbstractVertex, Long> brv;
+  private final int                       clusterId;
+  private final ScapeMode                 scapeMode;
+  private final Boolean                   memoryOptim;
+  Boolean                                 isOnGPU = false;
 
   /**
    * Builds a ClusterPartitioner Unique Repetition Count object.
@@ -87,12 +93,12 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
    *          Number of processing elements in compute clusters.
    */
   public ClusterPartitionerURC(PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode, Boolean memoryOptim) {
     super(graph, scenario, numberOfPEs);
+    this.memoryOptim = memoryOptim;
     this.brv = brv;
     this.clusterId = clusterId;
     this.scapeMode = scapeMode;
-    this.graph = graph;
   }
 
   /**
@@ -114,9 +120,10 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, urc, "urc_" + clusterId).build();
-      brv = PiBRV.compute(graph, BRVMethod.LCM);
+
       // compute mapping
       final Long nPE = mapping(urc, scenario, numberOfPEs, isOnGPU, brv);
+
       // apply scaling
       final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
@@ -124,19 +131,158 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         iActor.getGraphPort().setExpression(
             iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
+
       }
+
+      if (memoryOptim.equals(Boolean.TRUE)) {
+        // reduce memory exclusion graph matches
+        reduceMemExMatches(subGraph, scale, brv);
+        subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
+        subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
+
+        // pseudo merge redundant FIFO
+        mergeFIFO(subGraph);
+
+      }
+
+      // remove empty introduced FIFO
+      subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
+      subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
+
     }
     // map the cluster on the CPU or GPU according to timing
     this.graph.setOnGPU(isOnGPU);
-    // pseudo check consistency
-    PiBRV.compute(this.graph, BRVMethod.LCM);
+
     return this.graph;
+  }
+
+  private void mergeFIFO(PiGraph subGraph) {
+    final Map<BroadcastActor, List<InterfaceActor>> sourceMap = redundantFIFOMap(subGraph);
+
+    // check matching opportunities
+    for (final Entry<BroadcastActor, List<InterfaceActor>> map : sourceMap.entrySet()) {
+      // merge redundant buffer when they are more than 2
+      if (map.getValue().size() > 1) {
+        final DataPort sourcePort = map.getValue().get(0).getDataPort();
+        final DataPort targetPort0 = map.getValue().get(0).getDataPort().getFifo().getTargetPort();
+        // add a new broadcast inside cluster to retrieve the scaling
+        final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
+        brd.setName("Broadcast_Merge_" + map.getKey().getName());
+        brd.setContainingGraph(subGraph);
+        // connect interface to the new broadcast
+        final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
+        dataInputPort.setName("in");
+        final Long dt = map.getValue().get(0).getDataPort().getExpression().evaluate();
+        dataInputPort.setExpression(dt);
+        brd.getDataInputPorts().add(dataInputPort);
+        final Fifo fin = PiMMUserFactory.instance.createFifo();
+        fin.setType(sourcePort.getFifo().getType());
+        fin.setSourcePort((DataOutputPort) sourcePort);
+        fin.setTargetPort(dataInputPort);
+        fin.setContainingGraph(subGraph);
+        // connect broadcast to former targets
+        for (final InterfaceActor iActor : map.getValue()) {
+          final DataOutputPort dataOutputPort;
+          if (iActor.equals(map.getValue().get(0))) {
+            dataOutputPort = PiMMUserFactory.instance.copy(iActor.getDataOutputPorts().get(0));
+            final Fifo fout = PiMMUserFactory.instance.createFifo();
+            fout.setType(fin.getType());
+            fout.setSourcePort(dataOutputPort);
+            fout.setTargetPort((DataInputPort) targetPort0);
+            fout.setContainingGraph(subGraph);
+          } else {
+            dataOutputPort = iActor.getDataOutputPorts().get(0);
+          }
+          brd.getDataOutputPorts().add(dataOutputPort);
+
+          // remove FIFO connecting the former redundant interface
+          if (!iActor.equals(map.getValue().get(0))) {
+            final Fifo oldFifo = iActor.getGraphPort().getFifo();
+            final DataOutputPort oldPort = iActor.getGraphPort().getFifo().getSourcePort();
+            ((AbstractActor) iActor.getGraphPort().getFifo().getSource()).getDataOutputPorts().remove(oldPort);
+            iActor.getGraphPort().getContainingActor().getContainingPiGraph().removeFifo(oldFifo);
+          }
+        }
+        // remove former redundant interface
+        subGraph.getDataInputInterfaces().stream().filter(x -> x.getDataOutputPorts().isEmpty())
+            .forEach(subGraph::removeActor);
+
+      }
+
+    }
+
+  }
+
+  private Map<BroadcastActor, List<InterfaceActor>> redundantFIFOMap(PiGraph subGraph) {
+    final Map<BroadcastActor, List<InterfaceActor>> sourceMap = new HashMap<>();
+    // Identify the mergeable buffer
+    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+      if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
+        // Check if the map already contains the broadcast actor
+        if (sourceMap.containsKey(broadcast)) {
+          // Add the InterfaceActor to the existing list
+          sourceMap.get(broadcast).add(iActor);
+        } else {
+          // Create a new list and add the InterfaceActor
+          final List<InterfaceActor> list = new ArrayList<>();
+          list.add(iActor);
+          // Put the new list in the map
+          sourceMap.put(broadcast, list);
+        }
+      }
+    }
+    return sourceMap;
+  }
+
+  public static void reduceMemExMatches(PiGraph subGraph, Long scale, Map<AbstractVertex, Long> rv) {
+    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+      if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
+        final Long brdInput = broadcast.getDataInputPorts().get(0).getExpression().evaluate();
+        final long interfaceRate = iActor.getGraphPort().getExpression().evaluate();
+        final DataInputPort targetPort = iActor.getDataPort().getFifo().getTargetPort();
+        // set output broadcast expression
+        iActor.getGraphPort().getFifo().getSourcePort().setExpression(brdInput * scale);
+        // scale cluster in put on broadcast new value
+        iActor.getGraphPort().setExpression(brdInput * rv.get(broadcast));
+        iActor.getDataPort().setExpression(brdInput * rv.get(broadcast));
+
+        // add a new broadcast inside cluster to retrieve the scaling
+        final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
+        brd.setName("Broadcast_" + broadcast.getName());
+        brd.setContainingGraph(subGraph);
+        // connect interface to the new broadcast
+        final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
+        dataInputPort.setName("in");
+        final Long dt = brdInput * rv.get(broadcast);
+        dataInputPort.setExpression(dt);
+        brd.getDataInputPorts().add(dataInputPort);
+        final Fifo fin = PiMMUserFactory.instance.createFifo();
+        fin.setType(iActor.getDataPort().getFifo().getType());
+        fin.setSourcePort(iActor.getDataPort().getFifo().getSourcePort());
+        fin.setTargetPort(dataInputPort);
+        fin.setContainingGraph(subGraph);
+        // connect broadcast to target
+        final DataOutputPort dataOutputPort = PiMMUserFactory.instance.createDataOutputPort();
+        dataOutputPort.setName("out");
+        final Long rt = interfaceRate;
+        dataOutputPort.setExpression(rt);
+        brd.getDataOutputPorts().add(dataOutputPort);
+        final Fifo fout = PiMMUserFactory.instance.createFifo();
+        fout.setType(iActor.getDataPort().getFifo().getType());
+        fout.setSourcePort(dataOutputPort);
+        fout.setTargetPort(targetPort);
+        fout.setContainingGraph(subGraph);
+
+      }
+
+    }
+
   }
 
   public static Long mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs, Boolean isOnGPU,

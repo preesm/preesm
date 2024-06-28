@@ -50,6 +50,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                 + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
             values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
 
+        @Parameter(name = ClusteringScapeTask.MEMORY_PARAM, description = "simplify memory script for clustering",
+            values = { @Value(name = "Boolean", effect = "switch of memory aware clsutering algorithm") }),
+
     })
 
 public class ClusteringScapeTask extends AbstractTaskImplementation {
@@ -66,10 +69,14 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
   public static final String PARAM_PRINTER    = "Printer";
   public static final String VALUE_PRINTER_IR = "IR";
 
+  public static final String MEMORY_PARAM         = "Memory optimization";
+  public static final String MEMORY_OPTIM_DEFAULT = "False";
+
   protected long      stack;
   protected long      core;
   protected int       cluster;
   protected ScapeMode scapeMode;
+  protected Boolean   memory;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -83,6 +90,9 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     this.cluster = Integer.decode(clusterStr);
     // retrieve input parameter
     final String modeStr = parameters.get(CLUSTERING_PARAM);
+    // retrieve input parameter
+    final String clusterMem = parameters.get(MEMORY_PARAM);
+    this.memory = Boolean.valueOf(clusterMem);
 
     this.scapeMode = switch (modeStr) {
       case "0" -> ScapeMode.DATA;
@@ -96,7 +106,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     final Long stackSize = this.stack;
     final int clusterNumber = this.cluster;
 
-    final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber);
+    final ClusteringScape clusteringScape = new ClusteringScape(scenario, stackSize, scapeMode, clusterNumber, memory);
 
     final Scenario outputScenario = clusteringScape.execute();
     final Map<Actor, Long> clusterMemory = clusteringScape.getClusterMemory();
@@ -104,64 +114,6 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
     output.put("PiMM", outputScenario.getAlgorithm());
-    // update scenario, clear the intra cluster actors
-    // for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
-    // gp.getValue().clear();
-    // }
-    // // add all actor on all resources if full CPU
-    // // Smarter alloc : Ewen (smart)
-    //
-    // final Timings time = scenario.getTimings();
-    //
-    // final EMap<AbstractActor, EMap<Component, EMap<TimingType, String>>> map = time.getActorTimings();
-    //
-    // int timingOnCPU = 0;
-    // int timingOnGPU = 0;
-    //
-    // for (final Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> actorEntry : map.entrySet()) {
-    // final AbstractActor actor = actorEntry.getKey();
-    // final EMap<Component, EMap<TimingType, String>> componentMap = actorEntry.getValue();
-    //
-    // for (final Entry<Component, EMap<TimingType, String>> componentEntry : componentMap.entrySet()) {
-    // final Component component = componentEntry.getKey();
-    // final EMap<TimingType, String> timingMap = componentEntry.getValue();
-    //
-    // for (final Entry<TimingType, String> timingEntry : timingMap.entrySet()) {
-    // final TimingType timingType = timingEntry.getKey();
-    // final String timingValue = timingEntry.getValue();
-    //
-    // if (component.toString().contains("CPU")) {
-    // if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-    // timingOnCPU += Integer.parseInt(timingValue);
-    // }
-    // } else if (component.toString().contains("GPU")) {
-    // if (actor.getName().contains("srv") || actor.getName().contains("urc")) {
-    // timingOnGPU += Integer.parseInt(timingValue);
-    // }
-    // }
-    // }
-    // }
-    // }
-    //
-    // // End of smarter alloc
-    //
-    // if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())
-    // || (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU > timingOnCPU)) {
-    // scenario.getConstraints().getGroupConstraints()
-    // .forEach(groupConstraint -> outputScenario.getAllActors().forEach(actor ->
-    // groupConstraint.getValue().add(actor)));
-    // // temporary force srv/urc cluster to be map on GPU other on CPU if dual design
-    // // TODO: implementing smarter allocation
-    //
-    // } else if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && timingOnGPU < timingOnCPU) {
-    // scenario.getConstraints().getGroupConstraints()
-    // .forEach(gp -> outputScenario.getAllActors().stream()
-    // .filter(actor -> (gp.getKey().getComponent() instanceof GPU
-    // && (actor.getName().contains("srv") || actor.getName().contains("urc")))
-    // || (gp.getKey().getComponent() instanceof CPU
-    // && !(actor.getName().contains("srv") || actor.getName().contains("urc"))))
-    // .forEach(gp.getValue()::add));
-    // }
 
     // return scenario updated
     output.put("scenario", scenario);
@@ -177,6 +129,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     parameters.put(STACK_PARAM, STACK_SIZE_DEFAULT);
     parameters.put(LEVEL_PARAM, LEVEL_NUMBER_DEFAULT);
     parameters.put(CLUSTERING_PARAM, CLUSTERING_MODE_DEFAULT);
+    parameters.put(MEMORY_PARAM, MEMORY_OPTIM_DEFAULT);
 
     return parameters;
   }
