@@ -11,6 +11,7 @@ import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSRV;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerURC;
+import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -60,24 +61,24 @@ public class ClusteringScape extends ClusterPartitioner {
   /**
    * Size of the stack.
    */
-  private final Long stackSize;
+  private final Long    stackSize;
   /**
    * Number of hierarchical level.
    */
-  private final int  levelNumber;
+  private final int     levelNumber;
+  /**
+   * Enable memory optimization.
+   */
+  private final Boolean memoryOptim;
 
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
   private Map<Long, List<PiGraph>> hierarchicalLevelOrdered;
   private Long                     fulcrumLevelID = 0L;
 
-  private Long                   coreEquivalent = 1L;
-  private final Map<Actor, Long> clusterMemory;
-
-  public ClusteringScape(Scenario scenario, Long stackSize, int mode, int levelNumber) {
-    this.graph = scenario.getAlgorithm();
-    this.scenario = scenario;
-    this.archi = scenario.getDesign();
+  public ClusteringScape(Scenario scenario, Long stackSize, ScapeMode scapeMode, int levelNumber, Boolean memory) {
+    super(scenario.getAlgorithm(), scenario, EuclideTransfo.computeSingleNodeCoreEquivalent(scenario).intValue());
+    this.memoryOptim = memory;
     this.stackSize = stackSize;
     this.mode = mode;
     this.levelNumber = levelNumber;
@@ -112,8 +113,8 @@ public class ClusteringScape extends ClusterPartitioner {
     final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
     scenario.setAlgorithm(multiBranch);
     // check consistency
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-    PiBRV.printRV(brv);
+    // final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
@@ -292,7 +293,7 @@ public class ClusteringScape extends ClusterPartitioner {
             final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
             final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
             final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
+            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
             clusterMemory.put(findCluster(clusterName), mem);
             clusterId++;
           }
@@ -330,7 +331,7 @@ public class ClusteringScape extends ClusterPartitioner {
               final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
               final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
               final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
               clusterMemory.put(findCluster(clusterName), mem);
             }
             clusterId++;
@@ -366,7 +367,7 @@ public class ClusteringScape extends ClusterPartitioner {
               final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
               final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
               final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
               clusterMemory.put(findCluster(clusterName), mem);
             }
             clusterId++;
@@ -389,7 +390,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
       final Long mem = mem(subGraph);
       final String clusterName = subGraph.getName();
-      cluster(subGraph, scenario, stackSize);
+      cluster(subGraph, scenario, stackSize, memoryOptim);
       clusterMemory.put(findCluster(clusterName), mem);
     }
 
@@ -419,13 +420,13 @@ public class ClusteringScape extends ClusterPartitioner {
     final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
 
     // URC transfo
-    newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-        .cluster();
+    newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
+        memoryOptim).cluster();
 
     if (graph.getAllChildrenGraphs().size() == size) {
       // SRV transfo
-      newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-          .cluster();
+      newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
+          memoryOptim).cluster();
     }
     return newCluster;
   }
@@ -441,14 +442,14 @@ public class ClusteringScape extends ClusterPartitioner {
 
     if (graph.getAllChildrenGraphs().size() == size) {
       // URC transfo
-      newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-          .cluster();
+      newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
+          memoryOptim).cluster();
     }
 
     if (graph.getAllChildrenGraphs().size() == size) {
       // SRV transfo
-      newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
-          .cluster();
+      newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
+          memoryOptim).cluster();
     }
 
     if (graph.getAllChildrenGraphs().size() == size) {
@@ -472,7 +473,7 @@ public class ClusteringScape extends ClusterPartitioner {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
           final String clusterName = g.getName();
-          cluster(g, scenario, stackSize);
+          cluster(g, scenario, stackSize, memoryOptim);
           clusterMemory.put(findCluster(clusterName), mem);
         }
       }
@@ -499,10 +500,11 @@ public class ClusteringScape extends ClusterPartitioner {
    * @param g
    *          The identify clustered subgraph
    */
-  public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
+  public static void cluster(PiGraph g, Scenario scenario, Long stackSize, boolean memoryOptim) {
 
     // add a temporary single source in case of multiple source
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
+    // final PiGraph singleBranch = g;
     // compute the cluster schedule
     final List<ScapeSchedule> schedule = new ScheduleScape(singleBranch).execute();
     final Scenario clusterScenario = lastLevelScenario(singleBranch, scenario);
@@ -510,7 +512,7 @@ public class ClusteringScape extends ClusterPartitioner {
     final Map<AbstractVertex, Long> rv = PiBRV.compute(singleBranch, BRVMethod.LCM);
     final Map<Component, Map<TimingType, String>> sumTiming = clusterTiming(rv, singleBranch, scenario);
 
-    new CodegenScape(clusterScenario, singleBranch, schedule, stackSize);
+    new CodegenScape(clusterScenario, singleBranch, schedule, stackSize, memoryOptim);
 
     replaceBehavior(singleBranch, scenario);
     updateTiming(sumTiming, singleBranch, scenario);
@@ -541,6 +543,10 @@ public class ClusteringScape extends ClusterPartitioner {
     final FunctionPrototype functionPrototype = PiMMUserFactory.instance.createFunctionPrototype();
     cHeaderRefinement.setLoopPrototype(functionPrototype);
     functionPrototype.setName(oEmpty.getName());
+
+    final FunctionPrototype functionIntPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+    cHeaderRefinement.setInitPrototype(functionIntPrototype);
+    functionIntPrototype.setName(oEmpty.getName() + "Init");
 
     if (nameGraph.matches("^sub\\d+")) {
       functionPrototype.setName("Cluster_" + ((PiGraph) g.getContainingGraph()).getName() + "_" + oEmpty.getName());

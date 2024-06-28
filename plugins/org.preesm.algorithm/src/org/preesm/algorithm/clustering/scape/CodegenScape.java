@@ -11,6 +11,9 @@ import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ExpressionHolder;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.scenario.Scenario;
@@ -25,7 +28,9 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  */
 public class CodegenScape {
 
-  public CodegenScape(final Scenario scenario, final PiGraph subGraph, List<ScapeSchedule> schedule, Long stackSize) {
+  public CodegenScape(final Scenario scenario, final PiGraph subGraph, List<ScapeSchedule> schedule, Long stackSize,
+      boolean memoryOptim) {
+    memoryOptim = false;
     // print C file
     final String nameGraph = (subGraph.getContainingPiGraph() != null) ? subGraph.getContainingPiGraph().getName()
         : subGraph.getName();
@@ -34,7 +39,7 @@ public class CodegenScape {
     final String cfile = clusterName + ".c";
 
     final ScapeBuilder build = ScheduleFactory.eINSTANCE.createScapeBuilder();
-    new CodegenScapeBuilder(build, schedule, subGraph, stackSize);
+    new CodegenScapeBuilder(build, schedule, subGraph, stackSize, memoryOptim);
 
     final StringBuilder clusterCContent = buildCContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, cfile, clusterCContent);
@@ -53,7 +58,7 @@ public class CodegenScape {
       }
 
       final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();
-      new CodegenScapeBuilder(build2, schedule, subGraph, stackSize);
+      new CodegenScapeBuilder(build2, schedule, subGraph, stackSize, memoryOptim);
 
       final String cufile = clusterName + ".cu";
       final StringConcatenation clusterCuContent = buildCuContent(build2, subGraph);
@@ -124,6 +129,11 @@ public class CodegenScape {
     final String nameGraph = (subGraph.getContainingPiGraph() != null) ? subGraph.getContainingPiGraph().getName()
         : subGraph.getName();
     result.append("#include \"Cluster_" + nameGraph + "_" + subGraph.getName() + ".h\"\n\n");
+    for (final ConfigInputPort configInputPort : subGraph.getConfigInputPorts()) {
+      result.append("static int " + configInputPort.getName() + " = "
+          + ((ExpressionHolder) configInputPort.getIncomingDependency().getSetter()).getExpression().evaluate()
+          + ";\n");
+    }
     final String initFunc = build.getInitFunc();
     result.append(initFunc + "{\n");
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
@@ -131,7 +141,13 @@ public class CodegenScape {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
 
         if (cHeaderRefinement != null && cHeaderRefinement.getInitPrototype() != null) {
-          result.append(cHeaderRefinement.getInitPrototype().getName() + "();\n\n");
+          result.append(cHeaderRefinement.getInitPrototype().getName() + "(");
+          for (final FunctionArgument arg : cHeaderRefinement.getInitPrototype().getArguments()) {
+            result.append(arg.getName() + ",");
+          }
+
+          result.deleteCharAt(result.length() - 1);
+          result.append(");\n\n");
         }
       }
     }

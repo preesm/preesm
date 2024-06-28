@@ -90,7 +90,7 @@ public class ScheduleScape {
       PreesmLogger.getLogger().log(Level.SEVERE, () -> "APGAN doesn't handle cycle except cycle of 1 actor");
     }
     final String scheduleStr = scheduleStr();
-    final String message = "APGAN schedule: " + scheduleStr;
+    final String message = "APGAN schedule: " + scheduleStr + " for subgraph: " + graph.getName();
     PreesmLogger.getLogger().log(Level.INFO, message);
 
     return str2schedule(scheduleStr);
@@ -183,7 +183,13 @@ public class ScheduleScape {
     String combineName = "";
     for (int i = 1; i < iter; i++) {
       final Pair<String, String> pairMax = findMaxPair();
+      if (pairMax == null) {
+        break;
+      }
       combineName = combineName(pairMax);
+    }
+    if (combineName.contains("single_source")) {
+      combineName = combineName.replace("single_source*", "");
     }
 
     return combineName;

@@ -29,6 +29,7 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 
@@ -44,7 +45,9 @@ public class CodegenScapeBuilder {
   private static final String INDEX       = "index";
   private static final String SIZEOF_TEXT = "*sizeof(";
 
-  public CodegenScapeBuilder(ScapeBuilder build, List<ScapeSchedule> cs, PiGraph subGraph, Long stackSize) {
+  public CodegenScapeBuilder(ScapeBuilder build, List<ScapeSchedule> cs, PiGraph subGraph, Long stackSize,
+      boolean memoryOptim) {
+
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
     // build initial function
     String funcI = " void " + subGraph.getName() + "Init()";
@@ -68,7 +71,8 @@ public class CodegenScapeBuilder {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
 
-        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isHasADelay()) {
+        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isHasADelay()
+            && !dout.getContainingActor().getName().equals("single_source")) {
           // Classic CPU
           if (!cs.get(0).isOnGPU()) {
             final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
@@ -110,7 +114,7 @@ public class CodegenScapeBuilder {
       build.getBuffer().add("cudaDeviceSynchronize(); \n");
     }
     // build body
-    String body = bodyFunction(cs);
+    String body = bodyFunction(cs, false);
 
     if (synchro) {
       body += "\n // GPU to CPU buffer synchro \n";
@@ -134,7 +138,7 @@ public class CodegenScapeBuilder {
    *          Schedule structure of the cluster
    * @return The string content of the bodyFunction.
    */
-  private String bodyFunction(List<ScapeSchedule> cs) {
+  private String bodyFunction(List<ScapeSchedule> cs, boolean memoryOptim) {
 
     final StringConcatenation body = new StringConcatenation();
     boolean synchro = false;
@@ -229,8 +233,12 @@ public class CodegenScapeBuilder {
 
             }
           }
-          actor.append("); \n");
-          body.append(actor, "");
+
+          if (sc.getActor() instanceof SpecialActor && !memoryOptim) {
+            actor = processSpecialActor(sc);
+          }
+
+          body.append(actor);
           body.append(memcpy);
           if (!isGPU) {
             for (int i = 0; i < sc.getEndLoopNb(); i++) {
@@ -293,7 +301,7 @@ public class CodegenScapeBuilder {
         outBuffName = dout.getName();
         scaleOut = dout.getDataPort().getExpression().evaluate() / repetition;
       } else {
-        outBuffName = out.getName();
+        outBuffName = out.getContainingActor().getName() + "_" + out.getName() + "__" + inBuffName;
       }
 
       if (repetition > 1) {
@@ -382,7 +390,7 @@ public class CodegenScapeBuilder {
         scaleIn = din.getDataPort().getExpression().evaluate() / repetition;
       } else {
         inBuffName = ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
-            + in.getFifo().getSourcePort().getName() + "__" + join + "_" + in.getName();
+            + in.getFifo().getSourcePort().getName() + "__" + join.getName() + "_" + in.getName();
       }
 
       iterOut = String.valueOf(ret);
