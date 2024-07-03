@@ -41,7 +41,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -79,7 +81,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   private final int                       clusterId;
   private final ScapeMode                 scapeMode;
   private final Boolean                   memoryOptim;
-  Boolean                                 isOnGPU = false;
 
   /**
    * Builds a ClusterPartitioner Unique Repetition Count object.
@@ -122,8 +123,9 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, urc, "urc_" + clusterId).build();
 
       // compute mapping
-      final Long nPE = mapping(urc, scenario, numberOfPEs, isOnGPU, brv);
-
+      final Object[] result = mapping(urc, scenario, numberOfPEs, brv);
+      final Long nPE = (Long) result[0];
+      final Boolean isOnGPU = (Boolean) result[1];
       // apply scaling
       final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
@@ -154,10 +156,10 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-
+      // map the cluster on the CPU or GPU according to timing
+      subGraph.setOnGPU(isOnGPU);
+      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + isOnGPU);
     }
-    // map the cluster on the CPU or GPU according to timing
-    this.graph.setOnGPU(isOnGPU);
 
     return this.graph;
   }
@@ -285,24 +287,25 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
   }
 
-  public static Long mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs, Boolean isOnGPU,
+  public static Object[] mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs,
       Map<AbstractVertex, Long> brv) {
-    final Long timingCPU = timingCPU(urc, scenario, brv);
+    final Component cpu = scenario.getDesign().getOperatorComponentInstances().stream()
+        .map(ComponentInstance::getComponent).filter(component -> component instanceof CPU).findFirst().orElseThrow();
+    final Long timingCPU = timingCPU(urc, scenario, brv, cpu);
     final Long timingGPU = timingGPU(urc, scenario);
     if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU) {
 
-      return (long) numberOfPEs;
+      return new Object[] { (long) numberOfPEs, Boolean.FALSE };
     }
-    isOnGPU = true;
 
-    return scenario.getDesign().getOperatorComponentInstances().stream()
+    final Long gpuCount = scenario.getDesign().getOperatorComponentInstances().stream()
         .filter(opId -> opId.getComponent() instanceof GPU).count();
+    return new Object[] { gpuCount, Boolean.TRUE };
   }
 
-  private static Long timingCPU(List<AbstractActor> urc, Scenario scenario, Map<AbstractVertex, Long> brv) {
+  public static Long timingCPU(List<AbstractActor> urc, Scenario scenario, Map<AbstractVertex, Long> brv,
+      Component cpu) {
 
-    final Component cpu = scenario.getDesign().getOperatorComponentInstances().stream()
-        .map(ComponentInstance::getComponent).filter(component -> component instanceof CPU).findFirst().orElseThrow();
     Long sum = 0L;
     for (final AbstractActor actor : urc) {
       if (actor instanceof Actor) {
@@ -315,44 +318,57 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     return sum;
   }
 
-  private static Long timingGPU(List<AbstractActor> urc, Scenario scenario) {
+  public static Long timingGPU(List<AbstractActor> urc, Scenario scenario) {
     if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())) {
       final GPU gpu = (GPU) scenario.getDesign().getOperatorComponentInstances().stream()
           .map(ComponentInstance::getComponent).filter(component -> component instanceof GPU).findFirst().orElseThrow();
-      // If GPU parameters are different from 0, use their value, otherwise default to 1
-      final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 0 ? (long) gpu.getDedicatedMemSpeed() : 1;
-      final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 0 ? (long) gpu.getUnifiedMemSpeed() : 1;
-      final String memoryToUse = gpu.getMemoryToUse();
 
-      Long sum = 0L;
-      // build the list of PiGraph future DataPort
-      final List<DataPort> dataPortList = new LinkedList<>();
+      final Long offloading = offLoadingCost(gpu, urc);
+      final Long timing = urc.stream().filter(actor -> actor instanceof Actor).mapToLong(actor -> {
+        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
+            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
 
-      for (final AbstractActor actor : urc) {
-        for (final DataPort port : actor.getAllDataPorts()) {
-          // filter add port if target XOR source is in the list
-          if (urc.contains(port.getFifo().getSource()) ^ urc.contains(port.getFifo().getTarget())) {
-            dataPortList.add(port);
-          }
-        }
-      }
+        return scenario.getTimings().evaluateTimingOrDefault(aaa, gpu, TimingType.EXECUTION_TIME);
+      }).sum();
+      return offloading + timing;
 
-      for (final DataPort dataPort : dataPortList) {
-        final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
-        double time;
-
-        if (memoryToUse.equalsIgnoreCase("unified")) {
-          time = ((double) gpuInputSize / (double) unifiedMemSpeed);
-        } else {
-          time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
-        }
-
-        sum += (long) time;
-      }
-
-      return sum;
     }
     return Long.MAX_VALUE;
+  }
+
+  private static Long offLoadingCost(GPU gpu, List<AbstractActor> urc) {
+    // If GPU parameters are different from 0, use their value, otherwise default to 1
+    final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 0 ? (long) gpu.getDedicatedMemSpeed() : 1;
+    final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 0 ? (long) gpu.getUnifiedMemSpeed() : 1;
+    final String memoryToUse = gpu.getMemoryToUse();
+
+    Long sum = 0L;
+    // build the list of PiGraph future DataPort
+    final List<DataPort> dataPortList = new LinkedList<>();
+
+    for (final AbstractActor actor : urc) {
+      for (final DataPort port : actor.getAllDataPorts()) {
+        // filter add port if target XOR source is in the list
+        if (urc.contains(port.getFifo().getSource()) ^ urc.contains(port.getFifo().getTarget())) {
+          dataPortList.add(port);
+        }
+      }
+    }
+
+    for (final DataPort dataPort : dataPortList) {
+      final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
+      double time;
+
+      if (memoryToUse.equalsIgnoreCase("unified")) {
+        time = ((double) gpuInputSize / (double) unifiedMemSpeed);
+      } else {
+        time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
+      }
+
+      sum += (long) time;
+    }
+
+    return sum;
   }
 
   /**

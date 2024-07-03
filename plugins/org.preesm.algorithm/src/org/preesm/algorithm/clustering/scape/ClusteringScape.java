@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -113,7 +114,6 @@ public class ClusteringScape extends ClusterPartitioner {
     final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
     scenario.setAlgorithm(multiBranch);
     // check consistency
-    // final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
@@ -293,7 +293,10 @@ public class ClusteringScape extends ClusterPartitioner {
             final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
             final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
             final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
+            PreesmLogger.getLogger().log(Level.INFO, "cluster: " + clusterName + " is on GPU: "
+                + newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).isOnGPU());
+
+            cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
             clusterMemory.put(findCluster(clusterName), mem);
             clusterId++;
           }
@@ -331,7 +334,7 @@ public class ClusteringScape extends ClusterPartitioner {
               final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
               final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
               final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
               clusterMemory.put(findCluster(clusterName), mem);
             }
             clusterId++;
@@ -367,7 +370,7 @@ public class ClusteringScape extends ClusterPartitioner {
               final int lastChildrenGraphCreated = newGraph.getChildrenGraphs().size() - 1;
               final Long mem = mem(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated));
               final String clusterName = newGraph.getChildrenGraphs().get(lastChildrenGraphCreated).getName();
-              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize, memoryOptim);
+              cluster(newGraph.getChildrenGraphs().get(lastChildrenGraphCreated), scenario, stackSize);
               clusterMemory.put(findCluster(clusterName), mem);
             }
             clusterId++;
@@ -390,7 +393,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
       final Long mem = mem(subGraph);
       final String clusterName = subGraph.getName();
-      cluster(subGraph, scenario, stackSize, memoryOptim);
+      cluster(subGraph, scenario, stackSize);
       clusterMemory.put(findCluster(clusterName), mem);
     }
 
@@ -473,7 +476,7 @@ public class ClusteringScape extends ClusterPartitioner {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
           final String clusterName = g.getName();
-          cluster(g, scenario, stackSize, memoryOptim);
+          cluster(g, scenario, stackSize);
           clusterMemory.put(findCluster(clusterName), mem);
         }
       }
@@ -500,11 +503,10 @@ public class ClusteringScape extends ClusterPartitioner {
    * @param g
    *          The identify clustered subgraph
    */
-  public static void cluster(PiGraph g, Scenario scenario, Long stackSize, boolean memoryOptim) {
+  public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
 
     // add a temporary single source in case of multiple source
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
-    // final PiGraph singleBranch = g;
     // compute the cluster schedule
     final List<ScapeSchedule> schedule = new ScheduleScape(singleBranch).execute();
     final Scenario clusterScenario = lastLevelScenario(singleBranch, scenario);
@@ -512,7 +514,7 @@ public class ClusteringScape extends ClusterPartitioner {
     final Map<AbstractVertex, Long> rv = PiBRV.compute(singleBranch, BRVMethod.LCM);
     final Map<Component, Map<TimingType, String>> sumTiming = clusterTiming(rv, singleBranch, scenario);
 
-    new CodegenScape(clusterScenario, singleBranch, schedule, stackSize, memoryOptim);
+    new CodegenScape(clusterScenario, singleBranch, schedule, stackSize);
 
     replaceBehavior(singleBranch, scenario);
     updateTiming(sumTiming, singleBranch, scenario);
@@ -528,6 +530,7 @@ public class ClusteringScape extends ClusterPartitioner {
   private static void replaceBehavior(PiGraph g, Scenario scenario) {
 
     final PiGraph graph = (PiGraph) g.getContainingGraph();
+
     final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
 
     // add refinement
@@ -582,6 +585,7 @@ public class ClusteringScape extends ClusterPartitioner {
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);
     }
+    oEmpty.setOnGPU(g.isOnGPU());
 
     graph.replaceActor(g, oEmpty);
 
@@ -642,12 +646,15 @@ public class ClusteringScape extends ClusterPartitioner {
     // Compute the execution time a a cluster running on each architecture type
     for (final Component pe : archi.getProcessingElements()) {
       if (pe instanceof final CPU cpu) {
-        clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
-            String.valueOf(timingCPU(repetitionVector, cluster, scenario, cpu)));
-      } else if (pe instanceof final GPU gpu) {
-        clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME, String.valueOf(timingGPU(cluster, gpu)));
-      }
+        if (!cluster.isOnGPU()) {
+          clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME, String.valueOf(
+              ClusterPartitionerURC.timingCPU(cluster.getAllExecutableActors(), scenario, repetitionVector, cpu)));
 
+        } else {
+          clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
+              String.valueOf(ClusterPartitionerURC.timingGPU(cluster.getAllExecutableActors(), scenario)));
+        }
+      }
     }
     PreesmLogger.getLogger().log(Level.INFO,
         "Timing " + cluster.getName() + ": " + clusterTiming.get(archi.getProcessingElements().get(0)));
