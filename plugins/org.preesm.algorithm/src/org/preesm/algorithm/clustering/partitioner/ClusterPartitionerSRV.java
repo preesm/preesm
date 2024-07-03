@@ -37,7 +37,9 @@ package org.preesm.algorithm.clustering.partitioner;
 
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -62,13 +64,12 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
   private final int       clusterId;
   private final ScapeMode scapeMode;
   private final Boolean   memoryOptim;
-  Boolean                 isOnGPU = false;
 
   /**
    * Builds a ClusterPartitioner object.
    *
    * @param graph
-   *          pigraph
+   *          PiGraph
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
@@ -76,7 +77,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    * @param brv
    *          repetition vector
    * @param clusterId
-   *          List of non clusterable actors
+   *          Cluster number
    * @param memoryOptim
    *          Enable memory optimization to foster memory script
    */
@@ -104,7 +105,9 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphSRVs, "srv_" + clusterId).build();
 
       // compute mapping
-      final Long nPE = ClusterPartitionerURC.mapping(graphSRVs, scenario, numberOfPEs, isOnGPU, brv);
+      final Object[] result = ClusterPartitionerURC.mapping(graphSRVs, scenario, numberOfPEs, brv);
+      final Long nPE = (Long) result[0];
+      final Boolean isOnGPU = (Boolean) result[1];
 
       // apply scaling
       final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
@@ -132,11 +135,10 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-
+      // map the cluster on the CPU or GPU according to timing
+      subGraph.setOnGPU(isOnGPU);
+      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + isOnGPU);
     }
-
-    // map the cluster on the CPU or GPU according to timing
-    this.graph.setOnGPU(isOnGPU);
 
     return this.graph;
   }

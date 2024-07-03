@@ -139,6 +139,8 @@ class ScapeBuilder{
 	String body
 	String[] buffer
 	String[] dynmicBuffer
+	String[] freeBuffer
+	String[] offloadBuffer
 }
 
 /*
