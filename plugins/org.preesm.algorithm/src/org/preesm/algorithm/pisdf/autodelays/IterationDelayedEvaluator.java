@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2021) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2020)
+ * Alexandre Honorat [alexandre.honorat@inria.fr] (2020 - 2021)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
