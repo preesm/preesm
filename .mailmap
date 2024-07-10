@@ -5,46 +5,86 @@
 #   "printed Name" "<printed mail>" "logged Name" "<logged mail>"
 #
 
-Karol Desnos <karol.desnos@insa-rennes.fr> kdesnos <kdesnos@insa-rennes.fr>
-Karol Desnos <karol.desnos@insa-rennes.fr> unknown <kdesnos@pc-eii-pr09.educ.insa>
+# A
 
+Alexandre Honorat <alexandre.honorat@inria.fr> Alexandre Honorat <alexandre.honorat@inria.fr>
+Alexandre Honorat <alexandre.honorat@inria.fr> Alexandre Honorat <alexandre.honorat@insa-rennes.fr>
+Alexandre Honorat <alexandre.honorat@inria.fr> Alexandre Honorat <ahonorat@insa-rennes.fr>
 Antoine Morvan <antoine.morvan@insa-rennes.fr> Antoine Morvan <antoine.morvan.pro@gmail.com>
-Antoine Morvan <antoine.morvan@insa-rennes.fr> Antoine Morvan <antoine-morvan@users.noreply.github.com> 
+Antoine Morvan <antoine.morvan@insa-rennes.fr> Antoine Morvan <antoine-morvan@users.noreply.github.com>
 Antoine Morvan <antoine.morvan@insa-rennes.fr> Morvan Antoine <antoine.morvan@insa-rennes.fr>
 
-Alexandre Honorat <alexandre.honorat@insa-rennes.fr> Alexandre Honorat <ahonorat@insa-rennes.fr>
 
-Leonardo Suriano <leonardo.suriano@upm.es> leos313 <leonardo.suriano@live.it> 
-Leonardo Suriano <leonardo.suriano@upm.es> leo <leonardo.suriano@upm.es>
+# B
+
+Baptiste Launay <bapt.launay@gmail.com> blaunay <bapt.launay@gmail.com>
 
 
-# expect small case in mail addresses
-Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr>
-Maxime Pelcat <maxime.pelcat@insa-rennes.fr> mpelcat <mpelcat@insa-rennes.fr> 
-Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Pelcat Maxime <mpelcat@insa-rennes.fr>
-Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime <mpelcat@insa-rennes.fr>
-
-Julien Heulot <julien.heulot@insa-rennes.fr> Julien Heulot <jheulot@insa-rennes.fr>
-Julien Heulot <julien.heulot@insa-rennes.fr> Julien <jheulot@insa-rennes.fr>
-Julien Heulot <julien.heulot@insa-rennes.fr> jheulot <jheulot@insa-rennes.fr>
+# C
 
 Clément Guy <clement.guy@insa-rennes.fr> Clément Guy <clement.g.guy@gmail.com>
 
-Hamza Deroui <hamza.deroui@insa-rennes.fr> HDeroui <HDeroui@insa-rennes.fr>
-Hamza Deroui <hamza.deroui@insa-rennes.fr> Deroui Hamza <hamza.deroui@insa-rennes.fr>
 
-Julien Hascoet <jhascoet@kalray.eu> jhascoet <jhascoet@kalray.eu>
-Julien Hascoet <jhascoet@kalray.eu> Julien_Hascoet <jhascoet@kalray.eu>
+# D
 
 Daniel Madroñal <daniel.madronal@upm.es> dmadronal <daniel.madronal@upm.es>
+Dylan Gageot <gageot.dylan@gmail.com> dylangageot <gageot.dylan@gmail.com>
 
-Hugo Miomandre <hugo.miomandre@insa-rennes.fr>	hmiomand <hugo.miomandre@insa-rennes.fr>
+
+# F
 
 Florian Arrestier <florian.arrestier@insa-rennes.fr> Florian <farresti@insa-rennes.fr>
 Florian Arrestier <florian.arrestier@insa-rennes.fr> Arrestier Florian <florian.arrestier@insa-rennes.fr>
 
-Yaset Oliva <yaset.oliva@insa-rennes.fr> yaset <yaset.oliva-venegas@irisa.fr> 
 
-Dylan Gageot <gageot.dylan@gmail.com> dylangageot <gageot.dylan@gmail.com>
+# H
+
+Hamza Deroui <hamza.deroui@insa-rennes.fr> HDeroui <HDeroui@insa-rennes.fr>
+Hamza Deroui <hamza.deroui@insa-rennes.fr> Deroui Hamza <hamza.deroui@insa-rennes.fr>
+Hugo Miomandre <hugo.miomandre@insa-rennes.fr>	hmiomand <hugo.miomandre@insa-rennes.fr>
+Hugo Miomandre <hugo.miomandre@insa-rennes.fr>	Miomandre Hugo <hugo.miomandre@insa-rennes.fr>
+
+
+# J
+
+Jonathan Piat <jpiat@laas.fr> Jonathan Piat <jpiat@laas.fr>
+Julien Hascoet <jhascoet@kalray.eu> jhascoet <jhascoet@kalray.eu>
+Julien Hascoet <jhascoet@kalray.eu> Julien_Hascoet <jhascoet@kalray.eu>
+Julien Heulot <julien.heulot@insa-rennes.fr> Julien Heulot <jheulot@insa-rennes.fr>
+Julien Heulot <julien.heulot@insa-rennes.fr> Julien <jheulot@insa-rennes.fr>
+Julien Heulot <julien.heulot@insa-rennes.fr> jheulot <jheulot@insa-rennes.fr>
+
+
+# K
+
+Karol Desnos <karol.desnos@insa-rennes.fr> kdesnos <kdesnos@insa-rennes.fr>
+Karol Desnos <karol.desnos@insa-rennes.fr> unknown <kdesnos@pc-eii-pr09.educ.insa>
+
+
+# L
+
+Leonardo Suriano <leonardo.suriano@upm.es> leos313 <leonardo.suriano@live.it>
+Leonardo Suriano <leonardo.suriano@upm.es> leo <leonardo.suriano@upm.es>
+
+
+# M
+
+Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr> Matthieu Wipliez <matthieu.wipliez@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime Pelcat <Maxime.Pelcat@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> mpelcat <mpelcat@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Pelcat Maxime <mpelcat@insa-rennes.fr>
+Maxime Pelcat <maxime.pelcat@insa-rennes.fr> Maxime <mpelcat@insa-rennes.fr>
+
+# P
+
+Pengcheng Mu <pengcheng.mu@insa-rennes.fr> Pengcheng Mu <pengcheng.mu@insa-rennes.fr>
+
+
+# R
 
 Raquel Lazcano <raquel.lazcano@upm.es> rlazcano <raquel.lazcano@upm.es>
+
+
+# Y
+
+Yaset Oliva <yaset.oliva@insa-rennes.fr> yaset <yaset.oliva-venegas@irisa.fr>

@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  * Raquel Lazcano [raquel.lazcano@upm.es] (2019)
  *

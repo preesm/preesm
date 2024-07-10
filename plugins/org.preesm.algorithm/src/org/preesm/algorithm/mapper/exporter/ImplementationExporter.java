@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Jonathan Piat [jpiat@laas.fr] (2009 - 2011)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)

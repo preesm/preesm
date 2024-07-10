@@ -1,11 +1,13 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
- * Alexandre Honorat [alexandre.honorat@insa-rennes.fr] (2019)
+ * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Jonathan Piat [jpiat@laas.fr] (2011)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2016)
+ * Mickaël Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008 - 2009)
  *
  * This software is a computer program whose purpose is to help prototyping
