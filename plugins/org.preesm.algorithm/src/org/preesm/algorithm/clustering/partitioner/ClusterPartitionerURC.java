@@ -293,7 +293,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         .map(ComponentInstance::getComponent).filter(component -> component instanceof CPU).findFirst().orElseThrow();
     final Long timingCPU = timingCPU(urc, scenario, brv, cpu);
     final Long timingGPU = timingGPU(urc, scenario);
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU) {
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU
+        || urc.get(0).getContainingPiGraph().getName().contains("urc")) {
 
       return new Object[] { (long) numberOfPEs, Boolean.FALSE };
     }

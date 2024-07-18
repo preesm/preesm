@@ -116,7 +116,7 @@ public class PapifyPage extends ScenarioPage {
 
   /** String to name the first cell in the KPI estimation models section */
 
-  private String firstCellName = "PE Type \\ PAPI event";
+  private final String firstCellName = "PE Type \\ PAPI event";
 
   /** The table viewer. */
 
@@ -587,7 +587,7 @@ public class PapifyPage extends ScenarioPage {
       column.setMoveable(true);
       column.setWidth(150);
 
-      PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
+      final PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
           peTreeViewer, columnLabel, this.peContentProvider);
 
       viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(this.scenario, columnLabel));
@@ -610,6 +610,7 @@ public class PapifyPage extends ScenarioPage {
    * Adds a checkBoxTreeViewer to edit event association.
    *
    * @param managedForm
+   *          empty
    *
    * @param parent
    *          the parent
@@ -705,7 +706,7 @@ public class PapifyPage extends ScenarioPage {
   void updateActorEventColumns() {
 
     int counter = 0;
-    for (TreeColumn column : this.actorTreeViewer.getTree().getColumns()) {
+    for (final TreeColumn column : this.actorTreeViewer.getTree().getColumns()) {
       if (counter != 0) {
         column.dispose();
       }
@@ -722,7 +723,7 @@ public class PapifyPage extends ScenarioPage {
     columnTiming.setToolTipText(timingEvent.getDescription());
     columnTiming.setWidth(150);
 
-    PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
+    final PapifyEventListContentProvider2DMatrixES editingSupportTiming = new PapifyEventListContentProvider2DMatrixES(
         this.actorTreeViewer, timingEvent.getName(), this.checkStateListener);
 
     viewerColumnTiming.setLabelProvider(
@@ -730,10 +731,10 @@ public class PapifyPage extends ScenarioPage {
     viewerColumnTiming.setEditingSupport(editingSupportTiming);
     this.checkStateListener.addEstatusSupport(editingSupportTiming);
 
-    for (PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
+    for (final PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
       if (!oneComponent.getEventSets().isEmpty()) {
-        for (PapiEventSet oneEventSet : oneComponent.getEventSets()) {
-          for (PapiEvent oneEvent : oneEventSet.getEvents()) {
+        for (final PapiEventSet oneEventSet : oneComponent.getEventSets()) {
+          for (final PapiEvent oneEvent : oneEventSet.getEvents()) {
             if (oneEvent.getModifiers().isEmpty()) {
               final TreeViewerColumn viewerColumn = new TreeViewerColumn(this.actorTreeViewer, SWT.CENTER | SWT.CHECK);
               final TreeColumn column = viewerColumn.getColumn();
@@ -742,7 +743,7 @@ public class PapifyPage extends ScenarioPage {
               column.setToolTipText(oneEvent.getDescription());
               column.setWidth(150);
 
-              PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
+              final PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
                   this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
 
               viewerColumn.setLabelProvider(new PapifyEventListContentProvider2DMatrixCLP(this.scenario,
@@ -757,13 +758,13 @@ public class PapifyPage extends ScenarioPage {
   }
 
   void updateModelColumns() {
-    PapifyEnergyModelLabelProvider labelProvider = (PapifyEnergyModelLabelProvider) this.modelTableViewer
+    final PapifyEnergyModelLabelProvider labelProvider = (PapifyEnergyModelLabelProvider) this.modelTableViewer
         .getLabelProvider();
 
     labelProvider.clearEventList();
 
     final Table table = this.modelTableViewer.getTable();
-    for (TableColumn column : this.modelTableViewer.getTable().getColumns()) {
+    for (final TableColumn column : this.modelTableViewer.getTable().getColumns()) {
       column.dispose();
     }
 
@@ -774,10 +775,10 @@ public class PapifyPage extends ScenarioPage {
     int columnCounter = 1;
     int totalWidth = firstCellName.length() * 8;
 
-    for (PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
+    for (final PapiComponent oneComponent : this.papiEvents.getComponents().values()) {
       if (!oneComponent.getEventSets().isEmpty()) {
-        for (PapiEventSet oneEventSet : oneComponent.getEventSets()) {
-          for (PapiEvent oneEvent : oneEventSet.getEvents()) {
+        for (final PapiEventSet oneEventSet : oneComponent.getEventSets()) {
+          for (final PapiEvent oneEvent : oneEventSet.getEvents()) {
             if (oneEvent.getModifiers().isEmpty()) {
               final TableColumn columni = new TableColumn(table, SWT.NONE, columnCounter);
               columni.setText(oneEvent.getName());
@@ -797,11 +798,10 @@ public class PapifyPage extends ScenarioPage {
     this.modelTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
-          final TableItem ti = (TableItem) element;
+        if (element instanceof final TableItem ti) {
           final PapifyPeTypeEnergyModelImpl modelPeType = (PapifyPeTypeEnergyModelImpl) ti.getData();
           final String newValue = (String) value;
-          PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
+          final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
           boolean dirty = false;
           double parseDouble = 0.0;
           if (!firstCellName.equals(property)) {
@@ -846,10 +846,9 @@ public class PapifyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof PapifyPeTypeEnergyModelImpl) {
-          final PapifyPeTypeEnergyModelImpl modelPeType = (PapifyPeTypeEnergyModelImpl) element;
+        if (element instanceof final PapifyPeTypeEnergyModelImpl modelPeType) {
           if (!firstCellName.equals(property)) {
-            PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
+            final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
             if (modelPeType.getValue().containsKey(event)) {
               return Double.toString(modelPeType.getValue().get(event));
             }

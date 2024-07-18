@@ -1239,6 +1239,7 @@ class CPrinter extends BlankPrinter {
     for (var i = 0; i < snkArgs.size; i++) {
         val index = i
         val buff =snkArgs.findFirst[Buffer buf | buf.comment.equals("snk_out_" + index)]
+        if(buff!=null)
         funcStr += buff.type + " *" + buff.comment + ","
     }
 

@@ -134,7 +134,7 @@ public class HeaderParser {
           emptyIncludes, index, options, log);
       return parseCXXHeaderRec(translationUnit);
 
-    } catch (CoreException e) {
+    } catch (final CoreException e) {
       throw new PreesmRuntimeException("Error while parsing header file " + file.getRawLocationURI(), e);
     }
   }
@@ -152,51 +152,35 @@ public class HeaderParser {
   private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
-    if (nodeAST instanceof IASTFunctionDeclarator) {
-      // BASE CASE
-      // we got a function declaration !
-      final IASTFunctionDeclarator funcDeclor = (IASTFunctionDeclarator) nodeAST;
+    if (nodeAST instanceof final IASTFunctionDeclarator funcDeclor) {
       parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
-    } else if (nodeAST instanceof IASTFunctionDefinition) {
-      // DEEPER CASES
-      // we got a function definition, let's retrieve the declaration
-      final IASTFunctionDefinition funcDef = (IASTFunctionDefinition) nodeAST;
+    } else if (nodeAST instanceof final IASTFunctionDefinition funcDef) {
       returnTypeStack.addLast(funcDef.getDeclSpecifier());
       parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
       returnTypeStack.removeLast();
-    } else if (nodeAST instanceof IASTSimpleDeclaration) {
-      // we got a simple declaration, which could start a function definition or declaration with its return type
-      final IASTSimpleDeclaration simpleDeclon = (IASTSimpleDeclaration) nodeAST;
+    } else if (nodeAST instanceof final IASTSimpleDeclaration simpleDeclon) {
       returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
       for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
         parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       returnTypeStack.removeLast();
-    } else if (nodeAST instanceof ICPPASTTemplateDeclaration) {
-      // we got a template declaration, which could start a function definition or declaration
-      final ICPPASTTemplateDeclaration tempDeclon = (ICPPASTTemplateDeclaration) nodeAST;
+    } else if (nodeAST instanceof final ICPPASTTemplateDeclaration tempDeclon) {
       templateStack.addLast(tempDeclon);
       parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
       templateStack.removeLast();
-    } else if (nodeAST instanceof ICPPASTNamespaceDefinition) {
-      // we got a namespace definition, which could contain other namespaces and function definitions or declarations
-      final ICPPASTNamespaceDefinition nsDef = (ICPPASTNamespaceDefinition) nodeAST;
+    } else if (nodeAST instanceof final ICPPASTNamespaceDefinition nsDef) {
       namespaceStack.addLast(nsDef);
       for (final IASTDeclaration declon : nsDef.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       namespaceStack.removeLast();
-    } else if (nodeAST instanceof ICPPASTLinkageSpecification) {
-      final ICPPASTLinkageSpecification linkageSpec = (ICPPASTLinkageSpecification) nodeAST;
+    } else if (nodeAST instanceof final ICPPASTLinkageSpecification linkageSpec) {
       // inside an extern "C" block
       for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
-    } else if (nodeAST instanceof IASTTranslationUnit) {
-      // TOP CASE
-      // we got the full file, let's visit the declarations
-      final IASTTranslationUnit tu = (IASTTranslationUnit) nodeAST;
-      for (IASTDeclaration declon : tu.getDeclarations()) {
+    } else if (nodeAST instanceof final IASTTranslationUnit tu) {
+      for (final IASTDeclaration declon : tu.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
     }
@@ -241,7 +225,7 @@ public class HeaderParser {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
-          IASTPointerOperator[] pops = ((IASTDeclarator) childsParam[1]).getPointerOperators();
+          final IASTPointerOperator[] pops = ((IASTDeclarator) childsParam[1]).getPointerOperators();
           // pointers are not allowed her of course
           if (pops.length > 0) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
@@ -263,7 +247,8 @@ public class HeaderParser {
           if (!tempParam.getRawSignature().startsWith("typename") || typename == null) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
-          } else if (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
+          }
+          if (!typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_TYPE_TEMPLATED_PREFIX)
               && !typename.getRawSignature().trim().startsWith(RefinementChecker.FIFO_DEPTH_TEMPLATED_PREFIX)) {
             PreesmLogger.getLogger().info(() -> "Function " + rawName + " has template parameter <" + typename
                 + "> without the recommended prefix, codegen might not work.\n Allowed prefixes are: "
@@ -320,7 +305,7 @@ public class HeaderParser {
         final String argName = paramDeclor.getName().getRawSignature().trim();
         fA.setName(argName);
 
-        IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
+        final IASTPointerOperator[] pops = paramDeclor.getPointerOperators();
         if (pops.length == 0) {
           fA.setIsConfigurationParameter(true);
         } else {
@@ -374,13 +359,12 @@ public class HeaderParser {
       // in fifo nor write on configuration output ports)
       if (matches) {
         for (final FunctionArgument param : params) {
-          if (HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
-            param.setDirection(Direction.IN);
-            param.setIsConfigurationParameter(true);
-          } else {
+          if (!HeaderParser.hasCorrespondingPort(param, actor.getConfigInputPorts())) {
             matches = false;
             break;
           }
+          param.setDirection(Direction.IN);
+          param.setIsConfigurationParameter(true);
         }
       }
 
@@ -408,18 +392,19 @@ public class HeaderParser {
 
     // For each function prototype proto
     for (final FunctionPrototype proto : prototypes) {
-      // proto matches the signature of actor if:
-      // -it does not have more parameters than the actors ports
-      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
-      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
-          + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
-
       // Check that all proto parameters can be matched with a port
       final List<Port> allPorts = new ArrayList<>();
       allPorts.addAll(actor.getDataInputPorts());
       allPorts.addAll(actor.getDataOutputPorts());
       allPorts.addAll(actor.getConfigInputPorts());
       allPorts.addAll(actor.getConfigOutputPorts());
+
+      // proto matches the signature of actor if:
+      // -it does not have more parameters than the actors ports
+      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
+      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
+          + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
+
       for (final FunctionArgument param : proto.getArguments()) {
         matches &= HeaderParser.hasCorrespondingPort(param, allPorts);
       }
@@ -463,14 +448,13 @@ public class HeaderParser {
       boolean matches) {
     for (final Port p : actor.getConfigOutputPorts()) {
       final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-      if (param != null) {
-        param.setDirection(Direction.OUT);
-        param.setIsConfigurationParameter(true);
-        params.remove(param);
-      } else {
+      if (param == null) {
         matches = false;
         break;
       }
+      param.setDirection(Direction.OUT);
+      param.setIsConfigurationParameter(true);
+      params.remove(param);
     }
     return matches;
   }
@@ -479,14 +463,13 @@ public class HeaderParser {
       boolean matches) {
     for (final Port p : actor.getDataOutputPorts()) {
       final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-      if (param != null) {
-        param.setDirection(Direction.OUT);
-        param.setIsConfigurationParameter(false);
-        params.remove(param);
-      } else {
+      if (param == null) {
         matches = false;
         break;
       }
+      param.setDirection(Direction.OUT);
+      param.setIsConfigurationParameter(false);
+      params.remove(param);
     }
     return matches;
   }
@@ -495,14 +478,13 @@ public class HeaderParser {
       boolean matches) {
     for (final Port p : actor.getDataInputPorts()) {
       final FunctionArgument param = HeaderParser.getCorrespondingFunctionParameter(p, params);
-      if (param != null) {
-        param.setDirection(Direction.IN);
-        param.setIsConfigurationParameter(false);
-        params.remove(param);
-      } else {
+      if (param == null) {
         matches = false;
         break;
       }
+      param.setDirection(Direction.IN);
+      param.setIsConfigurationParameter(false);
+      params.remove(param);
     }
     return matches;
   }
@@ -523,12 +505,11 @@ public class HeaderParser {
     for (final FunctionPrototype proto : prototypes) {
       boolean allParams = true;
       for (final FunctionArgument param : proto.getArguments()) {
-        if (param.isIsConfigurationParameter()) {
-          param.setDirection(Direction.IN);
-        } else {
+        if (!param.isIsConfigurationParameter()) {
           allParams = false;
           break;
         }
+        param.setDirection(Direction.IN);
       }
 
       if (allParams) {
