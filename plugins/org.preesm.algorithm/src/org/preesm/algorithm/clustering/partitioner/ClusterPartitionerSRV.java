@@ -137,7 +137,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       }
       // map the cluster on the CPU or GPU according to timing
       subGraph.setOnGPU(isOnGPU);
-      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + isOnGPU);
+      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + subGraph.isOnGPU());
     }
 
     return this.graph;

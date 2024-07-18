@@ -62,15 +62,12 @@ public class ClusteringScape extends ClusterPartitioner {
   /**
    * Size of the stack.
    */
-  private final Long    stackSize;
+  private final Long     stackSize;
   /**
    * Number of hierarchical level.
    */
-  private final int     levelNumber;
-  /**
-   * Enable memory optimization.
-   */
-  private final Boolean memoryOptim;
+  private final int      levelNumber;
+  private static Boolean memoryOptim = false;
 
   ScapeMode scapeMode;
 
@@ -123,7 +120,7 @@ public class ClusteringScape extends ClusterPartitioner {
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     scenarioUpdate();
-
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     return scenario;
   }
 
@@ -135,7 +132,6 @@ public class ClusteringScape extends ClusterPartitioner {
     // map all call on CPU
     scenario.getConstraints().getGroupConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
         .forEach(x -> scenario.getAlgorithm().getAllActors().forEach(actor -> x.getValue().add(actor)));
-
   }
 
   /**
@@ -418,6 +414,7 @@ public class ClusteringScape extends ClusterPartitioner {
 
     // add a temporary single source in case of multiple source
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
+
     // compute the cluster schedule
     final List<ScapeSchedule> schedule = new ScheduleScape(singleBranch).execute();
     final Scenario clusterScenario = lastLevelScenario(singleBranch, scenario);
@@ -443,6 +440,7 @@ public class ClusteringScape extends ClusterPartitioner {
     final PiGraph graph = (PiGraph) g.getContainingGraph();
 
     final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
+    // final Boolean optimNames = memoryOptim;
 
     // add refinement
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -482,6 +480,17 @@ public class ClusteringScape extends ClusterPartitioner {
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
       functionArgument.setName(inputPort.getName());
+      // if (memoryOptim) {
+      // final String argName = inputPort.getName();
+      // // final String argName = inputPort.getName().substring(inputPort.getName().indexOf('_') + 1);
+      // // inputPort.getContainingActor().getName() + "_"
+      // // + inputPort.getName().substring(inputPort.getName().indexOf('_') + 1);
+      // PreesmLogger.getLogger().log(Level.INFO, "input: " + argName);
+      // functionArgument.setName(argName);
+      // in.setName(argName);
+      // } else {
+      // functionArgument.setName(inputPort.getName());
+      // }
       functionArgument.setType(in.getFifo().getType());
       functionArgument.setDirection(Direction.IN);
       functionPrototype.getArguments().add(functionArgument);
@@ -492,6 +501,17 @@ public class ClusteringScape extends ClusterPartitioner {
       oEmpty.getDataOutputPorts().add(outputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
       functionArgument.setName(outputPort.getName());
+      // if (memoryOptim) {
+      // final String argName = outputPort.getName();
+      // // final String argName = outputPort.getName().substring(outputPort.getName().indexOf('_') + 1);
+      // // outputPort.getContainingActor().getName() + "_"
+      // // + outputPort.getName().substring(outputPort.getName().indexOf('_') + 1);
+      // PreesmLogger.getLogger().log(Level.INFO, "output: " + argName);
+      // functionArgument.setName(argName);
+      // out.setName(argName);
+      // } else {
+      // functionArgument.setName(outputPort.getName());
+      // }
       functionArgument.setType(out.getFifo().getType());
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);

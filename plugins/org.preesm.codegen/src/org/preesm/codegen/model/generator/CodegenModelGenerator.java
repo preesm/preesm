@@ -148,7 +148,6 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
-import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -427,7 +426,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
-      if (cmp.getComponent() instanceof CPU) {
+      if (!(cmp.getComponent() instanceof GPU)) {
         this.coreBlocks.computeIfAbsent(cmp, key -> {
           final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(key);
           operatorBlock.setMultinode(multinode);
@@ -444,7 +443,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // This call can not fail as checks were already performed in the constructor
       final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered, create a Block and store it.
-      if (operator instanceof GPU) {
+      if (operator.getComponent() instanceof GPU) {
         return;
       }
       if (!this.coreBlocks.containsKey(operator)) {

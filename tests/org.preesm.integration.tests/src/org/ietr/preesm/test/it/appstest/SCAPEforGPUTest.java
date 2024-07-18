@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Dylan Gageot [gageot.dylan@gmail.com] (2020)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -40,52 +40,52 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.test.it.api.WorkflowRunner;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 /**
+ * Testing SCAPE graph transformation
  *
- * Testing Cluster Partitioner Task
- *
- * @author dgageot
- *
+ * @author orenaud
  */
-@RunWith(Parameterized.class)
-public class ClusterPartitionerTest {
 
-  static final String   PROJECT   = "org.ietr.preesm.sobel-morpho.partitioner";
-  static final String[] SCENARIOS = new String[] { "MPPA2Cluster.scenario" };
-  static final String[] WORKFLOWS = new String[] { "CodegenAutomaticClustering.workflow" };
+@RunWith(Parameterized.class)
+public class SCAPEforGPUTest {
 
   final String workflow;
   final String scenario;
+  final String projectName;
 
-  public ClusterPartitionerTest(final String workflow, final String scenario) {
+  public SCAPEforGPUTest(final String workflow, final String scenario, final String projectName) {
     this.scenario = scenario;
     this.workflow = workflow;
+    this.projectName = projectName;
   }
 
-  /**
-  *
-  */
-  @Parameters(name = "{0} - {1}")
+  @Parameters(name = "{2} - {0} - {1}")
   public static Collection<Object[]> data() {
+
     final List<Object[]> params = new ArrayList<>();
-    for (final String workflow : WORKFLOWS) {
-      for (final String scenario : SCENARIOS) {
-        params.add(new Object[] { workflow, scenario });
-      }
+
+    final String testProjectName = "org.ietr.preesm.gpu.clustering";
+    final String[] testScenarios = new String[] { "top_sobel_1cpu_1gpu.scenario" };
+    final String[] testWorkflows = new String[] { "Codegen.workflow" };
+    for (int i = 0; i < testScenarios.length; i++) {
+      params.add(new Object[] { testWorkflows[i], testScenarios[i], testProjectName });
     }
+
     return params;
   }
 
   @Test
-  public void testClusterScheduler() throws IOException, CoreException {
+  public void test() throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    // final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
-    // Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
+    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

@@ -139,11 +139,13 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       if (memoryOptim.equals(Boolean.TRUE)) {
         // reduce memory exclusion graph matches
         reduceMemExMatches(subGraph, scale, brv);
+
         subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
         subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
 
         // pseudo merge redundant FIFO
         mergeFIFO(subGraph);
+        // subGraph.getAllDataPorts().forEach(port -> System.out.println(port.getName()));
 
       }
 
@@ -158,7 +160,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       }
       // map the cluster on the CPU or GPU according to timing
       subGraph.setOnGPU(isOnGPU);
-      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + isOnGPU);
+      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + subGraph.isOnGPU());
     }
 
     return this.graph;
@@ -214,11 +216,13 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         // remove former redundant interface
         subGraph.getDataInputInterfaces().stream().filter(x -> x.getDataOutputPorts().isEmpty())
             .forEach(subGraph::removeActor);
-
       }
 
     }
 
+    subGraph.getAllDataPorts().forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
+    subGraph.getDataInterfaces()
+        .forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
   }
 
   private Map<BroadcastActor, List<InterfaceActor>> redundantFIFOMap(PiGraph subGraph) {
@@ -293,8 +297,29 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         .map(ComponentInstance::getComponent).filter(component -> component instanceof CPU).findFirst().orElseThrow();
     final Long timingCPU = timingCPU(urc, scenario, brv, cpu);
     final Long timingGPU = timingGPU(urc, scenario);
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU
-        || urc.get(0).getContainingPiGraph().getName().contains("urc")) {
+
+    // EWEN MODIFS
+    boolean isGPUPossible = false;
+    for (final AbstractActor act : urc) {
+      for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
+        if (comp.getComponent() instanceof GPU) {
+          isGPUPossible = true;
+        }
+      }
+    }
+
+    if (timingCPU > timingGPU && isGPUPossible) {
+      for (final AbstractActor act : urc) {
+        for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
+          if (comp.getComponent() instanceof GPU) {
+            act.setOnGPU(true);
+          }
+        }
+      }
+    }
+    // END EWEN MODIFS
+
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU || !isGPUPossible) {
 
       return new Object[] { (long) numberOfPEs, Boolean.FALSE };
     }
