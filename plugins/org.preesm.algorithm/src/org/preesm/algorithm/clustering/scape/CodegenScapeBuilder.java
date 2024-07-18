@@ -3,6 +3,7 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
@@ -29,6 +30,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.impl.ActorImpl;
 
 /**
  * This class fill the clustering SCAPE structure
@@ -62,6 +64,7 @@ public class CodegenScapeBuilder {
     task.run();
 
     // build body
+
     final String body = bodyFunction(subGraph, cs);
     build.setBody(body);
   }
@@ -119,6 +122,8 @@ public class CodegenScapeBuilder {
 
     final StringBuilder body = new StringBuilder();
     // Iterate through each schedule step (ScapeSchedule)
+    final Map<String, AbstractActor> processedActors = new HashMap<>();
+
     for (final ScapeSchedule sc : cs) {
       // Skip if the actor's name is empty
       if (sc.getActor().getName().isEmpty()) {
@@ -136,16 +141,22 @@ public class CodegenScapeBuilder {
       String memcpy = "";
 
       // Process regular actors
-      if (sc.getActor() instanceof Actor) {
-        final Runnable task = subGraph.isOnGPU() ? () -> actor.append(processActorGPU(sc))
+      if (sc.getActor() instanceof Actor && !processedActors.containsValue(sc.getActor())) {
+        final Runnable task = sc.getActor().isOnGPU() ? () -> actor.append(processActorGPU(sc))
             : () -> actor.append(processActorCPU(sc));
 
         task.run(); // Execute the appropriate actor processing method
-        memcpy = processClusteredDelay(sc);
+        if (!subGraph.isOnGPU()) {
+          memcpy = processClusteredDelay(sc);
+        }
       }
       // Process special actors
-      if (sc.getActor() instanceof SpecialActor) {
+      if (sc.getActor() instanceof SpecialActor && !subGraph.isOnGPU()) {
         actor.append(processSpecialActor(sc));
+      } else if (sc.getActor() instanceof SpecialActor && subGraph.isOnGPU()) {
+        if (sc.getActor() instanceof final BroadcastActor brd) {
+          actor.append(processBroadcastActorGPU(brd, sc.getRepetition()));
+        }
       }
 
       body.append(actor);
@@ -155,6 +166,8 @@ public class CodegenScapeBuilder {
       if (!subGraph.isOnGPU()) {
         IntStream.range(0, sc.getEndLoopNb()).forEach(i -> body.append("\n }"));
       }
+
+      processedActors.put(sc.getActor().getName(), sc.getActor());
 
     }
 
@@ -223,7 +236,10 @@ public class CodegenScapeBuilder {
         outBuffName = dout.getName();
         scaleOut = dout.getDataPort().getExpression().evaluate() / repetition;
       } else {
-        outBuffName = out.getContainingActor().getName() + "_" + out.getName() + "__" + inBuffName;
+        final String targetActorName = ((AbstractActor) out.getFifo().getTarget()).getName();
+        final String targetActorPortName = out.getFifo().getTargetPort().getName();
+        outBuffName = out.getContainingActor().getName() + "_" + out.getName() + "__" + targetActorName + "_"
+            + targetActorPortName;
       }
 
       if (repetition > 1) {
@@ -442,16 +458,24 @@ public class CodegenScapeBuilder {
 
     for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
       String buffname = "";
+
+      // EWEN TESTING
+
+      if (((AbstractActor) in.getFifo().getSource()).isOnGPU()) {
+        buffname += "d_";
+      }
+      // END EWEN TESTING
+
       Long scale = 1L;
 
       if (in.getFifo().getSource() instanceof final DataInputInterface din) {
         scale = din.getDataPort().getExpression().evaluate() / sc.getRepetition();
-        buffname = din.getName();
+        buffname += din.getName();
       } else if (in.getFifo().isHasADelay() && in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = in.getFifo().getDelay();
-        buffname = delay.getActor().getSetterActor().getName();
+        buffname += delay.getActor().getSetterActor().getName();
       } else {
-        buffname = ((AbstractVertex) in.getFifo().getSource()).getName() + "_" + in.getFifo().getSourcePort().getName()
+        buffname += ((AbstractVertex) in.getFifo().getSource()).getName() + "_" + in.getFifo().getSourcePort().getName()
             + "__" + sc.getActor().getName() + "_" + in.getName();
       }
 
@@ -472,16 +496,31 @@ public class CodegenScapeBuilder {
 
     for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
       String buffname = "";
+      // EWEN TESTING
+      if (((AbstractActor) out.getFifo().getTarget()).isOnGPU()) {
+        buffname += "d_";
+      } else if (out.getFifo().getTarget() instanceof final BroadcastActor bc) {
+        final AtomicBoolean isNextGPU = new AtomicBoolean(false);
+        bc.getDataOutputPorts().forEach(outPort -> {
+          if (((AbstractActor) outPort.getFifo().getTarget()).isOnGPU()) {
+            isNextGPU.set(true);
+          }
+        });
+        if (isNextGPU.get()) {
+          buffname += "d_";
+        }
+      }
+      // END EWEN TESTING
       Long scale = 1L;
 
       if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
         scale = dout.getDataPort().getExpression().evaluate() / sc.getRepetition();
-        buffname = dout.getName();
+        buffname += dout.getName();
       } else if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
-        buffname = delay.getActor().getGetterActor().getName();
+        buffname += delay.getActor().getGetterActor().getName();
       } else {
-        buffname = sc.getActor().getName() + "_" + out.getName() + "__"
+        buffname += sc.getActor().getName() + "_" + out.getName() + "__"
             + ((AbstractVertex) out.getFifo().getTarget()).getName() + "_" + out.getFifo().getTargetPort().getName();
       }
 
@@ -541,14 +580,54 @@ public class CodegenScapeBuilder {
     build.getBuffer().add("// GPU Input Buffer Declaration \n");
     processInputGPUBuffer(subGraph, build);
 
+    build.getBuffer().add("// GPU Broadcast Buffer Declaration \\n");
+    processBroadcastGPUBuffer(subGraph, build);
+
     build.getBuffer().add("// GPU Output Buffer Declaration \n");
     processOutputGPUBuffer(subGraph, build);
 
   }
 
+  private void processBroadcastGPUBuffer(PiGraph subGraph, ScapeBuilder build) {
+    subGraph.getExecutableActors().forEach(actor -> {
+      if (actor instanceof BroadcastActor) {
+        // Output Ports
+        final boolean localMem = true;
+        actor.getDataOutputPorts().forEach(outPort -> {
+          final DataInputPort inPort = actor.getDataInputPorts().get(0);
+          if (inPort.getFifo().getSource() instanceof ActorImpl) {
+            String outBuffname = "";
+            final Long nbExecOut = outPort.getExpression().evaluate();
+            if (outPort.getFifo().getTarget() instanceof final ActorImpl target) {
+              final String targetPortName = outPort.getFifo().getTargetPort().getName();
+              final String bcOutputPortName = outPort.getName();
+              outBuffname = "d_" + actor.getName() + "_" + bcOutputPortName + "__" + target.getName() + "_"
+                  + targetPortName;
+            }
+            if (!outBuffname.equals("")) {
+
+              final String buffer = outPort.getOutgoingFifo().getType() + " *" + outBuffname + " = NULL;";
+
+              final String cudaFreeBuffers = "cudaFree(" + outBuffname + ");\n";
+
+              build.getBuffer().add(buffer);
+              build.getBuffer().add(processCudaMallocBuffer(outBuffname, outPort, nbExecOut, localMem));
+              build.getFreeBuffer().add(cudaFreeBuffers);
+            }
+          }
+        });
+      }
+    });
+  }
+
   private void processOutputGPUBuffer(PiGraph subGraph, ScapeBuilder build) {
 
     final boolean localMem = true;
+
+    // final LinkedHashMap<AbstractActor, Boolean> actorsList = new LinkedHashMap<>();
+    //
+    // subGraph.getExecutableActors().forEach(actor -> actorsList.put(actor, actor.isOnGPU()));
+
     subGraph.getExecutableActors().forEach(actor -> actor.getDataOutputPorts().forEach(dout -> {
       String buffname = "";
       final Long nbExec = dout.getExpression().evaluate();
@@ -567,7 +646,7 @@ public class CodegenScapeBuilder {
       } else if (dout.getFifo().isHasADelay()) {
         final Delay delay = dout.getFifo().getDelay();
         buffname = "d_" + delay.getActor().getGetterActor().getName();
-      } else {
+      } else if (!(actor instanceof BroadcastActor) && !(actor.getName().equals("single_source"))) {
         buffname = "d_" + actor.getName() + "_" + dout.getName() + "__"
             + ((AbstractVertex) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
       }
@@ -590,11 +669,17 @@ public class CodegenScapeBuilder {
     subGraph.getExecutableActors().forEach(actor -> actor.getDataInputPorts().forEach(din -> {
       final Long nbExec = din.getExpression().evaluate();
       String buffname = "";
-      if (din.getFifo().getSource() instanceof final DataInputInterface) {
+      if (din.getFifo().getSource() instanceof final DataInputInterface inputInterface
+          && !(actor instanceof BroadcastActor)) {
         buffname = "d_" + din.getName();
-      } else if (din.getFifo().isHasADelay()) {
+        // buffname = "d_" + ((AbstractActor) din.getFifo().getTarget()).getName() + "_" + inputInterface.getName();
+        // buffname = "d_" + ((AbstractActor) din.getFifo().getTarget()).getName() + "_" + inputInterface.getName();
+      } else if (din.getFifo().isHasADelay() && !(actor instanceof BroadcastActor)) {
         final Delay delay = din.getFifo().getDelay();
         buffname = "d_" + delay.getActor().getSetterActor().getName();
+      } else if (actor instanceof BroadcastActor
+          && din.getFifo().getSource() instanceof final DataInputInterface inputInterface) {
+        buffname = "d_" + inputInterface.getName();
       }
 
       if (!buffname.equals("")) {
@@ -628,12 +713,57 @@ public class CodegenScapeBuilder {
     String cudaMallocBuffers = "";
     if (localMem) {
       cudaMallocBuffers = "cudaMalloc(&" + buffname + ", sizeof(" + dataPort.getFifo().getType() + ") *" + nbExec
-          + ");";
+          + "); \n";
     } else {
       cudaMallocBuffers = "cudaMallocManaged(&" + buffname + ", sizeof(" + dataPort.getFifo().getType() + ") *" + nbExec
           + ");";
     }
     return cudaMallocBuffers;
+  }
+
+  private StringBuilder processBroadcastActorGPU(BroadcastActor brd, int repetition) {
+
+    final StringBuilder actorImplem = new StringBuilder();
+    if (!(brd.getDataInputPorts().get(0).getFifo().getSource() instanceof DataInputInterface)
+        && !(brd.getDataInputPorts().get(0).getFifo().getSource() instanceof BroadcastActor)) {
+      final Long scaleIn = 1L;
+      String inBuffName = "";
+
+      if (!(brd.getDataInputPorts().get(0).getFifo().getSource() instanceof final DataInputInterface din)) {
+        final String srcActor = ((AbstractVertex) brd.getDataInputPorts().get(0).getFifo().getSource()).getName() + "_"
+            + brd.getDataInputPorts().get(0).getFifo().getSourcePort().getName();
+        final String snkActor = brd.getName() + "_" + brd.getDataInputPorts().get(0).getName();
+        inBuffName = "d_" + srcActor + "__" + snkActor;
+      }
+
+      for (final DataOutputPort out : brd.getDataOutputPorts()) {
+
+        Long scaleOut = 1L;
+        String outBuffName = "";
+        String iterOut = "0";
+        String iterIn = "0";
+
+        if (out.getFifo().getTarget() instanceof final DataOutputInterface dout) {
+          outBuffName = dout.getName();
+          scaleOut = dout.getDataPort().getExpression().evaluate() / repetition;
+        } else {
+          final String targetActorName = ((AbstractActor) out.getFifo().getTarget()).getName();
+          final String targetActorPortName = out.getFifo().getTargetPort().getName();
+          outBuffName = "d_" + out.getContainingActor().getName() + "_" + out.getName() + "__" + targetActorName + "_"
+              + targetActorPortName;
+        }
+
+        if (repetition > 1) {
+          iterOut = " " + INDEX + brd.getName() + "*" + scaleOut;
+          iterIn = " " + INDEX + brd.getName() + "*" + scaleIn;
+        }
+
+        final Long rate = out.getExpression().evaluate();
+        actorImplem.append("cudaMemcpy(" + outBuffName + " + " + iterOut + "," + inBuffName + " + " + iterIn + ","
+            + rate + SIZEOF_TEXT + out.getFifo().getType() + ")" + ", cudaMemcpyDeviceToDevice);\n");
+      }
+    }
+    return actorImplem;
   }
 
   private StringBuilder processActorGPU(ScapeSchedule sc) {
@@ -662,14 +792,14 @@ public class CodegenScapeBuilder {
     }
 
     // Append block size and dimensions
-    actorImplem.append(" int block_size" + sc.getActor().getName() + " = " + blockDim + "; \n");
+    actorImplem.append(" int block_size_" + sc.getActor().getName() + " = " + blockDim + "; \n");
 
-    actorImplem.append(" dim3 block_dim" + sc.getActor().getName() + " (block_size" + sc.getActor().getName() + "); "
-        + "\n dim3 grid_dim" + sc.getActor().getName() + " ((" + rateActor.get(sc.getActor().getName()) + "+ block_size"
-        + sc.getActor().getName() + " - 1 ) / block_size" + sc.getActor().getName() + "); \n");
+    actorImplem.append(" dim3 block_dim_" + sc.getActor().getName() + " (block_size_" + sc.getActor().getName() + "); "
+        + "\n dim3 grid_dim_" + sc.getActor().getName() + " ((" + rateActor.get(sc.getActor().getName())
+        + "+ block_size_" + sc.getActor().getName() + " - 1 ) / block_size_" + sc.getActor().getName() + "); \n");
 
-    actorImplem
-        .append(funcName + "<<<grid_dim" + sc.getActor().getName() + ", block_dim" + sc.getActor().getName() + ">>>(");
+    actorImplem.append(
+        funcName + "<<<grid_dim_" + sc.getActor().getName() + ", block_dim_" + sc.getActor().getName() + ">>>(");
 
     // Append loop prototype arguments
     final FunctionPrototype loopPrototype = ((Actor) sc.getActor())
@@ -684,14 +814,24 @@ public class CodegenScapeBuilder {
     // Append input buffer names
     sc.getActor().getDataInputPorts().forEach(in -> {
       String buffname = "";
-      if (in.getFifo().getSource() instanceof final DataInputInterface) {
 
+      if (in.getFifo().getSource() instanceof final DataInputInterface
+          & !(in.getFifo().getSource() instanceof final BroadcastActor)) {
         buffname = "d_" + in.getName();
       } else if (in.getFifo().isHasADelay()) {
         final Delay delay = in.getFifo().getDelay();
         buffname = "d_" + delay.getActor().getSetterActor().getName();
-      } else {
+      } else if (in.getFifo().getSource() instanceof final BroadcastActor bc) {
+        if (bc.getDataInputPorts().get(0).getFifo().getSource() instanceof final DataInputInterface inbc) {
+          buffname = "d_" + inbc.getName();
+        } else if (bc.getDataInputPorts().get(0).getFifo().getSource() instanceof final BroadcastActor intbc) {
+          buffname = "d_" + ((DataInputInterface) intbc.getDataInputPorts().get(0).getFifo().getSource()).getName();
+        } else {
+          buffname = "d_" + bc.getName() + "_" + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName()
+              + "_" + in.getName();
+        }
 
+      } else {
         buffname = "d_" + ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
             + in.getFifo().getSourcePort().getName() + "__" + sc.getActor().getName() + "_" + in.getName();
       }
