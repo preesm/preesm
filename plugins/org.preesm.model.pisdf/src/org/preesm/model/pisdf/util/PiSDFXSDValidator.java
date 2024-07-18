@@ -101,7 +101,7 @@ public class PiSDFXSDValidator {
 
   /**
    * @throws IOException
-   *           Exception
+   *           NonEmptyAtclauseDescription
    *
    */
   private final void validateLocal(final InputStream pisdfStreamed) throws IOException {

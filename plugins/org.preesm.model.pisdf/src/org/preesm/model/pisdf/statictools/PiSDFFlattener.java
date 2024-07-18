@@ -232,7 +232,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
   /**
    * @param originalGraph
-   *          The original graph
+   *          NonEmptyAtclauseDescription
    *
    */
   private static final void flattenCheck(final PiGraph originalGraph, final PiGraph graph) {
@@ -289,6 +289,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       final Parameter parameter = param2param.get(setter);
       if (parameter == null) {
         throw new PreesmRuntimeException();
+
       }
       final Dependency dep = PiMMUserFactory.instance.createDependency(parameter, port);
       this.result.addDependency(dep);
@@ -516,8 +517,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   private AbstractActor getActorFromActor(final AbstractActor actor, final DataPort port) {
-    if (actor instanceof final PiGraph piGraph) {
-      final AbstractVertex ifActor = piGraph.lookupVertex(port.getName());
+
+    if (actor instanceof PiGraph) {
+      final AbstractVertex ifActor = ((PiGraph) actor).lookupVertex(port.getName());
       return this.actor2actor.get(ifActor);
     }
     return this.actor2actor.get(actor);

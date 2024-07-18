@@ -12,6 +12,7 @@
             <port annotation="NONE" expr="3" kind="input" name="in"/>
         </node>
         <node id="h" kind="actor">
+<<<<<<< HEAD
             <data key="graph_desc">Code/generated/Cluster_top_h.h</data>
             <loop name="h">
                 <param direction="IN" isConfig="false" name="inD" type="char"/>
@@ -20,6 +21,9 @@
                 <param direction="OUT" isConfig="false"
                     name="out" type="char"/>
             </loop>
+=======
+            <data key="graph_desc">Algo/scape/h.pi</data>
+>>>>>>> 8e8bba198 (checkstyle update)
             <port annotation="NONE" expr="1" kind="input" name="inD"/>
             <port annotation="NONE" expr="1" kind="output" name="outD"/>
             <port annotation="NONE" expr="1" kind="output" name="out"/>

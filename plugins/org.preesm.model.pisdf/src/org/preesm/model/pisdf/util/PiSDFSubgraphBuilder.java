@@ -88,11 +88,13 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
    * List of visited Fifo in order to explore the PiGraph.
    */
   private final List<Fifo> visitedFifo;
-
+  private int              nbInputInterface;
+  private int              nbOutputInterface;
   /**
    * Number of input configuration interface of builded subgraph.
    */
-  private final int nbInputCfgInterface;
+
+  private final int        nbInputCfgInterface;
 
   /**
    * Repetition vector of input graph.
@@ -123,6 +125,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     this.subGraph.setUrl(this.parentGraph.getUrl() + "/" + subGraphName + ".pi");
     this.visitedFifo = new LinkedList<>();
     this.nbInputCfgInterface = 0;
+    this.nbInputInterface = 0;
+    this.nbOutputInterface = 0;
     // Compute BRV for the parent graph
     this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
     // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
@@ -170,7 +174,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the input interface
       final DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
-      final String inputName = object.getContainingActor().getName() + "_" + object.getName();
+      String inputName = object.getContainingActor().getName() + "_" + object.getName();
+      if (this.subGraph.getName().matches("^sub\\d+")) {
+        inputName = "in_" + this.nbInputInterface++;
+      }
       inputInterface.setName(inputName);
       inputInterface.getDataPort().setName(inputName);
       this.subGraph.addActor(inputInterface);
@@ -219,7 +226,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the output interface
       final DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
-      final String outputName = object.getContainingActor().getName() + "_" + object.getName();
+      String outputName = object.getContainingActor().getName() + "_" + object.getName();
+      if (this.subGraph.getName().matches("^sub\\d+")) {
+        outputName = "out_" + this.nbOutputInterface++;
+      }
       outputInterface.setName(outputName);
       outputInterface.getDataPort().setName(outputName);
       this.subGraph.addActor(outputInterface);

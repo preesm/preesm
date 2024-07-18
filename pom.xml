@@ -78,7 +78,7 @@
       <jacoco-version>0.8.12</jacoco-version>
       <tycho-version>2.7.5</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
-      <sonar-version>3.11.0.3922</sonar-version>
+      <sonar-version>3.9.1.2184</sonar-version>
       <checkstyle-version>10.14.2</checkstyle-version>
       <rcptt-version>2.4.3</rcptt-version>
       <rcptt-runner-version>2.5.4</rcptt-runner-version>

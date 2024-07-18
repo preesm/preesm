@@ -99,8 +99,8 @@ public class PapiConfigParser {
   private List<PapiEventModifier>    modifiers;
 
   /**
-   * @return PapiEventInfo
    *
+   * @return papiEventInfo doc
    */
   public final PapiEventInfo parse(final String filePath) {
     final File xmlConfigFile = Paths.get(filePath).toFile();

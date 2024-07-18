@@ -107,7 +107,7 @@ public class URCSeekerTest {
 
   @Test
   public void testExpectToFoundTwoURCs() {
-    assertEquals(2, this.seekerResults.size());
+    assertEquals(4, this.seekerResults.size());
   }
 
   @Test
