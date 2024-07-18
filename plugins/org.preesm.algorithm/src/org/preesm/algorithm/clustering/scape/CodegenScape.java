@@ -2,6 +2,7 @@ package org.preesm.algorithm.clustering.scape;
 
 import java.io.File;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
@@ -214,8 +215,12 @@ public class CodegenScape {
     result.append(loopFunc + "{ \n\n", "");
 
     // result.append("// buffer declaration \n\n ", "");
+    final HashSet<String> buff = new HashSet<>();
     for (final String buffer : build.getBuffer()) {
-      result.append(buffer + "\n ", "");
+      if (!buff.contains(buffer)) {
+        result.append(buffer + "\n ", "");
+        buff.add(buffer);
+      }
     }
     for (final String buffer : build.getDynmicBuffer()) {
       result.append(buffer + "\n ", "");
