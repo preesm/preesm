@@ -35,6 +35,7 @@ public class CodegenScape {
     final String clusterName = "/Cluster_" + nameGraph + "_" + subGraph.getName();
     final String clusterPath = scenario.getCodegenDirectory() + File.separator;
     final ScapeBuilder build = ScheduleFactory.eINSTANCE.createScapeBuilder();
+
     new CodegenScapeBuilder(build, schedule, subGraph, stackSize);
     // Generate a C file if the cluster is mapped on CPU
     if ((SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && !subGraph.isOnGPU())
@@ -80,18 +81,29 @@ public class CodegenScape {
     result.append(header(subGraph));
     final String nodeId = nodeIdentifier(subGraph);
 
-    result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
     final String upper = subGraph.getName().toUpperCase() + "_H";
 
     result.append("#ifndef " + upper + "\n");
     result.append("#define " + upper + "\n");
-    result.append(build.getInitFunc() + ";\n");
-    result.append(build.getLoopFunc() + ";\n");
     for (final AbstractActor actor : subGraph.getOnlyActors()) {
       if (actor instanceof final Actor a && a.getRefinement() != null) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
-        result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
+        if (result.indexOf("#include \"" + cHeaderRefinement.getFileName()) == -1) {
+          result.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
+        }
       }
+    }
+    result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
+
+    if (subGraph.isOnGPU()) {
+      result.append("#ifdef __cplusplus\n" + "extern \"C\" {\n" + "#endif \n\n");
+    }
+
+    result.append(build.getInitFunc() + ";\n");
+    result.append(build.getLoopFunc() + ";\n");
+
+    if (subGraph.isOnGPU()) {
+      result.append("#ifdef __cplusplus\n" + "}\n" + "#endif \n\n");
     }
 
     result.append("#endif \n");
