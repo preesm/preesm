@@ -7,8 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -64,15 +62,15 @@ public class ClusteringScape extends ClusterPartitioner {
   /**
    * Size of the stack.
    */
-  private final Long    stackSize;
+  private final Long     stackSize;
   /**
    * Number of hierarchical level.
    */
-  private final int     levelNumber;
+  private final int      levelNumber;
   /**
    * Enable memory optimization.
    */
-  private final Boolean memoryOptim;
+  private static Boolean memoryOptim = false;
 
   int                              clusterIndex   = -1;     // topological index
   private int                      clusterId      = 0;      // index cluster created
@@ -108,8 +106,6 @@ public class ClusteringScape extends ClusterPartitioner {
     // initializes all actors on CPU by default
     graph.getAllActors().forEach(actor -> actor.setOnGPU(false));
 
-    checkGPUCandidate();
-
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
     // Pattern identification
@@ -135,52 +131,6 @@ public class ClusteringScape extends ClusterPartitioner {
     // map all call on CPU
     scenario.getConstraints().getGroupConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
         .forEach(x -> scenario.getAlgorithm().getAllActors().forEach(actor -> x.getValue().add(actor)));
-  }
-
-  private void checkGPUCandidate() {
-    for (final AbstractActor actors : graph.getAllActors()) {
-
-    }
-
-    final EMap<ComponentInstance, EList<AbstractActor>> constr = scenario.getConstraints().getGroupConstraints();
-
-    for (final Map.Entry<ComponentInstance, EList<AbstractActor>> entry : constr.entrySet()) {
-      final ComponentInstance componentInstance = entry.getKey();
-      final EList<AbstractActor> abstractActors = entry.getValue();
-
-      // Iterate over the EList of AbstractActor
-      for (final AbstractActor actor : abstractActors) {
-        // Perform operations on each actor
-        // System.out.println("AbstractActor: " + actor.getName());
-        // System.out.println("AbstractActor: " + scenario.getPossibleMappings(actor));
-      }
-    }
-
-    final EMap<AbstractActor,
-        EMap<Component, EMap<TimingType, String>>> outerMap = scenario.getTimings().getActorTimings();
-
-    for (final Map.Entry<AbstractActor, EMap<Component, EMap<TimingType, String>>> outerEntry : outerMap.entrySet()) {
-      final AbstractActor abstractActor = outerEntry.getKey();
-      final EMap<Component, EMap<TimingType, String>> middleMap = outerEntry.getValue();
-
-      // Iterate over the nested EMap<Component, EMap<TimingType, String>>
-      for (final Map.Entry<Component, EMap<TimingType, String>> middleEntry : middleMap.entrySet()) {
-        final Component component = middleEntry.getKey();
-        final EMap<TimingType, String> innerMap = middleEntry.getValue();
-
-        // Iterate over the innermost EMap<TimingType, String>
-        for (final Map.Entry<TimingType, String> innerEntry : innerMap.entrySet()) {
-          final TimingType timingType = innerEntry.getKey();
-          final String value = innerEntry.getValue();
-
-          // Perform operations on each element
-          // System.out.println("AbstractActor: " + abstractActor);
-          // System.out.println("Component: " + component);
-          // System.out.println("TimingType: " + timingType);
-          // System.out.println("Value: " + value);
-        }
-      }
-    }
   }
 
   /**
@@ -582,6 +532,7 @@ public class ClusteringScape extends ClusterPartitioner {
     final PiGraph graph = (PiGraph) g.getContainingGraph();
 
     final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
+    // final Boolean optimNames = memoryOptim;
 
     // add refinement
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -620,8 +571,12 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataInputPort inputPort = PiMMUserFactory.instance.copy(in);
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      functionArgument.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
-      in.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
+      if (memoryOptim) {
+        functionArgument.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
+        in.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
+      } else {
+        functionArgument.setName(inputPort.getName());
+      }
       functionArgument.setType(in.getFifo().getType());
       functionArgument.setDirection(Direction.IN);
       functionPrototype.getArguments().add(functionArgument);
@@ -631,8 +586,12 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataOutputPort outputPort = PiMMUserFactory.instance.copy(out);
       oEmpty.getDataOutputPorts().add(outputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      functionArgument.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
-      out.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
+      if (memoryOptim) {
+        functionArgument.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
+        out.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
+      } else {
+        functionArgument.setName(outputPort.getName());
+      }
       functionArgument.setType(out.getFifo().getType());
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);

@@ -35,11 +35,20 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
+import java.util.List;
+import java.util.Map;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.pisdf.util.SEQSeeker;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
@@ -49,9 +58,28 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * @author orenaud
  *
  */
-public class ClusterPartitionerSEQ extends ClusterPartitioner {
+
+public class ClusterPartitionerSEQ {
+
+  /**
+   * Input graph.
+   */
+  private final PiGraph  graph;
+  /**
+   * Workflow scenario.
+   */
+  private final Scenario scenario;
+  /**
+   * Number of PEs in compute clusters.
+   */
+  private final int      numberOfPEs;
 
   private final Design archi;
+
+  private final Map<AbstractVertex, Long> brv;
+
+  private final int                 clusterId;
+  private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -63,25 +91,73 @@ public class ClusterPartitionerSEQ extends ClusterPartitioner {
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    *
+   * @param brv
+   * @param clusterId
+   * @param nonClusterableList
+   * @param archi
    */
-  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
-    super(scenario.getAlgorithm(), scenario, numberOfPEs);
-    this.archi = scenario.getDesign();
+  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList, Design archi) {
+    this.graph = graph;
+    this.scenario = scenario;
+    this.numberOfPEs = numberOfPEs;
+    this.brv = brv;
+    this.clusterId = clusterId;
+    this.nonClusterableList = nonClusterableList;
+    this.archi = archi;
   }
 
   /**
    * @return Clustered PiGraph.
    */
-  @Override
+
   public PiGraph cluster() {
 
-    if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())
-        && graph.getChildrenGraphs().isEmpty()) {
-      final int numberOfCut = numberOfPEs;
-      final int maxCut = numberOfPEs - 1;
-      return AutoDelaysTask.addDelays(graph, archi, scenario, false, false, false, numberOfPEs, numberOfCut, maxCut);
+    // TODO: Look for actor groups other than SEQ chains.
+    // Retrieve SEQ chains in input graph and verify that actors share component constraints.
+    if (this.graph.getAllDelays().size() == 0) {
+      final List<List<AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv,
+          nonClusterableList, brv, 1).seek();
 
+      // List<List<AbstractActor>> constrainedSEQs = new LinkedList<>();
+      // if (!graphSEQs.isEmpty()) {
+      // List<AbstractActor> SEQ = graphSEQs.get(0);// cluster one by one //
+      // for (List<AbstractActor> SRV : graphSRVs) {
+      // if (!ClusteringHelper.getListOfCommonComponent(SEQ, this.scenario).isEmpty()) {
+      // constrainedSEQs.add(SEQ);
+      // }
+      // }
+
+      // Subgraph 1st generation
+
+      if (!graphSEQs.isEmpty()) {
+        final List<AbstractActor> SEQ = graphSEQs.get(0);// cluster one by one
+        final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SEQ, "seq_" + clusterId).buildSRV();
+        final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
+            numberOfPEs, numberOfPEs, numberOfPEs + 1);// subGraphCutted
+        graph.replaceActor(subGraph, subGraphCutted);
+        // subGraphCutted.setClusterValue(true);
+        // Add constraints of the cluster in the scenario.
+        for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SEQ, this.scenario)) {
+          this.scenario.getConstraints().addConstraint(component, subGraphCutted);
+        }
+        final Map<AbstractVertex, Long> brvcut = PiBRV.compute(this.graph, BRVMethod.LCM);
+        // Retrieve pipeline stages
+        final List<List<AbstractActor>> graphSEQ2s = new SEQSeeker(subGraphCutted, this.numberOfPEs, brvcut,
+            nonClusterableList, brvcut, 2).seek();
+        // Subgraph 2st generation
+        if (!graphSEQ2s.isEmpty()) {
+          final List<AbstractActor> SEQ2 = graphSEQ2s.get(0);// cluster one by one
+          final PiGraph subsubGraph = new PiSDFSubgraphBuilder(subGraphCutted, SEQ2, "stage_" + clusterId).buildSRV();
+          subsubGraph.setClusterValue(true);
+          // Add constraints of the cluster in the scenario.
+          for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SEQ2, this.scenario)) {
+            this.scenario.getConstraints().addConstraint(component, subsubGraph);
+          }
+        }
+      }
     }
     return this.graph;
   }
+
 }

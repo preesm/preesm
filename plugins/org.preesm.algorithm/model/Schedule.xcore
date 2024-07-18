@@ -120,6 +120,19 @@ interface Schedule {
 		return SchedulePrinterSwitch.print(this)
 	}
 }
+/*
+ * This schedule contains an ordered list of clustering raiser actors
+ *
+ */
+class ClusterRaiserSchedule{
+	int iterator
+	refers AbstractActor actor
+	boolean beginLoop
+	boolean endLoop
+	boolean LoopPrec
+	int endLoopNb
+	refers ComponentInstance cmp
+}
 
 class ScapeSchedule{
 		int repetition

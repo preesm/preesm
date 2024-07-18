@@ -35,17 +35,21 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.pisdf.util.SRVSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -57,87 +61,102 @@ import org.preesm.model.slam.ComponentInstance;
  * @author orenaud
  *
  */
-public class ClusterPartitionerSRV extends ClusterPartitioner {
+
+public class ClusterPartitionerSRV {
+
+  /**
+   * Input graph.
+   */
+  private final PiGraph  graph;
+  /**
+   * Workflow scenario.
+   */
+  private final Scenario scenario;
+  /**
+   * Number of PEs in compute clusters.
+   */
+  private final int      numberOfPEs;
 
   private final Map<AbstractVertex, Long> brv;
 
-  private final int       clusterId;
-  private final ScapeMode scapeMode;
-  private final Boolean   memoryOptim;
+  private final int                 clusterId;
+  private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
    *
    * @param graph
-   *          PiGraph
+   * 
+   *          Input graph.
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    * @param brv
-   *          repetition vector
+   *
    * @param clusterId
-   *          Cluster number
-   * @param memoryOptim
-   *          Enable memory optimization to foster memory script
+   * @param nonClusterableList
    */
-  public ClusterPartitionerSRV(PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode, Boolean memoryOptim) {
-    super(graph, scenario, numberOfPEs);
-    this.memoryOptim = memoryOptim;
+  public ClusterPartitionerSRV(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
+    this.graph = graph;
+    this.scenario = scenario;
+    this.numberOfPEs = numberOfPEs;
     this.brv = brv;
     this.clusterId = clusterId;
-    this.scapeMode = scapeMode;
+    this.nonClusterableList = nonClusterableList;
   }
 
   /**
    * @return Clustered PiGraph.
    */
-  @Override
+
   public PiGraph cluster() {
 
-    // Retrieve SRV first candidate in input graph and verify that actors share component constraints.
-    final List<AbstractActor> graphSRVs = new ClusteringPatternSeekerSrv(this.graph, this.numberOfPEs, this.brv).seek();
+    // TODO: Look for actor groups other than URC chains.
+    // Retrieve URC chains in input graph and verify that actors share component constraints.
+    final List<List<AbstractActor>> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
+    final List<List<AbstractActor>> constrainedSRVs = new LinkedList<>();
+    if (!graphSRVs.isEmpty()) {
+      final List<AbstractActor> SRV = graphSRVs.get(0);// cluster one by one
+      // for (List<AbstractActor> SRV : graphSRVs) {
+      if (!ClusteringHelper.getListOfCommonComponent(SRV, this.scenario).isEmpty()) {
+        constrainedSRVs.add(SRV);
+      }
+    }
 
     // Cluster constrained SRV chains.
+
+    final List<PiGraph> subGraphs = new LinkedList<>();
     if (!graphSRVs.isEmpty()) {
+      final List<AbstractActor> SRV = graphSRVs.get(0);// cluster one by one
+      // for (List<AbstractActor> SRV : graphSRVs) {
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, SRV, "srv_" + clusterId).buildSRV();
 
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphSRVs, "srv_" + clusterId).build();
-
-      // compute mapping
-      final Object[] result = ClusterPartitionerURC.mapping(graphSRVs, scenario, numberOfPEs, brv);
-      final Long nPE = (Long) result[0];
-      final Boolean isOnGPU = (Boolean) result[1];
-
-      // apply scaling
-      final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
-          brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
-
-      for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
-        iActor.getGraphPort().setExpression(
-            iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
-
+      for (final AbstractActor delay : this.graph.getDelayActors()) {
+        for (final AbstractActor delaySub : subGraph.getDelayActors()) {
+          if (delay.getName().equals(delaySub.getName())) {
+            PiMMHelper.removeActorAndDependencies(this.graph, delay);
+          }
+        }
       }
-
-      if (memoryOptim.equals(Boolean.TRUE)) {
-        // reduce memory exclusion graph matches
-        ClusterPartitionerURC.reduceMemExMatches(subGraph, scale, brv);
-
-      }
-
-      // remove empty introduced fifo
-      subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
-      subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphSRVs, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(SRV, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-      // map the cluster on the CPU or GPU according to timing
-      subGraph.setOnGPU(isOnGPU);
-      PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " + subGraph.isOnGPU());
+      subGraphs.add(subGraph);
+    }
+
+    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
+    for (final PiGraph subgraph : subGraphs) {
+      final long factor = MathFunctionsHelper.gcd(brv.get(subgraph), this.numberOfPEs);
+      final String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
+          subgraph.getName(), brv.get(subgraph) / factor, factor);
+      PreesmLogger.getLogger().log(Level.INFO, message);
+      // new PiGraphFiringBalancer(subgraph, factor).balance();
     }
 
     return this.graph;

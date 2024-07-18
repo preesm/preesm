@@ -88,13 +88,22 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
    * List of visited Fifo in order to explore the PiGraph.
    */
   private final List<Fifo> visitedFifo;
-  private int              nbInputInterface;
-  private int              nbOutputInterface;
+
+  /**
+   * Number of input interface of builded subgraph.
+   */
+  private int nbInputInterface;
+
+  /**
+   * Number of output interface of builded subgraph.
+   */
+  private int nbOutputInterface;
+
   /**
    * Number of input configuration interface of builded subgraph.
    */
 
-  private final int        nbInputCfgInterface;
+  private final int nbInputCfgInterface;
 
   /**
    * Repetition vector of input graph.
@@ -159,6 +168,21 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     return this.subGraph;
   }
 
+  public PiGraph buildSRV() {
+    // Add subgraph to parent graph
+    this.parentGraph.addActor(subGraph);
+    // Add actors to the new subgraph
+    for (final AbstractActor actor : this.subGraphActors) {
+      doSwitch(actor);
+    }
+    // Check consistency of parent graph
+    // Check consistency of the graph (throw exception if recoverable or fatal error)
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    // pgcc.check(this.parentGraph);
+    return this.subGraph;
+  }
+
   @Override
   public Boolean caseAbstractActor(AbstractActor object) {
     this.subGraph.addActor(object);
@@ -174,10 +198,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the input interface
       final DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
-      String inputName = object.getContainingActor().getName() + "_" + object.getName();
-      if (this.subGraph.getName().matches("^sub\\d+")) {
-        inputName = "in_" + this.nbInputInterface++;
-      }
+
+      final String inputName = "in_" + this.nbInputInterface++;
       inputInterface.setName(inputName);
       inputInterface.getDataPort().setName(inputName);
       this.subGraph.addActor(inputInterface);
@@ -187,10 +209,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       inputPort.setName(inputName); // same name than DataInputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
-      long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
-      if (object.getContainingActor() instanceof DelayActor) {
-        portExpression = object.getFifo().getTargetPort().getExpression().evaluate();
-      }
+
+      final long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
       inputPort.setExpression(portExpression);
 
       // Interconnect the outside with hierarchical actor
@@ -226,10 +246,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
       // Setup the output interface
       final DataOutputInterface outputInterface = PiMMUserFactory.instance.createDataOutputInterface();
-      String outputName = object.getContainingActor().getName() + "_" + object.getName();
-      if (this.subGraph.getName().matches("^sub\\d+")) {
-        outputName = "out_" + this.nbOutputInterface++;
-      }
+
+      final String outputName = "out_" + this.nbOutputInterface++;
       outputInterface.setName(outputName);
       outputInterface.getDataPort().setName(outputName);
       this.subGraph.addActor(outputInterface);
@@ -239,10 +257,8 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       outputPort.setName(outputName); // same name than DataOutputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
-      long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
-      if (object.getContainingActor() instanceof DelayActor) {
-        portExpression = object.getFifo().getSourcePort().getExpression().evaluate();
-      }
+
+      final long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
       outputPort.setExpression(portExpression);
 
       // Interconnect the outside with hierarchical actor
@@ -276,88 +292,65 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   public Boolean caseConfigInputPort(ConfigInputPort object) {
 
     // Setup the input configuration interface
-    final Boolean interfaceExist = false;
     final ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
-    final String inputCfgName = object.getName();
-    if (this.subGraph.getParametersNames().contains(object.getName())) {
-      // this.subGraph.getConfigInputInterfaces()
-      inputInterface = this.subGraph.getConfigInputInterfaces().stream()
-          .filter(x -> x.getName().equals(object.getName())).findAny().orElseThrow();
-      interfaceExist = true;
-    } else {
+    final String inputCfgName = "cfg_" + this.nbInputCfgInterface++;
+    inputInterface.setName(inputCfgName);
+    this.subGraph.addParameter(inputInterface);
 
-      inputInterface.setName(inputCfgName);
-      this.subGraph.addParameter(inputInterface);
-    }
-
-    if (this.subGraph.getName().matches("^sub\\d+")
-        || this.subGraph.getName().matches(".*srv.*|.*urc.*|.*loop.|.*coarse.*")) {
-      // Setup the input configuration interface
-      Boolean interfaceExist = false;
-      ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
-      final String inputCfgName = object.getName();
-      if (this.subGraph.getParametersNames().contains(object.getName())) {
-        // this.subGraph.getConfigInputInterfaces()
-        inputInterface = this.subGraph.getConfigInputInterfaces().stream()
-            .filter(x -> x.getName().equals(object.getName())).findAny().orElseThrow();
-        interfaceExist = true;
-      } else {
-
+    // Setup input of hierarchical actor
+    final ConfigInputPort inputPort = inputInterface.getGraphPort();
+    inputPort.setName(inputCfgName); // same name than ConfigInputInterface
 
     // Interconnect the outside with hierarchical actor
-    if (Boolean.FALSE.equals(interfaceExist)) {
-      final Dependency outsideIncomingDependency = PiMMUserFactory.instance.createDependency();
-      inputPort.setIncomingDependency(outsideIncomingDependency);
+    final Dependency outsideIncomingDependency = PiMMUserFactory.instance.createDependency();
+    inputPort.setIncomingDependency(outsideIncomingDependency);
+    this.parentGraph.addDependency(outsideIncomingDependency);
+    final Dependency oldDependency = object.getIncomingDependency();
+    outsideIncomingDependency.setSetter(oldDependency.getSetter());
 
-      this.parentGraph.addDependency(outsideIncomingDependency);
+    this.parentGraph.addDependency(outsideIncomingDependency);
 
-      final Dependency oldDependency = object.getIncomingDependency();
-      outsideIncomingDependency.setSetter(oldDependency.getSetter());
-    }
-    // Setup inside communication with ConfigInputInterface
-    final Dependency dependency = object.getIncomingDependency();
-    dependency.setSetter(inputInterface);
-    this.subGraph.addDependency(dependency);
-
-      // Interconnect the outside with hierarchical actor
-      if (Boolean.FALSE.equals(interfaceExist)) {
-        final Dependency outsideIncomingDependency = PiMMUserFactory.instance.createDependency();
-        inputPort.setIncomingDependency(outsideIncomingDependency);
-
-        this.parentGraph.addDependency(outsideIncomingDependency);
-
-        final Dependency oldDependency = object.getIncomingDependency();
-        outsideIncomingDependency.setSetter(oldDependency.getSetter());
-      }
-      // Setup inside communication with ConfigInputInterface
-      final Dependency dependency = object.getIncomingDependency();
-      dependency.setSetter(inputInterface);
-      this.subGraph.addDependency(dependency);
-    } else {
-      // Setup the input configuration interface
-      final ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
-      final String inputCfgName = "cfg_" + this.nbInputCfgInterface++;
-      inputInterface.setName(inputCfgName);
-      this.subGraph.addParameter(inputInterface);
-
-      // Setup input of hierarchical actor
-      final ConfigInputPort inputPort = inputInterface.getGraphPort();
-      inputPort.setName(inputCfgName); // same name than ConfigInputInterface
-
-      // Interconnect the outside with hierarchical actor
-      final Dependency outsideIncomingDependency = PiMMUserFactory.instance.createDependency();
-      inputPort.setIncomingDependency(outsideIncomingDependency);
-      this.parentGraph.addDependency(outsideIncomingDependency);
-      final Dependency oldDependency = object.getIncomingDependency();
-      outsideIncomingDependency.setSetter(oldDependency.getSetter());
-
-      // Setup inside communication with ConfigInputInterface
-      final Dependency dependency = object.getIncomingDependency();
-      dependency.setSetter(inputInterface);
-      this.subGraph.addDependency(dependency);
-    }
-    return super.caseConfigInputPort(object);
+    final Dependency oldDependency = object.getIncomingDependency();
+    outsideIncomingDependency.setSetter(oldDependency.getSetter());
   }
+
+  // Setup inside communication with ConfigInputInterface
+  final Dependency dependency = object
+      .getIncomingDependency();dependency.setSetter(inputInterface);this.subGraph.addDependency(dependency);
+
+  // Interconnect the outside with hierarchical actor
+  if(Boolean.FALSE.equals(interfaceExist))
+  {
+    final Dependency outsideIncomingDependency = PiMMUserFactory.instance.createDependency();
+    inputPort.setIncomingDependency(outsideIncomingDependency);
+
+    this.parentGraph.addDependency(outsideIncomingDependency);
+
+    final Dependency oldDependency = object.getIncomingDependency();
+    outsideIncomingDependency.setSetter(oldDependency.getSetter());
+  }
+  // Setup inside communication with ConfigInputInterface
+  final Dependency dependency = object
+      .getIncomingDependency();dependency.setSetter(inputInterface);this.subGraph.addDependency(dependency);}else{
+  // Setup the input configuration interface
+  final ConfigInputInterface inputInterface = PiMMUserFactory.instance.createConfigInputInterface();
+  final String               inputCfgName   = "cfg_"
+      + this.nbInputCfgInterface++;inputInterface.setName(inputCfgName);this.subGraph.addParameter(inputInterface);
+
+  // Setup input of hierarchical actor
+  final ConfigInputPort inputPort = inputInterface.getGraphPort();inputPort.setName(inputCfgName); // same name than
+                                                                                                   // ConfigInputInterface
+
+  // Interconnect the outside with hierarchical actor
+  final Dependency outsideIncomingDependency = PiMMUserFactory.instance
+      .createDependency();inputPort.setIncomingDependency(outsideIncomingDependency);this.parentGraph.addDependency(outsideIncomingDependency);
+  final Dependency oldDependency = object
+      .getIncomingDependency();outsideIncomingDependency.setSetter(oldDependency.getSetter());
+
+  // Setup inside communication with ConfigInputInterface
+  final Dependency dependency = object
+      .getIncomingDependency();dependency.setSetter(inputInterface);this.subGraph.addDependency(dependency);
+  }return super.caseConfigInputPort(object);}
 
   @Override
   public Boolean caseFifo(Fifo object) {

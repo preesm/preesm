@@ -52,12 +52,11 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
+import org.preesm.model.pisdf.util.URCSeeker;
 
 /**
  * @author dgageot
@@ -84,7 +83,8 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
-    this.seeker = new ClusteringPatternSeekerUrc(this.topGraph, PiBRV.compute(this.topGraph, BRVMethod.LCM));
+
+    this.seeker = new URCSeeker(this.topGraph, null, null);
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }

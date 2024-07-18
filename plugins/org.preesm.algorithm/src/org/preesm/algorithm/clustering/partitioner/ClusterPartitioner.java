@@ -44,12 +44,18 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
-import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
+import org.preesm.model.pisdf.util.URCSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -66,15 +72,19 @@ public class ClusterPartitioner {
   /**
    * Input graph.
    */
-  protected final PiGraph  graph;
+
+  private final PiGraph                   graph;
   /**
    * Workflow scenario.
    */
-  protected final Scenario scenario;
+  private final Scenario                  scenario;
   /**
    * Number of PEs in compute clusters.
    */
-  protected final int      numberOfPEs;
+  private final int                       numberOfPEs;
+  private final Map<AbstractVertex, Long> brv;
+  private final int                       clusterId;
+  private final List<AbstractActor>       nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -86,10 +96,14 @@ public class ClusterPartitioner {
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    */
-  public ClusterPartitioner(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
+  public ClusterPartitioner(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
     this.graph = graph;
     this.scenario = scenario;
     this.numberOfPEs = numberOfPEs;
+    this.brv = brv;
+    this.clusterId = clusterId;
+    this.nonClusterableList = nonClusterableList;
   }
 
   /**
@@ -99,20 +113,88 @@ public class ClusterPartitioner {
 
     // Look for actor groups other than URC chains.
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph,
-        PiBRV.compute(this.graph, BRVMethod.LCM)).seek();
+
+    final List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph, this.nonClusterableList, this.brv).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
+    if (!graphURCs.isEmpty()) {
+      final List<AbstractActor> URC = graphURCs.get(0);// cluster one by one
+
+      // for (List<AbstractActor> URC : graphURCs) {
       if (!ClusteringHelper.getListOfCommonComponent(URC, this.scenario).isEmpty()) {
         constrainedURCs.add(URC);
       }
     }
 
     // Cluster constrained URC chains.
-    long index = 0;
+
     final List<PiGraph> subGraphs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + index++).build();
+    if (!graphURCs.isEmpty()) {
+      final List<AbstractActor> URC = graphURCs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + clusterId).build();
+
+      // identify the delay to extract
+      final List<Delay> d = new LinkedList<>();
+
+      for (final Delay ds : subGraph.getDelays()) {
+        d.add(ds);
+      }
+      for (final Delay retainedDelay : d) {
+        // remove delay from the subgraph + add it to the upper graph
+        subGraph.getContainingPiGraph().addDelay(retainedDelay);
+        final Long saveExpression = 0L;
+        // replace delay connection by interface
+        for (final AbstractActor a : subGraph.getExecutableActors()) {
+          for (final DataInputPort p : a.getDataInputPorts()) {
+            if (p.getFifo().isHasADelay()) {
+              if (p.getFifo().getDelay().equals(retainedDelay)) {
+                final DataInputInterface din = PiMMUserFactory.instance.createDataInputInterface();
+                din.setName(subGraph.getName() + d.indexOf(retainedDelay) + "_in");
+                din.getDataOutputPorts().get(0).setName(subGraph.getName() + d.indexOf(retainedDelay) + "_in");
+                din.getDataOutputPorts().get(0).setExpression(p.getFifo().getTargetPort().getExpression().evaluate());
+                final Fifo f = PiMMUserFactory.instance.createFifo();
+                f.setType(p.getFifo().getType());
+                f.setSourcePort(din.getDataOutputPorts().get(0));
+                f.setTargetPort(p);
+                f.setContainingGraph(subGraph);
+                din.setContainingGraph(subGraph);
+                // connect interfaces to delay
+                din.getGraphPort().setExpression(p.getFifo().getTargetPort().getExpression().evaluate());
+                retainedDelay.getContainingFifo().setTargetPort((DataInputPort) din.getGraphPort());
+              }
+            }
+          }
+          for (final DataOutputPort p : a.getDataOutputPorts()) {
+            if (p.getFifo().isHasADelay()) {
+              if (p.getFifo().getDelay().equals(retainedDelay)) {
+                final DataOutputInterface dout = PiMMUserFactory.instance.createDataOutputInterface();
+                dout.setName(subGraph.getName() + d.indexOf(retainedDelay) + "_out");
+                dout.getDataInputPorts().get(0).setName(subGraph.getName() + d.indexOf(retainedDelay) + "_out");
+                dout.getDataInputPorts().get(0).setExpression(p.getFifo().getSourcePort().getExpression().evaluate());
+                final Fifo f = PiMMUserFactory.instance.createFifo();
+                f.setType(p.getFifo().getType());
+                f.setSourcePort(p);
+                f.setTargetPort(dout.getDataInputPorts().get(0));
+                f.setContainingGraph(subGraph);
+                dout.setContainingGraph(subGraph);
+                // connect interfaces to delay
+                dout.getGraphPort().setExpression(p.getFifo().getSourcePort().getExpression().evaluate());
+                retainedDelay.getContainingFifo().setSourcePort((DataOutputPort) dout.getGraphPort());
+
+              }
+            }
+          }
+
+        }
+        retainedDelay.getContainingFifo().setContainingGraph(subGraph.getContainingPiGraph());//
+        // case getter setter
+        if (retainedDelay.hasSetterActor()) {
+          retainedDelay.getSetterActor().setContainingGraph(subGraph.getContainingPiGraph());
+        }
+        if (retainedDelay.hasGetterActor()) {
+          retainedDelay.getGetterActor().setContainingGraph(subGraph.getContainingPiGraph());
+        }
+      }
+
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
@@ -128,7 +210,7 @@ public class ClusterPartitioner {
       final String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
           subgraph.getName(), brv.get(subgraph) / factor, factor);
       PreesmLogger.getLogger().log(Level.INFO, message);
-      new PiGraphFiringBalancer(subgraph, factor).balance();
+      // new PiGraphFiringBalancer(subgraph, factor).balance();
     }
 
     return this.graph;
