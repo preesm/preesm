@@ -184,7 +184,7 @@ public class ArchitecturesGenerator {
 
   public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName, Double communicationRate,
       int coreIDStart) {
-    int i1 = coreIDStart;
+
     final Design design = SlamFactory.eINSTANCE.createDesign();
     final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
     final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
@@ -207,7 +207,6 @@ public class ArchitecturesGenerator {
     sharedMem.setInstanceName("shared_mem");
     design.getComponentInstances().add(sharedMem);
     sharedMem.setComponent(cn);
-
     for (final Entry<String, Integer> coreMap : coresList.entrySet()) {
       final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
       rootVLNV.setName(nodeName);
@@ -236,6 +235,7 @@ public class ArchitecturesGenerator {
       if (nodeName.equals("top")) {
         nodeID = "Node";
       }
+      int i1 = coreIDStart;
       for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
         cores[i - i1] = SlamFactory.eINSTANCE.createComponentInstance();
         cores[i - i1].setHardwareId(i);

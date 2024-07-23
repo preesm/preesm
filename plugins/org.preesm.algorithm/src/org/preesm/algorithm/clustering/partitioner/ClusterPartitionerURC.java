@@ -303,7 +303,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     boolean isGPUPossible = false;
     for (final AbstractActor act : urc) {
       for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
-        if (comp.getInstanceName().equals("GPU")) {
+        if (comp.getComponent() instanceof GPU) {
           isGPUPossible = true;
         }
       }
@@ -312,7 +312,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     if (timingCPU > timingGPU && isGPUPossible) {
       for (final AbstractActor act : urc) {
         for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
-          if (comp.getInstanceName().equals("GPU")) {
+          if (comp.getComponent() instanceof GPU) {
             act.setOnGPU(true);
           }
         }

@@ -71,11 +71,12 @@ public class SCAPEPartitioningTest {
 
     final String SCAPE2 = "scape2.workflow";
     final String ABC_3C = "ABC_3CoresX86.scenario";
+    final String ABC2_3C = "ABC2_3CoresX86.scenario";
 
     final List<Object[]> params = new ArrayList<>();
 
     final String testProjectName = "org.ietr.preesm.scape";
-    final String[] testScenarios = new String[] { "ABC_5CoresX86.scenario", ABC_3C, ABC_3C, ABC_3C, ABC_3C, ABC_3C,
+    final String[] testScenarios = new String[] { "ABC_5CoresX86.scenario", ABC2_3C, ABC_3C, ABC2_3C, ABC_3C, ABC_3C,
         "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario" };
     final String[] testWorkflows = new String[] { "euclide.workflow", "data.workflow", "pip.workflow",
         "scape1.workflow", SCAPE2, SCAPE2, SCAPE2, "schedule.workflow" };

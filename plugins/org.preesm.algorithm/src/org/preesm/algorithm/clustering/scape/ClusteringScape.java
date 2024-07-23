@@ -67,9 +67,6 @@ public class ClusteringScape extends ClusterPartitioner {
    * Number of hierarchical level.
    */
   private final int      levelNumber;
-  /**
-   * Enable memory optimization.
-   */
   private static Boolean memoryOptim = false;
 
   ScapeMode scapeMode;
@@ -123,7 +120,7 @@ public class ClusteringScape extends ClusterPartitioner {
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
     scenarioUpdate();
-
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
     return scenario;
   }
 
@@ -482,12 +479,18 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataInputPort inputPort = PiMMUserFactory.instance.copy(in);
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (memoryOptim) {
-        functionArgument.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
-        in.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
-      } else {
-        functionArgument.setName(inputPort.getName());
-      }
+      functionArgument.setName(inputPort.getName());
+      // if (memoryOptim) {
+      // final String argName = inputPort.getName();
+      // // final String argName = inputPort.getName().substring(inputPort.getName().indexOf('_') + 1);
+      // // inputPort.getContainingActor().getName() + "_"
+      // // + inputPort.getName().substring(inputPort.getName().indexOf('_') + 1);
+      // PreesmLogger.getLogger().log(Level.INFO, "input: " + argName);
+      // functionArgument.setName(argName);
+      // in.setName(argName);
+      // } else {
+      // functionArgument.setName(inputPort.getName());
+      // }
       functionArgument.setType(in.getFifo().getType());
       functionArgument.setDirection(Direction.IN);
       functionPrototype.getArguments().add(functionArgument);
@@ -497,12 +500,18 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataOutputPort outputPort = PiMMUserFactory.instance.copy(out);
       oEmpty.getDataOutputPorts().add(outputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (memoryOptim) {
-        functionArgument.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
-        out.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
-      } else {
-        functionArgument.setName(outputPort.getName());
-      }
+      functionArgument.setName(outputPort.getName());
+      // if (memoryOptim) {
+      // final String argName = outputPort.getName();
+      // // final String argName = outputPort.getName().substring(outputPort.getName().indexOf('_') + 1);
+      // // outputPort.getContainingActor().getName() + "_"
+      // // + outputPort.getName().substring(outputPort.getName().indexOf('_') + 1);
+      // PreesmLogger.getLogger().log(Level.INFO, "output: " + argName);
+      // functionArgument.setName(argName);
+      // out.setName(argName);
+      // } else {
+      // functionArgument.setName(outputPort.getName());
+      // }
       functionArgument.setType(out.getFifo().getType());
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);

@@ -46,7 +46,7 @@ import org.preesm.commons.logger.PreesmLogger;
 
 /**
  * Basic scheduling model for Choco solver.
- * 
+ *
  * @author ahonorat
  */
 public class ChocoSchedModel {
@@ -62,7 +62,7 @@ public class ChocoSchedModel {
   protected final BoolVar[][] mapping;
 
   /**
-   * 
+   *
    * @param name
    *          Name of the model.
    * @param tasks
@@ -88,20 +88,14 @@ public class ChocoSchedModel {
 
   protected Model generateModel() {
     // other transient variables but we don't care of their values
-    BoolVar[][] mappingT = model.boolVarMatrix("c", nbCores, nbTasks);
-    IntVar[] finishTimeVars = new IntVar[nbTasks];
+    final BoolVar[][] mappingT = model.boolVarMatrix("c", nbCores, nbTasks);
 
     // separate allocation of boolVars is faster
-    BoolVar[][][] samecoreVars = new BoolVar[nbTasks][nbTasks][nbCores];
+
     // BoolVar[][][] samecoreVars = new BoolVar[nbTasks][][];
     // for (int it = 0; it < nbTasks; it++) {
     // samecoreVars[it] = model.boolVarMatrix("sc", nbTasks, nbCores);
     // }
-
-    BoolVar[][] overlapVars = new BoolVar[nbTasks][nbTasks];
-    BoolVar[][] overlapSymVars = new BoolVar[nbTasks][nbTasks];
-    BoolVar[][] samecoreSymVars = new BoolVar[nbTasks][nbTasks];
-    BoolVar[][] oversameSymVars = new BoolVar[nbTasks][nbTasks];
 
     // BoolVar[][] overlapVars = model.boolVarMatrix("o", nbTasks, nbTasks);
     // BoolVar[][] overlapSymVars = model.boolVarMatrix("os", nbTasks, nbTasks);
@@ -130,7 +124,8 @@ public class ChocoSchedModel {
     }
 
     // start time and finish
-    for (Task t : tasks.values()) {
+    final IntVar[] finishTimeVars = new IntVar[nbTasks];
+    for (final Task t : tasks.values()) {
       startTimeVars[t.id] = model.intVar("s" + t.id, t.ns, t.xs, false);
       finishTimeVars[t.id] = model.intVar("f" + t.id, t.ns + t.load, t.xs + t.load, false);
       model.arithm(finishTimeVars[t.id], "=", startTimeVars[t.id], "+", t.load).post();
@@ -139,11 +134,11 @@ public class ChocoSchedModel {
     long removedComputationMax = 0;
 
     // all other constraints
-    for (Task t : tasks.values()) {
+    for (final Task t : tasks.values()) {
 
       // start time and preds
-      for (Integer pred : t.predId) {
-        Task temp = tasks.get(pred);
+      for (final Integer pred : t.predId) {
+        final Task temp = tasks.get(pred);
         model.arithm(finishTimeVars[temp.id], "<=", startTimeVars[t.id]).post();
       }
 
@@ -151,7 +146,7 @@ public class ChocoSchedModel {
       model.sum(mapping[t.id], "=", 1).post();
 
       // no overlapping if on same core
-      for (Task tt : tasks.values()) {
+      for (final Task tt : tasks.values()) {
 
         // is useful if Choco allocation of boolVar matrices, otherwise no variable
         // model.addClauseFalse(oversameSymVars[t.id][tt.id]);
@@ -187,7 +182,7 @@ public class ChocoSchedModel {
         }
 
         if (t.id < tt.id) {
-
+          final BoolVar[][] overlapVars = new BoolVar[nbTasks][nbTasks];
           // is useful if NOT Choco allocation of boolVar matrices
           overlapVars[tt.id][t.id] = model.boolVar();
           overlapVars[t.id][tt.id] = model.boolVar();
@@ -197,8 +192,11 @@ public class ChocoSchedModel {
           model.arithm(startTimeVars[tt.id], "<", finishTimeVars[t.id]).reifyWith(overlapVars[tt.id][t.id]);
 
           // is useful if NOT Choco allocation of boolVar matrices
+          final BoolVar[][] oversameSymVars = new BoolVar[nbTasks][nbTasks];
           oversameSymVars[t.id][tt.id] = model.boolVar(false);
+          final BoolVar[][] samecoreSymVars = new BoolVar[nbTasks][nbTasks];
           samecoreSymVars[t.id][tt.id] = model.boolVar();
+          final BoolVar[][] overlapSymVars = new BoolVar[nbTasks][nbTasks];
           overlapSymVars[t.id][tt.id] = model.boolVar();
 
           // check the task overlapping
@@ -207,6 +205,7 @@ public class ChocoSchedModel {
           // model.addClausesBoolEq(overlapSymVars[t.id][tt.id], overlapSymVars[tt.id][t.id]);
           // symmetry of two tasks on same cores
           // model.addClausesBoolEq(samecoreSymVars[t.id][tt.id], samecoreSymVars[tt.id][t.id]);
+          final BoolVar[][][] samecoreVars = new BoolVar[nbTasks][nbTasks][nbCores];
           for (int i = 0; i < nbCores; i++) {
             // is useful if NOT Choco allocation of boolVar matrices
             samecoreVars[t.id][tt.id][i] = model.boolVar();
@@ -231,13 +230,13 @@ public class ChocoSchedModel {
 
     if (horizon > 0) {
       // minimize latency
-      IntVar varLatency = model.intVar(0, horizon);
+      final IntVar varLatency = model.intVar(0, horizon);
       model.max(varLatency, finishTimeVars).post();
       model.setObjective(Model.MINIMIZE, varLatency);
     }
 
-    long totalComputationMax = nbTasks * (long) nbTasks * nbCores;
-    long percentageRemoved = (100 * removedComputationMax / totalComputationMax);
+    final long totalComputationMax = nbTasks * (long) nbTasks * nbCores;
+    final long percentageRemoved = (100 * removedComputationMax / totalComputationMax);
 
     PreesmLogger.getLogger().log(Level.INFO, "Redundant constraints removed from model: " + percentageRemoved + " %");
 

@@ -666,11 +666,11 @@ public class CodegenScapeBuilder {
   private void processInputGPUBuffer(PiGraph subGraph, ScapeBuilder build) {
 
     final boolean localMem = true;
+
     subGraph.getExecutableActors().forEach(actor -> actor.getDataInputPorts().forEach(din -> {
       final Long nbExec = din.getExpression().evaluate();
       String buffname = "";
-      if (din.getFifo().getSource() instanceof final DataInputInterface inputInterface
-          && !(actor instanceof BroadcastActor)) {
+      if (din.getFifo().getSource() instanceof DataInputInterface && !(actor instanceof BroadcastActor)) {
         buffname = "d_" + din.getName();
         // buffname = "d_" + ((AbstractActor) din.getFifo().getTarget()).getName() + "_" + inputInterface.getName();
         // buffname = "d_" + ((AbstractActor) din.getFifo().getTarget()).getName() + "_" + inputInterface.getName();
@@ -692,9 +692,9 @@ public class CodegenScapeBuilder {
         build.getBuffer().add(processCudaMallocBuffer(buffname, din, nbExec, localMem));
         build.getFreeBuffer().add(cudaFreeBuffers);
 
-        if (din.getFifo().getSource() instanceof final DataInputInterface inputInterface) {
+        if (din.getFifo().getSource() instanceof DataInputInterface) {
           String cudaMemcpyBuffers = "";
-          final String src = inputInterface.getName();
+          final String src = ((DataInputInterface) din.getFifo().getSource()).getName();
           if (localMem) {
             cudaMemcpyBuffers = "cudaMemcpy(" + buffname + ", " + src + ", sizeof(" + din.getIncomingFifo().getType()
                 + ") *" + nbExec + ", cudaMemcpyHostToDevice);\n";
@@ -772,16 +772,18 @@ public class CodegenScapeBuilder {
 
     // Compute rates for inputs and outputs
     final Map<String, Long> rateActor = new HashMap<>();
-    sc.getActor().getDataInputPorts()
-        .forEach(in -> rateActor.put(sc.getActor().getName(), in.getExpression().evaluate()));
-    sc.getActor().getDataOutputPorts().forEach(out -> {
+
+    for (final DataInputPort in : sc.getActor().getDataInputPorts()) {
+      rateActor.put(sc.getActor().getName(), in.getExpression().evaluate());
+    }
+
+    for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
       rateActor.put(((AbstractVertex) out.getFifo().getTarget()).getName(), out.getExpression().evaluate());
-      if (rateActor.get(sc.getActor().getName()) == null
-          || rateActor.get(sc.getActor().getName()) < out.getExpression().evaluate()) {
+      final Long currentRate = rateActor.get(sc.getActor().getName());
+      if (currentRate == null || currentRate < out.getExpression().evaluate()) {
         rateActor.put(sc.getActor().getName(), out.getExpression().evaluate());
       }
-    });
-
+    }
     // Determine block dimensions
     final int blockDim = (int) Math.min(1024, rateActor.get(sc.getActor().getName()));
 
@@ -792,6 +794,7 @@ public class CodegenScapeBuilder {
     }
 
     // Append block size and dimensions
+
     actorImplem.append(" int block_size_" + sc.getActor().getName() + " = " + blockDim + "; \n");
 
     actorImplem.append(" dim3 block_dim_" + sc.getActor().getName() + " (block_size_" + sc.getActor().getName() + "); "
@@ -806,17 +809,15 @@ public class CodegenScapeBuilder {
         .getRefinement() instanceof final CHeaderRefinement cheaderrefinement ? cheaderrefinement.getLoopPrototype()
             : null;
     if (loopPrototype != null) {
-      loopPrototype.getInputConfigParameters().forEach(arg -> {
-        actorImplem.append(arg.getName() + ",");
-      });
+      loopPrototype.getInputConfigParameters().forEach(arg -> actorImplem.append(arg.getName() + ","));
     }
 
     // Append input buffer names
     sc.getActor().getDataInputPorts().forEach(in -> {
       String buffname = "";
 
-      if (in.getFifo().getSource() instanceof final DataInputInterface
-          & !(in.getFifo().getSource() instanceof final BroadcastActor)) {
+      if (in.getFifo().getSource() instanceof DataInputInterface
+          && !(in.getFifo().getSource() instanceof BroadcastActor)) {
         buffname = "d_" + in.getName();
       } else if (in.getFifo().isHasADelay()) {
         final Delay delay = in.getFifo().getDelay();

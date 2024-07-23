@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.gpu.clustering/Algo/top_mem.pi"/>
+        <architecture url="/org.ietr.preesm.gpu.clustering/Archi/1cpu_1gpu.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.gpu.clustering/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="gpu"/>
+            <task name="top_mem/A"/>
+            <task name="top_mem/B"/>
+            <task name="top_mem/C"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="cpu"/>
+            <task name="top_mem/A"/>
+            <task name="top_mem/B"/>
+            <task name="top_mem/C"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/A"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/A"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/B"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/B"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/C"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/C"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/brd"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_mem/brd"/>
+    </timings>
+    <simuParams>
+        <mainCore>cpu</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="gpu"/>
+            <specialVertexOperator path="cpu"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

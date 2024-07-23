@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.gpu.clustering/Algo/top_sobel.pi"/>
+        <architecture url="/org.ietr.preesm.gpu.clustering/Archi/1cpu_1gpu.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.gpu.clustering/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="gpu"/>
+            <task name="top_sobel/Read_YUV"/>
+            <task name="top_sobel/display"/>
+            <task name="top_sobel/Sobel"/>
+            <task name="top_sobel/Split"/>
+            <task name="top_sobel/Merge"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="cpu"/>
+            <task name="top_sobel/Read_YUV"/>
+            <task name="top_sobel/display"/>
+            <task name="top_sobel/Sobel"/>
+            <task name="top_sobel/Split"/>
+            <task name="top_sobel/Merge"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Read_YUV"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Read_YUV"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/display"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/display"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Sobel"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Sobel"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Split"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Split"/>
+        <timing opname="CUDA" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Merge"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Merge"/>
+    </timings>
+    <simuParams>
+        <mainCore>cpu</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="gpu"/>
+            <specialVertexOperator path="cpu"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

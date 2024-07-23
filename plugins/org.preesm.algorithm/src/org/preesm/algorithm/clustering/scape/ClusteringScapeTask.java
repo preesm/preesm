@@ -116,7 +116,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     output.put("PiMM", outputScenario.getAlgorithm());
 
     // return scenario updated
-    output.put("scenario", scenario);
+    output.put("scenario", outputScenario);
     output.put("cMem", clusterMemory);
     return output;
   }

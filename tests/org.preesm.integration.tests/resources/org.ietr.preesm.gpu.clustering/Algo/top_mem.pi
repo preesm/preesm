@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">top_mem</data>
+        <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/code.h</data>
+            <loop name="A">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="char"/>
+                <param direction="OUT" isConfig="false"
+                    name="out2" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="out2"/>
+        </node>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/code.h</data>
+            <loop name="sink">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="4" kind="input" name="in"/>
+        </node>
+        <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/code.h</data>
+            <loop name="sink">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+        </node>
+        <node id="brd" kind="broadcast">
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="200" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="A" sourceport="out"
+            target="brd" targetport="in" type="char"/>
+        <edge kind="fifo" source="brd" sourceport="out"
+            target="B" targetport="in" type="char"/>
+        <edge kind="fifo" source="A" sourceport="out2" target="C"
+            targetport="in" type="char"/>
+    </graph>
+</graphml>
