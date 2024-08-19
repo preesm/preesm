@@ -197,12 +197,7 @@ public class HeaderParser {
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested return types were found.");
       return;
     }
-    // this log is annoying if checked on all functions
-    // else if (!returnTypeStack.getFirst().getRawSignature().contains("void")) {
-    // PreesmLogger.getLogger()
-    // .warning("Return type of function " + rawName + " is not void, and will not be used by PREESM.");
-    // return;
-    // }
+
     if (templateStack.size() > 1) {
       PreesmLogger.getLogger()
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested templates were found.");

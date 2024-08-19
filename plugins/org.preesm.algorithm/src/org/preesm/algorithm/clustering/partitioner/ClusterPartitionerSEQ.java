@@ -49,6 +49,7 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * @author orenaud
  *
  */
+
 public class ClusterPartitionerSEQ extends ClusterPartitioner {
 
   private final Design archi;
@@ -67,11 +68,13 @@ public class ClusterPartitionerSEQ extends ClusterPartitioner {
   public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
     super(scenario.getAlgorithm(), scenario, numberOfPEs);
     this.archi = scenario.getDesign();
+
   }
 
   /**
    * @return Clustered PiGraph.
    */
+
   @Override
   public PiGraph cluster() {
 
@@ -84,4 +87,5 @@ public class ClusterPartitionerSEQ extends ClusterPartitioner {
     }
     return this.graph;
   }
+
 }

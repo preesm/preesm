@@ -426,12 +426,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
+
       if (!(cmp.getComponent() instanceof GPU)) {
         this.coreBlocks.computeIfAbsent(cmp, key -> {
           final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(key);
           operatorBlock.setMultinode(multinode);
           return operatorBlock;
         });
+
       }
     }
 
@@ -440,16 +442,19 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
+
       // This call can not fail as checks were already performed in the constructor
       final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_Operator);
       // If this is the first time this operator is encountered, create a Block and store it.
       if (operator.getComponent() instanceof GPU) {
         return;
       }
+
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
       final CoreBlock operatorBlock = this.coreBlocks.get(operator);
+
       // 1.1 - Construct the "loop" of each core.
       final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.Vertex_vertexType)
           .toString();
@@ -491,6 +496,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // 3 - Put the buffer definition in their right place
     generateBufferDefinitions();
     generateTopBuffers(resultList);
+
     // 4 - Set enough info to compact instrumentation code
     compactPapifyUsage(resultList);
 
@@ -499,6 +505,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   void compactPapifyUsage(List<Block> allBlocks) {
     for (final Block cluster : allBlocks) {
+
       if (cluster instanceof final CoreBlock coreBlock) {
         final EList<Variable> definitions = cluster.getDefinitions();
         final EList<CodeElt> loopBlockElts = coreBlock.getLoopBlock().getCodeElts();
@@ -643,6 +650,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (prototypes == null) {
         // If the actor has no refinement
+
         throw new PreesmRuntimeException(ERROR_NO_REFINEMENT.formatted(dagVertex));
       }
       // Generate the loop functionCall
@@ -780,7 +788,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         registerCallVariableToCoreBlock(operatorBlock, functionCall2);
         // Add the function call to the operatorBlock
         operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
+
       }
+
     }
 
   }
@@ -1092,7 +1102,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // At this point, the dagEdge, srsdfEdge corresponding to the current argument were identified
       // Get the corresponding Variable
       final Variable varFirstFound = this.srSDFEdgeBuffers.get(subBufferProperties);
+
       Variable variable = null;
+
       if (varFirstFound instanceof final DistributedBuffer distributedBuffer) {
         final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
         final String coreBlockName = dagVertex.getPropertyStringValue(OPERATOR_LITERAL);
@@ -1565,6 +1577,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
     // There might be more than one edge, if one is connected to a
     // send/receive
+
     DAGEdge edge = null;
     for (final DAGEdge currentEdge : edges) {
       final DAGVertex source = currentEdge.getSource();
@@ -2160,6 +2173,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Get the corresponding Buffer
       final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
       Buffer buffer = null;
+
       if (firstFound instanceof final DistributedBuffer distributedBuffer) {
 
         final String coreBlockName = switch (f.getType()) {
@@ -2281,8 +2295,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final BufferProperties lastBuffProperty = bufferAggregate.get(0);
     final Buffer lastBufferFirstFound = this.srSDFEdgeBuffers.get(lastBuffProperty);
     Buffer lastBuffer = null;
-    if (lastBufferFirstFound instanceof final DistributedBuffer distributedBuffer) {
+
+    if (lastBufferFirstFound instanceof DistributedBuffer) {
       final String coreBlockName = operatorBlock.getName();
+      final DistributedBuffer distributedBuffer = (DistributedBuffer) lastBufferFirstFound;
+
       final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
       for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
         final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
@@ -2545,8 +2562,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   protected DistributedBuffer generateDistributedBuffer(final Buffer originalBuffer, final Buffer repeatedBuffer) {
 
     final DistributedBuffer duplicatedBuffer = CodegenModelUserFactory.eINSTANCE.createDistributedBuffer();
+
     if (originalBuffer instanceof final DistributedBuffer distributedBuffer) {
       duplicatedBuffer.getDistributedCopies().addAll(distributedBuffer.getDistributedCopies());
+
     } else {
       duplicatedBuffer.getDistributedCopies().add(originalBuffer);
     }

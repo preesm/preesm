@@ -601,6 +601,10 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique boolean removeParameter(Parameter param) {
 		return vertices.remove(param)
 	}
+	//opr
+	op unique boolean removeConfigInputPort(ConfigInputPort config) {
+		return vertices.remove(config)
+	}
 
 	/*
 	 * Removes the {@link Dependency} from the {@link Pigraph#edges} list,<br>
@@ -652,11 +656,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
 	}
-		op unique AbstractActor[] getExecutableActors() {
-			return (actors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
+
+	op unique AbstractActor[] getExecutableActors() {
+		return (actors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
 	}
-		op unique AbstractActor[] getAllExecutableActors() {
-			return (allActors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
+	op unique AbstractActor[] getAllExecutableActors() {
+		return (allActors.filter(it|(it instanceof ExecutableActor))).toEList.unmodifiableView
+
 	}
 	op unique Fifo[] getAllFifos() {
 		return (fifos + childrenGraphs.map[allFifos].flatten).toEList.unmodifiableView
@@ -708,8 +714,10 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Fifo[] getFifosWithoutDelay() {
 		return (fifos.filter[delay === null]).toEList.unmodifiableView
 	}
+
 	op unique void replaceActor(AbstractActor oldActor, AbstractActor newActor) {
 		
+
 //		val int oldActorNbConfigInputPorts
 
 		if(oldActor.configInputPorts.size != newActor.configInputPorts.size ||
@@ -749,7 +757,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		this.removeActor(oldActor)
 		this.addActor(newActor)
 
-		
 	}
 }
 

@@ -261,6 +261,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
+
     PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
 
     final Map<AbstractVertex, Long> wcets = new HashMap<>();
@@ -927,7 +928,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     @Override
     public boolean equals(Object o) {
+
       if (o instanceof final CutInformation ci) {
+
         return edgeCut.equals(ci.edgeCut);
       }
       return false;

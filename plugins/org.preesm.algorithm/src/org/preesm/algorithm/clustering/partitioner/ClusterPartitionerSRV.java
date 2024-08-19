@@ -69,7 +69,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
    * Builds a ClusterPartitioner object.
    *
    * @param graph
-   *          PiGraph
+   *          Input graph.
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
@@ -93,6 +93,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
   /**
    * @return Clustered PiGraph.
    */
+
   @Override
   public PiGraph cluster() {
 
@@ -142,5 +143,4 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
     return this.graph;
   }
-
 }

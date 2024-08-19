@@ -218,11 +218,37 @@ class CoreBlock extends Block {
 	refers CallBlock initBlock
 	refers Buffer[] sinkFifoBuffers
 	String coreType
-	refers Buffer[] topBuffers//opr
-	boolean multinode//opr
+	refers Buffer[] topBuffers
+	boolean multinode
 	unordered id int coreID
-	unordered int nodeID//opr
+	unordered int nodeID
 }
+
+class ClusterRaiserBlock extends Block {
+	String initFunc
+	refers FunctionCall clusterFunc 
+	refers LoopBlock bodyBlock
+	refers Block initBlock
+	refers Buffer[] sinkFifoBuffers
+	refers Buffer[] initBuffers
+	String coreType
+	unordered id int coreID
+}
+
+class MainSimsdpBlock extends Block{
+		String[] nodeID
+		refers Buffer[] buffers
+		refers FunctionCall[] subFunc
+		String coreType
+}
+
+//class ClusterInitBlock extends Block {
+//	refers FunctionCall clusterFunc 
+//	refers Block bodyBlock
+//	refers Buffer[] sinkFifoBuffers
+//	String coreType
+//	unordered id int coreID
+//}
 
 class ClusterBlock extends Block {
 	String schedule
@@ -241,13 +267,6 @@ class ScapeBlock extends Block {
 	
 }
 
-class MainSimsdpBlock extends Block{
-		String[] nodeID
-		refers Buffer[] buffers
-		refers FunctionCall[] subFunc
-		String coreType
-	
-}
 
 class SectionBlock extends Block {
 }
@@ -362,6 +381,14 @@ class FiniteLoopScapeBlock extends LoopBlock {
 		refers IteratedBuffer[] outBuffers
 }
 
+class FiniteLoopClusterRaiserBlock extends LoopBlock {
+	int nbIter
+
+	refers IntVar iter
+	refers IteratedBuffer[] inBuffers
+	refers IteratedBuffer[] outBuffers
+}
+
 class IntVar extends Variable {
 }
 
@@ -378,6 +405,7 @@ class DynamicBuffer extends Buffer {
 		refers Buffer buffer
 	
 }
+
 
 class PapifyAction extends Variable {
 	boolean opening = "false"

@@ -155,13 +155,16 @@ public class ScenariosGenerator {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
-      if (resource instanceof final IFile file
-          && file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
-        archis.add(file.getFullPath().toString());
+
+      if (resource instanceof final IFile file) {
+        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
+          archis.add(file.getFullPath().toString());
+        }
       }
     }
     for (final IResource resource : algoDir.members()) {
       if (resource instanceof final IFile file) {
+
         final String ext = file.getProjectRelativePath().getFileExtension();
         if (ext.equals(ScenariosGenerator.PI_GRAPH_EXT)) {
           algos.add(file.getFullPath().toString());
@@ -324,7 +327,7 @@ public class ScenariosGenerator {
       }
       saveScenario(scenario, scenarioFile);
     }
-  }
+  } // opr change private to public
 
   /**
    * Save a given PreesmScenario in a given IFile.

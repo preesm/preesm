@@ -114,7 +114,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       if (parameters.containsKey("EnergyAwarenessSearchType")) {
         searchingMode = parameters.get("EnergyAwarenessSearchType");
       }
-      EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
+      final EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
       /** iterate **/
       while (true) {
         /** Get configuration **/

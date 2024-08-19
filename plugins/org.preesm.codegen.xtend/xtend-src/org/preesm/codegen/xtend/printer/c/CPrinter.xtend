@@ -99,6 +99,13 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
+import org.eclipse.core.resources.ResourcesPlugin
+import java.io.File
+import org.preesm.codegen.model.DynamicBuffer
+import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock
+import org.preesm.codegen.model.ClusterRaiserBlock
+import org.preesm.model.pisdf.Actor
+import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -109,7 +116,7 @@ import org.preesm.commons.files.PreesmIOHelper
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	protected boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -158,6 +165,7 @@ class CPrinter extends BlankPrinter {
 			«ELSE»
 			#include "preesm_gen«block.getNodeID()».h"
 			«ENDIF »
+
 	'''
 
 	override printDefinitionsHeader(List<Variable> list) '''
@@ -181,7 +189,9 @@ class CPrinter extends BlankPrinter {
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
 	'''
-
+override printDynamicBufferDefinition(DynamicBuffer dynamicBuffer) '''
+	«dynamicBuffer.type»* «dynamicBuffer.name» = («dynamicBuffer.type»*) malloc («dynamicBuffer.getNbToken»*sizeof(«dynamicBuffer.type»)); // size:= «dynamicBuffer.getNbToken»*«dynamicBuffer.type»
+	'''
 	override printDefinitionsFooter(List<Variable> list) '''
 	«IF !list.empty»
 
@@ -337,6 +347,7 @@ class CPrinter extends BlankPrinter {
 			«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 			
 		«ENDIF»
+
 	'''
 
 	def List<Buffer> getAllBuffers(CoreBlock cb) {
@@ -508,7 +519,11 @@ class CPrinter extends BlankPrinter {
 			}
 		}
 	'''
-
+	
+override printFiniteLoopClusterRaiserBlockHeader(FiniteLoopClusterRaiserBlock block2) '''		
+		for(int «block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+	'''
+	
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
@@ -989,6 +1004,7 @@ class CPrinter extends BlankPrinter {
 	}
 
 	def String printMain(List<Block> printerBlocks) '''
+	
 		/**
 		«var block= engine.codeBlocks.get(0)»
 		«IF !(block as CoreBlock).isMultinode()»
@@ -1099,6 +1115,7 @@ class CPrinter extends BlankPrinter {
 			return 0;
 		}
 
+
 		«IF !(block as CoreBlock).isMultinode()»
 		int main(void) {
 		«ELSE»
@@ -1111,6 +1128,7 @@ class CPrinter extends BlankPrinter {
 					 	«ENDFOR»
 					 	
 		«ENDIF»
+
 		«IF this.usingOpenMP == 0»
 			 #ifndef _WIN32
 			 «IF !(block as CoreBlock).isMultinode()»
@@ -1225,6 +1243,7 @@ class CPrinter extends BlankPrinter {
 	'''
 		
 		def String printNodeArg() {
+
     var funcStr = ""
     val firstBlock = (this.engine.codeBlocks.head as CoreBlock)
     val srcArgs = firstBlock.topBuffers.filter[buf | buf.comment.contains("src")]
@@ -1248,6 +1267,7 @@ class CPrinter extends BlankPrinter {
     }
 
         return funcStr
+
 
 		}
 
@@ -1394,6 +1414,4 @@ class CPrinter extends BlankPrinter {
 		}
 	}
 	
-	
-
 }

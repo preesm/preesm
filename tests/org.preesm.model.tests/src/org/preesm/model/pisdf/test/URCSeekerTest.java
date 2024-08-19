@@ -82,7 +82,9 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
+
     this.seeker = new ClusteringPatternSeekerUrc(this.topGraph, PiBRV.compute(this.topGraph, BRVMethod.LCM));
+
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }

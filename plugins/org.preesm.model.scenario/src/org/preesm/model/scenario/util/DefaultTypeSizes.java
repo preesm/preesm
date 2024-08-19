@@ -108,6 +108,7 @@ public final class DefaultTypeSizes {
       return typeSize;
     }
     return ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE;
+
   }
 
   /**

@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -392,6 +393,29 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       }
 
       sum += (long) time;
+    }
+
+    for (final AbstractActor act : urc) {
+      for (final DataOutputPort outPort : act.getDataOutputPorts()) {
+        final Vertex target = outPort.getFifo().getTarget();
+
+        final boolean onGpuAndNextOnCpu = !((AbstractActor) target).isOnGPU() && act.isOnGPU();
+        final boolean onCpuAndNextOnGpu = ((AbstractActor) target).isOnGPU() && !act.isOnGPU();
+
+        if (onGpuAndNextOnCpu || onCpuAndNextOnGpu) {
+          System.out.println(act.getName());
+          final Long gpuInputSize = outPort.getPortRateExpression().evaluate();
+          double time;
+
+          if (memoryToUse.equalsIgnoreCase("unified")) {
+            time = ((double) gpuInputSize / (double) unifiedMemSpeed);
+          } else {
+            time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
+          }
+
+          sum += (long) time;
+        }
+      }
     }
 
     return sum;

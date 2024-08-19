@@ -195,6 +195,7 @@ public class CodegenEngine {
   private void registerBlockPrinters(final String selectedPrinter, final Set<IConfigurationElement> usablePrinters,
       final Block b) {
     IConfigurationElement foundPrinter = null;
+
     if (!(b instanceof CoreBlock)) {
       throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
     }
@@ -221,6 +222,7 @@ public class CodegenEngine {
     if (!coreType.equals("CUDA")) {
       final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
       blocks.add(b);
+
     }
   }
 
@@ -290,6 +292,7 @@ public class CodegenEngine {
         final String fileName = b.getName() + extension;
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
         CodeFormatterAndPrinter.format(iFile);
+
         if (b instanceof final CoreBlock cb) {
           multinode = cb.isMultinode();
         }
@@ -335,6 +338,7 @@ public class CodegenEngine {
           }
           final IFile iFile = PreesmIOHelper.getInstance().print(filePath, fileName, entry.getValue());
           CodeFormatterAndPrinter.format(iFile);
+
         }
       }
     }
@@ -348,4 +352,25 @@ public class CodegenEngine {
   public void registerApollo(String apolloFlag) {
     this.apolloEnabled = "true".equalsIgnoreCase(apolloFlag);
   }
+
+  /**
+   * Prints Main multi-node file
+   */
+  public void printMainSimSDP() {
+    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
+        .entrySet()) {
+      final String extension = printerAndBlocks.getKey().getAttribute("extension");
+      final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
+      for (final Block b : printerAndBlocks.getValue()) {
+        b.setName("mainSimSDP");
+        final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
+        final String fileName = b.getName() + extension;
+
+        final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
+        CodeFormatterAndPrinter.format(iFile);
+      }
+
+    }
+  }
+
 }
