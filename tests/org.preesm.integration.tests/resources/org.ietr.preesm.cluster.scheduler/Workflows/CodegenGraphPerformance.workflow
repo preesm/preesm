@@ -41,6 +41,7 @@
     <dftools:task
         pluginId="org.ietr.preesm.codegen.xtend.task.CodegenClusterTask" taskId="Code Generation">
         <dftools:data key="variables">
+            <dftools:variable name="Multinode" value="false"/>
             <dftools:variable name="Papify" value="false"/>
             <dftools:variable name="Printer" value="InstrumentedC"/>
         </dftools:data>
@@ -79,6 +80,8 @@
     <dftools:task
         pluginId="org.ietr.preesm.stats.exporter.StatsExporterTask" taskId="Gantt Exporter">
         <dftools:data key="variables">
+            <dftools:variable name="Multinode" value="false"/>
+            <dftools:variable name="Top" value="false"/>
             <dftools:variable name="path" value="/Code/generated"/>
         </dftools:data>
     </dftools:task>
@@ -91,7 +94,7 @@
     <dftools:task pluginId="cluster-scheduler" taskId="Cluster Scheduler">
         <dftools:data key="variables">
             <dftools:variable name="Optimization criteria" value="Performance"/>
-            <dftools:variable name="Parallelism" value="True" />
+            <dftools:variable name="Parallelism" value="True"/>
             <dftools:variable name="Target" value="Input graph"/>
         </dftools:data>
     </dftools:task>

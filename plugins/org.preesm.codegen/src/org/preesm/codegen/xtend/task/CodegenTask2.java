@@ -95,8 +95,11 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
             values = { @Value(name = "true/false",
                 effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
-        @Parameter(name = "Multinode", description = "oué", values = { @Value(name = "true/false", effect = "oué") })
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") })
+
+    // @Parameter(name = "Multinode", description = "Enables data transfer between multicore nodes",
+    // values = { @Value(name = "true/false",
+    // effect = "Prints thread launch functions suitable for transfer between multicore nodes") })
 
     })
 public class CodegenTask2 extends AbstractTaskImplementation {
@@ -140,11 +143,11 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     final boolean papify = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_PAPIFY));
 
     // Retrieve the MULTINODE flag
-    final boolean multinode = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_MULTINODE));
+    // final boolean multinode = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_MULTINODE));
 
     PreesmLogger.getLogger().log(Level.INFO, "Generating blocks.");
     final List<Block> codeBlocks = CodegenModelGenerator2.generate(archi, algo, scenario, schedule, mapping, memAlloc,
-        papify, multinode);
+        papify, false);
 
     PreesmLogger.getLogger().log(Level.INFO, "Printing blocks.");
 
@@ -196,7 +199,7 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     // Papify default
     parameters.put(CodegenTask2.PARAM_PAPIFY, "false");
 
-    parameters.put(CodegenTask2.PARAM_MULTINODE, "false");
+    // parameters.put(CodegenTask2.PARAM_MULTINODE, "false");
     return parameters;
   }
 
