@@ -56,7 +56,7 @@ public class ParameterTest {
     Assert.assertNotNull("Parameter value expression cannot be null", valueExpression);
     final String string = valueExpression.getExpressionAsString();
     Assert.assertNotNull("Expression value cannot be null", string);
-    final String expectedDefaultalue = "0";
+    final String expectedDefaultalue = "0.0";
     Assert.assertEquals(expectedDefaultalue, string);
   }
 }
