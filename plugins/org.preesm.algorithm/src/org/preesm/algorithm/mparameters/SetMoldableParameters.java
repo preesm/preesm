@@ -371,7 +371,7 @@ public class SetMoldableParameters {
   protected static void logCsvContentMparams(final StringBuilder logDSEpoints,
       final List<MoldableParameterIR> mparamsIR, final DSEpointIR point) {
     for (final MoldableParameterIR mpir : mparamsIR) {
-      logDSEpoints.append(mpir.mp.getExpression().evaluate() + ";");
+      logDSEpoints.append(mpir.mp.getExpression().evaluateAsDouble() + ";");
     }
     logDSEpoints.append(point.toCsvContentString() + "\n");
   }

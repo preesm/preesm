@@ -221,7 +221,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         if (!(setter instanceof final Parameter parameter)) {
           throw new PreesmRuntimeException();
         }
-        final long evaluate = parameter.getValueExpression().evaluate();
+        final long evaluate = parameter.getValueExpression().evaluateAsLong();
         portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
       }
     }

@@ -454,7 +454,7 @@ public class DSEpointIR implements Clusterable {
       for (final Entry<Pair<String, String>, Character> en : paramsMinOrMax.entrySet()) {
         final Pair<String, String> p = en.getKey();
         final Parameter param = graph.lookupParameterGivenGraph(p.getValue(), p.getKey());
-        paramsValues.put(p, param.getExpression().evaluate());
+        paramsValues.put(p, param.getExpression().evaluateAsLong());
       }
       return paramsValues;
     }

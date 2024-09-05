@@ -45,7 +45,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -238,13 +237,19 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
 
     try {
       // try out evaluating the expression
-      final long evaluate = elementValueExpression.evaluate();
-      lblValueObj.setText(Long.toString(evaluate));
-      txtExpression.setBackground(new Color(null, 255, 255, 255));
+      final double evaluate = elementValueExpression.evaluateAsDouble();
+      lblValueObj.setText(Double.toString(evaluate));
+
+      if (elementValueExpression.isExpressionInteger()) {
+        txtExpression.setBackground(BG_NORMAL_WHITE);
+      } else {
+        txtExpression.setBackground(BG_WARNING_YELLOW);
+      }
+
     } catch (final ExpressionEvaluationException e) {
       // otherwise print error message and put red background
       lblValueObj.setText("Error : " + e.getMessage());
-      txtExpression.setBackground(new Color(null, 240, 150, 150));
+      txtExpression.setBackground(BG_ERROR_RED);
     }
 
     if (expressionHasFocus) {

@@ -113,11 +113,11 @@ public class PiMMSRVerticesLinker {
     }
     // Get the number of delay
     final Expression sizeExpression = fifo.getDelay().getSizeExpression();
-    final long nDelays = sizeExpression.evaluate();
+    final long nDelays = sizeExpression.evaluateAsLong();
     // Sanity check on delay value
     final DataInputPort targetPort = fifo.getTargetPort();
     final Expression portRateExpression = targetPort.getPortRateExpression();
-    final long targetRate = portRateExpression.evaluate();
+    final long targetRate = portRateExpression.evaluateAsLong();
     if (nDelays < 0) {
       throw new PreesmRuntimeException(
           "Invalid number of delays on fifo[" + fifo.getId() + "]: " + Long.toString(nDelays));
@@ -147,12 +147,12 @@ public class PiMMSRVerticesLinker {
     // Setting Source properties
     this.sourcePort = fifo.getSourcePort();
     final Expression sourceExpression = this.sourcePort.getPortRateExpression();
-    this.sourceProduction = sourceExpression.evaluate();
+    this.sourceProduction = sourceExpression.evaluateAsLong();
 
     // Setting Sink properties
     this.sinkPort = fifo.getTargetPort();
     final Expression sinkExpression = this.sinkPort.getPortRateExpression();
-    this.sinkConsumption = sinkExpression.evaluate();
+    this.sinkConsumption = sinkExpression.evaluateAsLong();
 
   }
 
@@ -215,13 +215,13 @@ public class PiMMSRVerticesLinker {
       final Map<DataInputPort, AbstractVertex> vertexSinkSet) {
     // List of source vertices
     final List<SourceConnection> sourceSet = new ArrayList<>();
-    vertexSourceSet
-        .forEach((k, v) -> sourceSet.add(new SourceConnection(v, k.getPortRateExpression().evaluate(), k.getName())));
+    vertexSourceSet.forEach(
+        (k, v) -> sourceSet.add(new SourceConnection(v, k.getPortRateExpression().evaluateAsLong(), k.getName())));
 
     // List of sink vertices
     final List<SinkConnection> sinkSet = new ArrayList<>();
     vertexSinkSet
-        .forEach((k, v) -> sinkSet.add(new SinkConnection(v, k.getPortRateExpression().evaluate(), k.getName())));
+        .forEach((k, v) -> sinkSet.add(new SinkConnection(v, k.getPortRateExpression().evaluateAsLong(), k.getName())));
 
     // Connect all the source to the sinks
     connectEdges(sourceSet, sinkSet);
@@ -613,22 +613,22 @@ public class PiMMSRVerticesLinker {
       final AbstractActor setterActor = incomingFifo.getSourcePort().getContainingActor();
       final String setterName = setterActor.getName();
       final Expression setterRateExpression = incomingFifo.getSourcePort().getPortRateExpression();
-      final long setterRate = setterRateExpression.evaluate();
-      if (setterActor instanceof InitActor) {
+      final long setterRate = setterRateExpression.evaluateAsLong();
+      if (setterActor instanceof final InitActor initActor) {
         final InitActor init = PiMMUserFactory.instance.createInitActor();
         init.getDataOutputPorts().add(PiMMUserFactory.instance.createDataOutputPort());
         init.setName(this.graphPrefixe + setterName);
         init.getDataOutputPort().setName(this.sinkPort.getName());
-        init.setLevel(((InitActor) setterActor).getLevel());
+        init.setLevel(initActor.getLevel());
         init.getDataOutputPort().setExpression(setterRate);
         init.getDataOutputPort().setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
 
-        final AbstractActor endReference = ((InitActor) setterActor).getEndReference();
+        final AbstractActor endReference = initActor.getEndReference();
         final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + endReference.getName());
-        if (lookupVertex instanceof AbstractActor) {
-          init.setEndReference((AbstractActor) lookupVertex);
-          if (lookupVertex instanceof EndActor) {
-            ((EndActor) lookupVertex).setInitReference(init);
+        if (lookupVertex instanceof final AbstractActor abstractActor) {
+          init.setEndReference(abstractActor);
+          if (lookupVertex instanceof final EndActor endActor) {
+            endActor.setInitReference(init);
           }
         }
         resultGraph.addActor(init);
@@ -712,20 +712,20 @@ public class PiMMSRVerticesLinker {
       final AbstractActor getterActor = outgoingFifo.getTargetPort().getContainingActor();
       final String getterName = getterActor.getName();
       final Expression getterRateExpression = outgoingFifo.getTargetPort().getPortRateExpression();
-      final long getterRate = getterRateExpression.evaluate();
-      if (getterActor instanceof EndActor) {
+      final long getterRate = getterRateExpression.evaluateAsLong();
+      if (getterActor instanceof final EndActor endActor) {
         final EndActor end = PiMMUserFactory.instance.createEndActor();
         end.setName(this.graphPrefixe + getterName);
         end.getDataInputPorts().add(PiMMUserFactory.instance.createDataInputPort());
         end.getDataInputPort().setName(this.sourcePort.getName());
         end.getDataInputPort().setExpression(getterRate);
         end.getDataInputPort().setAnnotation(PortMemoryAnnotation.READ_ONLY);
-        final AbstractActor initReference = ((EndActor) getterActor).getInitReference();
+        final AbstractActor initReference = endActor.getInitReference();
         final AbstractVertex lookupVertex = resultGraph.lookupVertex(this.graphPrefixe + initReference.getName());
-        if (lookupVertex instanceof AbstractActor) {
-          end.setInitReference((AbstractActor) lookupVertex);
-          if (lookupVertex instanceof InitActor) {
-            ((InitActor) lookupVertex).setEndReference(end);
+        if (lookupVertex instanceof final AbstractActor abstractActor) {
+          end.setInitReference(abstractActor);
+          if (lookupVertex instanceof final InitActor initActor) {
+            initActor.setEndReference(end);
           }
         }
         resultGraph.addActor(end);

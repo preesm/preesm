@@ -211,7 +211,7 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
 
         try {
           // try out evaluating the expression
-          final long evaluate = periodicExp.evaluate();
+          final long evaluate = periodicExp.evaluateAsLong();
           if (evaluate < 0) {
             throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
           }

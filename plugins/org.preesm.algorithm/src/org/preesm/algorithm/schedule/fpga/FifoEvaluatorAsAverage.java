@@ -45,9 +45,9 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * This class evaluates fifo dependencies and size as if all data are produced/consumed according to their average
- * rate, i.e. total tokens divided by (finish time minus start time).
- * 
+ * This class evaluates fifo dependencies and size as if all data are produced/consumed according to their average rate,
+ * i.e. total tokens divided by (finish time minus start time).
+ *
  * @author ahonorat
  */
 public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
@@ -59,11 +59,11 @@ public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
 
   @Override
   protected Pair<Long, Long> computeMinStartFinishTimeCons(FifoInformations fifoInfos) {
-    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluate();
+    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluateAsLong();
     final long durationUntilFirstProd = (fifoInfos.prodNorms.oriET + prodRate - 1L) / prodRate;
     final long minStartTime = fifoInfos.producer.startTime + durationUntilFirstProd;
 
-    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
+    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
     final long durationAfterLastCons = (fifoInfos.consNorms.oriET + consRate - 1L) / consRate;
     final long minFinishTime = fifoInfos.producer.finishTime + durationAfterLastCons;
 
@@ -73,7 +73,7 @@ public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
   @Override
   protected long computeFifoSize(FifoInformations fifoInfos) {
     final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifoInfos.fifo.getType());
-    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluate();
+    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluateAsLong();
 
     final long overlapDuration = fifoInfos.producer.finishTime - fifoInfos.consumer.startTime;
     if (overlapDuration <= 0) {
@@ -86,7 +86,7 @@ public class FifoEvaluatorAsAverage extends AbstractAsapFpgaFifoEvaluator {
     // 3. epilog -- only consumption of token (at average speed)
     // At last, the total size is max (1+2, max(2,3))
 
-    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
+    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
 
     // 1. compute average prod token rates
     final long totalProductionSize = prodRate * fifoInfos.producer.nbFirings;

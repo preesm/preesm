@@ -173,7 +173,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    */
   private void parameters2GraphVariables(final PiGraph pg, final SDFGraph sdf) {
     for (final Parameter p : pg.getParameters()) {
-      final String evaluate = Long.toString(p.getValueExpression().evaluate());
+      final String evaluate = Double.toString(p.getValueExpression().evaluateAsDouble());
       final Variable variable = new Variable(p.getName(), evaluate);
       sdf.addVariable(variable);
     }
@@ -238,7 +238,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
    *          the list of available values for each parameter
    */
   private void computeDerivedParameterValues(final PiGraph graph, final PiGraphExecution execution) {
-    // If there is no value or list of valuse for one Parameter, the value
+    // If there is no value or list of values for one Parameter, the value
     // of the parameter is derived (i.e., computed from other parameters
     // values), we can evaluate it (after the values of other parameters
     // have been fixed)
@@ -247,7 +247,7 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
         // Evaluate the expression wrt. the current values of the
         // parameters and set the result as new expression
         final Expression valueExpression = p.getValueExpression();
-        final long evaluate = valueExpression.evaluate();
+        final double evaluate = valueExpression.evaluateAsDouble();
         p.setExpression(evaluate);
       }
     }
@@ -269,9 +269,9 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       SDFSourceInterfaceVertex sdfInputPort;
       // The SDF vertex to which to add the created port
       final SDFAbstractVertex sdfTarget = this.piVx2SDFVx.get(aa);
-      if (sdfTarget instanceof SDFSourceInterfaceVertex) {
+      if (sdfTarget instanceof final SDFSourceInterfaceVertex sdfSourceIfVertex) {
         // If the SDF vertex is an interface, use it as the port
-        sdfInputPort = (SDFSourceInterfaceVertex) sdfTarget;
+        sdfInputPort = sdfSourceIfVertex;
       } else {
         // Otherwise create a new port and add it to the SDF vertex
         sdfInputPort = new SDFSourceInterfaceVertex(null);
@@ -288,9 +288,9 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       SDFSinkInterfaceVertex sdfOutputPort;
       // The SDF vertex to which to add the created port
       final SDFAbstractVertex sdfSource = this.piVx2SDFVx.get(aa);
-      if (sdfSource instanceof SDFSinkInterfaceVertex) {
+      if (sdfSource instanceof final SDFSinkInterfaceVertex sdfSinkIfVertex) {
         // If the SDF vertex is an interface, use it as the port
-        sdfOutputPort = (SDFSinkInterfaceVertex) sdfSource;
+        sdfOutputPort = sdfSinkIfVertex;
       } else {
         // Otherwise create a new port and add it to the SDF vertex
         sdfOutputPort = new SDFSinkInterfaceVertex(null);
@@ -393,17 +393,18 @@ public class StaticPiMM2SDFVisitor extends PiMMSwitch<Boolean> {
       if (f.getDelay() != null) {
         // Evaluate the expression wrt. the current values of the
         // parameters
-        delay = new ExpressionEdgePropertyType(createValue(Long.toString(f.getDelay().getSizeExpression().evaluate())));
+        delay = new ExpressionEdgePropertyType(
+            createValue(Long.toString(f.getDelay().getSizeExpression().evaluateAsLong())));
       } else {
         delay = new ExpressionEdgePropertyType(new ConstantValue(0L));
       }
       // Evaluate the expression wrt. the current values of the parameters
       final ExpressionEdgePropertyType cons = new ExpressionEdgePropertyType(
-          createValue(Long.toString(piInputPort.getPortRateExpression().evaluate())));
+          createValue(Long.toString(piInputPort.getPortRateExpression().evaluateAsLong())));
 
       // Evaluate the expression wrt. the current values of the parameters
       final ExpressionEdgePropertyType prod = new ExpressionEdgePropertyType(
-          createValue(Long.toString(piOutputPort.getPortRateExpression().evaluate())));
+          createValue(Long.toString(piOutputPort.getPortRateExpression().evaluateAsLong())));
 
       final SDFEdge edge = this.result.addEdge(sdfSource, sdfOutputPort, sdfTarget, sdfInputPort, prod, cons, delay);
 

@@ -177,7 +177,7 @@ public class ClusteringHelper {
         final List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
         final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
         for (final Fifo fifo : fifos) {
-          result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluate();
+          result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluateAsLong();
         }
       }
     }

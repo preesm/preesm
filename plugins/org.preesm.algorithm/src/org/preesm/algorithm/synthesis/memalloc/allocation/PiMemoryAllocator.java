@@ -99,8 +99,7 @@ public abstract class PiMemoryAllocator {
     if (alignment != -1) {
 
       // Build a list of all MObject of the graph, including merged ones
-      final Set<PiMemoryExclusionVertex> allMObjects = new LinkedHashSet<>();
-      allMObjects.addAll(meg.vertexSet());
+      final Set<PiMemoryExclusionVertex> allMObjects = new LinkedHashSet<>(meg.vertexSet());
       // Include merged Mobjects (if any)
       final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostMap = meg.getPropertyBean()
           .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
@@ -141,7 +140,7 @@ public abstract class PiMemoryAllocator {
           }
 
           interBufferSpaces.add(interSpace);
-          internalOffset += interSpace + (typeSize * edge.getTargetPort().getPortRateExpression().evaluate());
+          internalOffset += interSpace + (typeSize * edge.getTargetPort().getPortRateExpression().evaluateAsLong());
 
           // Update the size of the memObject and add the interbuffer
           // space if it does not contain with 0.
@@ -614,26 +613,19 @@ public abstract class PiMemoryAllocator {
 
           // Both data and fixed alignment must be aligned on
           // data typeSize
-          if ((this.alignment >= 0) && (((internalOffset + offset) % typeSize) != 0)) {
-            unalignedObjects.put(memObj, offset);
-            break;
-          }
-
           // Check the fixed alignment
-          if ((this.alignment > 0) && (((internalOffset + offset) % this.alignment) != 0)) {
+          if (((this.alignment >= 0) && (((internalOffset + offset) % typeSize) != 0))
+              || ((this.alignment > 0) && (((internalOffset + offset) % this.alignment) != 0))) {
             unalignedObjects.put(memObj, offset);
             break;
           }
 
-        } else {
+        } else if (memObj.getSource().startsWith(PiMemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
           // Check alignment of memory objects not associated with an edge.
           // Process delay memobjects here
-          if (memObj.getSource().startsWith(PiMemoryExclusionGraph.FIFO_HEAD_PREFIX)) {
-            final Long typeSize = memObj.getPropertyBean().getValue(PiMemoryExclusionVertex.TYPE_SIZE);
-            if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
-              unalignedObjects.put(memObj, offset);
-            }
-
+          final Long typeSize = memObj.getPropertyBean().getValue(PiMemoryExclusionVertex.TYPE_SIZE);
+          if ((this.alignment == 0) && ((offset % typeSize) != 0)) {
+            unalignedObjects.put(memObj, offset);
           }
 
         }
@@ -771,7 +763,7 @@ public abstract class PiMemoryAllocator {
 
         final long dataTypeSizeOrDefault = inputExclusionGraph.getScenario().getSimulationInfo()
             .getDataTypeSizeInBit(edge.getType());
-        final long fifosize = edge.getSourcePort().getPortRateExpression().evaluate();
+        final long fifosize = edge.getSourcePort().getPortRateExpression().evaluateAsLong();
 
         if ((value + fifosize * dataTypeSizeOrDefault) > memorySize) {
           memorySize = value + fifosize * dataTypeSizeOrDefault;

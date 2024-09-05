@@ -106,7 +106,7 @@ public class AutoFillHeaderTemplatedFunctions {
         templateParametersException(refinement, proto);
       }
       if (o instanceof final Parameter param) {
-        final Long value = param.getExpression().evaluate();
+        final Long value = param.getExpression().evaluateAsLong();
         evaluatedParams.add(value.toString());
       } else if (o instanceof final String s) {
         evaluatedParams.add(s);

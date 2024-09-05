@@ -65,6 +65,9 @@ import org.preesm.model.pisdf.PeriodicElement;
  */
 public class ActorPeriodPropertiesSection extends GFPropertySection implements ITabbedPropertyConstants {
 
+  private static final Color BG_NORMAL_WHITE = new Color(null, 255, 255, 255);
+  private static final Color BG_ERROR_RED    = new Color(null, 240, 150, 150);
+
   /** Items of the {@link ActorPropertiesSection}. */
 
   /** The lbl for the actor period. */
@@ -212,7 +215,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
 
       try {
         // try out evaluating the expression
-        final long evaluate = periodicExp.evaluate();
+        final long evaluate = periodicExp.evaluateAsLong();
         if (evaluate < 0) {
           throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
         }
@@ -222,11 +225,11 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
         } else {
           this.lblPeriodValueObj.setText(Long.toString(evaluate));
         }
-        this.txtPeriod.setBackground(new Color(null, 255, 255, 255));
+        this.txtPeriod.setBackground(BG_NORMAL_WHITE);
       } catch (final ExpressionEvaluationException e) {
         // otherwise print error message and put red background
         this.lblPeriodValueObj.setText("Error : " + e.getMessage());
-        this.txtPeriod.setBackground(new Color(null, 240, 150, 150));
+        this.txtPeriod.setBackground(BG_ERROR_RED);
       }
 
       if (expressionHasFocus) {

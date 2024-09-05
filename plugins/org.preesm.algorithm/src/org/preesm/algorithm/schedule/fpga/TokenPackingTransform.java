@@ -102,7 +102,7 @@ public final class TokenPackingTransform extends ActorConstructTransform {
     connectParameter(unpacker, unpacked, "OUT_W");
 
     // Set repetition value
-    final long rep = fifo.getSourcePort().getPortRateExpression().evaluate()
+    final long rep = fifo.getSourcePort().getPortRateExpression().evaluateAsLong()
         * res.flatBrv.get(fifo.getSourcePort().getContainingActor()) / compressionRatio;
     res.flatBrv.put(packer, rep);
     res.flatBrv.put(unpacker, rep);

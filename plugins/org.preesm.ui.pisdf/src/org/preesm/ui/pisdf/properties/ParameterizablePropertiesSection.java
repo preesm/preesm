@@ -42,7 +42,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -258,36 +257,45 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       if (errorMP == null) {
         // we need to check, since isValid method is called only if an update is done
         try {
-          final long evaluate = mp.getExpression().evaluate();
-          lblValueObj.setText(Long.toString(evaluate));
-          txtExpression.setBackground(new Color(null, 255, 255, 255));
+          final double evaluate = mp.getExpression().evaluateAsDouble();
+          lblValueObj.setText(Double.toString(evaluate));
+          txtExpression.setBackground(BG_NORMAL_WHITE);
         } catch (final ExpressionEvaluationException e) {
           lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
-          txtExpression.setBackground(new Color(null, 240, 150, 150));
+          txtExpression.setBackground(BG_ERROR_RED);
         }
       } else {
         lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
-        txtExpression.setBackground(new Color(null, 240, 150, 150));
+        txtExpression.setBackground(BG_ERROR_RED);
       }
     } else {
 
+      // String txt = this.txtExpression.getText();
+      // if (txt.matches("^-?+0\\d++.*+$")) {
+      // while (txt.matches("^-?+0\\d++.*+$")) {
+      // txt = txt.substring(1);
+      // }
+      // this.txtExpression.setText(txt);
+      // }
+
       final String eltExprString = elementValueExpression.getExpressionAsString();
-      if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+      if (this.txtExpression.getText().isBlank() && !eltExprString.isBlank()) {
         this.txtExpression.setText(eltExprString);
       }
 
       try {
         // try out evaluating the expression
-        final long evaluate = elementValueExpression.evaluate();
+        final double evaluate = elementValueExpression.evaluateAsDouble();
+
         // if evaluation went well, just write the result
         if (!(businessObject instanceof ConfigInputInterface)) {
-          this.lblValueObj.setText(Long.toString(evaluate));
+          this.lblValueObj.setText(Double.toString(evaluate));
         }
-        this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+        this.txtExpression.setBackground(BG_NORMAL_WHITE);
       } catch (final ExpressionEvaluationException e) {
         // otherwise print error message and put red background
         this.lblValueObj.setText("Error : " + e.getMessage());
-        this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+        this.txtExpression.setBackground(BG_ERROR_RED);
       }
     }
 

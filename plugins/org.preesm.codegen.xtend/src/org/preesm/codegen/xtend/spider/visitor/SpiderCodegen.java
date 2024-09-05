@@ -339,7 +339,7 @@ public class SpiderCodegen {
         if (parametersProto.length() > 0) {
           parametersProto.append(", ");
         }
-        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
+        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluateAsLong());
       }
     }
     append(parametersProto);

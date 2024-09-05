@@ -89,7 +89,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       }
       final DataOutputPort sourcePort = incomingFifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
-      if (sourceActor instanceof JoinActor && dip.getExpression().evaluate() == sourcePort.getExpression().evaluate()) {
+      if (sourceActor instanceof JoinActor
+          && dip.getExpression().evaluateAsLong() == sourcePort.getExpression().evaluateAsLong()) {
         fillRemoveAndReplace(actor.getDataInputPorts(), sourceActor.getDataInputPorts(), dip);
         PiMMHelper.removeActorAndFifo(graph, incomingFifo, sourceActor);
       }

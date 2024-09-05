@@ -93,8 +93,8 @@ public class PiSDFMergeabilty {
     boolean result = true;
 
     for (final Fifo incomingFifo : incomingFifos) {
-      final long prodRate = incomingFifo.getSourcePort().getPortRateExpression().evaluate();
-      final long consRate = incomingFifo.getTargetPort().getPortRateExpression().evaluate();
+      final long prodRate = incomingFifo.getSourcePort().getPortRateExpression().evaluateAsLong();
+      final long consRate = incomingFifo.getTargetPort().getPortRateExpression().evaluateAsLong();
       final long individualRepetition = brv.get(first) / clusterRepetition;
       final Delay delay = incomingFifo.getDelay();
       final long delayValue;
@@ -102,7 +102,7 @@ public class PiSDFMergeabilty {
       if (delay == null) {
         delayValue = 0;
       } else {
-        delayValue = delay.getExpression().evaluate();
+        delayValue = delay.getExpression().evaluateAsLong();
       }
 
       // Precedence shift condition verification
@@ -117,15 +117,15 @@ public class PiSDFMergeabilty {
     }
 
     for (final Fifo outgoingFifo : outgoingFifos) {
-      final long prodRate = outgoingFifo.getSourcePort().getPortRateExpression().evaluate();
-      final long consRate = outgoingFifo.getTargetPort().getPortRateExpression().evaluate();
+      final long prodRate = outgoingFifo.getSourcePort().getPortRateExpression().evaluateAsLong();
+      final long consRate = outgoingFifo.getTargetPort().getPortRateExpression().evaluateAsLong();
       final long individualRepetition = brv.get(first) / clusterRepetition;
       final Delay delay = outgoingFifo.getDelay();
       final long delayValue;
       if (delay == null) {
         delayValue = 0;
       } else {
-        delayValue = delay.getExpression().evaluate();
+        delayValue = delay.getExpression().evaluateAsLong();
       }
 
       // Precedence shift condition verification

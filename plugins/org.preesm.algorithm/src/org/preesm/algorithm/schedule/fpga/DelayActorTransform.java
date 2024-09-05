@@ -84,7 +84,7 @@ public class DelayActorTransform extends ActorConstructTransform {
 
     // Connect size parameters
     final Parameter initSize = PiMMUserFactory.instance
-        .createParameter(delay.getContainingFifo().getId() + "_init_size", delay.getExpression().evaluate());
+        .createParameter(delay.getContainingFifo().getId() + "_init_size", delay.getExpression().evaluateAsLong());
     connectParameter(delayActor, initSize, "INIT_S");
 
     // Create data ports

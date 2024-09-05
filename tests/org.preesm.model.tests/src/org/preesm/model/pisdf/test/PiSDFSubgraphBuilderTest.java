@@ -184,7 +184,7 @@ public class PiSDFSubgraphBuilderTest {
     // Check port name
     Assert.assertTrue(dipSubGraph.getName().contains("in_0"));
     // Check rate
-    Assert.assertEquals(4, dipSubGraph.getExpression().evaluate());
+    Assert.assertEquals(4, dipSubGraph.getExpression().evaluateAsLong());
     // Check if incoming fifo link actor A to actor B_C
     Assert.assertEquals(actorA, dipSubGraph.getIncomingFifo().getSource());
   }
@@ -197,7 +197,7 @@ public class PiSDFSubgraphBuilderTest {
     // Check port name
     Assert.assertTrue(dopSubGraph.getName().contains("out_0"));
     // Check rate
-    Assert.assertEquals(4, dopSubGraph.getExpression().evaluate());
+    Assert.assertEquals(4, dopSubGraph.getExpression().evaluateAsLong());
     // Check if outgoing fifo link actor B_C to actor D
     Assert.assertEquals(actorD, dopSubGraph.getOutgoingFifo().getTarget());
   }
@@ -225,9 +225,9 @@ public class PiSDFSubgraphBuilderTest {
     // Check if actor B input fifo is linked to the data input interface
     Assert.assertEquals(actorB.getDataInputPorts().get(0).getFifo(), diiSubGraph.getDataPort().getFifo());
     // Check rate of data port of the interface
-    Assert.assertEquals(4, diiSubGraph.getDataPort().getExpression().evaluate());
+    Assert.assertEquals(4, diiSubGraph.getDataPort().getExpression().evaluateAsLong());
     // Check rate on actor B data input port
-    Assert.assertEquals(2, actorB.getDataInputPorts().get(0).getExpression().evaluate());
+    Assert.assertEquals(2, actorB.getDataInputPorts().get(0).getExpression().evaluateAsLong());
   }
 
   @Test
@@ -242,9 +242,9 @@ public class PiSDFSubgraphBuilderTest {
     // Check if actor C input fifo is linked to the data output interface
     Assert.assertEquals(actorC.getDataOutputPorts().get(0).getFifo(), doiSubGraph.getDataPort().getFifo());
     // Check rate of data port of the interface
-    Assert.assertEquals(4, doiSubGraph.getDataPort().getExpression().evaluate());
+    Assert.assertEquals(4, doiSubGraph.getDataPort().getExpression().evaluateAsLong());
     // Check rate on actor C data output port
-    Assert.assertEquals(4, actorC.getDataOutputPorts().get(0).getExpression().evaluate());
+    Assert.assertEquals(4, actorC.getDataOutputPorts().get(0).getExpression().evaluateAsLong());
   }
 
   @Test

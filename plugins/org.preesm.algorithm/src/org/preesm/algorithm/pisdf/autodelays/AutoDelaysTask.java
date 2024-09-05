@@ -518,10 +518,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           PreesmLogger.getLogger().info(() -> "Set fifo delay size and type of: " + f.getId());
         } else if (delay != null) {
           if (!reset) {
-            pipeSize += delay.getExpression().evaluate();
+            pipeSize += delay.getExpression().evaluateAsLong();
             PreesmLogger.getLogger().warning(() -> "Reset fifo delay size and type of: " + f.getId());
           } else {
-            pipeSize = delay.getExpression().evaluate() - pipeSize;
+            pipeSize = delay.getExpression().evaluateAsLong() - pipeSize;
           }
         } else {
           // when (delay == null && reset == true)
@@ -589,7 +589,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           graphFifo.addDelay(delay);
           PreesmLogger.getLogger().info(() -> "[in Cycle] Set fifo delay size and type of: " + f.getId());
         } else {
-          final long prevSize = delay.getExpression().evaluate();
+          final long prevSize = delay.getExpression().evaluateAsLong();
           pipeSize = Math.max(pipeSize, prevSize);
           if (pipeSize != prevSize) {
             PreesmLogger.getLogger().warning(() -> "[in Cycle] Reset fifo delay size and type of: " + f.getId());

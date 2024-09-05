@@ -252,7 +252,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     final int nbCore = slamDesign.getProcessingElements().get(0).getInstances().size();
     PreesmLogger.getLogger().info(() -> "Found " + nbCore + " cores.");
 
-    graphPeriod = piGraph.getPeriod().evaluate();
+    graphPeriod = piGraph.getPeriod().evaluateAsLong();
     PreesmLogger.getLogger().info(() -> "Graph period is: " + graphPeriod);
 
     final long time = System.nanoTime();
@@ -378,7 +378,7 @@ public class PeriodicScheduler extends AbstractScheduler {
       }
       // initializes the min/maxStartTime of periodic actors from firing instance number
       if (aa instanceof final PeriodicElement pe) {
-        final long period = pe.getPeriod().evaluate();
+        final long period = pe.getPeriod().evaluateAsLong();
         if (period > 0 && pe instanceof final Actor a) {
           va.isPeriodic = true;
           final long firingInstance = a.getFiringInstance();

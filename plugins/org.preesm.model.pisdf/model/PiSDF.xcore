@@ -93,7 +93,9 @@ interface Parameterizable {
 interface Expression {
 	refers ExpressionHolder holder opposite expression
 	op String getExpressionAsString()
-	op long evaluate()
+	op double evaluateAsDouble()
+	op long evaluateAsLong()
+	op boolean isExpressionInteger()
 }
 
 class StringExpression extends Expression {
@@ -101,18 +103,32 @@ class StringExpression extends Expression {
 	op String getExpressionAsString() {
 		return getExpressionString()
 	}
-	op long evaluate() {
+	op double evaluateAsDouble() {
+		// May need to remove the trailing .0 when the actual value is an integer
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
+	}
+	op long evaluateAsLong() {
+		return Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
+	}
+	op boolean isExpressionInteger() {
+		return ExpressionEvaluator.evaluate(this, Collections.emptyMap) == Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
 	}
 }
 
-class LongExpression extends Expression {
-	long value = "0"
+class DoubleExpression extends Expression {
+	double value = "0"
 	op String getExpressionAsString() {
-		return Long.toString(value)
+		return Double.toString(value)
 	}
-	op long evaluate() {
+	op double evaluateAsDouble() {
+		// May need to remove the trailing .0 when the actual value is an integer
 		return value
+	}
+	op long evaluateAsLong() {
+		return Math.round(value)
+	}
+	op boolean isExpressionInteger() {
+		return value == Math.round(value)
 	}
 }
 
@@ -121,8 +137,11 @@ interface ExpressionProxy extends Expression {
 	op String getExpressionAsString() {
 		return proxy.getExpression().getExpressionAsString
 	}
-	op long evaluate() {
-		proxy.getExpression().evaluate()
+	op double evaluateAsDouble() {
+		proxy.getExpression().evaluateAsDouble()
+	}
+	op long evaluateAsLong() {
+		proxy.getExpression().evaluateAsLong()
 	}
 }
 
@@ -136,7 +155,7 @@ interface ExpressionHolder extends Parameterizable {
 			expression = PiMMUserFactory.instance.createExpression(newExpression)
 		}
 	}
-	op void setExpression(long value) {
+	op void setExpression(double value) {
 		if (expression instanceof ExpressionProxy) {
 			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
 		} else {
@@ -676,7 +695,7 @@ class InitActor extends SrdagActor, RefinementContainer {
 		return dataOutputPorts.get(0)
 	}
 	op long getDelaySize() {
-		return dataPort.portRateExpression.evaluate
+		return dataPort.portRateExpression.evaluateAsLong
 	}
 	op PersistenceLevel getPersistenceLevel() {
 		return level

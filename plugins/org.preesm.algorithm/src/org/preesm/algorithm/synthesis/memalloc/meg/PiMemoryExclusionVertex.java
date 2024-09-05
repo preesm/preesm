@@ -176,15 +176,13 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
   }
 
   private static long getSize(final Fifo inputEdge, final Scenario scenario) {
-    final long sourceRate = inputEdge.getSourcePort().getPortRateExpression().evaluate();
-    final long targetRate = inputEdge.getTargetPort().getPortRateExpression().evaluate();
+    final long sourceRate = inputEdge.getSourcePort().getPortRateExpression().evaluateAsLong();
+    final long targetRate = inputEdge.getTargetPort().getPortRateExpression().evaluateAsLong();
     if (sourceRate != targetRate) {
       throw new PreesmRuntimeException(
           "Source and Target rate are not equal. PiGraph should be in SRDAG to run allocation.");
     }
     final String typeStr = inputEdge.getType();
-    final long type = scenario.getSimulationInfo().getDataTypeSizeInBit(typeStr);
-    // return type * sourceRate;
     return scenario.getSimulationInfo().getBufferSizeInBit(typeStr, sourceRate);
   }
 

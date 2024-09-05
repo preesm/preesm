@@ -152,7 +152,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.firingInstance = 0;
 
     // copy input graph period
-    this.result.setExpression(inputGraph.getPeriod().evaluate());
+    this.result.setExpression(inputGraph.getPeriod().evaluateAsLong());
   }
 
   /**
@@ -435,7 +435,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final DataInputPort targetPort = fifo.getTargetPort();
 
     // 0. If fifo is zero, ignore it
-    if (sourcePort.getExpression().evaluate() == 0 || targetPort.getExpression().evaluate() == 0) {
+    if (sourcePort.getExpression().evaluateAsLong() == 0 || targetPort.getExpression().evaluateAsLong() == 0) {
       return true;
     }
 
@@ -578,8 +578,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a BroadcastActor
-    final long prod = correspondingPortInParent.getPortRateExpression().evaluate();
-    final long cons = targetPort.getPortRateExpression().evaluate();
+    final long prod = correspondingPortInParent.getPortRateExpression().evaluateAsLong();
+    final long cons = targetPort.getPortRateExpression().evaluateAsLong();
     final long sinkRV = this.brv.get(sinkActor);
     final boolean needBroadcastInterface = prod != (cons * sinkRV);
     final boolean needBroadcastDelay = sourceActor.getDataPort().getFifo().getDelay() != null;
@@ -708,8 +708,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
 
     // 2.2 Now check if we need a RoundBufferActor
-    final long cons = correspondingPort.getPortRateExpression().evaluate();
-    final long prod = sourcePort.getPortRateExpression().evaluate();
+    final long cons = correspondingPort.getPortRateExpression().evaluateAsLong();
+    final long prod = sourcePort.getPortRateExpression().evaluateAsLong();
     final long sourceRV = this.brv.get(sourceActor);
     final boolean needRoundbufferInterface = cons != (prod * sourceRV);
     final boolean needRoundbufferDelay = sinkActor.getDataPort().getFifo().getDelay() != null;
@@ -767,7 +767,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // we can remove the config dependencies since all parameters have been resolved
     iaCopy.getConfigInputPorts().clear();
     // dummy fifo to trick the SR vertices linker
-    final long rate = ia.getDataPort().getExpression().evaluate();
+    final long rate = ia.getDataPort().getExpression().evaluateAsLong();
     final DataInputPort dummyDIP = PiMMUserFactory.instance.createDataInputPort(ia.getName());
     dummyDIP.setExpression(rate);
     dummyDIP.setName(ia.getName());
@@ -880,7 +880,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseParameter(final Parameter param) {
     // make sure config input interfaces are made into Parameter (since their expressions have been evaluated)
-    final long paramValue = param.getValueExpression().evaluate();
+    final double paramValue = param.getValueExpression().evaluateAsDouble();
     final String paramName = this.graphPrefix + param.getName();
     final Parameter copy = PiMMUserFactory.instance.createParameter(paramName, paramValue);
     this.param2param.put(param, copy);

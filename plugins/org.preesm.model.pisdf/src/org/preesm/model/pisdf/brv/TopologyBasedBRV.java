@@ -115,8 +115,8 @@ class TopologyBasedBRV extends PiBRV {
     for (final Fifo fifo : listFifo) {
       final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      final long prod = fifo.getSourcePort().getPortRateExpression().evaluate();
-      final long cons = fifo.getTargetPort().getPortRateExpression().evaluate();
+      final long prod = fifo.getSourcePort().getPortRateExpression().evaluateAsLong();
+      final long cons = fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
       if ((prod < 0) || (cons < 0)) {
         final String prodString = "Prod: " + Long.toString(prod) + "\n";
         final String consString = "Cons: " + Long.toString(cons) + "\n";

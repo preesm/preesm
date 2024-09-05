@@ -212,7 +212,7 @@ public class ParameterDecorators {
   protected static IDecorator getExpressionDecorator(final Parameter param, final PictogramElement pe) {
     final Expression expression = param.getValueExpression();
     try {
-      expression.evaluate();
+      expression.evaluateAsDouble();
     } catch (final ExpressionEvaluationException e) {
       final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
       imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());

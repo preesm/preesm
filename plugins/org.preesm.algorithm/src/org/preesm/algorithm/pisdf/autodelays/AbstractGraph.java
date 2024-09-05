@@ -153,8 +153,8 @@ public class AbstractGraph {
       }
 
       FifoAbstraction fa = absGraph.getEdge(absSrc, absTgt);
-      final long srcRate = dop.getPortRateExpression().evaluate();
-      final long tgtRate = dip.getPortRateExpression().evaluate();
+      final long srcRate = dop.getPortRateExpression().evaluateAsLong();
+      final long tgtRate = dip.getPortRateExpression().evaluateAsLong();
       if (srcRate > 0 && tgtRate > 0) {
         final long gcd = MathFunctionsHelper.gcd(srcRate, tgtRate);
         if (fa == null) {
@@ -172,7 +172,7 @@ public class AbstractGraph {
         long delay = 0L;
         if (d != null) {
           fa.nbNonZeroDelays++;
-          delayRawSize = d.getSizeExpression().evaluate();
+          delayRawSize = d.getSizeExpression().evaluateAsLong();
           delay = delayRawSize / gcd;
         }
         fa.delays.add(delay);

@@ -75,7 +75,7 @@ class LCMBasedBRV extends PiBRV {
   /**
    * Storage facility to compute BRV of one connected component, excluding fifo having production and consumption rates
    * equal to 0. Order of maps is important: do not replace by HashMap.
-   * 
+   *
    * @author ahonorat
    */
   static class CCinfo {
@@ -90,7 +90,7 @@ class LCMBasedBRV extends PiBRV {
 
   @Override
   public Map<AbstractVertex, Long> computeBRV(final PiGraph piGraph) {
-    Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
+    final Map<AbstractVertex, Long> graphBRV = new LinkedHashMap<>();
     if (piGraph == null) {
       final String msg = "cannot compute BRV for null graph.";
       throw new PreesmRuntimeException(msg);
@@ -112,13 +112,13 @@ class LCMBasedBRV extends PiBRV {
       // there might be several connected components in each subgraph since
       // fifos having both production and consumption rates equal to 0
       // are ignored by initRepsDFS method
-      for (CCinfo ccInfo : ccInfos) {
+      for (final CCinfo ccInfo : ccInfos) {
         if (!ccInfo.fifoProperties.isEmpty()) {
 
           // First actor has repetition ratio 1/1 by default
           // it is certain that this actor will be executed at least once since
           // actors in the CC are all connected by non zero fifo
-          AbstractActor firstActor = ccInfo.reps.keySet().iterator().next();
+          final AbstractActor firstActor = ccInfo.reps.keySet().iterator().next();
           ccInfo.reps.put(firstActor, new LongFraction(1L));
 
           // Set initial properties for the analysis
@@ -158,14 +158,14 @@ class LCMBasedBRV extends PiBRV {
   private static Pair<Long, Long> computeFifoProperties(Fifo f, AbstractActor src, AbstractActor tgt) {
     final DataOutputPort sourcePort = f.getSourcePort();
     final Expression sourcePortRateExpression = sourcePort.getPortRateExpression();
-    final long prod = sourcePortRateExpression.evaluate();
+    final long prod = sourcePortRateExpression.evaluateAsLong();
     final DataInputPort targetPort = f.getTargetPort();
     final Expression targetPortRateExpression = targetPort.getPortRateExpression();
-    final long cons = targetPortRateExpression.evaluate();
-    Pair<Long, Long> res = new Pair<>(prod, cons);
+    final long cons = targetPortRateExpression.evaluateAsLong();
+    final Pair<Long, Long> res = new Pair<>(prod, cons);
     if ((prod == 0 && cons != 0) || (prod != 0 && cons == 0)) {
-      String message = "Non valid edge prod / cons from actor " + src.getName() + "[" + sourcePort.getName() + "] to "
-          + tgt.getName() + "[" + targetPort.getName() + "].";
+      final String message = "Non valid edge prod / cons from actor " + src.getName() + "[" + sourcePort.getName()
+          + "] to " + tgt.getName() + "[" + targetPort.getName() + "].";
       throw new PreesmRuntimeException(message);
     }
     return res;
@@ -178,15 +178,15 @@ class LCMBasedBRV extends PiBRV {
    *          Connected component on which to perform DFS.
    * @param graphBRV
    *          Repetition vector of the graph. Updated for actors which will not be fired.
-   * 
+   *
    * @return List of connected components, with ordered actors regarding the DFS traversal of subgraph, and fifo
    *         properties. Fifo having both rates equal to 0 are ignored for the connected components.
    */
   private static List<CCinfo> initRepsDFS(List<AbstractActor> cc, final Map<AbstractVertex, Long> graphBRV) {
-    Set<AbstractActor> visited = new HashSet<>();
-    List<CCinfo> ccs = new ArrayList<>();
+    final Set<AbstractActor> visited = new HashSet<>();
+    final List<CCinfo> ccs = new ArrayList<>();
 
-    for (AbstractActor aa : cc) {
+    for (final AbstractActor aa : cc) {
       if (visited.contains(aa)) {
         // if already visited, nothing to do
         continue;
@@ -194,13 +194,13 @@ class LCMBasedBRV extends PiBRV {
       // else, we have discovered a new connected component
 
       // start new connected component exploration
-      CCinfo ccInfo = new CCinfo();
+      final CCinfo ccInfo = new CCinfo();
       ccs.add(ccInfo);
 
-      LinkedList<AbstractActor> toVisit = new LinkedList<>();
+      final LinkedList<AbstractActor> toVisit = new LinkedList<>();
       toVisit.addFirst(aa);
       while (!toVisit.isEmpty()) {
-        AbstractActor actor = toVisit.removeFirst();
+        final AbstractActor actor = toVisit.removeFirst();
         visited.add(actor);
         ccInfo.reps.put(actor, new LongFraction(0L));
         int nbValidFifo = 0;
@@ -209,7 +209,7 @@ class LCMBasedBRV extends PiBRV {
         for (final DataInputPort input : actor.getDataInputPorts()) {
           final Fifo fifo = input.getIncomingFifo();
           if (fifo == null) {
-            String message = "Actor [" + actor.getName() + "] has input port [" + input.getName()
+            final String message = "Actor [" + actor.getName() + "] has input port [" + input.getName()
                 + "] not connected to any FIFO.";
             throw new PreesmRuntimeException(message);
           }
@@ -219,7 +219,7 @@ class LCMBasedBRV extends PiBRV {
           }
 
           nbValidFifo++;
-          Pair<Long, Long> fifoProps = computeFifoProperties(fifo, sourceActor, actor);
+          final Pair<Long, Long> fifoProps = computeFifoProperties(fifo, sourceActor, actor);
           if (fifoProps.getKey() == 0 && fifoProps.getValue() == 0) {
             nbZeroRateFifo++;
             // then, ignore the fifo: treated as non existent
@@ -234,7 +234,7 @@ class LCMBasedBRV extends PiBRV {
         for (final DataOutputPort output : actor.getDataOutputPorts()) {
           final Fifo fifo = output.getOutgoingFifo();
           if (fifo == null) {
-            String message = "Actor [" + actor.getName() + "] has output port [" + output.getName()
+            final String message = "Actor [" + actor.getName() + "] has output port [" + output.getName()
                 + "] not connected to any FIFO.";
             PreesmLogger.getLogger().log(Level.SEVERE, message);
             throw new PreesmRuntimeException(message);
@@ -245,7 +245,7 @@ class LCMBasedBRV extends PiBRV {
           }
 
           nbValidFifo++;
-          Pair<Long, Long> fifoProps = computeFifoProperties(fifo, actor, targetActor);
+          final Pair<Long, Long> fifoProps = computeFifoProperties(fifo, actor, targetActor);
           if (fifoProps.getKey() == 0 && fifoProps.getValue() == 0) {
             nbZeroRateFifo++;
             // then, ignore the fifo: treated as non existent
@@ -278,18 +278,18 @@ class LCMBasedBRV extends PiBRV {
    */
   private static void setReps(Map<Fifo, Pair<Long, Long>> fifoProperties, Map<AbstractActor, LongFraction> reps) {
 
-    for (Entry<Fifo, Pair<Long, Long>> e : fifoProperties.entrySet()) {
-      Fifo f = e.getKey();
-      Pair<Long, Long> p = e.getValue();
-      long prod = p.getKey();
-      long cons = p.getValue();
+    for (final Entry<Fifo, Pair<Long, Long>> e : fifoProperties.entrySet()) {
+      final Fifo f = e.getKey();
+      final Pair<Long, Long> p = e.getValue();
+      final long prod = p.getKey();
+      final long cons = p.getValue();
       final DataOutputPort sourcePort = f.getSourcePort();
       final DataInputPort targetPort = f.getTargetPort();
-      AbstractActor src = sourcePort.getContainingActor();
-      AbstractActor tgt = targetPort.getContainingActor();
+      final AbstractActor src = sourcePort.getContainingActor();
+      final AbstractActor tgt = targetPort.getContainingActor();
 
       LongFraction srcRep = reps.get(src);
-      LongFraction tgtRep = reps.get(tgt);
+      final LongFraction tgtRep = reps.get(tgt);
 
       if (srcRep.getNumerator() == 0 && prod > 0) {
         LongFraction ratio = new LongFraction(cons, prod);
@@ -337,9 +337,9 @@ class LCMBasedBRV extends PiBRV {
       final long targetRV = graphBRV.get(targetActor);
 
       if (prod * sourceRV != cons * targetRV) {
-        String message = "Graph non consistent: edge source production [" + sourceActor.getName() + "] with rate ["
-            + (prod * sourceRV) + "] != edge target consumption [" + targetActor.getName() + "] with rate ["
-            + (cons * targetRV) + "]";
+        final String message = "Graph non consistent: edge source production [" + sourceActor.getName()
+            + "] with rate [" + (prod * sourceRV) + "] != edge target consumption [" + targetActor.getName()
+            + "] with rate [" + (cons * targetRV) + "]";
         throw new PreesmRuntimeException(message);
       }
     }

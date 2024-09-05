@@ -89,7 +89,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     final int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();
     PreesmLogger.getLogger().info(() -> "Found " + nbCores + " cores.");
 
-    final long graphPeriod = piGraph.getPeriod().evaluate();
+    final long graphPeriod = piGraph.getPeriod().evaluateAsLong();
     PreesmLogger.getLogger().info(() -> "Graph period is: " + graphPeriod);
 
     this.piGraph = piGraph;

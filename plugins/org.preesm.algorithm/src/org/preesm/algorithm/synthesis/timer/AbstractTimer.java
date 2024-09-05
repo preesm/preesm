@@ -86,7 +86,7 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
       // refine the startTime of periodic actors from firing instance number
       if (actor instanceof final PeriodicElement pe) {
-        final long period = pe.getPeriod().evaluate();
+        final long period = pe.getPeriod().evaluateAsLong();
         if (period > 0 && pe instanceof final Actor a) {
           final long firingInstance = a.getFiringInstance();
           final long ns = firingInstance * period;
