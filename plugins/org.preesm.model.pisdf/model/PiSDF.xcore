@@ -104,14 +104,13 @@ class StringExpression extends Expression {
 		return getExpressionString()
 	}
 	op double evaluateAsDouble() {
-		// May need to remove the trailing .0 when the actual value is an integer
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
 	op long evaluateAsLong() {
 		return Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
 	}
 	op boolean isExpressionInteger() {
-		return ExpressionEvaluator.evaluate(this, Collections.emptyMap) == Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
@@ -121,14 +120,13 @@ class DoubleExpression extends Expression {
 		return Double.toString(value)
 	}
 	op double evaluateAsDouble() {
-		// May need to remove the trailing .0 when the actual value is an integer
 		return value
 	}
 	op long evaluateAsLong() {
 		return Math.round(value)
 	}
 	op boolean isExpressionInteger() {
-		return value == Math.round(value)
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
@@ -142,6 +140,9 @@ interface ExpressionProxy extends Expression {
 	}
 	op long evaluateAsLong() {
 		proxy.getExpression().evaluateAsLong()
+	}
+	op boolean isExpressionInteger() {
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
