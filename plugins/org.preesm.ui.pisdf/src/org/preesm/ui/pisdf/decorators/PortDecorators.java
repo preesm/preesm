@@ -124,9 +124,9 @@ public class PortDecorators {
     final int xCoord;
     final int yCoord = (int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1;
 
-    if (port instanceof final DataInputPort) {
+    if (port instanceof DataInputPort) {
       xCoord = -5;
-    } else if (port instanceof final DataOutputPort) {
+    } else if (port instanceof DataOutputPort) {
       xCoord = a.getReferencedGraphicsAlgorithm().getWidth() - 13;
     } else {
       return null; // never there ?
