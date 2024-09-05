@@ -83,7 +83,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
             + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
             + "on, pages 41–48. IEEE, 2013." })
-@Deprecated
+// @Deprecated
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 
   /*

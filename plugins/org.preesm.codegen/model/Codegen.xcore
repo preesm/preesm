@@ -218,14 +218,66 @@ class CoreBlock extends Block {
 	refers LoopBlock loopBlock
 	refers CallBlock initBlock
 	refers Buffer[] sinkFifoBuffers
+	refers Buffer[] topBuffers//opr
+	boolean multinode//opr
+	String coreType
+	refers Buffer[] topBuffers//opr
+	boolean multinode//opr
+	unordered id int coreID
+	unordered int nodeID//opr
+}
+
+class ClusterRaiserBlock extends Block {
+	String initFunc
+	refers FunctionCall clusterFunc 
+	refers LoopBlock bodyBlock
+	refers Block initBlock
+	refers Buffer[] sinkFifoBuffers
+	refers Buffer[] initBuffers
 	String coreType
 	unordered id int coreID
 }
+
+class MainSimsdpBlock extends Block{
+	String[] nodeID
+	refers Buffer[] buffers
+	refers FunctionCall[] subFunc
+	String coreType
+	
+	
+}
+
+//class ClusterInitBlock extends Block {
+//	refers FunctionCall clusterFunc 
+//	refers Block bodyBlock
+//	refers Buffer[] sinkFifoBuffers
+//	String coreType
+//	unordered id int coreID
+//}
 
 class ClusterBlock extends Block {
 	String schedule
 	boolean parallel
 	boolean containParallelism
+}
+class ScapeBlock extends Block {
+		String initFunc
+		refers FunctionCall clusterFunc 
+		refers LoopBlock bodyBlock
+		refers Block initBlock
+		refers Buffer[] sinkFifoBuffers
+		refers Buffer[] initBuffers
+		String coreType
+		unordered id int coreID
+	
+}
+
+class MainSimsdpBlock extends Block{
+		String[] nodeID
+		refers Buffer[] buffers
+		refers FunctionCall[] subFunc
+		String coreType
+	
 }
 
 class SectionBlock extends Block {
@@ -334,6 +386,20 @@ class FiniteLoopBlock extends LoopBlock {
 	refers IteratedBuffer[] inBuffers
 	refers IteratedBuffer[] outBuffers
 }
+class FiniteLoopScapeBlock extends LoopBlock {
+		int nbIter
+		refers IntVar iter
+		refers IteratedBuffer[] inBuffers
+		refers IteratedBuffer[] outBuffers
+}
+
+class FiniteLoopClusterRaiserBlock extends LoopBlock {
+	int nbIter
+
+	refers IntVar iter
+	refers IteratedBuffer[] inBuffers
+	refers IteratedBuffer[] outBuffers
+}
 
 class IntVar extends Variable {
 }
@@ -346,6 +412,15 @@ class BufferIterator extends SubBuffer {
 class IteratedBuffer extends Buffer {
 	refers Buffer buffer
 	refers IntVar iter
+}
+class DynamicBuffer extends Buffer {
+		refers Buffer buffer
+	
+}
+
+class DynamicBuffer extends Buffer {
+	refers Buffer buffer
+
 }
 
 class PapifyAction extends Variable {

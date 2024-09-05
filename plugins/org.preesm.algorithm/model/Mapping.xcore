@@ -82,3 +82,19 @@ class MultiMappingEntry wraps java.util.Map$Entry {
 	refers AbstractActor key
 	refers ComponentInstance[] value
 }
+class CoreMapping{
+	int ID
+	String coreType
+	Double coreFrequency
+	Double coreCommunicationRate
+	
+}
+
+class NodeMapping{
+	int ID
+	String nodeName
+	Double nodeCommunicationRate
+	refers CoreMapping[] cores
+	int nbCoreEquivalent
+	
+}

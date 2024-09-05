@@ -153,43 +153,38 @@ public class HeaderParser {
   private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
+
     if (nodeAST instanceof final IASTFunctionDeclarator funcDeclor) {
-      // BASE CASE
-      // we got a function declaration !
       parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
     } else if (nodeAST instanceof final IASTFunctionDefinition funcDef) {
-      // DEEPER CASES
-      // we got a function definition, let's retrieve the declaration
       returnTypeStack.addLast(funcDef.getDeclSpecifier());
       parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
       returnTypeStack.removeLast();
     } else if (nodeAST instanceof final IASTSimpleDeclaration simpleDeclon) {
-      // we got a simple declaration, which could start a function definition or declaration with its return type
       returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
       for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
         parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       returnTypeStack.removeLast();
+
     } else if (nodeAST instanceof final ICPPASTTemplateDeclaration tempDeclon) {
-      // we got a template declaration, which could start a function definition or declaration
       templateStack.addLast(tempDeclon);
       parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
       templateStack.removeLast();
     } else if (nodeAST instanceof final ICPPASTNamespaceDefinition nsDef) {
-      // we got a namespace definition, which could contain other namespaces and function definitions or declarations
       namespaceStack.addLast(nsDef);
       for (final IASTDeclaration declon : nsDef.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
       namespaceStack.removeLast();
+
     } else if (nodeAST instanceof final ICPPASTLinkageSpecification linkageSpec) {
       // inside an extern "C" block
       for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
+
     } else if (nodeAST instanceof final IASTTranslationUnit tu) {
-      // TOP CASE
-      // we got the full file, let's visit the declarations
       for (final IASTDeclaration declon : tu.getDeclarations()) {
         parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
       }
@@ -207,12 +202,7 @@ public class HeaderParser {
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested return types were found.");
       return;
     }
-    // this log is annoying if checked on all functions
-    // else if (!returnTypeStack.getFirst().getRawSignature().contains("void")) {
-    // PreesmLogger.getLogger()
-    // .warning("Return type of function " + rawName + " is not void, and will not be used by PREESM.");
-    // return;
-    // }
+
     if (templateStack.size() > 1) {
       PreesmLogger.getLogger()
           .warning(() -> DISCARD_FUNC + rawName + ". While analyzing it, multiple nested templates were found.");
@@ -401,18 +391,19 @@ public class HeaderParser {
 
     // For each function prototype proto
     for (final FunctionPrototype proto : prototypes) {
-      // proto matches the signature of actor if:
-      // -it does not have more parameters than the actors ports
-      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
-      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
-          + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
-
       // Check that all proto parameters can be matched with a port
       final List<Port> allPorts = new ArrayList<>();
       allPorts.addAll(actor.getDataInputPorts());
       allPorts.addAll(actor.getDataOutputPorts());
       allPorts.addAll(actor.getConfigInputPorts());
       allPorts.addAll(actor.getConfigOutputPorts());
+
+      // proto matches the signature of actor if:
+      // -it does not have more parameters than the actors ports
+      final ArrayList<FunctionArgument> params = new ArrayList<>(proto.getArguments());
+      boolean matches = params.size() <= (actor.getDataInputPorts().size() + actor.getDataOutputPorts().size()
+          + actor.getConfigInputPorts().size() + actor.getConfigOutputPorts().size());
+
       for (final FunctionArgument param : proto.getArguments()) {
         matches &= HeaderParser.hasCorrespondingPort(param, allPorts);
       }

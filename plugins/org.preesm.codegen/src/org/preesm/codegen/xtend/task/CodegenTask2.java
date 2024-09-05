@@ -95,7 +95,13 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
             values = { @Value(name = "true/false",
                 effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
+                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") })
+
+    // @Parameter(name = "Multinode", description = "Enables data transfer between multicore nodes",
+    // values = { @Value(name = "true/false",
+    // effect = "Prints thread launch functions suitable for transfer between multicore nodes") })
+
+    })
 public class CodegenTask2 extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */
@@ -106,6 +112,9 @@ public class CodegenTask2 extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY = "Papify";
+
+  /** The Constant PARAM_MULTINODE. */
+  public static final String PARAM_MULTINODE = "Multinode";
 
   /*
    * (non-Javadoc)
@@ -133,9 +142,12 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_PAPIFY));
 
+    // Retrieve the MULTINODE flag
+    // final boolean multinode = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_MULTINODE));
+
     PreesmLogger.getLogger().log(Level.INFO, "Generating blocks.");
-    final List<
-        Block> codeBlocks = CodegenModelGenerator2.generate(archi, algo, scenario, schedule, mapping, memAlloc, papify);
+    final List<Block> codeBlocks = CodegenModelGenerator2.generate(archi, algo, scenario, schedule, mapping, memAlloc,
+        papify, false);
 
     PreesmLogger.getLogger().log(Level.INFO, "Printing blocks.");
 
@@ -152,8 +164,8 @@ public class CodegenTask2 extends AbstractTaskImplementation {
 
     engine.registerPrintersAndBlocks(selectedPrinter);
     engine.preprocessPrinters();
-    engine.print();
 
+    engine.print();
     // Create empty output map (codegen doesn't have output)
     return new LinkedHashMap<>();
   }
@@ -186,6 +198,8 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     parameters.put(CodegenTask2.PARAM_PRINTER, avilableLanguages.toString());
     // Papify default
     parameters.put(CodegenTask2.PARAM_PAPIFY, "false");
+
+    // parameters.put(CodegenTask2.PARAM_MULTINODE, "false");
     return parameters;
   }
 

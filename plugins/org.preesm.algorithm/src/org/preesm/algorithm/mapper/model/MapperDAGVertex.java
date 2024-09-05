@@ -105,6 +105,8 @@ public class MapperDAGVertex extends DAGVertex {
 
   /** Key to access to property dag_broadcast_vertex. */
   public static final String DAG_JOIN_VERTEX = "dag_join_vertex";
+  /** Key to access to property dag_broadcast_vertex. */
+  public static final String DAG_GPU_OFFLOAD = "gpu_offload_vertex";
 
   static {
     AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR_DEF);
@@ -169,12 +171,15 @@ public class MapperDAGVertex extends DAGVertex {
 
     if (this instanceof OverheadVertex) {
       result = new OverheadVertex(getId(), origVertex);
-    } else if (this instanceof final SendVertex thisSendVertex) {
-      result = new SendVertex(getId(), (MapperDAG) getBase(), thisSendVertex.getSource(), thisSendVertex.getTarget(),
-          thisSendVertex.getRouteStepIndex(), thisSendVertex.getNodeIndex(), origVertex);
-    } else if (this instanceof final ReceiveVertex thisRcvVerex) {
-      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), thisRcvVerex.getSource(), thisRcvVerex.getTarget(),
-          thisRcvVerex.getRouteStepIndex(), thisRcvVerex.getNodeIndex(), origVertex);
+
+    } else if (this instanceof SendVertex) {
+      result = new SendVertex(getId(), (MapperDAG) getBase(), ((SendVertex) this).getSource(),
+          ((SendVertex) this).getTarget(), ((SendVertex) this).getRouteStepIndex(), ((SendVertex) this).getNodeIndex(),
+          origVertex);
+    } else if (this instanceof ReceiveVertex) {
+      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), ((ReceiveVertex) this).getSource(),
+          ((ReceiveVertex) this).getTarget(), ((ReceiveVertex) this).getRouteStepIndex(),
+          ((ReceiveVertex) this).getNodeIndex(), origVertex);
     } else if (this instanceof final TransferVertex t) {
       result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
           t.getNodeIndex(), origVertex);
@@ -318,15 +323,17 @@ public class MapperDAGVertex extends DAGVertex {
     if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR_DEF)) {
       return getEffectiveOperator().getComponent().getVlnv().getName();
     }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
+
+    if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
       return getInit().getInitialOperatorList().toString();
     }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
+    if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
       return getInit().getParentVertex().getId();
     }
     if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
       return String.valueOf(getTiming().getCost());
-    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
       return String.valueOf(getTiming().getTotalOrder(this));
     } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
       return getEffectiveComponent().getInstanceName();
@@ -369,6 +376,10 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public VertexMapping getMapping() {
     return ((MapperDAG) getBase()).getMappings().getMapping(getName());
+  }
+
+  public org.preesm.model.pisdf.AbstractVertex getOrigVertex() {
+    return origVertex;
   }
 
   /**

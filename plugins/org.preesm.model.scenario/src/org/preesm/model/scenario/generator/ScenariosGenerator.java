@@ -157,9 +157,11 @@ public class ScenariosGenerator {
     final Set<String> archis = new LinkedHashSet<>();
     final Set<String> algos = new LinkedHashSet<>();
     for (final IResource resource : archiDir.members()) {
-      if (resource instanceof final IFile file
-          && file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
-        archis.add(file.getFullPath().toString());
+
+      if (resource instanceof final IFile file) {
+        if (file.getProjectRelativePath().getFileExtension().equals(ScenariosGenerator.ARCHI_EXT)) {
+          archis.add(file.getFullPath().toString());
+        }
       }
     }
     for (final IResource resource : algoDir.members()) {
@@ -316,7 +318,7 @@ public class ScenariosGenerator {
    * @throws CoreException
    *           the core exception
    */
-  private void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
+  public void saveScenarios(final Set<Scenario> scenarios, final IFolder scenarioDir) throws CoreException {
     for (final Scenario scenario : scenarios) {
       final String scenarioName = scenario.getScenarioName();
       final IPath scenarioPath = new Path(scenarioName).addFileExtension("scenario");
@@ -326,7 +328,7 @@ public class ScenariosGenerator {
       }
       saveScenario(scenario, scenarioFile);
     }
-  }
+  }// opr change private -> public
 
   /**
    * Save a given PreesmScenario in a given IFile.
@@ -336,7 +338,7 @@ public class ScenariosGenerator {
    * @param scenarioFile
    *          the IFile in which to save the PreesmScenario
    */
-  private void saveScenario(final Scenario scenario, final IFile scenarioFile) {
+  public void saveScenario(final Scenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);
     final Document generateScenarioDOM = writer.generateScenarioDOM();
     try (final ByteArrayOutputStream byteStream = new ByteArrayOutputStream()) {

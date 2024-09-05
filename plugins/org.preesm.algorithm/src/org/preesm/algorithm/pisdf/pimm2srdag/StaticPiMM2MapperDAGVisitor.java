@@ -208,6 +208,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseActor(final Actor actor) {
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, actor);
+
+    if (actor.isOnGPU()) {
+      vertex.getPropertyBean().setValue(MapperDAGVertex.SPECIAL_TYPE, MapperDAGVertex.DAG_GPU_OFFLOAD);
+    }
     // Set default properties from the PiMM actor
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex

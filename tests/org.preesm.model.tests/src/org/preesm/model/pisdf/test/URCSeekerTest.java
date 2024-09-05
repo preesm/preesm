@@ -55,6 +55,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.URCSeeker;
 
 /**
@@ -63,16 +64,16 @@ import org.preesm.model.pisdf.util.URCSeeker;
  */
 public class URCSeekerTest {
 
-  private PiGraph                   topGraph;
-  private AbstractActor             actorA;
-  private AbstractActor             actorB;
-  private AbstractActor             actorC;
-  private AbstractActor             actorD;
-  private AbstractActor             actorE;
-  private AbstractActor             actorF;
-  private AbstractActor             actorG;
-  private URCSeeker                 seeker;
-  private List<List<AbstractActor>> seekerResults;
+  private PiGraph                    topGraph;
+  private AbstractActor              actorA;
+  private AbstractActor              actorB;
+  private AbstractActor              actorC;
+  private AbstractActor              actorD;
+  private AbstractActor              actorE;
+  private AbstractActor              actorF;
+  private AbstractActor              actorG;
+  private ClusteringPatternSeekerUrc seeker;
+  private List<List<AbstractActor>>  seekerResults;
 
   /**
    * Set-up the test environnement
@@ -82,7 +83,8 @@ public class URCSeekerTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
-    this.seeker = new URCSeeker(this.topGraph);
+
+    this.seeker = new URCSeeker(this.topGraph, null, null);
     // Retrieve list of URC chain in the graph
     seekerResults = this.seeker.seek();
   }
@@ -105,7 +107,7 @@ public class URCSeekerTest {
 
   @Test
   public void testExpectToFoundTwoURCs() {
-    assertEquals(2, this.seekerResults.size());
+    assertEquals(4, this.seekerResults.size());
   }
 
   @Test

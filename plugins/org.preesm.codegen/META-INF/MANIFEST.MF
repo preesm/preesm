@@ -4,22 +4,21 @@ Bundle-Name: %pluginName
 Automatic-Module-Name: org.preesm.codegen
 Bundle-SymbolicName: org.preesm.codegen;singleton:=true
 Bundle-Version: 3.21.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: %providerName
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.preesm.codegen.model,
+ org.preesm.codegen.model.impl,
+ org.preesm.codegen.model.util
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.emf.ecore;visibility:=reexport,
- org.eclipse.core.resources,
- org.eclipse.emf.ecore.xmi,
- org.apache.commons.commons-collections4;bundle-version="4.4.0",
- org.eclipse.cdt.core;bundle-version="7.4.200",
  org.eclipse.xtext.xbase.lib,
  org.eclipse.emf.ecore.xcore.lib,
- org.eclipse.xtend.lib,
- org.preesm.algorithm;visibility:=reexport,
- org.preesm.commons;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport,
- org.eclipse.jface.text;bundle-version="3.20.100",
- org.eclipse.ui.ide
+ org.eclipse.jface.text;bundle-version="3.20.100"
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin

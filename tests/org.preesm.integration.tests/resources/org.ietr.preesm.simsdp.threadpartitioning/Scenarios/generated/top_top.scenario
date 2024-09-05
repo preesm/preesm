@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.simsdp.threadpartitioning/Algo/generated/top.pi"/>
+        <architecture url="/org.ietr.preesm.simsdp.threadpartitioning/Archi/top.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.simsdp.threadpartitioning/Code/generated/top"/>
+    </files>
+    <constraints excelUrl=""/>
+    <timings excelUrl="/org.ietr.preesm.simsdp.threadpartitioning/Scenarios/generated/top_tim.csv">
+        <timing opname="x86" time="83714669"
+            timingtype="EXECUTION_TIME" vertexname="top/sub0"/>
+        <timing opname="x86" time="114925684"
+            timingtype="EXECUTION_TIME" vertexname="top/sub1"/>
+        <timing opname="x86" time="" timingtype="EXECUTION_TIME" vertexname="top/sub2"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="double" size="64"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <pePower opName="Base" pePower="10.0"/>
+        <pePower opName="Node" pePower="10.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

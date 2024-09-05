@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">sub1</data>
+        <node expr="2048" id="N_SAMPLES" kind="param"/>
+        <node expr="200" id="N_BLOCKS" kind="param"/>
+        <node expr="3" id="SIGMA" kind="param"/>
+        <node expr="409600" id="SIZE" kind="param"/>
+        <node expr="128000000" id="SAMPLE_RATE" kind="param"/>
+        <node expr="1" id="DISPLAY" kind="param"/>
+        <node id="Brd_MAD_I" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="in"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_0"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_1"/>
+        </node>
+        <node id="Brd_STD_I" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="in"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_0"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_1"/>
+        </node>
+        <node id="MAD_Computation" kind="actor">
+            <data key="graph_desc">Code/include/madCpt.h</data>
+            <loop name="MADCpt">
+                <param direction="IN" isConfig="true"
+                    name="N_SAMPLES" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="SIGMA" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="mad_R_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="mad_I_o" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="SIGMA"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="mad_R_o"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="mad_I_o"/>
+        </node>
+        <node id="Join_MAD_Computation1" kind="join">
+            <port annotation="NONE" expr="178176" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="231424" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="Join_MAD_Computation0" kind="join">
+            <port annotation="NONE" expr="178176" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="231424" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="Brd_STD_R" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="in"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_1"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_2"/>
+        </node>
+        <node id="Brd_MAD_R" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="in"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_0"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="out_2"/>
+        </node>
+        <node id="STD_Computation" kind="actor">
+            <data key="graph_desc">Code/include/stdCpt.h</data>
+            <loop name="STDCpt">
+                <param direction="IN" isConfig="true"
+                    name="N_SAMPLES" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="SIGMA" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="std_R_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="std_I_o" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="SIGMA"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="N_SAMPLES" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="std_R_o"/>
+            <port annotation="NONE" expr="N_SAMPLES"
+                kind="output" name="std_I_o"/>
+        </node>
+        <node id="Plot_Threshold" kind="actor">
+            <data key="graph_desc">Code/include/plotThreshold.h</data>
+            <loop name="PlotThreshold">
+                <param direction="IN" isConfig="true"
+                    name="SAMPLE_RATE" type="int"/>
+                <param direction="IN" isConfig="true" name="SIZE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="DISPLAY" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_I_i" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="SIZE"/>
+            <port kind="cfg_input" name="SAMPLE_RATE"/>
+            <port kind="cfg_input" name="DISPLAY"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="mad_R_i"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="std_R_i"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="mad_I_i"/>
+            <port annotation="NONE" expr="SIZE" kind="input" name="std_I_i"/>
+        </node>
+        <node id="src_in_0" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_0.h</data>
+            <loop name="src_in_0">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="231424" kind="output" name="out"/>
+        </node>
+        <node id="src_in_1" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_1.h</data>
+            <loop name="src_in_1">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="231424" kind="output" name="out"/>
+        </node>
+        <node id="src_in_2" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_2.h</data>
+            <loop name="src_in_2">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="178176" kind="output" name="out"/>
+        </node>
+        <node id="src_in_3" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_3.h</data>
+            <loop name="src_in_3">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="178176" kind="output" name="out"/>
+        </node>
+        <node id="src_in_4" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_4.h</data>
+            <loop name="src_in_4">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="src_in_5" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_5.h</data>
+            <loop name="src_in_5">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="src_in_6" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_6.h</data>
+            <loop name="src_in_6">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="src_in_7" kind="actor">
+            <data key="graph_desc">Code/generated/interface/src_in_7.h</data>
+            <loop name="src_in_7">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="output" name="out"/>
+        </node>
+        <node id="snk_out_0" kind="actor">
+            <data key="graph_desc">Code/generated/interface/snk_out_0.h</data>
+            <loop name="snk_out_0">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="input" name="in"/>
+        </node>
+        <node id="snk_out_1" kind="actor">
+            <data key="graph_desc">Code/generated/interface/snk_out_1.h</data>
+            <loop name="snk_out_1">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="input" name="in"/>
+        </node>
+        <node id="snk_out_2" kind="actor">
+            <data key="graph_desc">Code/generated/interface/snk_out_2.h</data>
+            <loop name="snk_out_2">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="input" name="in"/>
+        </node>
+        <node id="snk_out_3" kind="actor">
+            <data key="graph_desc">Code/generated/interface/snk_out_3.h</data>
+            <loop name="snk_out_3">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="409600" kind="input" name="in"/>
+        </node>
+        <edge kind="fifo" source="Join_MAD_Computation1"
+            sourceport="out" target="Brd_MAD_I" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_I" sourceport="out_0"
+            target="Plot_Threshold" targetport="mad_I_i" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_I" sourceport="out_1"
+            target="snk_out_0" targetport="in" type="double"/>
+        <edge kind="fifo" source="STD_Computation"
+            sourceport="std_I_o" target="Brd_STD_I"
+            targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_STD_I" sourceport="out_0"
+            target="Plot_Threshold" targetport="std_I_i" type="double"/>
+        <edge kind="fifo" source="Brd_STD_I" sourceport="out_1"
+            target="snk_out_1" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_0" sourceport="out"
+            target="MAD_Computation" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_1" sourceport="out"
+            target="MAD_Computation" targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="MAD_Computation"
+            sourceport="mad_R_o" target="Join_MAD_Computation0"
+            targetport="in_1" type="double"/>
+        <edge kind="fifo" source="MAD_Computation"
+            sourceport="mad_I_o" target="Join_MAD_Computation1"
+            targetport="in_1" type="double"/>
+        <edge kind="fifo" source="src_in_2" sourceport="out"
+            target="Join_MAD_Computation1" targetport="in_0" type="double"/>
+        <edge kind="fifo" source="src_in_3" sourceport="out"
+            target="Join_MAD_Computation0" targetport="in_0" type="double"/>
+        <edge kind="fifo" source="Join_MAD_Computation0"
+            sourceport="out" target="Brd_MAD_R" targetport="in" type="double"/>
+        <edge kind="fifo" source="STD_Computation"
+            sourceport="std_R_o" target="Brd_STD_R"
+            targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_STD_R" sourceport="out_1"
+            target="Plot_Threshold" targetport="std_R_i" type="double"/>
+        <edge kind="fifo" source="Brd_STD_R" sourceport="out_2"
+            target="snk_out_2" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_R" sourceport="out_0"
+            target="Plot_Threshold" targetport="mad_R_i" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_R" sourceport="out_2"
+            target="snk_out_3" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_4" sourceport="out"
+            target="STD_Computation" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_5" sourceport="out"
+            target="STD_Computation" targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="src_in_6" sourceport="out"
+            target="Plot_Threshold" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_7" sourceport="out"
+            target="Plot_Threshold" targetport="raw_data_im_i" type="double"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_MAD_I" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_MAD_I" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_STD_I" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_STD_I" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="MAD_Computation" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="SIGMA"
+            target="MAD_Computation" targetport="SIGMA"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_STD_R" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_STD_R" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_MAD_R" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_MAD_R" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="STD_Computation" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="SIGMA"
+            target="STD_Computation" targetport="SIGMA"/>
+        <edge kind="dependency" source="SIZE"
+            target="Plot_Threshold" targetport="SIZE"/>
+        <edge kind="dependency" source="SAMPLE_RATE"
+            target="Plot_Threshold" targetport="SAMPLE_RATE"/>
+        <edge kind="dependency" source="DISPLAY"
+            target="Plot_Threshold" targetport="DISPLAY"/>
+    </graph>
+</graphml>

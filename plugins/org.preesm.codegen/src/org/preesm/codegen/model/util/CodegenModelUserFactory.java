@@ -123,31 +123,23 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
    *
    */
   public final PortDirection createPortDirection(final PortKind direction) {
-    switch (direction) {
-      case CFG_INPUT:
-        return PortDirection.NONE;
-      case DATA_INPUT:
-        return PortDirection.INPUT;
-      case DATA_OUTPUT:
-        return PortDirection.OUTPUT;
-      case CFG_OUTPUT:
-      default:
-        throw new PreesmRuntimeException();
-    }
+    return switch (direction) {
+      case CFG_INPUT -> PortDirection.NONE;
+      case DATA_INPUT -> PortDirection.INPUT;
+      case DATA_OUTPUT -> PortDirection.OUTPUT;
+      default -> throw new PreesmRuntimeException();
+    };
   }
 
   /**
    *
    */
   public final PortDirection createPortDirection(final Direction direction) {
-    switch (direction) {
-      case IN:
-        return PortDirection.INPUT;
-      case OUT:
-        return PortDirection.OUTPUT;
-      default:
-        return PortDirection.NONE;
-    }
+    return switch (direction) {
+      case IN -> PortDirection.INPUT;
+      case OUT -> PortDirection.OUTPUT;
+      default -> PortDirection.NONE;
+    };
   }
 
   /**
@@ -190,7 +182,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
     afc.setName(prototype.getName());
     afc.setOriActor(PreesmCopyTracker.getOriginalSource(actor));
     final EList<FunctionArgument> arguments = prototype.getArguments();
-    for (FunctionArgument a : arguments) {
+    for (final FunctionArgument a : arguments) {
       final String name = a.getName();
       final Port lookupPort = actor.lookupPort(name);
       if (lookupPort == null) {

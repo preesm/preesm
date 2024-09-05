@@ -64,7 +64,7 @@ public class GMLDAGImporterTest {
    * Test method.
    *
    * @throws IOException
-   *           Exception
+   *           empty
    *
    */
   @Test

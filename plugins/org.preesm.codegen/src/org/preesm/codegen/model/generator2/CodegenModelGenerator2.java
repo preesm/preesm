@@ -112,8 +112,9 @@ import org.preesm.model.slam.SlamRouteStep;
 public class CodegenModelGenerator2 {
 
   public static final List<Block> generate(final Design archi, final PiGraph algo, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
-    return new CodegenModelGenerator2(archi, algo, scenario, schedule, mapping, memAlloc, papify).generate();
+      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify,
+      final boolean multinode) {
+    return new CodegenModelGenerator2(archi, algo, scenario, schedule, mapping, memAlloc, papify, multinode).generate();
   }
 
   private final Design     archi;
@@ -126,9 +127,11 @@ public class CodegenModelGenerator2 {
   private AllocationToCodegenBuffer memoryLinker;
 
   private final boolean papify;
+  private final boolean multinode;
 
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
+      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify,
+      final boolean multinode) {
     this.archi = archi;
     this.algo = algo;
     this.scenario = scenario;
@@ -136,6 +139,7 @@ public class CodegenModelGenerator2 {
     this.mapping = mapping;
     this.memAlloc = memAlloc;
     this.papify = papify;
+    this.multinode = multinode;
   }
 
   private List<Block> generate() {
@@ -174,7 +178,10 @@ public class CodegenModelGenerator2 {
 
   private void generateBuffers(final Map<ComponentInstance, CoreBlock> coreBlocks) {
     final List<Buffer> buffers = this.memoryLinker.getCodegenBuffers();
-    buffers.forEach(buffer -> generateBuffer(coreBlocks, buffer));
+
+    for (final Buffer buffer : buffers) {
+      generateBuffer(coreBlocks, buffer);
+    }
   }
 
   private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
@@ -240,6 +247,7 @@ public class CodegenModelGenerator2 {
       final boolean isLocal) {
     // Set the creator for the current buffer
     variable.reaffectCreator(correspondingOperatorBlock);
+
     if (variable instanceof final Buffer buffer) {
       buffer.setLocal(isLocal);
       // Do the same recursively for all its children subbuffers
@@ -300,6 +308,7 @@ public class CodegenModelGenerator2 {
     newComm.setDirection(direction);
     newComm.setDelimiter(delimiter);
     final SlamRouteStep routeStep = actor.getRouteStep();
+
     if (!(routeStep instanceof final SlamMessageRouteStep msgRouteStep)) {
       throw new UnsupportedOperationException();
     }
@@ -326,7 +335,7 @@ public class CodegenModelGenerator2 {
     newComm.setData(buffer);
     newComm.getParameters().clear();
 
-    newComm.addParameter(buffer, portDirection);
+    newComm.addParameter(buffer, direction);
 
     // Set the name of the communication
     // SS <=> Start Send

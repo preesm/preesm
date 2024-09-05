@@ -50,7 +50,7 @@ import org.preesm.model.scenario.Scenario;
 public class ClusterScheduler {
 
   private ClusterScheduler() {
-    // Forbid instantiation
+
   }
 
   /**
@@ -70,7 +70,9 @@ public class ClusterScheduler {
 
     // Compute a schedule for every cluster
     for (final AbstractActor actor : inputGraph.getAllActors()) {
-      if (actor instanceof final PiGraph subgraph && subgraph.isCluster()) {
+
+      if (actor instanceof final PiGraph subgraph && (subgraph.isCluster())) {
+
         registerClusterSchedule(schedulesMap, scheduler, inputGraph, subgraph);
       }
     }

@@ -100,6 +100,13 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
+import org.eclipse.core.resources.ResourcesPlugin
+import java.io.File
+import org.preesm.codegen.model.DynamicBuffer
+import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock
+import org.preesm.codegen.model.ClusterRaiserBlock
+import org.preesm.model.pisdf.Actor
+import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -110,7 +117,7 @@ import org.preesm.commons.files.PreesmIOHelper
  */
 class CPrinter extends BlankPrinter {
 
-	boolean monitorAllFifoMD5 = false;
+	protected boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -154,9 +161,16 @@ class CPrinter extends BlankPrinter {
 			 *
 			 * Code generated for processing element «block.name» (ID=«block.coreID»).
 			 */
-
+			«IF !block.isMultinode()»
 			#include "preesm_gen.h"
 
+« val String location = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString» 
+
+			«val String filesFolder = location+engine.scenario.getCodegenDirectory()+ File.separator+"Cluster_Init.h"»
+			«var File file = new File(filesFolder)»
+			«IF file.exists()»
+				#include "Cluster_Init.h"«"\n\n"»
+			«ENDIF»
 	'''
 
 	override printDefinitionsHeader(List<Variable> list) '''
@@ -180,7 +194,9 @@ class CPrinter extends BlankPrinter {
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
 	'''
-
+override printDynamicBufferDefinition(DynamicBuffer dynamicBuffer) '''
+	«dynamicBuffer.type»* «dynamicBuffer.name» = («dynamicBuffer.type»*) malloc («dynamicBuffer.getNbToken»*sizeof(«dynamicBuffer.type»)); // size:= «dynamicBuffer.getNbToken»*«dynamicBuffer.type»
+	'''
 	override printDefinitionsFooter(List<Variable> list) '''
 	«IF !list.empty»
 
@@ -272,8 +288,20 @@ class CPrinter extends BlankPrinter {
 
 	override printDeclarationsHeader(List<Variable> list) '''
 	// Core Global Declaration
+	«IF !printedCoreBlock.isMultinode()»
 	extern pthread_barrier_t iter_barrier;
 	extern int preesmStopThreads;
+	«ELSE»
+
+	#include "sub«printedCoreBlock.getNodeID()».h"
+
+	extern pthread_barrier_t iter_barrier«printedCoreBlock.getNodeID()»;
+	extern int initNode«printedCoreBlock.getNodeID()»;
+
+	«ENDIF »
+	
+	
+	
 
 	«IF monitorAllFifoMD5 || !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 	#ifdef PREESM_MD5_UPDATE
@@ -299,9 +327,18 @@ class CPrinter extends BlankPrinter {
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
 	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
+		«IF !printedCoreBlock.isMultinode()»
 		if (arg != NULL) {
 			printf("Warning: expecting NULL arguments\n"); fflush(stdout);
 		}
+
+	«ELSE»
+		ThreadParams«printedCoreBlock.getNodeID()» *params = (ThreadParams«printedCoreBlock.getNodeID()»*)arg;
+		«var initBlock = engine.codeBlocks.get(0)»
+	 	«FOR buffer : (initBlock as CoreBlock).getTopBuffers»
+	 	«buffer.getType()» *«buffer.getName()» = params->«buffer.getComment()» ;
+	 	«ENDFOR»
+	«ENDIF »
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
@@ -311,7 +348,17 @@ class CPrinter extends BlankPrinter {
 	«ENDFOR»
 #endif
 	«ENDIF»
+	«IF !printedCoreBlock.isMultinode()»
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
+
+		
+		« val String location = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString» 
+			
+			«val String filesFolder = location+engine.scenario.getCodegenDirectory()+ File.separator+"Cluster_Init.h"»
+			«var File file = new File(filesFolder)»
+			«IF file.exists()»
+				clusterInit();«"\n\n"»
+			«ENDIF»
 	'''
 
 	def List<Buffer> getAllBuffers(CoreBlock cb) {
@@ -373,9 +420,12 @@ class CPrinter extends BlankPrinter {
 	}
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
-
+«IF printedCoreBlock.isMultinode()»
+	}
+«ENDIF »
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier);
+	
 #ifdef PREESM_LOOP_SIZE // Case of a finite loop
 	int index;
 	for(index=0;index<PREESM_LOOP_SIZE && !preesmStopThreads;index++){
@@ -384,12 +434,56 @@ class CPrinter extends BlankPrinter {
 #endif
 		// loop body«"\n\n"»
 		'''
+		
+	override printCoreLoopBlockHeader(LoopBlock block2, int nodeID) '''
+«IF printedCoreBlock.isMultinode()»
+	}
+«ENDIF »
+	// Begin the execution loop«"\n\t"»
+	pthread_barrier_wait(&iter_barrier«nodeID»);
+	
+
+		// loop body«"\n\n"»
+		'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
-
+	
 		}
+
+	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
+#ifdef PREESM_MD5_UPDATE
+	// Print MD5
+	rk_sema_wait(&preesmPrintSema);
+	unsigned char preesm_md5_chars_final[20] = { 0 };
+	«FOR buffer : printedCoreBlock.sinkFifoBuffers»
+	PREESM_MD5_Final(preesm_md5_chars_final, &preesm_md5_ctx_«buffer.name»);
+	printf("preesm_md5_«buffer.name» : ");
+	for (int i = 16; i > 0; i -= 1){
+		printf("%02x", *(preesm_md5_chars_final + i - 1));
+	}
+	printf("\n");
+	fflush(stdout);
+	«ENDFOR»
+	rk_sema_post(&preesmPrintSema);
+#endif
+	«ENDIF»
+
+		return NULL;
+	}
+
+	«IF block2.codeElts.empty»
+	// This call may inform the compiler that the main loop of the thread does not call any function.
+	void emptyLoop_«(block2.eContainer as CoreBlock).name»(){
+
+	}
+	«ENDIF»
+	'''
+	override printCoreLoopBlockFooter(LoopBlock block2, int nodeID) '''
+			// loop footer
+			pthread_barrier_wait(&iter_barrier«nodeID»);
+
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
@@ -436,7 +530,11 @@ class CPrinter extends BlankPrinter {
 			}
 		}
 	'''
-
+	
+override printFiniteLoopClusterRaiserBlockHeader(FiniteLoopClusterRaiserBlock block2) '''		
+		for(int «block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
+	'''
+	
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
@@ -810,7 +908,8 @@ class CPrinter extends BlankPrinter {
 		}
 	}
 
-	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
+
+		def CharSequence generatePreesmHeader(List<String> stdLibFiles, String path) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
 	    // org.apache.velocity.exception.VelocityException: The specified class for ResourceManager
@@ -828,8 +927,32 @@ class CPrinter extends BlankPrinter {
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
 
 	    context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
+	    
+	    // Filter header "Cluster" files
+		val includesForCluster = findAllCHeaderFileNamesUsed
+        .filter[it.startsWith("Cluster")]
+        .map["#include \"" + path + it + "\""]
+        .join("\n")
+        
+        // Filter header "Interface" files 
+		val includesForInterface = findAllCHeaderFileNamesUsed
+        .filter[it.startsWith("src")||it.startsWith("snk")]
+        .map["#include \"interface/"+ path  + it + "\""]
+        .join("\n")
 
-	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
+		// Filter other header files 
+		val includesForOther = findAllCHeaderFileNamesUsed
+        .filter[!(it.startsWith("Cluster")||it.startsWith("src")||it.startsWith("snk"))]
+        .map["#include \"" + it + "\""]
+        .join("\n")
+
+
+		context.put("USER_INCLUDES", includesForCluster + "\n" + includesForInterface + "\n" +includesForOther)
+
+
+
+
+	    //context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.filter[!it.startsWith("Cluster")].map["#include \""+it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
 		if(this.usingPapify == 1){
@@ -841,7 +964,10 @@ class CPrinter extends BlankPrinter {
 	    context.put("CONSTANTS", constants);
 
 	    // 3- init template reader
+	    
 	    val String templateLocalPath = "templates/c/preesm_gen.h";
+	    
+	    	
 	    val InputStreamReader reader = PreesmIOHelper.instance.getFileReader(templateLocalPath, this.class)
 
 	    // 4- init output writer
@@ -855,7 +981,8 @@ class CPrinter extends BlankPrinter {
 	    return writer.getBuffer().toString();
 	}
 
-	override generateStandardLibFiles() {
+
+		override generateStandardLibFiles(String path) {
 		val result = super.generateStandardLibFiles();
 		val String stdFilesFolder = "/stdfiles/c/"
 		val files = Arrays.asList(#[
@@ -875,7 +1002,7 @@ class CPrinter extends BlankPrinter {
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader(files))
+		result.put("preesm_gen.h",generatePreesmHeader(files,path))
 		return result
 	}
 
@@ -888,8 +1015,14 @@ class CPrinter extends BlankPrinter {
 	}
 
 	def String printMain(List<Block> printerBlocks) '''
+	
 		/**
+
+		«var block= engine.codeBlocks.get(0)»«IF !(block as CoreBlock).isMultinode()»
 		 * @file main.c
+		 «ELSE»
+		 * @file «engine.algo.name».c
+		 «ENDIF»
 		 * @generated by «this.class.simpleName»
 		 * @date «new Date»
 		 *
@@ -897,11 +1030,21 @@ class CPrinter extends BlankPrinter {
 		// no monitoring by default
 
 		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
+		«IF !(block as CoreBlock).isMultinode()»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
-
+		«ELSE»
+		#define _PREESM_MAIN_THREAD_ 0
+		«ENDIF»
 		// application dependent includes
+		«IF !(block as CoreBlock).isMultinode()»
 		#include "preesm_gen.h"
+		«ELSE»
+		 #include "preesm_gen«(block as CoreBlock).getNodeID()».h"
 
+		 #include "sub«(block as CoreBlock).getNodeID()».h"
+
+		 
+		 «ENDIF»
 		// Declare computation thread functions
 		«FOR coreBlock : engine.codeBlocks»
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
@@ -915,7 +1058,11 @@ class CPrinter extends BlankPrinter {
 		#include <stdlib.h>
 
 		#ifndef _WIN32
+		«IF !(block as CoreBlock).isMultinode()»
 		void handler(int sig) {
+		«ELSE»
+		void handler«(block as CoreBlock).getNodeID()»(int sig) {
+		«ENDIF»
 		  void *array[30];
 		  size_t size;
 		  size = backtrace(array, 30);
@@ -924,16 +1071,24 @@ class CPrinter extends BlankPrinter {
 		  exit(1);
 		}
 		#endif
-
+«IF !(block as CoreBlock).isMultinode()»
 		pthread_barrier_t iter_barrier;
 		int preesmStopThreads;
+		«ELSE»
+		pthread_barrier_t iter_barrier«(block as CoreBlock).getNodeID()»;
+		«ENDIF »
+		
 
 #ifdef PREESM_MD5_UPDATE
 		struct rk_sema preesmPrintSema;
 #endif
-
+		«IF !(block as CoreBlock).isMultinode()»
 		unsigned int launch(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *)) {
+		«ELSE»
 
+		unsigned int launch«(block as CoreBlock).getNodeID()»(unsigned int core_id, pthread_t * thread, void *(*start_routine) (void *), ThreadParams«(block as CoreBlock).getNodeID()» *params) {
+
+		«ENDIF »
 			// init pthread attributes
 			pthread_attr_t attr;
 			pthread_attr_init(&attr);
@@ -967,16 +1122,29 @@ class CPrinter extends BlankPrinter {
 		#endif
 
 			// create thread
+			«IF !(block as CoreBlock).isMultinode()»
 			pthread_create(thread, &attr, start_routine, NULL);
+			«ELSE»
+			pthread_create(thread, &attr, start_routine, (void*)params);
+			«ENDIF»
 			return 0;
 		}
 
 
+«IF !(block as CoreBlock).isMultinode()»
 		int main(void) {
+			 «ELSE»
+			 void «engine.algo.name»(«printNodeArg()») {
+			 «ENDIF»
 		«IF this.usingOpenMP == 0»
 			 #ifndef _WIN32
+			 «IF !(block as CoreBlock).isMultinode()»
 			 signal(SIGSEGV, handler);
 			 signal(SIGPIPE, handler);
+			 «ELSE»
+			 signal(SIGSEGV, handler«(block as CoreBlock).getNodeID()»);
+			 signal(SIGPIPE, handler«(block as CoreBlock).getNodeID()»);
+ 			 «ENDIF»
 			 #endif
 			// Set affinity of main thread to proper core ID
 		#ifndef PREESM_NO_AFFINITY
@@ -1014,7 +1182,12 @@ class CPrinter extends BlankPrinter {
 		#endif
 		«ENDIF»
 			// Creating a synchronization barrier
+
+			«IF !(block as CoreBlock).isMultinode()»
 			preesmStopThreads = 0;
+			«ELSE»
+			preesmStopThreads = 1;
+			«ENDIF»
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 #ifdef PREESM_MD5_UPDATE
 			rk_sema_init(&preesmPrintSema, 1);
@@ -1031,15 +1204,26 @@ class CPrinter extends BlankPrinter {
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
 				if (i != _PREESM_MAIN_THREAD_) {
+					«IF !(block as CoreBlock).isMultinode()»
 					if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
 						printf("Error: could not launch thread %d\n",i);
 						return 1;
+						
+						«ELSE»
+					if(launch«(block as CoreBlock).getNodeID()»(i,&coreThreads[i],coreThreadComputations[i],&threadParams)) {
+						printf("Error: could not launch thread %d\n",i);
+						break;
+						«ENDIF»
 					}
 				}
 			}
 
 			// run main operator code in this thread
+			«IF !(block as CoreBlock).isMultinode()»
 			coreThreadComputations[_PREESM_MAIN_THREAD_](NULL);
+			«ELSE»
+			coreThreadComputations[_PREESM_MAIN_THREAD_](&threadParams);
+			«ENDIF»
 
 			// Waiting for thread terminations
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
@@ -1055,11 +1239,34 @@ class CPrinter extends BlankPrinter {
 			«ELSE»
 			«FOR coreBlock : engine.codeBlocks»computationThread_Core«(coreBlock as CoreBlock).coreID»(NULL);«ENDFOR»
 			«ENDIF»
-
+			«IF !(block as CoreBlock).isMultinode()»
 			return 0;
+			«ENDIF»
 		}
 
 	'''
+		
+		def String printNodeArg() {
+
+			var str = ""
+			for(block:this.engine.codeBlocks){
+				val size = (block as CoreBlock).topBuffers.size
+				var index =0;
+				for(topBuffer: (block as CoreBlock).topBuffers){
+					str = str + topBuffer.type + " "+ topBuffer.name;
+					index++
+					if(index<size)
+						str = str+","
+					
+				}
+			}
+			
+			if(str==""){
+				str="void"
+			}
+
+			return str
+		}
 
 
 	override printSharedMemoryCommunication(SharedMemoryCommunication communication) '''
@@ -1204,4 +1411,108 @@ class CPrinter extends BlankPrinter {
 		}
 	}
 
+	override CharSequence printclusterRaiserHeader(ClusterRaiserBlock block) 	'''
+			/**
+			 * @file «block.name».c
+			 * @generated by «this.class.simpleName»
+			 * @date «new Date»
+			 */
+
+			#include "preesm_gen.h"
+#include <stdlib.h>
+			#include "«block.name».h"«"\n\n"»			
+	'''	
+	override CharSequence printclusterRaiserSecondaryFileHeader(ClusterRaiserBlock block, List<Actor> actors, FunctionCall functionCall)	'''
+
+			/**
+			 * @file «block.name».h
+			 * @generated by «this.class.simpleName»
+			 * @date «new Date»
+			 */
+
+			#ifndef _«block.name.toUpperCase»_H
+			#define _«block.name.toUpperCase»_H
+
+
+			«FOR actor : actors»
+			« val String location = ResourcesPlugin.getWorkspace().getRoot().getLocation().toString» 
+			«val String filesFolder = location+engine.scenario.getCodegenDirectory()+ File.separator+"Cluster_"+actor.getName()+".c"»
+
+			«var File file = new File(filesFolder)»
+			«IF file.exists()»
+				#include "Cluster_«actor.getName()».h"
+				«ELSE»
+				#include "«actor.getRefinement().getFileName()»"
+			«ENDIF»
+
+			«ENDFOR»
+
+
+			void «functionCall.name»(«FOR param : functionCall.parameters SEPARATOR ','»«param.type» «param.name »«ENDFOR»); 
+			//#endif
+	'''
+	
+	override printDynamicBufferFree(DynamicBuffer dynamicBuffer) '''
+		free(«dynamicBuffer.name»);
+	'''
+	
+	override CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) '''
+		/**
+		 * @file «block.name».h
+		 * @generated by «this.class.simpleName»
+		 * @date «new Date»
+		 */
+		
+		#include <stdio.h>
+		#include <mpi.h>
+		#include "stdlib.h"
+		
+		#include "preesm_gen.h"
+		//#define MPI_LOOP_SIZE 0
+		int MPIStopNode = 0;
+«««		«var int i=0»
+«««		«while (i < nodes){
+«««			println("int initNode"+i+"=0;");
+«««			i++}»			 
+«««			char nodeset[«nodes»]= {
+«««			«i=0»
+«««				«while (i < nodes-1){
+«««					println("\""+nodeID.get(i)+"\",");
+«««					i++}»
+«««				«println("\""+nodeID.get(nodes-1)+"\"};")»
+		
+	'''
+	
+	override protected printmpi(MainSimsdpBlock block) '''
+			int main(int argc, char **argv) {
+		   // Initialize the MPI environment
+		   MPI_Init(NULL, NULL);
+		
+		   // Get the number of processes
+		   int world_size;
+		   MPI_Comm_size(MPI_COMM_WORLD, &world_size);
+		
+		   // Get the name and rank of the processor
+		   char processor_name[MPI_MAX_PROCESSOR_NAME];
+		   int name_len;
+		   MPI_Get_processor_name(processor_name, &name_len);
+		   int world_rank;
+		   for(int indexMachine =0;indexMachine < 3;indexMachine++){
+		       if( processor_name==nodeset[indexMachine]){
+		           world_rank = indexMachine;
+		        }
+		    }
+		   // Print off a hello world message
+		   printf("Processor %s, rank %d out of %d processors\n",
+		          processor_name, world_rank, world_size);
+		
+		#ifdef MPI_LOOP_SIZE // Case of a finite loop
+			int index;
+			for(index=0;index<PREESM_LOOP_SIZE && !MPIStopNode;index++){
+		#else // Default case of an infinite loop
+			while(!MPIStopNode){
+		#endif
+		   
+	'''
+	
 }

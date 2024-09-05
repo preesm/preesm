@@ -54,6 +54,7 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -118,6 +119,11 @@ public class GanttData {
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
+      if (currentVertex.getKind().equals(MapperDAGVertex.DAG_VERTEX)
+          && ((Actor) currentVertex.getOrigVertex()).isOnGPU()) {
+        currentVertex.setKind(MapperDAGVertex.DAG_GPU_OFFLOAD);
+
+      }
       final ComponentInstance cmp = currentVertex.getEffectiveComponent();
 
       if (cmp != null) {
@@ -133,6 +139,7 @@ public class GanttData {
         PreesmLogger.getLogger().log(Level.SEVERE, message);
       }
     }
+
     return true;
   }
 
@@ -169,6 +176,15 @@ public class GanttData {
   public List<GanttComponent> getComponents() {
     final List<GanttComponent> componentList = new ArrayList<>(this.components.values());
     Collections.sort(componentList);
+    return componentList;
+  }
+
+  // mais pourquoi il met pas à jour la liste...
+  public List<GanttComponent> addComponent(GanttComponent component) {
+    final List<GanttComponent> componentList = new ArrayList<>(this.components.values());
+    componentList.add(component);
+    this.components.put(component.getId(), component);
+    // this.components.put(component.getId(), component);
     return componentList;
   }
 

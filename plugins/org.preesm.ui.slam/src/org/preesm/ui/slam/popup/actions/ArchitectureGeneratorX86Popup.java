@@ -36,9 +36,9 @@
  */
 package org.preesm.ui.slam.popup.actions;
 
+import java.util.concurrent.ExecutionException;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
-import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.ui.IWorkbenchPage;
@@ -66,13 +66,15 @@ public class ArchitectureGeneratorX86Popup extends AbstractHandler {
       // If it is a Preesm project, generate default design in Archi/ folder
       if (project.hasNature(PreesmProjectNature.ID)) {
         final String input = DialogUtil.askString("Generate default x86 architecture file.",
+
             "Enter the number of cores.", "", new NbCoresValidator());
         if (input == null || input.isEmpty()) {
           return null;
         }
 
         final ArchitecturesGenerator generator = new ArchitecturesGenerator(project);
-        generator.generateAndSaveX86Architecture(Integer.parseInt(input));
+
+        generator.generateAndSaveArchitecture(Integer.parseInt(input), null);
       }
 
     } catch (final Exception e) {

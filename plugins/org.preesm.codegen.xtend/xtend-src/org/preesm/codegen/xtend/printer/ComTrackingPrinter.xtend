@@ -44,6 +44,7 @@ import org.preesm.codegen.model.Direction
 import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.printer.CodegenAbstractPrinter
 import org.preesm.codegen.printer.BlankPrinter
+import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
  * This {@link ComTrackingPrinter} is a dummy implementation of the
@@ -77,6 +78,18 @@ class ComTrackingPrinter extends BlankPrinter {
 	communication.id» «communication.data.name»
 	«ENDIF»
 	'''
+	
+	override  printMainSimsdpHeader(MainSimsdpBlock block, int nodes) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override protected printmpi(MainSimsdpBlock block) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
 
 
 }

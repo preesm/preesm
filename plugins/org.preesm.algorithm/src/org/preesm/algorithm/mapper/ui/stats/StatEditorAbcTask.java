@@ -58,7 +58,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * Displays the gantt chart of the given mapped dag
  *
  * TODO: remove scenario from inputs (already contained in ABC)
- * 
+ *
  * @author mpelcat
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",
@@ -77,6 +77,44 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
 
     final LatencyAbc abc = (LatencyAbc) inputs.get("ABC");
 
+    // // test
+    // final AbstractTaskSched ats = new SimpleTaskSched();
+    // abc.setTaskScheduler(ats);
+    // // abc.gett
+
+    //
+    // final AbstractTaskSched ats = abc.getTaskScheduler();
+    // final MapperDAGVertex mapperdagvertex = abc.getDAG().getMapperDAGVertex("srv_8_1");
+    // final MapperDAGVertex mapperdagvertexcopy = mapperdagvertex.copy();
+    // mapperdagvertexcopy.setName("test");
+    //
+    // final ComponentInstance gpu = abc.getArchitecture().getComponentInstances().stream()
+    // .filter(x -> x.getComponent() instanceof GPU).findFirst().orElseThrow();
+    // mapperdagvertexcopy.setEffectiveComponent(gpu);
+    //
+    // final Actor actor = PiMMUserFactory.instance.createActor();
+    // actor.setName(mapperdagvertexcopy.getName());
+    // final Timing tim = new Timing(gpu.getComponent(), actor, 100);
+    //
+    // abc.getDAG().addVertex(mapperdagvertexcopy);
+    // ats.insertVertex(mapperdagvertexcopy);
+    // abc.setTaskScheduler(ats);
+    //
+    // //
+    // final GanttData ganttData = abc.getGanttData();
+    // final List<GanttComponent> components = ganttData.getComponents();
+    // final GanttComponent cmp = new GanttComponent("gpu");
+    // // final GanttTask task = new GanttTask(2, 10000, "test (x1)", Color.CYAN);
+    // // cmp.insertTask(task);
+    //
+    // components.add(cmp);
+    // ganttData.getComponents().add(cmp);
+    // ganttData.addComponent(cmp);
+    // abc.setGanttData(ganttData);
+
+    // abcCopy.getGanttData().addComponent(cmp);
+
+    // LatencyAbc abccopy = abc.cop
     final IEditorInput input = new StatEditorInput(new StatGeneratorAbc(abc));
 
     // Check if the workflow is running in command line mode

@@ -53,6 +53,7 @@ import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.model.util.CodegenModelUserFactory
 import org.preesm.codegen.printer.BlankPrinter
+import org.preesm.codegen.model.MainSimsdpBlock
 
 class XMLPrinter extends BlankPrinter {
 
@@ -277,6 +278,18 @@ class XMLPrinter extends BlankPrinter {
 
 	override printSubBufferDefinition(SubBuffer buffer) {
 		return printBufferDefinition(buffer)
+	}
+	
+	override printMainSimsdpHeader(MainSimsdpBlock block, int nodes) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override protected printmpi(MainSimsdpBlock block) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
 }
