@@ -107,6 +107,8 @@ import org.w3c.dom.Node;
  */
 public class PiWriter {
 
+  private static final String ZERO_STR = "0.0";
+
   /** The document created by this writer. */
   protected Document domDocument;
 
@@ -334,7 +336,7 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
 
     final String periodExpr = originalActor.getPeriod().getExpressionAsString();
-    if (!periodExpr.equals("0")) {
+    if (!periodExpr.equals(ZERO_STR)) {
       vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
 
@@ -366,7 +368,7 @@ public class PiWriter {
     // Set the kind of the Actor
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.ACTOR);
     final String periodExpr = actor.getPeriod().getExpressionAsString();
-    if (!periodExpr.equals("0")) {
+    if (!periodExpr.equals(ZERO_STR)) {
       vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
 
@@ -550,7 +552,7 @@ public class PiWriter {
     final Element graphElt = addGraphElt(rootElt);
     writeDataElt(graphElt, PiIdentifiers.GRAPH_NAME, graph.getName());
     final String periodExpr = graph.getPeriod().getExpressionAsString();
-    if (!periodExpr.equals("0")) {
+    if (!periodExpr.equals(ZERO_STR)) {
       graphElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
     // Write cluster value into graph element
@@ -655,7 +657,7 @@ public class PiWriter {
     } else {
       paramElt.setAttribute(PiIdentifiers.NODE_KIND, InterfaceKind.CFG_INPUT.getLiteral());
       final String value = param.getExpression().getExpressionAsString();
-      if (!value.equals("0")) {
+      if (!value.equals(ZERO_STR)) {
         paramElt.setAttribute(PiIdentifiers.PARAM_CII_DEFAULT, value);
       }
 
