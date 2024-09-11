@@ -39,6 +39,7 @@ package org.preesm.ui.pisdf.properties;
 import org.eclipse.emf.transaction.RecordingCommand;
 import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
@@ -52,6 +53,10 @@ import org.preesm.model.pisdf.ExpressionHolder;
  * The Class DataPortPropertiesUpdater.
  */
 public class DataPortPropertiesUpdater extends GFPropertySection {
+
+  protected static final Color BG_NORMAL_WHITE   = new Color(null, 255, 255, 255);
+  protected static final Color BG_WARNING_YELLOW = new Color(null, 240, 240, 150);
+  protected static final Color BG_ERROR_RED      = new Color(null, 240, 150, 150);
 
   /**
    * Update data port properties.

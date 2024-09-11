@@ -74,20 +74,20 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   /*
    * Map used to rapidly check if a parameter value has already been resolved
    */
-  private final Map<Parameter, Long> parameterValues;
+  private final Map<Parameter, Double> parameterValues;
 
   public PiSDFParameterResolverVisitor() {
     this(new LinkedHashMap<>());
   }
 
   /**
-   * private constructor for initializing visit of children subgraphs
+   * private constructor for initialising visit of children subgraphs
    */
-  private PiSDFParameterResolverVisitor(final Map<Parameter, Long> parameterValues) {
+  private PiSDFParameterResolverVisitor(final Map<Parameter, Double> parameterValues) {
     this.parameterValues = parameterValues;
   }
 
-  private static void resolveActorPorts(final AbstractActor actor, final Map<String, Long> paramValues) {
+  private static void resolveActorPorts(final AbstractActor actor, final Map<String, Double> paramValues) {
     // Init the JEP parser associated with the actor
     // Iterate over all data ports of the actor and resolve their rates
     for (final DataPort dp : actor.getAllDataPorts()) {
@@ -108,7 +108,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   /**
    * Fast evaluator for data port rate expression.<br>
    * If rate expression is a constant, then parsing is ignored since it is already done. <br>
-   * This implementation uses benefit of the fact that the parser is initialized once for a given actor.
+   * This implementation uses benefit of the fact that the parser is initialised once for a given actor.
    *
    * @param holder
    *          the expression to evaluate
@@ -117,9 +117,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
    * @throws PiMMHelperException
    *           the PiMMHandlerException exception
    */
-  private static void resolveExpression(final ExpressionHolder holder, final Map<String, Long> paramValues) {
+  private static void resolveExpression(final ExpressionHolder holder, final Map<String, Double> paramValues) {
     final Expression expression = holder.getExpression();
-    final long value = JEPWrapper.evaluate(expression.getExpressionAsString(), paramValues);
+    final double value = JEPWrapper.evaluate(expression.getExpressionAsString(), paramValues);
     holder.setExpression(value);
   }
 
@@ -136,7 +136,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
       // Evaluate the expression wrt. the current values of the
       // parameters and set the result as new expression
       final Expression valueExpression = p.getValueExpression();
-      final long value = valueExpression.evaluate();
+      final double value = valueExpression.evaluateAsDouble();
       p.setExpression(value);
       this.parameterValues.put(p, value);
     }
@@ -170,7 +170,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     // When we arrive here all upper graphs have been processed.
     // We can then directly evaluate parameter expression here.
     final Expression valueExpression = paramToEvaluate.getValueExpression();
-    final long evaluate = valueExpression.evaluate();
+    final double evaluate = valueExpression.evaluateAsDouble();
     cii.setExpression(evaluate);
     this.parameterValues.put(cii, evaluate);
     return true;
@@ -178,19 +178,19 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseExecutableActor(final ExecutableActor actor) {
-    // Map that associate to every parameter of an acotr the corresponding value in the graph
-    final Map<String, Long> portValues = new LinkedHashMap<>();
+    // Map that associate to every parameter of an actor the corresponding value in the graph
+    final Map<String, Double> configPortValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     for (final Parameter p : actor.getInputParameters()) {
       final EList<ConfigInputPort> ports = actor.lookupConfigInputPortsConnectedWithParameter(p);
       for (final ConfigInputPort port : ports) {
-        portValues.put(port.getName(), this.parameterValues.get(p));
+        configPortValues.put(port.getName(), this.parameterValues.get(p));
       }
     }
-    resolveActorPorts(actor, portValues);
+    resolveActorPorts(actor, configPortValues);
     // Resolve actor period
     if (actor instanceof final PeriodicElement pe) {
-      resolveExpression(pe, portValues);
+      resolveExpression(pe, configPortValues);
     }
     return true;
   }
@@ -206,8 +206,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
   }
 
   private Boolean caseOtherActors(final AbstractActor actor) {
-    // Map that associate to every parameter of an acotr the corresponding value in the graph
-    final Map<String, Long> portValues = new LinkedHashMap<>();
+    // Map that associate to every parameter of an actor the corresponding value in the graph
+    final Map<String, Double> portValues = new LinkedHashMap<>();
     // Data interface actors do not have parameter ports, thus expression is directly graph parameter
     for (final Parameter p : actor.getInputParameters()) {
       portValues.put(p.getName(), this.parameterValues.get(p));
@@ -235,7 +235,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Resolve graph period
-    graph.setExpression(graph.getPeriod().evaluate());
+    graph.setExpression(graph.getPeriod().evaluateAsLong());
 
     // We can now resolve data port rates for this graph
     for (final AbstractActor actor : graph.getOnlyActors()) {
@@ -244,12 +244,11 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
 
     // Deals with data ports of the graph
     // Map that associate to every parameter of an actor the corresponding value in the graph
-    final Map<String, Long> portValues = new LinkedHashMap<>();
+    final Map<String, Double> portValues = new LinkedHashMap<>();
     // We have to fetch the corresponding parameter port for normal actors
     // Port of a parameter may have a dependency to higher level parameter
     for (final Parameter p : graph.getInputParameters()) {
-      final EList<ConfigInputPort> ports = graph.lookupConfigInputPortsConnectedWithParameter(p);
-      for (final ConfigInputPort port : ports) {
+      for (final ConfigInputPort port : graph.lookupConfigInputPortsConnectedWithParameter(p)) {
         portValues.put(port.getName(), this.parameterValues.get(p));
       }
     }

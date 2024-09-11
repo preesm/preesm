@@ -215,9 +215,9 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
 
     final Delay d = da.getLinkedDelay();
-    final long value = d.getExpression().evaluate();
+    final long value = d.getExpression().evaluateAsLong();
     dExt.setActor(null);
-    if (dExt.getExpression().evaluate() != value) {
+    if (dExt.getExpression().evaluateAsLong() != value) {
       PreesmLogger.getLogger()
           .warning(() -> "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
     }
@@ -328,7 +328,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     out.setName("if_" + actor.getName());
     // Compute the appropriate out rate not to mess with repetition vector values
     final AbstractActor target = targetPort.getContainingActor();
-    final long targetRate = targetRateExpression.evaluate() * this.brv.get(target);
+    final long targetRate = targetRateExpression.evaluateAsLong() * this.brv.get(target);
     out.setExpression(targetRate);
     broadcastIn.getDataOutputPorts().add(out);
     // Add the actor to the graph
@@ -401,7 +401,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     in.setName("if_" + actor.getName());
     // Compute the appropriate in rate not to mess with repetition vector values
     final AbstractActor source = sourcePort.getContainingActor();
-    final long sourceRate = sourceRateExpression.evaluate() * this.brv.get(source);
+    final long sourceRate = sourceRateExpression.evaluateAsLong() * this.brv.get(source);
     in.setExpression(sourceRate);
     roundbufferOut.getDataInputPorts().add(in);
 
@@ -591,7 +591,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   public Boolean caseParameter(final Parameter param) {
     // make sure config input interfaces are made into Parameter (since their expressions have been evaluated)
     final Parameter copy = PiMMUserFactory.instance.createParameter();
-    copy.setExpression(param.getValueExpression().evaluate());
+    copy.setExpression(param.getValueExpression().evaluateAsDouble());
     copy.setName(graphPrefix + param.getName());
     this.result.addParameter(copy);
     this.param2param.put(param, copy);
@@ -626,7 +626,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
     final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
-    final long inRate = interfaceRateExpression.evaluate() * graphRV;
+    final long inRate = interfaceRateExpression.evaluateAsLong() * graphRV;
     in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     fork.getDataInputPorts().add(in);
@@ -666,7 +666,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
     final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
-    final long outRate = interfaceRateExpression.evaluate() * graphRV;
+    final long outRate = interfaceRateExpression.evaluateAsLong() * graphRV;
     out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     join.getDataOutputPorts().add(out);
@@ -700,7 +700,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     if (graph.getContainingPiGraph() == null) {
       result.setName(graph.getName() + "_flat");
       result.setUrl(graph.getUrl());
-      result.setExpression(graph.getPeriod().evaluate());
+      result.setExpression(graph.getPeriod().evaluateAsLong());
       PreesmCopyTracker.trackCopy(graph, this.result);
     }
 

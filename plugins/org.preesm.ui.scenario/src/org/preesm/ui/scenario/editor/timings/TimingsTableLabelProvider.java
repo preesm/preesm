@@ -195,9 +195,10 @@ public class TimingsTableLabelProvider extends BaseLabelProvider implements ITab
         return null;
       case VALUE: // Value
         if (timing != null && ExpressionEvaluator.canEvaluate(vertex, timing)) {
-          return Long.toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
+          return Double
+              .toString(ExpressionEvaluator.evaluate(vertex, timing, this.scenario.getParameterValues().map()));
         } else if (timing != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), timing)) {
-          return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), timing,
+          return Double.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), timing,
               this.scenario.getParameterValues().map()));
 
         } else {

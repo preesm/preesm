@@ -46,7 +46,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
@@ -358,24 +357,36 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     try {
       // try out evaluating the expression
       // if evaluation went well, just write the result
-      final long evaluate = srcRate.evaluate();
-      this.lblSourcePortValueObj.setText(Long.toString(evaluate));
-      this.txtSourcePortExpression.setBackground(new Color(null, 255, 255, 255));
+      final double evaluate = srcRate.evaluateAsDouble();
+      this.lblSourcePortValueObj.setText(Double.toString(evaluate));
+
+      if (srcRate.isExpressionInteger()) {
+        txtSourcePortExpression.setBackground(BG_NORMAL_WHITE);
+      } else {
+        txtSourcePortExpression.setBackground(BG_WARNING_YELLOW);
+      }
+
     } catch (final ExpressionEvaluationException e) {
       // otherwise print error message and put red background
       this.lblSourcePortValueObj.setText("Error : " + e.getMessage());
-      this.txtSourcePortExpression.setBackground(new Color(null, 240, 150, 150));
+      this.txtSourcePortExpression.setBackground(BG_ERROR_RED);
     }
     try {
       // try out evaluating the expression
-      final long evaluate = tgtRate.evaluate();
+      final double evaluate = tgtRate.evaluateAsDouble();
       // if evaluation went well, just write the result
-      this.lblTargetPortValueObj.setText(Long.toString(evaluate));
-      this.txtTargetPortExpression.setBackground(new Color(null, 255, 255, 255));
+      this.lblTargetPortValueObj.setText(Double.toString(evaluate));
+
+      if (tgtRate.isExpressionInteger()) {
+        txtTargetPortExpression.setBackground(BG_NORMAL_WHITE);
+      } else {
+        txtTargetPortExpression.setBackground(BG_WARNING_YELLOW);
+      }
+
     } catch (final ExpressionEvaluationException e) {
       // otherwise print error message and put red background
       this.lblTargetPortValueObj.setText("Error : " + e.getMessage());
-      this.txtTargetPortExpression.setBackground(new Color(null, 240, 150, 150));
+      this.txtTargetPortExpression.setBackground(BG_ERROR_RED);
     }
 
     if (srcPort instanceof ConfigOutputPort) {

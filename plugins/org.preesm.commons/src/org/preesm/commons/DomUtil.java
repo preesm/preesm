@@ -35,11 +35,8 @@
  */
 package org.preesm.commons;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.xml.serialize.OutputFormat;
-import org.apache.xml.serialize.XMLSerializer;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.w3c.dom.DOMConfiguration;
@@ -49,6 +46,7 @@ import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSInput;
 import org.w3c.dom.ls.LSParser;
+import org.w3c.dom.ls.LSSerializer;
 
 /**
  * This class defines utility methods to create DOM documents and print them to an output stream using DOM 3 Load Save
@@ -148,54 +146,32 @@ public class DomUtil {
    */
   public static void writeDocument(final Document document, final OutputStream byteStream) {
 
-    // TODO
-    // The following commented code using the LSSerializer is meant to replace to
-    // deprecated XMLSerializer and OutputFormat. However, the LSSerializer does
-    // not allow the customisation of the xml line width, resulting in a valid
-    // but slightly different generated *.pi file. These differences break RCPTT
-    // tests, but I don't want to go through the trouble of either reformatting
-    // the xml string the match the XMLSerializer output nor to modify RCPTT
-    // tests for the LSSerializer.
+    final String XML_HEADER = "<\\?xml version=\"1\\.0\" encoding=\"UTF-16\"\\?>";
 
-    // try {
-    // final DOMImplementationLS format = (DOMImplementationLS) DOMImplementationRegistry.newInstance()
-    // .getDOMImplementation("LS");
-    //
-    // final LSSerializer serializer = format.createLSSerializer();
-    //
-    // serializer.getDomConfig().setParameter("format-pretty-print", true);
-    // serializer.setNewLine("\n");
-    //
-    // final LSOutput output = format.createLSOutput();
-    // output.setEncoding("UTF-8");
-    // output.setByteStream(byteStream);
-    //
-    // String xmlString = serializer.writeToString(document);
-    //
-    // // Add a line break after the XML declaration
-    // xmlString = xmlString.replace("?><graphml", "?>\n<graphml");
-    //
-    // // Change encoding tag from UTF-16 to UTF-8
-    // xmlString = xmlString.replace("UTF-16", "UTF-8");
-    //
-    // byteStream.write(xmlString.getBytes("UTF-8"));
-    //
-    // } catch (final Exception e) {
-    // throw new PreesmRuntimeException("Could not write Graph", e);
-    // }
+    final String UTF_8 = "UTF-8";
+    final String UTF_16 = "UTF-16";
 
-    final OutputFormat format = new OutputFormat(document, "UTF-8", true);
-    format.setIndent(4);
-    format.setLineSeparator("\n");
-    format.setLineWidth(65);
-
-    final XMLSerializer serializer = new XMLSerializer(byteStream, format);
-    serializer.setNamespaces(true);
     try {
-      serializer.serialize(document);
-    } catch (final IOException e) {
+      final DOMImplementationLS format = (DOMImplementationLS) DOMImplementationRegistry.newInstance()
+          .getDOMImplementation("LS");
+
+      final LSSerializer serializer = format.createLSSerializer();
+
+      serializer.getDomConfig().setParameter("format-pretty-print", true);
+      serializer.setNewLine("\n");
+
+      String xmlString = serializer.writeToString(document);
+
+      // Add a line break after the XML declaration
+      xmlString = xmlString.replaceFirst(XML_HEADER, XML_HEADER + "\n");
+
+      // Change encoding tag from UTF-16 to UTF-8
+      xmlString = xmlString.replaceFirst(UTF_16, UTF_8);
+
+      byteStream.write(xmlString.getBytes(UTF_8));
+
+    } catch (final Exception e) {
       throw new PreesmRuntimeException("Could not write Graph", e);
     }
-
   }
 }

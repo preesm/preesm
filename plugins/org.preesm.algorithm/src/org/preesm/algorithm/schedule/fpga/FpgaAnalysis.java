@@ -113,8 +113,8 @@ public class FpgaAnalysis {
       if (iaPort instanceof DataOutputPort) {
         aaPort = iaPort.getFifo().getTargetPort();
       }
-      final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluate();
-      final long iaRate = iaPort.getExpression().evaluate();
+      final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluateAsLong();
+      final long iaRate = iaPort.getExpression().evaluateAsLong();
       if (aaRate % iaRate != 0) {
         PreesmLogger.getLogger().warning(
             "Interface rate of " + ia.getName() + " does not divide the total rate of the actor connected to it.");

@@ -228,9 +228,9 @@ public class FpgaCodeGenerator {
     boolean valid = true;
     for (final AbstractActor aa : flatGraph.getActors()) {
       if (aa instanceof BroadcastActor) {
-        final long inputRate = aa.getDataInputPorts().get(0).getExpression().evaluate();
+        final long inputRate = aa.getDataInputPorts().get(0).getExpression().evaluateAsLong();
         for (final DataPort dop : aa.getDataOutputPorts()) {
-          final long outputRate = dop.getExpression().evaluate();
+          final long outputRate = dop.getExpression().evaluateAsLong();
           if (outputRate != inputRate) {
             PreesmLogger.getLogger()
                 .warning(() -> String.format("Broadcast output port [%s:%s] has different rate than its input.",
@@ -521,11 +521,11 @@ public class FpgaCodeGenerator {
       nameArgs.add("'" + getFifoStreamSizeNameMacro(f) + "'");
       sizeArgs.add(s.toString());
       sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH - 1)); // Lower bound is excluded from range of values
-      final long srcRate = f.getSourcePort().getExpression().evaluate();
+      final long srcRate = f.getSourcePort().getExpression().evaluateAsLong();
       final long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long srcLambda = AdfgUtils.computeLambda(srcRate, srcII).longValue();
-      final long snkRate = f.getTargetPort().getExpression().evaluate();
+      final long snkRate = f.getTargetPort().getExpression().evaluateAsLong();
       final long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long snkLambda = AdfgUtils.computeLambda(snkRate, snkII).longValue();
@@ -979,7 +979,7 @@ public class FpgaCodeGenerator {
           // the graph parameter name may have been prefixed during a flattening transformation
           for (final Parameter inputParam : delayActor.getInputParameters()) {
             if (inputParam.getName().equals(prefix + arg.getName())) {
-              listArgNames.add(Long.toString(inputParam.getExpression().evaluate()));
+              listArgNames.add(Long.toString(inputParam.getExpression().evaluateAsLong()));
               break;
             }
           }
@@ -990,7 +990,7 @@ public class FpgaCodeGenerator {
             if (cip.getName().equals(arg.getName())) {
               final ISetter setter = cip.getIncomingDependency().getSetter();
               if (setter instanceof final Parameter parameter) {
-                listArgNames.add(Long.toString(parameter.getExpression().evaluate()));
+                listArgNames.add(Long.toString(parameter.getExpression().evaluateAsLong()));
                 break;
               }
             }

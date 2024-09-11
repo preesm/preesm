@@ -104,11 +104,11 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     // 1. we resolve all parameters since subgraph parameters cannot be evaluated properly otherwise
     PiMMHelper.resolveAllParameters(graphCopy);
     // 2. we export the resolved parameters
-    String params = getParamsHeader(graphCopy);
+    final String params = getParamsHeader(graphCopy);
 
     try {
       FileUtils.writeStringToFile(file, params, (String) null);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Unable to write graph parameters on file " + filePath, e);
     }
 
@@ -117,21 +117,21 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
 
   /**
    * Format parameters of a graph in a C header.
-   * 
+   *
    * @param graph
    *          Graph to get parameters from.
    * @return String being the header.
    */
   public static String getParamsHeader(PiGraph graph) {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
-    String fileUnit = graph.getName().toUpperCase() + "_PREESM_PARAMS_H";
+    final String fileUnit = graph.getName().toUpperCase() + "_PREESM_PARAMS_H";
     sb.append("#ifndef " + fileUnit + "\n");
     sb.append("#define " + fileUnit + "\n\n");
 
-    for (org.preesm.model.pisdf.Parameter p : graph.getAllParameters()) {
+    for (final org.preesm.model.pisdf.Parameter p : graph.getAllParameters()) {
       if (p.isLocallyStatic()) {
-        long value = p.getValueExpression().evaluate();
+        final long value = p.getValueExpression().evaluateAsLong();
         sb.append("#define " + p.getVertexPath().toUpperCase().replace('/', '_') + " " + value + "\n");
       }
     }

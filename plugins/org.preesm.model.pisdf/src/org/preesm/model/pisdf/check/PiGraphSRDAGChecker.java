@@ -41,7 +41,7 @@ import org.preesm.model.pisdf.util.FifoCycleDetector;
 /**
  * This class provides a method to check that a PiGraph is indeed a SRDAG (which means: no hierarchy, repetition vector
  * being one, no cycles, no delays).
- * 
+ *
  * @author ahonorat
  */
 public class PiGraphSRDAGChecker {
@@ -52,7 +52,7 @@ public class PiGraphSRDAGChecker {
 
   /**
    * Checks if a given PiGraph is a SRDAG (no hierarchy, single-rate, no delay, no cycle).
-   * 
+   *
    * @param piGraph
    *          the PiGraph to check
    * @return true if SRADG, false otherwise
@@ -65,15 +65,15 @@ public class PiGraphSRDAGChecker {
     }
     // check single-rate and delays
     final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
-      final long rateOut = f.getSourcePort().getExpression().evaluate();
-      final long rateIn = f.getTargetPort().getExpression().evaluate();
+      final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
+      final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
       return (rateOut == rateIn) && f.getDelay() == null;
     });
     if (!isSingleRate) {
       return false;
     }
     // check cycles (stop on first one)
-    FifoCycleDetector fcd = new FifoCycleDetector(true);
+    final FifoCycleDetector fcd = new FifoCycleDetector(true);
     fcd.doSwitch(piGraph);
     return !fcd.cyclesDetected();
   }

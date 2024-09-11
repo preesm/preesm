@@ -276,7 +276,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   private static long getActorMaximumRate(final AbstractActor aa) {
     long maxRate = 0L;
     for (final DataPort dp : aa.getAllDataPorts()) {
-      final long rate = dp.getExpression().evaluate();
+      final long rate = dp.getExpression().evaluateAsLong();
       if (rate > maxRate) {
         maxRate = rate;
       }

@@ -1652,7 +1652,8 @@ public class PiScriptRunner {
     for (final ConfigInputPort p : dagVertex.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
       if (setter instanceof final Parameter param) {
-        parameters.put(p.getName(), param.getExpression().evaluate());
+        // TODO: check if parameter expression needs to be check as long or double
+        parameters.put(p.getName(), param.getExpression().evaluateAsLong());
       }
     }
     parameters.put("alignment", this.alignment);
@@ -1671,7 +1672,7 @@ public class PiScriptRunner {
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
 
       // Weight is already dataSize * (Cons || prod)
-      final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
+      final long nbTokens = it.getTargetPort().getPortRateExpression().evaluateAsLong(); // / dataSize
       try {
         return new PiBuffer(it, dagVertex.getName(), it.getTargetPort().getName(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
@@ -1692,7 +1693,7 @@ public class PiScriptRunner {
 
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
-      final long nbTokens = it.getTargetPort().getPortRateExpression().evaluate(); // / dataSize
+      final long nbTokens = it.getTargetPort().getPortRateExpression().evaluateAsLong(); // / dataSize
       try {
         return new PiBuffer(it, dagVertex.getName(), it.getSourcePort().getName(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {

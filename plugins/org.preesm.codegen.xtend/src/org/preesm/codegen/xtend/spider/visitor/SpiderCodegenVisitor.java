@@ -284,7 +284,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
         parametersProto.append(", ");
         parametersDef.append(", ");
-        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluate());
+        parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluateAsLong());
         parametersDef.append("Param " + p.getName());
       }
     }

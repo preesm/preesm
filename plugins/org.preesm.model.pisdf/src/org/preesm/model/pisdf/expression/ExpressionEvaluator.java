@@ -52,11 +52,11 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.DoubleExpression;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.ExpressionProxy;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
-import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
 import org.preesm.model.pisdf.PiGraph;
@@ -79,7 +79,7 @@ public class ExpressionEvaluator {
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  public static final long evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
+  public static final double evaluate(final Parameter param, final Map<Parameter, String> overridenValues) {
     return evaluate(param, param.getValueExpression().getExpressionAsString(), overridenValues);
   }
 
@@ -88,7 +88,7 @@ public class ExpressionEvaluator {
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  public static final long evaluate(final Parameterizable p, final String value,
+  public static final double evaluate(final Parameterizable p, final String value,
       final Map<Parameter, String> overridenValues) {
     final Map<String, Double> lookupParameterValues = lookupParameterValues(p, overridenValues);
     return JEPWrapper.evaluate(value, lookupParameterValues);
@@ -99,7 +99,7 @@ public class ExpressionEvaluator {
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  public static final long evaluate(final Expression expression) {
+  public static final double evaluate(final Expression expression) {
     return evaluate(expression, Collections.emptyMap());
   }
 
@@ -110,7 +110,7 @@ public class ExpressionEvaluator {
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  public static final long evaluate(final Expression expression,
+  public static final double evaluate(final Expression expression,
       final Map<Parameter, String> overridenParameterValues) {
     return new InternalExpressionEvaluationVisitor(Collections.emptyMap(), overridenParameterValues)
         .doSwitch(expression);
@@ -252,7 +252,7 @@ public class ExpressionEvaluator {
    * @author anmorvan
    *
    */
-  private static class InternalExpressionEvaluationVisitor extends PiMMSwitch<Long> {
+  private static class InternalExpressionEvaluationVisitor extends PiMMSwitch<Double> {
     private final Map<String, ? extends Number> parameterValues;
     private final Map<Parameter, String>        overridenValues;
 
@@ -267,22 +267,22 @@ public class ExpressionEvaluator {
     }
 
     @Override
-    public Long caseLongExpression(final LongExpression longExpr) {
-      return longExpr.getValue();
+    public Double caseDoubleExpression(final DoubleExpression doubleExpr) {
+      return doubleExpr.getValue();
     }
 
     @Override
-    public Long caseExpressionProxy(final ExpressionProxy proxyExpr) {
+    public Double caseExpressionProxy(final ExpressionProxy proxyExpr) {
       return doSwitch(proxyExpr.getProxy().getExpression());
     }
 
     @Override
-    public Long caseStringExpression(final StringExpression stringExpr) {
+    public Double caseStringExpression(final StringExpression stringExpr) {
       final String expressionString = stringExpr.getExpressionString();
       try {
         // try to parse a long value stored as String
         // NumberFormatException is thrown if the expression String does not represent a long value
-        return Long.parseLong(expressionString);
+        return Double.parseDouble(expressionString);
       } catch (final NumberFormatException e) {
         try {
           // try to evaluate the expression without collecting variables, but only the one given in the parameterValue

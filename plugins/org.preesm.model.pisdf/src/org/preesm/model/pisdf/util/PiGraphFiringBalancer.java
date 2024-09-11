@@ -65,7 +65,7 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
 
   /**
    * Builds a PiGraphFiringBalancer based on the subgraph to process.
-   * 
+   *
    * @param graph
    *          Input PiGraph to process. Must be contained in another PiGraph.
    * @param balancingFactor
@@ -82,7 +82,7 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
     }
     this.graph = graph;
     // If balancing factor is not power of 2, throw an exception.
-    double estimatedPower = Math.log(balancingFactor) / Math.log(2);
+    final double estimatedPower = Math.log(balancingFactor) / Math.log(2);
     if (Math.ceil(estimatedPower) != Math.floor(estimatedPower)) {
       throw new PreesmRuntimeException(
           "PiGraphFiringBalancer: balancing factor " + balancingFactor + " is not power of 2.");
@@ -107,11 +107,11 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(PiGraph graph) {
     // Process all input interfaces.
-    for (DataInputInterface inputInterface : graph.getDataInputInterfaces()) {
+    for (final DataInputInterface inputInterface : graph.getDataInputInterfaces()) {
       doSwitch(inputInterface);
     }
     // Process all output interfaces.
-    for (DataOutputInterface outputInterface : graph.getDataOutputInterfaces()) {
+    for (final DataOutputInterface outputInterface : graph.getDataOutputInterfaces()) {
       doSwitch(outputInterface);
     }
     return super.casePiGraph(graph);
@@ -120,7 +120,7 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataPort(DataPort dataPort) {
     // Update rates on the data port.
-    Long newExpression = dataPort.getExpression().evaluate() * this.balancingFactor;
+    final Long newExpression = dataPort.getExpression().evaluateAsLong() * this.balancingFactor;
     dataPort.setExpression(newExpression);
     return true;
   }

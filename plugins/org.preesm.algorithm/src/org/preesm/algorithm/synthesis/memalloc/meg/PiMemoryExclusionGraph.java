@@ -223,7 +223,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         final Fifo outgoingEdge = dataPort.getFifo();
         final String typeName = outgoingEdge.getType();
         final long typeSize = this.getScenario().getSimulationInfo().getDataTypeSizeInBit(typeName);
-        final long fifoSize = dataPort.getPortRateExpression().evaluate();
+        final long fifoSize = dataPort.getPortRateExpression().evaluateAsLong();
         final PiMemoryExclusionVertex headMemoryNode = new PiMemoryExclusionVertex(
             PiMemoryExclusionGraph.FIFO_HEAD_PREFIX + dagEndVertex.getName(), dagInitVertex.getName(),
             this.getScenario().getSimulationInfo().getBufferSizeInBit(typeName, fifoSize), this.scenario);
@@ -290,8 +290,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     final List<AbstractActor> sort = helper.getTopologicallySortedActors();
 
     for (final AbstractActor v : sort) {
-      associatedMemExVertices.put(v, Pair.of(new LinkedHashSet<>() /* predecessor */,
-          new LinkedHashSet<>()) /* incoming */);
+      associatedMemExVertices.put(v,
+          Pair.of(new LinkedHashSet<>() /* predecessor */, new LinkedHashSet<>()) /* incoming */);
     }
 
     // Scan of the DAG in order to:
@@ -777,7 +777,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * @return an equal {@link PiMemoryExclusionVertex} from the {@link #vertexSet()}, null if there is no such vertex.
    */
   public PiMemoryExclusionVertex getVertex(final PiMemoryExclusionVertex memObject) {
-    for (PiMemoryExclusionVertex vertex : vertexSet()) {
+    for (final PiMemoryExclusionVertex vertex : vertexSet()) {
       if (vertex.equals(memObject)) {
         return vertex;
       }

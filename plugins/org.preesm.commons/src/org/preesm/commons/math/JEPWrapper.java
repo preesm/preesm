@@ -67,7 +67,7 @@ public class JEPWrapper {
   /**
    * Return the list of symbols used in the expression. The result list does not include standard constants, standard
    * functions and user declared functions (see {@link #initJep(Map)}). Unknown functions are treated as symbols.
-   * 
+   *
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
@@ -99,10 +99,10 @@ public class JEPWrapper {
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  public static final long evaluate(final String expression,
+  public static final double evaluate(final String expression,
       final Map<String, ? extends Number> addInputParameterValues) {
     final JEP jep = initJep(addInputParameterValues);
-    long result;
+    double result;
     try {
       result = parse(expression, jep);
     } catch (final ParseException | TokenMgrError e) {
@@ -137,25 +137,25 @@ public class JEPWrapper {
   }
 
   /**
-   * 
+   *
    * @throws ExpressionEvaluationException
    *           If the expression cannot be evaluated.
    */
-  private static long parse(final String allExpression, final JEP jep) throws ParseException {
+  private static double parse(final String allExpression, final JEP jep) throws ParseException {
     final Node parse = jep.parse(allExpression);
     final Object result = jep.evaluate(parse);
     if (result instanceof Long) {
-      return (long) result;
-    } else if (result instanceof Double) {
-      final Double dResult = (Double) result;
+      return (double) result;
+    }
+    if (result instanceof final Double dResult) {
       if (Double.isInfinite(dResult)) {
         throw new ExpressionEvaluationException("Expression '" + allExpression + "' evaluated to infinity.");
       }
-      return Math.round(dResult);
-    } else if (result instanceof Number) {
-      return ((Number) result).longValue();
-    } else {
-      throw new ExpressionEvaluationException("Unsupported result type " + result.getClass().getSimpleName());
+      return dResult;
     }
+    if (result instanceof final Number number) {
+      return number.doubleValue();
+    }
+    throw new ExpressionEvaluationException("Unsupported result type " + result.getClass().getSimpleName());
   }
 }

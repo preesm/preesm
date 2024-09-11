@@ -399,8 +399,8 @@ public class PiMMHelper {
     for (final Fifo f : piGraph.getFifos()) {
       final DataOutputPort dpi = f.getSourcePort();
       final DataInputPort dpo = f.getTargetPort();
-      final long ri = dpi.getExpression().evaluate();
-      final long ro = dpo.getExpression().evaluate();
+      final long ri = dpi.getExpression().evaluateAsLong();
+      final long ro = dpo.getExpression().evaluateAsLong();
       if (ri == 0 && ro == 0) {
         final Delay d = f.getDelay();
         f.assignDelay(null);
@@ -489,7 +489,7 @@ public class PiMMHelper {
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         delay.setLevel(PersistenceLevel.PERMANENT);
       }
-      if (delay.getSizeExpression().evaluate() == 0) {
+      if (delay.getSizeExpression().evaluateAsLong() == 0) {
         toRemove.add(delay);
       }
     }
@@ -645,7 +645,7 @@ public class PiMMHelper {
    */
   public static void checkPeriodicity(final PiGraph piGraph, final Map<AbstractVertex, Long> graphBRV) {
 
-    final long graphPeriod = piGraph.getPeriod().evaluate();
+    final long graphPeriod = piGraph.getPeriod().evaluateAsLong();
 
     final Map<PiGraph, Long> levelBRV = new LinkedHashMap<>();
     final Map<Long, List<AbstractVertex>> mapGraphPeriods = new LinkedHashMap<>();
@@ -658,7 +658,7 @@ public class PiMMHelper {
         levelBRV.put(container, getHierarchichalRV(container, graphBRV));
       }
       if (av instanceof final PeriodicElement actor) {
-        final long actorPeriod = actor.getPeriod().evaluate();
+        final long actorPeriod = actor.getPeriod().evaluateAsLong();
         if (actorPeriod > 0) {
           final Long actorRV = en.getValue() * levelBRV.get(container);
           final long period = actorRV * actorPeriod;
