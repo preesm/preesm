@@ -152,12 +152,12 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     final MapperDAG resDag = resSimu.getDAG();
     final TagDAG tagSDF = new TagDAG();
-    tagSDF.tag(dag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
+    tagSDF.tag(resDag, architecture, scenario, resSimu, abcParams.getEdgeSchedType());
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_ABC, resSimu);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, resDag);
 
     PreesmLogger.getLogger().log(Level.INFO, "DAG fully mapped, now removes useless sync and check schedules.");
-    removeRedundantSynchronization(parameters, dag);
+    removeRedundantSynchronization(parameters, resDag);
     checkSchedulingResult(parameters, resDag);
     return outputs;
   }
