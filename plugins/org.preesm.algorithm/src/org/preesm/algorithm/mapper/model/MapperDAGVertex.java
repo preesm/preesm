@@ -185,6 +185,7 @@ public class MapperDAGVertex extends DAGVertex {
     copy.setParentVertex(result);
     result.setInit(copy);
     result.setEffectiveComponent(getEffectiveComponent());
+    result.setRefinement(this.getRefinement());
 
     for (final String propertyKey : getPropertyBean().keys()) {
       final Object property = getPropertyBean().getValue(propertyKey);
@@ -326,7 +327,8 @@ public class MapperDAGVertex extends DAGVertex {
     }
     if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
       return String.valueOf(getTiming().getCost());
-    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
       return String.valueOf(getTiming().getTotalOrder(this));
     } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
       return getEffectiveComponent().getInstanceName();
