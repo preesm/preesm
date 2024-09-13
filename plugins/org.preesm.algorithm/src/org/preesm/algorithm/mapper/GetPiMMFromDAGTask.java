@@ -50,9 +50,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.mapper.getpimm", name = "GetPiMM",
 
-    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) }
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) }
 
 )
 public class GetPiMMFromDAGTask extends AbstractTaskImplementation {

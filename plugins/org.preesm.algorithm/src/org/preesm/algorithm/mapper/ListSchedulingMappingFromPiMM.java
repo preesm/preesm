@@ -65,10 +65,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-mapper.list", name = "List Scheduling from PiSDF", category = "Schedulers",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
@@ -114,7 +116,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       if (parameters.containsKey("EnergyAwarenessSearchType")) {
         searchingMode = parameters.get("EnergyAwarenessSearchType");
       }
-      EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
+      final EnergyAwarenessProvider provider = new EnergyAwarenessProvider(scenario, firstConfig, searchingMode);
       /** iterate **/
       while (true) {
         /** Get configuration **/

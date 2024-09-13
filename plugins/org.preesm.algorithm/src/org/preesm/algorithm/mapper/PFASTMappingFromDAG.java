@@ -56,9 +56,10 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
- * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighborhood search phase. It
+ * PFAST is a parallel mapping/scheduling method based on list scheduling followed by a neighbourhood search phase. It
  * was invented by Y-K Kwok.
  *
  * @author mwipliez
@@ -66,10 +67,12 @@ import org.preesm.model.slam.Design;
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.pfastdag", name = "PFast Scheduling from DAG", category = "Schedulers",
 
-    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
@@ -120,8 +123,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     simu2.setDAG(resdag);
 
-    // The transfers are reordered using the best found order during
-    // scheduling
+    // The transfers are reordered using the best found order during scheduling
     simu2.reschedule(pfastAlgorithm.getBestTotalOrder());
 
     return simu2;
