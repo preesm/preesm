@@ -73,7 +73,6 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.preesm.algorithm.mapper.algo.FastAlgorithm;
 import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -230,20 +229,20 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
   public void update(final Observable o, final Object arg) {
 
     // FAST
-    if (o instanceof final FastAlgorithm fast) {
-      fast.countObservers();
-
-      if (arg instanceof final Long l) {
-
-        final int i = 0;
-        this.lastValue[i] = l.doubleValue();
-
-        final Millisecond milli = new Millisecond();
-
-        this.datasets[i].getSeries(0).addOrUpdate(milli, this.lastValue[i]);
-
-      }
-    }
+    // if (o instanceof final FastAlgorithm fast) {
+    // fast.countObservers();
+    //
+    // if (arg instanceof final Long l) {
+    //
+    // final int i = 0;
+    // this.lastValue[i] = l.doubleValue();
+    //
+    // final Millisecond milli = new Millisecond();
+    //
+    // this.datasets[i].getSeries(0).addOrUpdate(milli, this.lastValue[i]);
+    //
+    // }
+    // }
 
     // PFAST
     if (o instanceof final PFastAlgorithm pfast) {

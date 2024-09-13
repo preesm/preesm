@@ -37,11 +37,10 @@
  */
 package org.preesm.algorithm.mapper.algo;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Observable;
 import java.util.Random;
-import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -49,17 +48,12 @@ import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
 import org.preesm.algorithm.mapper.abc.taskscheduling.AbstractTaskSched;
 import org.preesm.algorithm.mapper.abc.taskscheduling.TaskSwitcher;
-import org.preesm.algorithm.mapper.gantt.GanttData;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.algorithm.mapper.tools.RandomIterator;
-import org.preesm.algorithm.mapper.ui.BestCostPlotter;
-import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
-import org.preesm.algorithm.mapper.ui.gantt.GanttEditorRunnable;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -71,7 +65,7 @@ import org.preesm.model.slam.Design;
  * @author pmenuet
  * @author mpelcat
  */
-public class FastAlgorithm extends Observable {
+public class FastAlgorithm {
 
   /**
    * The scheduling (total order of tasks) for the best found solution.
@@ -84,6 +78,9 @@ public class FastAlgorithm extends Observable {
   /** The scenario. */
   private Scenario scenario = null;
 
+  private long fastLocalSearchTime;
+  private long fastGlobalSearchTime;
+
   /**
    * Constructor.
    *
@@ -93,7 +90,6 @@ public class FastAlgorithm extends Observable {
    *          the scenario
    */
   public FastAlgorithm(final InitialLists initialLists, final Scenario scenario) {
-    super();
     this.initialLists = initialLists;
     this.scenario = scenario;
   }
@@ -179,18 +175,6 @@ public class FastAlgorithm extends Observable {
 
     final Random randomGenerator = new Random(System.nanoTime());
 
-    final Semaphore pauseSemaphore = new Semaphore(1);
-    final BestCostPlotter costPlotter = new BestCostPlotter("FastAlgorithm", pauseSemaphore);
-
-    // initialing the data window if this is necessary
-    if (!pfastused) {
-
-      costPlotter.setSubplotCount(1);
-      BestCostEditor.createEditor(costPlotter);
-
-      addObserver(costPlotter);
-    }
-
     // Variables
     final LatencyAbc simulator = LatencyAbc.getInstance(abcParams, dag, archi, this.scenario);
 
@@ -229,11 +213,6 @@ public class FastAlgorithm extends Observable {
 
     this.bestTotalOrder = simulator.getTotalOrder();
 
-    if (displaySolutions) {
-      final GanttData ganttData = simulator.getGanttData();
-      launchEditor(ganttData, "Cost:" + initial + " List");
-    }
-
     final String msg = "Found List solution; Cost:" + initial;
     PreesmLogger.getLogger().log(Level.INFO, msg);
 
@@ -245,7 +224,7 @@ public class FastAlgorithm extends Observable {
       return simulator.getDAG().copy();
     }
     long bestSL = initial;
-    Long iBest;
+
     MapperDAG dagfinal = simulator.getDAG().copy();
     dagfinal.setScheduleCost(bestSL);
 
@@ -254,21 +233,15 @@ public class FastAlgorithm extends Observable {
 
     // FAST parameters
     // FAST is stopped after a time given in seconds
-    final long fastStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastTime());
-    // the number of local solutions searched in a neighborhood is the size
-    // of the graph
+    setGlobalSearchTimeout(fastParams.getFastTime());
+    // the number of local solutions searched in a neighbourhood is the size of the graph
     final int maxStep = dag.vertexSet().size() * archi.getOperatorComponentInstances().size();
-    // the number of better solutions found in a neighborhood is limited
+    // the number of better solutions found in a neighbourhood is limited
     final int margin = Math.max(maxStep / 10, 1);
 
     // step 4/17
     // Stopping after the given time in seconds is reached
-    while ((fastParams.getFastTime() < 0) || (System.currentTimeMillis() < fastStopTime)) {
-
-      // Notifying display
-      iBest = bestSL;
-      setChanged();
-      notifyObservers(iBest);
+    while ((fastParams.getFastTime() < 0) || !isGlobalSearchTimeout()) {
 
       // step 5
       int searchStep = 0;
@@ -276,35 +249,25 @@ public class FastAlgorithm extends Observable {
       simulator.updateFinalCosts();
 
       // FAST local search is stopped after a time given in seconds
-      final long fastLocalSearchStopTime = System.currentTimeMillis() + (1000 * fastParams.getFastLocalSearchTime());
+      setLocalSearchTimeout(fastParams.getFastLocalSearchTime());
 
-      // step 6 : neighborhood search
-      do {
-        // Mode stop
-        if ((costPlotter.getActionType() == 1) || ((monitor != null) && monitor.isCanceled())) {
-
-          return dagfinal.copy();
-        } else if (costPlotter.getActionType() == 2) {
-          // Mode Pause
-          try {
-            pauseSemaphore.acquire();
-            pauseSemaphore.release();
-          } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new PreesmRuntimeException("Semaphore issue", e);
-          }
-        }
+      // step 6 : neighbourhood search
+      while ((searchStep < maxStep) && (localCounter < margin) && !isLocalSearchTimeout()) {
 
         // step 7
         // Selecting random vertex with operator set of size > 1
-        List<ComponentInstance> operatorList = null;
+        List<ComponentInstance> operatorList = new ArrayList<>();
         int nonBlockingIndex = 0;
 
-        do {
+        while (vertexiter.hasNext() && (operatorList.size() < 2) && (nonBlockingIndex < 100)) {
           nonBlockingIndex++;
           currentvertex = vertexiter.next();
           operatorList = simulator.getCandidateOperators(currentvertex, false);
-        } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
+        }
+
+        if (operatorList.size() < 2) {
+          break;
+        }
 
         final long sl = simulator.getFinalCost();
 
@@ -345,8 +308,7 @@ public class FastAlgorithm extends Observable {
 
         searchStep++;
         // step 11
-      } while ((searchStep < maxStep) && (localCounter < margin)
-          && (System.currentTimeMillis() < fastLocalSearchStopTime));
+      }
 
       // step 12
       simulator.updateFinalCosts();
@@ -361,12 +323,6 @@ public class FastAlgorithm extends Observable {
 
         this.bestTotalOrder = simulator.getTotalOrder();
 
-        if (displaySolutions) {
-
-          final GanttData ganttData = simulator.getGanttData();
-          launchEditor(ganttData, "Cost:" + bestSL + " Fast");
-        }
-
         final String msg3 = "Found Fast solution; Cost:" + bestSL;
         PreesmLogger.getLogger().log(Level.INFO, msg3);
 
@@ -374,16 +330,19 @@ public class FastAlgorithm extends Observable {
       }
 
       // step 16
-      // Choosing a vertex in critical path with an operator set of more
-      // than 1 element
-      List<ComponentInstance> operatorList = null;
+      // Choosing a vertex in critical path with an operator set of more than 1 element
+      List<ComponentInstance> operatorList = new ArrayList<>();
       int nonBlockingIndex = 0;
 
-      do {
+      while (iter.hasNext() && (operatorList.size() < 2) && (nonBlockingIndex < 100)) {
         nonBlockingIndex++;
         fcpvertex = iter.next();
         operatorList = simulator.getCandidateOperators(fcpvertex, false);
-      } while ((operatorList.size() < 2) && (nonBlockingIndex < 100));
+      }
+
+      if (operatorList.size() < 2) {
+        break;
+      }
 
       // Choosing an operator different from the current vertex operator
       final ComponentInstance currentOp = dagfinal.getMapperDAGVertex(fcpvertex.getName()).getEffectiveOperator();
@@ -397,10 +356,25 @@ public class FastAlgorithm extends Observable {
 
       // Reschedule the whole dag
       listscheduler.schedule(dag, cpnDominantList, simulator, operatorfcp, fcpvertex);
-
     }
 
     return dagfinal;
+  }
+
+  private void setLocalSearchTimeout(int fastLocalSearchTime) {
+    this.fastLocalSearchTime = System.currentTimeMillis() + (1000 * fastLocalSearchTime);
+  }
+
+  private void setGlobalSearchTimeout(int fastGlobalSearchTime) {
+    this.fastGlobalSearchTime = System.currentTimeMillis() + (1000 * fastGlobalSearchTime);
+  }
+
+  private boolean isLocalSearchTimeout() {
+    return System.currentTimeMillis() > fastLocalSearchTime;
+  }
+
+  private boolean isGlobalSearchTimeout() {
+    return System.currentTimeMillis() > fastGlobalSearchTime;
   }
 
   /**
@@ -410,20 +384,6 @@ public class FastAlgorithm extends Observable {
    */
   public VertexOrderList getBestTotalOrder() {
     return this.bestTotalOrder;
-  }
-
-  /**
-   * Launch editor.
-   *
-   * @param ganttData
-   *          the gantt data
-   * @param name
-   *          the name
-   * @throws PreesmException
-   *           the workflow exception
-   */
-  private void launchEditor(final GanttData ganttData, final String name) {
-    GanttEditorRunnable.run(ganttData, name);
   }
 
 }
