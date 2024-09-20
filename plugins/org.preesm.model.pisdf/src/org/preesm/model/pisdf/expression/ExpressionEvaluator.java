@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -70,8 +71,23 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator {
 
+  // The Map needs to be concurrent because of parallel tests during CI.
+  // Map containing the already resolved expression associated to parameterizable.
+  private static final Map<Parameterizable, Map<String, Double>> expressionCache = new ConcurrentHashMap<>();
+
   private ExpressionEvaluator() {
     // forbid instantiation
+  }
+
+  private static Map<String, Double> getFromCacheOrCompute(final Parameterizable holder,
+      final Map<Parameter, String> overridenValues) {
+
+    return expressionCache.computeIfAbsent(holder, h -> lookupParameterValues(h, overridenValues));
+  }
+
+  // Explicit cache flush, when an expression is changed
+  public static void clearExpressionCache() {
+    expressionCache.clear();
   }
 
   /**
@@ -142,12 +158,12 @@ public class ExpressionEvaluator {
   /**
    *
    */
-  public static Map<String, Number> lookupParameterValues(final Expression expression,
+  public static Map<String, Double> lookupParameterValues(final Expression expression,
       final Map<Parameter, String> overridenValues) {
-    final Map<String, Number> result = new LinkedHashMap<>();
+    final Map<String, Double> result = new LinkedHashMap<>();
     final Parameterizable holder = expression.getHolder();
     if (holder != null) {
-      result.putAll(lookupParameterValues(holder, overridenValues));
+      result.putAll(getFromCacheOrCompute(holder, overridenValues));
     }
     return result;
   }
@@ -293,7 +309,7 @@ public class ExpressionEvaluator {
           // gather Expression parameters and evaluate the expression.
           // ExpressionEvaluationException will still be thrown if something goes wrong.
           final Map<String,
-              Number> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr, overridenValues);
+              Double> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr, overridenValues);
           return JEPWrapper.evaluate(expressionString, addInputParameterValues);
         }
       }
