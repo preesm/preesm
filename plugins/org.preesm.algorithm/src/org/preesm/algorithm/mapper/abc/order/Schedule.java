@@ -211,9 +211,8 @@ public class Schedule {
     final int index = indexOf(vertex);
     if (index <= 0) {
       return null;
-    } else {
-      return (this.elementList.get(index - 1));
     }
+    return (this.elementList.get(index - 1));
   }
 
   /**
@@ -227,9 +226,8 @@ public class Schedule {
     final int currentIndex = indexOf(vertex);
     if ((currentIndex < 0) || (currentIndex >= (this.elementList.size() - 1))) {
       return null;
-    } else {
-      return (this.elementList.get(currentIndex + 1));
     }
+    return (this.elementList.get(currentIndex + 1));
   }
 
   /**
@@ -240,12 +238,13 @@ public class Schedule {
    * @return the successors
    */
   public Set<MapperDAGVertex> getSuccessors(final MapperDAGVertex vertex) {
-    final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
+
     final int currentIndex = indexOf(vertex);
     if ((currentIndex < 0) || (currentIndex >= this.elementList.size())) {
-      return Collections.emptySet();
+      return new LinkedHashSet<>(); // Return empty list
     }
 
+    final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
     for (int i = currentIndex + 1; i < this.elementList.size(); i++) {
       vSet.add(this.elementList.get(i));
     }

@@ -73,7 +73,6 @@ import org.jfree.data.time.Millisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.ui.ApplicationFrame;
-import org.preesm.algorithm.mapper.algo.PFastAlgorithm;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 
@@ -245,17 +244,17 @@ public class BestCostPlotter extends ApplicationFrame implements ActionListener,
     // }
 
     // PFAST
-    if (o instanceof final PFastAlgorithm pfast) {
-      pfast.countObservers();
-
-      if (arg instanceof final Long l) {
-
-        final int i = 0;
-        this.lastValue[i] = l.doubleValue();
-        this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
-
-      }
-    }
+    // if (o instanceof final PFastAlgorithm pfast) {
+    // pfast.countObservers();
+    //
+    // if (arg instanceof final Long l) {
+    //
+    // final int i = 0;
+    // this.lastValue[i] = l.doubleValue();
+    // this.datasets[i].getSeries(0).addOrUpdate(new Millisecond(), this.lastValue[i]);
+    //
+    // }
+    // }
 
   }
 
