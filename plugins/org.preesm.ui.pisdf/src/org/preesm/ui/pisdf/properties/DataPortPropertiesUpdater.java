@@ -41,10 +41,7 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.ui.platform.GFPropertySection;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Text;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.ExpressionHolder;
 
@@ -69,17 +66,10 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
   protected void updateDataPortProperties(final DataPort port, final Text textToUpdate) {
     if (!port.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
       setNewExpression(port, textToUpdate.getText());
-      // If port is contained by an DataInterface, we should
-      // also update the graph port of the DataInterface
-      if (port.eContainer() instanceof final DataOutputInterface doi) {
-        final DataOutputPort oPort = (DataOutputPort) doi.getGraphPort();
-        if (!oPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
-          setNewExpression(oPort, textToUpdate.getText());
-        }
-      } else if (port.eContainer() instanceof final DataInputInterface dii) {
-        final DataInputPort iPort = (DataInputPort) dii.getGraphPort();
-        if (!iPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
-          setNewExpression(iPort, textToUpdate.getText());
+      if (port.eContainer() instanceof final DataInterface dInterface) {
+        final DataPort dPort = dInterface.getGraphPort();
+        if (!dPort.getPortRateExpression().getExpressionAsString().equals(textToUpdate.getText())) {
+          setNewExpression(dPort, textToUpdate.getText());
         }
       }
     }

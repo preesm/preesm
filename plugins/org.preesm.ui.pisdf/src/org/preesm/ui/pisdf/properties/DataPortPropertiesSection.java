@@ -182,7 +182,7 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
     String elementName = null;
     Expression elementValueExpression;
     final boolean expressionHasFocus = txtExpression.isFocusControl();
-    final Point selelection = txtExpression.getSelection();
+    final Point selection = txtExpression.getSelection();
     txtExpression.setEnabled(false);
 
     if (pictogramElement == null) {
@@ -254,7 +254,7 @@ public class DataPortPropertiesSection extends ParameterizablePropertiesSection 
 
     if (expressionHasFocus) {
       txtExpression.setFocus();
-      txtExpression.setSelection(selelection);
+      txtExpression.setSelection(selection);
     }
   }
 

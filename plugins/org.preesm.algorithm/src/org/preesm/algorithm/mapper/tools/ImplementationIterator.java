@@ -73,7 +73,7 @@ public abstract class ImplementationIterator extends AbstractGraphIterator<DAGVe
 
   /**
    */
-  public ImplementationIterator(final LatencyAbc abc, final MapperDAG dag, final boolean directOrder) {
+  protected ImplementationIterator(final LatencyAbc abc, final MapperDAG dag, final boolean directOrder) {
     super(dag);
     this.directOrder = directOrder;
     this.abc = abc;

@@ -54,15 +54,12 @@ public enum TaskSchedType {
   @Override
   public String toString() {
 
-    if (this == SIMPLE) {
-      return "Simple";
-    } else if (this == SWITCHER) {
-      return "Switcher";
-    } else if (this == TOPOLOGICAL) {
-      return "Topological";
-    } else {
-      throw new UnsupportedOperationException();
-    }
+    return switch (this) {
+      case SIMPLE -> "Simple";
+      case SWITCHER -> "Switcher";
+      case TOPOLOGICAL -> "Topological";
+      default -> throw new UnsupportedOperationException();
+    };
   }
 
 }

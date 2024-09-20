@@ -960,13 +960,16 @@ interface InterfaceActor extends NonExecutableActor {
 	}
 }
 
-class DataInputInterface extends InterfaceActor {
+abstract class DataInterface extends InterfaceActor{
+}
+
+class DataInputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_INPUT
 	}
 }
 
-class DataOutputInterface extends InterfaceActor {
+class DataOutputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_OUTPUT
 	}

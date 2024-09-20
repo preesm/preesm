@@ -220,7 +220,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     String elementName = null;
     Expression elementValueExpression = null;
     final boolean expressionHasFocus = this.txtExpression.isFocusControl();
-    final Point selelection = this.txtExpression.getSelection();
+    final Point selection = this.txtExpression.getSelection();
     this.txtExpression.setEnabled(false);
 
     if (pictogramElement == null) {
@@ -270,14 +270,6 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       }
     } else {
 
-      // String txt = this.txtExpression.getText();
-      // if (txt.matches("^-?+0\\d++.*+$")) {
-      // while (txt.matches("^-?+0\\d++.*+$")) {
-      // txt = txt.substring(1);
-      // }
-      // this.txtExpression.setText(txt);
-      // }
-
       final String eltExprString = elementValueExpression.getExpressionAsString();
       if (this.txtExpression.getText().isBlank() && !eltExprString.isBlank()) {
         this.txtExpression.setText(eltExprString);
@@ -301,7 +293,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
     if (expressionHasFocus) {
       this.txtExpression.setFocus();
-      this.txtExpression.setSelection(selelection);
+      this.txtExpression.setSelection(selection);
     }
   }
 

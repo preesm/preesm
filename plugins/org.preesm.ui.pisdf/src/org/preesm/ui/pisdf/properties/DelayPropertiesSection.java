@@ -45,7 +45,6 @@ import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -178,7 +177,7 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
     String elementName;
     Expression elementValueExpression;
     final boolean expressionHasFocus = txtExpression.isFocusControl();
-    final Point selelection = txtExpression.getSelection();
+    final Point selection = txtExpression.getSelection();
     txtExpression.setEnabled(false);
 
     if (pictogramElement == null) {
@@ -223,7 +222,6 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
       // try out evaluating the expression
       final double evaluate = elementValueExpression.evaluateAsDouble();
       lblValueObj.setText(Double.toString(evaluate));
-      // txtExpression.setBackground(BG_NORMAL_WHITE);
 
       if (elementValueExpression.isExpressionInteger()) {
         txtExpression.setBackground(BG_NORMAL_WHITE);
@@ -234,12 +232,12 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
     } catch (final ExpressionEvaluationException e) {
       // otherwise print error message and put red background
       lblValueObj.setText("Error : " + e.getMessage());
-      txtExpression.setBackground(new Color(null, 240, 150, 150));
+      txtExpression.setBackground(BG_ERROR_RED);
     }
 
     if (expressionHasFocus) {
       txtExpression.setFocus();
-      txtExpression.setSelection(selelection);
+      txtExpression.setSelection(selection);
     }
   }
 
