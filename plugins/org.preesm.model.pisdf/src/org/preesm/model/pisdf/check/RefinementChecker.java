@@ -102,8 +102,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   private static final String UINT64_T = "uint64_t";
 
   /*
-   * Map holding synonyms of identical types to avoid displaying a warning e.g. when one side of the fifo uses unsigned
-   * char while the other uses uint8_t.
+   * Map holding synonyms of identical types to avoid displaying a warning e.g. when the fifo uses unsigned char while
+   * the refinement uses uint8_t.
    */
   private static final Map<String,
       String> typeSynonymsMap = Map.ofEntries(new AbstractMap.SimpleEntry<>(INT8_T, INT8_T),
