@@ -1,0 +1,12 @@
+Step;Duration(ms)
+initialisation:0;0
+node partitioning:1:1;3283
+thread partitioning node0:1:1;0
+thread partitioning node1:1:1;0
+thread partitioning node2:1:1;0
+simulation:1:1;629
+node partitioning:2:1;2873
+thread partitioning node0:2:1;0
+thread partitioning node1:2:1;0
+thread partitioning node2:2:1;0
+simulation:2:1;540

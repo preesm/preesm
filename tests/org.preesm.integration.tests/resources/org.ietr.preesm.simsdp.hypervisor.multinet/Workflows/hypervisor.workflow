@@ -8,11 +8,6 @@
             <dftools:variable name="archi path" value="/Scenarios/initialisation.scenario"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="SimSDPChartTask.identifier" taskId="SimSDP chart">
-        <dftools:data key="variables"/>
-    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="void"
         targetport="void" to="hypervisor"/>
-    <dftools:dataTransfer from="hypervisor" sourceport="void"
-        targetport="void" to="SimSDP chart"/>
 </dftools:workflow>

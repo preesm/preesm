@@ -75,7 +75,6 @@ public class ArchitecturesGenerator {
 
   /** The Constant scenarioDirName. */
   private static final String ARCHI_DIR_NAME = "Archi";
-  private static final String LIBRARY_NAME   = "preesm";
 
   final IFolder archiDir;
 
@@ -88,9 +87,7 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
-   *
    */
-
   public void generateAndSaveX86Architecture(int nbX86cores) {
     saveArchitecture(generateX86Architecture(nbX86cores));
   }
@@ -101,11 +98,94 @@ public class ArchitecturesGenerator {
    */
   public void generateAndSaveFpgaArchitecture() {
     saveArchitecture(generateFpgaArchitecture());
+  }
 
-  public void generateAndSaveArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate,
+  /**
+   * Generate and save default SimSDP node architecture.
+   *
+   */
+  public void generateAndSaveSimSDPArchitecture(Map<String, Integer> cores, String nodeName, Double communicationRate,
       int coreIDStart) {
-    saveArchitecture(generateArchitecture(cores, nodeName, communicationRate, coreIDStart));
+    final Design simsdp = generateSimSDPArchitecture(cores, nodeName, communicationRate, coreIDStart);
+    saveArchitecture(simsdp);
 
+  }
+
+  public static Design generateSimSDPArchitecture(Map<String, Integer> coresList, String nodeName,
+      Double communicationRate, int coreIDStart) {
+    int i1 = coreIDStart;
+    final Design design = SlamFactory.eINSTANCE.createDesign();
+    final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
+    final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
+    final VLNV comNodeVLNV = SlamUserFactory.eINSTANCE.createVLNV();
+
+    comNodeVLNV.setName("SHARED_MEM");
+    comNodeVLNV.setLibrary("");
+    comNodeVLNV.setVendor("");
+    comNodeVLNV.setVersion("");
+
+    final ComNode cn = SlamFactory.eINSTANCE.createComNode();
+    cn.setParallel(true);
+    cn.setSpeed(communicationRate.floatValue()); // 1 000 000 000 = 1E9F
+    cn.setVlnv(comNodeVLNV);
+    cn.getInterfaces().add(mi);
+    ch.getComponents().add(cn);
+
+    final ComponentInstance sharedMem = SlamFactory.eINSTANCE.createComponentInstance();
+    sharedMem.setHardwareId(0);
+    sharedMem.setInstanceName("shared_mem");
+    design.getComponentInstances().add(sharedMem);
+    sharedMem.setComponent(cn);
+
+    for (final Entry<String, Integer> coreMap : coresList.entrySet()) {
+      final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
+      rootVLNV.setName(nodeName);
+
+      rootVLNV.setLibrary("preesm");
+      rootVLNV.setVendor("ietr");
+      rootVLNV.setVersion("1");
+
+      design.setVlnv(rootVLNV);
+
+      design.setComponentHolder(ch);
+
+      final VLNV operatorVLNV = SlamFactory.eINSTANCE.createVLNV();
+      operatorVLNV.setName(coreMap.getKey());
+      operatorVLNV.setLibrary("");
+      operatorVLNV.setVendor("");
+      operatorVLNV.setVersion("");
+      final Component opZ = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getSimpleName());
+      ch.getComponents().add(opZ);
+
+      mi.setName("BUSshared_mem");
+      opZ.getInterfaces().add(mi);
+
+      final ComponentInstance[] cores = new ComponentInstance[coreMap.getValue()];
+      String nodeID = "Core";
+      if (nodeName.equals("top")) {
+        nodeID = "Node";
+      }
+      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
+        cores[i - i1] = SlamFactory.eINSTANCE.createComponentInstance();
+        cores[i - i1].setHardwareId(i);
+        cores[i - i1].setInstanceName(nodeID + i);
+        design.getComponentInstances().add(cores[i - i1]);
+        cores[i - i1].setComponent(opZ);
+      }
+      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
+        final DataLink dl = SlamFactory.eINSTANCE.createDataLink();
+        dl.setDirected(false);
+        dl.setUuid(Integer.toString(i));
+        dl.setSourceComponentInstance(cores[i - i1]);
+        dl.setDestinationComponentInstance(sharedMem);
+        dl.setSourceInterface(mi);
+        dl.setDestinationInterface(mi);
+        design.getLinks().add(dl);
+      }
+      i1 += coreMap.getValue();
+    }
+
+    return design;
   }
 
   /**
@@ -113,19 +193,12 @@ public class ArchitecturesGenerator {
    *
    * @param nbX86cores
    *          Number of cores in the generated architecture.
-   *
-   *
    * @return The generated architecture.
    */
-
   public static Design generateX86Architecture(int nbX86cores) {
-
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
-
     rootVLNV.setName(nbX86cores + "CoresX86");
-
-    rootVLNV.setLibrary(LIBRARY_NAME);
-
+    rootVLNV.setLibrary("preesm");
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
 
@@ -188,83 +261,6 @@ public class ArchitecturesGenerator {
     return design;
   }
 
-  public static Design generateArchitecture(Map<String, Integer> coresList, String nodeName, Double communicationRate,
-      int coreIDStart) {
-
-    final Design design = SlamFactory.eINSTANCE.createDesign();
-    final ComponentHolder ch = SlamFactory.eINSTANCE.createComponentHolder();
-    final ComInterface mi = SlamFactory.eINSTANCE.createComInterface();
-    final VLNV comNodeVLNV = SlamUserFactory.eINSTANCE.createVLNV();
-
-    comNodeVLNV.setName("SHARED_MEM");
-    comNodeVLNV.setLibrary("");
-    comNodeVLNV.setVendor("");
-    comNodeVLNV.setVersion("");
-
-    final ComNode cn = SlamFactory.eINSTANCE.createComNode();
-    cn.setParallel(true);
-    cn.setSpeed(communicationRate.floatValue()); // 1 000 000 000 = 1E9F
-    cn.setVlnv(comNodeVLNV);
-    cn.getInterfaces().add(mi);
-    ch.getComponents().add(cn);
-
-    final ComponentInstance sharedMem = SlamFactory.eINSTANCE.createComponentInstance();
-    sharedMem.setHardwareId(0);
-    sharedMem.setInstanceName("shared_mem");
-    design.getComponentInstances().add(sharedMem);
-    sharedMem.setComponent(cn);
-    for (final Entry<String, Integer> coreMap : coresList.entrySet()) {
-      final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
-      rootVLNV.setName(nodeName);
-
-      rootVLNV.setLibrary(LIBRARY_NAME);
-      rootVLNV.setVendor("ietr");
-      rootVLNV.setVersion("1");
-
-      design.setVlnv(rootVLNV);
-
-      design.setComponentHolder(ch);
-
-      final VLNV operatorVLNV = SlamFactory.eINSTANCE.createVLNV();
-      operatorVLNV.setName(coreMap.getKey());
-      operatorVLNV.setLibrary("");
-      operatorVLNV.setVendor("");
-      operatorVLNV.setVersion("");
-      final Component opZ = SlamUserFactory.eINSTANCE.createComponent(operatorVLNV, CPU.class.getSimpleName());
-      ch.getComponents().add(opZ);
-
-      mi.setName("BUSshared_mem");
-      opZ.getInterfaces().add(mi);
-
-      final ComponentInstance[] cores = new ComponentInstance[coreMap.getValue()];
-      String nodeID = "Core";
-      if (nodeName.equals("top")) {
-        nodeID = "Node";
-      }
-      int i1 = coreIDStart;
-      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
-        cores[i - i1] = SlamFactory.eINSTANCE.createComponentInstance();
-        cores[i - i1].setHardwareId(i);
-        cores[i - i1].setInstanceName(nodeID + i);
-        design.getComponentInstances().add(cores[i - i1]);
-        cores[i - i1].setComponent(opZ);
-      }
-      for (int i = i1; i < i1 + coreMap.getValue(); ++i) {
-        final DataLink dl = SlamFactory.eINSTANCE.createDataLink();
-        dl.setDirected(false);
-        dl.setUuid(Integer.toString(i));
-        dl.setSourceComponentInstance(cores[i - i1]);
-        dl.setDestinationComponentInstance(sharedMem);
-        dl.setSourceInterface(mi);
-        dl.setDestinationInterface(mi);
-        design.getLinks().add(dl);
-      }
-      i1 += coreMap.getValue();
-    }
-
-    return design;
-  }
-
   /**
    * Generate and save fpga architecture with.
    *
@@ -273,7 +269,7 @@ public class ArchitecturesGenerator {
   public static Design generateFpgaArchitecture() {
     final VLNV rootVLNV = SlamFactory.eINSTANCE.createVLNV();
     rootVLNV.setName("fpga");
-    rootVLNV.setLibrary(LIBRARY_NAME);
+    rootVLNV.setLibrary("preesm");
     rootVLNV.setVendor("ietr");
     rootVLNV.setVersion("1");
 

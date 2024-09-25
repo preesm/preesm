@@ -3,8 +3,6 @@ package org.preesm.algorithm.node.partitioner;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -15,6 +13,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.mapping.model.NodeMapping;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.WorkspaceUtils;
@@ -186,7 +185,7 @@ public class InternodeBuilder {
     final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
     final Map<String, Integer> nodeList = new HashMap<>();
     nodeList.put("node", nodeIndex);
-    final Design topArchi = ArchitecturesGenerator.generateArchitecture(nodeList, "top",
+    final Design topArchi = ArchitecturesGenerator.generateSimSDPArchitecture(nodeList, "top",
         hierarchicalArchitecture.get(0).getNodeCommunicationRate(), 0);
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
@@ -204,7 +203,7 @@ public class InternodeBuilder {
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file.getProject();
     final String fileName = printgraph.getName() + "" + ".pi";
-    final URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
+    final org.eclipse.emf.common.util.URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
 
     // Get the project
     final String platformString = uri.toPlatformString(true);

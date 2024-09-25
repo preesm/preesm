@@ -44,8 +44,8 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.SRVSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -58,25 +58,25 @@ import org.preesm.model.slam.ComponentInstance;
  *
  */
 
-public class ClusterPartitionerSRV {
+public class ClusterPartitionerSRV extends ClusterPartitioner {
 
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int      numberOfPEs;
+  // /**
+  // * Input graph.
+  // */
+  // private final PiGraph graph;
+  // /**
+  // * Workflow scenario.
+  // */
+  // private final Scenario scenario;
+  // /**
+  // * Number of PEs in compute clusters.
+  // */
+  // private final int numberOfPEs;
 
   private final Map<AbstractVertex, Long> brv;
 
-  private final int clusterId;
-  // private final List<AbstractActor> nonClusterableList;
+  private final int       clusterId;
+  private final ScapeMode scapeMode;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -92,28 +92,27 @@ public class ClusterPartitionerSRV {
    *
    *          repetition vector
    * @param clusterId
-   *          List of non clusterable actors
-   * @param nonClusterableList
-   *          List of non clusterable actors cluster identificator
+   *          cluster identification number
+   *
    */
   public ClusterPartitionerSRV(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
+    super(graph, scenario, numberOfPEs);
     this.brv = brv;
     this.clusterId = clusterId;
-    // this.nonClusterableList = nonClusterableList;
+    this.scapeMode = scapeMode;
   }
 
   /**
    * @return Clustered PiGraph.
    */
 
+  @Override
   public PiGraph cluster() {
 
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphSRVs = new SRVSeeker(this.graph, this.numberOfPEs, this.brv).seek();
+    final List<
+        List<AbstractActor>> graphSRVs = new ClusteringPatternSeekerSrv(this.graph, this.numberOfPEs, this.brv).seek();
     final List<List<AbstractActor>> constrainedSRVs = new LinkedList<>();
     if (!graphSRVs.isEmpty()) {
       final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
@@ -133,7 +132,8 @@ public class ClusterPartitionerSRV {
       }
 
       // apply scaling
-      final Long scale = computeScalingFactor(subGraph);
+      final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
+          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, scapeMode);
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -151,65 +151,4 @@ public class ClusterPartitionerSRV {
     return this.graph;
   }
 
-  /**
-   * Used to compute the scaling factor :)
-   *
-   * @param subGraph
-   *          graph
-   */
-  private Long computeScalingFactor(PiGraph subGraph) {
-    // final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
-    final Long numbers = brv.get(subGraph.getExecutableActors().get(0));
-    Long scale;
-    if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
-        && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
-      final Long ratio = computeDelayRatio(subGraph);
-      scale = gcd(ratio, numbers);
-    } else {
-      scale = ncDivisor((long) numberOfPEs, numbers);
-    }
-    if (scale == 0L) {
-      scale = 1L;
-    }
-    return scale;
-  }
-
-  private Long computeDelayRatio(PiGraph subGraph) {
-    long count = 0L;
-    for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-      if (din.getGraphPort().getFifo().isHasADelay()) {
-        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluate()
-            / din.getGraphPort().getExpression().evaluate();
-        count = Math.max(count, ratio);
-      }
-    }
-    return count;
-  }
-
-  /**
-   * Used to compute the greatest common divisor between 2 values
-   *
-   */
-  private Long ncDivisor(Long nC, Long n) {
-    Long i;
-    Long ncDivisor = 0L;
-    for (i = 1L; i <= n; i++) {
-      if (n % i == 0 && (i >= nC)) {
-        // Sélectionne le premier diviseur qui est plus grand que nC
-        ncDivisor = i;
-        break; // On sort de la boucle car on a trouvé le diviseur souhaité
-
-      }
-    }
-    return ncDivisor;
-  }
-
-  private Long gcd(Long a, Long b) {
-    while (b != 0L) {
-      final Long temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
-  }
 }

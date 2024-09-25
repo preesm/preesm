@@ -42,7 +42,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.PlatformUI;
 import org.preesm.algorithm.mapper.ui.stats.EditorRunnable;

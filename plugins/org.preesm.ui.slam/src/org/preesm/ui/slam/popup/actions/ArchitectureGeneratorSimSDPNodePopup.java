@@ -35,14 +35,10 @@
  */
 package org.preesm.ui.slam.popup.actions;
 
-import java.awt.Button;
-import java.awt.GridLayout;
-import java.awt.Label;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import org.eclipse.core.commands.AbstractHandler;
 import org.eclipse.core.commands.ExecutionEvent;
@@ -50,9 +46,13 @@ import org.eclipse.core.resources.IProject;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.IWorkbenchPage;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
@@ -60,7 +60,6 @@ import org.preesm.ui.PreesmUIPlugin;
 import org.preesm.ui.slam.CoreInfo;
 import org.preesm.ui.utils.DialogUtil;
 import org.preesm.ui.wizards.PreesmProjectNature;
-import org.w3c.dom.Text;
 
 /**
  * This class provides commands to generate custom multinode architectures in a Preesm project. It extends
@@ -92,11 +91,9 @@ public class ArchitectureGeneratorSimSDPNodePopup extends AbstractHandler {
    * @param event
    *          The execution event triggering the command.
    * @return null, as no specific return value is expected.
-   * @throws ExecutionException
-   *           If an exception occurs during execution.
    */
   @Override
-  public Object execute(ExecutionEvent event) throws ExecutionException {
+  public Object execute(ExecutionEvent event) {
     try {
       // Get the selected IProject
       final IWorkbenchPage page = PreesmUIPlugin.getDefault().getWorkbench().getActiveWorkbenchWindow().getActivePage();
@@ -110,7 +107,7 @@ public class ArchitectureGeneratorSimSDPNodePopup extends AbstractHandler {
       }
 
     } catch (final Exception e) {
-      throw new ExecutionException("Could not generate SimSDP architecture.", e);
+      // throw new ExecutionException("Could not generate SimSDP architecture.", e);
     }
     return null;
   }

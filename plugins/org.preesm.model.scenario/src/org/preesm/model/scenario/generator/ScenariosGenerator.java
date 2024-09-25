@@ -328,7 +328,7 @@ public class ScenariosGenerator {
       }
       saveScenario(scenario, scenarioFile);
     }
-  }// opr change private -> public
+  }
 
   /**
    * Save a given PreesmScenario in a given IFile.

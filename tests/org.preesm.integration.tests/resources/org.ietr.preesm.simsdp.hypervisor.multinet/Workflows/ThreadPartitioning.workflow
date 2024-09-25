@@ -4,7 +4,7 @@
     <dftools:task pluginId="scape.task.identifier" taskId="SCAPE">
         <dftools:data key="variables">
             <dftools:variable name="Level number" value="1"/>
-            <dftools:variable name="Memory optimization" value="True"/>
+            <dftools:variable name="Memory optimization" value="False"/>
             <dftools:variable name="Non-cluster actor" value=""/>
             <dftools:variable name="SCAPE mode" value="2"/>
             <dftools:variable name="Stack size" value="1000000"/>
@@ -60,6 +60,12 @@
     <dftools:task pluginId="TopTimingExporterTask.identifier" taskId="Top Timing Exporter">
         <dftools:data key="variables"/>
     </dftools:task>
+    <dftools:task pluginId="pisdf-export" taskId="PiSDF Export">
+        <dftools:data key="variables">
+            <dftools:variable name="hierarchical" value="true"/>
+            <dftools:variable name="path" value="/Algo/scape"/>
+        </dftools:data>
+    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario"
         targetport="scenario" to="SCAPE"/>
     <dftools:dataTransfer from="SCAPE" sourceport="PiMM"
@@ -94,4 +100,6 @@
         sourceport="ABC" targetport="ABC" to="Top Timing Exporter"/>
     <dftools:dataTransfer from="SCAPE" sourceport="cMem"
         targetport="cMem" to="Intranode Stats exporter"/>
+    <dftools:dataTransfer from="SCAPE" sourceport="PiMM"
+        targetport="PiMM" to="PiSDF Export"/>
 </dftools:workflow>

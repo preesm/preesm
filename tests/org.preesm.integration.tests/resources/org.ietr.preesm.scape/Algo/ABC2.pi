@@ -8,26 +8,44 @@
     <graph edgedefault="directed">
         <data key="name">ABC2</data>
         <node id="A" kind="actor">
-            <data key="graph_desc">Code/include/h.h</data>
-            <loop name="src">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
                 <param direction="OUT" isConfig="false" name="o" type="char"/>
             </loop>
-            <init name="src"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="12" kind="output" name="o"/>
         </node>
         <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
             <port annotation="NONE" expr="3" kind="input" name="i"/>
         </node>
         <edge kind="fifo" source="A" sourceport="o" target="B"

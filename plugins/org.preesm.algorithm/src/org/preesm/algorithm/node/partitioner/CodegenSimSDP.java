@@ -213,6 +213,12 @@ public class CodegenSimSDP {
     return result;
   }
 
+  /**
+   * The port mapping follows the numerical order and has been built to match the interfacing between SimSDP's topgraph
+   * and subgraphs. The order is extracted from the port naming built in PiSDFSubgraphBuilder.java
+   *
+   *
+   */
   private void mappingPort() {
     for (final AbstractActor node : topGraph.getOnlyActors()) {
 
@@ -344,37 +350,37 @@ public class CodegenSimSDP {
     return result;
   }
 
-  private StringBuilder mpiSend(AbstractActor node) {
+  // private StringBuilder mpiSend(AbstractActor node) {
+  // final StringBuilder result = new StringBuilder();
+  // final Object[] args = node.getDataOutputPorts().toArray();
+  // for (int i = 0; i < args.length; i++) {
+  // final int index = i;
+  // final DataOutputPort dout = node.getDataOutputPorts().stream().filter(x -> x.getName().equals("out_" + index))
+  // .findFirst().orElseThrow(PreesmRuntimeException::new);
+  //
+  // final String bufferName = node.getName() + "_" + dout.getName() + "__"
+  // + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
+  // final int dest = Integer.parseInt(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
+  // String type = dout.getFifo().getType();
+  // String destination = String.valueOf(dest);
+  // if (isHomogeneous) {
+  // destination = "find_rank_by_processor_name(nodeset[" + dest + "])";
+  // }
+  // if ("uchar".equals(type)) {
+  // type = "unsigned_char";
+  // }
+  // result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
+  // + "," + destination + " ,label, MPI_COMM_WORLD);\n");
+  // }
+  // return result;
+  // }
+  //
+  // public static String generateFuncForHeterogeneousAttribute() {
+  // return HETEROGENEOUS_ATTIBUTE_FUNC;
+  // }
+
+  private String mpiSend(AbstractActor node) {
     final StringBuilder result = new StringBuilder();
-    final Object[] args = node.getDataOutputPorts().toArray();
-    for (int i = 0; i < args.length; i++) {
-      final int index = i;
-      final DataOutputPort dout = node.getDataOutputPorts().stream().filter(x -> x.getName().equals("out_" + index))
-          .findFirst().orElseThrow(PreesmRuntimeException::new);
-
-      final String bufferName = node.getName() + "_" + dout.getName() + "__"
-          + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
-      final int dest = Integer.parseInt(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
-      String type = dout.getFifo().getType();
-      String destination = String.valueOf(dest);
-      if (isHomogeneous) {
-        destination = "find_rank_by_processor_name(nodeset[" + dest + "])";
-      }
-      if ("uchar".equals(type)) {
-        type = "unsigned_char";
-      }
-      result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
-          + "," + destination + " ,label, MPI_COMM_WORLD);\n");
-    }
-    return result;
-  }
-
-  public static String generateFuncForHeterogeneousAttribute() {
-    return HETEROGENEOUS_ATTIBUTE_FUNC;
-  }
-
-  private StringConcatenation mpiSend(AbstractActor node) {
-    final StringConcatenation result = new StringConcatenation();
     final Object[] args = node.getDataOutputPorts().toArray();
     for (int i = 0; i < args.length; i++) {
       final int index = i;
@@ -395,7 +401,7 @@ public class CodegenSimSDP {
       result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
           + "," + destination + " ,label, MPI_COMM_WORLD);\n");
     }
-    return result;
+    return result.toString();
   }
 
   public static String generateFuncForHeterogeneousAttribute() {

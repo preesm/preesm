@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.URI;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,10 +15,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
-
 import org.eclipse.core.runtime.Path;
-import org.eclipse.emf.common.util.URI;
-
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
@@ -40,6 +35,7 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -194,20 +190,21 @@ public class IntranodeBuilder {
       // Create source/sink actors for DataInterfaces
       for (final InterfaceActor dataInterface : subgraph.getDataInterfaces()) {
 
+        Actor actor;
 
-      for (final DataInputInterface in : subgraph.getDataInputInterfaces()) {
-        final Actor src = createSourceActor(in, index, subgraph);
-        setExecutionTimeForInterface(src);
-      }
+        if (dataInterface instanceof final DataInputInterface dii) {
+          actor = createSourceActor(dii, index, subgraph);
+        } else {
+          // If dataInterface instanceof DataOutputInterface
+          actor = createSinkActor((DataOutputInterface) dataInterface, index, subgraph);
+        }
+        subgraph.removeActor(dataInterface);
+        archi.getProcessingElements().stream().forEach(opId -> scenario.getTimings().setExecutionTime(actor, opId, 1L));
 
-      // Create sink actors for DataOutputInterfaces
-      for (final DataOutputInterface out : subgraph.getDataOutputInterfaces()) {
-        final Actor snk = createSinkActor(out, index, subgraph);
-        setExecutionTimeForInterface(snk);
       }
 
       // Step 2: Merge CFG (rename dependencies and ports for inter-subgraph connections)
-      // convertAndMergeConfigInput(subgraph);
+      convertAndMergeConfigInput(subgraph);
 
       // Step 3: Compute BRV for Subgraph
       PiBRV.compute(subgraph, BRVMethod.LCM);
@@ -286,39 +283,43 @@ public class IntranodeBuilder {
 
   // Helper method to merge CFG (rename dependencies and ports for inter-subgraph connections)
   private void convertAndMergeConfigInput(PiGraph subgraph) {
+    final int i = 0;
     // Iterate through dependencies and rename setter names to getter names
     for (final Dependency dep : subgraph.getDependencies()) {
 
       // Finding if a Parameter of that name already exists
       final Parameter p = subgraph.getParameters().stream()
           .filter(cii -> cii.getName().equals(dep.getGetter().getName())).findAny().orElse(null);
+      if (dep.getSetter() instanceof ConfigInputInterface) {
 
-      final ConfigInputInterface cii = (ConfigInputInterface) dep.getSetter();
+        final ConfigInputInterface cii = (ConfigInputInterface) dep.getSetter();
 
-      if (p == null) {
-        // If no such named Parameter exists, creating it.
+        if (p == null || cii instanceof ConfigInputInterface) {
+          // If no such named Parameter exists, creating it.
 
-        // In case dependency source is config out
-        if (!(cii.getGraphPort().getIncomingDependency().getSource() instanceof Parameter)) {
-          throw new PreesmRuntimeException("Config output interface/port are not supported in this context.");
+          // In case dependency source is config out
+          if (!(cii.getGraphPort().getIncomingDependency().getSource() instanceof Parameter)) {
+            throw new PreesmRuntimeException("Config output interface/port are not supported in this context.");
+          }
+
+          // Creating replacement parameter
+          final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
+              ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
+
+          // Adding replacement parameter to graph
+          subgraph.addParameter(parameter);
+
+          // Reassigning ConfigInputInterface outgoing dependency to replacement parameter
+          parameter.getOutgoingDependencies().addAll(cii.getOutgoingDependencies());
+        } else {
+          // If a ConfigInputInterface of this name exists, reassigning current Dependency to it.
+          p.getOutgoingDependencies().addAll(cii.getOutgoingDependencies());
         }
-
-        // Creating replacement parameter
-        final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
-            ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
-
-        // Adding replacement parameter to graph
-        subgraph.addParameter(parameter);
-
-        // Reassigning ConfigInputInterface outgoing dependency to replacement parameter
-        parameter.getOutgoingDependencies().addAll(cii.getOutgoingDependencies());
-      } else {
-        // If a ConfigInputInterface of this name exists, reassigning current Dependency to it.
-        p.getOutgoingDependencies().addAll(cii.getOutgoingDependencies());
+        // Removing ConfigInputInterface from the graph, will also remove the associated ConfigInputPort
+        subgraph.removeParameter(cii);
       }
-      // Removing ConfigInputInterface from the graph, will also remove the associated ConfigInputPort
-      subgraph.removeParameter(cii);
     }
+    final int b = 0;
   }
 
   /**
@@ -335,7 +336,7 @@ public class IntranodeBuilder {
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);
     final IProject iProject = file.getProject();
     final String fileName = printgraph.getName() + ".pi";
-    final URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
+    final org.eclipse.emf.common.util.URI uri = FileUtils.getPathToFileInFolder(iProject, fromPortableString, fileName);
 
     // Get the project
     final String platformString = uri.toPlatformString(true);
@@ -398,6 +399,12 @@ public class IntranodeBuilder {
         copy.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
 
+        final ForkActor frk = PiMMUserFactory.instance.createForkActor();
+        frk.setName("Fork_" + key.getName() + index);
+        frk.getDataInputPorts().add(din);
+        frk.getDataOutputPorts().add(dout);
+        frk.getDataOutputPorts().add(doutn);
+        piGraph.addActor(frk);
         subsCopy.get(subRank).put(frk, 1L);
         brv.put(frk, 1L);
         index++;

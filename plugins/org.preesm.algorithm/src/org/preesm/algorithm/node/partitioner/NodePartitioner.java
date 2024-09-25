@@ -164,14 +164,14 @@ public class NodePartitioner {
         }
       }
 
-      final Design subArchi = ArchitecturesGenerator.generateArchitecture(type2nb, "Node" + node.getID(),
+      final Design subArchi = ArchitecturesGenerator.generateSimSDPArchitecture(type2nb, "Node" + node.getID(),
           node.getCores().get(0).getCoreCommunicationRate(), coreIDStart);
 
       subArchi.setUrl(archiPath + "Node" + node.getID() + ".slam");
       archiList.add(subArchi);
       a.saveArchitecture(subArchi);
-      a.generateAndSaveArchitecture(type2nb, "Node" + node.getID(), node.getCores().get(0).getCoreCommunicationRate(),
-          coreIDStart);
+      a.generateAndSaveSimSDPArchitecture(type2nb, "Node" + node.getID(),
+          node.getCores().get(0).getCoreCommunicationRate(), coreIDStart);
       coreIDStart += node.getCores().size();
     }
   }

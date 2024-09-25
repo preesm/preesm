@@ -87,13 +87,12 @@ public class PreesmCFormatter {
       doc.set(contents);
       final TextEdit edit = codeFormatter.format(CodeFormatter.K_TRANSLATION_UNIT, contents, 0, contents.length(), 0,
           null);
-      if (edit != null) {
-        edit.apply(doc);
-      } else {
+      if (edit == null) {
         final String errorMessage = NLS.bind(Messages.FormatProblem, file.getAbsolutePath());
         PreesmLogger.getLogger().log(Level.WARNING, errorMessage);
         return;
       }
+      edit.apply(doc);
 
       // write the file
       try (final BufferedWriter out = new BufferedWriter(new FileWriter(file))) {

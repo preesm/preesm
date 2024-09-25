@@ -65,38 +65,13 @@ public class ScenarioBuilder {
   }
 
   public void subExecute() {
-
     if (graph.getActors().isEmpty()) {
-
-    }
-  }
-
-  // store timing in case
-  csvGenerator(final subScenario, graph, archi);
-
-      final List<ComponentInstance> coreIds = new ArrayList<>(archi.getOperatorComponentInstances());
-      // for all different type of cores, allow mapping on it
-      final ComponentInstance mainOp = coreIds.get(0);
-      for (final ComponentInstance coreId : coreIds) {
-        for (final AbstractActor aa : graph.getAllActors()) {
-          if ((aa.getName().contains("src_") || aa.getName().contains("snk_")) && coreId != mainOp) {
-            continue;
-          }
-          subScenario.getConstraints().addConstraint(coreId, aa);
-
-        }
-        // Add special actors operator id (all cores can execute special
-        // actors)
-        subScenario.getSimulationInfo().addSpecialVertexOperator(coreId);
-      }
-
-      scenarioExporter(subScenario);
+      return;
 
     }
 
-  final Scenario subScenario = ScenarioUserFactory.createScenario();
-
-  defaultInfo(subScenario);
+    final Scenario subScenario = ScenarioUserFactory.createScenario();
+    defaultInfo(subScenario);
 
     // for all different type of cores, add default timing
     for (final Component opId : archi.getProcessingElements()) {
@@ -120,6 +95,7 @@ public class ScenarioBuilder {
     }
 
     scenarioExporter(subScenario);
+
   }
 
   private void defaultInfo(Scenario scenario) {

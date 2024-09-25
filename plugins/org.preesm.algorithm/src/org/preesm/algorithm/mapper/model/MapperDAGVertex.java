@@ -324,10 +324,10 @@ public class MapperDAGVertex extends DAGVertex {
       return getEffectiveOperator().getComponent().getVlnv().getName();
     }
 
-    if (propertyName.equals(ImplementationPropertyNames.Vertex_Available_Operators)) {
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
       return getInit().getInitialOperatorList().toString();
     }
-    if (propertyName.equals(ImplementationPropertyNames.Vertex_originalVertexId)) {
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
       return getInit().getParentVertex().getId();
     }
     if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
@@ -335,7 +335,8 @@ public class MapperDAGVertex extends DAGVertex {
     }
     if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
       return String.valueOf(getTiming().getTotalOrder(this));
-    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
+    }
+    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
       return getEffectiveComponent().getInstanceName();
     }
     return super.getPropertyStringValue(propertyName);

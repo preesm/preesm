@@ -119,8 +119,8 @@ public class GanttData {
 
     while (viterator.hasNext()) {
       final MapperDAGVertex currentVertex = (MapperDAGVertex) viterator.next();
-      if (currentVertex.getKind().equals(MapperDAGVertex.DAG_VERTEX)
-          && ((Actor) currentVertex.getOrigVertex()).isOnGPU()) {
+      if (currentVertex.getKind() != null && currentVertex.getKind().equals(MapperDAGVertex.DAG_VERTEX)
+          && currentVertex.getOrigVertex() instanceof final Actor actor && actor.isOnGPU()) {
         currentVertex.setKind(MapperDAGVertex.DAG_GPU_OFFLOAD);
 
       }

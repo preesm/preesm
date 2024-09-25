@@ -10,7 +10,8 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
  org.apache.commons.lang3;bundle-version="3.12.0",
  org.preesm.codegen.xtend,
  wrapped.org.apache-extras.beanshell.bsh,
- org.preesm.model.tests
+ org.preesm.model.tests,
+ org.preesm.algorithm
 Export-Package: org.ietr.dftools.algorithm.test,
  org.ietr.preesm.core.test,
  org.ietr.preesm.deadlock.test,

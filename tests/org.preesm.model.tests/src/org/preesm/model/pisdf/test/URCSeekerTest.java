@@ -56,7 +56,6 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
-import org.preesm.model.pisdf.util.URCSeeker;
 
 /**
  * @author dgageot
@@ -84,9 +83,10 @@ public class URCSeekerTest {
     createChainedActorsPiGraph();
     // Build the URC seeker
 
-    this.seeker = new URCSeeker(this.topGraph, null, null);
+    // this.seeker = new URCSeeker(this.topGraph, null);
+    this.seeker = new ClusteringPatternSeekerUrc(this.topGraph, null);
     // Retrieve list of URC chain in the graph
-    seekerResults = this.seeker.seek();
+    seekerResults = this.seeker.originalSeek();
   }
 
   /**
@@ -107,7 +107,7 @@ public class URCSeekerTest {
 
   @Test
   public void testExpectToFoundTwoURCs() {
-    assertEquals(4, this.seekerResults.size());
+    assertEquals(2, this.seekerResults.size());
   }
 
   @Test

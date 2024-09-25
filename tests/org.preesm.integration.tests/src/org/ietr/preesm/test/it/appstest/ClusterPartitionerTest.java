@@ -89,6 +89,7 @@ public class ClusterPartitionerTest {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
+    System.out.println("Taille de seekerResults : " + success);
     Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
   }
 }

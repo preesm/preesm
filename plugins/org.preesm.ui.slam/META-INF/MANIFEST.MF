@@ -5,7 +5,8 @@ Automatic-Module-Name: org.preesm.ui.slam.singleton.true
 Bundle-SymbolicName: org.preesm.ui.slam;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Require-Bundle: org.preesm.ui,
- org.preesm.model.slam
+ org.preesm.model.slam,
+ org.eclipse.swt
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Bundle-Vendor: IETR / INSA Rennes - VAADER

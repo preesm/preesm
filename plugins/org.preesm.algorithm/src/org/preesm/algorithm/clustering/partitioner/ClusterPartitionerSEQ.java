@@ -35,26 +35,11 @@
  */
 package org.preesm.algorithm.clustering.partitioner;
 
-import java.util.List;
-import java.util.Map;
-import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.pisdf.autodelays.AutoDelaysTask;
-import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.ConfigInputInterface;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.SEQSeeker;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
@@ -64,28 +49,9 @@ import org.preesm.model.slam.Design;
  * @author orenaud
  *
  */
-
-public class ClusterPartitionerSEQ {
-
-  /**
-   * Input graph.
-   */
-  private final PiGraph  graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int      numberOfPEs;
+public class ClusterPartitionerSEQ extends ClusterPartitioner {
 
   private final Design archi;
-
-  private final Map<AbstractVertex, Long> brv;
-
-  private final int                 clusterId;
-  private final List<AbstractActor> nonClusterableList;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -97,153 +63,25 @@ public class ClusterPartitionerSEQ {
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
    *
-   * @param brv
-   *          repetition vector
-   * @param clusterId
-   *          cluster identificator
-   * @param nonClusterableList
-   *          List of non clusterable actors
-   * @param archi
-   *          architecture
    */
-  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList, Design archi) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
-    this.brv = brv;
-    this.clusterId = clusterId;
-    this.nonClusterableList = nonClusterableList;
-    this.archi = archi;
+  public ClusterPartitionerSEQ(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
+    super(scenario.getAlgorithm(), scenario, numberOfPEs);
+    this.archi = scenario.getDesign();
   }
 
   /**
    * @return Clustered PiGraph.
    */
-
+  @Override
   public PiGraph cluster() {
 
-    // Look for actor groups other than SEQ chains.
-    // if (this.graph.getAllDelays().size() == 0) {
-    // if (this.graph.getChildrenGraphs().isEmpty()) {
-    final List<List<
-        AbstractActor>> graphSEQs = new SEQSeeker(this.graph, this.numberOfPEs, this.brv, nonClusterableList).seek();
-
-    // Subgraph 1st generation
-
-    if (!graphSEQs.isEmpty()) {
-      final List<AbstractActor> seq = graphSEQs.get(0);// cluster one by one
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, seq, "seq_" + clusterId).build();
-      int numberOfCut = numberOfPEs - 1;
-      if (subGraph.getExecutableActors().size() < numberOfPEs) {
-        numberOfCut = subGraph.getExecutableActors().size() - 1;
-      }
-      PiBRV.compute(this.graph, BRVMethod.LCM);
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(seq, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
-      }
-      final PiGraph subGraphCutted = AutoDelaysTask.addDelays(subGraph, archi, scenario, false, false, false,
-          numberOfPEs, numberOfCut, numberOfCut + 1);// subGraphCutted
-      graph.replaceActor(subGraph, subGraphCutted);
-      // partiallyFlatten(subGraphCutted);
+    if (graph.getDelayIndex() == 0 && SlamDesignPEtypeChecker.isHomogeneousCPU(scenario.getDesign())
+        && graph.getChildrenGraphs().isEmpty()) {
+      final int numberOfCut = numberOfPEs;
+      final int maxCut = numberOfPEs - 1;
+      return AutoDelaysTask.addDelays(graph, archi, scenario, false, false, false, numberOfPEs, numberOfCut, maxCut);
 
     }
-    // }
     return this.graph;
   }
-
-  // temporary func.
-  private void partiallyFlatten(PiGraph graph) {
-    final PiGraph parentGraph = graph.getContainingPiGraph();
-    // Substitute subgraph parameters with expression set in their parent graph
-    // /!\ Getting prod and cons rate from the subgraph will no longer
-    // be possible afterwards, unless it is copied in the parent.
-
-    // ...
-    // Connect FIFO that were connected to ports of the flattened actor
-    // and those connected to interfaces in the subgraph
-
-    for (final DataInputInterface din : graph.getDataInputInterfaces()) {
-      final Fifo fifo = din.getDataPort().getFifo();
-      final Fifo fifoTrash = din.getGraphPort().getFifo();
-      final Long rate = fifoTrash.getSourcePort().getExpression().evaluate();
-      fifo.setSourcePort(din.getGraphPort().getFifo().getSourcePort());
-      fifo.getSourcePort().setExpression(rate);
-      graph.removeFifo(fifoTrash);
-    }
-    for (final DataOutputInterface dout : graph.getDataOutputInterfaces()) {
-      final Fifo fifo = dout.getDataPort().getFifo();
-      final Fifo fifoTrash = dout.getGraphPort().getFifo();
-      final Long rate = fifoTrash.getTargetPort().getExpression().evaluate();
-
-      fifo.setTargetPort(dout.getGraphPort().getFifo().getTargetPort());
-      fifo.getTargetPort().setExpression(rate);
-      graph.removeFifo(fifoTrash);
-    }
-    for (final Parameter cfg : graph.getParameters()) {
-      final int size = cfg.getOutgoingDependencies().size();
-      for (int i = size - 1; i >= 0; i--) {
-        final Dependency dep = cfg.getOutgoingDependencies().get(i);
-        dep.setSetter(((ConfigInputInterface) cfg).getGraphPort().getIncomingDependency().getSetter());
-        dep.setContainingGraph(parentGraph);
-        // dep.getGetter().set
-      }
-
-    }
-
-    // transfer element upper
-    for (final AbstractActor actor : graph.getExecutableActors()) {
-      actor.setContainingGraph(parentGraph);
-    }
-    for (final Fifo fifo : graph.getFifos()) {
-      fifo.setContainingGraph(parentGraph);
-    }
-    for (final Fifo fifo : parentGraph.getFifos()) {
-      if (fifo.getTargetPort() == null) {
-        parentGraph.removeFifo(fifo);
-      }
-      if (fifo.getSourcePort() == null) {
-        parentGraph.removeFifo(fifo);
-      }
-    }
-    for (final Dependency dep : parentGraph.getDependencies()) {
-      dep.getGetter().getConfigurable();
-      // dep.getTarget()
-      // if (((Vertex) dep.getGetter()).getContainingGraph() != parentGraph) {
-      // ((Vertex) dep.getGetter()).setContainingGraph(parentGraph);
-      // }
-    }
-    // final int size = parentGraph.getAllDependencies().size();
-    // for (int i = size - 1; i >= 0; i--) {
-    // final Dependency dep = parentGraph.getAllDependencies().get(i);
-    // if (dep.getContainingGraph() != parentGraph) {
-    // graph.removeDependency(dep);
-    // parentGraph.removeDependency(dep);
-    // }
-    // }
-    int size = graph.getAllDependencies().size();
-    for (int i = size - 1; i >= 0; i--) {
-      final Dependency dep = graph.getAllDependencies().get(i);
-      graph.removeDependency(dep);
-    }
-
-    parentGraph.removeActor(graph);
-
-    for (final Parameter param : parentGraph.getParameters()) {
-      for (final Dependency dep : param.getOutgoingDependencies()) {
-        if (dep.getGetter() == null) {
-          int i;
-          i = 0;
-        }
-      }
-    }
-    size = parentGraph.getAllDependencies().size();
-    for (int i = size - 1; i >= 0; i--) {
-      final Dependency dep = parentGraph.getAllDependencies().get(i);
-      if (dep.getGetter() == null) {
-        parentGraph.removeDependency(dep);
-      }
-    }
-  }
-
 }

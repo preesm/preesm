@@ -4,7 +4,6 @@
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2022)
-
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,7 +38,6 @@ package org.preesm.model.slam.test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.attribute.FileAttribute;
 import java.nio.file.attribute.PosixFilePermission;
@@ -48,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.SystemUtils;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;

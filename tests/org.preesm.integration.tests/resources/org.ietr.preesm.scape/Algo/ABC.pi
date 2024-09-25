@@ -4,33 +4,67 @@
     <key attr.name="variables" for="graph" id="variables"/>
     <key attr.name="arguments" for="node" id="arguments"/>
     <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">ABC</data>
         <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="12" kind="output" name="o"/>
         </node>
         <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="IN" isConfig="false" name="li" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+                <param direction="OUT" isConfig="false" name="lo" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
             <port annotation="NONE" expr="1" kind="input" name="li"/>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
             <port annotation="NONE" expr="1" kind="output" name="lo"/>
         </node>
         <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
             <port annotation="NONE" expr="3" kind="input" name="i"/>
         </node>
         <node id="set" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="get" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
         </node>
         <node expr="1" getter="get" id="D_lo__D_li" kind="delay"

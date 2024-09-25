@@ -46,7 +46,6 @@
 package org.preesm.codegen.xtend.task;
 
 import java.io.IOException;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -62,16 +61,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.preesm.codegen.format.CodeFormatterAndPrinter;
 import org.preesm.codegen.model.Block;
-import org.preesm.codegen.model.ClusterRaiserBlock;
 import org.preesm.codegen.model.CoreBlock;
-import org.preesm.codegen.model.MainSimsdpBlock;
-import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -199,60 +196,39 @@ public class CodegenEngine {
       final Block b) {
     IConfigurationElement foundPrinter = null;
 
-    if (b instanceof ClusterRaiserBlock || b instanceof MainSimsdpBlock) {
-      String coreType = "";
-      if (b instanceof ClusterRaiserBlock) {
-        coreType = ((ClusterRaiserBlock) b).getCoreType();
-      } else {
-        coreType = ((MainSimsdpBlock) b).getCoreType();
-      }
-      for (final IConfigurationElement printer : usablePrinters) {
-        final IConfigurationElement[] supportedCores = printer.getChildren();
-        for (final IConfigurationElement supportedCore : supportedCores) {
-          if (supportedCore.getAttribute("type").equals(coreType)) {
-            foundPrinter = printer;
-            break;
-          }
-        }
-        if (foundPrinter != null) {
-          break;
-        }
-      }
-      if (foundPrinter == null) {
-        throw new PreesmRuntimeException(
-            "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
-      }
-      if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-        this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-      }
-      final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-      blocks.add(b);
-    } else if (b instanceof CoreBlock) {
-      final String coreType = ((CoreBlock) b).getCoreType();
-      for (final IConfigurationElement printer : usablePrinters) {
-        final IConfigurationElement[] supportedCores = printer.getChildren();
-        for (final IConfigurationElement supportedCore : supportedCores) {
-          if (supportedCore.getAttribute("type").equals(coreType)) {
-            foundPrinter = printer;
-            break;
-          }
-        }
-        if (foundPrinter != null) {
-          break;
-        }
-      }
-      if (foundPrinter == null) {
-        throw new PreesmRuntimeException(
-            "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
-      }
-      if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-        this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-      }
-      final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
-      blocks.add(b);
-    } else {
+    if (!(b instanceof final CoreBlock coreBlock)) {
       throw new PreesmRuntimeException("Only CoreBlock CodeBlocks can be printed in the current version of Preesm.");
     }
+
+    // temporary handle multiple frequency per core type
+    final String coreType = ((CoreBlock) b).getCoreType().split("_")[0];
+
+    for (final IConfigurationElement printer : usablePrinters) {
+      final IConfigurationElement[] supportedCores = printer.getChildren();
+      for (final IConfigurationElement supportedCore : supportedCores) {
+        if (supportedCore.getAttribute("type").equals(coreType)) {
+          foundPrinter = printer;
+          break;
+        }
+      }
+      if (foundPrinter != null) {
+        break;
+      }
+    }
+
+    if (foundPrinter == null) {
+      throw new PreesmRuntimeException(
+          "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
+    }
+
+    // if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
+    // this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
+    // }
+    this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, fp -> new ArrayList<>());
+
+    final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);
+    blocks.add(coreBlock);
+
   }
 
   private Set<IConfigurationElement> getLanguagePrinter(final String selectedPrinter) {
@@ -322,7 +298,7 @@ public class CodegenEngine {
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
         CodeFormatterAndPrinter.format(iFile);
 
-        if (b instanceof CoreBlock) {
+        if (b instanceof final CoreBlock coreblock) {
           multinode = ((CoreBlock) b).isMultinode();
         }
       }
@@ -337,7 +313,7 @@ public class CodegenEngine {
         }
 
         // Add standard files for this printer
-        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles();
+        final Map<String, CharSequence> generateStandardLibFiles = printer.generateStandardLibFiles(this.codegenPath);
         for (final Entry<String, CharSequence> entry : generateStandardLibFiles.entrySet()) {
           final String fileName = entry.getKey();
           final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
@@ -354,43 +330,6 @@ public class CodegenEngine {
           CodeFormatterAndPrinter.format(iFile);
         }
 
-      }
-    }
-  }
-
-  /**
-   * Prints SCAPE cluster files
-   */
-  public void printClusterRaiser() {
-
-    // Print C files
-    final Block hb = CodegenModelUserFactory.eINSTANCE.createBlock();
-    for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
-        .entrySet()) {
-
-      final String extension = printerAndBlocks.getKey().getAttribute("extension");
-      final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
-      final String extensionH = ".h";
-
-      for (final Block b : printerAndBlocks.getValue()) {
-        if (b instanceof ClusterRaiserBlock) {
-          if (((ClusterRaiserBlock) b).getBodyBlock() != null) {
-            final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
-            final String fileName = b.getName() + extension;
-
-            final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
-            CodeFormatterAndPrinter.format(iFile);
-            hb.setName(b.getName());
-
-            // Print H files
-
-            final String fileContentStringH = printer.clusterRaiserSecondaryFileHeader((ClusterRaiserBlock) b)
-                .toString();
-            final String fileNameH = b.getName() + extensionH;
-            final IFile iFileH = PreesmIOHelper.getInstance().print(this.codegenPath, fileNameH, fileContentStringH);
-            CodeFormatterAndPrinter.format(iFileH);
-          }
-        }
       }
     }
   }

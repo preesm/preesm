@@ -8,177 +8,154 @@
     <key attr.name="delay" attr.type="string" for="edge"/>
     <graph edgedefault="directed">
         <data key="name">ABC</data>
+        <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="12" kind="output" name="o"/>
+        </node>
+        <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="IN" isConfig="false" name="li" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+                <param direction="OUT" isConfig="false" name="lo" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="input" name="li"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+            <port annotation="NONE" expr="1" kind="output" name="lo"/>
+        </node>
         <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
             <port annotation="NONE" expr="3" kind="input" name="i"/>
         </node>
         <node id="set" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
         <node id="get" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
             <port annotation="NONE" expr="1" kind="input" name="i"/>
         </node>
-        <node id="E2" kind="actor">
-            <port annotation="NONE" expr="3" kind="input" name="i"/>
+        <node id="C2" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
         </node>
-        <node id="Fork_loop_D0" kind="fork">
+        <node id="Fork_eu_C0" kind="fork">
             <port annotation="NONE" expr="12" kind="input" name="in"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_2"/>
+            <port annotation="NONE" expr="10" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="2" kind="output" name="out_1"/>
         </node>
-        <node id="loop_0" kind="actor">
-            <data key="graph_desc">Code/generated/Cluster_ABC_loop_0.h</data>
-            <loop name="loop_0">
-                <param direction="IN" isConfig="false"
-                    name="in_0" type="char"/>
-                <param direction="IN" isConfig="false"
-                    name="in_1" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_0" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_1" type="char"/>
+        <node id="Join_eu_C0" kind="join">
+            <port annotation="NONE" expr="10" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="2" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="12" kind="output" name="out"/>
+        </node>
+        <node id="D2" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="IN" isConfig="false" name="li" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+                <param direction="OUT" isConfig="false" name="lo" type="char"/>
             </loop>
-            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
-            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
-            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="input" name="li"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+            <port annotation="NONE" expr="1" kind="output" name="lo"/>
         </node>
-        <node id="loop_1" kind="actor">
-            <data key="graph_desc">Code/generated/Cluster_ABC_loop_1.h</data>
-            <loop name="loop_1">
-                <param direction="IN" isConfig="false"
-                    name="in_0" type="char"/>
-                <param direction="IN" isConfig="false"
-                    name="in_1" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_0" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_1" type="char"/>
-            </loop>
-            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
-            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
-            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+        <node id="Fork_eu_D0" kind="fork">
+            <port annotation="NONE" expr="12" kind="input" name="in"/>
+            <port annotation="NONE" expr="10" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="2" kind="output" name="out_1"/>
         </node>
-        <node id="loop_2" kind="actor">
-            <data key="graph_desc">Code/generated/Cluster_ABC_loop_2.h</data>
-            <loop name="loop_2">
-                <param direction="IN" isConfig="false"
-                    name="in_0" type="char"/>
-                <param direction="IN" isConfig="false"
-                    name="in_1" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_0" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_1" type="char"/>
-            </loop>
-            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
-            <port annotation="NONE" expr="1" kind="input" name="in_1"/>
-            <port annotation="NONE" expr="1" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_1"/>
+        <node id="Join_eu_D0" kind="join">
+            <port annotation="NONE" expr="10" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="2" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="12" kind="output" name="out"/>
         </node>
-        <node id="urc_1" kind="actor">
-            <data key="graph_desc">Code/generated/Cluster_ABC_urc_1.h</data>
-            <loop name="urc_1">
-                <param direction="OUT" isConfig="false"
-                    name="out_0" type="char"/>
-            </loop>
-            <port annotation="NONE" expr="12" kind="output" name="out_0"/>
-        </node>
-        <node id="urc_2" kind="actor">
-            <data key="graph_desc">Code/generated/Cluster_ABC_urc_2.h</data>
-            <loop name="urc_2">
-                <param direction="IN" isConfig="false"
-                    name="in_0" type="char"/>
-                <param direction="IN" isConfig="false"
-                    name="in_1" type="char"/>
-                <param direction="IN" isConfig="false"
-                    name="in_2" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_0" type="char"/>
-                <param direction="OUT" isConfig="false"
-                    name="out_1" type="char"/>
-            </loop>
-            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
-            <port annotation="NONE" expr="4" kind="input" name="in_1"/>
-            <port annotation="NONE" expr="4" kind="input" name="in_2"/>
-            <port annotation="NONE" expr="9" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="3" kind="output" name="out_1"/>
-        </node>
-        <node id="srv_3" kind="actor">
-            <data key="graph_desc">Algo/scape/srv_3.pi</data>
-            <port annotation="NONE" expr="4" kind="input" name="in_0"/>
-            <port annotation="NONE" expr="4" kind="output" name="out_0"/>
-        </node>
-        <node expr="1" getter="" id="loop_0.out_0_loop_0.out_0"
-            kind="delay" level="permanent" setter="">
+        <node expr="1" getter="D_lo__D_li2" id="D_lo__D_li"
+            kind="delay" level="none" setter="set">
             <port annotation="NONE" expr="1" kind="input" name="set"/>
             <port annotation="NONE" expr="1" kind="output" name="get"/>
         </node>
-        <node expr="4" getter="" id="loop_0.out_1_loop_0.out_1"
-            kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="4" kind="input" name="set"/>
-            <port annotation="NONE" expr="4" kind="output" name="get"/>
-        </node>
-        <node expr="1" getter="" id="loop_1.out_0_loop_1.out_0"
-            kind="delay" level="permanent" setter="">
+        <node expr="1" getter="get" id="D_lo__D_li2" kind="delay"
+            level="none" setter="D_lo__D_li">
             <port annotation="NONE" expr="1" kind="input" name="set"/>
             <port annotation="NONE" expr="1" kind="output" name="get"/>
         </node>
-        <node expr="4" getter="" id="loop_1.out_1_loop_1.out_1"
-            kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="4" kind="input" name="set"/>
-            <port annotation="NONE" expr="4" kind="output" name="get"/>
-        </node>
-        <node expr="1" getter="" id="loop_2.out_0_loop_2.out_0"
-            kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="1" kind="input" name="set"/>
-            <port annotation="NONE" expr="1" kind="output" name="get"/>
-        </node>
-        <node expr="4" getter="" id="loop_2.out_1_loop_2.out_1"
-            kind="delay" level="permanent" setter="">
-            <port annotation="NONE" expr="4" kind="input" name="set"/>
-            <port annotation="NONE" expr="4" kind="output" name="get"/>
-        </node>
-        <edge expr="4" kind="fifo" source="loop_0"
-            sourceport="out_1" target="urc_2" targetport="in_0" type="char">
-            <data key="delay">loop_0.out_1_loop_0.out_1</data>
+        <edge expr="1" kind="fifo" source="D" sourceport="lo"
+            target="D" targetport="li" type="char">
+            <data key="delay">D_lo__D_li</data>
         </edge>
-        <edge expr="4" kind="fifo" source="loop_1"
-            sourceport="out_1" target="urc_2" targetport="in_1" type="char">
-            <data key="delay">loop_1.out_1_loop_1.out_1</data>
+        <edge expr="1" kind="fifo" source="D2" sourceport="lo"
+            target="D2" targetport="li" type="char">
+            <data key="delay">D_lo__D_li2</data>
         </edge>
-        <edge expr="4" kind="fifo" source="loop_2"
-            sourceport="out_1" target="urc_2" targetport="in_2" type="char">
-            <data key="delay">loop_2.out_1_loop_2.out_1</data>
-        </edge>
-        <edge expr="1" kind="fifo" source="loop_1"
-            sourceport="out_0" target="get" targetport="i" type="char">
-            <data key="delay">loop_1.out_0_loop_1.out_0</data>
-        </edge>
-        <edge expr="1" kind="fifo" source="loop_0"
-            sourceport="out_0" target="loop_2" targetport="in_1" type="char">
-            <data key="delay">loop_0.out_0_loop_0.out_0</data>
-        </edge>
-        <edge expr="1" kind="fifo" source="loop_2"
-            sourceport="out_0" target="loop_1" targetport="in_1" type="char">
-            <data key="delay">loop_2.out_0_loop_2.out_0</data>
-        </edge>
-        <edge kind="fifo" source="Fork_loop_D0"
-            sourceport="out_0" target="loop_0" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="A" sourceport="o" target="B"
+            targetport="i" type="char"/>
         <edge kind="fifo" source="set" sourceport="o"
-            target="loop_0" targetport="in_1" type="char"/>
-        <edge kind="fifo" source="Fork_loop_D0"
-            sourceport="out_1" target="loop_1" targetport="in_0" type="char"/>
-        <edge kind="fifo" source="Fork_loop_D0"
-            sourceport="out_2" target="loop_2" targetport="in_0" type="char"/>
-        <edge kind="fifo" source="urc_2" sourceport="out_0"
+            target="D_lo__D_li" targetport="set" type="char"/>
+        <edge kind="fifo" source="B" sourceport="o"
+            target="Fork_eu_C0" targetport="in" type="char"/>
+        <edge kind="fifo" source="Fork_eu_C0" sourceport="out_0"
+            target="C" targetport="i" type="char"/>
+        <edge kind="fifo" source="Fork_eu_C0" sourceport="out_1"
+            target="C2" targetport="i" type="char"/>
+        <edge kind="fifo" source="C" sourceport="o"
+            target="Join_eu_C0" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="C2" sourceport="o"
+            target="Join_eu_C0" targetport="in_1" type="char"/>
+        <edge kind="fifo" source="Join_eu_C0" sourceport="out"
+            target="Fork_eu_D0" targetport="in" type="char"/>
+        <edge kind="fifo" source="Fork_eu_D0" sourceport="out_0"
+            target="D" targetport="i" type="char"/>
+        <edge kind="fifo" source="Fork_eu_D0" sourceport="out_1"
+            target="D2" targetport="i" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li" sourceport="get"
+            target="D_lo__D_li2" targetport="set" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li2" sourceport="get"
+            target="get" targetport="i" type="char"/>
+        <edge kind="fifo" source="Join_eu_D0" sourceport="out"
             target="E" targetport="i" type="char"/>
-        <edge kind="fifo" source="urc_2" sourceport="out_1"
-            target="E2" targetport="i" type="char"/>
-        <edge kind="fifo" source="urc_1" sourceport="out_0"
-            target="srv_3" targetport="in_0" type="char"/>
-        <edge kind="fifo" source="srv_3" sourceport="out_0"
-            target="Fork_loop_D0" targetport="in" type="char"/>
+        <edge kind="fifo" source="D" sourceport="o"
+            target="Join_eu_D0" targetport="in_0" type="char"/>
+        <edge kind="fifo" source="D2" sourceport="o"
+            target="Join_eu_D0" targetport="in_1" type="char"/>
     </graph>
 </graphml>

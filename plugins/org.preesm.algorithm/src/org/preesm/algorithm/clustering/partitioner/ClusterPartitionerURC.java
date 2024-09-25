@@ -40,28 +40,27 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.graph.Vertex;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
-import org.preesm.model.pisdf.util.URCSeeker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.TimingType;
@@ -77,24 +76,12 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  * @author orenaud
  *
  */
-public class ClusterPartitionerURC {
+public class ClusterPartitionerURC extends ClusterPartitioner {
 
-  /**
-   * Input graph.
-   */
-
-  private final PiGraph                   graph;
-  /**
-   * Workflow scenario.
-   */
-  private final Scenario                  scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  private final int                       numberOfPEs;
   private final Map<AbstractVertex, Long> brv;
   private final int                       clusterId;
-  private final List<AbstractActor>       nonClusterableList;
+  private final ScapeMode                 scapeMode;
+  private final Boolean                   memoryOptim;
 
   /**
    * Builds a ClusterPartitioner object.
@@ -107,25 +94,23 @@ public class ClusterPartitionerURC {
    *          Number of processing elements in compute clusters.
    */
 
-  public ClusterPartitionerURC(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
-      Map<AbstractVertex, Long> brv, int clusterId, List<AbstractActor> nonClusterableList) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+  public ClusterPartitionerURC(PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode, Boolean memoryOptim) {
+    super(graph, scenario, numberOfPEs);
+    this.memoryOptim = memoryOptim;
     this.brv = brv;
     this.clusterId = clusterId;
-    this.nonClusterableList = nonClusterableList;
+    this.scapeMode = scapeMode;
   }
 
   /**
    * @return Clustered PiGraph.
    */
-
+  @Override
   public PiGraph cluster() {
 
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-
-    final List<List<AbstractActor>> graphURCs = new URCSeeker(this.graph, this.nonClusterableList, this.brv).seek();
+    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph, brv).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
@@ -134,96 +119,52 @@ public class ClusterPartitionerURC {
       }
     }
     // Cluster constrained URC chains.
-
-    final List<PiGraph> subGraphs = new LinkedList<>();
-
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, urc, "urc_" + clusterId).build();
 
-      // identify the delay to extract
-      final List<Delay> d = new LinkedList<>();
-
-      for (final Delay ds : subGraph.getDelays()) {
-        d.add(ds);
-      }
-      for (final Delay retainedDelay : d) {
-        // remove delay from the subgraph + add it to the upper graph
-        subGraph.getContainingPiGraph().addDelay(retainedDelay);
-        // replace delay connection by interface
-        for (final AbstractActor a : subGraph.getExecutableActors()) {
-          for (final DataInputPort p : a.getDataInputPorts()) {
-            if (p.getFifo().isHasADelay()) {
-              if (p.getFifo().getDelay().equals(retainedDelay)) {
-                final DataInputInterface din = PiMMUserFactory.instance.createDataInputInterface();
-                din.setName(subGraph.getName() + d.indexOf(retainedDelay) + "_in");
-                din.getDataOutputPorts().get(0).setName(subGraph.getName() + d.indexOf(retainedDelay) + "_in");
-                din.getDataOutputPorts().get(0).setExpression(p.getFifo().getTargetPort().getExpression().evaluate());
-                final Fifo f = PiMMUserFactory.instance.createFifo();
-                f.setType(p.getFifo().getType());
-                f.setSourcePort(din.getDataOutputPorts().get(0));
-                f.setTargetPort(p);
-                f.setContainingGraph(subGraph);
-                din.setContainingGraph(subGraph);
-                // connect interfaces to delay
-                din.getGraphPort().setExpression(p.getFifo().getTargetPort().getExpression().evaluate());
-                retainedDelay.getContainingFifo().setTargetPort((DataInputPort) din.getGraphPort());
-              }
-            }
-          }
-          for (final DataOutputPort p : a.getDataOutputPorts()) {
-            if (p.getFifo().isHasADelay()) {
-              if (p.getFifo().getDelay().equals(retainedDelay)) {
-                final DataOutputInterface dout = PiMMUserFactory.instance.createDataOutputInterface();
-                dout.setName(subGraph.getName() + d.indexOf(retainedDelay) + "_out");
-                dout.getDataInputPorts().get(0).setName(subGraph.getName() + d.indexOf(retainedDelay) + "_out");
-                dout.getDataInputPorts().get(0).setExpression(p.getFifo().getSourcePort().getExpression().evaluate());
-                final Fifo f = PiMMUserFactory.instance.createFifo();
-                f.setType(p.getFifo().getType());
-                f.setSourcePort(p);
-                f.setTargetPort(dout.getDataInputPorts().get(0));
-                f.setContainingGraph(subGraph);
-                dout.setContainingGraph(subGraph);
-                // connect interfaces to delay
-                dout.getGraphPort().setExpression(p.getFifo().getSourcePort().getExpression().evaluate());
-                retainedDelay.getContainingFifo().setSourcePort((DataOutputPort) dout.getGraphPort());
-
-              }
-            }
-          }
-
-        }
-        retainedDelay.getContainingFifo().setContainingGraph(subGraph.getContainingPiGraph());//
-        // case getter setter
-        if (retainedDelay.hasSetterActor()) {
-          retainedDelay.getSetterActor().setContainingGraph(subGraph.getContainingPiGraph());
-        }
-        if (retainedDelay.hasGetterActor()) {
-          retainedDelay.getGetterActor().setContainingGraph(subGraph.getContainingPiGraph());
-        }
-      }
+      // compute mapping
+      final Object[] result = mapping(urc, scenario, numberOfPEs, brv);
+      final Long nPE = (Long) result[0];
+      final Boolean isOnGPU = (Boolean) result[1];
       // apply scaling
-      final Long scale = computeScalingFactor(subGraph);
-      for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-        din.getGraphPort().setExpression(
-            din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);// scale
-        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
+      final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
+
+      for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+        iActor.getGraphPort().setExpression(
+            iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
+
       }
-      for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-        dout.getGraphPort().setExpression(
-            dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+
+      if (memoryOptim.equals(Boolean.TRUE)) {
+        // reduce memory exclusion graph matches
+        reduceMemExMatches(subGraph, scale, brv);
+
+        subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
+        subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
+
+        // pseudo merge redundant FIFO
+        mergeFIFO(subGraph);
+        // subGraph.getAllDataPorts().forEach(port -> System.out.println(port.getName()));
+
       }
+
+      // remove empty introduced FIFO
+      subGraph.getFifos().stream().filter(x -> x.getSourcePort() == null).forEach(subGraph::removeFifo);
+      subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-
+      // map the cluster on the CPU or GPU according to timing
+      subGraph.setOnGPU(isOnGPU);
+      // PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " +
+      // subGraph.isOnGPU());
     }
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    PiBRV.compute(this.graph, BRVMethod.LCM);
+
     return this.graph;
   }
 
@@ -488,16 +429,16 @@ public class ClusterPartitionerURC {
    *          graph
    *
    */
-  private Long computeScalingFactor(PiGraph subGraph) {
-    final Map<AbstractVertex, Long> rv = PiBRV.compute(subGraph, BRVMethod.LCM);
-    final Long[] numbers = rv.values().toArray(new Long[rv.size()]);
+  public static Long computeScalingFactor(PiGraph subGraph, Long clustredActorRepetition, Long nPE,
+      ScapeMode scapeMode) {
+
     Long scale;
-    if (subGraph.getDataInputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())
-        && subGraph.getDataOutputInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+    if (scapeMode == ScapeMode.DATA
+        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
-      scale = gcdSuite(ratio, numbers);
+      scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {
-      scale = ncDivisor((long) numberOfPEs, numbers);
+      scale = ncDivisor(nPE, clustredActorRepetition);
     }
     if (scale == 0L) {
       scale = 1L;
@@ -505,7 +446,7 @@ public class ClusterPartitionerURC {
     return scale;
   }
 
-  private Long computeDelayRatio(PiGraph subGraph) {
+  private static Long computeDelayRatio(PiGraph subGraph) {
     long count = 0L;
     for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
       if (din.getGraphPort().getFifo().isHasADelay()) {
@@ -522,46 +463,17 @@ public class ClusterPartitionerURC {
    *
    */
 
-  private Long gcd(Long a, Long b) {
-    while (b != 0L) {
-      final Long temp = b;
-      b = a % b;
-      a = temp;
-    }
-    return a;
-  }
-
-  /**
-   * Function to calculate the GCD of a list of numbers
-   *
-   * @param nC
-   *          number of Processing Element
-   * @param number
-   *          List of number
-   */
-  private Long gcdSuite(Long nC, Long[] numbers) {
-    if (numbers.length != 0) {
-      Long pgcd = nC;
-      for (final Long num : numbers) {
-        pgcd = gcd(pgcd, num);
+  private static Long ncDivisor(Long nC, Long n) {
+    Long i;
+    Long ncDivisor = 0L;
+    for (i = 1L; i <= n; i++) {
+      if (n % i == 0 && (i >= nC)) {
+        // Sélectionne le premier diviseur qui est plus grand que nC
+        ncDivisor = i;
+        break; // On sort de la boucle car on a trouvé le diviseur souhaité
       }
-      return pgcd;
     }
-    return 1L;
-  }
-
-  private Long ncDivisor(Long nc, Long[] numbers) {
-    Long gcd = numbers[0];
-
-    for (int i = 1; i < numbers.length; i++) {
-      gcd = gcd(gcd, numbers[i]);
-    }
-    Long multiple = 1L;
-    if (gcd > nc) {
-      multiple = (long) Math.ceil((double) nc / gcd);
-    }
-
-    return gcd * multiple;
+    return ncDivisor;
   }
 
 }

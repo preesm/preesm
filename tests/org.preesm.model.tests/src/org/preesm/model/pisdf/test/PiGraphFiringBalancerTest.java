@@ -101,6 +101,10 @@ public class PiGraphFiringBalancerTest {
   public void testFactor2() {
     new PiGraphFiringBalancer(this.subGraph, 2).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+
+    System.out.println("Taille de subGraph 2: " + brv.get(this.subGraph));
+    System.out.println("Taille de actorB 2: " + brv.get(this.actorB));
+    System.out.println("Taille de actorC 2: " + brv.get(this.actorC));
     assertEquals(Long.valueOf(128), brv.get(this.subGraph));
     assertEquals(Long.valueOf(2), brv.get(this.actorB));
     assertEquals(Long.valueOf(2), brv.get(this.actorC));
@@ -110,6 +114,9 @@ public class PiGraphFiringBalancerTest {
   public void testFactor4() {
     new PiGraphFiringBalancer(this.subGraph, 4).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
+    System.out.println("Taille de subGraph 4: " + brv.get(this.subGraph));
+    System.out.println("Taille de actorB 4: " + brv.get(this.actorB));
+    System.out.println("Taille de actorC 4: " + brv.get(this.actorC));
     assertEquals(Long.valueOf(64), brv.get(this.subGraph));
     assertEquals(Long.valueOf(4), brv.get(this.actorB));
     assertEquals(Long.valueOf(4), brv.get(this.actorC));

@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import org.chocosolver.solver.constraints.extension.Tuples;
+import org.apache.commons.math3.util.Pair;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.graph.Vertex;
@@ -273,11 +273,12 @@ public class ScheduleScape {
 
         if (value > maxValue) {
           maxValue = value;
-          maxPair = Tuples.create(outerKey, innerKey);
+          // maxPair = Tuples.create(outerKey, innerKey);
+          maxPair = new Pair<>(outerKey, innerKey);
         }
       }
+
     }
     return maxPair;
   }
-
 }

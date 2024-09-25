@@ -14,7 +14,8 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
  org.preesm.ui,
  org.apache.commons.lang3;bundle-version="3.12.0",
  org.eclipse.jgit;bundle-version="6.2.0",
- org.yaml.snakeyaml;bundle-version="2.0.0"
+ org.yaml.snakeyaml;bundle-version="2.0.0",
+ org.preesm.workflow
 Export-Package: org.ietr.preesm.test.it.api,
  org.ietr.preesm.test.it.appstest
 Import-Package: org.junit.jupiter.api;version="5.8.1",

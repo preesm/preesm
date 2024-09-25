@@ -73,10 +73,7 @@ import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
-import org.preesm.codegen.model.ClusterRaiserBlock
 import org.preesm.model.pisdf.Actor
-import org.preesm.codegen.model.DynamicBuffer
-import org.preesm.codegen.model.FiniteLoopClusterRaiserBlock
 import org.preesm.codegen.model.MainSimsdpBlock
 
 /**
@@ -241,29 +238,8 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printPostFunctionCall(FunctionCall functionCall) ''''''
 	
 
-	override protected printclusterRaiserSecondaryFileHeader(ClusterRaiserBlock block, List<Actor> actors, FunctionCall func) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
 
-	override printDynamicBuffer(DynamicBuffer dynamicBuffer) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
 
-	override printDynamicBufferDefinition(DynamicBuffer dynamicBuffer) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
-	override printDynamicBufferFree(DynamicBuffer dynamicBuffer) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
-	override protected printFiniteLoopClusterRaiserBlockHeader(FiniteLoopClusterRaiserBlock loopBlock) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
-
-	override protected printclusterRaiserHeader(ClusterRaiserBlock block) {
-		throw new UnsupportedOperationException("TODO: auto-generated method stub")
-	}
 	
 	
 	
@@ -272,6 +248,18 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	}
 	
 	override protected printmpi(MainSimsdpBlock block) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override generateStandardLibFiles(String path) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printCoreLoopBlockFooter(LoopBlock loopBlock, int nodeID) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printCoreLoopBlockHeader(LoopBlock loopBlock, int nodeID) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 

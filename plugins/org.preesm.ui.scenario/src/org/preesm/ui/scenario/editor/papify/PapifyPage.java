@@ -39,23 +39,18 @@
  */
 package org.preesm.ui.scenario.editor.papify;
 
-import java.awt.Composite;
-import java.awt.GridLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.FileNotFoundException;
-import java.nio.file.Path;
 import java.util.logging.Level;
-import javax.swing.CellEditor;
-import javax.swing.table.TableColumn;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IWorkspace;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ICellModifier;
@@ -66,11 +61,19 @@ import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.ui.IEditorPart;
@@ -99,7 +102,6 @@ import org.preesm.ui.scenario.editor.FileSelectionAdapter;
 import org.preesm.ui.scenario.editor.Messages;
 import org.preesm.ui.scenario.editor.PreesmAlgorithmTreeLabelProvider;
 import org.preesm.ui.scenario.editor.ScenarioPage;
-import org.w3c.dom.Text;
 
 /**
  * Papify editor within the implementation editor.
@@ -116,7 +118,7 @@ public class PapifyPage extends ScenarioPage {
 
   /** String to name the first cell in the KPI estimation models section */
 
-  private final String firstCellName = "PE Type \\ PAPI event";
+  private static final String FIRST_CELL_NAME = "PE Type \\ PAPI event";
 
   /** The table viewer. */
 
@@ -587,7 +589,7 @@ public class PapifyPage extends ScenarioPage {
       column.setMoveable(true);
       column.setWidth(150);
 
-      final PapifyComponentListContentProvider2DMatrixES editingSupport = new PapifyComponentListContentProvider2DMatrixES(
+      final PapifyComponentListContentProvider2DMatrixES editSupport = new PapifyComponentListContentProvider2DMatrixES(
           peTreeViewer, columnLabel, this.peContentProvider);
 
       viewerColumn.setLabelProvider(new PapifyComponentListContentProvider2DMatrixCLP(this.scenario, columnLabel));
@@ -610,9 +612,7 @@ public class PapifyPage extends ScenarioPage {
    * Adds a checkBoxTreeViewer to edit event association.
    *
    * @param managedForm
-   * 
-   *          empty
-   *
+   *          The form
    * @param parent
    *          the parent
    * @param toolkit
@@ -744,7 +744,7 @@ public class PapifyPage extends ScenarioPage {
               column.setToolTipText(oneEvent.getDescription());
               column.setWidth(150);
 
-              final PapifyEventListContentProvider2DMatrixES editingSupport = new PapifyEventListContentProvider2DMatrixES(
+              final PapifyEventListContentProvider2DMatrixES editSupport = new PapifyEventListContentProvider2DMatrixES(
                   this.actorTreeViewer, oneEvent.getName(), this.checkStateListener);
 
               viewerColumn.setLabelProvider(new PapifyEventListContentProvider2DMatrixCLP(this.scenario,
@@ -847,13 +847,10 @@ public class PapifyPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-
-        if (element instanceof final PapifyPeTypeEnergyModelImpl modelPeType) {
-          if (!firstCellName.equals(property)) {
-            final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
-            if (modelPeType.getValue().containsKey(event)) {
-              return Double.toString(modelPeType.getValue().get(event));
-            }
+        if (element instanceof final PapifyPeTypeEnergyModelImpl modelPeType && (!FIRST_CELL_NAME.equals(property))) {
+          final PapiEvent event = PapifyPage.this.scenario.getPapifyConfig().getEventByName(property);
+          if (modelPeType.getValue().containsKey(event)) {
+            return Double.toString(modelPeType.getValue().get(event));
           }
 
         }

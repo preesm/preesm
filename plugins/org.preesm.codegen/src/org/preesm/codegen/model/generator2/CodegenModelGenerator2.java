@@ -335,7 +335,7 @@ public class CodegenModelGenerator2 {
     newComm.setData(buffer);
     newComm.getParameters().clear();
 
-    newComm.addParameter(buffer, direction);
+    newComm.addParameter(buffer, portDirection);
 
     // Set the name of the communication
     // SS <=> Start Send

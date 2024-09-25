@@ -36,12 +36,16 @@
  */
 package org.preesm.model.pisdf.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 
@@ -63,9 +67,13 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
    */
   private final long balancingFactor;
 
+  Map<AbstractVertex, Long> brv                         = new HashMap<>();
+  Long                      hierarchicalActorRepetition = 0L;
+  Long                      actorRepetition             = 0L;
+
   /**
    * Builds a PiGraphFiringBalancer based on the subgraph to process.
-   * 
+   *
    * @param graph
    *          Input PiGraph to process. Must be contained in another PiGraph.
    * @param balancingFactor
@@ -82,12 +90,19 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
     }
     this.graph = graph;
     // If balancing factor is not power of 2, throw an exception.
-    double estimatedPower = Math.log(balancingFactor) / Math.log(2);
+    final double estimatedPower = Math.log(balancingFactor) / Math.log(2);
     if (Math.ceil(estimatedPower) != Math.floor(estimatedPower)) {
       throw new PreesmRuntimeException(
           "PiGraphFiringBalancer: balancing factor " + balancingFactor + " is not power of 2.");
     }
     this.balancingFactor = balancingFactor;
+    this.brv = PiBRV.compute(this.graph.getContainingPiGraph(), BRVMethod.LCM);
+    hierarchicalActorRepetition = brv.get(graph);
+    actorRepetition = brv.get(graph.getOnlyActors().get(0));
+    // this.repetition = hierarchicalActorRepetition * actorRepetition;
+    System.out.println("hierarchicalActorRepetition: " + hierarchicalActorRepetition + "actorRepetition: "
+        + actorRepetition + graph.getName());
+    final int i = 0;
   }
 
   /**
@@ -96,40 +111,74 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
    * hierarchy, but multiply by two firings of internal actors.
    */
   public void balance() {
+    this.brv = PiBRV.compute(this.graph.getContainingPiGraph(), BRVMethod.LCM);
+    // System.out.println("before balance repetition: hierarchicalActorRepetition: " + brv.get(graph)
+    // + " actorRepetition: " + brv.get(graph.getOnlyActors().get(0)) + graph.getName());
     // Process input PiGraph.
     doSwitch(this.graph);
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(this.graph);
+    this.brv = PiBRV.compute(this.graph.getContainingPiGraph(), BRVMethod.LCM);
+    // System.out.println("after balance hierarchicalActorRepetition: " + brv.get(graph) + " actorRepetition: "
+    // + brv.get(graph.getOnlyActors().get(0)) + graph.getName());
+    final int i = 0;
   }
 
   @Override
   public Boolean casePiGraph(PiGraph graph) {
     // Process all input interfaces.
-    for (DataInputInterface inputInterface : graph.getDataInputInterfaces()) {
+    for (final DataInputInterface inputInterface : graph.getDataInputInterfaces()) {
       doSwitch(inputInterface);
     }
     // Process all output interfaces.
-    for (DataOutputInterface outputInterface : graph.getDataOutputInterfaces()) {
+    for (final DataOutputInterface outputInterface : graph.getDataOutputInterfaces()) {
       doSwitch(outputInterface);
     }
     return super.casePiGraph(graph);
   }
 
-  @Override
-  public Boolean caseDataPort(DataPort dataPort) {
-    // Update rates on the data port.
-    Long newExpression = dataPort.getExpression().evaluate() * this.balancingFactor;
-    dataPort.setExpression(newExpression);
-    return true;
-  }
+  // @Override
+  // public Boolean caseDataPort(DataPort dataPort) {
+  // // Update rates on the data port.
+  // // // System.out.println("hierarchicalActorRepetition: " + hierarchicalActorRepetition);
+  // // final float r = (float) (this.repetition) / this.balancingFactor;
+  // // // System.out.println("r: " + r);
+  // // final float r2 = repetition / r;
+  // // // System.out.println("r: " + r2);
+  // // // r = 1L;
+  // // final Long newExpression = (long) (dataPort.getExpression().evaluate() * r2);
+  // // System.out.println("r: " + r + " r2: " + r2 + " expression:" + dataPort.getExpression().evaluate()
+  // // + " new expresion: " + newExpression);
+  // // final Long newExpression = dataPort.getExpression().evaluate() * hierarchicalActorRepetition /
+  // // this.balancingFactor;
+  // // System.out.println(" expression:" + dataPort.getExpression().evaluate() + " new expresion: " + newExpression);
+  // // dataPort.setExpression(newExpression);
+  // return true;
+  // }
 
   @Override
   public Boolean caseInterfaceActor(InterfaceActor interfaceActor) {
     // Explore inside data port and graph data port.
-    doSwitch(interfaceActor.getDataPort());
-    doSwitch(interfaceActor.getGraphPort());
+    // doSwitch(interfaceActor.getDataPort());
+    // doSwitch(interfaceActor.getGraphPort());
+    // final Long newExpression = (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluate()
+    // * hierarchicalActorRepetition / this.balancingFactor);
+
+    final Long newExpression = (hierarchicalActorRepetition == 1L) ? (long) Math.round(1.0 * this.balancingFactor)
+        : (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluate()
+            * hierarchicalActorRepetition / this.balancingFactor);
+
+    // final Long newExpression = interfaceActor.getGraphPort().getExpression().evaluate() * hierarchicalActorRepetition
+    // / this.balancingFactor;
+    // System.out.println(
+    // " expression:" + interfaceActor.getGraphPort().getExpression().evaluate() + " new expresion: " + newExpression);
+
+    interfaceActor.getGraphPort().setExpression(newExpression);
+
+    interfaceActor.getDataPort().setExpression(newExpression);
+
     return true;
   }
 
