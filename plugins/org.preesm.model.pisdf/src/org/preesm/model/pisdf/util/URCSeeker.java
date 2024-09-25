@@ -83,7 +83,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
+    this.graph.getActors().stream().filter(ExecutableActor.class::isInstance).forEach(x -> doSwitch(x));
     // Return identified URCs
     return identifiedURCs;
   }

@@ -81,46 +81,43 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
 
   @Override
   public AbstractActor caseCHeaderRefinement(final CHeaderRefinement ref) {
-    if (ref.getLoopPrototype() != null) {
-      // Create the actor returned by the function
-      final AbstractActor result = PiMMUserFactory.instance.createActor();
-
-      // Create all its ports corresponding to parameters of the
-      // prototype
-      final FunctionPrototype loopProto = ref.getLoopPrototype();
-      final List<FunctionArgument> loopParameters = loopProto.getArguments();
-      for (final FunctionArgument param : loopParameters) {
-        if (!param.isIsConfigurationParameter()) {
-          // Data Port
-          if (param.getDirection().equals(Direction.IN)) {
-            // Data Input
-            final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
-            port.setName(param.getName());
-            result.getDataInputPorts().add(port);
-          } else {
-            // Data Output
-            final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
-            port.setName(param.getName());
-            result.getDataOutputPorts().add(port);
-          }
-        } else {
-          // Config Port
-          if (param.getDirection().equals(Direction.IN)) {
-            // Config Input
-            final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
-            port.setName(param.getName());
-            result.getConfigInputPorts().add(port);
-          } else {
-            // Config Output
-            final ConfigOutputPort port = PiMMUserFactory.instance.createConfigOutputPort();
-            port.setName(param.getName());
-            result.getConfigOutputPorts().add(port);
-          }
-        }
-      }
-      return result;
-    } else {
+    if (ref.getLoopPrototype() == null) {
       return null;
     }
+    // Create the actor returned by the function
+    final AbstractActor result = PiMMUserFactory.instance.createActor();
+
+    // Create all its ports corresponding to parameters of the
+    // prototype
+    final FunctionPrototype loopProto = ref.getLoopPrototype();
+    final List<FunctionArgument> loopParameters = loopProto.getArguments();
+    for (final FunctionArgument param : loopParameters) {
+      if (!param.isIsConfigurationParameter()) {
+        // Data Port
+        if (param.getDirection().equals(Direction.IN)) {
+          // Data Input
+          final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
+          port.setName(param.getName());
+          result.getDataInputPorts().add(port);
+        } else {
+          // Data Output
+          final DataOutputPort port = PiMMUserFactory.instance.createDataOutputPort();
+          port.setName(param.getName());
+          result.getDataOutputPorts().add(port);
+        }
+        // Config Port
+      } else if (param.getDirection().equals(Direction.IN)) {
+        // Config Input
+        final ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort();
+        port.setName(param.getName());
+        result.getConfigInputPorts().add(port);
+      } else {
+        // Config Output
+        final ConfigOutputPort port = PiMMUserFactory.instance.createConfigOutputPort();
+        port.setName(param.getName());
+        result.getConfigOutputPorts().add(port);
+      }
+    }
+    return result;
   }
 }

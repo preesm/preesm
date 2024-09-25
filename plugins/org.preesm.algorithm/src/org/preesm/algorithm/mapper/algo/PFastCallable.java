@@ -178,6 +178,5 @@ class PFastCallable implements Callable<MapperDAG> {
     outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());
 
     return outputDAG;
-
   }
 }

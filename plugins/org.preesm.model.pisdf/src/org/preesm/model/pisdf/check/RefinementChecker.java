@@ -183,10 +183,6 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         final List<Pair<Port, Port>> correspondingPorts = getPiGraphRefinementCorrespondingPorts(a);
         final Pair<List<Pair<Port, FunctionArgument>>,
             List<Pair<Port, FunctionArgument>>> correspondingArguments = getCHeaderRefinementCorrespondingArguments(a);
-        // depending on the refinement type (PiGraph or CHeader),
-        // one of the two variables correspondingPorts/Arguments will be null
-        // sonar is detecting a bug here but this is fine:
-        // the following check methods will use only the variable corresponding to the refinement type
 
         validity &= checkRefinementPorts(a, correspondingPorts, correspondingArguments);
         validity &= checkRefinementFifoTypes(a, correspondingPorts, correspondingArguments);
@@ -332,57 +328,79 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    */
   private boolean checkRefinementFifoTypes(final Actor a, final List<Pair<Port, Port>> correspondingPorts,
       final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
-    boolean validity = true;
 
     if (a.isHierarchical()) {
-      for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
-        final Port topPort = correspondingPort.getKey();
-        final Port subPort = correspondingPort.getValue();
+      return checkRefinementFifoTypesHierarchical(a, correspondingPorts);
+    }
+    if (a.getRefinement() instanceof CHeaderRefinement) {
+      return checkRefinementFifoTypesCRefinement(a, correspondingArguments);
+    }
 
-        if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort)) {
+    return true;
+  }
+
+  private boolean checkRefinementFifoTypesHierarchical(final Actor a, final List<Pair<Port, Port>> correspondingPorts) {
+    boolean validity = true;
+
+    for (final Pair<Port, Port> correspondingPort : correspondingPorts) {
+      final Port topPort = correspondingPort.getKey();
+      final Port subPort = correspondingPort.getValue();
+
+      if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort)) {
+        continue;
+      }
+
+      final Fifo topFifo = ((DataPort) topPort).getFifo();
+      final Fifo subFifo = ((DataPort) subPort).getFifo();
+
+      if (topFifo == null || subFifo == null) {
+        continue;
+      }
+
+      if (!topFifo.getType().equals(subFifo.getType())) {
+        validity = false;
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
+            "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
+            topPort.getName(), a.getSubGraph().getName(), topFifo.getType(), subFifo.getType());
+      }
+    }
+
+    return validity;
+  }
+
+  private boolean checkRefinementFifoTypesCRefinement(final Actor a,
+      final Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>> correspondingArguments) {
+
+    boolean validity = true;
+
+    // we check only the loop prototype since the init one should not have any fifo connected to it
+    final List<Pair<Port, FunctionArgument>> loopMapArgs = correspondingArguments.getValue();
+    if (loopMapArgs != null) {
+
+      for (final Pair<Port, FunctionArgument> correspondingArgument : loopMapArgs) {
+        final Port topPort = correspondingArgument.getKey();
+        final FunctionArgument fa = correspondingArgument.getValue();
+
+        if (!(topPort instanceof DataPort) || fa == null) {
           continue;
         }
 
         final Fifo topFifo = ((DataPort) topPort).getFifo();
-        final Fifo subFifo = ((DataPort) subPort).getFifo();
-
-        if (topFifo != null && subFifo != null && !topFifo.getType().equals(subFifo.getType())) {
+        if (topFifo != null && !fa.getType().trim().equals(topFifo.getType())
+            && isHlsStreamTemplated(fa.getType()) == null) {
           validity = false;
           reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
-              "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
-              topPort.getName(), a.getSubGraph().getName(), topFifo.getType(), subFifo.getType());
+              "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
+              topPort.getName(), topFifo.getType(), fa.getType());
+          // check here the container type? If hls::stream for FPGA,
+          // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
+          // actor
         }
-      }
-    } else if (a.getRefinement() instanceof CHeaderRefinement) {
-      // we check only the loop prototype since the init one should not have any fifo connected to it
-      final List<Pair<Port, FunctionArgument>> loopMapArgs = correspondingArguments.getValue();
-      if (loopMapArgs != null) {
-
-        for (final Pair<Port, FunctionArgument> correspondingArgument : loopMapArgs) {
-          final Port topPort = correspondingArgument.getKey();
-          final FunctionArgument fa = correspondingArgument.getValue();
-
-          if (!(topPort instanceof DataPort) || fa == null) {
-            continue;
-          }
-
-          final Fifo topFifo = ((DataPort) topPort).getFifo();
-          if (topFifo != null && !fa.getType().trim().equals(topFifo.getType())
-              && isHlsStreamTemplated(fa.getType()) == null) {
-            validity = false;
-            reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
-                "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
-                topPort.getName(), topFifo.getType(), fa.getType());
-            // check here the container type? If hls::stream for FPGA,
-            // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
-            // actor
-          }
-          if (DEFAULT_PTR_TYPE.equals(fa.getType())) {
-            reportError(CheckerErrorLevel.WARNING, a,
-                "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
-                    + "this is discouraged since outside of the memory allocated by PREESM.",
-                a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
-          }
+        if (DEFAULT_PTR_TYPE.equals(fa.getType())) {
+          reportError(CheckerErrorLevel.WARNING, a,
+              "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
+                  + "this is discouraged since outside of the memory allocated by PREESM.",
+              a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
         }
       }
     }
@@ -620,28 +638,34 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     final Map<String, Pair<CorrespondingTemplateParameterType, List<FunctionArgument>>> result = new LinkedHashMap<>();
     for (final FunctionArgument fa : proto.getArguments()) {
       final Pair<String, String> hlsStream = isHlsStreamTemplated(fa.getType());
-      if (hlsStream != null) {
-        final String key = hlsStream.getKey();
-        if (key != null) {
-          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(key,
-              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
-          p.getValue().add(fa);
-          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_TYPE) {
-            // a single parameter is used for different use cases
-            result.replace(key, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
-          }
-        }
-        final String value = hlsStream.getValue();
-        if (value != null) {
-          final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(value,
-              k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
-          p.getValue().add(fa);
-          if (p.getKey() != CorrespondingTemplateParameterType.FIFO_DEPTH) {
-            // a single parameter is used for different use cases
-            result.replace(value, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
-          }
+
+      if (hlsStream == null) {
+        continue;
+      }
+
+      final String key = hlsStream.getKey();
+      final String value = hlsStream.getValue();
+
+      if (key != null) {
+        final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(key,
+            k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
+        p.getValue().add(fa);
+        if (p.getKey() != CorrespondingTemplateParameterType.FIFO_TYPE) {
+          // a single parameter is used for different use cases
+          result.replace(key, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
         }
       }
+
+      if (value != null) {
+        final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(value,
+            k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
+        p.getValue().add(fa);
+        if (p.getKey() != CorrespondingTemplateParameterType.FIFO_DEPTH) {
+          // a single parameter is used for different use cases
+          result.replace(value, new Pair<>(CorrespondingTemplateParameterType.MULTIPLE, p.getValue()));
+        }
+      }
+
     }
     return result;
   }
@@ -681,10 +705,9 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
    */
   public static Pair<List<Pair<Port, FunctionArgument>>, List<Pair<Port, FunctionArgument>>>
       getCHeaderRefinementCorrespondingArguments(final Actor a) {
-    if (!(a.getRefinement() instanceof CHeaderRefinement)) {
-      return null;
+    if (!(a.getRefinement() instanceof final CHeaderRefinement ref)) {
+      return new Pair<>(Collections.emptyList(), Collections.emptyList());
     }
-    final CHeaderRefinement ref = (CHeaderRefinement) a.getRefinement();
 
     List<Pair<Port, FunctionArgument>> initResult = null;
     final FunctionPrototype fpInit = ref.getInitPrototype();
@@ -737,7 +760,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   private static List<Pair<Port, Port>> getPiGraphRefinementCorrespondingPorts(final Actor a) {
     if (!a.isHierarchical()) {
-      return null;
+      return Collections.emptyList();
     }
 
     final PiGraph subGraph = a.getSubGraph();
