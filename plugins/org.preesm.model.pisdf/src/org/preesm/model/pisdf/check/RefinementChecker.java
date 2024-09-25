@@ -39,6 +39,7 @@
  */
 package org.preesm.model.pisdf.check;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -90,6 +91,31 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
   /** If the user wants a FIFO type being a pointer, then the default replacement type is the following. */
   public static final String DEFAULT_PTR_TYPE = "void*";
+
+  private static final String INT8_T   = "int8_t";
+  private static final String UINT8_T  = "uint8_t";
+  private static final String INT16_T  = "int16_t";
+  private static final String UINT16_T = "uint16_t";
+  private static final String INT32_T  = "int32_t";
+  private static final String UINT32_T = "uint32_t";
+  private static final String INT64_T  = "int64_t";
+  private static final String UINT64_T = "uint64_t";
+
+  /*
+   * Map holding synonyms of identical types to avoid displaying a warning e.g. when one side of the fifo uses unsigned
+   * char while the other uses uint8_t.
+   */
+  private static final Map<String,
+      String> typeSynonymsMap = Map.ofEntries(new AbstractMap.SimpleEntry<>(INT8_T, INT8_T),
+          new AbstractMap.SimpleEntry<>("char", INT8_T), new AbstractMap.SimpleEntry<>(UINT8_T, UINT8_T),
+          new AbstractMap.SimpleEntry<>("unsigned char", UINT8_T), new AbstractMap.SimpleEntry<>(INT16_T, INT16_T),
+          new AbstractMap.SimpleEntry<>("short", INT16_T), new AbstractMap.SimpleEntry<>(UINT16_T, UINT16_T),
+          new AbstractMap.SimpleEntry<>("unsigned short", UINT16_T), new AbstractMap.SimpleEntry<>(INT32_T, INT32_T),
+          new AbstractMap.SimpleEntry<>("int", INT32_T), new AbstractMap.SimpleEntry<>(UINT32_T, UINT32_T),
+          new AbstractMap.SimpleEntry<>("unsigned int", UINT32_T), new AbstractMap.SimpleEntry<>(INT64_T, INT64_T),
+          new AbstractMap.SimpleEntry<>("long", INT64_T), new AbstractMap.SimpleEntry<>("long long", INT64_T),
+          new AbstractMap.SimpleEntry<>(UINT64_T, UINT64_T), new AbstractMap.SimpleEntry<>("unsigned long", UINT64_T),
+          new AbstractMap.SimpleEntry<>("unsigned long long", UINT64_T));
 
   /**
    * Check if the given C/C++ header file extension is supported.
@@ -357,7 +383,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
         continue;
       }
 
-      if (!topFifo.getType().equals(subFifo.getType())) {
+      if (!areTypesIdentical(topFifo.getType(), subFifo.getType())) {
         validity = false;
         reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
             "Port [%s:%s] has a different fifo type than in its inner self [%s]: '%s' vs '%s'.", a.getName(),
@@ -375,37 +401,47 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
     // we check only the loop prototype since the init one should not have any fifo connected to it
     final List<Pair<Port, FunctionArgument>> loopMapArgs = correspondingArguments.getValue();
-    if (loopMapArgs != null) {
+    if (loopMapArgs == null) {
+      return true;
+    }
 
-      for (final Pair<Port, FunctionArgument> correspondingArgument : loopMapArgs) {
-        final Port topPort = correspondingArgument.getKey();
-        final FunctionArgument fa = correspondingArgument.getValue();
+    for (final Pair<Port, FunctionArgument> correspondingArgument : loopMapArgs) {
+      final Port topPort = correspondingArgument.getKey();
+      final FunctionArgument fa = correspondingArgument.getValue();
 
-        if (!(topPort instanceof DataPort) || fa == null) {
-          continue;
-        }
+      if (!(topPort instanceof final DataPort topDataPort) || topDataPort.getFifo() == null || fa == null) {
+        continue;
+      }
 
-        final Fifo topFifo = ((DataPort) topPort).getFifo();
-        if (topFifo != null && !fa.getType().trim().equals(topFifo.getType())
-            && isHlsStreamTemplated(fa.getType()) == null) {
-          validity = false;
-          reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
-              "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
-              topPort.getName(), topFifo.getType(), fa.getType());
-          // check here the container type? If hls::stream for FPGA,
-          // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
-          // actor
-        }
-        if (DEFAULT_PTR_TYPE.equals(fa.getType())) {
-          reportError(CheckerErrorLevel.WARNING, a,
-              "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
-                  + "this is discouraged since outside of the memory allocated by PREESM.",
-              a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
-        }
+      final String topFifoType = topDataPort.getFifo().getType();
+      final String funcArgType = fa.getType();
+
+      if (!areTypesIdentical(topFifoType, funcArgType) && isHlsStreamTemplated(funcArgType) == null) {
+        validity = false;
+        reportError(CheckerErrorLevel.FATAL_CODEGEN, a,
+            "Port [%s:%s] has a different fifo type than in its C/C++ refinement: '%s' vs '%s'.", a.getName(),
+            topPort.getName(), topFifoType, funcArgType);
+        // check here the container type? If hls::stream for FPGA,
+        // the templated FIFO type is either a parameter inferred by PREESM or direct value check along with the
+        // actor
+      }
+      if (DEFAULT_PTR_TYPE.equals(funcArgType)) {
+        reportError(CheckerErrorLevel.WARNING, a,
+            "Port [%s:%s] is a %s pointer in its C/C++ refinement, "
+                + "this is discouraged since outside of the memory allocated by PREESM.",
+            a.getName(), topPort.getName(), DEFAULT_PTR_TYPE);
       }
     }
 
     return validity;
+  }
+
+  private boolean areTypesIdentical(final String type1, final String type2) {
+
+    final String str1 = typeSynonymsMap.getOrDefault(type1, type1);
+    final String str2 = typeSynonymsMap.getOrDefault(type2, type2);
+
+    return str1.equals(str2);
   }
 
   /**
