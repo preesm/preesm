@@ -79,7 +79,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
         @Parameter(name = "fastTime", values = { @Value(name = "100") }),
         @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
         @Parameter(name = "nodesMin", values = { @Value(name = "5") }),
@@ -101,7 +100,6 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
 
     parameters.put("nodesMin", "5");
     parameters.put("procNumber", "1");
-    parameters.put("displaySolutions", "false");
     parameters.put("fastTime", "100");
     parameters.put("fastLocalSearchTime", "10");
     parameters.put("fastNumber", "100");
@@ -119,7 +117,7 @@ public class PFASTMappingFromDAG extends AbstractMappingFromDAG {
     final PFastAlgorithm pfastAlgorithm = new PFastAlgorithm();
     final PFastAlgoParameters pFastParams = new PFastAlgoParameters(parameters);
     final MapperDAG resdag = pfastAlgorithm.map(dag, architecture, scenario, initial, abcParameters, pFastParams, false,
-        0, pFastParams.isDisplaySolutions(), null, taskSched);
+        0, null, taskSched);
 
     simu2.setDAG(resdag);
 

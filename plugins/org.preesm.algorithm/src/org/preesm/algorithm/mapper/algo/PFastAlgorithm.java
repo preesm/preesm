@@ -128,12 +128,6 @@ public class PFastAlgorithm {
   }
 
   /**
-   * Constructor : PFastAlgorithm.
-   */
-  public PFastAlgorithm() {
-  }
-
-  /**
    * chooseNbCores : Determine how many processors will be used among the available ones and return the set of nodes on
    * which each processor will perform the fast algorithm.
    *
@@ -258,8 +252,6 @@ public class PFastAlgorithm {
    *          the population
    * @param populationSize
    *          // if we want a population this parameter determine how many individuals we want in the population
-   * @param isDisplaySolutions
-   *          the is display solutions
    * @param populationList
    *          // List of MapperDAG which are solution
    * @param taskSched
@@ -270,8 +262,7 @@ public class PFastAlgorithm {
    */
   public MapperDAG map(MapperDAG dag, final Design archi, final Scenario scenario, final InitialLists initialLists,
       final AbcParameters abcParams, final PFastAlgoParameters pFastParams, final boolean population,
-      int populationSize, final boolean isDisplaySolutions, final List<MapperDAG> populationList,
-      final AbstractTaskSched taskSched) {
+      int populationSize, final List<MapperDAG> populationList, final AbstractTaskSched taskSched) {
 
     int i = 0;
     if (populationSize < 1) {
@@ -288,14 +279,14 @@ public class PFastAlgorithm {
     final Set<Set<String>> subSet = new LinkedHashSet<>();
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(),
-        pFastParams.getFastLocalSearchTime(), pFastParams.isDisplaySolutions());
+        pFastParams.getFastLocalSearchTime());
 
     // if only one operator the fast must be used
     if (pFastParams.getProcNumber() == 0) {
       final FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, false, false, null, cpnDominantVector,
-          blockingnodeVector, fcpVector, taskSched);
+      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, null, cpnDominantVector, blockingnodeVector,
+          fcpVector, taskSched);
       return dag;
     }
 
@@ -331,8 +322,8 @@ public class PFastAlgorithm {
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), isDisplaySolutions, true,
-            abcParams, fastParams, scenario);
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), true, abcParams, fastParams,
+            scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
         futureTasks.add(task);

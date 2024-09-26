@@ -51,9 +51,6 @@ import org.preesm.commons.logger.PreesmLogger;
 
 public class FastAlgoParameters {
 
-  /** true if we need to display the intermediate solutions. */
-  private boolean displaySolutions;
-
   /** Time in seconds we want to run FAST. */
   private int fastTime = 200;
 
@@ -68,7 +65,6 @@ public class FastAlgoParameters {
    */
   public FastAlgoParameters(final Map<String, String> textParameters) {
 
-    this.displaySolutions = Boolean.valueOf(textParameters.get("displaySolutions"));
     if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
       this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
     }
@@ -76,8 +72,8 @@ public class FastAlgoParameters {
       this.fastLocalSearchTime = Integer.valueOf(textParameters.get("fastLocalSearchTime"));
     }
 
-    PreesmLogger.getLogger().log(Level.INFO, "The Fast algo parameters are: displaySolutions=true/false; "
-        + "fastTime in seconds; fastLocalSearchTime in seconds");
+    PreesmLogger.getLogger().log(Level.INFO,
+        "The Fast algo parameters are: fastTime in seconds; fastLocalSearchTime in seconds");
   }
 
   /**
@@ -87,23 +83,12 @@ public class FastAlgoParameters {
    *          the fast time
    * @param fastLocalSearchTime
    *          the fast local search time
-   * @param displaySolutions
-   *          the display solutions
    */
 
-  public FastAlgoParameters(final int fastTime, final int fastLocalSearchTime, final boolean displaySolutions) {
+  public FastAlgoParameters(final int fastTime, final int fastLocalSearchTime) {
 
-    this.displaySolutions = displaySolutions;
     this.fastTime = fastTime;
     this.fastLocalSearchTime = fastLocalSearchTime;
-  }
-
-  public boolean isDisplaySolutions() {
-    return this.displaySolutions;
-  }
-
-  public void setDisplaySolutions(final boolean displaySolutions) {
-    this.displaySolutions = displaySolutions;
   }
 
   /**

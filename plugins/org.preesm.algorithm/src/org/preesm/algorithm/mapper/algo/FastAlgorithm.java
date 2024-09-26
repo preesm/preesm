@@ -109,10 +109,6 @@ public class FastAlgorithm {
    *          the archi
    * @param alreadyMapped
    *          the already mapped
-   * @param pfastused
-   *          the pfastused
-   * @param displaySolutions
-   *          the display solutions
    * @param monitor
    *          the monitor
    * @param taskSched
@@ -122,15 +118,15 @@ public class FastAlgorithm {
    *           the workflow exception
    */
   public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams,
-      final MapperDAG dag, final Design archi, final boolean alreadyMapped, final boolean pfastused,
-      final boolean displaySolutions, final IProgressMonitor monitor, final AbstractTaskSched taskSched) {
+      final MapperDAG dag, final Design archi, final boolean alreadyMapped, final IProgressMonitor monitor,
+      final AbstractTaskSched taskSched) {
 
     final List<MapperDAGVertex> cpnDominantList = this.initialLists.getCpnDominant();
     final List<MapperDAGVertex> blockingNodesList = this.initialLists.getBlockingNodes();
     final List<MapperDAGVertex> finalcriticalpathList = this.initialLists.getCriticalpath();
 
-    return map(threadName, abcParams, fastParams, dag, archi, alreadyMapped, pfastused, displaySolutions, monitor,
-        cpnDominantList, blockingNodesList, finalcriticalpathList, taskSched);
+    return map(threadName, abcParams, fastParams, dag, archi, alreadyMapped, monitor, cpnDominantList,
+        blockingNodesList, finalcriticalpathList, taskSched);
   }
 
   /**
@@ -149,10 +145,6 @@ public class FastAlgorithm {
    *          the archi
    * @param alreadyMapped
    *          the already mapped
-   * @param pfastused
-   *          the pfastused
-   * @param displaySolutions
-   *          the display solutions
    * @param monitor
    *          the monitor
    * @param cpnDominantList
@@ -168,10 +160,9 @@ public class FastAlgorithm {
    *           the workflow exception
    */
   public MapperDAG map(final String threadName, final AbcParameters abcParams, final FastAlgoParameters fastParams,
-      final MapperDAG dag, final Design archi, final boolean alreadyMapped, final boolean pfastused,
-      final boolean displaySolutions, final IProgressMonitor monitor, final List<MapperDAGVertex> cpnDominantList,
-      final List<MapperDAGVertex> blockingNodesList, final List<MapperDAGVertex> finalcriticalpathList,
-      final AbstractTaskSched taskSched) {
+      final MapperDAG dag, final Design archi, final boolean alreadyMapped, final IProgressMonitor monitor,
+      final List<MapperDAGVertex> cpnDominantList, final List<MapperDAGVertex> blockingNodesList,
+      final List<MapperDAGVertex> finalcriticalpathList, final AbstractTaskSched taskSched) {
 
     final Random randomGenerator = new Random(System.nanoTime());
 

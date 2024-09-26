@@ -77,7 +77,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
         @Parameter(name = "fastTime", values = { @Value(name = "100") }),
         @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") })
 

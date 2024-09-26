@@ -80,7 +80,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
         @Parameter(name = "fastTime", values = { @Value(name = "100") }),
         @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") })
 
@@ -97,7 +96,6 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = super.getDefaultParameters();
 
-    parameters.put("displaySolutions", "false");
     parameters.put("fastTime", "100");
     parameters.put("fastLocalSearchTime", "10");
     return parameters;
@@ -110,8 +108,8 @@ public class FASTMappingFromDAG extends AbstractMappingFromDAG {
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(parameters);
     final FastAlgorithm fastAlgorithm = new FastAlgorithm(initial, scenario);
-    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, false,
-        fastParams.isDisplaySolutions(), null, taskSched);
+    final MapperDAG resDag = fastAlgorithm.map("test", abcParams, fastParams, dag, architecture, false, null,
+        taskSched);
 
     final LatencyAbc simu2 = LatencyAbc.getInstance(abcParams, resDag, architecture, scenario);
     // Transfer vertices are automatically regenerated

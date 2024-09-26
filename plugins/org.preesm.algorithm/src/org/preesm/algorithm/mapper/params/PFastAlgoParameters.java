@@ -60,9 +60,6 @@ public class PFastAlgoParameters {
   /** Number of processors available. */
   private int procNumber;
 
-  /** true if we need to display the intermediate solutions. */
-  private boolean displaySolutions;
-
   /** Time in seconds to run one FAST. */
   private int fastTime = 200;
 
@@ -83,7 +80,6 @@ public class PFastAlgoParameters {
 
     this.nodesMin = Integer.valueOf(textParameters.get("nodesMin"));
     this.procNumber = Integer.valueOf(textParameters.get("procNumber"));
-    this.displaySolutions = Boolean.valueOf(textParameters.get("displaySolutions"));
     if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
       this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
     }
@@ -94,9 +90,8 @@ public class PFastAlgoParameters {
       this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
     }
 
-    PreesmLogger.getLogger().log(Level.INFO,
-        "The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; "
-            + "fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+    PreesmLogger.getLogger().log(Level.INFO, "The PFast algo parameters are: "
+        + "nodesMin; procNumber; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 
   }
 
@@ -106,14 +101,6 @@ public class PFastAlgoParameters {
 
   public void setProcNumber(final int procNumber) {
     this.procNumber = procNumber;
-  }
-
-  public boolean isDisplaySolutions() {
-    return this.displaySolutions;
-  }
-
-  public void setDisplaySolutions(final boolean displaySolutions) {
-    this.displaySolutions = displaySolutions;
   }
 
   public int getNodesmin() {
