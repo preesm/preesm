@@ -60,6 +60,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JRootPane;
 import javax.swing.WindowConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTError;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
@@ -265,7 +266,7 @@ public class GanttPlotter {
       // Leaving the original code just in case this issue is resolved some day.
 
       // if (!SystemUtils.IS_OS_LINUX) {
-      if (false) {
+      try {
         // related to PREESM issue #303
         // may not work because of a libswt-awt-gtk4928+.so bug which is not our responsability
         // see following bug report
@@ -279,7 +280,7 @@ public class GanttPlotter {
         // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
         // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
-      } else {
+      } catch (UnsatisfiedLinkError | SWTError e) {
         // we catch this error since we can recover from it
         // Level.WARNING may stop the workflow depending on options
         // and as we are in a separate thread, events are not always well managed ...
