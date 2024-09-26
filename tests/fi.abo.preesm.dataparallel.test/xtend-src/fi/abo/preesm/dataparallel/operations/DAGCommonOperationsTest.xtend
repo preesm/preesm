@@ -227,13 +227,37 @@ class DAGCommonOperationsTest {
 		return parameters
 	}
 
-	def dispatch void acceptVisitor(PureDAGConstructor dagGen, DAGOperations visitor) {
+	// This is a patch for an issue introduced 2.36.0 of xtend/xtext.
+
+	def void acceptVisitor(PureDAGConstructor dagGen, DAGOperations visitor) {
 		dagGen.accept(visitor)
 	}
 
-	def dispatch void acceptVisitor(DAGSubsetConstructor dagGen, DAGCommonOperations visitor) {
+	def void acceptVisitor(DAGSubsetConstructor dagGen, DAGCommonOperations visitor) {
 		dagGen.accept(visitor)
 	}
+
+	def void acceptVisitor(DAGConstructor dagGen, DAGOperations visitor) {
+		if (dagGen instanceof DAGSubsetConstructor && visitor instanceof DAGCommonOperations) {
+			acceptVisitor(dagGen as DAGSubsetConstructor, visitor as DAGCommonOperations);
+			return
+		} else if (dagGen instanceof PureDAGConstructor && visitor !== null) {
+			acceptVisitor(dagGen as PureDAGConstructor, visitor);
+			return
+		} else {
+			throw new IllegalArgumentException("Unhandled parameter types");
+		}
+	}
+
+	// Original code was :
+	//	def dispatch void acceptVisitor(PureDAGConstructor dagGen, DAGOperations visitor) {
+	//		dagGen.accept(visitor)
+	//	}
+	//
+	//	def dispatch void acceptVisitor(DAGSubsetConstructor dagGen, DAGCommonOperations visitor) {
+	//		dagGen.accept(visitor)
+	//	}
+
 
 	/**
 	 * All source Instances are root instances, but not vice versa.

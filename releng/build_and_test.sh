@@ -23,6 +23,7 @@ DIR=$(cd `dirname $0` && echo `git rev-parse --show-toplevel`)
 SONAR=NO
 CI=NO
 RUNTEST=YES
+PARALLEL=NO
 
 if [ ! -z ${1+x} ]; then
   if [ "$1" == "--sonar" ]; then
@@ -34,6 +35,9 @@ if [ ! -z ${1+x} ]; then
   if [ "$1" == "--ci" ]; then
     CI=YES
     SONAR=NO
+  fi
+  if [ "$1" == "--parallel" ]; then
+    PARALLEL=YES
   fi
 fi
 
@@ -50,6 +54,12 @@ if [ "${CI}" == "YES" ]; then
   BATCHMODE="-B -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 else
   BATCHMODE=
+fi
+
+if [ "${PARALLEL}" == "YES" ]; then
+  PARALLEL="--threads 2.0C"
+else
+  PARALLEL=""
 fi
 
 if [ -x /usr/bin/Xvfb ]; then
@@ -70,7 +80,7 @@ echo " --"
 echo ""
 
 (cd $DIR && ./releng/fetch-rcptt-runner.sh)
-time (cd $DIR && mvn -e -c ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
+time (cd $DIR && mvn -e -c ${PARALLEL} ${BATCHMODE} clean ${BUILDGOAL} ${TESTMODE})
 
 # Sonar
 if [ "${SONAR}" == "YES" ]; then
