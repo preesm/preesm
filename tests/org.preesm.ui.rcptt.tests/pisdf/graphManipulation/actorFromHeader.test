@@ -1,0 +1,41 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _Xh07kH0EEe-tqodW1Mo--Q
+Element-Name: actorFromHeader
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _4psw0H0DEe-tqodW1Mo--Q
+Runtime-Version: 2.5.5.202409031853
+Save-Time: 9/27/24, 9:14 PM
+Testcase-Type: ecl
+Verifications: _pjUyIH0EEe-tqodW1Mo--Q
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+with [get-view "Project Explorer" | get-tree] {
+    select "actorFromHeader/Algo/graph.diagram" | double-click
+    select "actorFromHeader/Code/include/header.h"
+    with [get-item -path "actorFromHeader/Code/include/header.h"] {
+        drag-start "-2" 8
+        drag-enter 78 7 -detail move
+        drag-over 140 1
+        drag-exit
+    }
+}
+with [get-editor graph | get-diagram -index 1 | get-edit-part -name graph] {
+    drag-enter 12 193 -detail move
+    drag-over 138 188 -detail copy
+    drag-exit
+    drag-accept 138 188 -detail copy
+}
+get-view "Project Explorer" | get-tree | drag-set-data
+get-editor graph | get-diagram -index 1 | get-edit-part -name graph | drop 138 188 -detail copy
+get-window "Create Actor" | get-button OK | click -metaKeys ""
+get-window "Loop Function Selection" | get-button OK | click -metaKeys ""
+get-window "Init Function Selection" | get-button Cancel | click -metaKeys ""
+get-view "Project Explorer" | get-tree | drag-end -detail copy
+get-editor graph | get-diagram -index 1 | key-type "M1+s"
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

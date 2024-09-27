@@ -266,20 +266,18 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             return;
           }
         } else {
-          String title = "";
-          String message = "";
           FunctionPrototype loopProto = null;
 
           if (actor instanceof Actor) {
             // The file is a valid header file.
-            title = "Loop Function Selection";
-            message = "Select a loop function for actor " + ((AbstractActor) actor).getName()
+            final String loopTitle = "Loop Function Selection";
+            final String loopMessage = "Select a loop function for actor " + ((AbstractActor) actor).getName()
                 + "\n(* = any string, ? = any char):\nNote: return types are not considered.";
 
             loopPrototypes = getPrototypes(actor, PrototypeFilter.LOOP_ACTOR, allPrototypes);
             final FunctionPrototype[] loopProtoArray = loopPrototypes
                 .toArray(new FunctionPrototype[loopPrototypes.size()]);
-            loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, title, message,
+            loopProto = PiMMUtil.selectFunction(loopProtoArray, allProtoArray, loopTitle, loopMessage,
                 this.showOnlyValidPrototypes);
           }
 
@@ -294,8 +292,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             allInitPrototypes = new ArrayList<>();
             showOnlyCorresponding = true;
           }
-          title = "Init Function Selection";
-          message = "Select an optionnal init function for actor " + ((AbstractActor) actor).getName()
+          final String title = "Init Function Selection";
+          final String message = "Select an optionnal init function for actor " + ((AbstractActor) actor).getName()
               + ", or click Cancel to set none.\nNote: prototypes with pointers or arrays as "
               + "arguments are filtered out.\n(* = any string, ? = any char):";
           final FunctionPrototype[] initProtoArray = initPrototypes
