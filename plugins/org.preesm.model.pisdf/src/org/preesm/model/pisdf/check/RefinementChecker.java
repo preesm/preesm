@@ -372,16 +372,14 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
       final Port topPort = correspondingPort.getKey();
       final Port subPort = correspondingPort.getValue();
 
-      if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort)) {
+      // Check if inner and outer ports are DataPort and have valid Fifo
+      if (!(topPort instanceof DataPort) || !(subPort instanceof DataPort) || ((DataPort) topPort).getFifo() == null
+          || ((DataPort) subPort).getFifo() == null) {
         continue;
       }
 
       final Fifo topFifo = ((DataPort) topPort).getFifo();
       final Fifo subFifo = ((DataPort) subPort).getFifo();
-
-      if (topFifo == null || subFifo == null) {
-        continue;
-      }
 
       if (!areTypesIdentical(topFifo.getType(), subFifo.getType())) {
         validity = false;

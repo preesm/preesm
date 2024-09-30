@@ -316,24 +316,16 @@ public class MapperDAGVertex extends DAGVertex {
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR_DEF)) {
-      return getEffectiveOperator().getComponent().getVlnv().getName();
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
-      return getInit().getInitialOperatorList().toString();
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
-      return getInit().getParentVertex().getId();
-    }
-    if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
-      return String.valueOf(getTiming().getCost());
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
-      return String.valueOf(getTiming().getTotalOrder(this));
-    } else if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
-      return getEffectiveComponent().getInstanceName();
-    }
-    return super.getPropertyStringValue(propertyName);
+
+    return switch (propertyName) {
+      case ImplementationPropertyNames.VERTEX_OPERATOR_DEF -> getEffectiveOperator().getComponent().getVlnv().getName();
+      case ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS -> getInit().getInitialOperatorList().toString();
+      case ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID -> getInit().getParentVertex().getId();
+      case ImplementationPropertyNames.TASK_DURATION -> String.valueOf(getTiming().getCost());
+      case ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER -> String.valueOf(getTiming().getTotalOrder(this));
+      case ImplementationPropertyNames.VERTEX_OPERATOR -> getEffectiveComponent().getInstanceName();
+      default -> super.getPropertyStringValue(propertyName);
+    };
   }
 
   /**

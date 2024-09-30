@@ -182,9 +182,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
-    final Iterator<String> iterator = nameSet.iterator();
-    while (iterator.hasNext()) {
-      final String name = iterator.next();
+    for (String name : nameSet) {
       final MapperDAGVertex v = (MapperDAGVertex) getVertex(name);
       vSet.add(v);
     }
