@@ -233,13 +233,7 @@ class ClusterBlock extends Block {
 }
 
 
-class MainSimsdpBlock extends Block{
-		String[] nodeID
-		refers Buffer[] buffers
-		refers FunctionCall[] subFunc
-		String coreType
-	
-}
+
 
 class SectionBlock extends Block {
 }

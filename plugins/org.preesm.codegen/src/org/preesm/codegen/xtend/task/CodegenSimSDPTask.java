@@ -117,8 +117,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
                     + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
         @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
             values = { @Value(name = "true/false",
-                effect = "Print C code with Apollo function calls. Currently compatibe with x86") }),
-        @Parameter(name = "Multinode", description = "oué", values = { @Value(name = "true/false", effect = "oué") }) })
+                effect = "Print C code with Apollo function calls. Currently compatibe with x86") }) })
 
 public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
@@ -133,9 +132,6 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_APOLLO. */
   public static final String PARAM_APOLLO = "Apollo";
-
-  /** The Constant PARAM_MULTINODE. */
-  public static final String PARAM_MULTINODE = "Multinode";
 
   /*
    * (non-Javadoc)
@@ -169,15 +165,14 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     // Retrieve the APOLLO flag
     final String apolloFlag = parameters.get(CodegenSimSDPTask.PARAM_APOLLO);
 
-    // Retrieve the MULTINODE flag
-    final String multinode = parameters.get(CodegenSimSDPTask.PARAM_MULTINODE);
-    generator.registerMultinode(multinode);
+    generator.registerMultinode("true");
 
     final Collection<Block> codeBlocks = generator.generate();
     for (final Block block : codeBlocks) {
       if (block instanceof final CoreBlock coreBlock) {
         final int nodeID = Integer.parseInt(scenario.getAlgorithm().getName().replace("sub", ""));
         coreBlock.setNodeID(nodeID);
+        coreBlock.setMultinode(true);
       }
     }
 
@@ -309,7 +304,6 @@ public class CodegenSimSDPTask extends AbstractTaskImplementation {
     // Papify default
     parameters.put(CodegenSimSDPTask.PARAM_PAPIFY, "false");
 
-    parameters.put(CodegenSimSDPTask.PARAM_MULTINODE, "false");
     return parameters;
   }
 

@@ -127,6 +127,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       final Object[] result = mapping(urc, scenario, numberOfPEs, brv);
       final Long nPE = (Long) result[0];
       final Boolean isOnGPU = (Boolean) result[1];
+
       // apply scaling
       final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
@@ -146,7 +147,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
         // pseudo merge redundant FIFO
         mergeFIFO(subGraph);
-        // subGraph.getAllDataPorts().forEach(port -> System.out.println(port.getName()));
 
       }
 
@@ -161,8 +161,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       }
       // map the cluster on the CPU or GPU according to timing
       subGraph.setOnGPU(isOnGPU);
-      // PreesmLogger.getLogger().log(Level.INFO, "subgraph: " + subGraph.getName() + " is on GPU: " +
-      // subGraph.isOnGPU());
+
     }
 
     return this.graph;
@@ -296,19 +295,13 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   public static Object[] mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs,
       Map<AbstractVertex, Long> brv) {
     final Component cpu = scenario.getDesign().getOperatorComponentInstances().stream()
-        .map(ComponentInstance::getComponent).filter(component -> component instanceof CPU).findFirst().orElseThrow();
+        .map(ComponentInstance::getComponent).filter(CPU.class::isInstance).findFirst().orElseThrow();
     final Long timingCPU = timingCPU(urc, scenario, brv, cpu);
     final Long timingGPU = timingGPU(urc, scenario);
 
-    // EWEN MODIFS
-    boolean isGPUPossible = false;
-    for (final AbstractActor act : urc) {
-      for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
-        if (comp.getInstanceName().equals("GPU")) {
-          isGPUPossible = true;
-        }
-      }
-    }
+    // check if all actors can be mapped onto GPU
+    final boolean isGPUPossible = urc.stream().allMatch(
+        act -> scenario.getPossibleMappings(act).stream().anyMatch(comp -> comp.getInstanceName().equals("GPU")));
 
     if (timingCPU > timingGPU && isGPUPossible) {
       for (final AbstractActor act : urc) {
@@ -349,10 +342,10 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   public static Long timingGPU(List<AbstractActor> urc, Scenario scenario) {
     if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())) {
       final GPU gpu = (GPU) scenario.getDesign().getOperatorComponentInstances().stream()
-          .map(ComponentInstance::getComponent).filter(component -> component instanceof GPU).findFirst().orElseThrow();
+          .map(ComponentInstance::getComponent).filter(GPU.class::isInstance).findFirst().orElseThrow();
 
       final Long offloading = offLoadingCost(gpu, urc);
-      final Long timing = urc.stream().filter(actor -> actor instanceof Actor).mapToLong(actor -> {
+      final Long timing = urc.stream().filter(Actor.class::isInstance).mapToLong(actor -> {
         final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
             .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
 
@@ -468,9 +461,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     Long ncDivisor = 0L;
     for (i = 1L; i <= n; i++) {
       if (n % i == 0 && (i >= nC)) {
-        // Sélectionne le premier diviseur qui est plus grand que nC
         ncDivisor = i;
-        break; // On sort de la boucle car on a trouvé le diviseur souhaité
+        break;
       }
     }
     return ncDivisor;

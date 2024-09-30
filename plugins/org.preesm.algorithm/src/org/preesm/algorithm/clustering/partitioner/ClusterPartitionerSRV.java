@@ -60,19 +60,6 @@ import org.preesm.model.slam.ComponentInstance;
 
 public class ClusterPartitionerSRV extends ClusterPartitioner {
 
-  // /**
-  // * Input graph.
-  // */
-  // private final PiGraph graph;
-  // /**
-  // * Workflow scenario.
-  // */
-  // private final Scenario scenario;
-  // /**
-  // * Number of PEs in compute clusters.
-  // */
-  // private final int numberOfPEs;
-
   private final Map<AbstractVertex, Long> brv;
 
   private final int       clusterId;
@@ -125,6 +112,11 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).build();
 
+      // compute mapping
+      final Object[] result = ClusterPartitionerURC.mapping(srv, scenario, numberOfPEs, brv);
+      final Long nPE = (Long) result[0];
+      final Boolean isOnGPU = (Boolean) result[1];
+
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
@@ -133,7 +125,8 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
       // apply scaling
       final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
-          brv.get(subGraph.getExecutableActors().get(0)), (long) numberOfPEs, scapeMode);
+          brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
+
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
         din.getGraphPort().setExpression(
             din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -144,9 +137,15 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
             dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
       }
+
+      subGraph.setClusterValue(true);
+      // Add constraints of the cluster in the scenario.
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
+      }
+      // map the cluster on the CPU or GPU according to timing
+      subGraph.setOnGPU(isOnGPU);
     }
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    // PiBRV.compute(this.graph, BRVMethod.LCM);
 
     return this.graph;
   }

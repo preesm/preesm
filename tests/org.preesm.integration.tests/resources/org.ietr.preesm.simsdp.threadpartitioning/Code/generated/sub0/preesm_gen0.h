@@ -3,9 +3,8 @@
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
- * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -38,100 +37,91 @@
  */
 /*
  ============================================================================
- Name        : communication.h
+ Name        : preesm_gen.h
  Author      : kdesnos
- Version     : 2.0
- Copyright   : CECILL-C
- Description : Communication primitive for Preesm Codegen.
- Currently, primitives were tested only for x86, shared_mem
- communications.
+ Version     :
+ Copyright   :
+ Description :
  ============================================================================
  */
 
-#ifndef _PREESM_COMMUNICATION_H
-#define _PREESM_COMMUNICATION_H
-
-// irrelevent for MPPA
-#ifndef __k1__
+#ifndef _PREESM_PREESM_GEN_H
+#define _PREESM_PREESM_GEN_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#ifdef __APPLE__
-#include <dispatch/dispatch.h>
-#else
-#include <semaphore.h>
-#endif
-
-struct rk_sema {
-#ifdef __APPLE__
-    dispatch_semaphore_t    sem;
-#else
-  sem_t sem;
-#endif
-};
-
-#ifdef _WIN32
-void rk_sema_init(struct rk_sema *s, int value);
-#else
-void rk_sema_init(struct rk_sema *s, int value);
-#endif
-
-#ifdef _WIN32
-void rk_sema_wait(struct rk_sema *s);
-#else
-void rk_sema_wait(struct rk_sema *s);
-#endif
-
-#ifdef _WIN32
-void rk_sema_post(struct rk_sema *s);
-#else
-void rk_sema_post(struct rk_sema *s);
-#endif
-
 /**
- * Initialize the semaphores used for inter-core synchronization.
- */
-void communicationInit();
-
-/**
- * Non-blocking function called by the sender to signal that a buffer is ready
- * to be sent.
+ * This _GNU_SOURCE actually creates possible incompatibilities
+ * and a few requirements due to the dump.c/.c source files.
  *
- * @param[in] senderID
- *        the ID of the sender core
- * @param[in] coreID
- *        the ID of the receiver core
+ * To not face problems, preesm_gen.h must be included before everything else
+ * (as the definition of _GNU_SOURCE). When needed, preesm_gen.h should be included in the .c,
+ * indeed the inclusion in the .h creates a cyclic inclusion.
  */
-void sendStart(int senderID, int receveirID);
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
-/**
- * Blocking function (not for shared_mem communication) called by the sender to
- * signal that communication is completed.
- */
-void sendEnd();
+#include <stdio.h>
+#include <string.h>
+#include <pthread.h>
 
-/**
- * Non-blocking function called by the receiver begin receiving the
- * data. (not implemented with shared memory communications).
- */
-void receiveStart();
+#ifdef _WIN32
+#include <windows.h>
+#else
+// For Linux
+// Pthread barriers are defined in POSIX 2001 version
+// For the 1990 revision compliance the defined value of _POSIX_VERSION should be 1.
+// For the 1995 revision compliance the defined value of _POSIX_VERSION should be 199506L.
+// For the 2001 revision compliance the defined value of _POSIX_VERSION should be 200112L.
+#ifdef _POSIX_C_SOURCE
+#undef _POSIX_C_SOURCE
+#endif
 
-/**
- * Blocking function called by the sender to wait for the received data
- * availability.
- *
- * @param[in] senderID
- *        the ID of the sender core
- * @param[in] coreID
- *        the ID of the receiver core
- */
-void receiveEnd(int senderID, int receveirID);
+#ifdef _XOPEN_SOURCE
+#undef _XOPEN_SOURCE
+#endif
+
+#define _POSIX_C_SOURCE 200112L
+#define _XOPEN_SOURCE 600
+#include <unistd.h>
+#endif
+
+#include "communication.h"
+#include "dump.h"
+#include "fifo.h"
+#include "preesm_md5.h"
+#include "mac_barrier.h"
+
+#include "preesm.h"
+
+#include "sub0_srdag/Cluster_sub0_srv_0.h"
+#include "interface/sub0_srdag/snk_out_0.h"
+#include "interface/sub0_srdag/snk_out_1.h"
+#include "interface/sub0_srdag/snk_out_2.h"
+#include "interface/sub0_srdag/snk_out_3.h"
+#include "interface/sub0_srdag/snk_out_4.h"
+#include "interface/sub0_srdag/snk_out_5.h"
+#include "interface/sub0_srdag/snk_out_6.h"
+#include "interface/sub0_srdag/snk_out_7.h"
+#include "interface/sub0_srdag/snk_out_8.h"
+#include "interface/sub0_srdag/snk_out_9.h"
+#include "dataAcq.h"
+#include "plotRnIHisto.h"
+
+#define NB_DESIGN_ELTS 4
+#define NB_CORES 3
+
+#ifdef PREESM_LOOP_SIZE
+#ifdef PREESM_VERBOSE
+#define PREESM_MD5_UPDATE
+#endif
+#endif
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* __k1__ */
-#endif /* _PREESM_COMMUNICATION_H */
+#endif

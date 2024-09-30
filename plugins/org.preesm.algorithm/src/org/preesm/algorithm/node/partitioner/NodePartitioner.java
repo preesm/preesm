@@ -1,5 +1,6 @@
 package org.preesm.algorithm.node.partitioner;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,7 +64,7 @@ public class NodePartitioner {
   private String simulationPath = "";
   boolean        isHomogeneous  = true;
 
-  private final Random random = new Random();
+  private final Random random = new SecureRandom();
 
   public NodePartitioner(Scenario scenario, String archicsvpath, String partitioningMode) {
     this.graph = scenario.getAlgorithm();

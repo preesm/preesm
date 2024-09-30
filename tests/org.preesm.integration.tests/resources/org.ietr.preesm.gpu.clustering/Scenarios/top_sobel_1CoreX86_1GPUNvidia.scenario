@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.gpu.clustering/Algo/top_sobel.pi"/>
+        <architecture url="/org.ietr.preesm.gpu.clustering/Archi/1CoreX86_1GPUNvidia.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.gpu.clustering/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="top_sobel/Read_YUV"/>
+            <task name="top_sobel/display"/>
+            <task name="top_sobel/Sobel"/>
+            <task name="top_sobel/Split"/>
+            <task name="top_sobel/Merge"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="GPU"/>
+            <task name="top_sobel/Sobel"/>
+            <task name="top_sobel/Split"/>
+            <task name="top_sobel/Merge"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Read_YUV"/>
+        <timing opname="defaultGPU" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Read_YUV"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/display"/>
+        <timing opname="defaultGPU" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/display"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Sobel"/>
+        <timing opname="defaultGPU" time="10"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Sobel"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Split"/>
+        <timing opname="defaultGPU" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Split"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Merge"/>
+        <timing opname="defaultGPU" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top_sobel/Merge"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="defaultGPU" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="uchar" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="GPU"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

@@ -1,9 +1,9 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2019) :
  *
- * Alexandre Honorat <alexandre.honorat@insa-rennes.fr> (2019)
- * Antoine Morvan <antoine.morvan@insa-rennes.fr> (2017 - 2019)
- * Julien Hascoet <jhascoet@kalray.eu> (2017)
+ * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
+ * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Julien Hascoet [jhascoet@kalray.eu] (2017)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -44,6 +44,7 @@
  Printer of Preesm
  ============================================================================
  */
+
 //#include "sub0/preesm_gen0.h"
 #include "preesm_gen.h"
 

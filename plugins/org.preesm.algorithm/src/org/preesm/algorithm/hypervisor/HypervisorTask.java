@@ -118,7 +118,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       final int node = closestPair.getKey();
       final int core = closestPair.getValue();
 
-      iterativePartitioning(node, core, archiParams.getCoreFreqMax(), iteration, archiParams, project, monitor,
+      iterativePartitioning(node, core, archiParams.getCoreFreqMax(), iteration, archiParams, true, project, monitor,
           workflowManager);
       content = PreesmIOHelper.getInstance().read(project + SIMULATION_PATH, "latency_trend.csv");
       line = content.split("\n");
@@ -145,14 +145,14 @@ public class HypervisorTask extends AbstractTaskImplementation {
             final SimSDPNode simSDPnode = new SimSDPNode(nodeIndex, coreIndex, corefreqIndex, project);
             simSDPnode.execute();
           }
-          iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, archiParams, project, monitor,
+          iterativePartitioning(nodeIndex, coreIndex, corefreqIndex, iteration, archiParams, false, project, monitor,
               workflowManager);
         }
-
-        refineCoreMin(coreIndex, nodeIndex);
-        refineCoreMax(coreIndex, nodeIndex, project + SIMULATION_PATH);
+        if (Boolean.TRUE.equals(multinet)) {
+          refineCoreMin(coreIndex, nodeIndex);
+          refineCoreMax(coreIndex, nodeIndex, project + SIMULATION_PATH);
+        }
       }
-
     }
 
     return new LinkedHashMap<>();
@@ -234,7 +234,8 @@ public class HypervisorTask extends AbstractTaskImplementation {
   }
 
   private void iterativePartitioning(int nNode, int nCore, int cFreq, int iterativeBound,
-      ArchiMoldableParameter archiParams, String project, IProgressMonitor monitor, WorkflowManager workflowManager) {
+      ArchiMoldableParameter archiParams, boolean init3, String project, IProgressMonitor monitor,
+      WorkflowManager workflowManager) {
     configCount++;
 
     for (int iter = 0; iter < iterativeBound; iter++) {
@@ -257,7 +258,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
       // Launch thread partitioning
 
-      threadPartitioningLaucher(nNode, iter, workflowManager, monitor, project);
+      threadPartitioningLaucher(nNode, iter, workflowManager, monitor, project, init3);
 
       // Launch node simulator
       final long startTimeSimu = System.currentTimeMillis();
@@ -282,11 +283,16 @@ public class HypervisorTask extends AbstractTaskImplementation {
   }
 
   private void threadPartitioningLaucher(int nbNode, int iter, WorkflowManager workflowManager,
-      IProgressMonitor monitor, String project) {
+      IProgressMonitor monitor, String project, Boolean init3) {
     final Map<Integer, Long> part = new LinkedHashMap<>();
     for (int i = 0; i < nbNode; i++) {
       final long startTimeThreadPartitioning = System.currentTimeMillis();
-      final String workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning.workflow";
+      String workflowPath = "";
+      if (Boolean.TRUE.equals(init3)) {
+        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning2.workflow";
+      } else {
+        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning.workflow";
+      }
       final String scenarioPath = project + SCENARIO_GENERATED_PATH + "sub" + i + "_Node" + i + ".scenario";
       // it's possible that all node are not exploited
       final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath));

@@ -3,6 +3,7 @@ package org.preesm.algorithm.node.partitioner;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
@@ -12,6 +13,8 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.BasicEMap;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -116,7 +119,18 @@ public class ScenarioBuilder {
     // Add a average transfer size
     scenario.getSimulationInfo().setAverageDataSize(originalScenario.getSimulationInfo().getAverageDataSize());
 
-    scenario.getSimulationInfo().getDataTypes().addAll(originalScenario.getSimulationInfo().getDataTypes());
+    final EMap<String, Long> originalMap = originalScenario.getSimulationInfo().getDataTypes();
+    final EMap<String, Long> copiedMap = new BasicEMap<>();
+
+    // Copy entries from the original
+    for (final Entry<String, Long> entry : originalMap.entrySet()) {
+      copiedMap.put(entry.getKey(), entry.getValue());
+    }
+
+    // Add the copy to the new scenario
+    for (final Entry<String, Long> entry : copiedMap.entrySet()) {
+      scenario.getSimulationInfo().getDataTypes().put(entry.getKey(), entry.getValue());
+    }
 
     scenario.setSizesAreInBit(true);
     scenario.setCodegenDirectory(codegenPath);

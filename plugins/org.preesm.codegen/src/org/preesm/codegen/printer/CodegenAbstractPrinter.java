@@ -69,7 +69,6 @@ import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
-import org.preesm.codegen.model.MainSimsdpBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
@@ -1489,99 +1488,4 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    */
   public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
 
-  @Override
-  public CharSequence caseMainSimsdpBlock(final MainSimsdpBlock mainSimsdpBlock) {
-    final String indentationBlock = "";
-    final StringConcatenation result = new StringConcatenation();
-    final int nodes = mainSimsdpBlock.getNodeID().size();
-    final String[] nodeID = new String[nodes];
-
-    for (int i = 0; i < nodes; i++) {
-      nodeID[i] = mainSimsdpBlock.getNodeID().get(i);
-    }
-
-    result.append(printMainSimsdpHeader(mainSimsdpBlock, nodes, nodeID), indentationBlock);
-    // print init
-    for (int i = 0; i < nodes; i++) {
-      result.append("int initNode" + i + "=0;", indentationBlock);
-    }
-    result.append("char nodeset[" + nodes + "]={", indentationBlock);
-    String stri = "";
-    for (int i = 0; i < nodes - 1; i++) {
-      stri = stri + "\"" + mainSimsdpBlock.getNodeID().get(i) + "\"" + ",";
-    }
-    stri = stri + "\"" + mainSimsdpBlock.getNodeID().get(nodes - 1) + "\"" + "};";
-    result.append(stri, indentationBlock);
-    result.append("\n\n", indentationBlock);
-    // print buffer
-    result.append("//local buffer", indentationBlock);
-    result.append("\n", indentationBlock);
-    for (final Buffer b : mainSimsdpBlock.getBuffers()) {
-      final String str = b.getType() + " *" + b.getName() + " = (" + b.getType() + "*)malloc(sizeof(" + b.getType()
-          + ")*(" + b.getNbToken() + ")); \n";
-      result.append(str, indentationBlock);
-    }
-    result.append("\n", indentationBlock);
-    // print MPI init
-    result.append(printmpi(mainSimsdpBlock), indentationBlock);
-    // print body
-    result.append(printMPIfunc(mainSimsdpBlock), indentationBlock);
-    result.append("\n\n", indentationBlock);
-    String str = " // Finalize the MPI environment.\n";
-    result.append(str, indentationBlock);
-    str = "MPI_Finalize();";
-    result.append(str, indentationBlock);
-    for (final Buffer b : mainSimsdpBlock.getBuffers()) {
-      str = "free(" + b.getName() + " );\n";
-      result.append(str, indentationBlock);
-    }
-
-    result.append("\n return 0;\n}", indentationBlock);
-    return result;
-
-  }
-
-  private StringConcatenation printMPIfunc(MainSimsdpBlock mainSimsdpBlock) {
-    final String indentationBlock = "";
-    final StringConcatenation result = new StringConcatenation();
-    for (int i = 0; i < mainSimsdpBlock.getSubFunc().size(); i++) {
-      String str = "if (world_rank == " + i + ") {";
-      result.append(str, indentationBlock);
-      // print MPI receive
-      for (final Variable element : mainSimsdpBlock.getSubFunc().get(i).getParameters()) {
-        if (((Constant) element).getValue() == 1L) {
-          str = "MPI_Recv(" + element.getName() + "," + ((Constant) element).getValue() + ", MPI_UNSIGNED_CHAR, "
-              + (i - 1) + ", MPI_ANY_TAG, MPI_COMM_WORLD,MPI_STATUS_IGNORE);\n" + "";
-          result.append(str, indentationBlock);
-        }
-      }
-      // print sub func
-      str = mainSimsdpBlock.getSubFunc().get(i).getName() + "(";
-      for (int j = 0; j < mainSimsdpBlock.getSubFunc().get(i).getParameters().size(); j++) {
-        if (j == mainSimsdpBlock.getSubFunc().get(i).getParameters().size() - 1) {
-          str = str + ((Constant) mainSimsdpBlock.getSubFunc().get(i).getParameters().get(j)).getComment() + ");";
-        } else {
-          str = str + ((Constant) mainSimsdpBlock.getSubFunc().get(i).getParameters().get(j)).getComment() + ",";
-        }
-      }
-      result.append(str, indentationBlock);
-      // print MPI send
-      for (final Variable element : mainSimsdpBlock.getSubFunc().get(i).getParameters()) {
-        if (((Constant) element).getValue() == 2L) {
-          str = "MPI_Ssend(" + element.getName() + "," + ((Constant) element).getValue() + ", MPI_UNSIGNED_CHAR, " + i
-              + "," + (i + 1) + ", MPI_COMM_WORLD);\n" + "";
-          result.append(str, indentationBlock);
-        }
-      }
-      result.append("\n }", indentationBlock);// end if
-    }
-    result.append("}", indentationBlock);// end for
-
-    return result;
-
-  }
-
-  public abstract CharSequence printMainSimsdpHeader(MainSimsdpBlock block, int nodes, String[] nodeID);
-
-  protected abstract CharSequence printmpi(MainSimsdpBlock block);
 }

@@ -235,6 +235,7 @@ public abstract class AbstractWorkflowExecutor {
    */
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor,
       final boolean printLog) {
+
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
     final long startTime = System.currentTimeMillis();
 

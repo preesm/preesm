@@ -147,9 +147,11 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.SlamMessageRouteStep;
 
 /**
@@ -206,6 +208,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * of {@link Buffer}, the first for the FIFO head, and the second for the FIFO body (if any).
    */
   private final Map<Pair<DAGVertex, DAGVertex>, Pair<Buffer, Buffer>> dagFifoBuffers;
+  private final BiMap<DAGEdge, Buffer>                                dagEdgeTopBuffers;
+  private final List<Buffer>                                          topBuffer;
 
   /**
    * This {@link Map} associates a {@link SDFInitVertex} to its corresponding {@link FifoOperation#POP Pop}
@@ -274,6 +278,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.coreBlocks = new LinkedHashMap<>();
     this.srSDFEdgeBuffers = new LinkedHashMap<>();
     this.dagEdgeBuffers = HashBiMap.create(algo.edgeSet().size());
+    this.dagEdgeTopBuffers = HashBiMap.create(algo.edgeSet().size());
     this.dagFifoBuffers = new LinkedHashMap<>();
     this.dagVertexCalls = HashBiMap.create(algo.vertexSet().size());
     this.communications = new LinkedHashMap<>();
@@ -283,6 +288,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     this.configsAdded = new ArrayList<>();
     this.papifyActive = false;
     this.scheduleMapping = scheduleMapping;
+    this.topBuffer = new ArrayList<>();
   }
 
   /**
@@ -423,12 +429,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
-      // if (!this.coreBlocks.containsKey(cmp)) {
-      // final CoreBlock operatorBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
-      // this.coreBlocks.put(cmp, operatorBlock);
-      // }
 
-      this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
+      if (cmp.getComponent() instanceof CPU) {
+        this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
+      }
     }
 
     // 1 - iterate over dag vertices in SCHEDULING Order !
@@ -443,6 +447,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // Create a Block and store it.
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
+      }
+      if (operator instanceof GPU) {
+        return;
       }
       final CoreBlock operatorBlock = this.coreBlocks.get(operator);
       // 1.1 - Construct the "loop" of each core.
@@ -483,7 +490,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           throw new PreesmRuntimeException("Vertex " + vert + " has an unknown type: " + vert.getKind());
       }
     });
-
+    generateTopBuffers();
     final List<Block> resultList = this.coreBlocks.entrySet().stream()
         .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
         .collect(Collectors.toList());
@@ -495,6 +502,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     compactPapifyUsage(resultList);
 
     return Collections.unmodifiableList(resultList);
+  }
+
+  private void generateTopBuffers() {
+    for (final AbstractActor interfaceActor : this.scenario.getAlgorithm().getExecutableActors()) {
+      if (interfaceActor.getName().contains("snk") || interfaceActor.getName().contains("src")) {
+
+        for (final Entry<ComponentInstance, CoreBlock> entry : this.coreBlocks.entrySet()) {
+          entry.getValue().getTopBuffers().addAll(this.topBuffer);
+        }
+      }
+    }
+
   }
 
   void compactPapifyUsage(List<Block> allBlocks) {
@@ -884,10 +903,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       mainBuffer.setName(memoryBank);
       mainBuffer.setType("char");
       mainBuffer.setTokenTypeSizeInBit(8); // char is 8 bits
-
-      // To be removed
-      // mainBuffer.setSizeInBit(size);
-      // mainBuffer.setNbToken((long) (size + 7L) / mainBuffer.getTypeSize());
       mainBuffer.setNbToken((long) Math.ceil((double) size / (double) mainBuffer.getTokenTypeSizeInBit()));
       this.mainBuffers.put(memoryBank, mainBuffer);
 
@@ -926,10 +941,15 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             final Long dagEdgeSize = generateSubBuffers(dagEdgeBuffer, edge);
 
             // also accessible with dagAlloc.getKey().getWeight()
-            // dagEdgeBuffer.setSize(dagEdgeSize);
             dagEdgeBuffer
                 .setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTokenTypeSizeInBit()));
-            this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+            if (!dagEdgeBuffer.getName().contains("src") && !dagEdgeBuffer.getName().contains("snk")) {
+              this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);
+            } else {
+
+              this.dagEdgeTopBuffers.put(originalDagEdge, dagEdgeBuffer);
+              this.dagEdgeBuffers.put(originalDagEdge, dagEdgeBuffer);// not sure
+            }
           } else {
             if (!showWarningOnce) {
               PreesmLogger.getLogger().info(
@@ -941,8 +961,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
             // an edge of the single rate SDF Graph
             final Long dagEdgeSize = generateTwinSubBuffers(dagEdgeBuffer, edge);
 
-            // also accessible with dagAlloc.getKey().getWeight()
-            // dagEdgeBuffer.setSize(dagEdgeSize);
             dagEdgeBuffer
                 .setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTokenTypeSizeInBit()));
             final DistributedBuffer duplicatedBuffer = generateDistributedBuffer(
@@ -978,7 +996,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           // We set the size to keep the information
           dagEdgeBuffer
               .setNbToken((long) Math.ceil((double) dagEdgeSize / (double) dagEdgeBuffer.getTokenTypeSizeInBit()));
-          // dagEdgeBuffer.setSize(dagEdgeSize);
 
           // Save the DAGEdgeBuffer
           final DAGVertex originalSource = this.algo.getVertex(source.getName());
@@ -1139,6 +1156,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException(
             "Edge connected to " + arg.getDirection() + " port " + arg.getName() + " of DAG Actor " + dagVertex
                 + " is not present in the input MemEx.\n" + "There is something wrong in the Memory Allocation task.");
+      }
+      if (dagVertex.getName().startsWith("src") || dagVertex.getName().startsWith("snk")) {
+        final Buffer topBuf = (Buffer) var;
+
+        topBuf.setComment(dagVertex.getName().replace("_0", ""));
+        this.topBuffer.add(topBuf);
+
       }
 
       variableList.put(prototype.getArguments().get(arg), var);
