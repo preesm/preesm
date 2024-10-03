@@ -84,6 +84,7 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.VLNV;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class imports schedule expressed in dedicated json format. It is experimental and limited to flat PiMM and a few
@@ -100,10 +101,12 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
         + "It is experimental and limited to flat PiMM and a few architectures (regular x86 and Odroid)."
         + " See package org.preesm.algorithm.mapper.schedule for the json format.",
 
-    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = {
         @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })

@@ -1,0 +1,112 @@
+--- RCPTT testcase ---
+Format-Version: 1.0
+Contexts: _Xh07kH0EEe-tqodW1Mo--Q
+Element-Name: actorFromHeader
+Element-Type: testcase
+Element-Version: 3.0
+External-Reference: 
+Id: _4psw0H0DEe-tqodW1Mo--Q
+Runtime-Version: 2.5.5.202409031853
+Save-Time: 9/28/24, 12:51 PM
+Testcase-Type: ecl
+Verifications: _pjUyIH0EEe-tqodW1Mo--Q
+
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
+Content-Type: text/ecl
+Entry-Name: .content
+
+with [get-view "Project Explorer" | get-tree] {
+    select "actorFromHeader/Algo/graph.diagram" | double-click
+    select "actorFromHeader/Code/include/header.h"
+    with [get-item -path "actorFromHeader/Code/include/header.h"] {
+        drag-start 33 14
+        drag-enter 38 13 -detail move
+        drag-over 142 9
+    }
+}
+with [get-editor graph | get-diagram -index 1 | get-edit-part -name graph] {
+    drag-enter 25 200 -detail move
+    drag-exit
+    drag-over 130 199 -detail copy
+    drag-exit
+    drag-accept 130 199 -detail copy
+}
+get-view "Project Explorer" | get-tree | drag-set-data
+get-editor graph | get-diagram -index 1 | get-edit-part -name graph | drop 130 199 -detail copy
+get-window "Create Actor" | get-button Cancel | click -metaKeys ""
+get-view "Project Explorer" | get-tree | drag-end -detail copy
+with [get-editor graph | get-diagram -index 1] {
+    mouse-move 182 201 button1 -height 387 -width 630
+    mouse-press 182 201 button1 -height 387 -width 630
+    mouse-release 182 201 button1 "" -height 387 -width 630
+    mouse-hover 182 201 -height 387 -width 630
+    key-type "M1+s"
+}
+with [get-view "Project Explorer" | get-tree] {
+    select "actorFromHeader/Code/include/header.h"
+    with [get-item -path "actorFromHeader/Code/include/header.h"] {
+        drag-start 50 9
+        drag-enter 57 8 -detail move
+        drag-over 154 6
+        drag-exit
+    }
+}
+with [get-editor graph | get-diagram -index 1 | get-edit-part -name graph] {
+    drag-enter 7 199 -detail move
+    drag-over 151 199 -detail copy
+    drag-exit
+    drag-accept 151 199 -detail copy
+}
+get-view "Project Explorer" | get-tree | drag-set-data
+get-editor graph | get-diagram -index 1 | get-edit-part -name graph | drop 151 199 -detail copy
+get-window "Create Actor" | get-button OK | click -metaKeys ""
+get-window "Loop Function Selection" | get-button Cancel | click -metaKeys ""
+get-window "Init Function Selection" | get-button Cancel | click -metaKeys ""
+get-view "Project Explorer" | get-tree | drag-end -detail copy
+with [get-editor graph | get-diagram -index 1] {
+    mouse-move 183 236 button1 -height 387 -width 630
+    mouse-press 183 236 button1 -height 387 -width 630
+    mouse-hover 183 236 -mask "" -height 387 -width 630
+    mouse-release 183 236 button1 "" -height 387 -width 630
+    mouse-hover 88 149 -height 387 -width 630
+    key-type "M1+s"
+    key-type "M1+a"
+    key-type Del
+}
+get-window "Confirm Delete" | get-button Yes | click
+with [get-editor graph | get-diagram -index 1] {
+    key-type "M1+s"
+    get-edit-part -name graph | mouse-move "-2" 203 -height 387 -width 630
+}
+with [get-view "Project Explorer" | get-tree] {
+    select "actorFromHeader/Code/include/header.h"
+    with [get-item -path "actorFromHeader/Code/include/header.h"] {
+        drag-start 70 9
+        drag-enter 76 9 -detail move
+        drag-over 153 2
+    }
+}
+with [get-editor graph | get-diagram -index 1 | get-edit-part -name graph] {
+    drag-enter 0 194 -detail move
+    drag-exit
+    drag-over 167 188 -detail copy
+    drag-exit
+    drag-accept 167 188 -detail copy
+}
+get-view "Project Explorer" | get-tree | drag-set-data
+get-editor graph | get-diagram -index 1 | get-edit-part -name graph | drop 167 188 -detail copy
+get-window "Create Actor" | get-button OK | click -metaKeys ""
+get-window "Loop Function Selection" | get-button OK | click -metaKeys ""
+get-window "Init Function Selection" | get-button Cancel | click -metaKeys ""
+get-view "Project Explorer" | get-tree | drag-end -detail copy
+with [get-editor graph] {
+    with [get-diagram -index 1] {
+        mouse-move 409 282 button1 -height 387 -width 630
+        mouse-press 409 282 button1 -height 387 -width 630
+        mouse-release 409 282 button1 "" -height 387 -width 630
+        mouse-hover 409 282 -height 387 -width 630
+        key-type "M1+s"
+    }
+    get-palette | get-palette-entry Parameter | mouse-move 78 15 -height 24 -width 130
+}
+------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

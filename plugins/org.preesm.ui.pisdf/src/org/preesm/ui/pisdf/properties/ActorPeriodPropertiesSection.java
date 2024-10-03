@@ -190,7 +190,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
 
     final Actor actor = (Actor) bo;
 
-    final Point selelection = this.txtPeriod.getSelection();
+    final Point selection = this.txtPeriod.getSelection();
     final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
 
     if (!(actor instanceof PeriodicElement && !actor.isHierarchical() && !actor.isConfigurationActor())) {
@@ -234,7 +234,7 @@ public class ActorPeriodPropertiesSection extends GFPropertySection implements I
 
       if (expressionHasFocus) {
         this.txtPeriod.setFocus();
-        this.txtPeriod.setSelection(selelection);
+        this.txtPeriod.setSelection(selection);
       }
     }
 

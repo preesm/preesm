@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -50,9 +51,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.mapper.getpimm", name = "GetPiMM",
 
-    inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class) },
 
-    outputs = { @Port(name = "PiMM", type = PiGraph.class) }
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) }
 
 )
 public class GetPiMMFromDAGTask extends AbstractTaskImplementation {

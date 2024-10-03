@@ -98,6 +98,12 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 public class HeaderParser {
 
+  private static final String INPUT_MARKER  = "IN";
+  private static final String OUTPUT_MARKER = "OUT";
+
+  private static final String INPUT_MARKER_REGEX  = ".*?\\b" + INPUT_MARKER + "\\b.++";
+  private static final String OUTPUT_MARKER_REGEX = ".*?\\b" + OUTPUT_MARKER + "\\b.++";
+
   private static final String DISCARD_FUNC = "Discarded function ";
 
   private static final String TEMPLATE_WARNING = ". While analyzing it, "
@@ -118,8 +124,8 @@ public class HeaderParser {
    */
   public static List<FunctionPrototype> parseCXXHeader(final IFile file) {
     final Map<String, String> definedMacros = new HashMap<>();
-    definedMacros.put("IN", "");
-    definedMacros.put("OUT", "");
+    definedMacros.put(INPUT_MARKER, "");
+    definedMacros.put(OUTPUT_MARKER, "");
     final FileContent fC = FileContent.create(file);
     final String[] includePaths = new String[0];
     final IScannerInfo info = new ScannerInfo(definedMacros, includePaths);
@@ -297,12 +303,17 @@ public class HeaderParser {
         final FunctionArgument fA = PiMMUserFactory.instance.createFunctionArgument();
         protoParameters.add(fA);
 
+        if (paramDeclon.getRawSignature().matches(INPUT_MARKER_REGEX)) {
+          fA.setDirection(Direction.IN); // actually useless as direction is IN by default
+        } else if (paramDeclon.getRawSignature().matches(OUTPUT_MARKER_REGEX)) {
+          fA.setDirection(Direction.OUT);
+        }
+
         final String rawArgType = paramDeclon.getDeclSpecifier().getRawSignature();
         final String argType = NameCheckerC.removeCVqualifiers(rawArgType);
 
         fA.setType(argType);
-        final boolean isTemplated = argType.contains("<");
-        if (isTemplated || argType.contains(":")) {
+        if (argType.contains("<") || argType.contains(":")) {
           // then the type contains a template or a namespace
           fA.setIsCPPdefinition(true);
         }
@@ -325,7 +336,6 @@ public class HeaderParser {
                 .warning(() -> "Argument " + argName + " of function " + rawName
                     + " is a pointer to pointer, thus it is automatically replaced by "
                     + RefinementChecker.DEFAULT_PTR_TYPE + ".");
-
           }
 
           if (pops[pops.length - 1] instanceof ICPPASTReferenceOperator) {
@@ -511,16 +521,20 @@ public class HeaderParser {
     // For each function prototype proto check that the prototype has no
     // input or output buffers (i.e. parameters with a pointer type)
     for (final FunctionPrototype proto : prototypes) {
-      boolean allParams = true;
+      boolean allInputParams = true;
       for (final FunctionArgument param : proto.getArguments()) {
-        if (!param.isIsConfigurationParameter()) {
-          allParams = false;
+
+        // Only include input configuration parameters
+        if (!param.isIsConfigurationParameter() || param.getDirection() != Direction.IN) {
+          allInputParams = false;
           break;
         }
+
+        // This set should not be required
         param.setDirection(Direction.IN);
       }
 
-      if (allParams) {
+      if (allInputParams) {
         result.add(proto);
       }
     }

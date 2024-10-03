@@ -73,6 +73,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 
 /**
@@ -414,6 +415,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    *
    */
   public Expression createExpression(final String value) {
+    // Clear expression evaluation cache when changing an expression
+    ExpressionEvaluator.clearExpressionCache();
     try {
       // try to convert the expression in its long value
       return createExpression(Long.parseLong(value));
@@ -428,6 +431,8 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    *
    */
   public Expression createExpression(final double value) {
+    // Clear expression evaluation cache when changing an expression
+    ExpressionEvaluator.clearExpressionCache();
     final DoubleExpression createDoubleExpression = super.createDoubleExpression();
     createDoubleExpression.setValue(value);
     return createDoubleExpression;

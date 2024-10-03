@@ -1,9 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2024) :
  *
- * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Clément Guy [clement.guy@insa-rennes.fr] (2015)
- * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -34,51 +32,35 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.mapper.ui.bestcost;
 
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PartInitException;
-import org.eclipse.ui.PlatformUI;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
+package org.ietr.preesm.test.it.appstest;
 
-/**
- * Class used by the editor displaying the best latency found in time. Useful to run editor in display thread.
- *
- * @author mpelcat
- */
-public class BestCostEditorRunnable implements Runnable {
+import java.io.IOException;
+import org.eclipse.core.runtime.CoreException;
+import org.ietr.preesm.test.it.api.WorkflowRunner;
+import org.junit.Assert;
+import org.junit.Test;
 
-  private final IEditorInput input;
+public class FastSchedulerTest {
 
-  /**
-   * Instantiates a new best cost editor runnable.
-   *
-   * @param input
-   *          the input
-   */
-  public BestCostEditorRunnable(final IEditorInput input) {
-    super();
-    this.input = input;
+  @Test
+  public void testFastScheduler() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.stereo";
+    final String scenario = "/Scenarios/" + "8coresC6678.scenario";
+    final String workflow = "/Workflows/" + "CodegenFast.workflow";
+
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflow, scenario);
+    Assert.assertTrue("[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.", success);
   }
 
-  @Override
-  public void run() {
+  @Test
+  public void testPFastScheduler() throws IOException, CoreException {
+    final String projectName = "org.ietr.preesm.stereo";
+    final String scenario = "/Scenarios/" + "8coresC6678.scenario";
+    final String workflow = "/Workflows/" + "CodegenPFast.workflow";
 
-    final IWorkbenchWindow dwindow = PlatformUI.getWorkbench().getWorkbenchWindows()[0];
-
-    if ((dwindow != null) && (this.input instanceof BestCostEditorInput)) {
-      final IWorkbenchPage page = dwindow.getActivePage();
-
-      try {
-        page.openEditor(this.input, "org.ietr.preesm.plugin.mapper.plot.TimeEditor");
-
-      } catch (final PartInitException e) {
-        throw new PreesmRuntimeException(e);
-      }
-    }
-
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflow, scenario);
+    Assert.assertTrue("[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.", success);
   }
 
 }

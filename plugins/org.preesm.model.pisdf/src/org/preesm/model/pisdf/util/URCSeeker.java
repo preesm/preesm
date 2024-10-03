@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2024) :
  *
  * Dylan Gageot [gageot.dylan@gmail.com] (2020)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -83,7 +84,7 @@ public class URCSeeker extends PiMMSwitch<Boolean> {
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     // Explore all executable actors of the graph
-    this.graph.getActors().stream().filter(x -> x instanceof ExecutableActor).forEach(x -> doSwitch(x));
+    this.graph.getActors().stream().filter(ExecutableActor.class::isInstance).forEach(x -> doSwitch(x));
     // Return identified URCs
     return identifiedURCs;
   }

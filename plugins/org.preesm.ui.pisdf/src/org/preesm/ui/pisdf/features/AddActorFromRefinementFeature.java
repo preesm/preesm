@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023 - 2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2014 - 2015)
  *
@@ -105,14 +105,13 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
   @Override
   public PictogramElement add(final IAddContext context) {
     // 1- Create and Add Actor
-    final Actor actors = createActor(context);
+    final Actor actor = createActor(context);
 
     // Stop if actor creation was cancelled
-    if (actors == null) {
+    if (actor == null) {
       this.hasDoneChanges = false;
       return null;
     }
-    final Actor actor = actors;
 
     // 2- Set Refinement
     final boolean validFile = setRefinement(context, actor);
@@ -132,8 +131,7 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     pictElements[0] = getFeatureProvider().getAllPictogramElementsForBusinessObject(actor)[0];
 
     final AbstractActor protoPort = actor.getChildAbstractActor();
-    // protoPort is Null if actor creation was cancelled during refinement
-    // prototype selection
+    // protoPort is Null if actor creation was cancelled during refinement prototype selection
     if (protoPort != null) {
 
       protoPort.getAllPorts().forEach(port -> {
@@ -170,7 +168,8 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     newFilePath = ((IFile) context.getNewObject()).getFullPath();
     setRefinementFeature.setShowOnlyValidPrototypes(false);
     setRefinementFeature.setActorRefinement(actor, newFilePath);
-    return true;
+
+    return actor.getRefinement() != null;
   }
 
   private Actor createActor(final IAddContext context) {
@@ -182,10 +181,12 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     createContext.setTargetConnection(context.getTargetConnection());
     createActorFeature.execute(createContext);
     final Object[] actors = createActorFeature.getObjects();
-    if (actors.length > 0) {
-      return (Actor) actors[0];
+
+    if (actors == null || actors.length == 0) {
+      return null;
     }
-    return null;
+
+    return (Actor) actors[0];
   }
 
   /*

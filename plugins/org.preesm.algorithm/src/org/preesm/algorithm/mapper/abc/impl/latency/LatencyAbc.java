@@ -147,26 +147,15 @@ public abstract class LatencyAbc {
   public static LatencyAbc getInstance(final AbcParameters params, final MapperDAG dag, final Design archi,
       final Scenario scenario) {
 
-    LatencyAbc abc = null;
     final AbcType simulatorType = params.getSimulatorType();
 
-    switch (simulatorType) {
-      case INFINITE_HOMOGENEOUS:
-        abc = new InfiniteHomogeneousAbc(params, dag, archi, scenario);
-        break;
-      case LOSSELY_TIMED:
-        abc = new LooselyTimedAbc(params, dag, archi, simulatorType, scenario);
-        break;
-      case APPROXIMATELY_TIMED:
-        abc = new ApproximatelyTimedAbc(params, dag, archi, simulatorType, scenario);
-        break;
-      case ACCURATELY_TIMED:
-        abc = new AccuratelyTimedAbc(params, dag, archi, simulatorType, scenario);
-        break;
-      default:
-        throw new PreesmRuntimeException("Unsupported simulator type: " + simulatorType);
-    }
-    return abc;
+    return switch (simulatorType) {
+      case INFINITE_HOMOGENEOUS -> new InfiniteHomogeneousAbc(params, dag, archi, scenario);
+      case LOSSELY_TIMED -> new LooselyTimedAbc(params, dag, archi, simulatorType, scenario);
+      case APPROXIMATELY_TIMED -> new ApproximatelyTimedAbc(params, dag, archi, simulatorType, scenario);
+      case ACCURATELY_TIMED -> new AccuratelyTimedAbc(params, dag, archi, simulatorType, scenario);
+      default -> throw new PreesmRuntimeException("Unsupported simulator type: " + simulatorType);
+    };
   }
 
   /**
@@ -264,9 +253,11 @@ public abstract class LatencyAbc {
       final ComponentInstance initEffectiveOperator = implInitVertex.getEffectiveOperator();
       if (initEffectiveOperator != null) {
         // if init has been mapped (should be the case), forces end to be on same operator
+        // skip remapping if operator is already properly set
         if (effectiveOperator != null
             && effectiveOperator.getInstanceName().equals(initEffectiveOperator.getInstanceName())) {
-          // skip remapping if operator is already properly set
+          // Updating cost and timing
+          fireNewMappedVertex(impvertex, updateRank);
           return;
         }
         finalOperator = initEffectiveOperator;
@@ -282,14 +273,11 @@ public abstract class LatencyAbc {
       unmap(dagvertex);
     }
 
-    // Testing if the vertex or its group can be mapped on the
-    // target operator
+    // Testing if the vertex or its group can be mapped on the target operator
     if (isMapable(impvertex, finalOperator, false) || !updateRank || (impvertex instanceof TransferVertex)) {
 
-      // Implementation property is set in both DAG and
-      // implementation
-      // Modifying effective operator of the vertex and all its
-      // mapping set!
+      // Implementation property is set in both DAG and implementation
+      // Modifying effective operator of the vertex and all its mapping set!
       dagvertex.setEffectiveComponent(finalOperator);
       impvertex.setEffectiveComponent(finalOperator);
 
@@ -411,7 +399,6 @@ public abstract class LatencyAbc {
    * Sets the total orders in the dag.
    */
   public final void retrieveTotalOrder() {
-
     this.orderManager.tagDAG(this.dag);
   }
 
@@ -429,7 +416,6 @@ public abstract class LatencyAbc {
   public final boolean mapAllVerticesOnOperator(final ComponentInstance operator) {
 
     boolean possible = true;
-    MapperDAGVertex currentvertex;
 
     final TopologicalDAGIterator iterator = new TopologicalDAGIterator(this.dag);
 
@@ -437,7 +423,7 @@ public abstract class LatencyAbc {
      * The listener is mapped in each vertex
      */
     while (iterator.hasNext()) {
-      currentvertex = (MapperDAGVertex) iterator.next();
+      final MapperDAGVertex currentvertex = (MapperDAGVertex) iterator.next();
 
       // Looks for an operator able to execute currentvertex (preferably
       // the given operator)
@@ -824,23 +810,20 @@ public abstract class LatencyAbc {
 
     if (effectiveOp == null) {
       PreesmLogger.getLogger().severe("implementation of " + vertex.getName() + " failed");
+    }
+    final long vertextime = vertex.getInit().getTime(effectiveOp);
+
+    // Set costs
+    vertex.getTiming().setCost(vertextime);
+
+    setEdgesCosts(vertex.incomingEdges());
+    setEdgesCosts(vertex.outgoingEdges());
+
+    if (updateRank) {
+      updateTimings();
+      this.taskScheduler.insertVertex(vertex);
     } else {
-
-      final long vertextime = vertex.getInit().getTime(effectiveOp);
-
-      // Set costs
-      vertex.getTiming().setCost(vertextime);
-
-      setEdgesCosts(vertex.incomingEdges());
-      setEdgesCosts(vertex.outgoingEdges());
-
-      if (updateRank) {
-        updateTimings();
-        this.taskScheduler.insertVertex(vertex);
-      } else {
-        this.orderManager.insertGivenTotalOrder(vertex);
-      }
-
+      this.orderManager.insertGivenTotalOrder(vertex);
     }
   }
 

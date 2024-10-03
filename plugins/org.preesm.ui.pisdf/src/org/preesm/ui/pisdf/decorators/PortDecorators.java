@@ -109,15 +109,12 @@ public class PortDecorators {
    * @return the {@link IDecorator} or <code>null</code>.
    */
   protected static IDecorator getPortExpressionDecorator(final Port port, final PictogramElement pe) {
-    final ImageDecorator errorRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-    final ImageDecorator warningRenderingDecorator = new ImageDecorator(
-        IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+    final ImageDecorator errRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+    final ImageDecorator wrnRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
 
     if (port instanceof ConfigOutputPort) {
       return null;
     }
-
-    final String message = "Problems in parameter resolution: ";
 
     final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
@@ -138,19 +135,19 @@ public class PortDecorators {
       expression.evaluateAsDouble();
 
       if (!expression.isExpressionInteger()) {
-        warningRenderingDecorator.setX(xCoord);
-        warningRenderingDecorator.setY(yCoord);
-        warningRenderingDecorator.setMessage("Port expression resolution will default to rounded integer.");
+        wrnRenderingDecorator.setX(xCoord);
+        wrnRenderingDecorator.setY(yCoord);
+        wrnRenderingDecorator.setMessage("Port expression resolution will default to rounded integer.");
 
-        return warningRenderingDecorator;
+        return wrnRenderingDecorator;
       }
 
     } catch (final ExpressionEvaluationException e) {
-      errorRenderingDecorator.setX(xCoord);
-      errorRenderingDecorator.setY(yCoord);
-      errorRenderingDecorator.setMessage(message + e.getMessage());
+      errRenderingDecorator.setX(xCoord);
+      errRenderingDecorator.setY(yCoord);
+      errRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
 
-      return errorRenderingDecorator;
+      return errRenderingDecorator;
     }
 
     return null;

@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  * Jonathan Piat [jpiat@laas.fr] (2009 - 2011)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
@@ -182,9 +183,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
-    final Iterator<String> iterator = nameSet.iterator();
-    while (iterator.hasNext()) {
-      final String name = iterator.next();
+    for (String name : nameSet) {
       final MapperDAGVertex v = (MapperDAGVertex) getVertex(name);
       vSet.add(v);
     }

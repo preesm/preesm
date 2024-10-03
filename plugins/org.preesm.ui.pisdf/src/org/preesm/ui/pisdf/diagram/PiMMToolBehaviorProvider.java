@@ -40,6 +40,7 @@
 package org.preesm.ui.pisdf.diagram;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -206,18 +207,14 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
     for (final Anchor a : ((ContainerShape) pe).getAnchors()) {
       for (final Object pbo : a.getLink().getBusinessObjects()) {
         if (pbo instanceof final Port port) {
-          for (final IDecorator d : PortDecorators.getDecorators(port, a)) {
-            decorators.add(d);
-          }
+          Collections.addAll(decorators, PortDecorators.getDecorators(port, a));
         }
       }
     }
 
     if (bo instanceof final Actor actorBo) {
       // Add decorators to the actor itself
-      for (final IDecorator d : ActorDecorators.getDecorators(actorBo, pe)) {
-        decorators.add(d);
-      }
+      Collections.addAll(decorators, ActorDecorators.getDecorators(actorBo, pe));
     }
 
     final IDecorator[] result = new IDecorator[decorators.size()];
@@ -237,8 +234,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
   public ICustomFeature getDoubleClickFeature(final IDoubleClickContext context) {
     final ICustomFeature customFeature = new OpenRefinementFeature(getFeatureProvider());
 
-    // canExecute() tests especially if the context contains a Actor with a
-    // valid refinement
+    // canExecute() tests especially if the context contains a Actor with a valid refinement
     if (customFeature.canExecute(context)) {
       return customFeature;
     }

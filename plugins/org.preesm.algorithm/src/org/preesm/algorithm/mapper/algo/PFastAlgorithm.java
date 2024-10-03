@@ -45,14 +45,12 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Observable;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
-import java.util.concurrent.Semaphore;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
@@ -62,8 +60,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.params.FastAlgoParameters;
 import org.preesm.algorithm.mapper.params.PFastAlgoParameters;
-import org.preesm.algorithm.mapper.ui.BestCostPlotter;
-import org.preesm.algorithm.mapper.ui.bestcost.BestCostEditor;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -76,7 +72,7 @@ import org.preesm.model.slam.Design;
  * @author pmenuet
  * @author mpelcat
  */
-public class PFastAlgorithm extends Observable {
+public class PFastAlgorithm {
 
   /**
    * The scheduling (total order of tasks) for the best found solution.
@@ -129,13 +125,6 @@ public class PFastAlgorithm extends Observable {
       super();
     }
 
-  }
-
-  /**
-   * Constructor : PFastAlgorithm.
-   */
-  public PFastAlgorithm() {
-    super();
   }
 
   /**
@@ -261,10 +250,8 @@ public class PFastAlgorithm extends Observable {
    *          the fast params
    * @param population
    *          the population
-   * @param populationsize
+   * @param populationSize
    *          // if we want a population this parameter determine how many individuals we want in the population
-   * @param isDisplaySolutions
-   *          the is display solutions
    * @param populationList
    *          // List of MapperDAG which are solution
    * @param taskSched
@@ -275,12 +262,11 @@ public class PFastAlgorithm extends Observable {
    */
   public MapperDAG map(MapperDAG dag, final Design archi, final Scenario scenario, final InitialLists initialLists,
       final AbcParameters abcParams, final PFastAlgoParameters pFastParams, final boolean population,
-      int populationsize, final boolean isDisplaySolutions, final List<MapperDAG> populationList,
-      final AbstractTaskSched taskSched) {
+      int populationSize, final List<MapperDAG> populationList, final AbstractTaskSched taskSched) {
 
     int i = 0;
-    if (populationsize < 1) {
-      populationsize = 1;
+    if (populationSize < 1) {
+      populationSize = 1;
     }
     int k = 0;
 
@@ -293,26 +279,15 @@ public class PFastAlgorithm extends Observable {
     final Set<Set<String>> subSet = new LinkedHashSet<>();
 
     final FastAlgoParameters fastParams = new FastAlgoParameters(pFastParams.getFastTime(),
-        pFastParams.getFastLocalSearchTime(), pFastParams.isDisplaySolutions());
+        pFastParams.getFastLocalSearchTime());
 
     // if only one operator the fast must be used
     if (pFastParams.getProcNumber() == 0) {
       final FastAlgorithm algorithm = new FastAlgorithm(initialLists, scenario);
 
-      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, false, false, null, cpnDominantVector,
-          blockingnodeVector, fcpVector, taskSched);
+      dag = algorithm.map("Fast", abcParams, fastParams, dag, archi, false, null, cpnDominantVector, blockingnodeVector,
+          fcpVector, taskSched);
       return dag;
-    }
-
-    // Data window set
-    final Semaphore pauseSemaphore = new Semaphore(1);
-    final BestCostPlotter costPlotter = new BestCostPlotter("PFast Algorithm", pauseSemaphore);
-
-    if (!population) {
-      costPlotter.setSubplotCount(1);
-      BestCostEditor.createEditor(costPlotter);
-
-      addObserver(costPlotter);
     }
 
     // step 1
@@ -321,10 +296,8 @@ public class PFastAlgorithm extends Observable {
 
     this.bestTotalOrder = archisimu.getTotalOrder();
     archisimu.updateFinalCosts();
-    long iBest = archisimu.getFinalCost();
+    final long iBest = archisimu.getFinalCost();
 
-    setChanged();
-    notifyObservers(iBest);
     dagfinal.setScheduleCost(iBest);
     dag.setScheduleCost(iBest);
     // step 3/4
@@ -349,8 +322,8 @@ public class PFastAlgorithm extends Observable {
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), isDisplaySolutions, true,
-            abcParams, fastParams, scenario);
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), true, abcParams, fastParams,
+            scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
         futureTasks.add(task);
@@ -363,34 +336,17 @@ public class PFastAlgorithm extends Observable {
       try {
 
         for (final FutureTask<MapperDAG> task : futureTasks) {
-
           final MapperDAG currentOutDAG = task.get();
           mappedDAGSet.add(currentOutDAG);
-
         }
-        while (mappedDAGSet.size() > populationsize) {
 
+        while (mappedDAGSet.size() > populationSize) {
           mappedDAGSet.pollLast();
         }
 
         // step 12
         if (!population) {
           dag = mappedDAGSet.first().copy();
-
-          iBest = dag.getScheduleCost();
-          setChanged();
-          notifyObservers(iBest);
-
-          // Mode Pause
-          while (costPlotter.getActionType() == 2) {
-            Thread.sleep(50);
-          }
-
-          // Mode stop
-          if (costPlotter.getActionType() == 1) {
-            break;
-          }
-
         }
 
         es.shutdown();
