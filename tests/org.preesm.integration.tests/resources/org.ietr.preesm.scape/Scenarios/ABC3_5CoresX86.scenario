@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.scape/Algo/ABC3.pi"/>
+        <architecture url="/org.ietr.preesm.scape/Archi/5CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="ABC3/A"/>
+            <task name="ABC3/B"/>
+            <task name="ABC3/C"/>
+            <task name="ABC3/D"/>
+            <task name="ABC3/F"/>
+            <task name="ABC3/set"/>
+            <task name="ABC3/get"/>
+            <task name="ABC3/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="ABC3/A"/>
+            <task name="ABC3/B"/>
+            <task name="ABC3/C"/>
+            <task name="ABC3/D"/>
+            <task name="ABC3/F"/>
+            <task name="ABC3/set"/>
+            <task name="ABC3/get"/>
+            <task name="ABC3/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="ABC3/A"/>
+            <task name="ABC3/B"/>
+            <task name="ABC3/C"/>
+            <task name="ABC3/D"/>
+            <task name="ABC3/F"/>
+            <task name="ABC3/set"/>
+            <task name="ABC3/get"/>
+            <task name="ABC3/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="ABC3/A"/>
+            <task name="ABC3/B"/>
+            <task name="ABC3/C"/>
+            <task name="ABC3/D"/>
+            <task name="ABC3/F"/>
+            <task name="ABC3/set"/>
+            <task name="ABC3/get"/>
+            <task name="ABC3/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="ABC3/A"/>
+            <task name="ABC3/B"/>
+            <task name="ABC3/C"/>
+            <task name="ABC3/D"/>
+            <task name="ABC3/F"/>
+            <task name="ABC3/set"/>
+            <task name="ABC3/get"/>
+            <task name="ABC3/E"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/A"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/B"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/C"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/D"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/F"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/set"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/get"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/E"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC3/D_lo__D_li"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

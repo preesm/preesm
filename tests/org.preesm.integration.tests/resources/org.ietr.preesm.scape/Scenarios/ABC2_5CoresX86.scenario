@@ -5,7 +5,7 @@
     </flags>
     <files>
         <algorithm url="/org.ietr.preesm.scape/Algo/ABC2.pi"/>
-        <architecture url="/org.ietr.preesm.scape/Archi/3CoresX86.slam"/>
+        <architecture url="/org.ietr.preesm.scape/Archi/5CoresX86.slam"/>
         <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
     </files>
     <constraints excelUrl="">
@@ -27,6 +27,22 @@
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
+            <task name="ABC2/A"/>
+            <task name="ABC2/B"/>
+            <task name="ABC2/C"/>
+            <task name="ABC2/D"/>
+            <task name="ABC2/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="ABC2/A"/>
+            <task name="ABC2/B"/>
+            <task name="ABC2/C"/>
+            <task name="ABC2/D"/>
+            <task name="ABC2/E"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
             <task name="ABC2/A"/>
             <task name="ABC2/B"/>
             <task name="ABC2/C"/>
@@ -57,6 +73,8 @@
             <specialVertexOperator path="Core0"/>
             <specialVertexOperator path="Core1"/>
             <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
         </specialVertexOperators>
     </simuParams>
     <parameterValues/>

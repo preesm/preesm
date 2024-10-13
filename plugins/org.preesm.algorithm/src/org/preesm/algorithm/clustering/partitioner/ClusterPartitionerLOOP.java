@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
@@ -57,6 +58,8 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -107,14 +110,17 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
     final List<AbstractActor> localPluralLOOPs = new ClusteringPatternSeekerLoop(graph).pluralLocalseek();
     if (!localPluralLOOPs.isEmpty()) {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, localPluralLOOPs, LOOP_PREFIX + clusterId).build();
-      extractDelay();
+      extractDelay(subGraph);
       // Add constraints of the cluster in the scenario.
       subGraph.setClusterValue(true);
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(localPluralLOOPs,
           this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-
+      // check consistency
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+          CheckerErrorLevel.NONE);
+      pgcc.check(graph);
       return this.graph;
     }
     // retrieve the obtained or existing single local cycle to be semi-unrolled
@@ -129,6 +135,10 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
         duplicationValue = brv.get(graphLocalSingleLOOPs.get(0));
       }
       semiUnroll(graphLocalSingleLOOPs.get(0), duplicationValue, brv.get(graphLocalSingleLOOPs.get(0)));
+      // check consistency
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+          CheckerErrorLevel.NONE);
+      pgcc.check(graph);
       return this.graph;
     }
     // retrieve the obtained or existing single local cycle to be coarse
@@ -147,8 +157,78 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
     return this.graph;
   }
 
-  private void extractDelay() {
-    // TODO Auto-generated method stub
+  private void extractDelay(PiGraph subGraph) {
+
+    for (final Delay retainedDelay : subGraph.getDelays()) {
+      final PiGraph upperGraph = subGraph.getContainingPiGraph();
+      // move delay to upper graph
+      retainedDelay.setContainingGraph(upperGraph);
+      retainedDelay.getActor().setContainingGraph(upperGraph);
+
+      // create input interface
+      final DataInputInterface din = PiMMUserFactory.instance.createDataInputInterface();
+      final String nameIn = "delay_" + retainedDelay.getContainingFifo().getTargetPort().getName();
+      din.setContainingGraph(subGraph);
+      din.setName(nameIn);
+      din.getDataOutputPorts().get(0).setName(nameIn);
+      din.getGraphPort().setName(nameIn);
+      // homogenize expression
+      final Long expressionIn = retainedDelay.getContainingFifo().getTargetPort().getExpression().evaluate();
+      din.getDataOutputPorts().get(0).setExpression(expressionIn);
+      din.getGraphPort().setExpression(expressionIn);
+      // connect interface to target
+      final Fifo fIn = PiMMUserFactory.instance.createFifo();
+      fIn.setType(retainedDelay.getContainingFifo().getType());
+      fIn.setSourcePort((DataOutputPort) din.getDataPort());
+      fIn.setTargetPort(retainedDelay.getContainingFifo().getTargetPort());
+      fIn.setContainingGraph(subGraph);
+      // connect delay to interface
+      retainedDelay.getContainingFifo().setTargetPort((DataInputPort) din.getGraphPort());
+
+      // create output interface
+      final DataOutputInterface dout = PiMMUserFactory.instance.createDataOutputInterface();
+      final String nameOut = "delay_" + retainedDelay.getContainingFifo().getSourcePort().getName();
+      dout.setContainingGraph(subGraph);
+      dout.setName(nameOut);
+      dout.getDataInputPorts().get(0).setName(nameOut);
+      dout.getGraphPort().setName(nameOut);
+      // homogenize expression
+      final Long expressionOut = retainedDelay.getContainingFifo().getSourcePort().getExpression().evaluate();
+      dout.getDataInputPorts().get(0).setExpression(expressionOut);
+      dout.getGraphPort().setExpression(expressionOut);
+      // connect interface to target
+      final Fifo fOut = PiMMUserFactory.instance.createFifo();
+      fOut.setType(retainedDelay.getContainingFifo().getType());
+      fOut.setSourcePort(retainedDelay.getContainingFifo().getSourcePort());
+      fOut.setTargetPort((DataInputPort) dout.getDataPort());
+      fOut.setContainingGraph(subGraph);
+      // connect delay to interface
+      retainedDelay.getContainingFifo().setSourcePort((DataOutputPort) dout.getGraphPort());
+
+      // case getter setter
+      if (retainedDelay.hasSetterActor()) {
+        // remove interface
+        final DataInputInterface sourceInterface = (DataInputInterface) retainedDelay.getSetterActor();
+        final DataOutputPort sourcePort = sourceInterface.getGraphPort().getFifo().getSourcePort();
+        subGraph.removeActor(retainedDelay.getSetterActor());
+        retainedDelay.getActor().getDataInputPort().getFifo().setSourcePort(sourcePort);
+        retainedDelay.getActor().getDataInputPort().getFifo().setContainingGraph(upperGraph);
+
+      }
+      if (retainedDelay.hasGetterActor()) {
+        // remove interface
+        final DataOutputInterface targetInterface = (DataOutputInterface) retainedDelay.getGetterActor();
+        final DataInputPort targetPort = targetInterface.getGraphPort().getFifo().getTargetPort();
+        subGraph.removeActor(retainedDelay.getGetterActor());
+        retainedDelay.getActor().getDataOutputPort().getFifo().setTargetPort(targetPort);
+        retainedDelay.getActor().getDataOutputPort().getFifo().setContainingGraph(upperGraph);
+
+      }
+      retainedDelay.getContainingFifo().setContainingGraph(upperGraph);
+      graph.getAllFifos().stream().filter(x -> x.getSourcePort() == null).forEach(x -> graph.removeFifo(x));
+      graph.getAllFifos().stream().filter(x -> x.getTargetPort() == null).forEach(x -> graph.removeFifo(x));
+
+    }
 
   }
 
