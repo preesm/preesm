@@ -4,47 +4,38 @@
         <sizesAreInBit/>
     </flags>
     <files>
-        <algorithm url="/org.ietr.preesm.scape/Algo/ABC2.pi"/>
+        <algorithm url="/org.ietr.preesm.scape/Algo/sub.pi"/>
         <architecture url="/org.ietr.preesm.scape/Archi/3CoresX86.slam"/>
         <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
             <operator name="Core0"/>
-            <task name="ABC2/A"/>
-            <task name="ABC2/B"/>
-            <task name="ABC2/C"/>
-            <task name="ABC2/D"/>
-            <task name="ABC2/E"/>
+            <task name="sub/Z"/>
+            <task name="sub/Y"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core1"/>
-            <task name="ABC2/A"/>
-            <task name="ABC2/B"/>
-            <task name="ABC2/C"/>
-            <task name="ABC2/D"/>
-            <task name="ABC2/E"/>
+            <task name="sub/Z"/>
+            <task name="sub/Y"/>
         </constraintGroup>
         <constraintGroup>
             <operator name="Core2"/>
-            <task name="ABC2/A"/>
-            <task name="ABC2/B"/>
-            <task name="ABC2/C"/>
-            <task name="ABC2/D"/>
-            <task name="ABC2/E"/>
+            <task name="sub/Z"/>
+            <task name="sub/Y"/>
         </constraintGroup>
     </constraints>
     <timings excelUrl="">
         <timing opname="x86" time="100"
-            timingtype="EXECUTION_TIME" vertexname="ABC2/A"/>
+            timingtype="EXECUTION_TIME" vertexname="sub/Z"/>
         <timing opname="x86" time="100"
-            timingtype="EXECUTION_TIME" vertexname="ABC2/B"/>
+            timingtype="EXECUTION_TIME" vertexname="sub/Y"/>
         <timing opname="x86" time="100"
-            timingtype="EXECUTION_TIME" vertexname="ABC2/C"/>
+            timingtype="EXECUTION_TIME" vertexname="sub/inD"/>
         <timing opname="x86" time="100"
-            timingtype="EXECUTION_TIME" vertexname="ABC2/D"/>
+            timingtype="EXECUTION_TIME" vertexname="sub/outD"/>
         <timing opname="x86" time="100"
-            timingtype="EXECUTION_TIME" vertexname="ABC2/E"/>
+            timingtype="EXECUTION_TIME" vertexname="sub/out"/>
     </timings>
     <simuParams>
         <mainCore>Core0</mainCore>

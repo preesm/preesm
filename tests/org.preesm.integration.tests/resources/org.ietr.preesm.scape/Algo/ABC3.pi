@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <key attr.name="delay" attr.type="string" for="edge"/>
+    <graph edgedefault="directed">
+        <data key="name">ABC3</data>
+        <node id="A" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="B" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="12" kind="output" name="o"/>
+        </node>
+        <node id="C" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="IN" isConfig="false" name="li" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="input" name="li"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="F" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="i"/>
+        </node>
+        <node id="set" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node id="get" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+        </node>
+        <node id="E" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+                <param direction="OUT" isConfig="false" name="lo" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="i"/>
+            <port annotation="NONE" expr="1" kind="output" name="lo"/>
+            <port annotation="NONE" expr="1" kind="output" name="o"/>
+        </node>
+        <node expr="1" getter="get" id="D_lo__D_li" kind="delay"
+            level="none" setter="set">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <edge expr="1" kind="fifo" source="E" sourceport="lo"
+            target="D" targetport="li" type="char">
+            <data key="delay">D_lo__D_li</data>
+        </edge>
+        <edge kind="fifo" source="A" sourceport="o" target="B"
+            targetport="i" type="char"/>
+        <edge kind="fifo" source="B" sourceport="o" target="C"
+            targetport="i" type="char"/>
+        <edge kind="fifo" source="C" sourceport="o" target="D"
+            targetport="i" type="char"/>
+        <edge kind="fifo" source="D" sourceport="o" target="E"
+            targetport="i" type="char"/>
+        <edge kind="fifo" source="set" sourceport="o"
+            target="D_lo__D_li" targetport="set" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li" sourceport="get"
+            target="get" targetport="i" type="char"/>
+        <edge kind="fifo" source="E" sourceport="o" target="F"
+            targetport="i" type="char"/>
+    </graph>
+</graphml>

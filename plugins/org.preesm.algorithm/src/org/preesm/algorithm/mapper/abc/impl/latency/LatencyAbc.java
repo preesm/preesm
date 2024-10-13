@@ -306,18 +306,6 @@ public abstract class LatencyAbc {
       impvertex.setEffectiveComponent(finalOperator);
 
       fireNewMappedVertex(impvertex, updateRank);
-      // if (((AbstractActor) dagvertex.getOrigVertex()).isOnGPU()) {
-      // final ComponentInstance gpuOperator = this.archi.getComponentInstances().stream()
-      // .filter(x -> x.getComponent() instanceof GPU).findFirst().orElseThrow();
-      //
-      // final MapperDAGVertex copyDagVertex = dagvertex.copy();
-      // final MapperDAGVertex copyImpVertex = impvertex.copy();
-      //
-      // copyDagVertex.setEffectiveComponent(gpuOperator);
-      // copyImpVertex.setEffectiveComponent(gpuOperator);
-      //
-      // fireNewMappedVertex(copyImpVertex, true);
-      // }
 
     } else {
 
