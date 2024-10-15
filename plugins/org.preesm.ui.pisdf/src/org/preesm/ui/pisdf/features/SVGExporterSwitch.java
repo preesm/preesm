@@ -474,7 +474,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     ciiNode.appendChild(polygon);
     final StringBuilder points = new StringBuilder();
     for (final Point p : polyPe.getPoints()) {
-      points.append((p.getX() + 18) + "," + (p.getY() + 16) + " ");
+      points.append((p.getX() + width / 2 - 7) + "," + (p.getY() + 16) + " ");
     }
     polygon.setAttribute(POINTS_LITERAL, points.toString());
     polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
