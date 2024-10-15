@@ -1024,9 +1024,20 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
     switch (t.getHorizontalAlignment()) {
       case ALIGNMENT_LEFT:
-        // TODO (t.getX()-t.getWidth()));
-        el.setAttribute("x", "" + (-10));
-        el.setAttribute(TEXT_ANCHOR_LITERAL, "end");
+        // Value should be -2 for Data Output Port and -10 for Config Output Port
+
+        // Get graphic element associated to text
+        final GraphicsAlgorithm portGA = t.getParentGraphicsAlgorithm().getGraphicsAlgorithmChildren().stream()
+            .filter(ga -> ga != t).findAny().orElseThrow();
+        final int offset;
+        if (portGA instanceof Polygon) {
+          offset = -10;
+        } else {
+          offset = -2;
+        }
+
+        el.setAttribute("x", "" + offset);
+        el.setAttribute(TEXT_ANCHOR_LITERAL, END_LITERAL);
         break;
       case ALIGNMENT_RIGHT:
         el.setAttribute("x", "" + (t.getX() + 2));
