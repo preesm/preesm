@@ -870,7 +870,10 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
           .getAllPictogramElementsForBusinessObject(f.getDelay());
       final Ellipse delay = (Ellipse) (pes[0].getGraphicsAlgorithm());
 
-      final Element circle = this.doc.createElement(CIRCLE_LITTERAL);
+      this.totalWidth = java.lang.Math.max(delay.getX() + 12 + 8, this.totalWidth);
+      this.totalHeight = java.lang.Math.max(delay.getY() + 12 + 8, this.totalHeight);
+
+      final Element circle = this.doc.createElement(CIRCLE_LITERAL);
       this.svg.appendChild(circle);
       circle.setAttribute("cx", "" + (delay.getX() + 12));
       circle.setAttribute("cy", "" + (delay.getY() + 12));
