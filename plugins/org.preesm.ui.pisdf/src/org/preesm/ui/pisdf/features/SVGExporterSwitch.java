@@ -96,41 +96,47 @@ import org.w3c.dom.Element;
  */
 public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
-  private static final String CIRCLE_LITTERAL = "circle";
+  private static final String CIRCLE_LITERAL = "circle";
 
-  private static final String TRANSFORM_LITTERAL = "transform";
+  private static final String TRANSFORM_LITERAL = "transform";
 
-  private static final String HEIGHT_LITTERAL = "height";
+  private static final String HEIGHT_LITERAL = "height";
 
-  private static final String WIDTH_LITTERAL = "width";
+  private static final String WIDTH_LITERAL = "width";
 
-  private static final String STROKE_WIDTH_LITTERAL = "stroke-width";
+  private static final String STROKE_WIDTH_LITERAL = "stroke-width";
 
-  private static final String POINTS_LITTERAL = "points";
+  private static final String POINTS_LITERAL  = "points";
+  private static final String POLYGON_LITERAL = "polygon";
 
-  private static final String POLYGON_LITTERAL = "polygon";
+  private static final String FONT_FAMILY_LITERAL = "font-family";
 
-  private static final String FONT_FAMILY_LITTERAL = "font-family";
-
-  private static final String WIDTH_LITERAL = WIDTH_LITTERAL;
-
-  private static final String HEIGHT_LITERAL = HEIGHT_LITTERAL;
+  private static final String FONT_SIZE_LITERAL   = "font-size";
+  private static final String FONT_STYLE_LITERAL  = "font-style";
+  private static final String FONT_WEIGHT_LITERAL = "font-weight";
 
   private static final String START_LITERAL = "start";
+  private static final String END_LITERAL   = "end";
 
   private static final String BLACK_LITERAL = "black";
+  private static final String WHITE_LITERAL = "white";
 
   private static final String MIDDLE_LITERAL = "middle";
 
+  private static final String FILL_LITERAL   = "fill";
   private static final String STROKE_LITERAL = "stroke";
 
   private static final String TRANSLATE_LITERAL = "translate";
 
   private static final String TEXT_ANCHOR_LITERAL = "text-anchor";
 
-  private static final String RGB_GREY_LITERAL = "rgb(100,100,100)";
-
-  private static final String RGB_BLUE_LITERAL = "rgb(98,131,167)";
+  // Colour constants
+  private static final String RGB_GREY_LITERAL       = "rgb(100,100,100)";
+  private static final String RGB_GREEN_LITERAL      = "rgb(182,215,122)";
+  private static final String RGB_DARK_BLUE_LITERAL  = "rgb(98,131,167)";
+  private static final String RGB_LIGHT_BLUE_LITERAL = "rgb(187,218,247)";
+  private static final String RGB_RED_LITERAL        = "rgb(234,153,153)";
+  private static final String RGB_YELLOW_LITERAL     = "rgb(255,229,153)";
 
   /**
    *
@@ -198,7 +204,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     /* Populate XML Files with File Header */
     this.svg = doc.createElement("svg");
     doc.appendChild(svg);
-    svg.setAttribute(FONT_FAMILY_LITTERAL, "Arial");
+    svg.setAttribute(FONT_FAMILY_LITERAL, "Arial");
     svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
 
     final Element defs = doc.createElement("defs");
@@ -211,11 +217,11 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     fifoMarker.setAttribute("markerHeight", "4");
     fifoMarker.setAttribute("refX", "4");
     fifoMarker.setAttribute("refY", "2");
-    final Element polygon1 = doc.createElement(POLYGON_LITTERAL);
+    final Element polygon1 = doc.createElement(POLYGON_LITERAL);
     fifoMarker.appendChild(polygon1);
-    polygon1.setAttribute(POINTS_LITTERAL, "0,0 5,2 0,4");
-    polygon1.setAttribute("fill", "rgb(100, 100, 100)");
-    polygon1.setAttribute(STROKE_WIDTH_LITTERAL, "none");
+    polygon1.setAttribute(POINTS_LITERAL, "0,0 5,2 0,4");
+    polygon1.setAttribute(FILL_LITERAL, RGB_GREY_LITERAL);
+    polygon1.setAttribute(STROKE_WIDTH_LITERAL, "none");
 
     final Element depMarker = doc.createElement("marker");
     defs.appendChild(depMarker);
@@ -224,11 +230,11 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     depMarker.setAttribute("markerHeight", "4");
     depMarker.setAttribute("refX", "4");
     depMarker.setAttribute("refY", "2");
-    final Element polygon = doc.createElement(POLYGON_LITTERAL);
+    final Element polygon = doc.createElement(POLYGON_LITERAL);
     depMarker.appendChild(polygon);
-    polygon.setAttribute(POINTS_LITTERAL, "0,0 5,2 0,4");
-    polygon.setAttribute("fill", "rgb(98, 131, 167)");
-    polygon.setAttribute(STROKE_WIDTH_LITTERAL, "none");
+    polygon.setAttribute(POINTS_LITERAL, "0,0 5,2 0,4");
+    polygon.setAttribute(FILL_LITERAL, RGB_DARK_BLUE_LITERAL);
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, "none");
 
     /* Populate SVG File with Graph Data */
     for (final Dependency d : graph.getDependencies()) {
@@ -244,8 +250,8 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       doSwitch(aa);
     }
 
-    svg.setAttribute(WIDTH_LITTERAL, "" + (getTotalWidth() + 20));
-    svg.setAttribute(HEIGHT_LITTERAL, "" + (getTotalHeight() + 20));
+    svg.setAttribute(WIDTH_LITERAL, "" + (getTotalWidth() + 20));
+    svg.setAttribute(HEIGHT_LITERAL, "" + (getTotalHeight() + 20));
 
     /* Write the SVG to String */
     try {
@@ -300,31 +306,31 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element paramNode = this.doc.createElement("g");
     this.svg.appendChild(paramNode);
     paramNode.setAttribute("id", p.getName());
-    paramNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
-    final Element polygon = this.doc.createElement(POLYGON_LITTERAL);
+    paramNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    final Element polygon = this.doc.createElement(POLYGON_LITERAL);
     paramNode.appendChild(polygon);
-    polygon.setAttribute(POINTS_LITTERAL, "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 "
+    polygon.setAttribute(POINTS_LITERAL, "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 "
         + (width) + "," + (height / 2) + " " + (width) + "," + (height));
-    polygon.setAttribute("fill", "rgb(187,218,247)");
-    polygon.setAttribute(STROKE_LITERAL, RGB_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITTERAL, "4px");
+    polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
+    polygon.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, "4px");
 
     if (!p.isLocallyStatic()) {
-      final Element circle = this.doc.createElement(CIRCLE_LITTERAL);
+      final Element circle = this.doc.createElement(CIRCLE_LITERAL);
       paramNode.appendChild(circle);
       circle.setAttribute("cx", "" + (width / 2));
       circle.setAttribute("cy", "15");
       circle.setAttribute("r", "6");
-      circle.setAttribute("fill", "white");
-      circle.setAttribute(STROKE_WIDTH_LITTERAL, "2px");
-      circle.setAttribute(STROKE_LITERAL, RGB_BLUE_LITERAL);
+      circle.setAttribute(FILL_LITERAL, WHITE_LITERAL);
+      circle.setAttribute(STROKE_WIDTH_LITERAL, "2px");
+      circle.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
     }
 
     final Element text = this.doc.createElement("text");
     paramNode.appendChild(text);
     text.setAttribute("x", "" + (width / 2));
     text.setAttribute("y", "" + (height - 5));
-    text.setAttribute("fill", BLACK_LITERAL);
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
     text.setAttribute(TEXT_ANCHOR_LITERAL, MIDDLE_LITERAL);
     addFontToSVG(text, getFont(p));
     text.appendChild(this.doc.createTextNode(p.getName()));
@@ -358,29 +364,29 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element diiNode = this.doc.createElement("g");
     this.svg.appendChild(diiNode);
     diiNode.setAttribute("id", dii.getName());
-    diiNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
-    {
-      final Element rect = this.doc.createElement("rect");
-      diiNode.appendChild(rect);
-      rect.setAttribute("rx", "2");
-      rect.setAttribute("ry", "2");
-      rect.setAttribute("x", "" + (width - 16));
-      rect.setAttribute("y", "0");
-      rect.setAttribute(WIDTH_LITERAL, "16");
-      rect.setAttribute(HEIGHT_LITERAL, "16");
-      rect.setAttribute("fill", "rgb(182, 215, 122)");
-      rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      rect.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    diiNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
 
-      final Element text = this.doc.createElement("text");
-      diiNode.appendChild(text);
-      text.setAttribute("x", "2");
-      text.setAttribute("y", "11");
-      text.setAttribute("fill", BLACK_LITERAL);
-      text.setAttribute(TEXT_ANCHOR_LITERAL, START_LITERAL);
-      addFontToSVG(text, getFont(dii));
-      text.appendChild(this.doc.createTextNode(dii.getName()));
-    }
+    final Element rect = this.doc.createElement("rect");
+    diiNode.appendChild(rect);
+    rect.setAttribute("rx", "2");
+    rect.setAttribute("ry", "2");
+    rect.setAttribute("x", "" + (width - 16));
+    rect.setAttribute("y", "0");
+    rect.setAttribute(WIDTH_LITERAL, "16");
+    rect.setAttribute(HEIGHT_LITERAL, "16");
+    rect.setAttribute(FILL_LITERAL, RGB_GREEN_LITERAL);
+    rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
+    rect.setAttribute(STROKE_WIDTH_LITERAL, "3px");
+
+    final Element text = this.doc.createElement("text");
+    diiNode.appendChild(text);
+    text.setAttribute("x", "2");
+    text.setAttribute("y", "11");
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
+    text.setAttribute(TEXT_ANCHOR_LITERAL, START_LITERAL);
+    addFontToSVG(text, getFont(dii));
+    text.appendChild(this.doc.createTextNode(dii.getName()));
+
     return 0;
   }
 
@@ -412,7 +418,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element doiNode = this.doc.createElement("g");
     this.svg.appendChild(doiNode);
     doiNode.setAttribute("id", doi.getName());
-    doiNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    doiNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
     final Element rect = this.doc.createElement("rect");
     doiNode.appendChild(rect);
     rect.setAttribute("rx", "2");
@@ -421,15 +427,15 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     rect.setAttribute("y", "0");
     rect.setAttribute(WIDTH_LITERAL, "16");
     rect.setAttribute(HEIGHT_LITERAL, "16");
-    rect.setAttribute("fill", "rgb(234, 153, 153)");
+    rect.setAttribute(FILL_LITERAL, RGB_RED_LITERAL);
     rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-    rect.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    rect.setAttribute(STROKE_WIDTH_LITERAL, "3px");
 
     final Element text = this.doc.createElement("text");
     doiNode.appendChild(text);
     text.setAttribute("x", "21");
     text.setAttribute("y", "11");
-    text.setAttribute("fill", BLACK_LITERAL);
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
     text.setAttribute(TEXT_ANCHOR_LITERAL, START_LITERAL);
     addFontToSVG(text, getFont(doi));
     text.appendChild(this.doc.createTextNode(doi.getName()));
@@ -460,8 +466,8 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element ciiNode = this.doc.createElement("g");
     this.svg.appendChild(ciiNode);
     ciiNode.setAttribute("id", cii.getName());
-    ciiNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
-    final Element polygon = this.doc.createElement(POLYGON_LITTERAL);
+    ciiNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    final Element polygon = this.doc.createElement(POLYGON_LITERAL);
     final PictogramElement pictogramElement = ciiPes[0];
     final Polygon polyPe = (Polygon) pictogramElement.getGraphicsAlgorithm();
     ciiNode.appendChild(polygon);
@@ -469,16 +475,16 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     for (final Point p : polyPe.getPoints()) {
       points.append((p.getX() + 3) + "," + (p.getY() + 16) + " ");
     }
-    polygon.setAttribute(POINTS_LITTERAL, points.toString());
-    polygon.setAttribute("fill", "rgb(187, 218, 247)");
-    polygon.setAttribute(STROKE_LITERAL, RGB_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    polygon.setAttribute(POINTS_LITERAL, points.toString());
+    polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
+    polygon.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, "3px");
 
     final Element text = this.doc.createElement("text");
     ciiNode.appendChild(text);
     text.setAttribute("x", "" + (width / 2));
     text.setAttribute("y", "10");
-    text.setAttribute("fill", BLACK_LITERAL);
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
     text.setAttribute(TEXT_ANCHOR_LITERAL, MIDDLE_LITERAL);
     addFontToSVG(text, getFont(cii));
     text.appendChild(this.doc.createTextNode(cii.getName()));
@@ -510,19 +516,19 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element coiNode = this.doc.createElement("g");
     this.svg.appendChild(coiNode);
     coiNode.setAttribute("id", coi.getName());
-    coiNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
-    final Element polygon = this.doc.createElement(POLYGON_LITTERAL);
+    coiNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    final Element polygon = this.doc.createElement(POLYGON_LITERAL);
     coiNode.appendChild(polygon);
-    polygon.setAttribute(POINTS_LITTERAL, "0,0 16,8 0,16");
-    polygon.setAttribute("fill", "rgb(255, 229, 153)");
+    polygon.setAttribute(POINTS_LITERAL, "0,0 16,8 0,16");
+    polygon.setAttribute(FILL_LITERAL, RGB_YELLOW_LITERAL);
     polygon.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, "3px");
 
     final Element text = this.doc.createElement("text");
     coiNode.appendChild(text);
     text.setAttribute("x", "21");
     text.setAttribute("y", "11");
-    text.setAttribute("fill", BLACK_LITERAL);
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
     text.setAttribute(TEXT_ANCHOR_LITERAL, START_LITERAL);
     addFontToSVG(text, getFont(coi));
     text.appendChild(this.doc.createTextNode(coi.getName()));
@@ -583,13 +589,13 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final Element portNode = this.doc.createElement("g");
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", cip.getName());
-      portNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
-      final Element polygon = this.doc.createElement(POLYGON_LITTERAL);
+      portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
+      final Element polygon = this.doc.createElement(POLYGON_LITERAL);
       portNode.appendChild(polygon);
-      polygon.setAttribute(POINTS_LITTERAL, "0,0 8,5 0,10");
-      polygon.setAttribute("fill", "rgb(187, 218, 247)");
+      polygon.setAttribute(POINTS_LITERAL, "0,0 8,5 0,10");
+      polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
       polygon.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      polygon.setAttribute(STROKE_WIDTH_LITTERAL, "1px");
+      polygon.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -618,13 +624,13 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final Element portNode = this.doc.createElement("g");
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", cop.getName());
-      portNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
-      final Element polygon = this.doc.createElement(POLYGON_LITTERAL);
+      portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
+      final Element polygon = this.doc.createElement(POLYGON_LITERAL);
       portNode.appendChild(polygon);
-      polygon.setAttribute(POINTS_LITTERAL, "0,0 -8,5 0,10");
-      polygon.setAttribute("fill", "rgb(255, 229, 153)");
+      polygon.setAttribute(POINTS_LITERAL, "0,0 -8,5 0,10");
+      polygon.setAttribute(FILL_LITERAL, RGB_YELLOW_LITERAL);
       polygon.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      polygon.setAttribute(STROKE_WIDTH_LITTERAL, "1px");
+      polygon.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -653,16 +659,16 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final Element portNode = this.doc.createElement("g");
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", dip.getName());
-      portNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
+      portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
       final Element rect = this.doc.createElement("rect");
       portNode.appendChild(rect);
       rect.setAttribute("x", "0");
       rect.setAttribute("y", "1");
       rect.setAttribute(WIDTH_LITERAL, "8");
       rect.setAttribute(HEIGHT_LITERAL, "8");
-      rect.setAttribute("fill", "rgb(182, 215, 122)");
+      rect.setAttribute(FILL_LITERAL, RGB_GREEN_LITERAL);
       rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      rect.setAttribute(STROKE_WIDTH_LITTERAL, "1px");
+      rect.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -691,16 +697,16 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final Element portNode = this.doc.createElement("g");
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", dop.getName());
-      portNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
+      portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
       final Element rect = this.doc.createElement("rect");
       portNode.appendChild(rect);
       rect.setAttribute("x", "0");
       rect.setAttribute("y", "1");
-      rect.setAttribute(WIDTH_LITERAL, "-8");
+      rect.setAttribute(WIDTH_LITERAL, "8");
       rect.setAttribute(HEIGHT_LITERAL, "8");
-      rect.setAttribute("fill", "rgb(234, 153, 153)");
+      rect.setAttribute(FILL_LITERAL, RGB_RED_LITERAL);
       rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      rect.setAttribute(STROKE_WIDTH_LITTERAL, "1px");
+      rect.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -716,7 +722,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element actorNode = this.doc.createElement("g");
     this.svg.appendChild(actorNode);
     actorNode.setAttribute("id", ea.getName());
-    actorNode.setAttribute(TRANSFORM_LITTERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    actorNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
     final ContainerShape containerShape = (ContainerShape) actorPes[0];
     final EList<Shape> childrenShapes = containerShape.getChildren();
 
@@ -736,22 +742,22 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     rect.setAttribute(WIDTH_LITERAL, "" + width);
     rect.setAttribute(HEIGHT_LITERAL, "" + height);
 
-    rect.setAttribute("fill", "rgb(" + actorRect.getBackground().getRed() + ", " + actorRect.getBackground().getGreen()
-        + ", " + actorRect.getBackground().getBlue() + ")");
+    rect.setAttribute(FILL_LITERAL, "rgb(" + actorRect.getBackground().getRed() + ", "
+        + actorRect.getBackground().getGreen() + ", " + actorRect.getBackground().getBlue() + ")");
 
     rect.setAttribute(STROKE_LITERAL, "rgb(" + actorRect.getForeground().getRed() + ", "
         + actorRect.getForeground().getGreen() + ", " + actorRect.getForeground().getBlue() + ")");
 
-    rect.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    rect.setAttribute(STROKE_WIDTH_LITERAL, "3px");
 
     if (!ea.getConfigOutputPorts().isEmpty()) {
-      final Element circle = this.doc.createElement(CIRCLE_LITTERAL);
+      final Element circle = this.doc.createElement(CIRCLE_LITERAL);
       actorNode.appendChild(circle);
       circle.setAttribute("cx", "" + (width - 8));
       circle.setAttribute("cy", "9");
       circle.setAttribute("r", "4");
-      circle.setAttribute("fill", "white");
-      circle.setAttribute(STROKE_WIDTH_LITTERAL, "2px");
+      circle.setAttribute(FILL_LITERAL, WHITE_LITERAL);
+      circle.setAttribute(STROKE_WIDTH_LITERAL, "2px");
       circle.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
     }
 
@@ -803,9 +809,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     points.append((end.getX() - prevX) + "," + (end.getY() - prevY) + " ");
 
     depNode.setAttribute("d", points.toString());
-    depNode.setAttribute("fill", "none");
-    depNode.setAttribute(STROKE_LITERAL, "rgb(98, 131, 167)");
-    depNode.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+    depNode.setAttribute(FILL_LITERAL, "none");
+    depNode.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
+    depNode.setAttribute(STROKE_WIDTH_LITERAL, "3px");
     depNode.setAttribute("stroke-dasharray", "5,2");
     depNode.setAttribute("marker-end", "url(#depEnd)");
 
@@ -849,9 +855,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       points.append((end.getX() - prevX) + "," + (end.getY() - prevY) + " ");
 
       depNode.setAttribute("d", points.toString());
-      depNode.setAttribute("fill", "none");
-      depNode.setAttribute(STROKE_LITERAL, "rgb(100, 100, 100)");
-      depNode.setAttribute(STROKE_WIDTH_LITTERAL, "3px");
+      depNode.setAttribute(FILL_LITERAL, "none");
+      depNode.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
+      depNode.setAttribute(STROKE_WIDTH_LITERAL, "3px");
       depNode.setAttribute("marker-end", "url(#fifoEnd)");
     }
 
@@ -865,9 +871,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       circle.setAttribute("cx", "" + (delay.getX() + 12));
       circle.setAttribute("cy", "" + (delay.getY() + 12));
       circle.setAttribute("r", "8");
-      circle.setAttribute("fill", RGB_GREY_LITERAL);
+      circle.setAttribute(FILL_LITERAL, RGB_GREY_LITERAL);
       circle.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      circle.setAttribute(STROKE_WIDTH_LITTERAL, "1px");
+      circle.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       pes[0].getLink();
     }
@@ -1026,16 +1032,16 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
         break;
     }
 
-    el.setAttribute("fill", "rgb(" + t.getForeground().getRed() + ", " + t.getForeground().getGreen() + ", "
+    el.setAttribute(FILL_LITERAL, "rgb(" + t.getForeground().getRed() + "," + t.getForeground().getGreen() + ","
         + t.getForeground().getBlue() + ")");
 
-    el.setAttribute("font-size", t.getFont().getSize() + "pt");
-    el.setAttribute(FONT_FAMILY_LITTERAL, t.getFont().getName());
+    el.setAttribute(FONT_SIZE_LITERAL, t.getFont().getSize() + "pt");
+    el.setAttribute(FONT_FAMILY_LITERAL, t.getFont().getName());
     if (t.getFont().isBold()) {
-      el.setAttribute("font-weight", "bold");
+      el.setAttribute(FONT_WEIGHT_LITERAL, "bold");
     }
     if (t.getFont().isItalic()) {
-      el.setAttribute("font-style", "italic");
+      el.setAttribute(FONT_STYLE_LITERAL, "italic");
     }
 
   }
@@ -1053,13 +1059,13 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       return;
     }
 
-    e.setAttribute("font-size", f.getSize() + "pt");
-    e.setAttribute(FONT_FAMILY_LITTERAL, f.getName());
+    e.setAttribute(FONT_SIZE_LITERAL, f.getSize() + "pt");
+    e.setAttribute(FONT_FAMILY_LITERAL, f.getName());
     if (f.isBold()) {
-      e.setAttribute("font-weight", "bold");
+      e.setAttribute(FONT_WEIGHT_LITERAL, "bold");
     }
     if (f.isItalic()) {
-      e.setAttribute("font-style", "italic");
+      e.setAttribute(FONT_STYLE_LITERAL, "italic");
     }
   }
 
