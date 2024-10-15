@@ -578,13 +578,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       final int portX = (int) (bra.getRelativeWidth() * width);
       final int portY = (int) (bra.getRelativeHeight() * height);
-      Text portText = null;
 
-      for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof final Text text) {
-          portText = text;
-        }
-      }
+      final Text portText = (Text) bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().stream()
+          .filter(Text.class::isInstance).findAny().orElse(null);
 
       if (portText == null) {
         return null;
@@ -613,13 +609,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       final int portX = (int) (bra.getRelativeWidth() * width);
       final int portY = (int) (bra.getRelativeHeight() * height);
-      Text portText = null;
 
-      for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof final Text text) {
-          portText = text;
-        }
-      }
+      final Text portText = (Text) bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().stream()
+          .filter(Text.class::isInstance).findAny().orElse(null);
 
       if (portText == null) {
         return null;
@@ -648,13 +640,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       final int portX = (int) (bra.getRelativeWidth() * width);
       final int portY = (int) (bra.getRelativeHeight() * height);
-      Text portText = null;
 
-      for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof final Text text) {
-          portText = text;
-        }
-      }
+      final Text portText = (Text) bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().stream()
+          .filter(Text.class::isInstance).findAny().orElse(null);
 
       if (portText == null) {
         return null;
@@ -686,13 +674,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       final int portX = (int) (bra.getRelativeWidth() * width - 8);
       final int portY = (int) (bra.getRelativeHeight() * height);
-      Text portText = null;
 
-      for (final GraphicsAlgorithm ga : bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren()) {
-        if (ga instanceof final Text text) {
-          portText = text;
-        }
-      }
+      final Text portText = (Text) bra.getGraphicsAlgorithm().getGraphicsAlgorithmChildren().stream()
+          .filter(Text.class::isInstance).findAny().orElse(null);
 
       if (portText == null) {
         return null;
@@ -831,6 +815,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   public Integer caseFifo(final Fifo f) {
     final Set<FreeFormConnection> ffcs = getFifoFFC(f);
 
+    // If a fifo has a delay, the graphical representation is composed of multiple ffcs
     for (final FreeFormConnection ffc : ffcs) {
       final Element depNode = this.doc.createElement("path");
       this.svg.appendChild(depNode);
@@ -850,6 +835,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final StringBuilder points = new StringBuilder("m ");
       int prevX = start.getX();
       int prevY = start.getY();
+
       points.append(start.getX() + "," + start.getY() + " ");
       for (final org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()) {
         points.append((p.getX() - prevX) + "," + (p.getY() - prevY) + " ");
@@ -1010,16 +996,10 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     }
     final int textHeight = GraphitiUi.getUiLayoutService().calculateTextSize(t.getValue(), t.getFont()).getHeight();
     switch (t.getVerticalAlignment()) {
-      case ALIGNMENT_BOTTOM:
-        el.setAttribute("y", "" + (t.getY() + t.getHeight()));
-        break;
-      case ALIGNMENT_CENTER:
-        el.setAttribute("y", "" + ((t.getY() + (t.getHeight() / 2) + (t.getFont().getSize() / 2)) - 2));
-        break;
-      case ALIGNMENT_TOP:
-        el.setAttribute("y", "" + (t.getY() + textHeight));
-        break;
-      default:
+      case ALIGNMENT_BOTTOM -> el.setAttribute("y", "" + (t.getY() + t.getHeight()));
+      case ALIGNMENT_TOP -> el.setAttribute("y", "" + (t.getY() + textHeight));
+      // Defaults to ALIGNMENT_CENTER
+      default -> el.setAttribute("y", "" + ((t.getY() + (t.getHeight() / 2) + (t.getFont().getSize() / 2)) - 2));
     }
 
     switch (t.getHorizontalAlignment()) {
@@ -1095,15 +1075,12 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
    * @return the int
    */
   protected static int computeActorHeight(final ExecutableActor ea) {
-    int height;
 
     /* Compute Actor Height */
     final int nConfigPorts = java.lang.Math.max(ea.getConfigInputPorts().size(), ea.getConfigOutputPorts().size());
     final int nDataPorts = java.lang.Math.max(ea.getDataInputPorts().size(), ea.getDataOutputPorts().size());
-    height = 25 /* Name */
+    return 25 /* Name */
         + (nConfigPorts * 15) + (nDataPorts * 15);
-
-    return height;
   }
 
 }
