@@ -79,6 +79,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
@@ -848,7 +849,11 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       depNode.setAttribute(FILL_LITERAL, "none");
       depNode.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
       depNode.setAttribute(STROKE_WIDTH_LITERAL, "3px");
-      depNode.setAttribute("marker-end", "url(#fifoEnd)");
+
+      // if the ffc ends on a delay, do not show the arrow
+      if (!(ffc.getEnd().getLink().getBusinessObjects().get(0) instanceof Delay)) {
+        depNode.setAttribute("marker-end", "url(#fifoEnd)");
+      }
     }
 
     if (f.getDelay() != null) {
