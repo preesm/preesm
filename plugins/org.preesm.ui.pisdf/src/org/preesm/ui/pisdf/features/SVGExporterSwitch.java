@@ -502,16 +502,20 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   public Integer caseConfigOutputInterface(final ConfigOutputInterface coi) {
     int x = 0;
     int y = 0;
+    int width = 0;
+    int height = 0;
+
     final PictogramElement[] coiPes = this.exportSVGFeature.getFeatureProvider()
         .getAllPictogramElementsForBusinessObject(coi);
     if (coiPes != null) {
       x = coiPes[1].getGraphicsAlgorithm().getX();
       y = coiPes[1].getGraphicsAlgorithm().getY();
+      width = coiPes[1].getGraphicsAlgorithm().getWidth();
+      height = coiPes[1].getGraphicsAlgorithm().getHeight();
     }
 
-    // TODO Adjust size
-    this.totalWidth = java.lang.Math.max(x + 16, this.totalWidth);
-    this.totalHeight = java.lang.Math.max(y + 16, this.totalHeight);
+    this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
+    this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
 
     final Element coiNode = this.doc.createElement("g");
     this.svg.appendChild(coiNode);
