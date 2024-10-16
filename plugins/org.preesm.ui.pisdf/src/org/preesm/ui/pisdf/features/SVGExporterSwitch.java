@@ -69,6 +69,7 @@ import org.eclipse.graphiti.mm.pictograms.Shape;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.graphiti.ui.services.GraphitiUi;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.graph.Edge;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -251,7 +252,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       doSwitch(aa);
     }
 
-    svg.setAttribute(WIDTH_LITERAL, "" + (getTotalWidth() + 20));
+    svg.setAttribute(WIDTH_LITERAL, "" + (getTotalWidth() + 22));
     svg.setAttribute(HEIGHT_LITERAL, "" + (getTotalHeight() + 20));
 
     /* Write the SVG to String */
@@ -770,32 +771,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element depNode = this.doc.createElement("path");
     this.svg.appendChild(depNode);
 
-    final ILocation start = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getStart());
-
-    if (d.getSetter() instanceof ConfigOutputPort) {
-      start.setY(start.getY() + 5);
-    }
-
-    final ILocation end = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getEnd());
-
-    if (d.getGetter().eContainer() instanceof final Parameter p) {
-      final PictogramElement[] pPes = this.exportSVGFeature.getFeatureProvider()
-          .getAllPictogramElementsForBusinessObject(p);
-      end.setX(end.getX() - (pPes[0].getGraphicsAlgorithm().getWidth() / 2));
-    } else {
-      end.setY(end.getY() + 5);
-    }
-
-    final StringBuilder points = new StringBuilder("m ");
-    int prevX = start.getX();
-    int prevY = start.getY();
-    points.append(start.getX() + "," + start.getY() + " ");
-    for (final org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()) {
-      points.append((p.getX() - prevX) + "," + (p.getY() - prevY) + " ");
-      prevX = p.getX();
-      prevY = p.getY();
-    }
-    points.append((end.getX() - prevX) + "," + (end.getY() - prevY) + " ");
+    final StringBuilder points = drawPrettyLine(d, ffc, 20f);
 
     depNode.setAttribute("d", points.toString());
     depNode.setAttribute(FILL_LITERAL, "none");
@@ -821,29 +797,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       final Element depNode = this.doc.createElement("path");
       this.svg.appendChild(depNode);
 
-      final ILocation start = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getStart());
-
-      if (f.getSourcePort() instanceof DataOutputPort) {
-        start.setY(start.getY() + 5);
-      }
-
-      final ILocation end = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getEnd());
-
-      if (f.getTargetPort() instanceof DataInputPort) {
-        end.setY(end.getY() + 5);
-      }
-
-      final StringBuilder points = new StringBuilder("m ");
-      int prevX = start.getX();
-      int prevY = start.getY();
-
-      points.append(start.getX() + "," + start.getY() + " ");
-      for (final org.eclipse.graphiti.mm.algorithms.styles.Point p : ffc.getBendpoints()) {
-        points.append((p.getX() - prevX) + "," + (p.getY() - prevY) + " ");
-        prevX = p.getX();
-        prevY = p.getY();
-      }
-      points.append((end.getX() - prevX) + "," + (end.getY() - prevY) + " ");
+      final StringBuilder points = drawPrettyLine(f, ffc, 10f);
 
       depNode.setAttribute("d", points.toString());
       depNode.setAttribute(FILL_LITERAL, "none");
@@ -911,6 +865,89 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       }
     }
     return null;
+  }
+
+  private StringBuilder drawPrettyLine(final Edge edge, final FreeFormConnection ffc, final float distance) {
+
+    final ILocation start = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getStart());
+
+    if ((edge instanceof final Fifo f && f.getSourcePort() instanceof DataOutputPort)
+        || (edge instanceof final Dependency d && d.getSetter() instanceof ConfigOutputPort)) {
+      start.setY(start.getY() + 5);
+    }
+
+    final ILocation end = Graphiti.getPeLayoutService().getLocationRelativeToDiagram(ffc.getEnd());
+
+    if (edge instanceof final Fifo f && f.getTargetPort() instanceof DataInputPort) {
+      end.setY(end.getY() + 5);
+    } else if (edge instanceof final Dependency d) {
+      if (d.getGetter().eContainer() instanceof final Parameter p) {
+        final PictogramElement[] pPes = this.exportSVGFeature.getFeatureProvider()
+            .getAllPictogramElementsForBusinessObject(p);
+        end.setX(end.getX() - (pPes[0].getGraphicsAlgorithm().getWidth() / 2));
+      } else {
+        end.setY(end.getY() + 5);
+      }
+    }
+
+    final StringBuilder points = new StringBuilder("M ");
+    points.append(start.getX() + "," + start.getY() + " ");
+    int prevX = start.getX();
+    int prevY = start.getY();
+
+    if (ffc.getBendpoints().isEmpty()) {
+      points.append("L " + (end.getX()) + "," + (end.getY()) + " ");
+      return points;
+    }
+
+    // Adding intermediate points between each bendpoints to make quadratic Bézier curve work
+
+    for (int i = 0; i < ffc.getBendpoints().size(); i++) {
+
+      final int currentX = ffc.getBendpoints().get(i).getX();
+      final int currentY = ffc.getBendpoints().get(i).getY();
+
+      int nextX;
+      int nextY;
+
+      // If we are on the last bendpoint, set next to end
+      if (i + 1 >= ffc.getBendpoints().size()) {
+        nextX = end.getX();
+        nextY = end.getY();
+      } else {
+        nextX = ffc.getBendpoints().get(i + 1).getX();
+        nextY = ffc.getBendpoints().get(i + 1).getY();
+      }
+
+      // Computing point just before current bendpoint
+
+      final int prevdX = prevX - currentX;
+      final int prevdY = prevY - currentY;
+
+      final int beforeX = (int) (distance / Math.sqrt(prevdX * prevdX + prevdY * prevdY) * prevdX) + currentX;
+      final int beforeY = (int) (distance / Math.sqrt(prevdX * prevdX + prevdY * prevdY) * prevdY) + currentY;
+
+      // Drawing fifo up to this before point
+      points.append("L " + beforeX + "," + beforeY + " ");
+
+      // Computing point just after current bendpoint
+
+      final int nextdX = nextX - currentX;
+      final int nextdY = nextY - currentY;
+
+      final int afterX = (int) (distance / Math.sqrt(nextdX * nextdX + nextdY * nextdY) * nextdX) + currentX;
+      final int afterY = (int) (distance / Math.sqrt(nextdX * nextdX + nextdY * nextdY) * nextdY) + currentY;
+
+      // Drawing fifo up to this after point, using current bendpoint as control point or quadratic Bézier curve
+      points.append("Q " + currentX + "," + currentY + " " + afterX + "," + afterY + " ");
+
+      // Preparation for next iteration
+      prevX = currentX;
+      prevY = currentY;
+    }
+
+    points.append("L " + (end.getX()) + "," + (end.getY()) + " ");
+    return points;
   }
 
   /**
