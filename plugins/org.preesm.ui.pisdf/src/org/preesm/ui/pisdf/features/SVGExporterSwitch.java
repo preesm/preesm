@@ -85,6 +85,7 @@ import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -136,6 +137,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   // Colour constants
   private static final String RGB_GREY_LITERAL       = "rgb(100,100,100)";
   private static final String RGB_GREEN_LITERAL      = "rgb(182,215,122)";
+  private static final String RGB_PALE_GREEN_LITERAL = "rgb(185,206,172)";
   private static final String RGB_DARK_BLUE_LITERAL  = "rgb(98,131,167)";
   private static final String RGB_LIGHT_BLUE_LITERAL = "rgb(187,218,247)";
   private static final String RGB_RED_LITERAL        = "rgb(234,153,153)";
@@ -316,7 +318,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
         + (width) + "," + (height / 2) + " " + (width) + "," + (height));
     polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
     polygon.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITERAL, "4px");
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
 
     if (!p.isLocallyStatic()) {
       final Element circle = this.doc.createElement(CIRCLE_LITERAL);
@@ -328,6 +330,56 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       circle.setAttribute(STROKE_WIDTH_LITERAL, "2px");
       circle.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
     }
+
+    final Element text = this.doc.createElement("text");
+    paramNode.appendChild(text);
+    text.setAttribute("x", "" + (width / 2));
+    text.setAttribute("y", "" + (height - 5));
+    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
+    text.setAttribute(TEXT_ANCHOR_LITERAL, MIDDLE_LITERAL);
+    addFontToSVG(text, getFont(p));
+    text.appendChild(this.doc.createTextNode(p.getName()));
+    return 0;
+  }
+
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.
+   * Parameter)
+   */
+  @Override
+  public Integer caseMoldableParameter(final MoldableParameter p) {
+    if (p.isLocallyStatic()
+        && (p.isConfigurationInterface() && (((ConfigInputInterface) p).getGraphPort() instanceof ConfigInputPort))) {
+      return caseConfigInputInterface(p);
+    }
+
+    final PictogramElement[] paramPes = this.exportSVGFeature.getFeatureProvider()
+        .getAllPictogramElementsForBusinessObject(p);
+    if (paramPes == null) {
+      return null;
+    }
+
+    final int x = paramPes[0].getGraphicsAlgorithm().getX();
+    final int y = paramPes[0].getGraphicsAlgorithm().getY();
+    final int width = paramPes[0].getGraphicsAlgorithm().getWidth();
+    final int height = paramPes[0].getGraphicsAlgorithm().getHeight();
+
+    this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
+    this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
+
+    final Element paramNode = this.doc.createElement("g");
+    this.svg.appendChild(paramNode);
+    paramNode.setAttribute("id", p.getName());
+    paramNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
+    final Element polygon = this.doc.createElement(POLYGON_LITERAL);
+    paramNode.appendChild(polygon);
+    polygon.setAttribute(POINTS_LITERAL, "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 "
+        + (width) + "," + (height / 2) + " " + (width) + "," + (height));
+    polygon.setAttribute(FILL_LITERAL, RGB_PALE_GREEN_LITERAL);
+    polygon.setAttribute(STROKE_LITERAL, BLACK_LITERAL);
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
 
     final Element text = this.doc.createElement("text");
     paramNode.appendChild(text);
@@ -777,7 +829,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     depNode.setAttribute("d", points.toString());
     depNode.setAttribute(FILL_LITERAL, "none");
     depNode.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
-    depNode.setAttribute(STROKE_WIDTH_LITERAL, "3px");
+    depNode.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
     depNode.setAttribute("stroke-dasharray", "5,2");
     depNode.setAttribute("marker-end", "url(#depEnd)");
 
