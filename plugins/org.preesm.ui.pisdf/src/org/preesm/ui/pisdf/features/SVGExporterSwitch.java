@@ -107,6 +107,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   private static final String WIDTH_LITERAL = "width";
 
   private static final String STROKE_WIDTH_LITERAL = "stroke-width";
+  private static final String LINE_WIDTH           = "2.5px";
 
   private static final String POINTS_LITERAL  = "points";
   private static final String POLYGON_LITERAL = "polygon";
@@ -794,19 +795,23 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
     // If a fifo has a delay, the graphical representation is composed of multiple ffcs
     for (final FreeFormConnection ffc : ffcs) {
-      final Element depNode = this.doc.createElement("path");
-      this.svg.appendChild(depNode);
+      final Element fifoNode = this.doc.createElement("path");
+      this.svg.appendChild(fifoNode);
 
       final StringBuilder points = drawPrettyLine(f, ffc, 10f);
 
-      depNode.setAttribute("d", points.toString());
-      depNode.setAttribute(FILL_LITERAL, "none");
-      depNode.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      depNode.setAttribute(STROKE_WIDTH_LITERAL, "3px");
+      fifoNode.setAttribute("d", points.toString());
+      fifoNode.setAttribute(FILL_LITERAL, "none");
+      fifoNode.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
+      fifoNode.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
+
+      if (f.getSource() instanceof DelayActor || f.getTarget() instanceof DelayActor) {
+        fifoNode.setAttribute("stroke-dasharray", "8,3,3,3");
+      }
 
       // if the ffc ends on a delay, do not show the arrow
       if (!(ffc.getEnd().getLink().getBusinessObjects().get(0) instanceof Delay)) {
-        depNode.setAttribute("marker-end", "url(#fifoEnd)");
+        fifoNode.setAttribute("marker-end", "url(#fifoEnd)");
       }
     }
 
