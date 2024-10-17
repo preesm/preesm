@@ -292,16 +292,14 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       return caseConfigInputInterface(p);
     }
 
-    int x;
-    int y;
     final PictogramElement[] paramPes = this.exportSVGFeature.getFeatureProvider()
         .getAllPictogramElementsForBusinessObject(p);
     if (paramPes == null) {
       return null;
     }
 
-    x = paramPes[0].getGraphicsAlgorithm().getX();
-    y = paramPes[0].getGraphicsAlgorithm().getY();
+    final int x = paramPes[0].getGraphicsAlgorithm().getX();
+    final int y = paramPes[0].getGraphicsAlgorithm().getY();
     final int width = paramPes[0].getGraphicsAlgorithm().getWidth();
     final int height = paramPes[0].getGraphicsAlgorithm().getHeight();
 
@@ -978,8 +976,8 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       // Computing point just before current bendpoint
 
-      final int prevdX = prevX - currentX;
-      final int prevdY = prevY - currentY;
+      final float prevdX = prevX - (float) currentX;
+      final float prevdY = prevY - (float) currentY;
 
       final int beforeX = (int) (distance / Math.sqrt(prevdX * prevdX + prevdY * prevdY) * prevdX) + currentX;
       final int beforeY = (int) (distance / Math.sqrt(prevdX * prevdX + prevdY * prevdY) * prevdY) + currentY;
@@ -989,8 +987,8 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
 
       // Computing point just after current bendpoint
 
-      final int nextdX = nextX - currentX;
-      final int nextdY = nextY - currentY;
+      final float nextdX = nextX - (float) currentX;
+      final float nextdY = nextY - (float) currentY;
 
       final int afterX = (int) (distance / Math.sqrt(nextdX * nextdX + nextdY * nextdY) * nextdX) + currentX;
       final int afterY = (int) (distance / Math.sqrt(nextdX * nextdX + nextdY * nextdY) * nextdY) + currentY;
