@@ -1,5 +1,6 @@
 package org.preesm.algorithm.node.partitioner;
 
+import java.io.File;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,9 +104,9 @@ public class NodePartitioner {
     }
 
     final String[] uriString = graph.getUrl().split("/");
-    scenariiPath = "/" + uriString[1] + "/Scenarios/generated/";
-    archiPath = "/" + uriString[1] + "/Archi/";
-    simulationPath = "/" + uriString[1] + "/Simulation/";
+    scenariiPath = File.separator + uriString[1] + "/Scenarios/generated/";
+    archiPath = File.separator + uriString[1] + "/Archi/";
+    simulationPath = File.separator + uriString[1] + "/Simulation/";
 
     if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
       PreesmLogger.getLogger().log(Level.SEVERE,

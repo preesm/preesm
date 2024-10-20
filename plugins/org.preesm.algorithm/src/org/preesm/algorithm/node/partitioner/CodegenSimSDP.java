@@ -39,7 +39,7 @@ public class CodegenSimSDP {
                      0, MPI_COMM_WORLD);
 
           for (int i = 0; i < size; i++) {
-              printf("Processor name of rank %d: %s\n", i, processor_names[i]);
+              printf("Processor name of rank %d: %s ", i, processor_names[i]);
               if(strcmp(processor_names[i], processor_name) == 0) {
                   rank = i;
               }
@@ -275,15 +275,7 @@ public class CodegenSimSDP {
 
         for (final Port port : portRank.get(node.getName()).values()) {
 
-          String bufferName = "";
-          if (port instanceof final DataOutputPort dout) {
-            bufferName = node.getName() + "_" + port.getName() + "__"
-                + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_"
-                + dout.getFifo().getTargetPort().getName();
-          } else if (port instanceof final DataInputPort din) {
-            bufferName = ((AbstractActor) din.getFifo().getSource()).getName() + "_"
-                + din.getFifo().getSourcePort().getName() + "__" + node.getName() + "_" + din.getName();
-          }
+          final String bufferName = simsdpBufferName(port, node);
 
           result.append(bufferName + ",");
         }
@@ -309,6 +301,18 @@ public class CodegenSimSDP {
     result.append("\treturn 0;\n}");
 
     return result;
+  }
+
+  private String simsdpBufferName(Port port, AbstractActor node) {
+    String bufferName = "";
+    if (port instanceof final DataOutputPort dout) {
+      bufferName = node.getName() + "_" + port.getName() + "__" + ((AbstractActor) dout.getFifo().getTarget()).getName()
+          + "_" + dout.getFifo().getTargetPort().getName();
+    } else if (port instanceof final DataInputPort din) {
+      bufferName = ((AbstractActor) din.getFifo().getSource()).getName() + "_" + din.getFifo().getSourcePort().getName()
+          + "__" + node.getName() + "_" + din.getName();
+    }
+    return bufferName;
   }
 
   private StringBuilder free(AbstractActor node) {
@@ -350,35 +354,6 @@ public class CodegenSimSDP {
     return result;
   }
 
-  // private StringBuilder mpiSend(AbstractActor node) {
-  // final StringBuilder result = new StringBuilder();
-  // final Object[] args = node.getDataOutputPorts().toArray();
-  // for (int i = 0; i < args.length; i++) {
-  // final int index = i;
-  // final DataOutputPort dout = node.getDataOutputPorts().stream().filter(x -> x.getName().equals("out_" + index))
-  // .findFirst().orElseThrow(PreesmRuntimeException::new);
-  //
-  // final String bufferName = node.getName() + "_" + dout.getName() + "__"
-  // + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
-  // final int dest = Integer.parseInt(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
-  // String type = dout.getFifo().getType();
-  // String destination = String.valueOf(dest);
-  // if (isHomogeneous) {
-  // destination = "find_rank_by_processor_name(nodeset[" + dest + "])";
-  // }
-  // if ("uchar".equals(type)) {
-  // type = "unsigned_char";
-  // }
-  // result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
-  // + "," + destination + " ,label, MPI_COMM_WORLD);\n");
-  // }
-  // return result;
-  // }
-  //
-  // public static String generateFuncForHeterogeneousAttribute() {
-  // return HETEROGENEOUS_ATTIBUTE_FUNC;
-  // }
-
   private String mpiSend(AbstractActor node) {
     final StringBuilder result = new StringBuilder();
     final Object[] args = node.getDataOutputPorts().toArray();
@@ -389,7 +364,7 @@ public class CodegenSimSDP {
 
       final String bufferName = node.getName() + "_" + dout.getName() + "__"
           + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
-      final int dest = Integer.valueOf(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
+      final int dest = Integer.parseInt(((AbstractActor) dout.getFifo().getTarget()).getName().replace("sub", ""));
       String type = dout.getFifo().getType();
       String destination = String.valueOf(dest);
       if (isHomogeneous) {
@@ -407,31 +382,7 @@ public class CodegenSimSDP {
   public static String generateFuncForHeterogeneousAttribute() {
     final StringBuilder code = new StringBuilder();
 
-    code.append("int find_rank_by_processor_name(const char *processor_name) {\n");
-    code.append("    int rank = -1;\n");
-    code.append("    int size;\n");
-    code.append("    MPI_Comm_size(MPI_COMM_WORLD, &size);\n");
-    code.append("    char **processor_names = (char **)malloc(size * sizeof(char *));\n");
-    code.append("    for (int i = 0; i < size; i++) {\n");
-    code.append("        processor_names[i] = (char *)malloc(MPI_MAX_PROCESSOR_NAME * sizeof(char));\n");
-    code.append("    }\n");
-    code.append("    MPI_Gather(processor_name, MPI_MAX_PROCESSOR_NAME, MPI_CHAR,\n");
-    code.append("               processor_names[0], MPI_MAX_PROCESSOR_NAME, MPI_CHAR,\n");
-    code.append("               0, MPI_COMM_WORLD);\n\n");
-
-    code.append("    for (int i = 0; i < size; i++) {\n");
-    code.append("        printf(\"Processor name of rank %d: %s\\n\", i, processor_names[i]);\n");
-    code.append("        if(strcmp(processor_names[i], processor_name) == 0) {\n");
-    code.append("            rank = i;\n");
-    code.append("        }\n");
-    code.append("    }\n\n");
-
-    code.append("    for (int i = 0; i < size; i++) {\n");
-    code.append("        free(processor_names[i]);\n");
-    code.append("    }\n");
-    code.append("    free(processor_names);\n");
-    code.append("    return rank;\n");
-    code.append("}");
+    code.append(HETEROGENEOUS_ATTIBUTE_FUNC);
 
     return code.toString();
   }

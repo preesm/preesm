@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -16,7 +15,6 @@ import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -60,12 +58,12 @@ public class ClusteringScape extends ClusterPartitioner {
   /**
    * Size of the stack.
    */
-  private final Long     stackSize;
+  private final Long    stackSize;
   /**
    * Number of hierarchical level.
    */
-  private final int      levelNumber;
-  private static Boolean memoryOptim = false;
+  private final int     levelNumber;
+  private final Boolean memoryOptim;
 
   ScapeMode scapeMode;
 
@@ -201,7 +199,7 @@ public class ClusteringScape extends ClusterPartitioner {
           isHasCluster = false;
         }
         if (!newCluster.getChildrenGraphs().isEmpty()) {
-          cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+          cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize, memoryOptim);
           clusterId++;
         }
       } while (isHasCluster);
@@ -231,7 +229,7 @@ public class ClusteringScape extends ClusterPartitioner {
         if (!newCluster.getChildrenGraphs().isEmpty()) {
           final int newSize = graph.getAllChildrenGraphs().size();
           for (int i = 0; i < (newSize - size); i++) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize, memoryOptim);
           }
           clusterId++;
         }
@@ -260,7 +258,7 @@ public class ClusteringScape extends ClusterPartitioner {
             isHasCluster = false;
           }
           if (!newCluster.getChildrenGraphs().isEmpty()) {
-            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize);
+            cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize, memoryOptim);
             clusterId++;
           }
         }
@@ -281,7 +279,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
       final Long mem = mem(subGraph);
       final String clusterName = subGraph.getName();
-      cluster(subGraph, scenario, stackSize);
+      cluster(subGraph, scenario, stackSize, memoryOptim);
       clusterMemory.put(findCluster(clusterName), mem);
     }
 
@@ -303,24 +301,6 @@ public class ClusteringScape extends ClusterPartitioner {
     }
     return null;
   }
-
-  // private PiGraph applyClusterPartitionersData(PiGraph piGraph) {
-  // PiGraph newCluster;
-  //
-  // final int size = graph.getAllChildrenGraphs().size();
-  // final Map<AbstractVertex, Long> rv = PiBRV.compute(piGraph, BRVMethod.LCM);
-  //
-  // // URC transfo
-  // newCluster = new ClusterPartitionerURC(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
-  // memoryOptim).cluster();
-  //
-  // if (graph.getAllChildrenGraphs().size() == size) {
-  // // SRV transfo
-  // newCluster = new ClusterPartitionerSRV(piGraph, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
-  // memoryOptim).cluster();
-  // }
-  // return newCluster;
-  // }
 
   private PiGraph applyClusterPartitioners(PiGraph piGraph) {
 
@@ -364,7 +344,7 @@ public class ClusteringScape extends ClusterPartitioner {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
           final String clusterName = g.getName();
-          cluster(g, scenario, stackSize);
+          cluster(g, scenario, stackSize, memoryOptim);
           clusterMemory.put(findCluster(clusterName), mem);
         }
       }
@@ -391,7 +371,7 @@ public class ClusteringScape extends ClusterPartitioner {
    * @param g
    *          The identify clustered subgraph
    */
-  public static void cluster(PiGraph g, Scenario scenario, Long stackSize) {
+  public static void cluster(PiGraph g, Scenario scenario, Long stackSize, boolean memoryOptim) {
 
     // add a temporary single source in case of multiple source
     final PiGraph singleBranch = new MultiBranch(g).addInitialSource();
@@ -405,7 +385,7 @@ public class ClusteringScape extends ClusterPartitioner {
 
     new CodegenScape(clusterScenario, singleBranch, schedule, stackSize);
 
-    replaceBehavior(singleBranch, scenario);
+    replaceBehavior(singleBranch, scenario, memoryOptim);
     updateTiming(sumTiming, singleBranch, scenario);
   }
 
@@ -416,12 +396,11 @@ public class ClusteringScape extends ClusterPartitioner {
    *          The identify clustered subgraph
    */
 
-  private static void replaceBehavior(PiGraph g, Scenario scenario) {
+  private static void replaceBehavior(PiGraph g, Scenario scenario, boolean memoryOptim) {
 
     final PiGraph graph = (PiGraph) g.getContainingGraph();
 
     final Actor oEmpty = PiMMUserFactory.instance.createActor(g.getName());
-    // final Boolean optimNames = memoryOptim;
 
     // add refinement
     final Refinement refinement = PiMMUserFactory.instance.createCHeaderRefinement();
@@ -460,7 +439,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataInputPort inputPort = PiMMUserFactory.instance.copy(in);
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (memoryOptim) {
+      if (Boolean.TRUE.equals(memoryOptim)) {
         functionArgument.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
         in.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
       } else {
@@ -475,7 +454,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataOutputPort outputPort = PiMMUserFactory.instance.copy(out);
       oEmpty.getDataOutputPorts().add(outputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (memoryOptim) {
+      if (Boolean.TRUE.equals(memoryOptim)) {
         functionArgument.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
         out.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
       } else {
@@ -556,66 +535,9 @@ public class ClusteringScape extends ClusterPartitioner {
         }
       }
     }
-    PreesmLogger.getLogger().log(Level.INFO,
-        "Timing " + cluster.getName() + ": " + clusterTiming.get(archi.getProcessingElements().get(0)));
 
     return clusterTiming;
   }
-
-  // private static Long timingGPU(PiGraph cluster, GPU gpu) {
-  // // If GPU parameters are different from 0, use their value, otherwise default to 1
-  // final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 0 ? (long) gpu.getDedicatedMemSpeed() : 1;
-  // final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 0 ? (long) gpu.getUnifiedMemSpeed() : 1;
-  // final String memoryToUse = gpu.getMemoryToUse();
-  //
-  // Long sum = 0L;
-  // for (final DataPort dataPort : cluster.getAllDataPorts()) {
-  // final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
-  // double time;
-  //
-  // if (memoryToUse.equalsIgnoreCase("unified")) {
-  // time = ((double) gpuInputSize / (double) unifiedMemSpeed);
-  // } else {
-  // time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
-  // }
-  //
-  // sum += (long) time;
-  // }
-  //
-  // return sum;
-  // }
-  //
-  // /**
-  // * The execution time of a cluster on a CPU processing element is the sum of executable actors only. There is no
-  // data
-  // * transfer within an actor cluster, as it is built sequentially for this type of architecture.
-  // *
-  // * @param repetitionVector
-  // * list of the cluster repetition vector
-  // * @param cluster
-  // * PiGraph of the cluster
-  // * @param scenario
-  // * contains list of timing
-  // * @param cpu
-  // * CPU-type processing element
-  // * @return cluster execution time on CPU
-  // */
-  //
-  // private static Long timingCPU(Map<AbstractVertex, Long> repetitionVector, PiGraph cluster, Scenario scenario,
-  // CPU cpu) {
-  // // sum the actor timing contained in the cluster
-  // Long sum = 0L;
-  // for (final AbstractActor actor : cluster.getOnlyActors()) {
-  // if (actor instanceof Actor) {
-  // final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
-  // .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
-  //
-  // sum += scenario.getTimings().evaluateTimingOrDefault(aaa, cpu, TimingType.EXECUTION_TIME)
-  // * repetitionVector.get(actor);
-  // }
-  // }
-  // return sum;
-  // }
 
   /**
    * Used to create a temporary scenario of the cluster
