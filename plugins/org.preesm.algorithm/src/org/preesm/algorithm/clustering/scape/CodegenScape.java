@@ -216,7 +216,6 @@ public class CodegenScape {
     final String loopFunc = build.getLoopFunc();
     result.append(loopFunc + "{ \n\n", "");
 
-    // result.append("// buffer declaration \n\n ", "");
     final HashSet<String> buff = new HashSet<>();
     for (final String buffer : build.getBuffer()) {
       if (!buff.contains(buffer)) {

@@ -23,7 +23,6 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
@@ -102,6 +101,9 @@ public class EuclideTransfo {
   public static Long computeSingleNodeCoreEquivalent(Scenario inputScenario) {
     final PiGraph inputGraph = inputScenario.getAlgorithm();
     final Design inputArchi = inputScenario.getDesign();
+    // filter CPU component
+    final List<ComponentInstance> cpuInstances = inputArchi.getOperatorComponentInstances().stream()
+        .filter(opId -> opId.getComponent() instanceof CPU).toList();
     Long coreEq = 0L;
     int actorNumber = 0;
     for (final AbstractActor actor : inputGraph.getOnlyActors()) {
@@ -112,30 +114,24 @@ public class EuclideTransfo {
         Long sumTiming = 0L;
         Long slow = Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor,
             inputArchi.getOperatorComponentInstances().stream().map(ComponentInstance::getComponent)
-                .filter(component -> component instanceof CPU).findFirst().orElseThrow()));
-        for (final ComponentInstance opId : inputArchi.getOperatorComponentInstances()) {
-          final Component component = opId.getComponent();
-          if (component instanceof CPU) {
-            sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
-            final Long timeSeek = Long
-                .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, opId.getComponent()));
-            if (timeSeek < slow) {
-              slow = timeSeek;
-            }
-          }
+                .filter(CPU.class::isInstance).findFirst().orElseThrow()));
+
+        for (final ComponentInstance cpu : cpuInstances) {
+          sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, cpu.getComponent()));
+          final Long timeSeek = Long
+              .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, cpu.getComponent()));
+
+          slow = timeSeek < slow ? timeSeek : slow;
+
         }
         coreEq += (sumTiming / slow);
         actorNumber++;
       }
     }
-    if (actorNumber > 0) {
-      coreEq /= actorNumber;
-    } else {
-      // coreEq = (long) inputArchi.getOperatorComponentInstances().size();
-      coreEq = inputArchi.getOperatorComponentInstances().stream().filter(opId -> opId.getComponent() instanceof CPU)
-          .count();
+    coreEq = actorNumber > 0 ? coreEq / actorNumber
+        : inputArchi.getOperatorComponentInstances().stream().filter(opId -> opId.getComponent() instanceof CPU)
+            .count();
 
-    }
     return coreEq;
   }
 

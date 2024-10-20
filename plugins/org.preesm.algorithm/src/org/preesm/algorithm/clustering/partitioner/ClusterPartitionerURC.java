@@ -365,52 +365,29 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
     Long sum = 0L;
     // build the list of PiGraph future DataPort
-    final List<DataPort> dataPortList = new LinkedList<>();
+    final List<DataPort> dataPortList = urc.stream().flatMap(actor -> actor.getAllDataPorts().stream())
+        .filter(port -> urc.contains(port.getFifo().getSource()) ^ urc.contains(port.getFifo().getTarget())).toList();
 
-    for (final AbstractActor actor : urc) {
-      for (final DataPort port : actor.getAllDataPorts()) {
-        // filter add port if target XOR source is in the list
-        if (urc.contains(port.getFifo().getSource()) ^ urc.contains(port.getFifo().getTarget())) {
-          dataPortList.add(port);
-        }
-      }
-    }
-
-    for (final DataPort dataPort : dataPortList) {
+    // Calculate sum for DataPorts
+    sum += dataPortList.stream().mapToLong(dataPort -> {
       final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
-      double time;
+      return (long) (memoryToUse.equalsIgnoreCase("unified") ? ((double) gpuInputSize / unifiedMemSpeed)
+          : ((double) gpuInputSize / dedicatedMemSpeed));
+    }).sum();
 
-      if (memoryToUse.equalsIgnoreCase("unified")) {
-        time = ((double) gpuInputSize / (double) unifiedMemSpeed);
-      } else {
-        time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
-      }
+    // Calculate sum for actor outputs
 
-      sum += (long) time;
-    }
-
-    for (final AbstractActor act : urc) {
-      for (final DataOutputPort outPort : act.getDataOutputPorts()) {
-        final Vertex target = outPort.getFifo().getTarget();
-
-        final boolean onGpuAndNextOnCpu = !((AbstractActor) target).isOnGPU() && act.isOnGPU();
-        final boolean onCpuAndNextOnGpu = ((AbstractActor) target).isOnGPU() && !act.isOnGPU();
-
-        if (onGpuAndNextOnCpu || onCpuAndNextOnGpu) {
-          System.out.println(act.getName());
-          final Long gpuInputSize = outPort.getPortRateExpression().evaluate();
-          double time;
-
-          if (memoryToUse.equalsIgnoreCase("unified")) {
-            time = ((double) gpuInputSize / (double) unifiedMemSpeed);
-          } else {
-            time = ((double) gpuInputSize / (double) dedicatedMemSpeed);
-          }
-
-          sum += (long) time;
-        }
-      }
-    }
+    sum += urc.stream().flatMap(act -> act.getDataOutputPorts().stream()).filter(outPort -> {
+      final Vertex act = outPort.getFifo().getSource();
+      final Vertex target = outPort.getFifo().getTarget();
+      final boolean onGpuAndNextOnCpu = !((AbstractActor) target).isOnGPU() && ((AbstractActor) act).isOnGPU();
+      final boolean onCpuAndNextOnGpu = ((AbstractActor) target).isOnGPU() && !((AbstractActor) act).isOnGPU();
+      return onGpuAndNextOnCpu || onCpuAndNextOnGpu;
+    }).mapToLong(outPort -> {
+      final Long gpuInputSize = outPort.getPortRateExpression().evaluate();
+      return (long) (memoryToUse.equalsIgnoreCase("unified") ? (double) gpuInputSize / unifiedMemSpeed
+          : (double) gpuInputSize / dedicatedMemSpeed);
+    }).sum();
 
     return sum;
   }

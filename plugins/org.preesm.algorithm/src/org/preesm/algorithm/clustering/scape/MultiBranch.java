@@ -62,12 +62,9 @@ public class MultiBranch {
       // - it s not a delay or an interface
       // - it doesnot have inputport or it should be a delay or a data input interface
       if (!(source instanceof DelayActor) && !(source instanceof DataInputInterface)
-          && ((source instanceof ExecutableActor
-              && (source.getDataInputPorts().isEmpty() || source.getDataInputPorts().stream()
-                  .allMatch(x -> x.getFifo().isHasADelay() || x.getFifo().getSource() instanceof DataInputInterface))))
-      // || (source instanceof final PiGraph pigraph && pigraph.getDataInputPorts().isEmpty()))
-      // && !(source.getDataOutputPorts().stream().anyMatch(x -> x.getFifo().getTarget() instanceof DelayActor))
-      ) {
+          && (source instanceof ExecutableActor
+              && (source.getDataInputPorts().isEmpty() || source.getDataInputPorts().stream().allMatch(
+                  x -> x.getFifo().isHasADelay() || x.getFifo().getSource() instanceof DataInputInterface)))) {
         sourceList.add(source);
       }
     }
