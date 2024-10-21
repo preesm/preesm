@@ -38,6 +38,7 @@ package org.preesm.ui.pisdf.features;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -215,45 +216,16 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element defs = doc.createElement("defs");
     svg.appendChild(defs);
 
-    final Element fifoMarker = doc.createElement("marker");
+    final Element fifoMarker = createEdgeMarkerElement("fifoEnd", RGB_GREY_LITERAL);
     defs.appendChild(fifoMarker);
-    fifoMarker.setAttribute("id", "fifoEnd");
-    fifoMarker.setAttribute("markerWidth", "4");
-    fifoMarker.setAttribute("markerHeight", "4");
-    fifoMarker.setAttribute("refX", "4");
-    fifoMarker.setAttribute("refY", "2");
-    final Element polygon1 = doc.createElement(POLYGON_LITERAL);
-    fifoMarker.appendChild(polygon1);
-    polygon1.setAttribute(POINTS_LITERAL, "0,0 5,2 0,4");
-    polygon1.setAttribute(FILL_LITERAL, RGB_GREY_LITERAL);
-    polygon1.setAttribute(STROKE_WIDTH_LITERAL, "none");
 
-    final Element depMarker = doc.createElement("marker");
+    final Element depMarker = createEdgeMarkerElement("depEnd", RGB_DARK_BLUE_LITERAL);
     defs.appendChild(depMarker);
-    depMarker.setAttribute("id", "depEnd");
-    depMarker.setAttribute("markerWidth", "4");
-    depMarker.setAttribute("markerHeight", "4");
-    depMarker.setAttribute("refX", "4");
-    depMarker.setAttribute("refY", "2");
-    final Element polygon = doc.createElement(POLYGON_LITERAL);
-    depMarker.appendChild(polygon);
-    polygon.setAttribute(POINTS_LITERAL, "0,0 5,2 0,4");
-    polygon.setAttribute(FILL_LITERAL, RGB_DARK_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITERAL, "none");
 
-    /* Populate SVG File with Graph Data */
-    for (final Dependency d : graph.getDependencies()) {
-      doSwitch(d);
-    }
-    for (final Fifo f : graph.getFifos()) {
-      doSwitch(f);
-    }
-    for (final Parameter p : graph.getParameters()) {
-      doSwitch(p);
-    }
-    for (final AbstractActor aa : graph.getActors()) {
-      doSwitch(aa);
-    }
+    graph.getDependencies().forEach(d -> doSwitch(d));
+    graph.getFifos().forEach(f -> doSwitch(f));
+    graph.getParameters().forEach(p -> doSwitch(p));
+    graph.getActors().forEach(aa -> doSwitch(aa));
 
     svg.setAttribute(WIDTH_LITERAL, "" + (getTotalWidth() + 22));
     svg.setAttribute(HEIGHT_LITERAL, "" + (getTotalHeight() + 20));
@@ -277,6 +249,22 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       ErrorWithExceptionDialog.errorDialogWithStackTrace(message, e);
       throw new PreesmRuntimeException(message, e);
     }
+  }
+
+  private Element createEdgeMarkerElement(final String markerId, final String markerColor) {
+    final Element edgeMarker = doc.createElement("marker");
+    edgeMarker.setAttribute("id", markerId);
+    edgeMarker.setAttribute("markerWidth", "4");
+    edgeMarker.setAttribute("markerHeight", "4");
+    edgeMarker.setAttribute("refX", "4");
+    edgeMarker.setAttribute("refY", "2");
+    final Element polygon = doc.createElement(POLYGON_LITERAL);
+    edgeMarker.appendChild(polygon);
+    polygon.setAttribute(POINTS_LITERAL, "0,0 5,2 0,4");
+    polygon.setAttribute(FILL_LITERAL, markerColor);
+    polygon.setAttribute(STROKE_WIDTH_LITERAL, "none");
+
+    return edgeMarker;
   }
 
   /*
@@ -306,37 +294,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
     this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
 
-    final Element paramNode = this.doc.createElement("g");
+    final Element paramNode = createParameterNodeElement(paramPes[0], p, RGB_LIGHT_BLUE_LITERAL, RGB_DARK_BLUE_LITERAL);
     this.svg.appendChild(paramNode);
-    paramNode.setAttribute("id", p.getName());
-    paramNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
-    final Element polygon = this.doc.createElement(POLYGON_LITERAL);
-    paramNode.appendChild(polygon);
-    polygon.setAttribute(POINTS_LITERAL, "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 "
-        + (width) + "," + (height / 2) + " " + (width) + "," + (height));
-    polygon.setAttribute(FILL_LITERAL, RGB_LIGHT_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
-    polygon.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
 
-    if (!p.isLocallyStatic()) {
-      final Element circle = this.doc.createElement(CIRCLE_LITERAL);
-      paramNode.appendChild(circle);
-      circle.setAttribute("cx", "" + (width / 2));
-      circle.setAttribute("cy", "15");
-      circle.setAttribute("r", "6");
-      circle.setAttribute(FILL_LITERAL, WHITE_LITERAL);
-      circle.setAttribute(STROKE_WIDTH_LITERAL, "2px");
-      circle.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
-    }
-
-    final Element text = this.doc.createElement("text");
-    paramNode.appendChild(text);
-    text.setAttribute("x", "" + (width / 2));
-    text.setAttribute("y", "" + (height - 5));
-    text.setAttribute(FILL_LITERAL, BLACK_LITERAL);
-    text.setAttribute(TEXT_ANCHOR_LITERAL, MIDDLE_LITERAL);
-    addFontToSVG(text, getFont(p));
-    text.appendChild(this.doc.createTextNode(p.getName()));
     return 0;
   }
 
@@ -367,16 +327,29 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     this.totalWidth = java.lang.Math.max(x + width, this.totalWidth);
     this.totalHeight = java.lang.Math.max(y + height, this.totalHeight);
 
-    final Element paramNode = this.doc.createElement("g");
+    final Element paramNode = createParameterNodeElement(paramPes[0], p, RGB_PALE_GREEN_LITERAL, BLACK_LITERAL);
     this.svg.appendChild(paramNode);
+
+    return 0;
+  }
+
+  private Element createParameterNodeElement(final PictogramElement paramPe, final Parameter p, final String fillColor,
+      final String strokeColor) {
+
+    final int x = paramPe.getGraphicsAlgorithm().getX();
+    final int y = paramPe.getGraphicsAlgorithm().getY();
+    final int width = paramPe.getGraphicsAlgorithm().getWidth();
+    final int height = paramPe.getGraphicsAlgorithm().getHeight();
+
+    final Element paramNode = this.doc.createElement("g");
     paramNode.setAttribute("id", p.getName());
     paramNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + x + "," + y + ")");
     final Element polygon = this.doc.createElement(POLYGON_LITERAL);
     paramNode.appendChild(polygon);
     polygon.setAttribute(POINTS_LITERAL, "0," + (height) + " " + "0," + (height / 2) + " " + (width / 2) + ",0 "
         + (width) + "," + (height / 2) + " " + (width) + "," + (height));
-    polygon.setAttribute(FILL_LITERAL, RGB_PALE_GREEN_LITERAL);
-    polygon.setAttribute(STROKE_LITERAL, BLACK_LITERAL);
+    polygon.setAttribute(FILL_LITERAL, fillColor);
+    polygon.setAttribute(STROKE_LITERAL, strokeColor);
     polygon.setAttribute(STROKE_WIDTH_LITERAL, LINE_WIDTH);
 
     final Element text = this.doc.createElement("text");
@@ -387,7 +360,19 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     text.setAttribute(TEXT_ANCHOR_LITERAL, MIDDLE_LITERAL);
     addFontToSVG(text, getFont(p));
     text.appendChild(this.doc.createTextNode(p.getName()));
-    return 0;
+
+    if (!p.isLocallyStatic()) {
+      final Element circle = this.doc.createElement(CIRCLE_LITERAL);
+      paramNode.appendChild(circle);
+      circle.setAttribute("cx", "" + (width / 2));
+      circle.setAttribute("cy", "15");
+      circle.setAttribute("r", "6");
+      circle.setAttribute(FILL_LITERAL, WHITE_LITERAL);
+      circle.setAttribute(STROKE_WIDTH_LITERAL, "2px");
+      circle.setAttribute(STROKE_LITERAL, RGB_DARK_BLUE_LITERAL);
+    }
+
+    return paramNode;
   }
 
   /*
@@ -705,15 +690,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", dip.getName());
       portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
-      final Element rect = this.doc.createElement("rect");
+
+      final Element rect = createActorDataPortElement(RGB_GREEN_LITERAL);
       portNode.appendChild(rect);
-      rect.setAttribute("x", "0");
-      rect.setAttribute("y", "1");
-      rect.setAttribute(WIDTH_LITERAL, "8");
-      rect.setAttribute(HEIGHT_LITERAL, "8");
-      rect.setAttribute(FILL_LITERAL, RGB_GREEN_LITERAL);
-      rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      rect.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -739,15 +718,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       actorNode.appendChild(portNode);
       portNode.setAttribute("id", dop.getName());
       portNode.setAttribute(TRANSFORM_LITERAL, TRANSLATE_LITERAL + "(" + portX + "," + portY + ")");
-      final Element rect = this.doc.createElement("rect");
+
+      final Element rect = createActorDataPortElement(RGB_RED_LITERAL);
       portNode.appendChild(rect);
-      rect.setAttribute("x", "0");
-      rect.setAttribute("y", "1");
-      rect.setAttribute(WIDTH_LITERAL, "8");
-      rect.setAttribute(HEIGHT_LITERAL, "8");
-      rect.setAttribute(FILL_LITERAL, RGB_RED_LITERAL);
-      rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
-      rect.setAttribute(STROKE_WIDTH_LITERAL, "1px");
 
       final Element text = this.doc.createElement("text");
       portNode.appendChild(text);
@@ -756,6 +729,19 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     }
 
     return 1;
+  }
+
+  private Element createActorDataPortElement(final String portColor) {
+    final Element rect = this.doc.createElement("rect");
+    rect.setAttribute("x", "0");
+    rect.setAttribute("y", "1");
+    rect.setAttribute(WIDTH_LITERAL, "8");
+    rect.setAttribute(HEIGHT_LITERAL, "8");
+    rect.setAttribute(FILL_LITERAL, portColor);
+    rect.setAttribute(STROKE_LITERAL, RGB_GREY_LITERAL);
+    rect.setAttribute(STROKE_WIDTH_LITERAL, "1px");
+
+    return rect;
   }
 
   private Element drawActor(final AbstractActor ea, int x, int y, final PictogramElement[] actorPes, final int width,
@@ -900,15 +886,9 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final PictogramElement[] actorPes = this.exportSVGFeature.getFeatureProvider()
         .getAllPictogramElementsForBusinessObject(aa);
 
-    ContainerShape containerShape = null;
-    for (final PictogramElement pe : actorPes) {
-      if (pe instanceof final ContainerShape cs) {
-        containerShape = cs;
-      }
-    }
-    if (containerShape == null) {
-      throw new IllegalArgumentException("getFont of a AbstractVertex without ContainerShape");
-    }
+    final ContainerShape containerShape = Arrays.stream(actorPes).filter(ContainerShape.class::isInstance)
+        .map(pe -> (ContainerShape) pe).findAny()
+        .orElseThrow(() -> new IllegalArgumentException("getFont of a AbstractVertex without ContainerShape"));
 
     final EList<Shape> childrenShapes = containerShape.getChildren();
 
@@ -955,7 +935,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
       return points;
     }
 
-    // Adding intermediate points between each bendpoints to make quadratic Bézier curve work
+    // Adding intermediate points before and after each bendpoints to make quadratic Bézier curve work
 
     for (int i = 0; i < ffc.getBendpoints().size(); i++) {
 
