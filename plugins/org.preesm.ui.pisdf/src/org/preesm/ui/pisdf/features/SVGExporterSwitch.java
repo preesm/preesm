@@ -222,6 +222,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
     final Element depMarker = createEdgeMarkerElement("depEnd", RGB_DARK_BLUE_LITERAL);
     defs.appendChild(depMarker);
 
+    /* Populate SVG File with Graph Data */
     graph.getDependencies().forEach(d -> doSwitch(d));
     graph.getFifos().forEach(f -> doSwitch(f));
     graph.getParameters().forEach(p -> doSwitch(p));
