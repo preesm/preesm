@@ -470,16 +470,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    *          the property
    */
   private String getAnnotationFromPort(final DataPort piPort) {
-    switch (piPort.getAnnotation()) {
-      case READ_ONLY:
-        return SDFEdge.MODIFIER_READ_ONLY;
-      case WRITE_ONLY:
-        return SDFEdge.MODIFIER_WRITE_ONLY;
-      case UNUSED:
-        return SDFEdge.MODIFIER_UNUSED;
-      default:
-        return "";
-    }
+    return switch (piPort.getAnnotation()) {
+      case READ_ONLY -> SDFEdge.MODIFIER_READ_ONLY;
+      case WRITE_ONLY -> SDFEdge.MODIFIER_WRITE_ONLY;
+      case UNUSED -> SDFEdge.MODIFIER_UNUSED;
+      default -> "";
+    };
   }
 
   /** The current prototype. */
@@ -527,28 +523,16 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseFunctionArgument(final FunctionArgument f) {
     if (f.isIsConfigurationParameter()) {
-      int direction = 0;
-      switch (f.getDirection()) {
-        case IN:
-          direction = 0;
-          break;
-        case OUT:
-          direction = 1;
-          break;
-        default:
-      }
+      final int direction = switch (f.getDirection()) {
+        case IN -> 0;
+        case OUT -> 1;
+      };
       this.currentParameter = new CodeGenParameter(f.getName(), direction);
     } else {
-      String direction = "";
-      switch (f.getDirection()) {
-        case IN:
-          direction = CodeGenArgument.INPUT;
-          break;
-        case OUT:
-          direction = CodeGenArgument.OUTPUT;
-          break;
-        default:
-      }
+      final String direction = switch (f.getDirection()) {
+        case IN -> CodeGenArgument.INPUT;
+        case OUT -> CodeGenArgument.OUTPUT;
+      };
       this.currentArgument = new CodeGenArgument(f.getName(), direction);
       this.currentArgument.setType(f.getType());
     }
