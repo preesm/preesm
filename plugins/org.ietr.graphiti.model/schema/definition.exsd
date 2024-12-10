@@ -1,0 +1,436 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+
+    Copyright or © or Copr. IETR/INSA - Rennes (2009 - 2019) :
+
+    Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+    Clément Guy [clement.guy@insa-rennes.fr] (2014)
+    Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2009 - 2011)
+
+    This software is a computer program whose purpose is to help prototyping
+    parallel applications using dataflow formalism.
+
+    This software is governed by the CeCILL  license under French law and
+    abiding by the rules of distribution of free software.  You can  use,
+    modify and/ or redistribute the software under the terms of the CeCILL
+    license as circulated by CEA, CNRS and INRIA at the following URL
+    "http://www.cecill.info".
+
+    As a counterpart to the access to the source code and  rights to copy,
+    modify and redistribute granted by the license, users are provided only
+    with a limited warranty  and the software's author,  the holder of the
+    economic rights,  and the successive licensors  have only  limited
+    liability.
+
+    In this respect, the user's attention is drawn to the risks associated
+    with loading,  using,  modifying and/or developing or reproducing the
+    software by the user in light of its specific status of free software,
+    that may mean  that it is complicated to manipulate,  and  that  also
+    therefore means  that it is reserved for developers  and  experienced
+    professionals having in-depth computer knowledge. Users are therefore
+    encouraged to load and test the software's suitability as regards their
+    requirements in conditions enabling the security of their systems and/or
+    data to be ensured and,  more generally, to use and operate it in the
+    same conditions as regards security.
+
+    The fact that you are presently reading this means that you have had
+    knowledge of the CeCILL license and that you accept its terms.
+
+-->
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.ietr.dftools.graphiti.model" xmlns="http://www.w3.org/2001/XMLSchema">
+<annotation>
+      <appinfo>
+         <meta.schema plugin="org.ietr.dftools.graphiti.model" id="graphiti.definition" name="Graphiti Definitition"/>
+      </appinfo>
+      <documentation>
+         Definition of a configuration.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <annotation>
+         <appinfo>
+            <meta.element />
+         </appinfo>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="configuration" minOccurs="1" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+
+               </documentation>
+               <appinfo>
+                  <meta.attribute translatable="true"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="configuration">
+      <annotation>
+         <documentation>
+            A configuration type.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="graphType" minOccurs="1" maxOccurs="unbounded"/>
+            <element ref="vertexType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="edgeType" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="import"/>
+            <element ref="export" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this configuration.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="extension" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Extension of files this configuration matches.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  Type of files this configuration matches.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="text">
+                  </enumeration>
+                  <enumeration value="text/xml">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+         <attribute name="validator" type="string" use="required">
+            <annotation>
+               <documentation>
+                  This attribute defines a class that implements IValidator. It is called when a graph is about to be saved. A validator checks that the given graph is valid. A validator may modify the graph in order to make it correct, or add errors/warnings to the Problems view, or both.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.ietr.dftools.graphiti.model.IValidator"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="refinement" type="string">
+            <annotation>
+               <documentation>
+                  This attribute defines a class that implements IRefinementPolicy. It is called when the &quot;Set Refinement&quot; command is executed on a vertex. If not specified, the DefaultRequirementPolicy will be used.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.ietr.dftools.graphiti.model.IRefinementPolicy"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="vertexType">
+      <annotation>
+         <documentation>
+            Describes a type of vertex.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="color"/>
+            <element ref="shape"/>
+            <element ref="size"/>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this vertex type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="graphType">
+      <annotation>
+         <documentation>
+            Describes a type of graph.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this graph type.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="edgeType">
+      <annotation>
+         <documentation>
+            Describes a type of edge.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+            <element ref="parameter" minOccurs="0" maxOccurs="unbounded"/>
+            <element ref="color" minOccurs="0" maxOccurs="1"/>
+         </sequence>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this vertex type.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="directed" type="boolean" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="parameter">
+      <annotation>
+         <documentation>
+            A parameter.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of this parameter.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="type" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Type of this parameter, as a Java class.
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+         <attribute name="default" type="string">
+            <annotation>
+               <documentation>
+                  Default value of this parameter.
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="color">
+      <annotation>
+         <documentation>
+            Color of a vertex or edge.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="red" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="green" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="blue" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="shape">
+      <annotation>
+         <documentation>
+            Shape of a vertex.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="type" use="required">
+            <annotation>
+               <documentation>
+                  Shape type: Rounded box, circle or triangle.
+               </documentation>
+            </annotation>
+            <simpleType>
+               <restriction base="string">
+                  <enumeration value="roundedBox">
+                  </enumeration>
+                  <enumeration value="circle">
+                  </enumeration>
+                  <enumeration value="triangle">
+                  </enumeration>
+               </restriction>
+            </simpleType>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="size">
+      <annotation>
+         <documentation>
+            Size.
+         </documentation>
+      </annotation>
+      <complexType>
+         <attribute name="width" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="height" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="import">
+      <annotation>
+         <documentation>
+            Defines one or more input transformations.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="transformation"/>
+            <element ref="xslt" minOccurs="1" maxOccurs="unbounded"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="export">
+      <annotation>
+         <documentation>
+            Defines output transformations, if any.
+         </documentation>
+      </annotation>
+      <complexType>
+         <choice>
+            <element ref="transformation"/>
+            <element ref="xslt" minOccurs="1" maxOccurs="unbounded"/>
+         </choice>
+      </complexType>
+   </element>
+
+   <element name="xslt">
+      <complexType>
+         <attribute name="name" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="resource"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="transformation">
+      <complexType>
+         <attribute name="class" type="string" use="required">
+            <annotation>
+               <documentation>
+
+               </documentation>
+               <appinfo>
+                  <meta.attribute kind="java" basedOn=":org.ietr.dftools.graphiti.io.ITransformation"/>
+               </appinfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="since"/>
+      </appinfo>
+      <documentation>
+         [Enter the first release in which this extension point appears.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="examples"/>
+      </appinfo>
+      <documentation>
+         [Enter extension point usage example here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="apiinfo"/>
+      </appinfo>
+      <documentation>
+         [Enter API information here.]
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appinfo>
+         <meta.section type="implementation"/>
+      </appinfo>
+      <documentation>
+         [Enter information about supplied implementation of this extension point.]
+      </documentation>
+   </annotation>
+
+
+</schema>

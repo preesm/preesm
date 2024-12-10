@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Automatic-Module-Name: org.ietr.graphiti.model.test
+Bundle-SymbolicName: org.ietr.graphiti.model.test
+Bundle-Version: 1.13.12
+Bundle-Vendor: %providerName
+Fragment-Host: org.ietr.graphiti.model
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.junit;bundle-version="4.12.0"
+Export-Package: org.ietr.graphiti.model.test

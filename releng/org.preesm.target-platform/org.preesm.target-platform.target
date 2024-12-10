@@ -23,10 +23,11 @@
 			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700"/>
 			<unit id="org.eclipse.sdk.feature.group" version="4.24.0.v20220607-0700"/>
 			<unit id="org.eclipse.platform.feature.group" version="4.24.0.v20220607-0700"/>
+			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="10.7.0.202204110055"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://preesm.insa-rennes.fr/repo"/>
-			<unit id="org.ietr.graphiti.feature.feature.group" version="1.13.12"/>
+			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.13"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.13.v20241023-1126"/>
 		</location>
 		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
@@ -131,6 +132,12 @@
 				</dependency>
 				<dependency>
 					<groupId>org.jfree</groupId>
+					<artifactId>jcommon</artifactId>
+					<version>1.0.24</version>
+					<type>jar</type>
+				</dependency>
+				<dependency>
+					<groupId>org.jfree</groupId>
 					<artifactId>jfreechart</artifactId>
 					<version>1.5.5</version>
 					<type>jar</type>
@@ -177,7 +184,7 @@
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>54.0.0</version>
+					<version>55.0.2</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -211,6 +218,12 @@
 					<version>3.0.1</version>
 					<type>jar</type>
 				</dependency>
+				<dependency>
+					<groupId>net.sf.saxon</groupId>
+					<artifactId>Saxon-HE</artifactId>
+					<version>10.9</version>
+					<type>jar</type>
+				</dependency>
 			</dependencies>
 		</location>
 		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
@@ -228,10 +241,6 @@
 					<url>https://repository.jboss.org/nexus/content/repositories/public/</url>
 				</repository>
 			</repositories>
-		</location>
-		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.12"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.12.v20240802-1518"/>
 		</location>
 	</locations>
 </target>
