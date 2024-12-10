@@ -54,7 +54,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -269,7 +268,7 @@ public class SetMoldableParameters {
     PreesmLogger.getLogger().fine(() -> "==> Testing combination: " + index);
 
     final PiGraph graphResolvedCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    PiMMHelper.resolveAllParameters(graphResolvedCopy);
+    graphResolvedCopy.resolveAllParameters();
     final Map<Pair<String, String>, Long> paramsValues = globalComparator.getParamsValues(graphResolvedCopy);
     DSEpointIR res = confSched.runConfiguration(scenario, graph, architecture);
     res = new DSEpointIR(res.energy, res.latency, res.durationII, res.memory, 0, 0, paramsValues, res.isSchedulable);

@@ -139,7 +139,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHelper.resolveAllParameters(graphCopy);
+    graphCopy.resolveAllParameters();
     // 2. Compute BRV following the chosen method
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     PiBRV.printRV(brv);
@@ -227,7 +227,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final PersistenceLevel plExt = dExt.getLevel();
     d.setLevel(plExt);
     d.setActor(daExt);
-    PiMMHelper.removeActorAndDependencies(graph, da);
+    graph.removeActorAndDependencies(da);
   }
 
   /**
@@ -304,7 +304,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
     // if we are at the top level then we keep the data interfaces
-    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+    if (actor.isAtTopLevel()) {
       // parameters have been resolved we do not need dependencies
       actor.getConfigInputPorts().clear();
       return caseNonExecutableActor(actor);
@@ -343,7 +343,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
     // if we are at the top level then we keep the data interfaces
-    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+    if (actor.isAtTopLevel()) {
       // parameters have been resolved we do not need dependencies
       actor.getConfigInputPorts().clear();
       return caseNonExecutableActor(actor);
@@ -362,7 +362,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseConfigOutputInterface(final ConfigOutputInterface actor) {
     // if we are at the top level then we keep the data interfaces
-    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+    if (actor.isAtTopLevel()) {
       // parameters have been resolved we do not need dependencies
       actor.getConfigInputPorts().clear();
       return caseNonExecutableActor(actor);
@@ -431,7 +431,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // Set the source / target ports of the new FIFO
     final String sourceName;
     // Special case for interfaces
-    if ((source instanceof InterfaceActor) && !PiMMHelper.isVertexAtTopLevel(source)) {
+    if ((source instanceof InterfaceActor) && !source.isAtTopLevel()) {
       sourceName = "if_" + fifo.getSourcePort().getName();
     } else {
       sourceName = fifo.getSourcePort().getName();
@@ -440,7 +440,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final DataOutputPort sourcePort = findOutputPort(newSource, sourceName);
     final String targetName;
     // Special case for interface
-    if ((target instanceof InterfaceActor) && !PiMMHelper.isVertexAtTopLevel(target)) {
+    if ((target instanceof InterfaceActor) && !target.isAtTopLevel()) {
       targetName = "if_" + fifo.getTargetPort().getName();
     } else {
       targetName = fifo.getTargetPort().getName();
@@ -625,7 +625,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataInputPort in = PiMMUserFactory.instance.createDataInputPort();
     in.setName(actor.getName());
-    final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    final Long graphRV = graph.getHierarchichalRV(this.brv);
     final long inRate = interfaceRateExpression.evaluateAsLong() * graphRV;
     in.setExpression(inRate);
     in.setAnnotation(PortMemoryAnnotation.READ_ONLY);
@@ -665,7 +665,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // Add the input port and the output port
     final DataOutputPort out = PiMMUserFactory.instance.createDataOutputPort();
     out.setName(actor.getName());
-    final Long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    final Long graphRV = graph.getHierarchichalRV(this.brv);
     final long outRate = interfaceRateExpression.evaluateAsLong() * graphRV;
     out.setExpression(outRate);
     out.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
@@ -763,7 +763,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   private void quasiSRTransformation(final PiGraph graph) {
     final String backupPrefix = this.graphPrefix;
     // We need to get the repetition vector of the graph
-    final long graphRV = PiMMHelper.getHierarchichalRV(graph, this.brv);
+    final long graphRV = graph.getHierarchichalRV(this.brv);
     final IntegerName iN = new IntegerName(graphRV - 1);
     for (long i = 0; i < graphRV; ++i) {
       if (!backupPrefix.isEmpty()) {

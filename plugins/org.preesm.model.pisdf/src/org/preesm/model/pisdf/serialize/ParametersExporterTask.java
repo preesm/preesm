@@ -53,7 +53,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -103,7 +102,7 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     // valuation)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. we resolve all parameters since subgraph parameters cannot be evaluated properly otherwise
-    PiMMHelper.resolveAllParameters(graphCopy);
+    graphCopy.resolveAllParameters();
     // 2. we export the resolved parameters
     final String params = getParamsHeader(graphCopy);
 
