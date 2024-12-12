@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Automatic-Module-Name: org.preesm.graphiti.ui.test
+Bundle-SymbolicName: org.preesm.graphiti.ui.test
+Bundle-Version: 3.21.0.qualifier
+Bundle-Vendor: %providerName
+Fragment-Host: org.preesm.graphiti.ui
+Bundle-RequiredExecutionEnvironment: JavaSE-17
+Require-Bundle: org.junit;bundle-version="4.12.0"
+Export-Package: org.preesm.graphiti.ui.test

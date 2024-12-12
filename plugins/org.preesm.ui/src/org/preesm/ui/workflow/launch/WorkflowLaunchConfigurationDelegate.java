@@ -54,10 +54,10 @@ import org.preesm.workflow.WorkflowManager;
 public class WorkflowLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 
   /** The Constant ATTR_WORKFLOW_FILE_NAME. */
-  public static final String ATTR_WORKFLOW_FILE_NAME = "org.ietr.dftools.ui.workflow.fileName";
+  public static final String ATTR_WORKFLOW_FILE_NAME = "org.preesm.ui.workflow.fileName";
 
   // Beware: Changing this ID without modifying the corresponding ID in
-  // org.ietr.dftools.ui/plugin.xml
+  // org.preesm.ui/plugin.xml
   // can break the launch shortcut for wokflows (Right Click > Run as)
   public static final String WORKFLOW_LAUNCH_CONFIG_TYPE_ID = "net.sf.dftools.ui.workflow.launchConfigurationType";
 

@@ -38,7 +38,7 @@ package org.preesm.ui.slam.properties;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-import org.ietr.dftools.graphiti.ui.properties.MapSection;
+import org.preesm.graphiti.ui.properties.MapSection;
 
 // TODO: Auto-generated Javadoc
 /**

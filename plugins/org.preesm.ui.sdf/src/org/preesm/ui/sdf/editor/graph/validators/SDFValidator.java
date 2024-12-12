@@ -37,8 +37,8 @@
 package org.preesm.ui.sdf.editor.graph.validators;
 
 import org.eclipse.core.resources.IFile;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.validators.DataflowValidator;
+import org.preesm.graphiti.model.Graph;
+import org.preesm.graphiti.validators.DataflowValidator;
 
 // TODO: Auto-generated Javadoc
 /**

@@ -683,7 +683,7 @@ Version 1.0 dated 2006-09-05.
          unpack="false"/>
 
    <plugin
-         id="org.ietr.graphiti.model"
+         id="org.preesm.graphiti.model"
          download-size="0"
          install-size="0"
          version="0.0.0"

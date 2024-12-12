@@ -51,11 +51,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.wizards.newresource.BasicNewResourceWizard;
-import org.ietr.dftools.graphiti.GraphitiModelPlugin;
-import org.ietr.dftools.graphiti.model.Configuration;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.ObjectType;
-import org.ietr.dftools.graphiti.ui.wizards.WizardSaveGraphPage;
+import org.preesm.graphiti.GraphitiModelPlugin;
+import org.preesm.graphiti.model.Configuration;
+import org.preesm.graphiti.model.Graph;
+import org.preesm.graphiti.model.ObjectType;
+import org.preesm.graphiti.ui.wizards.WizardSaveGraphPage;
 
 /**
  * This class provides a wizard to create a new workflow network.

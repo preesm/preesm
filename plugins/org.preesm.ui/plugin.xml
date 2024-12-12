@@ -44,8 +44,8 @@
    <!-- Workflow editor & config -->
    <extension point="org.eclipse.ui.editors">
       <editor
-         class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
-         contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
+         class="org.preesm.graphiti.ui.editors.GraphEditor"
+         contributorClass="org.preesm.graphiti.ui.editors.GraphActionBarContributor"
          default="true" extensions="workflow" icon="resources/icons/workflow.png"
          id="net.sf.dftools.ui.WorkflowEditor" name="Workflow Editor">
       </editor>
@@ -76,7 +76,7 @@
    <extension
       point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
-         contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         contributorId="org.preesm.graphiti.ui.properties.contributor">
          <propertySection
             class="org.preesm.ui.workflow.properties.WorkflowTaskVariablesMapSection"
             filter="org.preesm.ui.workflow.filters.WorkflowTaskFilter"
@@ -89,9 +89,9 @@
    <extension
       point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
-         contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+         contributorId="org.preesm.graphiti.ui.properties.contributor">
          <propertyTab
-            category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+            category="org.preesm.graphiti.ui.properties.category.vertex"
             id="net.sf.dftools.ui.workflow.variables"
             label="Task Variables">
          </propertyTab>
@@ -196,7 +196,7 @@
 
    <extension point="org.eclipse.ui.commands">
       <command
-         id="org.ietr.dftools.ui.command.workflow.converter"
+         id="org.preesm.ui.command.workflow.converter"
          name="Convert Old Workflow">
       </command>
    </extension>

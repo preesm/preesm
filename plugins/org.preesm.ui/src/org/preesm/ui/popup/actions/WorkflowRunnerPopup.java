@@ -79,7 +79,7 @@ public class WorkflowRunnerPopup extends AbstractHandler {
       final Object firstElement = structuredSelection.getFirstElement();
       if (firstElement instanceof final ITabbedPropertySheetPageContributor graph) {
         final String contributorId = graph.getContributorId();
-        if (org.ietr.dftools.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
+        if (org.preesm.graphiti.ui.properties.PropertiesConstants.CONTRIBUTOR_ID.equals(contributorId)) {
           // get there when the active selection is within a tab with id PropertiesConstants.CONTRIBUTOR_ID from
           // Graphiti package.
           // this is one way to make sure the command is triggered from Graphiti editor
