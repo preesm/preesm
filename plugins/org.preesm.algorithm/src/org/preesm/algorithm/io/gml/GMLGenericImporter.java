@@ -160,8 +160,8 @@ public class GMLGenericImporter extends GMLImporter<AbstractGraph, AbstractVerte
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
-   * org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.preesm.algorithm.importer.GMLImporter#parsePort(org.w3c.dom.Element,
+   * org.preesm.algorithm.model.AbstractGraph)
    */
   @Override
   public AbstractVertex parsePort(final Element portElt, final AbstractGraph parentGraph) {

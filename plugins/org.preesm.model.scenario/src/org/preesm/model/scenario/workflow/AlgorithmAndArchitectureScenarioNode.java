@@ -184,7 +184,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @see org.preesm.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {

@@ -199,7 +199,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
+   * @see org.preesm.algorithm.model.AbstractVertex#clone()
    */
   @Override
   public DAGVertex copy() {
@@ -209,7 +209,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   * @see org.preesm.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
@@ -219,7 +219,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionAdded(org.ietr.dftools.algorithm.model.AbstractEdge)
+   * @see org.preesm.algorithm.model.AbstractVertex#connectionAdded(org.preesm.algorithm.model.AbstractEdge)
    */
   @Override
   public void connectionAdded(final AbstractEdge<?, ?> e) {
@@ -230,7 +230,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * (non-Javadoc)
    *
    * @see
-   * org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
+   * org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
    */
   @Override
   public void connectionRemoved(final AbstractEdge<?, ?> e) {

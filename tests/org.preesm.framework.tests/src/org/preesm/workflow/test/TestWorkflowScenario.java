@@ -51,7 +51,7 @@ public class TestWorkflowScenario extends AbstractScenarioImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractScenarioImplementation#extractData(java.lang.String)
+   * @see org.preesm.workflow.implement.AbstractScenarioImplementation#extractData(java.lang.String)
    */
   @Override
   public Map<String, Object> extractData(final String path) {
@@ -66,7 +66,7 @@ public class TestWorkflowScenario extends AbstractScenarioImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @see org.preesm.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {

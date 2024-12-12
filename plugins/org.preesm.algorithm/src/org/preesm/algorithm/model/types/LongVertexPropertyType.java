@@ -72,7 +72,7 @@ public class LongVertexPropertyType extends AbstractVertexPropertyType<Long> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertexPropertyType#intValue()
+   * @see org.preesm.algorithm.model.AbstractVertexPropertyType#intValue()
    */
   @Override
   public long longValue() {
@@ -82,7 +82,7 @@ public class LongVertexPropertyType extends AbstractVertexPropertyType<Long> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertexPropertyType#toString()
+   * @see org.preesm.algorithm.model.AbstractVertexPropertyType#toString()
    */
   @Override
   public String toString() {
@@ -92,7 +92,7 @@ public class LongVertexPropertyType extends AbstractVertexPropertyType<Long> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertexPropertyType#clone()
+   * @see org.preesm.algorithm.model.AbstractVertexPropertyType#clone()
    */
   @Override
   public AbstractVertexPropertyType<Long> copy() {

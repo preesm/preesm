@@ -159,7 +159,7 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#clone()
+   * @see org.preesm.algorithm.model.dag.DAGVertex#clone()
    */
   @Override
   public MapperDAGVertex copy() {
@@ -311,7 +311,7 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
+   * @see org.preesm.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {

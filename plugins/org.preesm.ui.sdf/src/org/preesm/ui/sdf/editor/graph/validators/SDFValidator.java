@@ -52,7 +52,7 @@ public class SDFValidator extends DataflowValidator {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.validators.DataflowValidator#validate(org.ietr.dftools.graphiti.model.Graph,
+   * @see org.preesm.graphiti.validators.DataflowValidator#validate(org.preesm.graphiti.model.Graph,
    * org.eclipse.core.resources.IFile)
    */
   @Override

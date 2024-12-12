@@ -73,7 +73,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.SDFAbstractVertex#clone()
    */
   @Override
   public abstract SDFInterfaceVertex copy();
@@ -81,7 +81,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#equals(java.lang.Object)
+   * @see org.preesm.algorithm.model.AbstractVertex#equals(java.lang.Object)
    */
   @Override
   public boolean equals(final Object e) {
@@ -141,7 +141,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex#getNbRepeat()
+   * @see org.preesm.algorithm.model.sdf.SDFAbstractVertex#getNbRepeat()
    */
   @Override
   public long getNbRepeat() {
@@ -160,7 +160,7 @@ public abstract class SDFInterfaceVertex extends SDFAbstractVertex implements II
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#setPropertyValue(java.lang.String, java.lang.Object)
+   * @see org.preesm.algorithm.model.AbstractVertex#setPropertyValue(java.lang.String, java.lang.Object)
    */
   @Override
   public void setPropertyValue(final String propertyName, final Object value) {

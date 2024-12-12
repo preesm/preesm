@@ -106,9 +106,9 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#addEdge(org.ietr.dftools.algorithm.model.AbstractVertex,
-   * org.ietr.dftools.algorithm.model.IInterface, org.ietr.dftools.algorithm.model.AbstractVertex,
-   * org.ietr.dftools.algorithm.model.IInterface)
+   * @see org.preesm.algorithm.model.AbstractGraph#addEdge(org.preesm.algorithm.model.AbstractVertex,
+   * org.preesm.algorithm.model.IInterface, org.preesm.algorithm.model.AbstractVertex,
+   * org.preesm.algorithm.model.IInterface)
    */
   @Override
   public SDFEdge addEdge(final SDFAbstractVertex source, final IInterface sourcePort, final SDFAbstractVertex target,
@@ -124,8 +124,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#addEdge(org.ietr.dftools.algorithm.model.AbstractVertex,
-   * org.ietr.dftools.algorithm.model.AbstractVertex)
+   * @see org.preesm.algorithm.model.AbstractGraph#addEdge(org.preesm.algorithm.model.AbstractVertex,
+   * org.preesm.algorithm.model.AbstractVertex)
    */
   @Override
   public SDFEdge addEdge(final SDFAbstractVertex source, final SDFAbstractVertex target) {
@@ -227,7 +227,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#addVertex(org.ietr.dftools.algorithm.model.AbstractVertex)
+   * @see org.preesm.algorithm.model.AbstractGraph#addVertex(org.preesm.algorithm.model.AbstractVertex)
    */
   @Override
   public boolean addVertex(final SDFAbstractVertex vertex) {
@@ -256,7 +256,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#clone()
+   * @see org.preesm.algorithm.model.AbstractGraph#clone()
    */
   @Override
   public SDFGraph copy() {
@@ -358,7 +358,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   * @see org.preesm.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {
@@ -486,7 +486,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#getVertexFactory()
+   * @see org.preesm.algorithm.model.AbstractGraph#getVertexFactory()
    */
   @Override
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -663,7 +663,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.IModelObserver#update(org.ietr.dftools.algorithm.model.AbstractGraph,
+   * @see org.preesm.algorithm.model.IModelObserver#update(org.preesm.algorithm.model.AbstractGraph,
    * java.lang.Object)
    */
   @SuppressWarnings("rawtypes")

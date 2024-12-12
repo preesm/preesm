@@ -81,7 +81,7 @@ public class TextualEdgePropertyTypeFactory implements PropertyFactory {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertyFactory#create(java.lang.Object)
+   * @see org.preesm.algorithm.model.PropertyFactory#create(java.lang.Object)
    */
   @Override
   public Object create(final Object value) {

@@ -63,7 +63,7 @@ public class GMLSDFImporter implements GMLModelParserWrapper<SDFGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLModelParserWrapper#parse(java.io.File)
+   * @see org.preesm.algorithm.importer.GMLModelParserWrapper#parse(java.io.File)
    */
   @Override
   public SDFGraph parse(final File f) throws FileNotFoundException {
@@ -82,7 +82,7 @@ public class GMLSDFImporter implements GMLModelParserWrapper<SDFGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.importer.GMLModelParserWrapper#parse(java.io.InputStream, java.lang.String)
+   * @see org.preesm.algorithm.importer.GMLModelParserWrapper#parse(java.io.InputStream, java.lang.String)
    */
   @Override
   public SDFGraph parse(final InputStream input, final String path) throws FileNotFoundException {

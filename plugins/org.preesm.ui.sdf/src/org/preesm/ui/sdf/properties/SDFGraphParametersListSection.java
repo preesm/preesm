@@ -53,7 +53,7 @@ public class SDFGraphParametersListSection extends ListSection {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.ui.properties.ListSection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see org.preesm.graphiti.ui.properties.ListSection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override
