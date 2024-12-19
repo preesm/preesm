@@ -44,10 +44,6 @@ package org.preesm.model.pisdf.serialize;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -57,7 +53,6 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.preesm.commons.DomUtil;
-import org.preesm.commons.GMLKey;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -116,13 +111,6 @@ public class PiWriter {
   // URI where the document will be saved
   private final URI documentURI;
 
-  /**
-   * This LinkedHashMap associates a List to each <b>element</b> (graph, node, edge, port) of a Pi description. For each
-   * <b>element</b>, a list of {@link GMLKey} s is associated. A {@link GMLKey} can be seen as an attribute of this
-   * element.
-   */
-  protected Map<String, List<GMLKey>> elementKeys;
-
   /** Graph {@link Element} of the DOM {@link Document} of this Writer. */
   protected Element graphElement;
 
@@ -136,8 +124,6 @@ public class PiWriter {
    *          the output document URI
    */
   public PiWriter(final URI uri) {
-    // Instantiate an empty elementKeys Map
-    this.elementKeys = new LinkedHashMap<>();
 
     // Initialize attributes to null
     this.rootElement = null;
@@ -161,40 +147,6 @@ public class PiWriter {
   }
 
   /**
-   * Adds a Key to the elementKeys map with the specified informations. Also insert the key at the document root.
-   *
-   * @param id
-   *          Id of the key (identical to name)
-   * @param name
-   *          The Name of the key
-   * @param elt
-   *          The Class this key applies to
-   * @param type
-   *          The value type of this key (can be null)
-   * @param desc
-   *          This key description (can be null)
-   */
-  protected void addKey(final String id, final String name, final String elt, final String type, final Class<?> desc) {
-    // Create the new Key
-    final GMLKey key = new GMLKey(name, elt, type, desc);
-    key.setId(id);
-
-    // Create the corresponding keyElement (if it does not exists)
-    final Element keyElt = createKeyElt(key);
-
-    // If the new keyElement was created
-    if (keyElt != null) {
-      // Put the Key in the list of its element
-      this.elementKeys.get(key.getApplyTo()).add(key);
-
-      // Add the KeyElement to the document
-      // also works if graphElt does not exist yet
-      this.rootElement.insertBefore(keyElt, this.graphElement);
-    }
-
-  }
-
-  /**
    * Creates a new child for the given parent Element with the name "name".
    *
    * @author Jonathan Piat
@@ -207,46 +159,6 @@ public class PiWriter {
   protected Element appendChild(final Node parentElement, final String name) {
     final Element newElt = this.domDocument.createElement(name);
     parentElement.appendChild(newElt);
-    return newElt;
-  }
-
-  /**
-   * Check if the key already exists.
-   *
-   * @param key
-   *          the key
-   * @return the element
-   */
-  protected Element createKeyElt(final GMLKey key) {
-    // Check if the element already has a Key list
-    if (this.elementKeys.get(key.getApplyTo()) == null) {
-      // If not, create the Key list for this element and add it to elementKeys
-      final ArrayList<GMLKey> keys = new ArrayList<>();
-      this.elementKeys.put(key.getApplyTo(), keys);
-    } else if (this.elementKeys.get(key.getApplyTo()).contains(key)) {
-      // If the element already exists, check if this key is already in its Key list
-      // The element already exists, no need to create a new one
-      return null;
-    }
-
-    // If this code is reached, the new element must be created
-    // Create the element
-    final Element newElt = this.domDocument.createElement("key");
-    newElt.setAttribute("attr.name", key.getName());
-    if (key.getApplyTo() != null) {
-      newElt.setAttribute("for", key.getApplyTo());
-    }
-    if (key.getType() != null) {
-      newElt.setAttribute("attr.type", key.getType());
-    }
-    if (key.getId() != null) {
-      newElt.setAttribute("id", key.getId());
-    }
-    if (key.getTypeClass() != null) {
-      final Element descElt = appendChild(newElt, "desc");
-      descElt.setTextContent(key.getTypeClass().getName());
-    }
-
     return newElt;
   }
 
@@ -400,7 +312,6 @@ public class PiWriter {
    *          The text content of the data element
    */
   protected void writeDataElt(final Element parentElt, final String keyName, final String textContent) {
-    addKey(null, keyName, parentElt.getTagName(), "string", null);
     final Element nameElt = appendChild(parentElt, PiIdentifiers.DATA);
     nameElt.setAttribute(PiIdentifiers.DATA_KEY, keyName);
     nameElt.setTextContent(textContent);
@@ -560,34 +471,19 @@ public class PiWriter {
       graphElt.setAttribute(PiIdentifiers.CLUSTER, "true");
     }
 
-    for (final Parameter param : graph.getParameters()) {
-      writeParameter(graphElt, param);
-    }
+    graph.getParameters().forEach(param -> writeParameter(graphElt, param));
 
     // Write the vertices of the graph
-    for (final AbstractActor actor : graph.getActors()) {
-      // ignore all non executable actors
-      if (actor instanceof DelayActor) {
-        continue;
-      }
-      writeAbstractActor(graphElt, actor);
-    }
+    graph.getActors().stream().filter(a -> !(a instanceof DelayActor))
+        .forEach(actor -> writeAbstractActor(graphElt, actor));
 
-    for (final Delay delay : graph.getDelays()) {
-      writeDelayVertex(graphElt, delay);
-    }
+    graph.getDelays().forEach(delay -> writeDelayVertex(graphElt, delay));
 
     // For the diagram creation, FIFO with delays need to be written / parse first
-    for (final Fifo fifo : graph.getFifosWithDelay()) {
-      writeFifos(graphElt, fifo);
-    }
-    for (final Fifo fifo : graph.getFifosWithoutDelay()) {
-      writeFifos(graphElt, fifo);
-    }
+    graph.getFifosWithDelay().forEach(fifo -> writeFifos(graphElt, fifo));
+    graph.getFifosWithoutDelay().forEach(fifo -> writeFifos(graphElt, fifo));
 
-    for (final Dependency dependency : graph.getDependencies()) {
-      writeDependency(graphElt, dependency);
-    }
+    graph.getDependencies().forEach(dependency -> writeDependency(graphElt, dependency));
   }
 
   /**
@@ -603,15 +499,11 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, vertex.getKind().getLiteral());
     // Write ports of the actor
     switch (vertex.getKind()) {
-      case DATA_INPUT:
-        writePorts(vertexElt, vertex.getDataOutputPorts());
-        break;
-      case DATA_OUTPUT:
-        writePorts(vertexElt, vertex.getDataInputPorts());
-        break;
-      default:
+      case DATA_INPUT -> writePorts(vertexElt, vertex.getDataOutputPorts());
+      case DATA_OUTPUT -> writePorts(vertexElt, vertex.getDataInputPorts());
+      default -> {
+        /* do nothing */ }
     }
-
   }
 
   /**
@@ -673,10 +565,6 @@ public class PiWriter {
    *          The serialized Graph
    */
   protected void writePi(final Element parentElt, final PiGraph graph) {
-    // Add IBSDF Keys - Might not be needed.
-    addKey("parameters", "parameters", "graph", null, null);
-    addKey("variables", "variables", "graph", null, null);
-    addKey("arguments", "arguments", "node", null, null);
 
     // Write the Graph
     writeGraph(parentElt, graph);
@@ -783,9 +671,8 @@ public class PiWriter {
     if (isCPPdef) {
       protoElt.setAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_IS_CPPDEF, String.valueOf(isCPPdef));
     }
-    for (final FunctionArgument p : prototype.getArguments()) {
-      writeFunctionParameter(protoElt, p);
-    }
+
+    prototype.getArguments().forEach(p -> writeFunctionParameter(protoElt, p));
   }
 
   /**
