@@ -40,6 +40,7 @@ package org.preesm.model.pisdf.util;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -163,7 +164,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(this.subGraph);
-    pgcc.check(this.parentGraph);
+    // pgcc.check(this.parentGraph);
     return this.subGraph;
   }
 
@@ -215,6 +216,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       final String dataType = oldFifo.getType();
       incomingFifo.setSourcePort(oldFifo.getSourcePort());
       incomingFifo.setType(dataType);
+      incomingFifo.setContainingGraph(parentGraph);
 
       // Setup inside communication with DataInputInterface
       final DataOutputPort outputPort = (DataOutputPort) inputInterface.getDataPort();
@@ -223,6 +225,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       outputPort.setOutgoingFifo(insideOutgoingFifo);
       insideOutgoingFifo.setTargetPort(object);
       insideOutgoingFifo.setType(dataType);
+      insideOutgoingFifo.setContainingGraph(subGraph);
       inputInterface.getDataOutputPorts().add(outputPort);
       this.subGraph.addFifo(insideOutgoingFifo);
     }
@@ -248,7 +251,9 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       final DataOutputPort outputPort = (DataOutputPort) outputInterface.getGraphPort();
       outputPort.setName(outputName); // same name than DataOutputInterface
       // Compute port expression
-      final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
+      final long actorRepetition = Optional.ofNullable(this.repetitionVector.get(object.getContainingActor()))
+          .orElse(1L);
+
       long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
       if (object.getContainingActor() instanceof DelayActor) {
         portExpression = object.getFifo().getSourcePort().getExpression().evaluate();

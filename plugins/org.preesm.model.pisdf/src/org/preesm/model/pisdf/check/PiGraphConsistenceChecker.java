@@ -69,7 +69,7 @@ import org.preesm.model.pisdf.util.DependencyCycleDetector;
  * whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch} here because then we
  * would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete evaluation.
  * Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with {@code &=}.
- * 
+ *
  */
 public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
@@ -78,7 +78,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   /**
    * Builds the checker without logging messages nor stopping on errors. Then the user has to call the
    * {@link #check(PiGraph)} method.
-   * 
+   *
    */
   public PiGraphConsistenceChecker() {
     this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
@@ -86,7 +86,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Builds the checker, then the user has to call the {@link #check(PiGraph)} method.
-   * 
+   *
    * @param throwExceptionLevel
    *          The maximum level of error throwing exceptions.
    * @param loggerLevel
@@ -99,7 +99,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check the whole graph, throwing exception for every warning but not logging them.
-   * 
+   *
    * @param graph
    *          The PiSDF graph to check.
    * @return Whether or not the PiSDF graph is consistent.
@@ -265,6 +265,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph = containingActor.getContainingPiGraph();
       wellContained = (containingPiGraph == peek);
+      final int i = 0;
       if (!wellContained) {
         reportError(CheckerErrorLevel.FATAL_ALL, port,
             "Port [<%s>:%s] containing actor graph [%s] differs from peek graph [%s].", actorName, portName,
@@ -281,6 +282,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
       // if a PiGraph then we would be at top level or in a non reconnected PiGraph
       final PiGraph containingPiGraph2 = fifo.getContainingPiGraph();
       fifoWellContained = (containingPiGraph2 == peek);
+      final int i = 0;
       if (!fifoWellContained) {
         reportError(CheckerErrorLevel.FATAL_ALL, port, "Port [<%s>:%s] fifo graph [%s] differs from peek graph [%s].",
             actorName, portName, containingPiGraph2, peek);

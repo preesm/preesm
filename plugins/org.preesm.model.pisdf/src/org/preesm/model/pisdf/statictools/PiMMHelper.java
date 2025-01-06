@@ -298,6 +298,9 @@ public class PiMMHelper {
    *          the current connected component @ the PiMMHandlerException exception
    */
   private static void iterativeCCFetcher(final AbstractActor actor, final List<AbstractActor> cc) {
+    // if (actor == null) {
+    // return;
+    // }
     for (final ConfigOutputPort output : actor.getConfigOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null && output.getOutgoingDependencies().isEmpty()) {
@@ -310,6 +313,7 @@ public class PiMMHelper {
         PiMMHelper.iterativeCCFetcher(targetActor, cc);
       }
     }
+
     for (final DataOutputPort output : actor.getDataOutputPorts()) {
       final Fifo fifo = output.getOutgoingFifo();
       if (fifo == null) {
@@ -317,7 +321,7 @@ public class PiMMHelper {
             + "] is not connected to a FIFO.");
       }
       final AbstractActor targetActor = fifo.getTargetPort().getContainingActor();
-      if (!cc.contains(targetActor)) {
+      if (!cc.contains(targetActor) && targetActor != null) {
         cc.add(targetActor);
         PiMMHelper.iterativeCCFetcher(targetActor, cc);
       }

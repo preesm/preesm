@@ -97,7 +97,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     // Perform multinet initialization if applicable
     if (Boolean.TRUE.equals(multinet)) {
       final long startTimeInit = System.currentTimeMillis();
-      performMultinetInitialization(workflowManager, monitor, project, archiParams);
+      // performMultinetInitialization(workflowManager, monitor, project, archiParams);
       initTime = System.currentTimeMillis() - startTimeInit;
 
     }
@@ -135,7 +135,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
         }
 
         // Refine core bounds if multinet is true
-        refineCoreBoundsIfMultinet(coreIndex, nodeIndex, project);
+        // refineCoreBoundsIfMultinet(coreIndex, nodeIndex, project);
 
       }
     }
@@ -160,8 +160,11 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final Pair<Integer, Integer> closestPair = findClosestPair(parallelismMaxTh, archiParams);
 
     // Run iterative partitioning and refine architecture
-    iterativePartitioning(closestPair.getKey(), closestPair.getValue(), archiParams.getCoreFreqMax(), archiParams, true,
-        monitor, workflowManager);
+    final int max = 8;// core;
+    if (speedupMax < max) {
+      iterativePartitioning(closestPair.getKey(), closestPair.getValue(), archiParams.getCoreFreqMax(), archiParams,
+          true, monitor, workflowManager);
+    }
     initialfinalLatencyOptim = getFinalLatency(project);
     archiParams.refine(initMemory);
   }
@@ -249,7 +252,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final String workflowPath = project + WORKFLOW_PATH + initName + ".workflow";
 
     final String scenarioPath = project + scenarioName;
-    workflowManager.execute(workflowPath, scenarioPath, monitor, multinet);
+    workflowManager.execute(workflowPath, scenarioPath, monitor, true);
 
   }
 
@@ -297,7 +300,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
   private void nodePartitioningLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
     final String workflowPath = project + WORKFLOW_PATH + "NodePartitioning.workflow";
     final String scenarioPath = project + scenarioName;
-    workflowManager.execute(workflowPath, scenarioPath, monitor, multinet);
+    workflowManager.execute(workflowPath, scenarioPath, monitor, true);
 
   }
 
@@ -310,13 +313,13 @@ public class HypervisorTask extends AbstractTaskImplementation {
       if (Boolean.TRUE.equals(init3)) {
         workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning2.workflow";
       } else {
-        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning.workflow";
+        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning2.workflow";
       }
       final String scenarioPath = project + SCENARIO_GENERATED_PATH + "sub" + i + "_Node" + i + ".scenario";
       // it's possible that all node are not exploited
       final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(scenarioPath));
       if (iFile.exists()) {
-        workflowManager.execute(workflowPath, scenarioPath, monitor, multinet);
+        workflowManager.execute(workflowPath, scenarioPath, monitor, true);
       }
 
       part.put(i, System.currentTimeMillis() - startTimeThreadPartitioning);
@@ -361,7 +364,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
       final String scenarioPath = project + SCENARIO_GENERATED_PATH + "top_top.scenario";
       if (Boolean.TRUE.equals(isExistingNetwork)) {
-        workflowManager.execute(workflowPath, scenarioPath, monitor, multinet);
+        workflowManager.execute(workflowPath, scenarioPath, monitor, true);
       }
     }
 

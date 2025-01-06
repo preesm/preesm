@@ -27,6 +27,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -43,8 +44,6 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -125,6 +124,7 @@ public class IntranodeBuilder {
    */
   private void exportSubs() {
     for (final PiGraph subgraph : sublist) {
+      subgraph.getAllFifos().stream().filter(x -> x.getSourcePort() == null).forEach(x -> subgraph.removeFifo(x));
       graphExporter(subgraph);
       final String indexStr = subgraph.getName().replace("sub", "");
       final Long indexL = Long.decode(indexStr);
@@ -207,8 +207,32 @@ public class IntranodeBuilder {
       convertAndMergeConfigInput(subgraph);
 
       // Step 3: Compute BRV for Subgraph
-      PiBRV.compute(subgraph, BRVMethod.LCM);
+      // subgraph.getAllFifos().stream().filter(x -> x.getTargetPort() == null).forEach(x -> subgraph.removeFifo(x));
+
+      final boolean depsOk = subgraph.getAllParameters().stream().flatMap(x -> x.getOutgoingDependencies().stream())
+          .allMatch(d -> d.getContainingGraph() == subgraph);
+
+      final boolean depsOk2 = subgraph.getAllParameters().stream().allMatch(param -> {
+        // Obtenir les dépendances invalides
+        final List<Dependency> invalidDependencies = param.getOutgoingDependencies().stream()
+            .filter(d -> d.getContainingGraph() != subgraph).toList();
+        for (final Dependency d : invalidDependencies) {
+          graph.removeDependency(d);
+          subgraph.removeDependency(d);
+          d.getSetter().getOutgoingDependencies().remove(d);
+        }
+
+        // Vérifier s'il ne reste que des dépendances valides
+        return param.getOutgoingDependencies().stream().allMatch(d -> d.getContainingGraph() == subgraph);
+      });
+      final boolean depsOk3 = subgraph.getAllParameters().stream().flatMap(x -> x.getOutgoingDependencies().stream())
+          .allMatch(d -> d.getContainingGraph() == subgraph);
+      // subgraph.getAllParameters().stream().forEach(x -> x.getOutgoingDependencies().stream()
+      // .filter(y -> y.getContainingGraph() != subgraph).forEach(y -> graph.removeDependency(y)));
+
       subgraph.setContainingGraph(null);
+      // PiBRV.compute(subgraph, BRVMethod.LCM);
+
     }
   }
 
@@ -298,13 +322,19 @@ public class IntranodeBuilder {
           // If no such named Parameter exists, creating it.
 
           // In case dependency source is config out
-          if (!(cii.getGraphPort().getIncomingDependency().getSource() instanceof Parameter)) {
+          if (cii.getGraphPort().getIncomingDependency().getSource() instanceof ConfigOutputInterface) {
             throw new PreesmRuntimeException("Config output interface/port are not supported in this context.");
           }
 
           // Creating replacement parameter
+          // final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
+          // ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
+
           final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
-              ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
+              (cii.getGraphPort().getIncomingDependency() != null
+                  && cii.getGraphPort().getIncomingDependency().getSource() != null)
+                      ? ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate()
+                      : 1L);
 
           // Adding replacement parameter to graph
           subgraph.addParameter(parameter);
@@ -330,7 +360,7 @@ public class IntranodeBuilder {
    */
   private void graphExporter(PiGraph printgraph) {
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
-    PiBRV.compute(printgraph, BRVMethod.LCM);
+    // PiBRV.compute(printgraph, BRVMethod.LCM);
 
     final IPath fromPortableString = Path.fromPortableString(graphPath);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);

@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -176,7 +177,8 @@ public class InternodeExporterTask extends AbstractTaskImplementation {
       // Calculate the result by adding the current and previous deviations
       Double result;
       if (!previousDeviationPerNode.isEmpty()) {
-        result = entry.getValue() + previousDeviationPerNode.get(entry.getKey());
+        result = entry.getValue() + Optional.ofNullable(previousDeviationPerNode.get(entry.getKey())).orElse(0d);
+
       } else {
         result = entry.getValue();
       }

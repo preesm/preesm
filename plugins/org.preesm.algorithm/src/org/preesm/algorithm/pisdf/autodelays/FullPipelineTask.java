@@ -6,6 +6,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -27,10 +28,15 @@ public class FullPipelineTask extends AbstractTaskImplementation {
       IProgressMonitor monitor, String nodeName, Workflow workflow) throws InterruptedException {
 
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
     final int numberOfPEs = graph.getActorIndex();
+
+    if (!graph.getAllChildrenGraphs().isEmpty()) {
+      graph = PiSDFFlattener.flatten(graph, false);
+      scenario.setAlgorithm(graph);
+    }
 
     final PiGraph graphCopy = AutoDelaysTask.addDelays(graph, architecture, scenario, false, false, false, numberOfPEs,
         numberOfPEs, numberOfPEs - 1);

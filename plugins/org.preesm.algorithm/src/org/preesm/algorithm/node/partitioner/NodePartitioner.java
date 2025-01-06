@@ -32,6 +32,9 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
@@ -42,7 +45,7 @@ public class NodePartitioner {
   /**
    * Input graph.
    */
-  private final PiGraph  graph;
+  private PiGraph        graph;
   /**
    * Workflow scenario.
    */
@@ -114,7 +117,11 @@ public class NodePartitioner {
     }
     // Filter hierarchy
     if (!graph.getAllChildrenGraphs().isEmpty()) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Hierarchical graphs are not handle yet, please feed a flat version");
+      graph = PiSDFFlattener.flatten(graph, false);
+      graph.getAllParameters().stream().filter(x -> x.getOutgoingDependencies() == null)
+          .forEach(x -> graph.removeParameter(x));
+      PreesmLogger.getLogger().log(Level.INFO,
+          "Hierarchical graphs are not handle yet, SimSDP employ the flattening process");
     }
     final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(scenario);
     pipelineCycleInfo.execute();
@@ -124,7 +131,7 @@ public class NodePartitioner {
           "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
     }
 
-    pipelineCycleInfo.removeCycle();
+    // pipelineCycleInfo.removeCycle();
 
     // 1. compute the number of equivalent core
     final int sumNodeEquivalent = fillNodeMapping();
@@ -135,18 +142,27 @@ public class NodePartitioner {
     exportArchitecture();
     // 2. compute cumulative equivalent time
     brv = PiBRV.compute(graph, BRVMethod.LCM);// test
-    computeWorkload();
+    final boolean multinet = true;
+    if (!multinet) {
+      computeWorkload();
+    }
     computeEqTime(sumNodeEquivalent);
     // 3. sort actor in topological as soon as possible order
 
     computeTopoASAP();
+    scenario.setAlgorithm(graph);
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(this.graph);
     // 4. construct subGraphs
     final List<PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP).execute();
     // 7. construct top
     final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
     // 9. generate main file
-
-    new CodegenSimSDP(scenario, topGraph, nodeNames, isHomogeneous);
+    final int i = 0;
+    if (i == 1) {
+      new CodegenSimSDP(scenario, topGraph, nodeNames, isHomogeneous);
+    }
 
     return topGraph;
 
@@ -278,6 +294,7 @@ public class NodePartitioner {
   }
 
   private void computeTopoASAP() {
+    // graph = new MultiBranch(graph).addInitialSource();
     // Utilisation d'une expression lambda pour filtrer les acteurs qui ne sont pas des instances de DelayActor
     final List<AbstractActor> fullList = graph.getActors().stream().filter(actor -> !(actor instanceof DelayActor))
         .collect(Collectors.toList());
@@ -305,6 +322,7 @@ public class NodePartitioner {
       rank++;
       topoOrderASAP.put(rank, orderRank(list));
     }
+    // graph = new MultiBranch(graph).removeInitialSource();
   }
 
   private void processDirectSuccessors(AbstractActor a, Long rank, List<AbstractActor> list,

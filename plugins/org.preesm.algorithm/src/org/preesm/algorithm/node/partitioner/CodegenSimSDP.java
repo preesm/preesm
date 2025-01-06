@@ -331,10 +331,17 @@ public class CodegenSimSDP {
     final Object[] args = node.getDataInputPorts().toArray();
     for (int i = 0; i < args.length; i++) {
       final int index = i;
+      // final DataInputPort din = node.getDataInputPorts().stream()
+      // .sorted(Comparator
+      // .comparing(port -> Integer.parseInt(port.getFifo().getSourcePort().getName().replace("out_", ""))))
+      // .skip(index).findFirst().orElseThrow(PreesmRuntimeException::new);
+
       final DataInputPort din = node.getDataInputPorts().stream()
+          .filter(port -> port.getFifo().getSourcePort().getName().matches("out_\\d+"))
           .sorted(Comparator
               .comparing(port -> Integer.parseInt(port.getFifo().getSourcePort().getName().replace("out_", ""))))
-          .skip(index).findFirst().orElseThrow(PreesmRuntimeException::new);
+          .skip(index) // Ignore les premiers "index" éléments
+          .findFirst().orElseThrow(PreesmRuntimeException::new); // Lève une exception si aucun élément trouvé
 
       final String bufferName = ((AbstractActor) din.getFifo().getSource()).getName() + "_"
           + din.getFifo().getSourcePort().getName() + "__" + node.getName() + "_" + din.getName();

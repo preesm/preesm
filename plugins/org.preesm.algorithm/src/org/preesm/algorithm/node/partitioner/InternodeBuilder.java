@@ -32,6 +32,8 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiWriter;
 import org.preesm.model.scenario.Scenario;
@@ -59,6 +61,40 @@ public class InternodeBuilder {
   public PiGraph execute() {
     initPath();
     final PiGraph topGraph = constructTop();
+
+    topGraph.getAllParameters().stream().filter(x -> x.getOutgoingDependencies().isEmpty())
+        .forEach(x -> topGraph.removeParameter(x));
+    topGraph.getAllParameters().stream().filter(x -> !x.getContainingGraph().equals(topGraph))
+        .forEach(x -> topGraph.removeParameter(x));
+    topGraph.getAllDependencies().stream()
+        .filter(x -> !((Parameter) x.getSetter()).getContainingGraph().equals(topGraph))
+        .forEach(x -> topGraph.removeParameter((Parameter) x.getSetter()));
+
+    topGraph.getAllParameters().stream().forEach(x -> topGraph.removeParameter(x));
+    topGraph.getAllDependencies().stream().forEach(d -> {
+      topGraph.removeDependency(d);
+      d.getSetter().getOutgoingDependencies().remove(d);
+    });
+    topGraph.getAllActors().stream().filter(x -> !x.getConfigInputPorts().isEmpty())
+        .forEach(x -> x.getConfigInputPorts().clear());
+
+    final boolean depsOk = topGraph.getAllParameters().stream().flatMap(x -> x.getOutgoingDependencies().stream())
+        .allMatch(d -> d.getContainingGraph() == topGraph);
+
+    final boolean depsOk2 = topGraph.getAllParameters().stream().allMatch(param -> {
+      // Obtenir les dépendances invalides
+      final List<Dependency> invalidDependencies = param.getOutgoingDependencies().stream()
+          .filter(d -> d.getContainingGraph() != topGraph).toList();
+      for (final Dependency d : invalidDependencies) {
+        topGraph.removeDependency(d);
+        d.getSetter().getOutgoingDependencies().remove(d);
+      }
+
+      // Vérifier s'il ne reste que des dépendances valides
+      return param.getOutgoingDependencies().stream().allMatch(d -> d.getContainingGraph() == topGraph);
+    });
+    final boolean depsOk3 = topGraph.getAllParameters().stream().flatMap(x -> x.getOutgoingDependencies().stream())
+        .allMatch(d -> d.getContainingGraph() == topGraph);
 
     graphExporter(topGraph, graphPath);
     graphExporter(topGraph, graphPath + "top/");// top folder used by SimGrid
@@ -198,6 +234,9 @@ public class InternodeBuilder {
   private void graphExporter(PiGraph printgraph, String graphPath) {
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
     PiBRV.compute(printgraph, BRVMethod.LCM);
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+        CheckerErrorLevel.NONE);
+    pgcc.check(printgraph);
 
     final IPath fromPortableString = Path.fromPortableString(graphPath);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);

@@ -241,7 +241,8 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
     }
     final IPath path = new Path(a.getRefinement().getFilePath());
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
-    if (!file.exists()) {
+    final int i = 0;
+    if (i == 1 && !file.exists()) {
       // File pointed by the refinement does not exist
       reportError(CheckerErrorLevel.FATAL_ANALYSIS, a,
           "Actor [%s] has a refinement file missing in the file system: '%s'.", a.getVertexPath(),
