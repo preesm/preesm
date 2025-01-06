@@ -102,8 +102,9 @@ class LCMBasedBRV extends PiBRV {
 
     for (final List<AbstractActor> cc : ccWOInterfaces) {
       // Initializes all reps to 0
+
+      // If unconnected, each actor is executed once by default.
       for (final AbstractActor actor : cc) {
-        // If unconnected, each actor is executed once by default.
         graphBRV.put(actor, 1L);
       }
 

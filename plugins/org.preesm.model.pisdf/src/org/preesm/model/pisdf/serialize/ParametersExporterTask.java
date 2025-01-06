@@ -65,9 +65,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-export.parameters", name = "Parameters exporter", category = "Graph Exporters",
     description = "Export parameters of the graph as C header with define. "
         + "Exports only static parameters. Name of file is: <graphName>_preesm_params.h",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     parameters = { @Parameter(name = ParametersExporterTask.PARAM_PATH, values = {
         @Value(name = ParametersExporterTask.DEFAULT_PATH, effect = "default path, relative to the project") }) })
+
 public class ParametersExporterTask extends AbstractTaskImplementation {
 
   public static final String DEFAULT_PATH = "/Code";

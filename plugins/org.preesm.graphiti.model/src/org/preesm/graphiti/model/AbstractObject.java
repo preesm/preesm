@@ -104,7 +104,7 @@ public abstract class AbstractObject {
    * @param type
    *          the type
    */
-  public AbstractObject(final ObjectType type) {
+  protected AbstractObject(final ObjectType type) {
     this.propertyChange = new PropertyChangeSupport(this);
     this.properties = new LinkedHashMap<>();
     this.type = type;

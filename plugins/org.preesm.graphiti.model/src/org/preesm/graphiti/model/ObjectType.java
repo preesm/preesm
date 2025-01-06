@@ -154,12 +154,10 @@ public class ObjectType implements Comparable<ObjectType> {
    */
   @Override
   public boolean equals(final Object obj) {
-    if (obj instanceof ObjectType) {
-      final ObjectType type = (ObjectType) obj;
+    if (obj instanceof final ObjectType type) {
       return this.name.equals(type.name);
-    } else {
-      return false;
     }
+    return false;
   }
 
   @Override

@@ -103,7 +103,9 @@ public class XsltTransformer {
     final TransformerFactory factory = TransformerFactory
         .newInstance(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName(), null);
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
 
     factory.setURIResolver((href, base) -> {
       try {

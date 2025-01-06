@@ -49,7 +49,7 @@ public class FileFormatTest {
   @Test
   public void testConstruct() {
     final FileFormat fileFormat = new FileFormat("txt", "Text");
-    Assert.assertTrue("Text".equals(fileFormat.getContentType()));
+    Assert.assertEquals("Text", fileFormat.getContentType());
   }
 
 }

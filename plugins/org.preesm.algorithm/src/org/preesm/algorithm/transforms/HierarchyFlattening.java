@@ -44,7 +44,6 @@ package org.preesm.algorithm.transforms;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.apache.commons.lang3.time.StopWatch;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.model.sdf.SDFGraph;
@@ -58,6 +57,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Class used to flatten the hierarchy of a given graph.
@@ -68,7 +68,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "org.ietr.preesm.plugin.transforms.flathierarchy", name = "Hierarchy Flattening",
     category = "Graph Transformation",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class) }, outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, type = SDFGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_GRAPH, type = SDFGraph.class) },
 
     shortDescription = "Transforms a hierarchical IBSDF graph into an equivalent SDF graph.",
 
@@ -90,8 +91,6 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @Deprecated
 public class HierarchyFlattening extends AbstractTaskImplementation {
 
-  private static final Logger LOGGER = PreesmLogger.getLogger();
-
   /*
    * (non-Javadoc)
    *
@@ -103,59 +102,59 @@ public class HierarchyFlattening extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    final SDFGraph algorithm = (SDFGraph) inputs.get("SDF");
+    final SDFGraph algorithm = (SDFGraph) inputs.get(KEY_SDF_GRAPH);
     final String depthS = parameters.get("depth");
     final StopWatch timer = new StopWatch();
     timer.start();
 
-    int depth;
+    final int decodedDepth;
     if (depthS != null) {
-      depth = Integer.decode(depthS);
+      decodedDepth = Integer.decode(depthS);
     } else {
-      depth = 1;
+      decodedDepth = 1;
     }
 
-    if (depth == 0) {
+    if (decodedDepth == 0) {
       /* we now extract repetition vector into non-flattened hierarchical actors. */
-      outputs.put("SDF", algorithm.copy());
-      HierarchyFlattening.LOGGER.log(Level.INFO, "flattening depth = 0: no flattening");
+      outputs.put(KEY_SDF_GRAPH, algorithm.copy());
+      PreesmLogger.getLogger().log(Level.INFO, "flattening depth = 0: no flattening");
       return outputs;
-    } else if (depth < 0) {
+    }
+
+    final int depth;
+    if (decodedDepth < 0) {
       depth = Integer.MAX_VALUE;
+    } else {
+      depth = decodedDepth;
     }
 
     final ConsistencyChecker checkConsistent = new ConsistencyChecker();
-    if (checkConsistent.verifyGraph(algorithm)) {
-      HierarchyFlattening.LOGGER.log(Level.FINER,
-          "flattening application " + algorithm.getName() + " at level " + depth);
-
-      final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
-      algorithm.insertBroadcasts();
-      try {
-        final boolean validateModel = algorithm.validateModel();
-        if (validateModel) {
-          try {
-            flattener.flattenGraph();
-          } catch (final PreesmException e) {
-            throw new PreesmRuntimeException(e.getMessage(), e);
-          }
-          HierarchyFlattening.LOGGER.log(Level.INFO, "Flattening complete with depth " + depth);
-          final SDFGraph resultGraph = flattener.getFlattenedGraph();
-
-          outputs.put("SDF", resultGraph);
-        } else {
-          final String message = "Could not compute a schedule, graph can't be flattened";
-          throw new PreesmRuntimeException(message);
-        }
-      } catch (final PreesmException e) {
-        throw new PreesmRuntimeException(e.getMessage(), e);
-      }
-    } else {
+    if (!checkConsistent.verifyGraph(algorithm)) {
       throw new PreesmRuntimeException("Inconsistent Hierarchy, graph can't be flattened");
+    }
+    PreesmLogger.getLogger().finer(() -> "flattening application " + algorithm.getName() + " at level " + depth);
+
+    final IbsdfFlattener flattener = new IbsdfFlattener(algorithm, depth);
+    algorithm.insertBroadcasts();
+    try {
+      final boolean validateModel = algorithm.validateModel();
+      if (!validateModel) {
+        final String message = "Could not compute a schedule, graph can't be flattened";
+        throw new PreesmRuntimeException(message);
+      }
+
+      flattener.flattenGraph();
+
+      PreesmLogger.getLogger().info(() -> "Flattening complete with depth " + depth);
+      final SDFGraph resultGraph = flattener.getFlattenedGraph();
+
+      outputs.put(KEY_SDF_GRAPH, resultGraph);
+    } catch (final PreesmException e) {
+      throw new PreesmRuntimeException(e.getMessage(), e);
     }
 
     timer.stop();
-    PreesmLogger.getLogger().log(Level.INFO, "Flattening: " + timer.toString() + "s.");
+    PreesmLogger.getLogger().info(() -> "Flattening: " + timer.toString() + "s.");
 
     return outputs;
   }
