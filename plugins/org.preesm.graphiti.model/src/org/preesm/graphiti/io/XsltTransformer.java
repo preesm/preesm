@@ -103,16 +103,21 @@ public class XsltTransformer {
     final TransformerFactory factory = TransformerFactory
         .newInstance(net.sf.saxon.TransformerFactoryImpl.class.getCanonicalName(), null);
 
-    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
-    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
+    factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, false);
+
+    /*
+     * Support for these attributes was added in Saxon 10.3
+     *
+     * factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+     * factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+     */
 
     factory.setURIResolver((href, base) -> {
       try {
         // What we are doing here is solving the "href" URI and get
         // an InputStream from it.
         IPath path1 = new Path(href);
-        InputStream is;
+        final InputStream is;
 
         if (path1.isAbsolute()) {
           // absolute path, just opens it

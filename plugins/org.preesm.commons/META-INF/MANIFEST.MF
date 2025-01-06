@@ -15,7 +15,6 @@ Require-Bundle: org.eclipse.core.runtime,
  org.apache.commons.math3;bundle-version="3.6.1";visibility:=reexport,
  org.apache.commons.lang3;bundle-version="3.7.0",
  org.apache.commons.io;bundle-version="2.6.0",
- org.apache.xerces;bundle-version="2.12.2",
  wrapped.org.scijava.jep;bundle-version="2.4.2",
  org.eclipse.emf.ecore;visibility:=reexport
 Bundle-RequiredExecutionEnvironment: JavaSE-17

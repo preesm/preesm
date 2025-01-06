@@ -43,7 +43,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.util.FifoBreakingCycleDetector.CycleNodeType;
 
 /**
  * This class provides helper functions to compute the breaking fifo in a cycle.
