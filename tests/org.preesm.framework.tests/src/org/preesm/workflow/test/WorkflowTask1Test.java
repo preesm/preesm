@@ -50,7 +50,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 /**
  * The Class TestWorkflowTask1.
  */
-public class TestWorkflowTask1 extends AbstractTaskImplementation {
+public class WorkflowTask1Test extends AbstractTaskImplementation {
 
   /*
    * (non-Javadoc)

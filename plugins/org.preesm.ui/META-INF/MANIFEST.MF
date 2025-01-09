@@ -18,7 +18,7 @@ Require-Bundle: org.eclipse.core.runtime;visibility:=reexport,
  org.preesm.graphiti.ui;visibility:=reexport,
  org.preesm.workflow
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Export-Package: org.preesm.ui,
  org.preesm.ui.console,
  org.preesm.ui.editor.graph.validators,

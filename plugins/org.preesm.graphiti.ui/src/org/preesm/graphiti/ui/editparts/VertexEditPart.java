@@ -113,7 +113,7 @@ public class VertexEditPart extends AbstractGraphitiEditPart implements NodeEdit
   @SuppressWarnings("unchecked")
   void addEdges(final EdgeList edges) {
     final List<EdgeEditPart> connections = new ArrayList<>();
-    final List<EdgeEditPart> sourceConnections2 = getSourceConnections();
+    final List<EdgeEditPart> sourceConnections2 = (List<EdgeEditPart>) getSourceConnections();
     connections.addAll(sourceConnections2);
 
     for (final EdgeEditPart dependency : connections) {

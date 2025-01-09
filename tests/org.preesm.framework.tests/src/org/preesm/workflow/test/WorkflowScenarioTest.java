@@ -46,7 +46,7 @@ import org.preesm.workflow.implement.AbstractScenarioImplementation;
 /**
  * The Class TestWorkflowScenario.
  */
-public class TestWorkflowScenario extends AbstractScenarioImplementation {
+public class WorkflowScenarioTest extends AbstractScenarioImplementation {
 
   /*
    * (non-Javadoc)

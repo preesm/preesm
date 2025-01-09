@@ -17,25 +17,26 @@ jobs:
     name: Build & Test
     strategy:
       matrix:
-        os: [ubuntu-20.04]
-        java-version: [17]
+        os: [ubuntu-latest]
+        java-version: [21]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
-          java-version: 17
+          distribution: 'temurin'
+          java-version: ${{ matrix.java-version }}
 
       - name: Git Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
+      # This step should soon be unnecessary: https://github.com/actions/runner-images/issues/11093
       - name: Set up Maven
         uses: stCarolas/setup-maven@v5
         with:
-          maven-version: 3.6.3
+          maven-version: 3.9.9
 
       - name: Restore m2 cache # Only trigger on feature branch
         if: github.ref != 'refs/heads/develop'
@@ -60,7 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
+        run: mvn -X -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
 
       - name: Archive Linux product
         uses: actions/upload-artifact@v4
@@ -104,7 +105,7 @@ jobs:
     if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
     name: GihHub Release
     needs: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifacts
         uses: actions/download-artifact@v4

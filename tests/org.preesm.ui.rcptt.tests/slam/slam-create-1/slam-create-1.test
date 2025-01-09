@@ -6,10 +6,10 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _jBIQ8AIPEem5ROe3sIoWRg
-Runtime-Version: 2.5.1.M3
-Save-Time: 2/10/21 12:57 PM
+Runtime-Version: 2.5.5.202409031853
+Save-Time: 1/9/25, 10:35 AM
 Testcase-Type: ecl
-Verifications: _0QDPgAIZEem_19ziQctLSg
+Verifications: _PdXtIM5qEe-OJIWOcgykQA
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
@@ -347,5 +347,5 @@ get-editor "4CoresX86.slam" | get-diagram -index 1 | key-type "M1+s"
 get-view Problems | click
 get-editor "4CoresX86.slam" | get-diagram -index 1 | mouse-hover 108 376 -height 380 -width 624
 get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Archi/4CoresX86.slam" | get-menu
-    -path "Open With/Text Editor" | click
+    -path "Open With/Plain Text Editor" | click
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

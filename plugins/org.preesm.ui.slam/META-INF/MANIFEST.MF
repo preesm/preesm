@@ -7,7 +7,7 @@ Bundle-Version: 3.21.0.qualifier
 Require-Bundle: org.preesm.ui,
  org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.ui.slam,
  org.preesm.ui.slam.filters,

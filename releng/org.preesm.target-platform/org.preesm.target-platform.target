@@ -2,58 +2,32 @@
 <?pde version="3.8"?>
 <target name="preesm">
 	<locations>
-		<!--<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2022-06"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="10.7.0.202206081808"/>
-			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.14.33.v20220224-2257"/>
-			<unit id="org.eclipse.egit.feature.group" version="6.2.0.202206071550-r"/>
-			<unit id="org.eclipse.emf.ecoretools.sdk.feature.group" version="3.4.0.202201202026"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.30.0.v20220516-1117"/>
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.21.0.v20220426-0617"/>
-			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.30.0.v20220426-0617"/>
-			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.30.0.v20220313-0955"/>
-			<unit id="org.eclipse.emf.codegen.feature.group" version="2.23.0.v20210924-1718"/>
-			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.24.0.v20210924-1718"/>
-			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.1700.v20220509-0833"/>
-			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202206070201"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.18.0.202106091000"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.18.0.202106091000"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.14.1200.v20220607-0700"/>
-			<unit id="org.eclipse.platform.feature.group" version="4.24.0.v20220607-0700"/>
-			<unit id="org.eclipse.sdk.feature.group" version="4.24.0.v20220607-0700"/>
-			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="10.7.0.202204110055"/>
-			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.27.0.v20220530-0508"/>
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.27.0.v20220530-0508"/>
-		</location> -->
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2023-09"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.3.0.202309051907"/>
-			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.14.39.v20230529-2049"/>
-			<unit id="org.eclipse.egit.feature.group" version="6.7.0.202309050840-r"/>
-			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.35.0.v20230801-1141"/>
-			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.35.0.v20230622-1149"/>
-			<unit id="org.eclipse.emf.codegen.feature.group" version="2.24.0.v20230211-1150"/>
-			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.25.0.v20230211-1150"/>
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.26.0.v20230704-0626"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.35.0.v20230829-0934"/>
-			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2200.v20230717-2134"/>
-			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202209120200"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.19.1.202211181144"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.19.1.202211181144"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.15.100.v20230903-1000"/>
-			<unit id="org.eclipse.platform.feature.group" version="4.29.0.v20230903-1000"/>
-			<unit id="org.eclipse.sdk.feature.group" version="4.29.0.v20230903-1000"/>
-			<!-- <unit id="org.eclipse.tm.terminal.connector.local.feature.feature.group" version="11.3.0.202307110141"/>
-			<unit id="org.eclipse.tm.terminal.connector.ssh.feature.feature.group" version="11.3.0.202307110141"/>
-			<unit id="org.eclipse.tm.terminal.connector.telnet.feature.feature.group" version="11.3.0.202307110141"/> -->
-			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="11.3.0.202307110141"/>
-			<unit id="org.eclipse.tm.terminal.view.feature.feature.group" version="11.3.0.202308190036"/>
-			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.32.0.v20230827-1315"/>
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.32.0.v20230827-1315"/>
+			<repository location="https://download.eclipse.org/releases/2024-12"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.6.1.202407022008"/>
+			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.15.2.v20240812-1535"/>
+			<unit id="org.eclipse.egit.feature.group" version="7.1.0.202411261347-r"/>
+			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.40.0.v20240911-1442"/>
+			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.40.0.v20240911-1442"/>
+			<unit id="org.eclipse.emf.codegen.feature.group" version="2.26.0.v20240911-1027"/>
+			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.27.0.v20240911-1027"/>
+			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.31.0.v20241001-1300"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="2.40.0.v20241018-1213"/>
+			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2700.v20240929-1145"/>
+			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202411181539"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.19.2.202311281543"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.19.2.202311281543"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.16.100.v20241120-1800"/>
+			<unit id="org.eclipse.platform.feature.group" version="4.34.0.v20241120-1800"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.34.0.v20241120-1800"/>
+			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="11.6.1.202406241230"/>
+			<unit id="org.eclipse.tm.terminal.view.feature.feature.group" version="11.6.1.202406241230"/>
+			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.37.0.v20241119-0857"/>
+			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.37.0.v20241119-0857"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/17/updates/release/17.0.13"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="17.0.13.v20241023-1126"/>
+			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.5"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="21.0.5.v20241023-1957"/>
 		</location>
 		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
@@ -74,6 +48,12 @@
 					<artifactId>jackson-databind</artifactId>
 					<version>2.17.2</version>
 					<type>jar</type>
+				</dependency>
+				<dependency>
+				    <groupId>jakarta.annotation</groupId>
+				    <artifactId>jakarta.annotation-api</artifactId>
+				    <version>3.0.0</version>
+				    <type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.jfree</groupId>
@@ -137,6 +117,12 @@
 					<artifactId>commons-lang3</artifactId>
 					<version>3.17.0</version>
 					<type>jar</type>
+				</dependency>
+				<dependency>
+				    <groupId>commons-io</groupId>
+				    <artifactId>commons-io</artifactId>
+				    <version>2.8.0</version>
+				    <type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.apache.velocity</groupId>
@@ -257,7 +243,7 @@
 				<dependency>
 					<groupId>org.jboss.tools.tycho-plugins</groupId>
 					<artifactId>repository-utils</artifactId>
-					<version>2.7.5</version>
+					<version>4.0.7</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>

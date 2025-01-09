@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.tests.model.scenario.types;
+package org.preesm.model.scenario.types.test;
 
 import java.util.Arrays;
 import java.util.Collection;

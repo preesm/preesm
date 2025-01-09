@@ -51,7 +51,7 @@ import org.preesm.algorithm.throughput.sdf.tools.SDFTransformer;
  * @author hderoui
  *
  */
-public class PeriodicScheduleModelOjAlgoTests {
+public class PeriodicScheduleModelOjAlgoTest {
 
   @Test
   public void testNormalizedPeriodShouldBeComputed() {
