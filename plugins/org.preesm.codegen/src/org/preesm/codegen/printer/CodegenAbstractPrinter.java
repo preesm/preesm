@@ -140,9 +140,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final char r = '\r';
 
     // if the last character is a \n, remove it
-    if ((result.length() > 0) && (result.charAt(result.length() - 1) == newLine)) {
+    if ((!result.isEmpty()) && (result.charAt(result.length() - 1) == newLine)) {
       result = result.subSequence(0, result.length() - 1).toString();
-      if ((result.length() > 0) && (result.charAt(result.length() - 1) == r)) {
+      if ((!result.isEmpty()) && (result.charAt(result.length() - 1) == r)) {
         result = result.subSequence(0, result.length() - 1).toString();
       }
     }

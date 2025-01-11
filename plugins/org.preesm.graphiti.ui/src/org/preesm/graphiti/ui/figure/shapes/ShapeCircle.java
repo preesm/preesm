@@ -65,8 +65,8 @@ public class ShapeCircle extends Ellipse implements IShape {
   /*
    * (non-Javadoc)
    *
-   * @see org.preesm.graphiti.ui.figure.shapes.IShape#getConnectionAnchor(org.preesm.graphiti.ui.figure.
-   * VertexFigure, java.lang.String, boolean)
+   * @see org.preesm.graphiti.ui.figure.shapes.IShape#getConnectionAnchor(org.preesm.graphiti.ui.figure. VertexFigure,
+   * java.lang.String, boolean)
    */
   @Override
   public ConnectionAnchor getConnectionAnchor(final VertexFigure figure, final String portName,
@@ -82,8 +82,8 @@ public class ShapeCircle extends Ellipse implements IShape {
   @Override
   public IShape newShape() {
     try {
-      return getClass().newInstance();
-    } catch (final InstantiationException | IllegalAccessException e) {
+      return getClass().getDeclaredConstructor().newInstance();
+    } catch (final ReflectiveOperationException e) {
       throw new GraphitiException("", e);
     }
   }

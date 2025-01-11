@@ -160,7 +160,7 @@ public class WorkspaceUtils {
    *           the core exception
    */
   public static IFolder createFolderInto(final String folderPath, final IProject project) throws CoreException {
-    if ((folderPath != null) && (folderPath.length() > 0)) {
+    if ((folderPath != null) && (!folderPath.isEmpty())) {
       final IFolder folder = project.getFolder(folderPath);
       if (!folder.exists()) {
         WorkspaceUtils.createFolder(folder, false, true, null);

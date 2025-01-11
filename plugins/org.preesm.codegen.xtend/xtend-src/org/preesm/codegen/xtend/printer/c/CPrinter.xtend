@@ -1006,7 +1006,7 @@ class CPrinter extends BlankPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
 		#ifdef PREESM_VERBOSE

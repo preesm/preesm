@@ -39,9 +39,8 @@ package org.preesm.graphiti.io;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import org.eclipse.draw2d.geometry.Rectangle;
-import org.preesm.graphiti.GraphitiException;
 import org.preesm.graphiti.model.Graph;
 import org.preesm.graphiti.model.ObjectType;
 import org.preesm.graphiti.model.Vertex;
@@ -64,27 +63,23 @@ public class LayoutWriter {
    */
   public void write(final Graph graph, final OutputStream out) {
     PrintWriter writer;
-    try {
-      writer = new PrintWriter(new OutputStreamWriter(out, "UTF-8"));
-      writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      writer.println("<layout>");
-      writer.println("\t<vertices>");
+    writer = new PrintWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8));
+    writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+    writer.println("<layout>");
+    writer.println("\t<vertices>");
 
-      for (final Vertex vertex : graph.vertexSet()) {
-        final String id = (String) vertex.getValue(ObjectType.PARAMETER_ID);
-        final Rectangle bounds = (Rectangle) vertex.getValue(Vertex.PROPERTY_SIZE);
-        final String x = String.valueOf(bounds.x);
-        final String y = String.valueOf(bounds.y);
+    for (final Vertex vertex : graph.vertexSet()) {
+      final String id = (String) vertex.getValue(ObjectType.PARAMETER_ID);
+      final Rectangle bounds = (Rectangle) vertex.getValue(Vertex.PROPERTY_SIZE);
+      final String x = String.valueOf(bounds.x);
+      final String y = String.valueOf(bounds.y);
 
-        writer.println("\t\t<vertex id=\"" + id + "\" x=\"" + x + "\" y=\"" + y + "\"/>");
-      }
-
-      writer.println("\t</vertices>");
-      writer.println("</layout>");
-      writer.close();
-    } catch (final UnsupportedEncodingException e) {
-      throw new GraphitiException("UTF-8 encoding unsupported", e);
+      writer.println("\t\t<vertex id=\"" + id + "\" x=\"" + x + "\" y=\"" + y + "\"/>");
     }
+
+    writer.println("\t</vertices>");
+    writer.println("</layout>");
+    writer.close();
   }
 
 }

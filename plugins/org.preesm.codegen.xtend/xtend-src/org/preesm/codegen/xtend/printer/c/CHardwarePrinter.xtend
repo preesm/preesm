@@ -207,7 +207,7 @@ class CHardwarePrinter extends CPrinter {
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
 		«FOR coreBlock : engine.codeBlocks»
-			«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»		&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»
+			«IF !((coreBlock as CoreBlock).coreType.equals("Hardware"))»		&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»
 			«ELSE»
 				«IF this.threadHardwarePrintedUsage == 0»		&computationThread_Core«(coreBlock as CoreBlock).coreID»
 					// «this.threadHardwarePrintedUsage=1»

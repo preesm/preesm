@@ -39,6 +39,8 @@ package org.preesm.commons.files;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -129,7 +131,7 @@ public final class URLResolver {
     if (resultURL == null) {
       try {
         resultURL = resolvePlainURL(location);
-      } catch (final MalformedURLException e) {
+      } catch (final MalformedURLException | URISyntaxException e) {
         resultURL = null;
       }
     }
@@ -169,8 +171,8 @@ public final class URLResolver {
     return findMember.getLocationURI().toURL();
   }
 
-  private final URL resolvePlainURL(final String resource) throws MalformedURLException {
-    return new URL(resource);
+  private final URL resolvePlainURL(final String resource) throws MalformedURLException, URISyntaxException {
+    return new URI(resource).toURL();
   }
 
   private final URL resolveFileSystemURL(final String fileSystemPath) throws MalformedURLException {
