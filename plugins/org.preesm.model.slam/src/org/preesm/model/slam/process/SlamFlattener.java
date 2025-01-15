@@ -255,14 +255,13 @@ public class SlamFlattener {
 
     // In case we found the internal hierarchy port corresponding to the
     // port in the upper graph
-    if (foundPort != null) {
-      final ComponentInstance instanceToConnect = refMap.get(foundPort.getInternalComponentInstance());
-      final ComInterface itf = foundPort.getInternalInterface();
-      link.setSourceComponentInstance(instanceToConnect);
-      link.setSourceInterface(itf);
-    } else {
+    if (foundPort == null) {
       throw new PreesmRuntimeException("Could not find port");
     }
+    final ComponentInstance instanceToConnect = refMap.get(foundPort.getInternalComponentInstance());
+    final ComInterface itf = foundPort.getInternalInterface();
+    link.setSourceComponentInstance(instanceToConnect);
+    link.setSourceInterface(itf);
   }
 
   /**
@@ -291,14 +290,13 @@ public class SlamFlattener {
 
     // In case we found the internal hierarchy port corresponding to the
     // port in the upper graph
-    if (foundPort != null) {
-      final ComponentInstance instanceToConnect = refMap.get(foundPort.getInternalComponentInstance());
-      final ComInterface itf = foundPort.getInternalInterface();
-      link.setDestinationComponentInstance(instanceToConnect);
-      link.setDestinationInterface(itf);
-    } else {
+    if (foundPort == null) {
       throw new PreesmRuntimeException("Could not find port");
     }
+    final ComponentInstance instanceToConnect = refMap.get(foundPort.getInternalComponentInstance());
+    final ComInterface itf = foundPort.getInternalInterface();
+    link.setDestinationComponentInstance(instanceToConnect);
+    link.setDestinationInterface(itf);
   }
 
   /**
@@ -344,15 +342,11 @@ public class SlamFlattener {
       final Map<ComponentInstance, ComponentInstance> refMap) {
 
     for (final Link originalLink : links) {
-      Link newLink = null;
-
-      if (originalLink instanceof DataLink) {
-        newLink = SlamFactory.eINSTANCE.createDataLink();
-      } else if (originalLink instanceof ControlLink) {
-        newLink = SlamFactory.eINSTANCE.createControlLink();
-      } else {
-        throw new PreesmRuntimeException("Unsupported link type");
-      }
+      final Link newLink = switch (originalLink) {
+        case final DataLink dl -> SlamFactory.eINSTANCE.createDataLink();
+        case final ControlLink cl -> SlamFactory.eINSTANCE.createControlLink();
+        default -> throw new PreesmRuntimeException("Unsupported link type");
+      };
 
       newLink.setDirected(originalLink.isDirected());
       // Choosing a new unique Uuid

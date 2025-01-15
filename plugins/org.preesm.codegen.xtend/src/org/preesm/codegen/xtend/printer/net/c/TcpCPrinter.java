@@ -241,26 +241,16 @@ public class TcpCPrinter extends CPrinter {
     final int to = communication.getReceiveEnd().getCoreContainer().getCoreID();
     final int from = communication.getSendStart().getCoreContainer().getCoreID();
     switch (direction) {
-      case SEND:
-        functionCallBuilder.append("send_");
-        break;
-      case RECEIVE:
-        functionCallBuilder.append("receive_");
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
+      case SEND -> functionCallBuilder.append("send_");
+      case RECEIVE -> functionCallBuilder.append("receive_");
+      default -> throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
     }
 
     final Delimiter delimiter = communication.getDelimiter();
     switch (delimiter) {
-      case START:
-        functionCallBuilder.append("start");
-        break;
-      case END:
-        functionCallBuilder.append("end");
-        break;
-      default:
-        throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
+      case START -> functionCallBuilder.append("start");
+      case END -> functionCallBuilder.append("end");
+      default -> throw new UnsupportedOperationException("Unsupported [" + direction + "] communication direction.");
     }
     final long size = communication.getData().getNbToken();
 

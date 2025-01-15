@@ -104,9 +104,9 @@ public class PreesmIOHelper {
   public static void createFolderRecursively(IFolder folder, boolean force, boolean local, IProgressMonitor monitor)
       throws CoreException {
     if (!folder.exists()) {
-      IContainer parent = folder.getParent();
-      if (parent instanceof IFolder) {
-        createFolderRecursively((IFolder) parent, force, local, null);
+      final IContainer parent = folder.getParent();
+      if (parent instanceof final IFolder parentFolder) {
+        createFolderRecursively(parentFolder, force, local, null);
       }
       folder.create(force, local, monitor);
     }
@@ -117,7 +117,7 @@ public class PreesmIOHelper {
     InputStreamReader reader = null;
     try {
       reader = new InputStreamReader(mainTemplate.openStream());
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not locate main template [" + fileLocation + "].", e);
     }
     return reader;

@@ -77,12 +77,10 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public Object[] getChildren(final Object parentElement) {
     Object[] table = null;
 
-    if (parentElement instanceof PiGraph) {
-      final PiGraph graph = (PiGraph) parentElement;
+    if (parentElement instanceof final PiGraph graph) {
       // Some types of vertices are ignored in the constraints view
       table = filterPISDFChildren(graph.getActors()).toArray();
-    } else if (parentElement instanceof Actor) {
-      final Actor actor = (Actor) parentElement;
+    } else if (parentElement instanceof final Actor actor) {
       if (actor.isHierarchical()) {
         final PiGraph subGraph = actor.getSubGraph();
         table = filterPISDFChildren(subGraph.getActors()).toArray();
@@ -111,11 +109,9 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
   public boolean hasChildren(final Object element) {
     boolean hasChildren = false;
 
-    if (element instanceof PiGraph) {
-      final PiGraph graph = (PiGraph) element;
+    if (element instanceof final PiGraph graph) {
       hasChildren = !graph.getActors().isEmpty();
-    } else if (element instanceof Actor) {
-      final Actor actor = (Actor) element;
+    } else if (element instanceof final Actor actor) {
       hasChildren = actor.getRefinement() != null;
     }
 
@@ -133,8 +129,8 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
 
     /** The scenario. */
     Scenario scenario;
-    if (inputElement instanceof Scenario) {
-      scenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario scenar) {
+      scenario = scenar;
       // Opening algorithm from file
       this.currentPISDFGraph = scenario.getAlgorithm();
       table[0] = this.currentPISDFGraph;

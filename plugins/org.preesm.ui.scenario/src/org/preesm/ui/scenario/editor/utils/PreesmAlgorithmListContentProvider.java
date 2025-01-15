@@ -62,9 +62,7 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
 
     Object[] elementTable = null;
 
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
-
+    if (inputElement instanceof final Scenario inputScenario) {
       try {
         elementTable = getSortedPISDFVertices(inputScenario).toArray();
       } catch (final Exception e) {

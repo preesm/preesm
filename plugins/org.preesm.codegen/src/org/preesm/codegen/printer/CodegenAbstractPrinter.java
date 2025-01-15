@@ -561,15 +561,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseBuffer(final Buffer buffer) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printBufferDefinition(buffer);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printBufferDeclaration(buffer);
-    }
-
-    return printBuffer(buffer);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printBufferDefinition(buffer);
+      case PRINTING_DECLARATIONS -> printBufferDeclaration(buffer);
+      default -> printBuffer(buffer);
+    };
   }
 
   @Override
@@ -592,15 +588,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseConstant(final Constant constant) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printConstantDefinition(constant);
-    }
 
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printConstantDeclaration(constant);
-    }
-
-    return printConstant(constant);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printConstantDefinition(constant);
+      case PRINTING_DECLARATIONS -> printConstantDeclaration(constant);
+      default -> printConstant(constant);
+    };
   }
 
   @Override
@@ -614,28 +607,20 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseConstantString(final ConstantString constant) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printConstantStringDefinition(constant);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printConstantStringDeclaration(constant);
-    }
-
-    return printConstantString(constant);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printConstantStringDefinition(constant);
+      case PRINTING_DECLARATIONS -> printConstantStringDeclaration(constant);
+      default -> printConstantString(constant);
+    };
   }
 
   @Override
   public CharSequence caseIntVar(final IntVar intVar) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printIntVarDefinition(intVar);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printIntVarDeclaration(intVar);
-    }
-
-    return printIntVar(intVar);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printIntVarDefinition(intVar);
+      case PRINTING_DECLARATIONS -> printIntVarDeclaration(intVar);
+      default -> printIntVar(intVar);
+    };
   }
 
   @Override
@@ -785,15 +770,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseNullBuffer(final NullBuffer nullBuffer) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printNullBufferDefinition(nullBuffer);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printNullBufferDeclaration(nullBuffer);
-    }
-
-    return printNullBuffer(nullBuffer);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printNullBufferDefinition(nullBuffer);
+      case PRINTING_DECLARATIONS -> printNullBufferDeclaration(nullBuffer);
+      default -> printNullBuffer(nullBuffer);
+    };
   }
 
   @Override
@@ -809,28 +790,20 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseSubBuffer(final SubBuffer subBuffer) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printSubBufferDefinition(subBuffer);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printSubBufferDeclaration(subBuffer);
-    }
-
-    return printSubBuffer(subBuffer);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printSubBufferDefinition(subBuffer);
+      case PRINTING_DECLARATIONS -> printSubBufferDeclaration(subBuffer);
+      default -> printSubBuffer(subBuffer);
+    };
   }
 
   @Override
   public CharSequence caseBufferIterator(final BufferIterator bufferIterator) {
-    if (this.state.equals(PrinterState.PRINTING_DEFINITIONS)) {
-      return printBufferIteratorDefinition(bufferIterator);
-    }
-
-    if (this.state.equals(PrinterState.PRINTING_DECLARATIONS)) {
-      return printBufferIteratorDeclaration(bufferIterator);
-    }
-
-    return printBufferIterator(bufferIterator);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printBufferIteratorDefinition(bufferIterator);
+      case PRINTING_DECLARATIONS -> printBufferIteratorDeclaration(bufferIterator);
+      default -> printBufferIterator(bufferIterator);
+    };
   }
 
   @Override

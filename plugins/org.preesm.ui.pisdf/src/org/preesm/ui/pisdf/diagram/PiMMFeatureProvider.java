@@ -318,26 +318,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return null;
     }
-    final Object newObject = context.getNewObject();
-    final IAddFeature addFeature;
-    if (newObject instanceof final EObject eObject) {
-      final PiMMAddFeatureSelectionSwitch piMMAddFeatureSelectionSwitch = new PiMMAddFeatureSelectionSwitch();
-      addFeature = piMMAddFeatureSelectionSwitch.doSwitch(eObject);
-    } else if (newObject instanceof IFile) {
-      final Object businessObjectForPictogramElement = getBusinessObjectForPictogramElement(
-          context.getTargetContainer());
-      if (businessObjectForPictogramElement instanceof Actor || businessObjectForPictogramElement instanceof Delay) {
-        addFeature = new AddRefinementFeature(this);
-      } else if (businessObjectForPictogramElement instanceof PiGraph) {
-        addFeature = new AddActorFromRefinementFeature(this);
-      } else {
-        addFeature = null;
-      }
-    } else {
-      addFeature = null;
-    }
 
-    return addFeature;
+    final Object newObject = context.getNewObject();
+    final Object bo = getBusinessObjectForPictogramElement(context.getTargetContainer());
+
+    return switch (newObject) {
+      case final EObject eObject -> new PiMMAddFeatureSelectionSwitch().doSwitch(eObject);
+      case final IFile iFile when bo instanceof Actor -> new AddRefinementFeature(this);
+      case final IFile iFile when bo instanceof Delay -> new AddRefinementFeature(this);
+      case final IFile iFile when bo instanceof PiGraph -> new AddActorFromRefinementFeature(this);
+      default -> null;
+    };
   }
 
   /*
@@ -410,11 +401,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       // Export SVG Feature is available for any selection
       features.add(new ExportSVGFeature(this));
 
-      if (obj instanceof DelayActor) {
+      if (obj instanceof DelayActor) { // NonExecutableActor
         return new ICustomFeature[0];
       }
 
-      if (obj instanceof PiGraph) {
+      if (obj instanceof PiGraph) { // AbstractActor, AbstractVertex
         features.add(new SetVisibleAllDependenciesFeature(this, true));
         features.add(new SetVisibleAllDependenciesFeature(this, false));
         features.add(new AutoLayoutFeature(this));
@@ -424,18 +415,18 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         features.add(new RenameAbstractVertexFeature(this));
       }
 
-      if (obj instanceof ExecutableActor) {
+      if (obj instanceof ExecutableActor) { // AbstractActor, AbstractVertex
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
             new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
             new AddDataOutputPortFeature(this), };
         features.addAll(Arrays.asList(actorFeatures));
       }
-      if (obj instanceof InitActor) {
+      if (obj instanceof InitActor) { // AbstractActor, AbstractVertex
         features.add(new SetActorRefinementFeature(this));
         features.add(new ClearActorRefinementFeature(this));
         features.add(new OpenRefinementFeature(this));
       }
-      if (obj instanceof Actor) {
+      if (obj instanceof Actor) { // ExecutableActor, AbstractActor, AbstractVertex
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
             new ClearActorRefinementFeature(this), new OpenRefinementFeature(this),
             new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this),
@@ -491,18 +482,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     public IDeleteFeature casePort(final Port object) {
 
       final EObject eContainer = object.eContainer();
-      if (eContainer instanceof ExecutableActor) {
-        return new DeleteActorPortFeature(PiMMFeatureProvider.this);
-      }
-      if (!(eContainer instanceof InterfaceActor)) {
-        return new DeletePiMMelementFeature(PiMMFeatureProvider.this);
-      }
-      // We do not allow deletion of the port of an InterfaceActor through the GUI
-      return new DefaultDeleteFeature(PiMMFeatureProvider.this) {
-        @Override
-        public boolean canDelete(final IDeleteContext context) {
-          return false;
-        }
+
+      return switch (eContainer) {
+        case final ExecutableActor ea -> new DeleteActorPortFeature(PiMMFeatureProvider.this);
+        // We do not allow deletion of the port of an InterfaceActor through the GUI
+        case final InterfaceActor ia -> new DefaultDeleteFeature(PiMMFeatureProvider.this) {
+          @Override
+          public boolean canDelete(final IDeleteContext context) {
+            return false;
+          }
+        };
+        default -> new DeletePiMMelementFeature(PiMMFeatureProvider.this);
       };
     }
 
@@ -597,22 +587,15 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     }
     final PictogramElement pictogramElement = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-    if (bo instanceof ExecutableActor) {
-      return new LayoutActorFeature(this);
-    }
-    if (bo instanceof Port) {
-      return new LayoutPortFeature(this);
-    }
-    if (bo instanceof InterfaceActor) {
-      return new LayoutInterfaceFeature(this);
-    }
-    if (bo instanceof final Parameter param) {
-      if (param.isConfigurationInterface()) {
-        return new LayoutInterfaceFeature(this);
-      }
-      return new LayoutParameterFeature(this);
-    }
-    return super.getLayoutFeature(context);
+
+    return switch (bo) {
+      case final ExecutableActor ea -> new LayoutActorFeature(this);
+      case final Port p -> new LayoutPortFeature(this);
+      case final InterfaceActor ia -> new LayoutInterfaceFeature(this);
+      case final ConfigInputInterface cii -> new LayoutInterfaceFeature(this);
+      case final Parameter p -> new LayoutParameterFeature(this);
+      default -> super.getLayoutFeature(context);
+    };
   }
 
   /*
@@ -643,15 +626,13 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
     final PictogramElement pe = context.getPictogramElement();
     final Object bo = getBusinessObjectForPictogramElement(pe);
-    if (bo instanceof Delay || bo instanceof Fifo) {
-      // we do nothing since they will be moved by actors move
-      return new MovesIfOnlyOneFeature(this);
-    }
-    if (bo instanceof AbstractActor) {
-      return new MoveAbstractActorFeature(this);
-    }
 
-    return super.getMoveShapeFeature(context);
+    return switch (bo) {
+      case final Delay d -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
+      case final Fifo f -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
+      case final AbstractActor aa -> new MoveAbstractActorFeature(this);
+      default -> super.getMoveShapeFeature(context);
+    };
   }
 
   /*
@@ -756,27 +737,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     if (!isEditable()) {
       return null;
     }
-    final PictogramElement pictogramElement = context.getPictogramElement();
-    if (pictogramElement instanceof Diagram) {
-      return new UpdateDiagramFeature(this);
-    }
-    if (pictogramElement instanceof ContainerShape) {
-      final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-      if (bo instanceof ExecutableActor) {
-        return new UpdateActorFeature(this);
-      }
-      if (bo instanceof AbstractVertex) {
-        return new UpdateAbstractVertexFeature(this);
-      }
 
-    }
-    if (pictogramElement instanceof BoxRelativeAnchor) {
-      final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
-      if (bo instanceof Port) {
-        return new UpdatePortFeature(this);
-      }
-    }
-    return super.getUpdateFeature(context);
+    final PictogramElement pictogramElement = context.getPictogramElement();
+    final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
+
+    return switch (pictogramElement) {
+      case final Diagram d -> new UpdateDiagramFeature(this);
+      case final ContainerShape cs when bo instanceof ExecutableActor -> new UpdateActorFeature(this);
+      case final ContainerShape cs when bo instanceof AbstractVertex -> new UpdateAbstractVertexFeature(this);
+      case final BoxRelativeAnchor bra when bo instanceof Port -> new UpdatePortFeature(this);
+      default -> super.getUpdateFeature(context);
+    };
   }
 
 }

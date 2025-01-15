@@ -93,11 +93,9 @@ public class DirectEditingPortNameFeature extends AbstractDirectEditingFeature {
     final GraphicsAlgorithm ga = context.getGraphicsAlgorithm();
     // support direct editing, if it is a Port, and the user clicked
     // directly on the text and not somewhere else in the rectangle
-    if ((bo instanceof Port) && (ga instanceof Text)) {
-      return true;
-    }
+    return (bo instanceof Port) && (ga instanceof Text);
+
     // direct editing not supported in all other cases
-    return false;
   }
 
   /*

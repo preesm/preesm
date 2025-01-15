@@ -106,22 +106,22 @@ public class AutoFillHeaderTemplatedFunctions {
       if (c == CorrespondingTemplateParameterType.NONE || c == CorrespondingTemplateParameterType.MULTIPLE) {
         templateParametersException(refinement, proto);
       }
-      if (o instanceof final Parameter param) {
-        final Long value = param.getExpression().evaluateAsLong();
-        evaluatedParams.add(value.toString());
-      } else if (o instanceof final String s) {
-        evaluatedParams.add(s);
-      } else if (o instanceof final Fifo f) {
-        if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
-          evaluatedParams.add(f.getType());
-        } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
-          evaluatedParams.add(FpgaCodeGenerator.getFifoStreamSizeNameMacro(f));
-        } else {
-          templateParametersException(refinement, proto);
+      switch (o) {
+        case final Parameter param -> {
+          final Long value = param.getExpression().evaluateAsLong();
+          evaluatedParams.add(value.toString());
         }
-      } else {
+        case final String s -> evaluatedParams.add(s);
+        case final Fifo f -> {
+          switch (c) {
+            case CorrespondingTemplateParameterType.FIFO_TYPE -> evaluatedParams.add(f.getType());
+            case CorrespondingTemplateParameterType.FIFO_DEPTH ->
+              evaluatedParams.add(FpgaCodeGenerator.getFifoStreamSizeNameMacro(f));
+            default -> templateParametersException(refinement, proto);
+          }
+        }
         // could not evaluate the related object
-        templateParametersException(refinement, proto);
+        default -> templateParametersException(refinement, proto);
       }
     }
 

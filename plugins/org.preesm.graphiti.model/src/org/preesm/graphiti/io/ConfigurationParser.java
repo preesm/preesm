@@ -219,14 +219,14 @@ public class ConfigurationParser {
     for (final IConfigurationElement element : children) {
       final String name = element.getAttribute("name");
       final String type = element.getName();
-      if (type.equals("transformation")) {
-        final ITransformation instance = (ITransformation) element.createExecutableExtension("class");
-        transformations.add(new Transformation(instance));
-      } else if (type.equals("xslt")) {
-        transformations.add(new Transformation(name));
-      } else {
-        throw new IllegalArgumentException("Unknown type: " + type);
-      }
+
+      final Transformation transfo = switch (type) {
+        case "transformation" -> new Transformation((ITransformation) element.createExecutableExtension("class"));
+        case "xslt" -> new Transformation(name);
+        default -> throw new IllegalArgumentException("Unknown type: " + type);
+      };
+
+      transformations.add(transfo);
     }
   }
 

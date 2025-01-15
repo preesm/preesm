@@ -198,11 +198,10 @@ public class GenericGraphParser {
     if (suitableConfigs.isEmpty()) {
       throw new IncompatibleConfigurationFile("No configuration could parse the file" + file.getFullPath());
     }
-    if (suitableConfigs.size() == 1) {
-      configuration = suitableConfigs.get(0);
-    } else {
+    if (suitableConfigs.size() != 1) {
       throw new IncompatibleConfigurationFile("Many configurations could parse the file");
     }
+    configuration = suitableConfigs.get(0);
 
     // parse with the configuration
     try {
@@ -251,7 +250,8 @@ public class GenericGraphParser {
         if (source == null) {
           final String message = edgeName + ", the source vertex \"" + sourceId + errorMessageEnd;
           throw new TransformedDocumentParseError(message);
-        } else if (target == null) {
+        }
+        if (target == null) {
           final String message = edgeName + ", the target vertex \"" + targetId + errorMessageEnd;
           throw new TransformedDocumentParseError(message);
         }
@@ -311,22 +311,21 @@ public class GenericGraphParser {
     }
     if (parameterType == Map.class) {
       return parseMapParameter(child);
+    }
+    final Element element = child;
+    final String value = element.getAttribute(GenericGraphParser.VALUE_ATTRIBUTE_NAME);
+    if (!element.hasAttribute(GenericGraphParser.VALUE_ATTRIBUTE_NAME) || value.isEmpty()) {
+      return null;
+    } else if (parameterType == Integer.class) {
+      return Integer.valueOf(value);
+    } else if (parameterType == Float.class) {
+      return Float.valueOf(value);
+    } else if (parameterType == Boolean.class) {
+      return Boolean.valueOf(value);
+    } else if (parameterType == String.class) {
+      return value;
     } else {
-      final Element element = child;
-      final String value = element.getAttribute(GenericGraphParser.VALUE_ATTRIBUTE_NAME);
-      if (!element.hasAttribute(GenericGraphParser.VALUE_ATTRIBUTE_NAME) || value.isEmpty()) {
-        return null;
-      } else if (parameterType == Integer.class) {
-        return Integer.valueOf(value);
-      } else if (parameterType == Float.class) {
-        return Float.valueOf(value);
-      } else if (parameterType == Boolean.class) {
-        return Boolean.valueOf(value);
-      } else if (parameterType == String.class) {
-        return value;
-      } else {
-        return value;
-      }
+      return value;
     }
   }
 

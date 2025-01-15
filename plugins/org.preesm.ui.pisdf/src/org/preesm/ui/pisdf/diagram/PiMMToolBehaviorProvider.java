@@ -177,24 +177,13 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
       return existingDecorators;
     }
     final Object bo = featureProvider.getBusinessObjectForPictogramElement(pe);
-    IDecorator[] result = null;
-    if (bo instanceof ExecutableActor) {
-      result = decorateActor(pe, bo);
-    }
 
-    if (bo instanceof final Parameter param && !param.isConfigurationInterface()) {
-      result = ParameterDecorators.getDecorators(param, pe);
-      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
-    }
-
-    if (bo instanceof final Delay delayPo) {
-      result = DelayDecorators.getDecorators(delayPo, pe);
-      this.decoratorAdapter.getPesAndDecorators().put(pe, result);
-    }
-
-    if (result == null) {
-      result = super.getDecorators(pe);
-    }
+    final IDecorator[] result = switch (bo) {
+      case final ExecutableActor ea -> decorateActor(pe, bo);
+      case final Parameter param when !param.isConfigurationInterface() -> ParameterDecorators.getDecorators(param, pe);
+      case final Delay delayPo -> DelayDecorators.getDecorators(delayPo, pe);
+      default -> super.getDecorators(pe);
+    };
 
     this.decoratorAdapter.getPesAndDecorators().put(pe, result);
     return result;
