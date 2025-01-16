@@ -169,19 +169,22 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
     RefinementContainer rc = null;
     boolean acceptPiFiles = false;
-    if (bo instanceof final Delay delay) {
-      rc = delay.getActor();
-      if (rc == null) {
+    switch (bo) {
+      case final Delay delay -> {
+        rc = delay.getActor();
+        if (rc == null) {
+          return;
+        }
+      }
+      case final Actor actor -> {
+        rc = actor;
+        acceptPiFiles = true;
+      }
+      case final InitActor iActor -> rc = iActor;
+      // If not Delay or not Actor or not InitActor
+      default -> {
         return;
       }
-    } else if (bo instanceof final Actor actor) {
-      rc = actor;
-      acceptPiFiles = true;
-    } else if (bo instanceof final InitActor iActor) {
-      rc = iActor;
-    } else {
-      // If not Delay or not Actor or not InitActor
-      return;
     }
 
     final String question = "Please select a valid refinement file (.h/hpp, or .pi if Actor)";
@@ -352,12 +355,9 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
       case LOOP_ACTOR -> HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, allPrototypes);
       case INIT -> HeaderParser.filterInitPrototypes(allPrototypes);
       case INIT_DELAY_ACTOR -> HeaderParser.filterInitBufferPrototypes(allPrototypes);
-      case NONE -> null;
+      case NONE -> throw new PreesmRuntimeException();
     };
 
-    if (result == null) {
-      throw new PreesmRuntimeException();
-    }
     return result;
   }
 

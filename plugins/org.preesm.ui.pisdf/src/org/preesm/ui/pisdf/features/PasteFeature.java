@@ -241,19 +241,17 @@ public class PasteFeature extends AbstractPasteFeature {
   private void connectDep(final PiGraph targetPiGraph, final ISetter setter, final ConfigInputPort getter,
       final Parameterizable targetParameterizable) {
     final Configurable copiedParameterizable = this.copiedObjects.get(targetParameterizable);
+
     // lookup copied setter
-    ISetter copiedSetter = null;
-    if (setter instanceof final Parameter param) {
-      copiedSetter = (Parameter) this.copiedObjects.get(param);
-    } else if (setter instanceof final ConfigOutputPort cop) {
-      final AbstractActor originalActor = (AbstractActor) setter.eContainer();
-      final ConfigOutputPort originalConfigPort = cop;
-      final AbstractActor copiedActor = (AbstractActor) this.copiedObjects.get(originalActor);
-      final ConfigOutputPort lookupConfigOutputPort = lookupConfigOutputPort(copiedActor, originalConfigPort);
-      copiedSetter = lookupConfigOutputPort;
-    } else {
-      throw new IllegalStateException();
-    }
+    final ISetter copiedSetter = switch (setter) {
+      case final Parameter param -> (Parameter) this.copiedObjects.get(param);
+      case final ConfigOutputPort originalConfigPort -> {
+        final AbstractActor originalActor = (AbstractActor) setter.eContainer();
+        final AbstractActor copiedActor = (AbstractActor) this.copiedObjects.get(originalActor);
+        yield lookupConfigOutputPort(copiedActor, originalConfigPort);
+      }
+      default -> throw new IllegalStateException();
+    };
 
     final ConfigInputPort copiedConfigInputPort = lookupConfigInputPort(copiedParameterizable, getter);
     final Dependency newDep = PiMMUserFactory.instance.createDependency(copiedSetter, copiedConfigInputPort);
@@ -262,26 +260,20 @@ public class PasteFeature extends AbstractPasteFeature {
   }
 
   private boolean shouldConnectDep(final ISetter setter, final Parameterizable targetParameterizable) {
-    final boolean sourceOk;
-    if (setter instanceof final Parameter param) {
-      sourceOk = this.copiedObjects.containsKey(param);
-    } else if (setter instanceof ConfigOutputPort) {
-      sourceOk = this.copiedObjects.containsKey(setter.eContainer());
-    } else {
-      sourceOk = false;
-    }
+
+    final boolean sourceOk = switch (setter) {
+      case final Parameter param -> this.copiedObjects.containsKey(param);
+      case final ConfigOutputPort cop -> this.copiedObjects.containsKey(cop.eContainer());
+      default -> false;
+    };
 
     final boolean targetOk;
     if (targetParameterizable instanceof AbstractVertex) {
       targetOk = this.copiedObjects.containsKey(targetParameterizable);
-    } else if (targetParameterizable instanceof final Delay delay) {
-      final Fifo fifo = delay.getContainingFifo();
-      final EObject fifoSource = fifo.getSourcePort().eContainer();
-      final EObject fifoTarget = fifo.getTargetPort().eContainer();
-      targetOk = this.copiedObjects.containsKey(fifoSource) && this.copiedObjects.containsKey(fifoTarget);
     } else {
       targetOk = false;
     }
+
     return sourceOk && targetOk;
   }
 
@@ -662,11 +654,12 @@ public class PasteFeature extends AbstractPasteFeature {
     }
     boolean hasOneVertex = false;
     for (final Object object : fromClipboard) {
-      final boolean objectIsVertex = object instanceof VertexCopy;
-      if (objectIsVertex) {
+      if (object instanceof VertexCopy) {
         hasOneVertex = true;
+        break;
       }
     }
+
     return hasOneVertex;
   }
 
