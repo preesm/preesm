@@ -79,7 +79,7 @@
       <tycho-version>4.0.10</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>5.0.0.4389</sonar-version>
-      <checkstyle-version>10.18.1</checkstyle-version>
+      <checkstyle-version>10.21.1</checkstyle-version>
       <!-- <rcptt-version>2.4.3</rcptt-version> -->
       <rcptt-runner-version>2.5.5</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.1</preesm.coding.policy.version>
