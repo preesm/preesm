@@ -83,11 +83,10 @@ public class GraphLayoutManager extends XYLayout {
   @Override
   protected Dimension calculatePreferredSize(final IFigure container, final int wHint, final int hHint) {
     container.validate();
-    @SuppressWarnings("unchecked")
     final List<? extends IFigure> children = container.getChildren();
     final Rectangle result = new Rectangle().setLocation(container.getClientArea().getLocation());
-    for (int i = 0; i < children.size(); i++) {
-      result.union(children.get(i).getBounds());
+    for (final IFigure child : children) {
+      result.union(child.getBounds());
     }
     result.resize(container.getInsets().getWidth(), container.getInsets().getHeight());
     return result.getSize();

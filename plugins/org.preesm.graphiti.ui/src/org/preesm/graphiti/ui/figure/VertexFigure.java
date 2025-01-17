@@ -116,12 +116,10 @@ public class VertexFigure extends Figure {
      */
     @Override
     public boolean equals(final Object obj) {
-      if (obj instanceof ConcreteBendpoint) {
-        final ConcreteBendpoint cbp = (ConcreteBendpoint) obj;
+      if (obj instanceof final ConcreteBendpoint cbp) {
         return (this.end == cbp.end) && (this.offset == cbp.offset);
-      } else {
-        return false;
       }
+      return false;
     }
 
     @Override
@@ -234,9 +232,8 @@ public class VertexFigure extends Figure {
    */
   public void addToList(final Connection conn, final boolean end, final int offset) {
     // get the concrete list
-    if (!this.bendpoints.containsKey(conn)) {
-      this.bendpoints.put(conn, new ArrayList<>());
-    }
+    this.bendpoints.computeIfAbsent(conn, k -> new ArrayList<>());
+
     final List<ConcreteBendpoint> list = this.bendpoints.get(conn);
 
     final ConcreteBendpoint cbp = new ConcreteBendpoint(end, offset);
@@ -263,7 +260,6 @@ public class VertexFigure extends Figure {
    * Adjusts the size of this figure according to its id and ports.
    */
   public void adjustSize() {
-    @SuppressWarnings("unchecked")
     final List<IFigure> children = new ArrayList<>(this.shape.getChildren());
     children.remove(this.labelId);
     for (final IFigure child : children) {

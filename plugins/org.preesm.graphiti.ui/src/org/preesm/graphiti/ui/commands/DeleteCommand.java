@@ -70,11 +70,11 @@ public class DeleteCommand extends Command {
    *          An object to delete.
    */
   public DeleteCommand(final Object obj) {
-    if (obj instanceof Vertex) {
-      this.vertex = (Vertex) obj;
+    if (obj instanceof final Vertex v) {
+      this.vertex = v;
       this.parent = this.vertex.getParent();
-    } else if (obj instanceof Edge) {
-      this.edge = (Edge) obj;
+    } else if (obj instanceof final Edge e) {
+      this.edge = e;
       this.parent = this.edge.getParent();
     }
   }

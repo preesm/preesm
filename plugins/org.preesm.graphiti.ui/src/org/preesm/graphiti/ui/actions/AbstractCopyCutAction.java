@@ -49,7 +49,7 @@ import org.preesm.graphiti.ui.editparts.VertexEditPart;
  */
 public abstract class AbstractCopyCutAction extends SelectionAction {
 
-  public AbstractCopyCutAction(final IWorkbenchPart part) {
+  protected AbstractCopyCutAction(final IWorkbenchPart part) {
     super(part);
   }
 
@@ -62,12 +62,10 @@ public abstract class AbstractCopyCutAction extends SelectionAction {
   protected boolean calculateEnabled() {
     // enabled when at least one object is selected
     final ISelection selection = getSelection();
-    if (selection instanceof IStructuredSelection) {
-      final IStructuredSelection ssel = (IStructuredSelection) selection;
+    if (selection instanceof final IStructuredSelection ssel) {
       return ((!ssel.isEmpty()) && (ssel.getFirstElement() instanceof VertexEditPart));
-    } else {
-      return false;
     }
+    return false;
   }
 
   /*

@@ -53,6 +53,7 @@ import org.eclipse.draw2d.graph.NodeList;
 import org.eclipse.draw2d.graph.Subgraph;
 import org.eclipse.gef.EditPart;
 import org.eclipse.gef.EditPolicy;
+import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.LayerConstants;
 import org.eclipse.gef.editparts.AbstractGraphicalEditPart;
 import org.eclipse.gef.editpolicies.RootComponentEditPolicy;
@@ -87,9 +88,8 @@ public class GraphEditPart extends AbstractGraphitiEditPart {
    *          A list of edges in the graph.
    */
   void addEdges(final EdgeList edges) {
-    for (final Object child : getChildren()) {
-      if (child instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) child;
+    for (final GraphicalEditPart child : getChildren()) {
+      if (child instanceof final VertexEditPart part) {
         part.addEdges(edges);
       }
     }
@@ -102,7 +102,6 @@ public class GraphEditPart extends AbstractGraphitiEditPart {
    * @param nodes
    *          A list of nodes in the graph.
    */
-  @SuppressWarnings("unchecked")
   void addNodes(final NodeList nodes) {
     final Subgraph subgraph = new Subgraph(this);
     subgraph.innerPadding = new Insets(0, 0, 0, 0);
@@ -113,9 +112,8 @@ public class GraphEditPart extends AbstractGraphitiEditPart {
 
     nodes.add(subgraph);
 
-    for (final Object child : getChildren()) {
-      if (child instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) child;
+    for (final GraphicalEditPart child : getChildren()) {
+      if (child instanceof final VertexEditPart part) {
         part.addNodes(nodes, subgraph);
       }
     }
@@ -211,9 +209,8 @@ public class GraphEditPart extends AbstractGraphitiEditPart {
    * {@link CompoundDirectedGraphLayout} algorithm to the different figures, by setting their bounds.
    */
   void updateFigures() {
-    for (final Object child : getChildren()) {
-      if (child instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) child;
+    for (final GraphicalEditPart child : getChildren()) {
+      if (child instanceof final VertexEditPart part) {
         part.updateFigures();
       }
     }

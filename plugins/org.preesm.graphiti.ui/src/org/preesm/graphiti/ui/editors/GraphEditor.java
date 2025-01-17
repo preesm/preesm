@@ -215,7 +215,6 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
 
         final IAction action = (IAction) ctor.newInstance(this);
         registry.registerAction(action);
-        @SuppressWarnings("unchecked")
         final List<String> selectionActions = getSelectionActions();
         final String id = action.getId();
         selectionActions.add(id);
@@ -311,17 +310,18 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
   }
 
   @Override
-  @SuppressWarnings("rawtypes")
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public Object getAdapter(final Class type) {
     if (type == ZoomManager.class) {
       return ((ScalableFreeformRootEditPart) getGraphicalViewer().getRootEditPart()).getZoomManager();
-    } else if (type == IContentOutlinePage.class) {
-      return new ThumbnailOutlinePage(this);
-    } else if (type == IPropertySheetPage.class) {
-      return this.tabbedPropertySheetPage;
-    } else {
-      return super.getAdapter(type);
     }
+    if (type == IContentOutlinePage.class) {
+      return new ThumbnailOutlinePage(this);
+    }
+    if (type == IPropertySheetPage.class) {
+      return this.tabbedPropertySheetPage;
+    }
+    return super.getAdapter(type);
   }
 
   /**

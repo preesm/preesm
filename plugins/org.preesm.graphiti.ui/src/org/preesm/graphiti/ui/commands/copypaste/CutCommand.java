@@ -84,8 +84,7 @@ public class CutCommand extends Command {
     final List<Vertex> vertices = new ArrayList<>();
 
     for (final Object obj : this.list) {
-      if (obj instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) obj;
+      if (obj instanceof final VertexEditPart part) {
         Vertex vertex = (Vertex) part.getModel();
 
         // remove from parent
@@ -123,8 +122,7 @@ public class CutCommand extends Command {
   public void undo() {
     final Iterator<Graph> it = this.parents.iterator();
     for (final Object obj : this.list) {
-      if (obj instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) obj;
+      if (obj instanceof final VertexEditPart part) {
         final Vertex vertex = (Vertex) part.getModel();
         final Graph parent = it.next();
         parent.addVertex(vertex);

@@ -47,7 +47,7 @@ import org.eclipse.swt.widgets.Display;
 public class GraphitiClipboard {
 
   private GraphitiClipboard() {
-    // forbid isntantiation
+    // forbid instantiation
   }
 
   /** The event name used for {@link GraphitiClipboard#fireContentsSet()}. */

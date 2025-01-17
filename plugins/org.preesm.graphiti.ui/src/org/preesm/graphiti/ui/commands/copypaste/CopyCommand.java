@@ -75,8 +75,7 @@ public class CopyCommand extends Command {
     // copy vertices
     final List<Vertex> vertices = new ArrayList<>();
     for (final Object obj : this.list) {
-      if (obj instanceof VertexEditPart) {
-        final VertexEditPart vertexEditPart = (VertexEditPart) obj;
+      if (obj instanceof final VertexEditPart vertexEditPart) {
         Vertex vertex = (Vertex) vertexEditPart.getModel();
 
         // copy vertex and add to list

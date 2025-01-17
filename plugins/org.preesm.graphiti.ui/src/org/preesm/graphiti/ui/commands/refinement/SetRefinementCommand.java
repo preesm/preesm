@@ -70,9 +70,8 @@ public class SetRefinementCommand extends Command {
   public boolean canExecute() {
     if (this.vertex == null) {
       return false;
-    } else {
-      return this.policy.isRefinable(this.vertex);
     }
+    return this.policy.isRefinable(this.vertex);
   }
 
   /*
@@ -121,11 +120,11 @@ public class SetRefinementCommand extends Command {
    * @see RefinementManager#setSelection(ISelection)
    */
   public void setSelection(final ISelection selection) {
-    if (selection instanceof IStructuredSelection) {
-      final Object obj = ((IStructuredSelection) selection).getFirstElement();
-      if (obj instanceof VertexEditPart) {
+    if (selection instanceof final IStructuredSelection sSelection) {
+      final Object obj = sSelection.getFirstElement();
+      if (obj instanceof final VertexEditPart vep) {
         // we are dealing with a vertex edit part
-        this.vertex = (Vertex) ((VertexEditPart) obj).getModel();
+        this.vertex = (Vertex) vep.getModel();
         this.policy = this.vertex.getConfiguration().getRefinementPolicy();
       }
     }

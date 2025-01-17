@@ -78,11 +78,8 @@ public class ManualGraphLayoutManager extends StackLayout {
       heightHint = hHint;
     }
     final Dimension d = new Dimension();
-    @SuppressWarnings("unchecked")
     final List<? extends IFigure> children = figure.getChildren();
-    IFigure child;
-    for (int i = 0; i < children.size(); i++) {
-      child = children.get(i);
+    for (final IFigure child : children) {
       if (!isObservingVisibility() || child.isVisible()) {
         d.union(sizeSelector.getSize(child, widthHint, heightHint));
       }
@@ -150,11 +147,8 @@ public class ManualGraphLayoutManager extends StackLayout {
   @Override
   public void layout(final IFigure parent) {
     final Rectangle r = parent.getClientArea();
-    @SuppressWarnings("unchecked")
     final List<? extends IFigure> children = parent.getChildren();
-    IFigure child;
-    for (int i = 0; i < children.size(); i++) {
-      child = children.get(i);
+    for (final IFigure child : children) {
       if (child instanceof ScrollPane) {
         child.setBounds(r);
       }

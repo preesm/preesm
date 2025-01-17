@@ -135,7 +135,6 @@ public class VertexEditPart extends AbstractGraphitiEditPart implements NodeEdit
    * @param parent
    *          Its parent subgraph.
    */
-  @SuppressWarnings("unchecked")
   void addNodes(final NodeList nodes, final Subgraph parent) {
     this.node = new Node(this, parent);
     nodes.add(this.node);
@@ -205,8 +204,7 @@ public class VertexEditPart extends AbstractGraphitiEditPart implements NodeEdit
    */
   @Override
   protected List<Edge> getModelSourceConnections() {
-    if (getModel() instanceof Vertex) {
-      final Vertex vertex = (Vertex) getModel();
+    if (getModel() instanceof final Vertex vertex) {
       final Graph parent = vertex.getParent();
 
       // we get the *output* dependencies of vertex
@@ -226,8 +224,7 @@ public class VertexEditPart extends AbstractGraphitiEditPart implements NodeEdit
    */
   @Override
   protected List<Edge> getModelTargetConnections() {
-    if (getModel() instanceof Vertex) {
-      final Vertex vertex = (Vertex) getModel();
+    if (getModel() instanceof final Vertex vertex) {
       final Graph parent = vertex.getParent();
 
       // we get the *input* dependencies of vertex
