@@ -52,7 +52,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.ConfigInputInterface;
-import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -185,27 +185,26 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       return;
     }
     final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-    if (bo == null) {
-      return;
-    }
-    if (bo instanceof final InterfaceActor iActor) {
-      final DataPort dp = iActor.getDataPort();
-      updateDataPortProperties(dp, txtExpression);
-    } else if (bo instanceof final MoldableParameter mp) {
-      if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
+
+    switch (bo) {
+      case null -> {
+        return;
+      }
+      case final InterfaceActor iActor -> updateDataPortProperties(iActor.getDataPort(), txtExpression);
+      case final MoldableParameter mp when !mp.getUserExpression().equals(this.txtExpression.getText()) -> {
         setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
       }
-    } else if (bo instanceof final Parameter param) {
-      if ((bo instanceof ConfigInputInterface)) {
-        this.lblValueObj.setText(
-            "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
-      }
-      if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
+      case final ConfigInputInterface cii -> this.lblValueObj.setText(
+          "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
+      case final Parameter param when !param.getValueExpression().getExpressionAsString()
+          .equals(this.txtExpression.getText()) -> {
         setNewExpression(param, this.txtExpression.getText());
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
       }
-    } // end Parameter
+      default -> {
+        /* Nothing */ }
+    }
 
     refresh();
   }
@@ -218,7 +217,6 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
   @Override
   public void refresh() {
     final PictogramElement pictogramElement = getSelectedPictogramElement();
-    String elementName = null;
     Expression elementValueExpression = null;
     final boolean expressionHasFocus = this.txtExpression.isFocusControl();
     final Point selection = this.txtExpression.getSelection();
@@ -234,15 +232,13 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       return;
     }
 
-    if (businessObject instanceof final Parameter param) {
-      elementName = param.getName();
-      elementValueExpression = ((Parameter) businessObject).getValueExpression();
-    } else if (businessObject instanceof final InterfaceActor iface) {
-      elementName = iface.getName();
-      elementValueExpression = iface.getDataPort().getPortRateExpression();
-    } else {
-      throw new UnsupportedOperationException();
+    switch (businessObject) {
+      case final Parameter param -> elementValueExpression = param.getValueExpression();
+      case final InterfaceActor iface -> elementValueExpression = iface.getDataPort().getPortRateExpression();
+      default -> throw new UnsupportedOperationException();
     }
+
+    final String elementName = ((Configurable) businessObject).getName();
 
     this.lblNameObj.setText(elementName == null ? " " : elementName);
     if (elementValueExpression == null) {
