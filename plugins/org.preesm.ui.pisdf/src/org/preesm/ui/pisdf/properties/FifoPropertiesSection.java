@@ -117,6 +117,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** TYPE ****/
     this.txtTypeObj = factory.createText(composite, "");
     data = new FormData();
+    data.height = TEXT_FIELD_HEIGHT;
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(25, 0);
     this.txtTypeObj.setLayoutData(data);
@@ -132,6 +133,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     /**** EXPRESSION ****/
     this.txtSourcePortExpression = factory.createText(composite, "");
     data = new FormData();
+    data.height = TEXT_FIELD_HEIGHT;
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.txtTypeObj);
@@ -142,7 +144,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtSourcePortExpression, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblType);
+    data.top = new FormAttachment(this.txtTypeObj);
     this.lblSourcePortExpression.setLayoutData(data);
 
     /**** VALUE ****/
@@ -157,13 +159,14 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.lblSourcePortValueObj, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblSourcePortExpression);
+    data.top = new FormAttachment(this.txtSourcePortExpression);
     this.lblSourcePortValue.setLayoutData(data);
 
     /**** TARGET PORT ****/
     /**** EXPRESION ****/
     this.txtTargetPortExpression = factory.createText(composite, "");
     data = new FormData();
+    data.height = TEXT_FIELD_HEIGHT;
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblSourcePortValueObj);
@@ -174,7 +177,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtTargetPortExpression, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblSourcePortValue);
+    data.top = new FormAttachment(this.lblSourcePortValueObj);
     this.lblTargetPortExpression.setLayoutData(data);
 
     /**** VALUE ****/
@@ -189,7 +192,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.lblTargetPortValueObj, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblTargetPortExpression);
+    data.top = new FormAttachment(this.txtTargetPortExpression);
     this.lblTargetPortValue.setLayoutData(data);
 
     /*** Type box listener ***/

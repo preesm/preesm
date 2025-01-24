@@ -131,6 +131,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     /**** EXPRESION ****/
     this.txtExpression = factory.createText(composite, "");
     data = new FormData();
+    data.height = TEXT_FIELD_HEIGHT;
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblNameObj);
@@ -142,7 +143,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtExpression, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblName);
+    data.top = new FormAttachment(this.lblNameObj);
     this.lblExpression.setLayoutData(data);
 
     /**** VALUE ****/
@@ -157,7 +158,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.lblValueObj, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblExpression);
+    data.top = new FormAttachment(this.txtExpression);
     this.lblValue.setLayoutData(data);
 
   }
