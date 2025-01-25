@@ -66,7 +66,7 @@ public class ClusterPartitioner {
   /**
    * Input graph.
    */
-  protected final PiGraph  graph;
+  protected PiGraph        graph;
   /**
    * Workflow scenario.
    */

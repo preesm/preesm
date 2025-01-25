@@ -144,14 +144,17 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
     // retrieve the obtained or existing single local cycle to be coarse
     final List<AbstractActor> graphNotLocalSingleLOOPs = new ClusteringPatternSeekerLoop(graph).singleNotLocalseek();
     if (!graphNotLocalSingleLOOPs.isEmpty()) {
+      // TODO allow PiSDFSubgraphBuilder to construct a subgraph composed with th global delay and 1 actor, there is
+      // currently dependencies issues since only local
+
       final PiGraph subGraph = new PiSDFSubgraphBuilder(graph, graphNotLocalSingleLOOPs, LOOP_PREFIX + clusterId)
-          .build();
-      // Add constraints of the cluster in the scenario.
+          .build(); // Add constraints of the cluster in the scenario.
       subGraph.setClusterValue(true);
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphNotLocalSingleLOOPs,
           this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
+
     }
 
     return this.graph;

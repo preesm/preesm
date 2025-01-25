@@ -360,6 +360,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       if (delay != null) {
         this.subGraph.addDelay(delay);
         if (delay.getLevel().equals(PersistenceLevel.NONE) && delay.hasGetterActor()) {
+
           for (final Port delayPort : delay.getActor().getAllPorts()) {
             doSwitch(delayPort);
           }

@@ -43,8 +43,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.commons.graph.Vertex;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -327,11 +329,27 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
       for (final AbstractActor a : topoOrderASAP.get(rank)) {
         processDirectSuccessors(a, rank, list, fullList);
+        processGetter(list, fullList, rank);
       }
+      if (list.isEmpty()) {
 
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "Issue computing Topological order, it will run in an infinite loop");
+      }
       rank++;
       topoOrderASAP.put(rank, list);
     }
+  }
+
+  private void processGetter(List<AbstractActor> list, List<AbstractActor> fullList, Long rank) {
+    final List<AbstractActor> filteredActors = fullList.stream().filter(x -> x.getDataInputPorts().size() == 1
+        && x.getDataOutputPorts().isEmpty() && x.getDirectPredecessors().get(0) instanceof DelayActor).toList();
+
+    filteredActors.forEach(actor -> {
+      list.add(actor);
+      fullList.remove(actor);
+    });
+
   }
 
   private void processDirectSuccessors(AbstractActor a, Long rank, List<AbstractActor> list,
@@ -339,7 +357,8 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     for (final Vertex aa : a.getDirectSuccessors()) {
       final Long rankMatch = rank + 1;
 
-      if (isValidSuccessor(aa, rankMatch) && (!list.contains(aa))) {
+      if (isValidSuccessor(aa, rankMatch) && (!list.contains(aa)) && !(aa instanceof DelayActor) && topoOrderASAP
+          .entrySet().stream().filter(y -> y.getKey() < rankMatch).noneMatch(y -> y.getValue().contains(aa))) {
         list.add((AbstractActor) aa);
         fullList.remove(aa);
       }
@@ -347,8 +366,9 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
   }
 
   private boolean isValidSuccessor(Vertex aa, Long rankMatch) {
-    return aa.getDirectPredecessors().stream().filter(x -> x instanceof Actor || x instanceof SpecialActor)
-        .allMatch(x -> isPredecessorInPreviousRanks(x, rankMatch));
+    return aa.getDirectPredecessors().stream()
+        .filter(x -> x instanceof Actor || x instanceof SpecialActor || x instanceof DelayActor)
+        .allMatch(x -> isPredecessorInPreviousRanks(x, rankMatch) || x == aa);
   }
 
   private boolean isPredecessorInPreviousRanks(Vertex x, Long rankMatch) {

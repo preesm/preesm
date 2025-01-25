@@ -466,9 +466,11 @@ public class CodegenScapeBuilder {
     final StringBuilder actorImplem = new StringBuilder();
 
     boolean isGPU = false;
-    for (final AbstractActor prout : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
-      if (prout.isOnGPU()) {
-        isGPU = true;
+    if (sc.getActor().getContainingPiGraph().getContainingPiGraph() != null) {
+      for (final AbstractActor prout : sc.getActor().getContainingPiGraph().getContainingPiGraph().getActors()) {
+        if (prout.isOnGPU()) {
+          isGPU = true;
+        }
       }
     }
 

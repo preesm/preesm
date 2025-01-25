@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -15,6 +16,7 @@ import org.preesm.algorithm.clustering.partitioner.ScapeMode;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -34,6 +36,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerLoop;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
@@ -86,6 +89,13 @@ public class ClusteringScape extends ClusterPartitioner {
   }
 
   public Scenario execute() {
+
+    // return the entire graph clustered
+    if (levelNumber == 0) {
+      topCluster();
+      scenarioUpdate();
+      return scenario;
+    }
 
     // brings RV down to the lowest level
     initHierarchy();
@@ -180,7 +190,9 @@ public class ClusteringScape extends ClusterPartitioner {
    * levels in the input graph. The goal is two reduce the data parallelism to the target.
    */
   private void executeMode0() {
+
     final Long fulcrumLevel = fulcrumLevelID - 1;
+
     for (final PiGraph g : hierarchicalLevelOrdered.get(fulcrumLevel)) {
       PiGraph newCluster = null;
       boolean isHasCluster = true;
@@ -204,6 +216,7 @@ public class ClusteringScape extends ClusterPartitioner {
         }
       } while (isHasCluster);
     }
+
   }
 
   /**
@@ -213,6 +226,7 @@ public class ClusteringScape extends ClusterPartitioner {
    *
    */
   private void executeMode1() {
+
     for (final PiGraph piGraph : hierarchicalLevelOrdered.get(fulcrumLevelID - 1)) {
       PiGraph newCluster = null;
       boolean isHasCluster = true;
@@ -273,16 +287,17 @@ public class ClusteringScape extends ClusterPartitioner {
    * children have been grouped.
    */
   private void topCluster() {
-    if (levelNumber > hierarchicalLevelOrdered.size()) {
-
-      final List<AbstractActor> graphTOPs = graph.getActors();
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
-      final Long mem = mem(subGraph);
-      final String clusterName = subGraph.getName();
-      cluster(subGraph, scenario, stackSize, memoryOptim);
-      clusterMemory.put(findCluster(clusterName), mem);
+    if (!graph.getAllDelays().isEmpty()) {
+      PreesmLogger.getLogger().log(Level.INFO, "Delay can't be clustered yet");
+      return;
     }
-
+    graph = PiSDFFlattener.flatten(graph, false);
+    final List<AbstractActor> graphTOPs = graph.getActors();
+    final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, graphTOPs, "coarse_" + clusterId).build();
+    final Long mem = mem(subGraph);
+    final String clusterName = subGraph.getName();
+    cluster(subGraph, scenario, stackSize, memoryOptim);
+    clusterMemory.put(findCluster(clusterName), mem);
   }
 
   /**
@@ -340,7 +355,7 @@ public class ClusteringScape extends ClusterPartitioner {
     final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size() - 1;
     if (fulcrumLevelID <= totalLevelNumber) {
 
-      for (Long i = totalLevelNumber; i >= fulcrumLevelID; i--) {
+      for (Long i = totalLevelNumber; i > fulcrumLevelID; i--) {
         for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
           final Long mem = mem(g);
           final String clusterName = g.getName();
@@ -439,12 +454,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataInputPort inputPort = PiMMUserFactory.instance.copy(in);
       oEmpty.getDataInputPorts().add(inputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (Boolean.TRUE.equals(memoryOptim)) {
-        functionArgument.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
-        in.setName(inputPort.getName().substring(inputPort.getName().indexOf('_') + 1));
-      } else {
-        functionArgument.setName(inputPort.getName());
-      }
+      functionArgument.setName(inputPort.getName());
       functionArgument.setType(in.getFifo().getType());
       functionArgument.setDirection(Direction.IN);
       functionPrototype.getArguments().add(functionArgument);
@@ -454,12 +464,7 @@ public class ClusteringScape extends ClusterPartitioner {
       final DataOutputPort outputPort = PiMMUserFactory.instance.copy(out);
       oEmpty.getDataOutputPorts().add(outputPort);
       final FunctionArgument functionArgument = PiMMUserFactory.instance.createFunctionArgument();
-      if (Boolean.TRUE.equals(memoryOptim)) {
-        functionArgument.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
-        out.setName(outputPort.getName().substring(outputPort.getName().indexOf('_') + 1));
-      } else {
-        functionArgument.setName(outputPort.getName());
-      }
+      functionArgument.setName(outputPort.getName());
       functionArgument.setType(out.getFifo().getType());
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);

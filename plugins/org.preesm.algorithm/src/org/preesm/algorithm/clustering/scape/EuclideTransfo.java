@@ -68,8 +68,8 @@ public class EuclideTransfo {
   public PiGraph execute() {
     if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
       // check if there is no global or local delay, and there is only single actor loop
-      if (graph.getDelays().stream().anyMatch(x -> x.getLevel() != PersistenceLevel.NONE) && !graph.getDelays().stream()
-          .allMatch(x -> x.getContainingFifo().getSource().equals(x.getContainingFifo().getTarget()))) {
+      if (graph.getAllDelays().stream().anyMatch(x -> x.getLevel() != PersistenceLevel.NONE) || !graph.getDelays()
+          .stream().allMatch(x -> x.getContainingFifo().getSource().equals(x.getContainingFifo().getTarget()))) {
         return graph;
       }
       final Long coreEquivalent = computeSingleNodeCoreEquivalent(scenario);
@@ -221,7 +221,7 @@ public class EuclideTransfo {
             .forEach(x -> x.setIncomingFifo(foutn));
 
         index++;
-      } else {
+      } else if (in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         // copy delay
         final Fifo fdin = PiMMUserFactory.instance.createFifo();
         final String type = in.getFifo().getType();

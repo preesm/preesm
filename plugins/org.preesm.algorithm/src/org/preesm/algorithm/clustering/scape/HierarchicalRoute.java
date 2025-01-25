@@ -60,16 +60,20 @@ public class HierarchicalRoute {
 
     // TODO Debug this function
 
-    final Long totalLevelNumber = (long) (hierarchicalLevelOrdered.size() - 1);
+    final Long totalLevelNumber = (long) hierarchicalLevelOrdered.size();
 
     if (scapeMode == ScapeMode.DATA || scapeMode == ScapeMode.DATA_PIPELINE) {
       final String message = "Level configuration: 0-> full clustering, " + (totalLevelNumber + 1)
           + "-> nothing, between -> cluster partially";
       PreesmLogger.getLogger().log(Level.INFO, () -> message);
+      // check if the value is in between 0 and totalLevelNumber +1
+      if (levelNumber > totalLevelNumber + 1) {
+        return totalLevelNumber + 1;
+      }
       return (long) levelNumber;
     }
 
-    Long count = totalLevelNumber;
+    Long count = totalLevelNumber - 1;
     // detect the highest delay
     for (final Fifo fd : graph.getFifosWithDelay()) {
       // detect loop --> no pipeline and contains hierarchical graph
