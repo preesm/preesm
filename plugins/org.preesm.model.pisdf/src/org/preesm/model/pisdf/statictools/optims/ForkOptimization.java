@@ -46,7 +46,6 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * @author farresti
@@ -87,7 +86,8 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
       if (targetActor instanceof ForkActor
           && dop.getExpression().evaluateAsLong() == targetPort.getExpression().evaluateAsLong()) {
         fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
-        PiMMHelper.removeActorAndFifo(graph, outgoingFifo, targetActor);
+        graph.removeActorAndDependencies(targetActor);
+        graph.removeFifo(outgoingFifo);
       }
     }
 

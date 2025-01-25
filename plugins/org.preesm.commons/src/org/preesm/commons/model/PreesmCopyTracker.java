@@ -88,9 +88,8 @@ public class PreesmCopyTracker<T extends Notifier> extends PreesmAdapter {
     final V source = getSource(copy);
     if (source == null) {
       return copy;
-    } else {
-      return getOriginalSource(source);
     }
+    return getOriginalSource(source);
   }
 
   /**

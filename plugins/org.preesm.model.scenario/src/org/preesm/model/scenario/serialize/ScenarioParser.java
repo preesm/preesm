@@ -173,11 +173,8 @@ public class ScenarioParser {
               // deprecated
             }
             case ScenarioConstants.FLAGS -> parseFlags(elt);
-            default -> {
-              throw new PreesmRuntimeException(
-                  "Unrecognized tag name in scenario: " + type + " in " + file.getFullPath().toString());
-              // empty
-            }
+            default -> throw new PreesmRuntimeException(
+                "Unrecognized tag name in scenario: " + type + " in " + file.getFullPath().toString());
           }
         }
 

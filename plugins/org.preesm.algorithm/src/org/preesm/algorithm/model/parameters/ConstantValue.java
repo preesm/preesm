@@ -58,7 +58,7 @@ public class ConstantValue implements Value {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.parameters.Value#getValue()
+   * @see org.preesm.algorithm.model.parameters.Value#getValue()
    */
   @Override
   public String getValue() {
@@ -68,7 +68,7 @@ public class ConstantValue implements Value {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.parameters.Value#intValue()
+   * @see org.preesm.algorithm.model.parameters.Value#intValue()
    */
   @Override
   public long longValue() {
@@ -79,7 +79,7 @@ public class ConstantValue implements Value {
    * (non-Javadoc)
    *
    * @see
-   * org.ietr.dftools.algorithm.model.parameters.Value#setExpressionSolver(org.ietr.dftools.algorithm.model.parameters.
+   * org.preesm.algorithm.model.parameters.Value#setExpressionSolver(org.preesm.algorithm.model.parameters.
    * IExpressionSolver)
    */
   @Override
@@ -90,7 +90,7 @@ public class ConstantValue implements Value {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.parameters.Value#setValue(java.lang.String)
+   * @see org.preesm.algorithm.model.parameters.Value#setValue(java.lang.String)
    */
   @Override
   public void setValue(final String value) {

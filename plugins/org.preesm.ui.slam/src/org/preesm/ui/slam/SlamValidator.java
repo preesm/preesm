@@ -44,11 +44,11 @@ import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.runtime.CoreException;
-import org.ietr.dftools.graphiti.model.Edge;
-import org.ietr.dftools.graphiti.model.Graph;
-import org.ietr.dftools.graphiti.model.IValidator;
-import org.ietr.dftools.graphiti.model.Vertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.graphiti.model.Edge;
+import org.preesm.graphiti.model.Graph;
+import org.preesm.graphiti.model.IValidator;
+import org.preesm.graphiti.model.Vertex;
 
 /**
  * Validating the System-Level Architecture Model.

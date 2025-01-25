@@ -55,8 +55,8 @@ public class PreesmAlgorithmTreeLabelProvider extends LabelProvider {
   @Override
   public String getText(final Object element) {
     String name = "";
-    if (element instanceof AbstractActor) {
-      name = ((AbstractActor) element).getName();
+    if (element instanceof final AbstractActor abstractActor) {
+      name = abstractActor.getName();
     }
 
     return name;

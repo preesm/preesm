@@ -67,6 +67,8 @@ public class TasksTest {
 
     params.add(new Object[] { "Tasks.workflow", "1core.scenario", "org.ietr.preesm.sobel" });
 
+    params.add(new Object[] { "TcpCodegen.workflow", "4core.scenario", "org.ietr.preesm.sobel" });
+
     params.add(new Object[] { "CodegenEnergy.workflow", "4core.scenario", "org.ietr.preesm.sobel" });
 
     params.add(new Object[] { "CodegenAutoDelay.workflow", "4coreX86.scenario", "org.ietr.preesm.stabilization" });

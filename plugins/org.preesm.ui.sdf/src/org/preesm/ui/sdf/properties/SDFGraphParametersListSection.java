@@ -38,7 +38,7 @@ package org.preesm.ui.sdf.properties;
 
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
-import org.ietr.dftools.graphiti.ui.properties.ListSection;
+import org.preesm.graphiti.ui.properties.ListSection;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -53,7 +53,7 @@ public class SDFGraphParametersListSection extends ListSection {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.graphiti.ui.properties.ListSection#createControls(org.eclipse.swt.widgets.Composite,
+   * @see org.preesm.graphiti.ui.properties.ListSection#createControls(org.eclipse.swt.widgets.Composite,
    * org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage)
    */
   @Override

@@ -6,10 +6,10 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _jBIQ8AIPEem5ROe3sIoWRg
-Runtime-Version: 2.5.1.M3
-Save-Time: 2/10/21 12:57 PM
+Runtime-Version: 2.5.5.202409031853
+Save-Time: 1/17/25, 5:11 PM
 Testcase-Type: ecl
-Verifications: _0QDPgAIZEem_19ziQctLSg
+Verifications: _PdXtIM5qEe-OJIWOcgykQA
 
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac
 Content-Type: text/ecl
@@ -344,8 +344,35 @@ with [get-view Properties | get-tree] {
     apply-cell-edit -deactivate
 }
 get-editor "4CoresX86.slam" | get-diagram -index 1 | key-type "M1+s"
-get-view Problems | click
-get-editor "4CoresX86.slam" | get-diagram -index 1 | mouse-hover 108 376 -height 380 -width 624
-get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Archi/4CoresX86.slam" | get-menu
-    -path "Open With/Text Editor" | click
+//get-view Properties | get-tree | key-type "M1+s"
+//get-view Properties | get-tree | key-type "M1+z"
+//get-view Properties | get-tree | key-type "M1+M2+z"
+with [get-editor "4CoresX86.slam"] {
+    with [get-palette | get-palette-entry CPU] {
+        mouse-move 16 10 button1 -height 24 -width 177
+        mouse-press 16 10 button1 -height 24 -width 177
+        mouse-release 16 10 button1 "" -height 24 -width 177
+    }
+    with [get-diagram -index 1] {
+        mouse-move 513 71 button1 -height 387 -width 635
+        mouse-press 513 71 button1 -height 387 -width 635
+        mouse-release 513 71 button1 "" -height 387 -width 635
+    }
+}
+with [get-window "New vertex"] {
+    get-editbox -after [get-label "Please enter a vertex identifier"] | set-text core
+    get-button OK | click
+}
+with [get-editor "4CoresX86.slam" | get-diagram -index 1] {
+    key-type "M1+c"
+    key-type "M1+x"
+    key-type "M1+v"
+}
+get-window "New vertex" | get-button OK | click -metaKeys CTRL
+with [get-editor "4CoresX86.slam" | get-diagram -index 1] {
+    key-type "M1+z"
+    key-type "M1+M2+z"
+    key-type "M1+z"
+    key-type "M1+s"
+}
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

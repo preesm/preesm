@@ -52,7 +52,6 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 
 /**
@@ -93,7 +92,9 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       if (sourceActor instanceof JoinActor
           && dip.getExpression().evaluateAsLong() == sourcePort.getExpression().evaluateAsLong()) {
         fillRemoveAndReplace(actor.getDataInputPorts(), sourceActor.getDataInputPorts(), dip);
-        PiMMHelper.removeActorAndFifo(graph, incomingFifo, sourceActor);
+        graph.removeActorAndDependencies(sourceActor);
+        graph.removeFifo(incomingFifo);
+
       }
     }
 
@@ -143,8 +144,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       final PiMMSRVerticesLinker srLinker = new PiMMSRVerticesLinker();
       srLinker.execute(sourceSet, sinkSet);
       fifoToRemove.forEach(graph::removeFifo);
-      PiMMHelper.removeActorAndDependencies(graph, actor);
-      PiMMHelper.removeActorAndDependencies(graph, target);
+      graph.removeActorAndDependencies(actor);
+      graph.removeActorAndDependencies(target);
       graph.removeFifo(fifo);
       return true;
     }

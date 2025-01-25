@@ -70,9 +70,9 @@ public class PreesmMessages {
   public static String getString(final String key, final String... variables) {
     try {
       String message = PreesmMessages.RESOURCE_BUNDLE.getString(key);
-      for (final String var : variables) {
-        if (var != null) {
-          message = message.replaceFirst("%VAR%", var);
+      for (final String str : variables) {
+        if (str != null) {
+          message = message.replaceFirst("%VAR%", str);
         }
       }
       return message;

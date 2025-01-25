@@ -39,7 +39,7 @@ package org.preesm.ui.sdf.properties.filters;
 
 import org.eclipse.gef.EditPart;
 import org.eclipse.jface.viewers.IFilter;
-import org.ietr.dftools.graphiti.model.Graph;
+import org.preesm.graphiti.model.Graph;
 
 // TODO: Auto-generated Javadoc
 /**

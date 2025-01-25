@@ -160,7 +160,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#clone()
+   * @see org.preesm.algorithm.model.AbstractGraph#clone()
    */
   @Override
   public DirectedAcyclicGraph copy() {
@@ -170,7 +170,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#validateModel(java.util.logging.Logger)
+   * @see org.preesm.algorithm.model.AbstractGraph#validateModel(java.util.logging.Logger)
    */
   @Override
   public boolean validateModel() {
@@ -180,7 +180,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractGraph#getVertexFactory()
+   * @see org.preesm.algorithm.model.AbstractGraph#getVertexFactory()
    */
   @Override
   @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -329,7 +329,7 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   * @see org.preesm.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {

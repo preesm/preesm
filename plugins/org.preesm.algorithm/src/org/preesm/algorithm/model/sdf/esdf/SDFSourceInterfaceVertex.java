@@ -58,7 +58,7 @@ public class SDFSourceInterfaceVertex extends SDFInterfaceVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.SDFInterfaceVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.SDFInterfaceVertex#clone()
    */
   @Override
   public SDFSourceInterfaceVertex copy() {

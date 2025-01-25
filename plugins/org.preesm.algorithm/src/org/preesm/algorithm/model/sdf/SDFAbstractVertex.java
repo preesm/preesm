@@ -111,7 +111,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#addInterface(org.ietr.dftools.algorithm.model.IInterface)
+   * @see org.preesm.algorithm.model.AbstractVertex#addInterface(org.preesm.algorithm.model.IInterface)
    */
   @Override
   public boolean addInterface(final IInterface port) {
@@ -444,7 +444,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   * @see org.preesm.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {

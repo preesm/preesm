@@ -4,4 +4,4 @@ Bundle-Name: Product
 Bundle-SymbolicName: org.preesm.product
 Bundle-Version: 3.21.0.qualifier
 Automatic-Module-Name: org.preesm.product
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21

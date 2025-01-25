@@ -597,7 +597,6 @@ Version 1.0 dated 2006-09-05.
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.xtext.xbase.lib"/>
       <feature id="org.eclipse.graphiti.feature"/>
-      <feature id="org.ietr.graphiti.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient5.feature"/>
       <feature id="org.preesm.feature" installMode="root"/>
@@ -612,10 +611,6 @@ Version 1.0 dated 2006-09-05.
       <plugin id="org.eclipse.equinox.p2.reconciler.dropins" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
    </configurations>
-
-   <repositories>
-      <repository location="https://preesm.insa-rennes.fr/repo/" enabled="true" />
-   </repositories>
 
    <preferencesInfo>
       <targetfile overwrite="false"/>

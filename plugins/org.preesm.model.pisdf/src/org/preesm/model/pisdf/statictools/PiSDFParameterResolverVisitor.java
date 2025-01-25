@@ -159,8 +159,7 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     } else {
       // regular case
       final ISetter setter = incomingDependency.getSetter();
-      // Setter of an incoming dependency into a ConfigInputInterface must be
-      // a parameter
+      // Setter of an incoming dependency into a ConfigInputInterface must be a parameter
       if (!(setter instanceof Parameter)) {
         throw new UnsupportedOperationException(
             "In a static PiMM graph, setter of an incomming dependency must be a parameter.");
@@ -209,9 +208,8 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     // Map that associate to every parameter of an actor the corresponding value in the graph
     final Map<String, Double> portValues = new LinkedHashMap<>();
     // Data interface actors do not have parameter ports, thus expression is directly graph parameter
-    for (final Parameter p : actor.getInputParameters()) {
-      portValues.put(p.getName(), this.parameterValues.get(p));
-    }
+    actor.getInputParameters().forEach(p -> portValues.put(p.getName(), this.parameterValues.get(p)));
+
     resolveActorPorts(actor, portValues);
     return true;
   }
@@ -224,23 +222,18 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Resolve input interfaces
-    for (final ConfigInputInterface p : graph.getConfigInputInterfaces()) {
-      doSwitch(p);
-    }
+    graph.getConfigInputInterfaces().forEach(cii -> doSwitch(cii));
+
     // Resolve locally static parameters (neither ConfigInputInterface nor ConfigOutputInterface)
     // Thus, ConfigOutputInterface are never evaluated, but we already restrict this analysis to
     // locally static graphs, which must not depend on ConfigOutputInterface/Port by definition.
-    for (final Parameter p : graph.getOnlyParameters()) {
-      doSwitch(p);
-    }
+    graph.getOnlyParameters().forEach(p -> doSwitch(p));
 
     // Resolve graph period
     graph.setExpression(graph.getPeriod().evaluateAsLong());
 
     // We can now resolve data port rates for this graph
-    for (final AbstractActor actor : graph.getOnlyActors()) {
-      doSwitch(actor);
-    }
+    graph.getOnlyActors().forEach(aa -> doSwitch(aa));
 
     // Deals with data ports of the graph
     // Map that associate to every parameter of an actor the corresponding value in the graph

@@ -73,17 +73,25 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-export", name = "PiSDF Exporter", category = "Graph Exporters",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = {
-        @Parameter(name = "path", values = { @Value(name = "/Algo/generated/pisdf/", effect = "default path") }),
-        @Parameter(name = "hierarchical",
+        @Parameter(name = PiSDFExporterTask.PARAM_PATH,
+            values = { @Value(name = PiSDFExporterTask.PARAM_PATH_DEFAULT, effect = "default path") }),
+        @Parameter(name = PiSDFExporterTask.PARAM_HIER,
             values = { @Value(name = "true/false",
                 effect = "Export the whole hierarchy (default: true). When set to true, will export all the "
                     + "hierarchy in the folder given by 'path', replacing refinement paths. Note: exporting "
                     + "hierarchical graph with this option set to false can cause the  the consistency check "
                     + "fail if the children graphs do not exist.") }) })
+
 public class PiSDFExporterTask extends AbstractTaskImplementation {
+
+  public static final String PARAM_PATH         = "path";
+  public static final String PARAM_PATH_DEFAULT = "/Algo/generated/pisdf/";
+
+  public static final String PARAM_HIER         = "hierarchical";
+  public static final String PARAM_HIER_DEFAULT = "true";
 
   /**
    */
@@ -107,8 +115,8 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.preesm.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.preesm.workflow.elements.Workflow)
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -116,15 +124,15 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
 
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    final String hierarchicalParameter = parameters.get("hierarchical");
-    final String pathParameter = parameters.get("path");
+    final String hierarchicalParameter = parameters.get(PARAM_HIER);
+    final String pathParameter = parameters.get(PARAM_PATH);
 
     // create a copy of the input graph so that subgraph disconnector does not impact other tasks
     final PiGraph graphCopy = PiMMUserFactory.instance.copyWithHistory(graph);
 
     // Creates the output file now
     final String sXmlPath = WorkspaceUtils.getAbsolutePath(pathParameter, workflow.getProjectName());
-    IPath xmlPath = new Path(sXmlPath);
+    final IPath xmlPath = new Path(sXmlPath);
     // Get a complete valid path with all folders existing
     try {
       if (xmlPath.getFileExtension() != null) {
@@ -165,7 +173,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
       // the reconnection is useless since we copied the graph first
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Could not open outputstream file " + string);
     }
   }
@@ -173,21 +181,21 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   * @see org.preesm.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = new LinkedHashMap<>();
 
-    parameters.put("path", "/Algo/generated/pisdf/");
-    parameters.put("hierarchical", "true");
+    parameters.put(PARAM_PATH, PARAM_PATH_DEFAULT);
+    parameters.put(PARAM_HIER, PARAM_HIER_DEFAULT);
     return parameters;
   }
 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @see org.preesm.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {

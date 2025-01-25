@@ -48,7 +48,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  *
@@ -70,7 +69,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
   protected void fillRemoveAndReplace(final List<T> oldDataPorts, final List<T> newDataPorts, final T port) {
     final int index = oldDataPorts.indexOf(port) + this.portOffset;
     this.portOffset += newDataPorts.size() - 1;
-    // Adding short suffixe
+    // Adding short suffix
     newDataPorts.forEach(d -> d.setName(d.getName() + "_" + Integer.toString(this.portOffset)));
     this.dataPortsToRemove.add(port);
     this.dataPortsToReplace.put(index, newDataPorts);
@@ -123,7 +122,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
         } else {
           return false;
         }
-        PiMMHelper.removeActorAndDependencies(graph, actor);
+        graph.removeActorAndDependencies(actor);
         return true;
       }
     }

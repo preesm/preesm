@@ -103,8 +103,7 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
   protected void deleteConnectedConnection(final Anchor cba) {
     // First, the list of connections is scanned in order to fill a map with
     // the deleteFeatures and their context.
-    Map<IDeleteFeature, IDeleteContext> delFeatures;
-    delFeatures = new LinkedHashMap<>();
+    Map<IDeleteFeature, IDeleteContext> delFeatures = new LinkedHashMap<>();
     fillDeleteMap(delFeatures, cba.getOutgoingConnections());
     fillDeleteMap(delFeatures, cba.getIncomingConnections());
 
@@ -132,16 +131,23 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
     // Scan the anchors
     final EList<Anchor> anchors = cs.getAnchors();
     for (final Anchor anchor : anchors) {
-      // hack ... should be the same behavior for all anchor type
-      if (anchor instanceof ChopboxAnchor) {
-        // case Parameter or Actor
-        deleteConnectedConnection(anchor);
-      } else if (anchor instanceof BoxRelativeAnchor) {
-        // case ConfigInputInterface
-        deleteConnectedConnection(anchor);
-      } else {
-        throw new UnsupportedOperationException("Unsupported anchor type");
+
+      switch (anchor) {
+        case final ChopboxAnchor cba -> deleteConnectedConnection(anchor);
+        case final BoxRelativeAnchor bra -> deleteConnectedConnection(anchor);
+        default -> throw new UnsupportedOperationException("Unsupported anchor type");
       }
+
+      // // hack ... should be the same behavior for all anchor type
+      // if (anchor instanceof ChopboxAnchor) {
+      // // case Parameter or Actor
+      // deleteConnectedConnection(anchor);
+      // } else if (anchor instanceof BoxRelativeAnchor) {
+      // // case ConfigInputInterface
+      // deleteConnectedConnection(anchor);
+      // } else {
+      // throw new UnsupportedOperationException("Unsupported anchor type");
+      // }
     }
   }
 

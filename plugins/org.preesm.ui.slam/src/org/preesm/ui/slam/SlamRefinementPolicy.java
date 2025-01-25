@@ -39,9 +39,9 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.ietr.dftools.graphiti.model.DefaultRefinementPolicy;
-import org.ietr.dftools.graphiti.model.Vertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.graphiti.model.DefaultRefinementPolicy;
+import org.preesm.graphiti.model.Vertex;
 import org.preesm.ui.utils.FileUtils;
 
 /**

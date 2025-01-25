@@ -91,7 +91,7 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex#getOutgoingConnections()
+   * @see org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex#getOutgoingConnections()
    */
   @SuppressWarnings("unchecked")
   @Override
@@ -102,7 +102,7 @@ public class SDFRoundBufferVertex extends SDFBroadcastVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.esdf.SDFBroadcastVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.esdf.SDFBroadcastVertex#clone()
    */
   @Override
   public SDFRoundBufferVertex copy() {

@@ -5,7 +5,7 @@ Automatic-Module-Name: org.preesm.framework.tests
 Bundle-SymbolicName: org.preesm.framework.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.junit;bundle-version="4.13.2",
  org.preesm.cli,
  org.preesm.workflow,

@@ -480,7 +480,7 @@ public class PiParser {
 
       String sourcePortName = edgeElt.getAttribute(PiIdentifiers.DEPENDENCY_SOURCE_PORT);
       sourcePortName = (sourcePortName.isEmpty()) ? null : sourcePortName;
-      final ConfigOutputPort oPort = (ConfigOutputPort) ((ExecutableActor) source).lookupPort(sourcePortName);
+      final ConfigOutputPort oPort = (ConfigOutputPort) source.lookupPort(sourcePortName);
       if (oPort == null) {
         throw new PreesmRuntimeException(
             "Edge source port " + sourcePortName + " does not exist for actor" + setterName);

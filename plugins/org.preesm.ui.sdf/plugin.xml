@@ -44,7 +44,7 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertySections">
       <propertySections
-            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+            contributorId="org.preesm.graphiti.ui.properties.contributor">
          <propertySection
                class="org.preesm.ui.sdf.properties.SDFGraphParametersListSection"
                filter="org.preesm.ui.sdf.properties.filters.SDFGraphFilter"
@@ -71,8 +71,8 @@
    <extension
          point="org.eclipse.ui.editors">
       <editor
-            class="org.ietr.dftools.graphiti.ui.editors.GraphEditor"
-            contributorClass="org.ietr.dftools.graphiti.ui.editors.GraphActionBarContributor"
+            class="org.preesm.graphiti.ui.editors.GraphEditor"
+            contributorClass="org.preesm.graphiti.ui.editors.GraphActionBarContributor"
             default="true"
             extensions="graphml, design, component"
             icon="resources/icons/graphiti.gif"
@@ -85,19 +85,19 @@
    <extension
          point="org.eclipse.ui.views.properties.tabbed.propertyTabs">
       <propertyTabs
-            contributorId="org.ietr.dftools.graphiti.ui.properties.contributor">
+            contributorId="org.preesm.graphiti.ui.properties.contributor">
          <propertyTab
-               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               category="org.preesm.graphiti.ui.properties.category.graph"
                id="org.preesm.ui.sdf.properties.tab.sdf.graph.parameters"
                label="Graph Parameters">
          </propertyTab>
          <propertyTab
-               category="org.ietr.dftools.graphiti.ui.properties.category.graph"
+               category="org.preesm.graphiti.ui.properties.category.graph"
                id="org.preesm.ui.sdf.properties.tab.sdf.graph.variables"
                label="Graph Variable Declarations">
          </propertyTab>
          <propertyTab
-               category="org.ietr.dftools.graphiti.ui.properties.category.vertex"
+               category="org.preesm.graphiti.ui.properties.category.vertex"
                id="org.preesm.ui.sdf.properties.tab.sdf.vertex.arguments"
                label="Instance Arguments">
          </propertyTab>

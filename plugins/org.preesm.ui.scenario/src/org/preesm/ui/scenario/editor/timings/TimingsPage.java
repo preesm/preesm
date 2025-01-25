@@ -379,7 +379,7 @@ public class TimingsPage extends ScenarioPage {
     newTableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_FILL);
     final EList<Component> components = scenario.getDesign().getComponents();
-    gd.heightHint = Math.max(50, Math.min(200, components.size() * 20 + 30));
+    gd.heightHint = Math.clamp((long) components.size() * 20 + 30, 50, 200);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = true;
     tablecps.setLayoutData(gd);

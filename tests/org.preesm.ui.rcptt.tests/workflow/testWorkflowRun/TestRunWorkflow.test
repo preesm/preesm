@@ -6,8 +6,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _FZ2j4Ob4EeeMlf4lWoX8aw
-Runtime-Version: 2.2.0.201706152316
-Save-Time: 12/22/17 10:20 AM
+Runtime-Version: 2.5.5.202409031853
+Save-Time: 1/14/25, 3:22 PM
 Testcase-Type: ecl
 Verifications: _VGp-gOb5EeeMlf4lWoX8aw
 
@@ -23,5 +23,22 @@ with [get-view "Project Explorer" | get-tree] {
 with [get-window "Select an existing scenario file."] {
     get-tree | select "org.ietr.preesm.sobel/Scenarios/01-display_1core.scenario"
     get-button OK | click
+}
+get-view "Project Explorer" | get-tree | select "org.ietr.preesm.sobel/Workflows/Codegen.workflow" | double-click
+
+with [get-editor "Codegen.workflow" | get-diagram -index 1] {
+    mouse-move 414 120 button3 -height 387 -width 664
+    mouse-press 414 120 button3 -height 387 -width 664
+    mouse-release 414 120 button3 -height 387 -width 664
+    get-menu -path "Run Workflow" | click
+}
+with [get-editor "Codegen.workflow" | get-diagram -index 1] {
+    mouse-move 405 99 button3 -height 387 -width 664
+    mouse-press 334 94 button3 -height 387 -width 664
+    get-menu -path "Run Workflow" | click -metaKeys ""
+}
+with [get-window "Select an existing scenario file."] {
+    get-tree | select "org.ietr.preesm.sobel/Scenarios/01-display_1core.scenario"
+    get-button OK | click -metaKeys ""
 }
 ------=_.content-0a7243a0-75d3-3d5f-9791-539de0e5b7ac--

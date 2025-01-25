@@ -78,8 +78,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.scenario.task", name = "scenario",
 
-    outputs = { @Port(name = "scenario", type = Scenario.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "PiMM", type = PiGraph.class) }
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) }
 
 )
 public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplementation {
@@ -184,7 +185,7 @@ public class AlgorithmAndArchitectureScenarioNode extends AbstractScenarioImplem
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @see org.preesm.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {

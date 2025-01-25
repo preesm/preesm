@@ -527,7 +527,7 @@ public class ToHSDFVisitor implements IGraphVisitor<SDFGraph, SDFAbstractVertex,
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.preesm.algorithm.model.visitors.IGraphVisitor#visit(org.preesm.algorithm.model.AbstractGraph)
    */
   @Override
   public void visit(final SDFGraph sdf) {

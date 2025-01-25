@@ -61,7 +61,7 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractGraph)
+   * @see org.preesm.algorithm.model.visitors.IGraphVisitor#visit(org.preesm.algorithm.model.AbstractGraph)
    */
   @Override
   public void visit(final SDFGraph sdf) {
@@ -74,7 +74,7 @@ public class ConsistencyChecker implements IGraphVisitor<SDFGraph, SDFAbstractVe
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.visitors.IGraphVisitor#visit(org.ietr.dftools.algorithm.model.AbstractVertex)
+   * @see org.preesm.algorithm.model.visitors.IGraphVisitor#visit(org.preesm.algorithm.model.AbstractVertex)
    */
   @Override
   public void visit(final SDFAbstractVertex sdfVertex) {

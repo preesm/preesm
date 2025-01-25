@@ -135,21 +135,15 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
     if (protoPort != null) {
 
       protoPort.getAllPorts().forEach(port -> {
-        AbstractAddActorPortFeature addFeature;
 
-        // Could be replaced with instanceof pattern matching in a switch statement once it comes out of preview
         // Instance of ConfigOutputPort needs to be check BEFORE DataOutputPort because the former extends the latter
-        if (port instanceof ConfigInputPort) {
-          addFeature = new AddConfigInputPortFeature(getFeatureProvider());
-        } else if (port instanceof ConfigOutputPort) {
-          addFeature = new AddConfigOutputPortFeature(getFeatureProvider());
-        } else if (port instanceof DataInputPort) {
-          addFeature = new AddDataInputPortFeature(getFeatureProvider());
-        } else if (port instanceof DataOutputPort) {
-          addFeature = new AddDataOutputPortFeature(getFeatureProvider());
-        } else {
-          throw new PreesmRuntimeException("Unrecognized port type");
-        }
+        final AbstractAddActorPortFeature addFeature = switch (port) {
+          case final ConfigInputPort cip -> new AddConfigInputPortFeature(getFeatureProvider());
+          case final ConfigOutputPort cop -> new AddConfigOutputPortFeature(getFeatureProvider());
+          case final DataInputPort dip -> new AddDataInputPortFeature(getFeatureProvider());
+          case final DataOutputPort dop -> new AddDataOutputPortFeature(getFeatureProvider());
+          default -> throw new PreesmRuntimeException("Unrecognized port type");
+        };
 
         final ICustomContext portContext = new CustomContext(pictElements);
         addFeature.setGivenName(port.getName());

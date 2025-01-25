@@ -139,8 +139,8 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
-   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.ietr.dftools.workflow.elements.Workflow)
+   * @see org.preesm.workflow.implement.AbstractTaskImplementation#execute(java.util.Map, java.util.Map,
+   * org.eclipse.core.runtime.IProgressMonitor, java.lang.String, org.preesm.workflow.elements.Workflow)
    */
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -275,7 +275,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
+   * @see org.preesm.workflow.implement.AbstractTaskImplementation#getDefaultParameters()
    */
   @Override
   public Map<String, String> getDefaultParameters() {
@@ -286,7 +286,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
+   * @see org.preesm.workflow.implement.AbstractWorkflowNodeImplementation#monitorMessage()
    */
   @Override
   public String monitorMessage() {

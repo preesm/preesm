@@ -174,7 +174,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     PreesmLogger.getLogger().log(Level.FINE, " >>   - resolve params");
-    PiMMHelper.resolveAllParameters(graphCopy);
+    graphCopy.resolveAllParameters();
     // 2. Compute BRV following the chosen method
     PreesmLogger.getLogger().log(Level.FINE, " >>   - compute brv");
     final Map<AbstractVertex, Long> brvOriginal = PiBRV.compute(graphCopy, method);
@@ -421,7 +421,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseInterfaceActor(final InterfaceActor actor) {
-    if (PiMMHelper.isVertexAtTopLevel(actor)) {
+    if (actor.isAtTopLevel()) {
       return caseNonExecutableActor(actor);
     }
     return true;

@@ -53,7 +53,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -66,9 +65,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-export.parameters", name = "Parameters exporter", category = "Graph Exporters",
     description = "Export parameters of the graph as C header with define. "
         + "Exports only static parameters. Name of file is: <graphName>_preesm_params.h",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     parameters = { @Parameter(name = ParametersExporterTask.PARAM_PATH, values = {
         @Value(name = ParametersExporterTask.DEFAULT_PATH, effect = "default path, relative to the project") }) })
+
 public class ParametersExporterTask extends AbstractTaskImplementation {
 
   public static final String DEFAULT_PATH = "/Code";
@@ -103,7 +103,7 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     // valuation)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. we resolve all parameters since subgraph parameters cannot be evaluated properly otherwise
-    PiMMHelper.resolveAllParameters(graphCopy);
+    graphCopy.resolveAllParameters();
     // 2. we export the resolved parameters
     final String params = getParamsHeader(graphCopy);
 

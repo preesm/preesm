@@ -58,7 +58,7 @@ public class SDFEndVertex extends SDFInitVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.esdf.SDFInitVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.esdf.SDFInitVertex#clone()
    */
   @Override
   public SDFEndVertex copy() {

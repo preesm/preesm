@@ -306,23 +306,33 @@ public class PFastAlgorithm {
     final ConcurrentSkipListSet<MapperDAG> mappedDAGSet = new ConcurrentSkipListSet<>(
         new FinalTimeComparator(abcParams, dagfinal, archi, scenario));
 
+    if (nbCores > subSet.size()) {
+      PreesmLogger.getLogger().info(() -> "Only up to " + subSet.size() + " cores are going to be used.");
+    }
+
     // step 5/7/8
     int totalsearchcount = 0;
+    final ExecutorService es = Executors.newFixedThreadPool(nbCores);
+
     while (totalsearchcount < pFastParams.getFastNumber()) {
 
       // step 11
 
       // create ExecutorService to manage threads
-      final Iterator<Set<String>> subiter = subSet.iterator();
+      final Iterator<Set<String>> subIter = subSet.iterator();
       final Set<FutureTask<MapperDAG>> futureTasks = new LinkedHashSet<>();
-      final ExecutorService es = Executors.newFixedThreadPool(nbCores);
 
       // step 6
       for (i = k; i < (nbCores + k); i++) {
+
+        if (!subIter.hasNext()) {
+          break;
+        }
+
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subiter.next(), true, abcParams, fastParams,
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subIter.next(), true, abcParams, fastParams,
             scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
@@ -349,16 +359,16 @@ public class PFastAlgorithm {
           dag = mappedDAGSet.first().copy();
         }
 
-        es.shutdown();
-
       } catch (final InterruptedException | ExecutionException e) {
         Thread.currentThread().interrupt();
+        es.shutdown();
         throw new PreesmRuntimeException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;
 
     }
+    es.shutdown();
 
     if (population) {
       final Iterator<MapperDAG> ite = mappedDAGSet.iterator();
@@ -369,6 +379,8 @@ public class PFastAlgorithm {
       }
 
     }
+
+    PreesmLogger.getLogger().info("Total search count = " + totalsearchcount);
 
     this.bestTotalOrder = mappedDAGSet.first().getPropertyBean().getValue("bestTotalOrder");
     dagfinal = mappedDAGSet.first().copy();

@@ -55,6 +55,9 @@ public class DataPortPropertiesUpdater extends GFPropertySection {
   protected static final Color BG_WARNING_YELLOW = new Color(null, 240, 240, 150);
   protected static final Color BG_ERROR_RED      = new Color(null, 240, 150, 150);
 
+  /** The text field height. */
+  protected static final int TEXT_FIELD_HEIGHT = 20;
+
   /**
    * Update data port properties.
    *

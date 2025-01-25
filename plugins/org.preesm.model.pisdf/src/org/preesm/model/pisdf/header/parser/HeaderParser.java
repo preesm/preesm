@@ -159,45 +159,54 @@ public class HeaderParser {
   private static void parseCXXHeaderRecAux(final IASTNode nodeAST,
       LinkedList<ICPPASTNamespaceDefinition> namespaceStack, LinkedList<ICPPASTTemplateDeclaration> templateStack,
       LinkedList<IASTDeclSpecifier> returnTypeStack, List<FunctionPrototype> resultList) {
-    if (nodeAST instanceof final IASTFunctionDeclarator funcDeclor) {
-      // BASE CASE
-      // we got a function declaration !
-      parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
-    } else if (nodeAST instanceof final IASTFunctionDefinition funcDef) {
-      // DEEPER CASES
-      // we got a function definition, let's retrieve the declaration
-      returnTypeStack.addLast(funcDef.getDeclSpecifier());
-      parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
-      returnTypeStack.removeLast();
-    } else if (nodeAST instanceof final IASTSimpleDeclaration simpleDeclon) {
-      // we got a simple declaration, which could start a function definition or declaration with its return type
-      returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
-      for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
-        parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
+
+    switch (nodeAST) {
+      // BASE CASE: we got a function declaration !
+      case final IASTFunctionDeclarator funcDeclor ->
+        parseFunctionDeclor(funcDeclor, namespaceStack, templateStack, returnTypeStack, resultList);
+
+      case final IASTFunctionDefinition funcDef -> {
+        // DEEPER CASES: we got a function definition, let's retrieve the declaration
+        returnTypeStack.addLast(funcDef.getDeclSpecifier());
+        parseCXXHeaderRecAux(funcDef.getDeclarator(), namespaceStack, templateStack, returnTypeStack, resultList);
+        returnTypeStack.removeLast();
       }
-      returnTypeStack.removeLast();
-    } else if (nodeAST instanceof final ICPPASTTemplateDeclaration tempDeclon) {
-      // we got a template declaration, which could start a function definition or declaration
-      templateStack.addLast(tempDeclon);
-      parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
-      templateStack.removeLast();
-    } else if (nodeAST instanceof final ICPPASTNamespaceDefinition nsDef) {
-      // we got a namespace definition, which could contain other namespaces and function definitions or declarations
-      namespaceStack.addLast(nsDef);
-      for (final IASTDeclaration declon : nsDef.getDeclarations()) {
-        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      case final IASTSimpleDeclaration simpleDeclon -> {
+        // we got a simple declaration, which could start a function definition or declaration with its return type
+        returnTypeStack.addLast(simpleDeclon.getDeclSpecifier());
+        for (final IASTDeclarator declor : simpleDeclon.getDeclarators()) {
+          parseCXXHeaderRecAux(declor, namespaceStack, templateStack, returnTypeStack, resultList);
+        }
+        returnTypeStack.removeLast();
       }
-      namespaceStack.removeLast();
-    } else if (nodeAST instanceof final ICPPASTLinkageSpecification linkageSpec) {
-      // inside an extern "C" block
-      for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
-        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      case final ICPPASTTemplateDeclaration tempDeclon -> {
+        // we got a template declaration, which could start a function definition or declaration
+        templateStack.addLast(tempDeclon);
+        parseCXXHeaderRecAux(tempDeclon.getDeclaration(), namespaceStack, templateStack, returnTypeStack, resultList);
+        templateStack.removeLast();
       }
-    } else if (nodeAST instanceof final IASTTranslationUnit tu) {
-      // TOP CASE
-      // we got the full file, let's visit the declarations
-      for (final IASTDeclaration declon : tu.getDeclarations()) {
-        parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+      case final ICPPASTNamespaceDefinition nsDef -> {
+        // we got a namespace definition, which could contain other namespaces and function definitions or declarations
+        namespaceStack.addLast(nsDef);
+        for (final IASTDeclaration declon : nsDef.getDeclarations()) {
+          parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+        }
+        namespaceStack.removeLast();
+      }
+      case final ICPPASTLinkageSpecification linkageSpec -> {
+        // inside an extern "C" block
+        for (final IASTDeclaration declon : linkageSpec.getDeclarations()) {
+          parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+        }
+      }
+      case final IASTTranslationUnit tu -> {
+        // TOP CASE: we got the full file, let's visit the declarations
+        for (final IASTDeclaration declon : tu.getDeclarations()) {
+          parseCXXHeaderRecAux(declon, namespaceStack, templateStack, returnTypeStack, resultList);
+        }
+      }
+      default -> {
+        // empty
       }
     }
 
@@ -247,8 +256,8 @@ public class HeaderParser {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);
             return;
           }
-          final String paramType = ((ICPPASTSimpleDeclSpecifier) childsParam[0]).getRawSignature().trim();
-          final String paramName = ((ICPPASTDeclarator) childsParam[1]).getRawSignature().trim();
+          final String paramType = childsParam[0].getRawSignature().trim();
+          final String paramName = childsParam[1].getRawSignature().trim();
           // we do not support anything else then int and long static template parameters
           if (!paramType.equals("int") && !paramType.equals("long")) {
             PreesmLogger.getLogger().warning(() -> DISCARD_FUNC + rawName + TEMPLATE_WARNING);

@@ -518,7 +518,7 @@ public class SimulationPage extends ScenarioPage {
     tableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
 
-    gd.heightHint = Math.max(50, Math.min(300, this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+    gd.heightHint = Math.clamp((long) this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30, 50, 300);
     gd.widthHint = 250;
     tablecps.setLayoutData(gd);
 
@@ -547,8 +547,8 @@ public class SimulationPage extends ScenarioPage {
               DefaultTypeSizes.getInstance().getTypeSizeOrDefault(dialog.getValue().trim()));
           tableViewer.refresh();
           propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
-          gd.heightHint = Math.max(50,
-              Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+          gd.heightHint = Math
+              .clamp((long) SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30, 50, 300);
           tablecps.requestLayout();
         }
       }
@@ -569,8 +569,8 @@ public class SimulationPage extends ScenarioPage {
           SimulationPage.this.scenario.getSimulationInfo().getDataTypes().removeKey(dataType.getKey());
           tableViewer.refresh();
           propertyChanged(this, IEditorPart.PROP_DIRTY);
-          gd.heightHint = Math.max(50,
-              Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+          gd.heightHint = Math
+              .clamp((long) SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30, 50, 300);
           tablecps.requestLayout();
         }
       }
@@ -589,8 +589,8 @@ public class SimulationPage extends ScenarioPage {
 
         tableViewer.refresh();
         propertyChanged(SimulationPage.this, IEditorPart.PROP_DIRTY);
-        gd.heightHint = Math.max(50,
-            Math.min(300, SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30));
+        gd.heightHint = Math
+            .clamp((long) SimulationPage.this.scenario.getSimulationInfo().getDataTypes().size() * 20 + 30, 50, 300);
         tablecps.requestLayout();
       }
 
@@ -715,8 +715,8 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.addCheckStateListener(checkStateListener);
 
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = Math.max(50,
-        Math.min(300, SimulationPage.this.scenario.getDesign().getOperatorComponentInstances().size() * 20 + 30));
+    gd.heightHint = Math.clamp(
+        (long) SimulationPage.this.scenario.getDesign().getOperatorComponentInstances().size() * 20 + 30, 50, 300);
     gd.widthHint = 250;
     treeviewer.getTree().setLayoutData(gd);
 

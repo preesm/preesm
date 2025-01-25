@@ -62,7 +62,6 @@ import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * @author farresti
@@ -94,7 +93,7 @@ public abstract class PiBRV {
       final AbstractVertex av = en.getKey();
       final PiGraph container = av.getContainingPiGraph();
 
-      levelRV.computeIfAbsent(container, c -> PiMMHelper.getHierarchichalRV(c, brv));
+      levelRV.computeIfAbsent(container, c -> c.getHierarchichalRV(brv));
 
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);

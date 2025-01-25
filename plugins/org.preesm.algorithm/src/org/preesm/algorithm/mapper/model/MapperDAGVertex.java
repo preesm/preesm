@@ -74,7 +74,9 @@ public class MapperDAGVertex extends DAGVertex {
   /** Properties set when converting sdf to dag. */
   private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
 
-  public static final String DAG_END_VERTEX = "dag_end_vertex";
+  /** Key to access to property dag_init_vertex. */
+  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
+  public static final String DAG_END_VERTEX  = "dag_end_vertex";
 
   /** Key to access to property dag_broadcast_vertex. */
   public static final String DAG_BROADCAST_VERTEX = "dag_broadcast_vertex";
@@ -87,9 +89,6 @@ public class MapperDAGVertex extends DAGVertex {
 
   /** Key to access to property special_type_roundbuffer. */
   public static final String SPECIAL_TYPE_ROUNDBUFFER = "special_type_roundbuffer";
-
-  /** Key to access to property dag_init_vertex. */
-  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
 
   /** Persistence level of a delay */
   public static final String PERSISTENCE_LEVEL = "persistence_level";
@@ -160,7 +159,7 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#clone()
+   * @see org.preesm.algorithm.model.dag.DAGVertex#clone()
    */
   @Override
   public MapperDAGVertex copy() {
@@ -312,7 +311,7 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
+   * @see org.preesm.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {

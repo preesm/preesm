@@ -90,8 +90,7 @@ public abstract class PreesmLogger extends Logger {
             final Object obj = element.createExecutableExtension("type");
 
             // and checks it actually is an ITransformation.
-            if (obj instanceof Logger) {
-              final Logger preesmLogger = (Logger) obj;
+            if (obj instanceof final Logger preesmLogger) {
               preesmLogger.setLevel(Level.INFO);
               setLogger(preesmLogger);
             }
