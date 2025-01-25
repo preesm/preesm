@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2023)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -87,24 +87,24 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
     // Compute BRV
     final Map<AbstractVertex, Long> brv = PiBRV.compute(copyGraph, BRVMethod.LCM);
     // Process on delay that are pipeline
-    final List<Delay> delays = new LinkedList<>();
-    delays.addAll(copyGraph.getAllDelays());
+    final List<Delay> delays = new LinkedList<>(copyGraph.getAllDelays());
     for (final Delay delay : delays) {
       // Retrieve output and input port
       final Fifo fifo = delay.getContainingFifo();
       final DataOutputPort sourceOutput = fifo.getSourcePort();
       final DataInputPort targetInput = fifo.getTargetPort();
       // Compute tokens exchange
-      final long delayTokens = delay.getExpression().evaluate();
+      final long delayTokens = delay.getExpression().evaluateAsLong();
       final AbstractActor containingActor = sourceOutput.getContainingActor();
       final Expression expression = sourceOutput.getExpression();
-      final long evaluate = expression.evaluate();
+      final long evaluate = expression.evaluateAsLong();
       final Long long1 = brv.get(containingActor);
       if (long1 == null) {
         throw new PreesmRuntimeException("Could not get BRV info for " + containingActor);
       }
       final long sourceTokens = long1 * evaluate;
-      final long targetTokens = brv.get(targetInput.getContainingActor()) * targetInput.getExpression().evaluate();
+      final long targetTokens = brv.get(targetInput.getContainingActor())
+          * targetInput.getExpression().evaluateAsLong();
       // Verify that it is a perfect fit delay
       if ((delayTokens == sourceTokens) && (delayTokens == targetTokens)) {
         // Create InitActor and EndActor
@@ -136,7 +136,6 @@ public class PiSDFTransformPerfectFitDelayToEndInit {
         copyGraph.addFifo(sourceFifo);
         copyGraph.addFifo(targetFifo);
         for (final ConfigInputPort cip : delay.getConfigInputPorts()) {
-          // copyGraph.getEdges().remove(cip.getIncomingDependency());
           copyGraph.removeDependency(cip.getIncomingDependency());
         }
         copyGraph.removeDelay(delay);

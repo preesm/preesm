@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2021) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
  * Dylan Gageot [gageot.dylan@gmail.com] (2020)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -42,6 +43,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -139,41 +141,33 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
     return super.casePiGraph(graph);
   }
 
-  // @Override
-  // public Boolean caseDataPort(DataPort dataPort) {
-  // // Update rates on the data port.
-  // // // System.out.println("hierarchicalActorRepetition: " + hierarchicalActorRepetition);
-  // // final float r = (float) (this.repetition) / this.balancingFactor;
-  // // // System.out.println("r: " + r);
-  // // final float r2 = repetition / r;
-  // // // System.out.println("r: " + r2);
-  // // // r = 1L;
-  // // final Long newExpression = (long) (dataPort.getExpression().evaluate() * r2);
-  // // System.out.println("r: " + r + " r2: " + r2 + " expression:" + dataPort.getExpression().evaluate()
-  // // + " new expresion: " + newExpression);
-  // // final Long newExpression = dataPort.getExpression().evaluate() * hierarchicalActorRepetition /
-  // // this.balancingFactor;
-  // // System.out.println(" expression:" + dataPort.getExpression().evaluate() + " new expresion: " + newExpression);
-  // // dataPort.setExpression(newExpression);
-  // return true;
-  // }
+  @Override
+  public Boolean caseDataPort(DataPort dataPort) {
+    // Update rates on the data port.
+    final Long newExpression = dataPort.getExpression().evaluateAsLong() * this.balancingFactor;
+    dataPort.setExpression(newExpression);
+    return true;
+  }
 
   @Override
   public Boolean caseInterfaceActor(InterfaceActor interfaceActor) {
     // Explore inside data port and graph data port.
     // doSwitch(interfaceActor.getDataPort());
     // doSwitch(interfaceActor.getGraphPort());
-    // final Long newExpression = (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluate()
+    // final Long newExpression = (long) Math.round((float)
+    // interfaceActor.getGraphPort().getExpression().evaluateAsLong()
     // * hierarchicalActorRepetition / this.balancingFactor);
 
     final Long newExpression = (hierarchicalActorRepetition == 1L) ? (long) Math.round(1.0 * this.balancingFactor)
-        : (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluate()
+        : (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluateAsLong()
             * hierarchicalActorRepetition / this.balancingFactor);
 
-    // final Long newExpression = interfaceActor.getGraphPort().getExpression().evaluate() * hierarchicalActorRepetition
+    // final Long newExpression = interfaceActor.getGraphPort().getExpression().evaluateAsLong() *
+    // hierarchicalActorRepetition
     // / this.balancingFactor;
     // System.out.println(
-    // " expression:" + interfaceActor.getGraphPort().getExpression().evaluate() + " new expresion: " + newExpression);
+    // " expression:" + interfaceActor.getGraphPort().getExpression().evaluateAsLong() + " new expresion: " +
+    // newExpression);
 
     interfaceActor.getGraphPort().setExpression(newExpression);
 

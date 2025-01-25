@@ -100,9 +100,6 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
-import org.eclipse.core.resources.ResourcesPlugin
-import java.io.File
-import org.preesm.model.pisdf.Actor
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -113,7 +110,7 @@ import org.preesm.model.pisdf.Actor
  */
 class CPrinter extends BlankPrinter {
 
-	protected boolean monitorAllFifoMD5 = false;
+	boolean monitorAllFifoMD5 = false;
 
 	Map<CoreBlock, Set<FifoCall>> fifoPops = new HashMap();
 
@@ -1168,7 +1165,7 @@ class CPrinter extends BlankPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.last == coreBlock) {""} else {", "}»«ENDFOR»
+				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
 		#ifdef PREESM_VERBOSE

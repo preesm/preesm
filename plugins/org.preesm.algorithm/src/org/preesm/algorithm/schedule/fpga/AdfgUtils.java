@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2023 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2023 - 2024)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -186,7 +187,7 @@ public class AdfgUtils {
     for (final DataPort dp : current.aa.getAllDataPorts()) {
       final long maxNumberOfSteps = 1000;
       final long limit = Math.min(updatedII + maxNumberOfSteps, (long) (current.oriII * overestimationRatio));
-      final long rate = dp.getExpression().evaluate();
+      final long rate = dp.getExpression().evaluateAsLong();
       long refFracNumerator = new BigFraction(updatedII, rate).getNumeratorAsLong();
       for (long testII = updatedII; testII < limit; testII++) {
         final BigFraction testFrac = new BigFraction(testII, rate);
@@ -217,7 +218,7 @@ public class AdfgUtils {
       logLambda.append(String.format("/actor <%s>%n", ani.aa.getName()));
 
       final String logLambdaPorts = ani.aa.getAllDataPorts().stream().map(dp -> {
-        final long rate = dp.getExpression().evaluate();
+        final long rate = dp.getExpression().evaluateAsLong();
         final BigFraction lambdaFr = computeLambda(rate, ani.oriII);
         lambdaPerPort.put(dp, lambdaFr);
         final double valD = lambdaFr.doubleValue();

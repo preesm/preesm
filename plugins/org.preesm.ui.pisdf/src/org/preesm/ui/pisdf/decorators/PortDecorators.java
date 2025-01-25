@@ -50,6 +50,7 @@ import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -108,39 +109,47 @@ public class PortDecorators {
    * @return the {@link IDecorator} or <code>null</code>.
    */
   protected static IDecorator getPortExpressionDecorator(final Port port, final PictogramElement pe) {
-    final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
-    final String message = "Problems in parameter resolution: ";
+    final ImageDecorator errRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+    final ImageDecorator wrnRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
+
+    if (port instanceof ConfigOutputPort) {
+      return null;
+    }
 
     final BoxRelativeAnchor a = (BoxRelativeAnchor) pe;
 
-    if (port instanceof final DataInputPort dip) {
-      final Expression expression = dip.getPortRateExpression();
+    final int xCoord;
+    final int yCoord = (int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1;
 
-      try {
-        expression.evaluate();
-      } catch (final ExpressionEvaluationException e) {
-        imageRenderingDecorator.setX(-5);
-        imageRenderingDecorator
-            .setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
-        imageRenderingDecorator.setMessage(message + e.getMessage());
-
-        return imageRenderingDecorator;
-      }
+    if (port instanceof DataInputPort) {
+      xCoord = -5;
+    } else if (port instanceof DataOutputPort) {
+      xCoord = a.getReferencedGraphicsAlgorithm().getWidth() - 13;
+    } else {
+      return null; // never there ?
     }
-    if ((port instanceof final DataOutputPort dop) && !(port instanceof ConfigOutputPort)) {
-      final Expression expression = dop.getPortRateExpression();
 
-      try {
-        expression.evaluate();
-      } catch (final ExpressionEvaluationException e) {
-        imageRenderingDecorator.setX(a.getReferencedGraphicsAlgorithm().getWidth() - 13);
-        imageRenderingDecorator
-            .setY((int) (a.getRelativeHeight() * a.getReferencedGraphicsAlgorithm().getHeight()) - 1);
-        imageRenderingDecorator.setMessage(message + e.getMessage());
+    final Expression expression = ((DataPort) port).getPortRateExpression();
 
-        return imageRenderingDecorator;
+    try {
+      expression.evaluateAsDouble();
+
+      if (!expression.isExpressionInteger()) {
+        wrnRenderingDecorator.setX(xCoord);
+        wrnRenderingDecorator.setY(yCoord);
+        wrnRenderingDecorator.setMessage("Port expression resolution will default to rounded integer.");
+
+        return wrnRenderingDecorator;
       }
+
+    } catch (final ExpressionEvaluationException e) {
+      errRenderingDecorator.setX(xCoord);
+      errRenderingDecorator.setY(yCoord);
+      errRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
+
+      return errRenderingDecorator;
     }
+
     return null;
   }
 }

@@ -180,7 +180,7 @@ public class CodegenSimSDP {
           final String bufferName = node.getName() + "_" + dout.getName() + "__"
               + ((AbstractActor) dout.getFifo().getTarget()).getName() + "_" + dout.getFifo().getTargetPort().getName();
           result.append(dout.getFifo().getType() + " *" + bufferName + "=(" + dout.getFifo().getType() + "*)malloc("
-              + dout.getExpression().evaluate() + " * sizeof(" + dout.getFifo().getType() + "));\n");
+              + dout.getExpression().evaluateAsLong() + " * sizeof(" + dout.getFifo().getType() + "));\n");
 
         }
       }
@@ -348,7 +348,7 @@ public class CodegenSimSDP {
         type = "unsigned_char";
       }
 
-      result.append("MPI_Recv(" + bufferName + "," + din.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
+      result.append("MPI_Recv(" + bufferName + "," + din.getExpression().evaluateAsLong() + "," + "MPI_" + type.toUpperCase()
           + "," + source + ", label, MPI_COMM_WORLD, &status);\n");
     }
     return result;
@@ -373,7 +373,7 @@ public class CodegenSimSDP {
       if ("uchar".equals(type)) {
         type = "unsigned_char";
       }
-      result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluate() + "," + "MPI_" + type.toUpperCase()
+      result.append("MPI_Send(" + bufferName + "," + dout.getExpression().evaluateAsLong() + "," + "MPI_" + type.toUpperCase()
           + "," + destination + " ,label, MPI_COMM_WORLD);\n");
     }
     return result.toString();

@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Jonathan Piat [jpiat@laas.fr] (2011)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
@@ -60,9 +61,6 @@ public class PFastAlgoParameters {
   /** Number of processors available. */
   private int procNumber;
 
-  /** true if we need to display the intermediate solutions. */
-  private boolean displaySolutions;
-
   /** Time in seconds to run one FAST. */
   private int fastTime = 200;
 
@@ -83,7 +81,6 @@ public class PFastAlgoParameters {
 
     this.nodesMin = Integer.valueOf(textParameters.get("nodesMin"));
     this.procNumber = Integer.valueOf(textParameters.get("procNumber"));
-    this.displaySolutions = Boolean.valueOf(textParameters.get("displaySolutions"));
     if (Integer.valueOf(textParameters.get("fastTime")) > 0) {
       this.fastTime = Integer.valueOf(textParameters.get("fastTime"));
     }
@@ -94,9 +91,8 @@ public class PFastAlgoParameters {
       this.fastNumber = Integer.valueOf(textParameters.get("fastNumber"));
     }
 
-    PreesmLogger.getLogger().log(Level.INFO,
-        "The PFast algo parameters are: nodesMin; procNumber; displaySolutions=true/false; "
-            + "fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
+    PreesmLogger.getLogger().log(Level.INFO, "The PFast algo parameters are: "
+        + "nodesMin; procNumber; fastTime in seconds; fastLocalSearchTime in seconds; fastNumber");
 
   }
 
@@ -106,14 +102,6 @@ public class PFastAlgoParameters {
 
   public void setProcNumber(final int procNumber) {
     this.procNumber = procNumber;
-  }
-
-  public boolean isDisplaySolutions() {
-    return this.displaySolutions;
-  }
-
-  public void setDisplaySolutions(final boolean displaySolutions) {
-    this.displaySolutions = displaySolutions;
   }
 
   public int getNodesmin() {

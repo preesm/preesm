@@ -127,6 +127,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
       case CFG_INPUT -> PortDirection.NONE;
       case DATA_INPUT -> PortDirection.INPUT;
       case DATA_OUTPUT -> PortDirection.OUTPUT;
+      case CFG_OUTPUT -> throw new PreesmRuntimeException();
       default -> throw new PreesmRuntimeException();
     };
   }

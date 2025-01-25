@@ -2,7 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021 - 2023)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023 - 2024)
  * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2022 - 2024)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -276,7 +276,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   private static long getActorMaximumRate(final AbstractActor aa) {
     long maxRate = 0L;
     for (final DataPort dp : aa.getAllDataPorts()) {
-      final long rate = dp.getExpression().evaluate();
+      final long rate = dp.getExpression().evaluateAsLong();
       if (rate > maxRate) {
         maxRate = rate;
       }

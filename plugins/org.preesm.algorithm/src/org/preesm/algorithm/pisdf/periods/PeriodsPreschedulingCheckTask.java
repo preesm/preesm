@@ -159,7 +159,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     for (final AbstractActor absActor : graphCopy.getActors()) {
       if ((absActor instanceof final Actor actor) && (absActor instanceof PeriodicElement) && !actor.isHierarchical()
           && !actor.isConfigurationActor()) {
-        final long period = actor.getPeriod().evaluate();
+        final long period = actor.getPeriod().evaluateAsLong();
         if (period > 0) {
           periodicActors.put(actor, period);
         }
@@ -175,7 +175,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     // check that are all actor periods times brv are equal and set the graph period if needed
     PiMMHelper.checkPeriodicity(graphCopy, brv);
 
-    final long graphPeriod = graphCopy.getPeriod().evaluate();
+    final long graphPeriod = graphCopy.getPeriod().evaluateAsLong();
     if (graphPeriod <= 0 && periodicActors.isEmpty()) {
       PreesmLogger.getLogger().log(Level.WARNING, "This task is useless when there is no period in the graph.");
       return output;
@@ -278,9 +278,9 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
     @Override
     public int compare(Actor arg0, Actor arg1) {
       if (reverse) {
-        return Long.compare(arg1.getPeriod().evaluate(), arg0.getPeriod().evaluate());
+        return Long.compare(arg1.getPeriod().evaluateAsLong(), arg0.getPeriod().evaluateAsLong());
       }
-      return Long.compare(arg0.getPeriod().evaluate(), arg1.getPeriod().evaluate());
+      return Long.compare(arg0.getPeriod().evaluateAsLong(), arg1.getPeriod().evaluateAsLong());
     }
 
   }
@@ -305,7 +305,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
       final TreeMap<Actor, Long> nbTimesDuringAperiod = new TreeMap<>(new ActorPeriodComparator(true));
       allPeriodicActors.keySet().forEach(e -> {
-        final long ePeriod = e.getPeriod().evaluate();
+        final long ePeriod = e.getPeriod().evaluateAsLong();
         if (ePeriod <= slack && !nbf.containsKey(e)) {
           nbTimesDuringAperiod.put(e, slack / ePeriod);
         }

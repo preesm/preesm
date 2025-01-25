@@ -57,7 +57,7 @@ public class StringEdgePropertyType extends AbstractEdgePropertyType<String> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#clone()
    */
   @Override
   public StringEdgePropertyType copy() {
@@ -67,7 +67,7 @@ public class StringEdgePropertyType extends AbstractEdgePropertyType<String> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#intValue()
    */
   @Override
   public long longValue() {
@@ -77,7 +77,7 @@ public class StringEdgePropertyType extends AbstractEdgePropertyType<String> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#toString()
    */
   @Override
   public String toString() {

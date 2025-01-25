@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -93,17 +94,27 @@ public class DelayDecorators {
    * @return the {@link IDecorator} or <code>null</code>.
    */
   protected static IDecorator getExpressionDecorator(final Delay delay, final PictogramElement pe) {
-    final ImageDecorator imageRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+    final ImageDecorator errRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_ERROR_TSK);
+    final ImageDecorator wrngRenderingDecorator = new ImageDecorator(IPlatformImageConstants.IMG_ECLIPSE_WARNING_TSK);
 
     final Expression expression = delay.getSizeExpression();
     try {
-      expression.evaluate();
-    } catch (final ExpressionEvaluationException e) {
-      imageRenderingDecorator.setX(-8);
-      imageRenderingDecorator.setY(8);
-      imageRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
+      expression.evaluateAsDouble();
 
-      return imageRenderingDecorator;
+      if (!expression.isExpressionInteger()) {
+        wrngRenderingDecorator.setX(-8);
+        wrngRenderingDecorator.setY(8);
+        wrngRenderingDecorator.setMessage("Delay expression resolution will default to rounded integer.");
+
+        return wrngRenderingDecorator;
+      }
+
+    } catch (final ExpressionEvaluationException e) {
+      errRenderingDecorator.setX(-8);
+      errRenderingDecorator.setY(8);
+      errRenderingDecorator.setMessage("Problems in parameter resolution: " + e.getMessage());
+
+      return errRenderingDecorator;
     }
     return null;
   }

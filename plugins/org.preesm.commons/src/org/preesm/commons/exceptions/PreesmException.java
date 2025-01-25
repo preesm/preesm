@@ -45,19 +45,19 @@ public abstract class PreesmException extends RuntimeException {
 
   private static final long serialVersionUID = -8790240310563615206L;
 
-  public PreesmException() {
+  protected PreesmException() {
     this(null, null);
   }
 
-  public PreesmException(final String message) {
+  protected PreesmException(final String message) {
     this(message, null);
   }
 
-  public PreesmException(final String message, final Throwable cause) {
+  protected PreesmException(final String message, final Throwable cause) {
     super(message, cause);
   }
 
-  public PreesmException(final Throwable cause) {
+  protected PreesmException(final Throwable cause) {
     this(null, cause);
   }
 

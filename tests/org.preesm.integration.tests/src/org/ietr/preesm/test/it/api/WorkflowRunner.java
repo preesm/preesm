@@ -38,6 +38,8 @@ package org.ietr.preesm.test.it.api;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -119,7 +121,7 @@ public class WorkflowRunner {
       if (projectRoot == null) {
         resolve = PreesmResourcesHelper.getInstance().resolve(projectName, WorkflowRunner.class);
       } else {
-        resolve = new URL("file://" + projectRoot);
+        resolve = new URI("file://" + projectRoot).toURL();
       }
       URLHelper.copyContent(resolve, project);
 
@@ -129,9 +131,11 @@ public class WorkflowRunner {
       final String workflowPath = "/" + projectName + workflowFilePathStr;
       final String scenarioPath = "/" + projectName + scenarioFilePathStr;
 
-      final boolean success = workflowManager.execute(workflowPath, scenarioPath, null, true);
+      return workflowManager.execute(workflowPath, scenarioPath, null, false);
 
-      return success;
+    } catch (final URISyntaxException e) {
+      e.printStackTrace();
+      return false;
     } finally {
       // clean
       project.close(null);

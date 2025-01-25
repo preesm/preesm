@@ -65,7 +65,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -106,7 +105,7 @@ public class BRVExporter extends AbstractTaskImplementation {
 
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
-    PiMMHelper.resolveAllParameters(graph);
+    graph.resolveAllParameters();
     // 2. Compute BRV following the chosen method
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
@@ -154,7 +153,7 @@ public class BRVExporter extends AbstractTaskImplementation {
       final AbstractVertex av = en.getKey();
       final PiGraph container = av.getContainingPiGraph();
       if (!levelRV.containsKey(container)) {
-        levelRV.put(container, PiMMHelper.getHierarchichalRV(container, brv));
+        levelRV.put(container, container.getHierarchichalRV(brv));
       }
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);

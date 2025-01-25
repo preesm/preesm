@@ -52,7 +52,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.ui.dialogs.ListDialog;
 import org.eclipse.ui.model.WorkbenchContentProvider;
-import org.ietr.dftools.graphiti.model.Vertex;
+import org.preesm.graphiti.model.Vertex;
 import org.preesm.model.slam.serialize.RefinementList;
 
 /**

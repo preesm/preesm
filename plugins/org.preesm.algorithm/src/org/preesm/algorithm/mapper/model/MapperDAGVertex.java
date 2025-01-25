@@ -74,7 +74,9 @@ public class MapperDAGVertex extends DAGVertex {
   /** Properties set when converting sdf to dag. */
   private static final String INITIAL_PROPERTY = "INITIAL_PROPERTY";
 
-  public static final String DAG_END_VERTEX = "dag_end_vertex";
+  /** Key to access to property dag_init_vertex. */
+  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
+  public static final String DAG_END_VERTEX  = "dag_end_vertex";
 
   /** Key to access to property dag_broadcast_vertex. */
   public static final String DAG_BROADCAST_VERTEX = "dag_broadcast_vertex";
@@ -87,9 +89,6 @@ public class MapperDAGVertex extends DAGVertex {
 
   /** Key to access to property special_type_roundbuffer. */
   public static final String SPECIAL_TYPE_ROUNDBUFFER = "special_type_roundbuffer";
-
-  /** Key to access to property dag_init_vertex. */
-  public static final String DAG_INIT_VERTEX = "dag_init_vertex";
 
   /** Persistence level of a delay */
   public static final String PERSISTENCE_LEVEL = "persistence_level";
@@ -162,7 +161,7 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.dag.DAGVertex#clone()
+   * @see org.preesm.algorithm.model.dag.DAGVertex#clone()
    */
   @Override
   public MapperDAGVertex copy() {
@@ -190,6 +189,7 @@ public class MapperDAGVertex extends DAGVertex {
     copy.setParentVertex(result);
     result.setInit(copy);
     result.setEffectiveComponent(getEffectiveComponent());
+    result.setRefinement(this.getRefinement());
 
     for (final String propertyKey : getPropertyBean().keys()) {
       final Object property = getPropertyBean().getValue(propertyKey);
@@ -316,30 +316,20 @@ public class MapperDAGVertex extends DAGVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
+   * @see org.preesm.algorithm.model.AbstractVertex#getPropertyStringValue(java.lang.String)
    */
   @Override
   public String getPropertyStringValue(final String propertyName) {
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR_DEF)) {
-      return getEffectiveOperator().getComponent().getVlnv().getName();
-    }
 
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS)) {
-      return getInit().getInitialOperatorList().toString();
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID)) {
-      return getInit().getParentVertex().getId();
-    }
-    if (propertyName.equals(ImplementationPropertyNames.TASK_DURATION)) {
-      return String.valueOf(getTiming().getCost());
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER)) {
-      return String.valueOf(getTiming().getTotalOrder(this));
-    }
-    if (propertyName.equals(ImplementationPropertyNames.VERTEX_OPERATOR)) {
-      return getEffectiveComponent().getInstanceName();
-    }
-    return super.getPropertyStringValue(propertyName);
+    return switch (propertyName) {
+      case ImplementationPropertyNames.VERTEX_OPERATOR_DEF -> getEffectiveOperator().getComponent().getVlnv().getName();
+      case ImplementationPropertyNames.VERTEX_AVAILABLE_OPERATORS -> getInit().getInitialOperatorList().toString();
+      case ImplementationPropertyNames.VERTEX_ORIGINAL_VERTEX_ID -> getInit().getParentVertex().getId();
+      case ImplementationPropertyNames.TASK_DURATION -> String.valueOf(getTiming().getCost());
+      case ImplementationPropertyNames.VERTEX_SCHEDULING_ORDER -> String.valueOf(getTiming().getTotalOrder(this));
+      case ImplementationPropertyNames.VERTEX_OPERATOR -> getEffectiveComponent().getInstanceName();
+      default -> super.getPropertyStringValue(propertyName);
+    };
   }
 
   /**

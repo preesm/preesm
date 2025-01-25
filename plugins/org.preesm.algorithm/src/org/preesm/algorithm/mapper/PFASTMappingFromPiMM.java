@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Jonathan Piat [jpiat@laas.fr] (2008 - 2011)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
@@ -62,17 +63,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-mapper.pfast", name = "PFast Scheduling from PiSDF", category = "Schedulers",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
         @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
         @Parameter(name = "Check", values = { @Value(name = "True") }),
         @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
         @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "displaySolutions", values = { @Value(name = "false") }),
         @Parameter(name = "fastTime", values = { @Value(name = "100") }),
         @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
         @Parameter(name = "nodesMin", values = { @Value(name = "5") }),

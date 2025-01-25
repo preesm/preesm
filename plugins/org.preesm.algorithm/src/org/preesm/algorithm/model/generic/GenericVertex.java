@@ -47,7 +47,7 @@ public class GenericVertex extends AbstractVertex<GenericGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#clone()
+   * @see org.preesm.algorithm.model.AbstractVertex#clone()
    */
   @Override
   public GenericVertex copy() {
@@ -65,7 +65,7 @@ public class GenericVertex extends AbstractVertex<GenericGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
+   * @see org.preesm.algorithm.model.PropertySource#getFactoryForProperty(java.lang.String)
    */
   @Override
   public PropertyFactory getFactoryForProperty(final String propertyName) {

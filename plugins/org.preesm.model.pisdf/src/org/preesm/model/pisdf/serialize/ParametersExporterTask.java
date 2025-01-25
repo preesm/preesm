@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2020)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -52,7 +53,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -65,9 +65,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-export.parameters", name = "Parameters exporter", category = "Graph Exporters",
     description = "Export parameters of the graph as C header with define. "
         + "Exports only static parameters. Name of file is: <graphName>_preesm_params.h",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     parameters = { @Parameter(name = ParametersExporterTask.PARAM_PATH, values = {
         @Value(name = ParametersExporterTask.DEFAULT_PATH, effect = "default path, relative to the project") }) })
+
 public class ParametersExporterTask extends AbstractTaskImplementation {
 
   public static final String DEFAULT_PATH = "/Code";
@@ -102,13 +103,13 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
     // valuation)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     // 1. we resolve all parameters since subgraph parameters cannot be evaluated properly otherwise
-    PiMMHelper.resolveAllParameters(graphCopy);
+    graphCopy.resolveAllParameters();
     // 2. we export the resolved parameters
-    String params = getParamsHeader(graphCopy);
+    final String params = getParamsHeader(graphCopy);
 
     try {
       FileUtils.writeStringToFile(file, params, (String) null);
-    } catch (IOException e) {
+    } catch (final IOException e) {
       throw new PreesmRuntimeException("Unable to write graph parameters on file " + filePath, e);
     }
 
@@ -117,21 +118,21 @@ public class ParametersExporterTask extends AbstractTaskImplementation {
 
   /**
    * Format parameters of a graph in a C header.
-   * 
+   *
    * @param graph
    *          Graph to get parameters from.
    * @return String being the header.
    */
   public static String getParamsHeader(PiGraph graph) {
-    StringBuilder sb = new StringBuilder();
+    final StringBuilder sb = new StringBuilder();
 
-    String fileUnit = graph.getName().toUpperCase() + "_PREESM_PARAMS_H";
+    final String fileUnit = graph.getName().toUpperCase() + "_PREESM_PARAMS_H";
     sb.append("#ifndef " + fileUnit + "\n");
     sb.append("#define " + fileUnit + "\n\n");
 
-    for (org.preesm.model.pisdf.Parameter p : graph.getAllParameters()) {
+    for (final org.preesm.model.pisdf.Parameter p : graph.getAllParameters()) {
       if (p.isLocallyStatic()) {
-        long value = p.getValueExpression().evaluate();
+        final long value = p.getValueExpression().evaluateAsLong();
         sb.append("#define " + p.getVertexPath().toUpperCase().replace('/', '_') + " " + value + "\n");
       }
     }

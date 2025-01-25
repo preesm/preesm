@@ -51,17 +51,19 @@
 package org.preesm.model.pisdf
 
 import java.io.File
+import java.util.ArrayList
 import java.util.Collections
 import java.util.Optional
-import java.util.ArrayList
+import org.eclipse.emf.ecore.EMap
 import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.commons.graph.Edge
 import org.preesm.commons.graph.Graph
 import org.preesm.commons.graph.Vertex
+import org.preesm.commons.logger.PreesmLogger
 import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
+import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor
 import org.preesm.model.pisdf.util.RefinementResolver
-import org.preesm.commons.logger.PreesmLogger
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -93,7 +95,9 @@ interface Parameterizable {
 interface Expression {
 	refers ExpressionHolder holder opposite expression
 	op String getExpressionAsString()
-	op long evaluate()
+	op double evaluateAsDouble()
+	op long evaluateAsLong()
+	op boolean isExpressionInteger()
 }
 
 class StringExpression extends Expression {
@@ -101,18 +105,30 @@ class StringExpression extends Expression {
 	op String getExpressionAsString() {
 		return getExpressionString()
 	}
-	op long evaluate() {
+	op double evaluateAsDouble() {
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
+	}
+	op long evaluateAsLong() {
+		return Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
+	}
+	op boolean isExpressionInteger() {
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
-class LongExpression extends Expression {
-	long value = "0"
+class DoubleExpression extends Expression {
+	double value = "0"
 	op String getExpressionAsString() {
-		return Long.toString(value)
+		return Double.toString(value)
 	}
-	op long evaluate() {
+	op double evaluateAsDouble() {
 		return value
+	}
+	op long evaluateAsLong() {
+		return Math.round(value)
+	}
+	op boolean isExpressionInteger() {
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
@@ -121,8 +137,14 @@ interface ExpressionProxy extends Expression {
 	op String getExpressionAsString() {
 		return proxy.getExpression().getExpressionAsString
 	}
-	op long evaluate() {
-		proxy.getExpression().evaluate()
+	op double evaluateAsDouble() {
+		proxy.getExpression().evaluateAsDouble()
+	}
+	op long evaluateAsLong() {
+		proxy.getExpression().evaluateAsLong()
+	}
+	op boolean isExpressionInteger() {
+		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
@@ -136,7 +158,7 @@ interface ExpressionHolder extends Parameterizable {
 			expression = PiMMUserFactory.instance.createExpression(newExpression)
 		}
 	}
-	op void setExpression(long value) {
+	op void setExpression(double value) {
 		if (expression instanceof ExpressionProxy) {
 			(expression as ExpressionProxy).proxy.setExpression(PiMMUserFactory.instance.createExpression(value))
 		} else {
@@ -206,14 +228,45 @@ abstract class AbstractActor extends Configurable {
 	op unique Port[] getAllPorts() {
 		return (allConfigPorts + allDataPorts).toEList.unmodifiableView
 	}
-	/*
-	 * @deprecated use getVertexPath() instead;
-	 */
-	op String getActorPath() {
-		return vertexPath
-	}
 	op boolean isCluster() {
 		return false
+	}
+
+	/*
+	 * Check if an AbstractActor is contained in a top-level graph.
+	 *
+	 * @return true if the containing graph is not contained by another graph, false otherwise.
+	 */
+	op boolean isAtTopLevel() {
+		val PiGraph parent = getContainingPiGraph;
+		return (parent !== null && parent.isAtTopLevel);
+	}
+
+	/**
+	 * Compute the full repetition vector (among all hierarchies) of an actor.
+	 *
+	 * @param graphBRV
+	 *          Repetition vector map of the whole graph.
+	 * @return Full repetition vector of the actor according to the hierarchy.
+	 */
+	op long getHierarchichalRV(EMap<AbstractVertex, Long> graphBRV) {
+		// We need to get the repetition vector of the graph
+		val long graphRV = graphBRV.getOrDefault(this, 1L);
+		// We also need to get the total repetition vector of the hierarchy to correctly flatten the hierarchy
+		var long graphHierarchicalRV = 1L;
+		var PiGraph containingGraph = getContainingPiGraph;
+		while (containingGraph !== null) {
+			var long currentGraphRV;
+			if (graphBRV.get(containingGraph) === null) {
+				currentGraphRV = 1L;
+			} else {
+				currentGraphRV = graphBRV.get(containingGraph);
+			}
+			graphHierarchicalRV = graphHierarchicalRV * currentGraphRV;
+			containingGraph = containingGraph.getContainingPiGraph;
+		}
+		// We update the value of the graphRV accordingly
+		return graphRV * graphHierarchicalRV;
 	}
 }
 
@@ -255,7 +308,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		fifoWithoutDelayIndex = edges.filter(Fifo).filter(f | f.getDelay() === null).length
 	}
 
-
 	op boolean isCluster() {
 		return clusterValue
 	}
@@ -272,6 +324,15 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		// and if the input setters on its config interfaces are static
 		// and if all its children graphs are locally static
 		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
+	}
+
+	/*
+	 * Check if a graph is the top-level graph.
+	 *
+	 * @return true if the current graph is the top-level graph, false otherwise.
+	 */
+	op boolean isAtTopLevel() {
+		return this.getContainingPiGraph() === null;
 	}
 
 	/*
@@ -514,6 +575,32 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return edges.remove(dep)
 	}
 	
+	/*
+	 * Remove dependencies of an actor, the configure input port if not used anymore.
+	 *
+	 * @param actor
+	 *          To remove from graph.
+	 */
+	op void removeActorIncomingDependencies(AbstractActor actor) {
+		for (ConfigInputPort cip : actor.getConfigInputPorts) {
+			val Dependency incomingDependency = cip.getIncomingDependency;
+			removeDependency(incomingDependency);
+			val ISetter setter = incomingDependency.getSetter;
+			setter.getOutgoingDependencies.remove(incomingDependency);
+
+			// Remove the setter if it is a Parameter and not in use anymore
+			if (setter instanceof Parameter && setter.getOutgoingDependencies.isEmpty
+				&& !(setter as Parameter).isConfigurationInterface) {
+				removeParameter(setter as Parameter);
+			}
+		}
+	}
+
+	op void removeActorAndDependencies(AbstractActor actor) {
+		removeActorIncomingDependencies(actor);
+		removeActor(actor);
+	}
+
 	op unique Parameter[] getOnlyParameters() {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
@@ -579,10 +666,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique ConfigOutputInterface[] getConfigOutputInterfaces() {
 		return actors.filter(ConfigOutputInterface).toEList.unmodifiableView
 	}
-	op unique InterfaceActor[] getDataInterfaces() {
-		return (getDataInputInterfaces + getDataOutputInterfaces).toEList.unmodifiableView
-	}
-	op Parameter lookupParameterGivenGraph(String parameterName , String graphName) {
+	op Parameter lookupParameterGivenGraph(String parameterName, String graphName) {
 		return allParameters.findFirst[it.name == parameterName && (it.containingPiGraph).name == graphName]
 	}
 	op AbstractVertex lookupVertex(String vertexName) {
@@ -608,7 +692,16 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Fifo[] getFifosWithoutDelay() {
 		return (fifos.filter[delay === null]).toEList.unmodifiableView
 	}
-
+	
+	/**
+	 * Resolve all parameter values of the reference PiGraph and its child sub-graph. 
+ 	 *
+	 * @ the PiMMHandlerException exception
+	 */
+      op unique void resolveAllParameters() { 
+val PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor 
+	piMMResolverVisitor.casePiGraph(this);}
+	
 	//Hugo Impl
 
 	op unique void replaceActor(AbstractActor oldActor, AbstractActor newActor) {
@@ -651,6 +744,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 
 		this.removeActor(oldActor)
 		this.addActor(newActor)
+
 
 
 	}
@@ -738,7 +832,7 @@ class InitActor extends SrdagActor, RefinementContainer {
 		return dataOutputPorts.get(0)
 	}
 	op long getDelaySize() {
-		return dataPort.portRateExpression.evaluate
+		return dataPort.portRateExpression.evaluateAsLong
 	}
 	op PersistenceLevel getPersistenceLevel() {
 		return level
@@ -861,6 +955,7 @@ abstract class DataPort extends Port, ExpressionHolder {
 		return actorName + portName;
 	}
 	op Fifo getFifo()
+	op DataPort getOppositePort()
 }
 
 class DataInputPort extends DataPort {
@@ -871,6 +966,12 @@ class DataInputPort extends DataPort {
 	op Fifo getFifo() {
 		return incomingFifo;
 	}
+	op DataOutputPort getOppositePort() {
+		if (incomingFifo !== null) {
+			return incomingFifo.sourcePort
+		}
+		return null
+	}
 }
 
 class DataOutputPort extends DataPort {
@@ -880,6 +981,12 @@ class DataOutputPort extends DataPort {
 	}
 	op Fifo getFifo() {
 		return outgoingFifo;
+	}
+	op DataInputPort getOppositePort() {
+		if (outgoingFifo !== null) {
+			return outgoingFifo.targetPort
+		}
+		return null
 	}
 }
 
@@ -1002,13 +1109,16 @@ interface InterfaceActor extends NonExecutableActor {
 	}
 }
 
-class DataInputInterface extends InterfaceActor {
+abstract class DataInterface extends InterfaceActor {
+}
+
+class DataInputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_INPUT
 	}
 }
 
-class DataOutputInterface extends InterfaceActor {
+class DataOutputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_OUTPUT
 	}

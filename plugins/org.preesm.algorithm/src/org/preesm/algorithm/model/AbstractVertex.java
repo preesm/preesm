@@ -283,9 +283,8 @@ public abstract class AbstractVertex<G> extends Observable
    * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
    */
   @Override
-  @SuppressWarnings("rawtypes")
   public void update(final Observable o, final Object arg) {
-    if ((arg instanceof final String str) && (o instanceof final AbstractEdge abstractEdge)) {
+    if ((arg instanceof final String str) && (o instanceof final AbstractEdge<?, ?> abstractEdge)) {
       final Object property = abstractEdge.getPropertyBean().getValue(str);
       if (property != null) {
         this.getPropertyBean().setValue((String) arg, property);
@@ -396,9 +395,8 @@ public abstract class AbstractVertex<G> extends Observable
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  @SuppressWarnings("rawtypes")
   public boolean equals(final Object e) {
-    if (e instanceof final AbstractVertex abstractVertex) {
+    if (e instanceof final AbstractVertex<?> abstractVertex) {
       return abstractVertex.getName().equals(this.getName());
     }
     return false;

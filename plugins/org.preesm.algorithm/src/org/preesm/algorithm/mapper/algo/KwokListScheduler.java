@@ -162,48 +162,38 @@ public class KwokListScheduler {
     ComponentInstance chosenOperator = null;
     // if operator is not overriden by init/end group constraint
     if (endReferenceOperator != null) {
-      chosenOperator = endReferenceOperator;
-    } else {
-      final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
-      if (opList.size() == 1) {
-        chosenOperator = opList.get(0);
-      } else {
-        for (final ComponentInstance currentoperator : opList) {
-          final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
-          // test the earliest ready operator
-          if (test < time) {
-            chosenOperator = currentoperator;
-            time = test;
-          }
-        }
+      return endReferenceOperator;
+    }
+    final List<ComponentInstance> opList = archisimu.getCandidateOperators(currentvertex, true);
+    if (opList.size() == 1) {
+      return opList.get(0);
+    }
+    for (final ComponentInstance currentoperator : opList) {
+      final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
+      // test the earliest ready operator
+      if (test < time) {
+        chosenOperator = currentoperator;
+        time = test;
       }
     }
     return chosenOperator;
   }
 
   private ComponentInstance getEndReferenceOperator(final MapperDAGVertex currentvertex) {
-    final ComponentInstance res;
     final String value = currentvertex.getPropertyBean().getValue("kind");
-    if (value != null
-        && (MapperDAGVertex.DAG_INIT_VERTEX.equals(value) || MapperDAGVertex.DAG_END_VERTEX.equals(value))) {
-      final String endReferenceName = currentvertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
-      switch (value) {
-        case MapperDAGVertex.DAG_INIT_VERTEX:
-          final MapperDAGVertex dagEndVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
-          final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
-          res = endEffectiveOperator;
-          break;
-        case MapperDAGVertex.DAG_END_VERTEX:
-          final MapperDAGVertex dagInitVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
-          final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
-          res = initEffectiveOperator;
-          break;
-        default:
-          res = null;
+    final String endReferenceName = currentvertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+    return switch (value) {
+      case MapperDAGVertex.DAG_INIT_VERTEX -> {
+        final MapperDAGVertex dagEndVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
+        final ComponentInstance endEffectiveOperator = dagEndVertex.getEffectiveOperator();
+        yield endEffectiveOperator;
       }
-    } else {
-      res = null;
-    }
-    return res;
+      case MapperDAGVertex.DAG_END_VERTEX -> {
+        final MapperDAGVertex dagInitVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
+        final ComponentInstance initEffectiveOperator = dagInitVertex.getEffectiveOperator();
+        yield initEffectiveOperator;
+      }
+      case null, default -> null;
+    };
   }
 }

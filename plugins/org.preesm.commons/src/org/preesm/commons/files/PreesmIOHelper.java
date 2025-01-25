@@ -171,8 +171,8 @@ public class PreesmIOHelper {
       throws CoreException {
     if (!folder.exists()) {
       final IContainer parent = folder.getParent();
-      if (parent instanceof final IFolder ifolder) {
-        createFolderRecursively(ifolder, force, local, null);
+      if (parent instanceof final IFolder parentFolder) {
+        createFolderRecursively(parentFolder, force, local, null);
       }
       folder.create(force, local, monitor);
     }

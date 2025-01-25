@@ -69,7 +69,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.SDFAbstractVertex#clone()
    */
   @Override
   public SDFJoinVertex copy() {
@@ -240,7 +240,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractVertex#connectionAdded(org.ietr.dftools.algorithm.model.AbstractEdge)
+   * @see org.preesm.algorithm.model.AbstractVertex#connectionAdded(org.preesm.algorithm.model.AbstractEdge)
    */
   @SuppressWarnings("rawtypes")
   @Override
@@ -252,7 +252,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    * (non-Javadoc)
    *
    * @see
-   * org.ietr.dftools.algorithm.model.AbstractVertex#connectionRemoved(org.ietr.dftools.algorithm.model.AbstractEdge)
+   * org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
    */
   @SuppressWarnings("rawtypes")
   @Override
@@ -264,7 +264,7 @@ public class SDFJoinVertex extends SDFAbstractSpecialVertex {
    * (non-Javadoc)
    *
    * @see
-   * org.ietr.dftools.algorithm.model.AbstractVertex#copyProperties(org.ietr.dftools.algorithm.model.PropertySource)
+   * org.preesm.algorithm.model.AbstractVertex#copyProperties(org.preesm.algorithm.model.PropertySource)
    */
   @Override
   public void copyProperties(final PropertySource props) {

@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.ResourcesPlugin;
@@ -188,7 +190,9 @@ public class IntranodeBuilder {
       final int index = Integer.parseInt(subgraph.getName().replace("sub", ""));
 
       // Create source/sink actors for DataInterfaces
-      for (final InterfaceActor dataInterface : subgraph.getDataInterfaces()) {
+      for (final InterfaceActor dataInterface : Stream
+          .concat(subgraph.getDataOutputInterfaces().stream(), subgraph.getDataInputInterfaces().stream())
+          .collect(Collectors.toList())) {
 
         Actor actor;
 
@@ -304,7 +308,7 @@ public class IntranodeBuilder {
 
           // Creating replacement parameter
           final Parameter parameter = PiMMUserFactory.instance.createParameter(cii.getName(),
-              ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluate());
+              ((Parameter) cii.getGraphPort().getIncomingDependency().getSource()).getExpression().evaluateAsLong());
 
           // Adding replacement parameter to graph
           subgraph.addParameter(parameter);
@@ -375,8 +379,9 @@ public class IntranodeBuilder {
     for (final DataInputPort in : key.getDataInputPorts()) {
       if (!in.getFifo().isHasADelay()) {
 
-        final Long dt = in.getFifo().getSourcePort().getExpression().evaluate() * brv.get(in.getFifo().getSource());
-        final Long rt = in.getExpression().evaluate();
+        final Long dt = in.getFifo().getSourcePort().getExpression().evaluateAsLong()
+            * brv.get(in.getFifo().getSource());
+        final Long rt = in.getExpression().evaluateAsLong();
 
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in", dt);
@@ -416,8 +421,9 @@ public class IntranodeBuilder {
     for (final DataOutputPort out : key.getDataOutputPorts()) {
       if (!out.getFifo().isHasADelay()) {
 
-        final Long dt = out.getFifo().getTargetPort().getExpression().evaluate() * brv.get(out.getFifo().getTarget());
-        final Long rt = out.getExpression().evaluate();
+        final Long dt = out.getFifo().getTargetPort().getExpression().evaluateAsLong()
+            * brv.get(out.getFifo().getTarget());
+        final Long rt = out.getExpression().evaluateAsLong();
 
         // connect Join to dout
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out", dt);
@@ -434,7 +440,7 @@ public class IntranodeBuilder {
 
         // connect duplicated actors to Join
         final DataInputPort dinn = PiMMUserFactory.instance.createDataInputPort("in_" + 1,
-            dt - (rv2 - rv1) * out.getFifo().getSourcePort().getExpression().evaluate());
+            dt - (rv2 - rv1) * out.getFifo().getSourcePort().getExpression().evaluateAsLong());
 
         final Fifo finn = PiMMUserFactory.instance.createFifo();
         finn.setType(fout.getType());

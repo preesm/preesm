@@ -93,15 +93,7 @@ public class ParameterCombinationExplorer {
   protected void resetIndex(int index) {
     final MoldableParameterIR mpir = mparamsIR.get(index);
     mpir.currentExprIndex = 1;
-    if (mpir.values.isEmpty()) {
-      final String expr = mpir.exprs.get(0);
-      mpir.mp.setExpression(expr);
-      scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), expr);
-    } else {
-      final Long value = mpir.values.get(0);
-      mpir.mp.setExpression(value);
-      scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), value.toString());
-    }
+    overrideParameterInScenario(mpir, 0);
   }
 
   /**
@@ -122,19 +114,10 @@ public class ParameterCombinationExplorer {
       resetIndex(index);
       if (mparamsIR.size() - 1 == index) {
         return false;
-      } else {
-        return setNext(index + 1);
       }
+      return setNext(index + 1);
     }
-    if (lmpir.values.isEmpty()) {
-      final String expr = lmpir.exprs.get(lmpir.currentExprIndex);
-      lmpir.mp.setExpression(expr);
-      scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), expr);
-    } else {
-      final Long value = lmpir.values.get(lmpir.currentExprIndex);
-      lmpir.mp.setExpression(value);
-      scenario.getParameterValues().put(mparamTOscenarParam.get(lmpir.mp), value.toString());
-    }
+    overrideParameterInScenario(lmpir, lmpir.currentExprIndex);
     lmpir.currentExprIndex += 1;
     return true;
   }
@@ -168,17 +151,21 @@ public class ParameterCombinationExplorer {
         return false;
       }
       mpir.currentExprIndex = index;
-      if (mpir.values.isEmpty()) {
-        final String expr = mpir.exprs.get(mpir.currentExprIndex);
-        mpir.mp.setExpression(expr);
-        scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), expr);
-      } else {
-        final Long value = mpir.values.get(mpir.currentExprIndex);
-        mpir.mp.setExpression(value);
-        scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), value.toString());
-      }
+      overrideParameterInScenario(mpir, mpir.currentExprIndex);
     }
     return true;
+  }
+
+  private void overrideParameterInScenario(MoldableParameterIR mpir, int index) {
+    if (mpir.values.isEmpty()) {
+      final String expr = mpir.exprs.get(index);
+      mpir.mp.setExpression(expr);
+      scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), expr);
+    } else {
+      final Long value = mpir.values.get(index);
+      mpir.mp.setExpression(value);
+      scenario.getParameterValues().put(mparamTOscenarParam.get(mpir.mp), value.toString());
+    }
   }
 
 }

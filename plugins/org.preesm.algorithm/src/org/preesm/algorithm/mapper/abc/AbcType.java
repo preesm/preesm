@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  * Pengcheng Mu [pengcheng.mu@insa-rennes.fr] (2008)
@@ -87,7 +88,6 @@ public enum AbcType {
    */
   @Override
   public String toString() {
-
     return this.name;
   }
 

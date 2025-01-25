@@ -41,6 +41,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -131,10 +133,12 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       // apply scaling
       final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
-      for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
-        iActor.getGraphPort().setExpression(
-            iActor.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
+      for (final InterfaceActor iActor : Stream
+          .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
+          .collect(Collectors.toList())) {
+        iActor.getGraphPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong());
 
       }
 
@@ -183,7 +187,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         // connect interface to the new broadcast
         final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
         dataInputPort.setName("in");
-        final Long dt = map.getValue().get(0).getDataPort().getExpression().evaluate();
+        final Long dt = map.getValue().get(0).getDataPort().getExpression().evaluateAsLong();
         dataInputPort.setExpression(dt);
         brd.getDataInputPorts().add(dataInputPort);
         final Fifo fin = PiMMUserFactory.instance.createFifo();
@@ -222,14 +226,17 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     }
 
     subGraph.getAllDataPorts().forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
-    subGraph.getDataInterfaces()
+    Stream.concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
+        .collect(Collectors.toList())
         .forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
   }
 
   private Map<BroadcastActor, List<InterfaceActor>> redundantFIFOMap(PiGraph subGraph) {
     final Map<BroadcastActor, List<InterfaceActor>> sourceMap = new HashMap<>();
     // Identify the mergeable buffer
-    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+    for (final InterfaceActor iActor : Stream
+        .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
+        .collect(Collectors.toList())) {
       if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
         // Check if the map already contains the broadcast actor
         if (sourceMap.containsKey(broadcast)) {
@@ -248,10 +255,12 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   }
 
   public static void reduceMemExMatches(PiGraph subGraph, Long scale, Map<AbstractVertex, Long> rv) {
-    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+    for (final InterfaceActor iActor : Stream
+        .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
+        .collect(Collectors.toList())) {
       if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
-        final Long brdInput = broadcast.getDataInputPorts().get(0).getExpression().evaluate();
-        final long interfaceRate = iActor.getGraphPort().getExpression().evaluate();
+        final Long brdInput = broadcast.getDataInputPorts().get(0).getExpression().evaluateAsLong();
+        final long interfaceRate = iActor.getGraphPort().getExpression().evaluateAsLong();
         final DataInputPort targetPort = iActor.getDataPort().getFifo().getTargetPort();
         // set output broadcast expression
         iActor.getGraphPort().getFifo().getSourcePort().setExpression(brdInput * scale);
@@ -370,7 +379,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
     // Calculate sum for DataPorts
     sum += dataPortList.stream().mapToLong(dataPort -> {
-      final Long gpuInputSize = dataPort.getPortRateExpression().evaluate();
+      final Long gpuInputSize = dataPort.getPortRateExpression().evaluateAsLong();
       return (long) (memoryToUse.equalsIgnoreCase("unified") ? ((double) gpuInputSize / unifiedMemSpeed)
           : ((double) gpuInputSize / dedicatedMemSpeed));
     }).sum();
@@ -384,7 +393,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       final boolean onCpuAndNextOnGpu = ((AbstractActor) target).isOnGPU() && !((AbstractActor) act).isOnGPU();
       return onGpuAndNextOnCpu || onCpuAndNextOnGpu;
     }).mapToLong(outPort -> {
-      final Long gpuInputSize = outPort.getPortRateExpression().evaluate();
+      final Long gpuInputSize = outPort.getPortRateExpression().evaluateAsLong();
       return (long) (memoryToUse.equalsIgnoreCase("unified") ? (double) gpuInputSize / unifiedMemSpeed
           : (double) gpuInputSize / dedicatedMemSpeed);
     }).sum();
@@ -404,7 +413,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
     Long scale;
     if (scapeMode == ScapeMode.DATA
-        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+        && Stream.concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
+            .collect(Collectors.toList()).stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
       final Long ratio = computeDelayRatio(subGraph);
       scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {
@@ -420,8 +430,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     long count = 0L;
     for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
       if (din.getGraphPort().getFifo().isHasADelay()) {
-        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluate()
-            / din.getGraphPort().getExpression().evaluate();
+        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluateAsLong()
+            / din.getGraphPort().getExpression().evaluateAsLong();
         count = Math.max(count, ratio);
       }
     }

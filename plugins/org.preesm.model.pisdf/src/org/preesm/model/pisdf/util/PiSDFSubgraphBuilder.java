@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2022) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -89,6 +89,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
    * List of visited Fifo in order to explore the PiGraph.
    */
   private final List<Fifo> visitedFifo;
+
   /**
    * Number of input interface of builded subgraph.
    */
@@ -196,9 +197,9 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       inputPort.setName(inputName); // same name than DataInputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
-      long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
+      long portExpression = object.getExpression().evaluateAsLong() * actorRepetition / this.subGraphRepetition;
       if (object.getContainingActor() instanceof DelayActor) {
-        portExpression = object.getFifo().getTargetPort().getExpression().evaluate();
+        portExpression = object.getFifo().getTargetPort().getExpression().evaluateAsLong();
       }
       inputPort.setExpression(portExpression);
 
@@ -240,6 +241,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       if (this.subGraph.getName().matches("^sub\\d+")) {
         outputName = "out_" + this.nbOutputInterface++;
       }
+
       outputInterface.setName(outputName);
       outputInterface.getDataPort().setName(outputName);
       this.subGraph.addActor(outputInterface);
@@ -249,9 +251,9 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       outputPort.setName(outputName); // same name than DataOutputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
-      long portExpression = object.getExpression().evaluate() * actorRepetition / this.subGraphRepetition;
+      long portExpression = object.getExpression().evaluateAsLong() * actorRepetition / this.subGraphRepetition;
       if (object.getContainingActor() instanceof DelayActor) {
-        portExpression = object.getFifo().getSourcePort().getExpression().evaluate();
+        portExpression = object.getFifo().getSourcePort().getExpression().evaluateAsLong();
       }
       outputPort.setExpression(portExpression);
 
@@ -305,6 +307,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       // Setup input of hierarchical actor
       final ConfigInputPort inputPort = inputInterface.getGraphPort();
       inputPort.setName(inputCfgName); // same name than ConfigInputInterface
+
 
       // Interconnect the outside with hierarchical actor
       if (Boolean.FALSE.equals(interfaceExist)) {

@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,7 +48,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  *
@@ -69,7 +69,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
   protected void fillRemoveAndReplace(final List<T> oldDataPorts, final List<T> newDataPorts, final T port) {
     final int index = oldDataPorts.indexOf(port) + this.portOffset;
     this.portOffset += newDataPorts.size() - 1;
-    // Adding short suffixe
+    // Adding short suffix
     newDataPorts.forEach(d -> d.setName(d.getName() + "_" + Integer.toString(this.portOffset)));
     this.dataPortsToRemove.add(port);
     this.dataPortsToReplace.put(index, newDataPorts);
@@ -102,7 +102,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
         return false;
       }
       final Expression inputRateExpression = dataInputPort.getPortRateExpression();
-      final long inputRate = inputRateExpression.evaluate();
+      final long inputRate = inputRateExpression.evaluateAsLong();
       // 1. Get output rate
       final DataOutputPort dataOutputPort = actor.getDataOutputPorts().get(0);
       final Fifo dopFifo = dataOutputPort.getFifo();
@@ -110,7 +110,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
         return false;
       }
       final Expression outputRateExpression = dataOutputPort.getPortRateExpression();
-      final long outputRate = outputRateExpression.evaluate();
+      final long outputRate = outputRateExpression.evaluateAsLong();
       if (inputRate == outputRate) {
         // 2. We can remove one of the FIFO and the actor
         if (dipFifo.getDelay() == null) {
@@ -122,7 +122,7 @@ public abstract class AbstractPiGraphSpecialActorRemover<T extends DataPort> {
         } else {
           return false;
         }
-        PiMMHelper.removeActorAndDependencies(graph, actor);
+        graph.removeActorAndDependencies(actor);
         return true;
       }
     }

@@ -4,8 +4,8 @@ Element-Name: scenario-generate-2-expectedworkspace
 Element-Type: verification
 Element-Version: 2.0
 Id: _TdLogAOcEem9q69sJFZzEg
-Runtime-Version: 2.5.1.M3
-Save-Time: 12/21/21, 4:23 PM
+Runtime-Version: 2.5.4.202210020716
+Save-Time: 9/9/24, 3:59 PM
 Verification-Type: org.eclipse.rcptt.verifications.workspace
 
 ------=_contents/org.ietr.preesm.reinforcement_learning/Spider/include/actor.h-6d2b2336-bd9f-36af-aebd-84fb520c099f
@@ -86,18 +86,18 @@ AC5jb250ZW50VVQFAAEAAAAAUEsFBgAAAAABAAEAPwAAAKMCAAAAAA==
 Content-Type: q7/binary
 Entry-Name: contents/org.ietr.preesm.sobel/Scenarios/01-simple_display_1CoreX86.scenario
 
-UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAAC9VEtv4jAQvvdXWL43
-hkvFIVCxlFYctlRbQN0TcpMheNcv2U4F++t38oIkZZF62Vxiz3z55pFvJr4/KEk+wHlh9JgOowEloBOT
-Cp2N6Xr1eDui95Ob2CeguRNmckPwiXeSZ746l3cv/oCfOljobyKwGsRaqHgnJLS/4DIzToS9IrmTY8qM
-yyIBwUXWAXgVefMOkk0RxQbDWy+UlbBNhbeSHyMrKGtzuWQvAiQhd3CdrgCy4cw4eBvdRV5y1SHCuiED
-/SAckhl3vEo2QzBDNDgeIGX0XPa5VGTUPjgudPAEDgnIdcFIOzEbxJMzuT17Sq+xBb1xRHMFY1pkPmin
-XIIC979rwKdesR/A0+3P9eZrX9XvTnfYxVTb5qbqIBTq518VV15ibBX8MLqjBG14HA4GtJNkBQ1Hi875
-23y2Xi2Wz9vV4vucFqINcPhK2f8ncq91Mau7UV8Rnb9wx1V7GhR2r/i3k/IHx+x070PUM6pu4vfcQbpV
-oBpoZW+NBObIM3jggb/ibE6wPqTtW8/4FE0rLNb3RNLYa6HkCUampBj3MR111XGBIvYWEsHlpmzYstZy
-P8ZFELE87C8IPmbXONHba29siwsEcBsuc/DsZLZid5wZvRMoVFyClUwbdzHW2Wd3Kw8MvDNOcZ3A8v0X
-7gvxAcQ0p/nLK2oj6qZuYVqsFT8vyU/66MTCXcvOy/YvUEsHCNpOKrwOAgAAnwUAAFBLAQIUABQACAgI
-AAAAIQDaTiq8DgIAAJ8FAAAIAAkAAAAAAAAAAAAAAAAAAAAuY29udGVudFVUBQABAAAAAFBLBQYAAAAA
-AQABAD8AAABNAgAAAAA=
+UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAAC1VEtv4jAQvvdXWL43
+hkvFIVCxlFYctlRbQN0TcpMheNcv2U4F++t3EhLyKIvUw+YSe+bzNw9/nvj+oCT5AOeF0WM6jAaUgE5M
+KnQ2puvV4+2I3k9uYp+A5k6YyQ3BL95JnvnTutx78Qf81MFCfxOBVSDWQsU7IaF9gsvMOBH2iuROjikz
+LosEBBdZB+BV5M07SDZFFBsMb71QVsI2Fd5KfoysoKzN5ZK9CJCE3MF1ugLIhjPj4G10F3nJVYcI64YM
+9INwSGbc8SrZDMEM0eB4gJTRpuymVGTUPjgudPAEDgnIdcFIOzFrxJMzuW08pdfYgt44ormCMS0yH7RT
+LkGB+98V4FOv2A/g6fbnevO1U9W/0x12MdW2ua46CIX6+VfFJy8x9hT8MLqjBG24HA4G5RLd4WjRMH+b
+z9arxfJ5u1p8n9NCqAEOXyn1/0XrtShmVdXVFtH5C3dctVWvsEvFHU7Ki4zZed+HqGdU18TvuYN0q0DV
+0JO9JX3MkWfwwAN/xTc4wZqQtm9t8CmaVlis74mhtleCyBOMTEnxrMd01FXBBYrYW0gEl5uyYctKs/0Y
+F0HE8rC/IOyYXeNEb6+9sS02EMBtuMzBs7PZit1xZvROoCBx2J3kWLuL55t9drfywMA74xTXCSzff+Fc
+EB9ATL2av7yiNqJu6hamxfjw85L8rI9OLJyprBmqfwFQSwcIa1qPYg0CAACHBQAAUEsBAhQAFAAICAgA
+AAAhAGtaj2INAgAAhwUAAAgACQAAAAAAAAAAAAAAAAAAAC5jb250ZW50VVQFAAEAAAAAUEsFBgAAAAAB
+AAEAPwAAAEwCAAAAAA==
 ------=_contents/org.ietr.preesm.sobel/Scenarios/01-simple_display_1CoreX86.scenario-cd07d348-8dce-3d17-95dc-47c6342f0e67--
 ------=_contents/org.ietr.preesm.sobel/Workflows/Codegen.workflow-79c4da17-9b60-31ce-b717-3c96e188d0aa
 Content-Type: q7/binary
@@ -351,6 +351,15 @@ SPBtUrDc/qV/FlJwqE8ACzqlg2T57d9fUTUXLOx3emhTgLw+zvfUoU6K9MVz3BNraWeoSZ1Ox4lhBD3x
 AG0ZAABQSwECFAAUAAgICAAAACEAAuj2nf4DAABtGQAACAAJAAAAAAAAAAAAAAAAAAAALmNvbnRlbnRV
 VAUAAQAAAABQSwUGAAAAAAEAAQA/AAAAPQQAAAAA
 ------=_contents/org.ietr.preesm.reinforcement_learning/Algo/training-dynamic/actor_train.pi-a0721355-e381-39d4-9080-6d21c37e26a9--
+------=_contents/org.ietr.preesm.reinforcement_learning/.settings/org.eclipse.core.resources.prefs-73c11d76-e97c-3ddf-a998-093e51819869
+Content-Type: q7/binary
+Entry-Name: contents/org.ietr.preesm.reinforcement_learning/.settings/org.eclipse.core.resources.prefs
+
+UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAABLTc7JLChO1SsoSk1L
+LUrNS04t1itLLSrOzM+zNeQC8vNTMvPS9W0KivKzUpNL7GxDQ9x0LbgAUEsHCA3o3k03AAAANwAAAFBL
+AQIUABQACAgIAAAAIQAN6N5NNwAAADcAAAAIAAkAAAAAAAAAAAAAAAAAAAAuY29udGVudFVUBQABAAAA
+AFBLBQYAAAAAAQABAD8AAAB2AAAAAAA=
+------=_contents/org.ietr.preesm.reinforcement_learning/.settings/org.eclipse.core.resources.prefs-73c11d76-e97c-3ddf-a998-093e51819869--
 ------=_contents/org.ietr.preesm.reinforcement_learning/Algo/prediction/mlp.pi-469596c6-8b49-3e30-8955-8b3a2315c996
 Content-Type: q7/binary
 Entry-Name: contents/org.ietr.preesm.reinforcement_learning/Algo/prediction/mlp.pi
@@ -649,6 +658,15 @@ uPxCMW5Mvy66hf6zdzVbVP/6rmb/AFBLBwjSAx8MawMAAD0WAABQSwECFAAUAAgICAAAACEA0gMfDGsD
 AAA9FgAACAAJAAAAAAAAAAAAAAAAAAAALmNvbnRlbnRVVAUAAQAAAABQSwUGAAAAAAEAAQA/AAAAqgMA
 AAAA
 ------=_contents/org.ietr.preesm.reinforcement_learning/Algo/prediction/prediction.pi-ca800f3e-edad-3869-876f-463f9638b1c4--
+------=_contents/org.ietr.preesm.sobel/.settings/org.eclipse.core.resources.prefs-b60a3adb-7b06-351b-8e0c-12027f228bfa
+Content-Type: q7/binary
+Entry-Name: contents/org.ietr.preesm.sobel/.settings/org.eclipse.core.resources.prefs
+
+UEsDBBQACAgIAAAAIQAAAAAAAAAAAAAAAAAIAAkALmNvbnRlbnRVVAUAAQAAAABLTc7JLChO1SsoSk1L
+LUrNS04t1itLLSrOzM+zNeQC8vNTMvPS9W0KivKzUpNL7GxDQ9x0LbgAUEsHCA3o3k03AAAANwAAAFBL
+AQIUABQACAgIAAAAIQAN6N5NNwAAADcAAAAIAAkAAAAAAAAAAAAAAAAAAAAuY29udGVudFVUBQABAAAA
+AFBLBQYAAAAAAQABAD8AAAB2AAAAAAA=
+------=_contents/org.ietr.preesm.sobel/.settings/org.eclipse.core.resources.prefs-b60a3adb-7b06-351b-8e0c-12027f228bfa--
 ------=_contents/org.ietr.preesm.reinforcement_learning/Code/include/actor.h-6167e303-f9dd-3aee-b4e5-7e74e5543c5b
 Content-Type: q7/binary
 Entry-Name: contents/org.ietr.preesm.reinforcement_learning/Code/include/actor.h
@@ -1491,20 +1509,21 @@ dFVUBQABAAAAAFBLBQYAAAAAAQABAD8AAACTGQAAAAA=
 Content-Type: q7/binary
 Entry-Name: .q7.content
 
-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
+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
+
 ------=_.q7.content-3d2e0690-ce48-3609-83e0-c704d49f1eaf--
 ------=_contents/org.ietr.preesm.reinforcement_learning/Algo/training/mlp_raw.pi-c820c424-f818-3057-8bf9-2d5379b42ba3
 Content-Type: q7/binary

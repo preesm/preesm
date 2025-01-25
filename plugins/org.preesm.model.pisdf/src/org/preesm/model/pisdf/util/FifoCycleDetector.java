@@ -198,32 +198,31 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     final Set<AbstractActor> successors = new LinkedHashSet<>();
     for (final DataOutputPort port : actor.getDataOutputPorts()) {
       final Fifo outgoingFifo = port.getOutgoingFifo();
-      if ((outgoingFifo != null)) {
-        if (!this.ignoredFifos.contains(outgoingFifo)) {
-          final DataInputPort dp = outgoingFifo.getTargetPort();
-          if (!(dp.eContainer() instanceof final AbstractActor abstractActor)) {
-            throw new PreesmRuntimeException("UNEXPECTED");
-          }
-          successors.add(abstractActor);
+      if (outgoingFifo == null) {
+        continue;
+      }
+      if (!this.ignoredFifos.contains(outgoingFifo)) {
+        final DataInputPort dp = outgoingFifo.getTargetPort();
+        if (!(dp.eContainer() instanceof final AbstractActor abstractActor)) {
+          throw new PreesmRuntimeException("UNEXPECTED");
         }
-        // if there is a delay actor, it may also introduce a dependency by its setter or getter
-        final Delay delay = outgoingFifo.getDelay();
-        if (delay != null) {
-          final AbstractActor getter = delay.getGetterActor();
-          if (getter != null && !this.ignoredFifos.contains(delay.getActor().getDataOutputPort().getFifo())) {
-            final Set<
-                AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
-            lSources.add(actor);
-            successors.add(getter);
-          }
+        successors.add(abstractActor);
+      }
+      // if there is a delay actor, it may also introduce a dependency by its setter or getter
+      final Delay delay = outgoingFifo.getDelay();
+      if (delay != null) {
+        final AbstractActor getter = delay.getGetterActor();
+        if (getter != null && !this.ignoredFifos.contains(delay.getActor().getDataOutputPort().getFifo())) {
+          final Set<AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
+          lSources.add(actor);
+          successors.add(getter);
         }
       }
     }
     // second, visit all successors
     for (final AbstractActor aa : successors) {
       doSwitch(aa);
-      // If fast detection is activated and a cycle was detected, get
-      // out of here!
+      // If fast detection is activated and a cycle was detected, get out of here!
       if (this.fastDetection && cyclesDetected()) {
         break;
       }
@@ -359,10 +358,8 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     int indexFF = -1;
     for (final List<Fifo> edgeFifos : cycleFifosPerEdge) {
       indexFF += 1;
-      boolean hasDelays = true;
-      for (final Fifo fifo : edgeFifos) {
-        hasDelays &= (fifo.getDelay() != null);
-      }
+
+      final boolean hasDelays = edgeFifos.stream().anyMatch(Fifo::isHasADelay);
 
       if (hasDelays) {
         // Keep the shortest list of feedback delay

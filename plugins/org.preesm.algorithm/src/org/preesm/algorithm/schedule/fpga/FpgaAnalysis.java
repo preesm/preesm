@@ -1,6 +1,7 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2024) :
  *
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -113,8 +114,8 @@ public class FpgaAnalysis {
       if (iaPort instanceof DataOutputPort) {
         aaPort = iaPort.getFifo().getTargetPort();
       }
-      final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluate();
-      final long iaRate = iaPort.getExpression().evaluate();
+      final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluateAsLong();
+      final long iaRate = iaPort.getExpression().evaluateAsLong();
       if (aaRate % iaRate != 0) {
         PreesmLogger.getLogger().warning(
             "Interface rate of " + ia.getName() + " does not divide the total rate of the actor connected to it.");

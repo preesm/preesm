@@ -112,7 +112,7 @@ public class PipelineCycleInfo {
         // connect target delay to a new input interface
         final DataInputPort delayedActorPortIn = delay.getContainingFifo().getTargetPort();
         final String type = delay.getContainingFifo().getType();
-        final Long expressionIn = delayedActorPortIn.getExpression().evaluate();
+        final Long expressionIn = delayedActorPortIn.getExpression().evaluateAsLong();
 
         final DataInputInterface delayInterface = PiMMUserFactory.instance.createDataInputInterface();
         delayInterface.setContainingGraph(subGraph);
@@ -129,7 +129,7 @@ public class PipelineCycleInfo {
 
         // connect source delay to a new output interface
         final DataOutputPort delayedActorPortout = delay.getContainingFifo().getSourcePort();
-        final Long expressionOut = delayedActorPortout.getExpression().evaluate();
+        final Long expressionOut = delayedActorPortout.getExpression().evaluateAsLong();
 
         final DataOutputInterface delayInterfaceOut = PiMMUserFactory.instance.createDataOutputInterface();
         delayInterfaceOut.setContainingGraph(subGraph);

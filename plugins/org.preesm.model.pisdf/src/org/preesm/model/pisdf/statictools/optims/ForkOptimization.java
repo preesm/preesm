@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2021) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -45,7 +46,6 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * @author farresti
@@ -83,9 +83,11 @@ public class ForkOptimization extends AbstractPiGraphSpecialActorRemover<DataOut
       }
       final DataInputPort targetPort = outgoingFifo.getTargetPort();
       final AbstractActor targetActor = targetPort.getContainingActor();
-      if (targetActor instanceof ForkActor && dop.getExpression().evaluate() == targetPort.getExpression().evaluate()) {
+      if (targetActor instanceof ForkActor
+          && dop.getExpression().evaluateAsLong() == targetPort.getExpression().evaluateAsLong()) {
         fillRemoveAndReplace(actor.getDataOutputPorts(), targetActor.getDataOutputPorts(), dop);
-        PiMMHelper.removeActorAndFifo(graph, outgoingFifo, targetActor);
+        graph.removeActorAndDependencies(targetActor);
+        graph.removeFifo(outgoingFifo);
       }
     }
 

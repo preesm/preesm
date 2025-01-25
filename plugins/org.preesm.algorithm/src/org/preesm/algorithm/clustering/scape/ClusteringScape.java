@@ -152,12 +152,12 @@ public class ClusteringScape extends ClusterPartitioner {
         // apply scaling
         final Long scale = brv.get(subGraph);
         for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-          din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluate() * scale);
-          din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
+          din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong() * scale);
+          din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
         }
         for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-          dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluate() * scale);
-          dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+          dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong() * scale);
+          dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong());
         }
       }
     }
@@ -372,7 +372,7 @@ public class ClusteringScape extends ClusterPartitioner {
       for (final DataOutputPort out : a.getDataOutputPorts()) {
         if (!(out.getFifo().getTarget() instanceof DataOutputInterface)) {
           final Long typeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(out.getFifo().getType());
-          mem += out.getExpression().evaluate() * typeInBit;
+          mem += out.getExpression().evaluateAsLong() * typeInBit;
         }
       }
 

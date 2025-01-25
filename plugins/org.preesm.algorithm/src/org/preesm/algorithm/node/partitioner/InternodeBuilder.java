@@ -137,7 +137,7 @@ public class InternodeBuilder {
       d.setName(((AbstractActor) f.getSource()).getName() + "_out_" + ((AbstractActor) f.getTarget()).getName() + "_in_"
           + index);
       d.setLevel(PersistenceLevel.PERMANENT);
-      d.setExpression(f.getSourcePort().getExpression().evaluate());
+      d.setExpression(f.getSourcePort().getExpression().evaluateAsLong());
       d.setContainingGraph(f.getContainingGraph());
       f.assignDelay(d);
       d.getActor().setContainingGraph(f.getContainingGraph());

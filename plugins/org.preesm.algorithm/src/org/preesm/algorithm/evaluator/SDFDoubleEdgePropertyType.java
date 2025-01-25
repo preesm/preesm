@@ -34,7 +34,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-//TODO put in : package org.ietr.dftools.algorithm.model.sdf.types;
+//TODO put in : package org.preesm.algorithm.model.sdf.types;
 
 package org.preesm.algorithm.evaluator;
 

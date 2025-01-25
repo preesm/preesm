@@ -8,7 +8,7 @@ Require-Bundle: org.preesm.ui,
  org.preesm.model.slam,
  org.eclipse.swt
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Export-Package: org.preesm.ui.slam,
  org.preesm.ui.slam.filters,

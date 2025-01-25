@@ -5,7 +5,20 @@ Automatic-Module-Name: org.preesm.model.scenario
 Bundle-SymbolicName: org.preesm.model.scenario;singleton:=true
 Bundle-Version: 3.21.0.qualifier
 Bundle-ClassPath: .
+Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.preesm.model.scenario,
+ org.preesm.model.scenario.impl,
+ org.preesm.model.scenario.util
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.emf.ecore;visibility:=reexport,
+ org.eclipse.xtext.xbase.lib,
+ org.eclipse.emf.ecore.xcore.lib,
+ org.preesm.model.slam;visibility:=reexport,
+ org.preesm.model.pisdf;visibility:=reexport,
+ org.preesm.commons;visibility:=reexport
+Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.core.resources,
@@ -16,7 +29,7 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.model.slam;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport,
  org.preesm.commons;visibility:=reexport,
- org.apache.commons.io;bundle-version="2.6.0",
+ org.apache.commons.commons-io;bundle-version="2.17.0",
  wrapped.net.sourceforge.jexcelapi.jxl,
  org.apache.commons.lang3;bundle-version="3.8.1"
 Bundle-ActivationPolicy: lazy

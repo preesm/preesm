@@ -191,7 +191,7 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
 
     final PiGraph graph = (PiGraph) bo;
 
-    final Point selelection = this.txtPeriod.getSelection();
+    final Point selection = this.txtPeriod.getSelection();
     final boolean expressionHasFocus = this.txtPeriod.isFocusControl();
 
     boolean periodVisible = false;
@@ -211,7 +211,7 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
 
         try {
           // try out evaluating the expression
-          final long evaluate = periodicExp.evaluate();
+          final long evaluate = periodicExp.evaluateAsLong();
           if (evaluate < 0) {
             throw new IllegalArgumentException("Period cannot be negative: either positive or 0 if aperiodic.");
           }
@@ -230,7 +230,7 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
 
         if (expressionHasFocus) {
           this.txtPeriod.setFocus();
-          this.txtPeriod.setSelection(selelection);
+          this.txtPeriod.setSelection(selection);
         }
       }
 

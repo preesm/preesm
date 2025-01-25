@@ -429,10 +429,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
     // init coreBlocks
     for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
-
-      if (cmp.getComponent() instanceof CPU) {
-        this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
-      }
+      this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
     }
 
     // 1 - iterate over dag vertices in SCHEDULING Order !
@@ -440,8 +437,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     scheduledDAGIterator.forEachRemaining(vert -> {
 
       // 1.0 - Identify the core used.
-      // This call can not fail as checks were already performed in
-      // the constructor
+      // This call can not fail as checks were already performed in the constructor
       final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.

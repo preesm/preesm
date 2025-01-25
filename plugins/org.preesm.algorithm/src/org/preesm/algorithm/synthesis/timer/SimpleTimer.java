@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2020)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -62,7 +63,7 @@ public class SimpleTimer extends AgnosticTimer {
 
   /**
    * Compute WCET of actors, based on the scenario information.
-   * 
+   *
    * @param scenario
    *          Scenario of the application.
    * @param mapping
@@ -79,9 +80,9 @@ public class SimpleTimer extends AgnosticTimer {
   public long computeSpecialActorTiming(final UserSpecialActor userSpecialActor) {
 
     final long totalInRate = userSpecialActor.getDataInputPorts().stream()
-        .mapToLong(port -> port.getPortRateExpression().evaluate()).sum();
+        .mapToLong(port -> port.getPortRateExpression().evaluateAsLong()).sum();
     final long totalOutRate = userSpecialActor.getDataOutputPorts().stream()
-        .mapToLong(port -> port.getPortRateExpression().evaluate()).sum();
+        .mapToLong(port -> port.getPortRateExpression().evaluateAsLong()).sum();
 
     final long maxRate = Math.max(totalInRate, totalOutRate);
 
@@ -91,11 +92,11 @@ public class SimpleTimer extends AgnosticTimer {
       final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
       wcet = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
     } else {
-      Set<Component> cmps = scenario.getPossibleMappings(userSpecialActor).stream().map(x -> x.getComponent())
+      final Set<Component> cmps = scenario.getPossibleMappings(userSpecialActor).stream().map(x -> x.getComponent())
           .collect(Collectors.toSet());
       for (final Component cmp : cmps) {
         final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(cmp);
-        long et = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
+        final long et = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
         if (et > wcet) {
           wcet = et;
         }

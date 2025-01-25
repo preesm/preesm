@@ -40,7 +40,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.CodeElt;
-import org.preesm.codegen.model.util.CodegenModelUserFactory;
+import org.preesm.codegen.model.CodegenFactory;
 
 /**
  */
@@ -48,7 +48,7 @@ public class ActorBlockTest {
 
   @Test
   public void testConstruct() {
-    final ActorBlock actor = CodegenModelUserFactory.eINSTANCE.createActorBlock();
+    final ActorBlock actor = CodegenFactory.eINSTANCE.createActorBlock();
     Assert.assertNotNull(actor);
     final EList<CodeElt> codeElts = actor.getCodeElts();
     Assert.assertNotNull(codeElts);

@@ -70,7 +70,7 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
+   * @see org.preesm.algorithm.factories.ModelVertexFactory#createVertex(org.w3c.dom.Element)
    */
   @Override
   public SDFAbstractVertex createVertex(final Element vertexElt, org.preesm.model.pisdf.AbstractVertex origVertex) {
@@ -158,7 +158,7 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
+   * @see org.preesm.algorithm.factories.ModelVertexFactory#createVertex(java.lang.String)
    */
   @Override
   public SDFAbstractVertex createVertex(final String kind, org.preesm.model.pisdf.AbstractVertex origVertex) {
@@ -180,7 +180,7 @@ public class SDFVertexFactory implements IModelVertexFactory<SDFAbstractVertex> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String, int)
+   * @see org.preesm.algorithm.factories.ModelVertexFactory#createInterface(java.lang.String, int)
    */
   @Override
   public IInterface createInterface(final String name, final int dir) {

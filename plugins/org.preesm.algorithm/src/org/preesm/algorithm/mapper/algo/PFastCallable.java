@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
  *
@@ -82,10 +83,6 @@ class PFastCallable implements Callable<MapperDAG> {
   // parameters for the fast algorithm
   private final FastAlgoParameters fastParams;
 
-  /** The is display solutions. */
-  // True if we want to display the best found solutions
-  private final boolean isDisplaySolutions;
-
   /** The already mapped. */
   // Variables to know if we have to do the initial scheduling or not
   private final boolean alreadyMapped;
@@ -104,8 +101,6 @@ class PFastCallable implements Callable<MapperDAG> {
    *          the input archi
    * @param blockingNodeNames
    *          the blocking node names
-   * @param isDisplaySolutions
-   *          the is display solutions
    * @param alreadyMapped
    *          the already mapped
    * @param abcParams
@@ -116,8 +111,8 @@ class PFastCallable implements Callable<MapperDAG> {
    *          the scenario
    */
   public PFastCallable(final String name, final MapperDAG inputDAG, final Design inputArchi,
-      final Set<String> blockingNodeNames, final boolean isDisplaySolutions, final boolean alreadyMapped,
-      final AbcParameters abcParams, final FastAlgoParameters fastParams, final Scenario scenario) {
+      final Set<String> blockingNodeNames, final boolean alreadyMapped, final AbcParameters abcParams,
+      final FastAlgoParameters fastParams, final Scenario scenario) {
     this.threadName = name;
     this.inputDAG = inputDAG;
     this.inputArchi = inputArchi;
@@ -125,7 +120,6 @@ class PFastCallable implements Callable<MapperDAG> {
     this.fastParams = fastParams;
     this.alreadyMapped = alreadyMapped;
     this.abcParams = abcParams;
-    this.isDisplaySolutions = isDisplaySolutions;
     this.scenario = scenario;
   }
 
@@ -171,13 +165,12 @@ class PFastCallable implements Callable<MapperDAG> {
     // performing the fast algorithm
     final FastAlgorithm algo = new FastAlgorithm(initialLists, this.scenario);
     final MapperDAG outputDAG = algo.map(this.threadName, this.abcParams, this.fastParams, callableDAG, callableArchi,
-        this.alreadyMapped, true, this.isDisplaySolutions, null, initialLists.getCpnDominant(), callableBlockingNodes,
-        initialLists.getCriticalpath(), taskSched);
+        this.alreadyMapped, null, initialLists.getCpnDominant(), callableBlockingNodes, initialLists.getCriticalpath(),
+        taskSched);
 
     // Saving best total order for future display
     outputDAG.getPropertyBean().setValue("bestTotalOrder", algo.getBestTotalOrder());
 
     return outputDAG;
-
   }
 }

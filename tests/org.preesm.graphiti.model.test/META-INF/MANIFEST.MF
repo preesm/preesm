@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Graphiti :: Tests :: Model
+Automatic-Module-Name: org.preesm.graphiti.model.test
+Bundle-SymbolicName: org.preesm.graphiti.model.test
+Bundle-Version: 3.21.0.qualifier
+Bundle-Vendor: IETR / INSA Rennes - VAADER
+Fragment-Host: org.preesm.graphiti.model
+Bundle-RequiredExecutionEnvironment: JavaSE-21
+Require-Bundle: org.junit;bundle-version="4.12.0"
+Export-Package: org.preesm.graphiti.model.test

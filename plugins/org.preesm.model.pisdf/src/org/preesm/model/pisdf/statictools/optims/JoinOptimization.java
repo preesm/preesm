@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2021) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -51,7 +52,6 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.pisdf.statictools.PiMMSRVerticesLinker;
 
 /**
@@ -89,9 +89,12 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       }
       final DataOutputPort sourcePort = incomingFifo.getSourcePort();
       final AbstractActor sourceActor = sourcePort.getContainingActor();
-      if (sourceActor instanceof JoinActor && dip.getExpression().evaluate() == sourcePort.getExpression().evaluate()) {
+      if (sourceActor instanceof JoinActor
+          && dip.getExpression().evaluateAsLong() == sourcePort.getExpression().evaluateAsLong()) {
         fillRemoveAndReplace(actor.getDataInputPorts(), sourceActor.getDataInputPorts(), dip);
-        PiMMHelper.removeActorAndFifo(graph, incomingFifo, sourceActor);
+        graph.removeActorAndDependencies(sourceActor);
+        graph.removeFifo(incomingFifo);
+
       }
     }
 
@@ -141,8 +144,8 @@ public class JoinOptimization extends AbstractPiGraphSpecialActorRemover<DataInp
       final PiMMSRVerticesLinker srLinker = new PiMMSRVerticesLinker();
       srLinker.execute(sourceSet, sinkSet);
       fifoToRemove.forEach(graph::removeFifo);
-      PiMMHelper.removeActorAndDependencies(graph, actor);
-      PiMMHelper.removeActorAndDependencies(graph, target);
+      graph.removeActorAndDependencies(actor);
+      graph.removeActorAndDependencies(target);
       graph.removeFifo(fifo);
       return true;
     }

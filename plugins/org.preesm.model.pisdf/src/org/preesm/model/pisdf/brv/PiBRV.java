@@ -62,7 +62,6 @@ import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiMMHelper;
 
 /**
  * @author farresti
@@ -94,7 +93,7 @@ public abstract class PiBRV {
       final AbstractVertex av = en.getKey();
       final PiGraph container = av.getContainingPiGraph();
 
-      levelRV.computeIfAbsent(container, c -> PiMMHelper.getHierarchichalRV(c, brv));
+      levelRV.computeIfAbsent(container, c -> c.getHierarchichalRV(brv));
 
       final long actorRV = en.getValue();
       final long actorFullRV = actorRV * levelRV.get(container);
@@ -181,7 +180,7 @@ public abstract class PiBRV {
     if (motherGraph != null) {
       // otherwise it means that we compute a local BRV (from GUI)
       final DataPort opposite = ia.getGraphPort();
-      final long oppositeRate = opposite.getExpression().evaluate();
+      final long oppositeRate = opposite.getExpression().evaluateAsLong();
       if (/* motherGraph != graph && */oppositeRate != rate) {
         final String msg = "DataPort [" + opposite.getName() + "] of actor ["
             + opposite.getContainingActor().getVertexPath()
@@ -212,7 +211,7 @@ public abstract class PiBRV {
     scaleScaleFactors.add(1L);
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
       final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
-      final long cons = dataInputPort.getPortRateExpression().evaluate();
+      final long cons = dataInputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, out, cons);
       final Fifo fifo = dataInputPort.getIncomingFifo();
       final DataOutputPort sourcePort = fifo.getSourcePort();
@@ -222,7 +221,7 @@ public abstract class PiBRV {
         continue;
       }
 
-      final long prod = sourcePort.getPortRateExpression().evaluate();
+      final long prod = sourcePort.getPortRateExpression().evaluateAsLong();
       final long sourceRV = graphBRV.get(sourceActor);
       final long tmp = inscaleFactor * prod * sourceRV;
       if (tmp > 0) {
@@ -274,7 +273,7 @@ public abstract class PiBRV {
     scaleScaleFactors.add(1L);
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
       final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
-      final long prod = dataOutputPort.getPortRateExpression().evaluate();
+      final long prod = dataOutputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, in, prod);
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
       final DataInputPort targetPort = fifo.getTargetPort();
@@ -285,7 +284,7 @@ public abstract class PiBRV {
       }
 
       final long targetRV = graphBRV.get(targetActor);
-      final long cons = targetPort.getPortRateExpression().evaluate();
+      final long cons = targetPort.getPortRateExpression().evaluateAsLong();
       final long tmp = inscaleFactor * cons * targetRV;
       if (tmp > 0) {
         long scaleScaleFactor = 1L;

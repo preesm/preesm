@@ -171,7 +171,7 @@ public class CodegenScape {
     final StringBuilder result = new StringBuilder();
     for (final ConfigInputPort configInputPort : subGraph.getConfigInputPorts()) {
       result.append("static int " + configInputPort.getName() + " = "
-          + ((ExpressionHolder) configInputPort.getIncomingDependency().getSetter()).getExpression().evaluate()
+          + ((ExpressionHolder) configInputPort.getIncomingDependency().getSetter()).getExpression().evaluateAsLong()
           + ";\n");
     }
     final String initFunc = build.getInitFunc();

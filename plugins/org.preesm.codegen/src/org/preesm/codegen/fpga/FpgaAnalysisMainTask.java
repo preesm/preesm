@@ -79,8 +79,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     description = "Schedule actors according to their ET and II thanks to an ASAP scheduler. "
         + "Only works for single FPGA architectures with single frequency domain."
         + "Periods in the graph are not taken into account.",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     parameters = {
         @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
             description = "Whether or not the schedule must be shown at the end.",
@@ -98,6 +99,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             description = "Whether or not the tokens should be packed to otpimize bram usage.",
             values = { @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE,
                 effect = "False disables this feature.") }) })
+
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";

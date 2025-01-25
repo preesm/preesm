@@ -266,16 +266,14 @@ public class CodegenModelGenerator2 {
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
 
-      if (actor instanceof final Actor normalActor) {
-        generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
-      } else if (actor instanceof final UserSpecialActor userSpecialActor) {
-        generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
-      } else if (actor instanceof final SrdagActor srdagActor) {
-        generateInitEndFifoCall(srdagActor, coreBlock);
-      } else if (actor instanceof final CommunicationActor commActor) {
-        generateCommunication(commActor, coreBlock);
-      } else {
-        throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
+      switch (actor) {
+        case final Actor normalActor ->
+          generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
+        case final UserSpecialActor userSpecialActor ->
+          generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
+        case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
+        case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
+        default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
   }

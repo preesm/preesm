@@ -83,10 +83,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Only works for homogeneous architectures, does not take into account communication times. "
         + "Works also if there are no periods in the graph. "
         + "Result is exported in the same format as pisdf-mapper.list standard scheduler.",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
 
-    outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "ABC", type = LatencyAbc.class) })
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) })
 public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
 
   private PiGraph inputPiGraphSRDAG = null;

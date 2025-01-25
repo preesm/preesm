@@ -109,7 +109,7 @@ public class PiSDFXSDValidator {
       throw new NullPointerException("PiSDF XSD was not initialized properly");
     }
     pisdfStreamed.mark(Integer.MAX_VALUE);
-    final CloseShieldInputStream protectedStream = new CloseShieldInputStream(pisdfStreamed);
+    final CloseShieldInputStream protectedStream = CloseShieldInputStream.wrap(pisdfStreamed);
     final Source xmlFile = new StreamSource(protectedStream);
     final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
     try {

@@ -77,7 +77,7 @@ public class MoldableParameterExprChecker {
     for (final String str : strValues) {
       mp.setExpression(str);
       try {
-        mp.getExpression().evaluate();
+        mp.getExpression().evaluateAsLong();
       } catch (final ExpressionEvaluationException e) {
         return e;
       }

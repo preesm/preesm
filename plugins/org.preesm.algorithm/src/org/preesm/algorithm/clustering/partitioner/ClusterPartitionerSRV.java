@@ -128,14 +128,14 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
           brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-        din.getGraphPort().setExpression(
-            din.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluate());
+        din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
       }
       for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-        dout.getGraphPort().setExpression(
-            dout.getGraphPort().getExpression().evaluate() * brv.get(subGraph.getExecutableActors().get(0)) / scale);
-        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluate());
+        dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong());
       }
 
       subGraph.setClusterValue(true);

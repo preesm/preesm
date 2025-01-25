@@ -5,25 +5,26 @@ Automatic-Module-Name: org.preesm.algorithm.tests
 Bundle-SymbolicName: org.preesm.algorithm.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.junit;bundle-version="4.13.2",
  org.apache.commons.lang3;bundle-version="3.12.0",
  org.preesm.codegen.xtend,
  wrapped.org.apache-extras.beanshell.bsh,
- org.preesm.model.tests,
- org.preesm.algorithm
-Export-Package: org.ietr.dftools.algorithm.test,
- org.ietr.preesm.core.test,
- org.ietr.preesm.deadlock.test,
- org.ietr.preesm.mapper.schedule.test,
- org.ietr.preesm.mapper.test,
- org.ietr.preesm.mathematicalmodels.test,
- org.ietr.preesm.memory.script.test,
- org.ietr.preesm.memory.test,
- org.ietr.preesm.schedule.test,
- org.ietr.preesm.throughput.helpers.test,
- org.ietr.preesm.throughput.parsers.test,
- org.ietr.preesm.throughput.test,
- org.ietr.preesm.throughput.transformers.test,
- org.preesm.algorithm.synthesis.test
+ org.preesm.model.testsExport-Package: org.ietr.dftools.algorithm.test;resolution:=optional,
+ org.ietr.preesm.deadlock.test;resolution:=optional,
+ org.ietr.preesm.mapper.schedule.test;resolution:=optional,
+ org.ietr.preesm.mapper.test;resolution:=optional,
+ org.ietr.preesm.mathematicalmodels.test;resolution:=optional,
+ org.ietr.preesm.memory.script.test;resolution:=optional,
+ org.ietr.preesm.memory.test;resolution:=optional,
+ org.ietr.preesm.schedule.test;resolution:=optional,
+ org.ietr.preesm.throughput.helpers.test;resolution:=optional,
+ org.ietr.preesm.throughput.parsers.test;resolution:=optional,
+ org.ietr.preesm.throughput.test;resolution:=optional,
+ org.ietr.preesm.throughput.transformers.test;resolution:=optional,
+ org.preesm.algorithm.synthesis.test;resolution:=optional
 Bundle-ClassPath: .
+Import-Package: org.preesm.algorithm.codegen.model,
+ org.preesm.algorithm.deadlock,
+ org.preesm.algorithm.generator,
+ org.preesm.model.pisdf.test

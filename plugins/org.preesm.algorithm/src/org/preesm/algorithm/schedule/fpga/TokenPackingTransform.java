@@ -1,6 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2023 - 2024) :
  *
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Dardaillon Mickael [mickael.dardaillon@insa-rennes.fr] (2023)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -102,7 +103,7 @@ public final class TokenPackingTransform extends ActorConstructTransform {
     connectParameter(unpacker, unpacked, "OUT_W");
 
     // Set repetition value
-    final long rep = fifo.getSourcePort().getPortRateExpression().evaluate()
+    final long rep = fifo.getSourcePort().getPortRateExpression().evaluateAsLong()
         * res.flatBrv.get(fifo.getSourcePort().getContainingActor()) / compressionRatio;
     res.flatBrv.put(packer, rep);
     res.flatBrv.put(unpacker, rep);

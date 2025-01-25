@@ -50,6 +50,6 @@ public class ScenarioConfiguration {
   }
 
   /** ID used to save scenario file name in tab attributes. */
-  public static final String ATTR_SCENARIO_FILE_NAME = "org.ietr.dftools.ui.workflow.scenarioFileName";
+  public static final String ATTR_SCENARIO_FILE_NAME = "org.preesm.ui.workflow.scenarioFileName";
 
 }

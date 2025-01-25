@@ -87,10 +87,10 @@ public class Timing {
   }
 
   public long getTime() {
-    return ExpressionEvaluator.evaluate(getActor(), getStringValue(), Collections.emptyMap());
+    return Math.round(ExpressionEvaluator.evaluate(getActor(), getStringValue(), Collections.emptyMap()));
   }
 
-  public boolean canEvaluate() {
+  public boolean canevaluateAsLong() {
     return ExpressionEvaluator.canEvaluate(getActor(), getStringValue());
   }
 

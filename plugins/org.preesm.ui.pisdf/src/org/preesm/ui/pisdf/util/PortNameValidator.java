@@ -90,28 +90,21 @@ public class PortNameValidator implements IInputValidator {
    */
   @Override
   public String isValid(final String newPortName) {
-    String message = null;
+    final String message;
     // Check if the name is not empty
-    if (newPortName.length() < 1) {
+    if (newPortName.isBlank()) {
       message = "/!\\ Port name cannot be empty /!\\";
-      return message;
-    }
-
-    // Check if the name is not a C keyword
-    if (NameCheckerC.isCkeyword(newPortName)) {
+    } else if (NameCheckerC.isCkeyword(newPortName)) {
+      // Check if the name is not a C keyword
       message = "/!\\ Name <" + newPortName + NameCheckerC.MESSAGE_C_KEYWORD_NAME_ERROR;
-      return message;
-    }
-    // Check if the name meets the model regex
-    if (!NameCheckerC.matchCvariableRegex(newPortName)) {
+    } else if (!NameCheckerC.matchCvariableRegex(newPortName)) {
+      // Check if the name meets the model regex
       message = "/!\\ Name <" + newPortName + NameCheckerC.MESSAGE_VARIABLE_NAME_ERROR;
-      return message;
-    }
-
-    // Check if no other port has the same name
-    if (this.portsNames.contains(newPortName)) {
+    } else if (this.portsNames.contains(newPortName)) {
+      // Check if no other port has the same name
       message = "/!\\ A port with name " + newPortName + " already exists /!\\";
-      return message;
+    } else {
+      message = null;
     }
 
     return message;

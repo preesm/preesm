@@ -9,7 +9,6 @@
             <dftools:variable name="Check" value="True"/>
             <dftools:variable name="Optimize synchronization" value="false"/>
             <dftools:variable name="balanceLoads" value="true"/>
-            <dftools:variable name="displaySolutions" value="true"/>
             <dftools:variable name="edgeSchedType" value="Simple"/>
             <dftools:variable name="fastLocalSearchTime" value="10"/>
             <dftools:variable name="fastTime" value="100"/>

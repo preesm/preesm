@@ -177,9 +177,10 @@ public class EnergyTableLabelProvider extends BaseLabelProvider implements ITabl
         return null;
       case 4: // Value
         if (energy != null && ExpressionEvaluator.canEvaluate(vertex, energy)) {
-          return Long.toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
+          return Double
+              .toString(ExpressionEvaluator.evaluate(vertex, energy, this.scenario.getParameterValues().map()));
         } else if (energy != null && ExpressionEvaluator.canEvaluate(vertex.getContainingPiGraph(), energy)) {
-          return Long.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), energy,
+          return Double.toString(ExpressionEvaluator.evaluate(vertex.getContainingPiGraph(), energy,
               this.scenario.getParameterValues().map()));
         } else {
           return "";

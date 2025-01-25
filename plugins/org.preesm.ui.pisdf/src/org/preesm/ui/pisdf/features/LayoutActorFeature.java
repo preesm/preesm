@@ -178,15 +178,12 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
         // connections without ports do not have any GraphicAlgorithm
         // Only process anchors with a GraphicAlgorithm
         if (anchor.getGraphicsAlgorithm() != null) {
-          // Retrieve the children of the invisible rectangle of the
-          // anchor
+          // Retrieve the children of the invisible rectangle of the anchor
           final EList<GraphicsAlgorithm> anchorChildren = anchor.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
 
-          // Scan the children of the invisible rectangle looking for
-          // the label
+          // Scan the children of the invisible rectangle looking for the label
           for (final GraphicsAlgorithm child : anchorChildren) {
-            // The Label of the anchor should be the only child with
-            // type Text
+            // The Label of the anchor should be the only child with type Text
             if (child instanceof final Text cText) {
               // Retrieve the size of the text
               final String text = cText.getValue();
@@ -199,23 +196,17 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
               final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
               switch (obj.eClass().getClassifierID()) {
-                case PiMMPackage.CONFIG_INPUT_PORT:
-                  cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                  break;
-                case PiMMPackage.CONFIG_OUTPUT_PORT:
+                case PiMMPackage.CONFIG_INPUT_PORT -> cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+                case PiMMPackage.CONFIG_OUTPUT_PORT ->
                   cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                  break;
-                case PiMMPackage.DATA_INPUT_PORT:
-                  inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                  break;
-                case PiMMPackage.DATA_OUTPUT_PORT:
-                  outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                  break;
-                default:
+                case PiMMPackage.DATA_INPUT_PORT -> inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+                case PiMMPackage.DATA_OUTPUT_PORT -> outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+                default -> {
+                  // nothing
+                }
               }
             }
           }
-
         }
       }
       anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);

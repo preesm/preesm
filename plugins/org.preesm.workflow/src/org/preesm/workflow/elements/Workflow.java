@@ -85,8 +85,8 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
 
   @Override
   public boolean equals(final Object obj) {
-    if (obj instanceof Workflow) {
-      return this.path.equals(((Workflow) obj).path);
+    if (obj instanceof final Workflow workflow) {
+      return this.path.equals(workflow.path);
     }
     return false;
   }

@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2021) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -92,7 +92,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
       final List<Fifo> fifos = actor.getDataOutputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
       for (final Fifo fifo : fifos) {
         final String fifoType = fifo.getType();
-        final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluate();
+        final long fifoTokenSize = fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
         final long fifoBufferSize = scenario.getSimulationInfo().getBufferSizeInBit(fifoType, fifoTokenSize);
 
         final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
@@ -116,9 +116,7 @@ public class SimpleMemoryAllocation implements IMemoryAllocation {
         .map(InitActor.class::cast).filter(a -> a.getEndReference() instanceof EndActor).collect(Collectors.toList());
     for (final InitActor initActor : initActors) {
       final String fifoType = initActor.getDataPort().getFifo().getType();
-      final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifoType);
       final long delayTokenSize = initActor.getDelaySize();
-      // final long delayBufferSize = dataTypeSize * delayTokenSize;
       final long delayBufferSize = scenario.getSimulationInfo().getBufferSizeInBit(fifoType, delayTokenSize);
 
       final LogicalBuffer logicBuff = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();

@@ -39,6 +39,8 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -176,7 +178,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       din.getDataOutputPorts().get(0).setName(nameIn);
       din.getGraphPort().setName(nameIn);
       // homogenize expression
-      final Long expressionIn = retainedDelay.getContainingFifo().getTargetPort().getExpression().evaluate();
+      final Long expressionIn = retainedDelay.getContainingFifo().getTargetPort().getExpression().evaluateAsLong();
       din.getDataOutputPorts().get(0).setExpression(expressionIn);
       din.getGraphPort().setExpression(expressionIn);
       // connect interface to target
@@ -196,7 +198,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       dout.getDataInputPorts().get(0).setName(nameOut);
       dout.getGraphPort().setName(nameOut);
       // homogenize expression
-      final Long expressionOut = retainedDelay.getContainingFifo().getSourcePort().getExpression().evaluate();
+      final Long expressionOut = retainedDelay.getContainingFifo().getSourcePort().getExpression().evaluateAsLong();
       dout.getDataInputPorts().get(0).setExpression(expressionOut);
       dout.getGraphPort().setExpression(expressionOut);
       // connect interface to target
@@ -294,16 +296,18 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
     // Scale and pipeline each loop
     for (final PiGraph sub : pipList) {
-      for (final InterfaceActor iActor : sub.getDataInterfaces()) {
+      for (final InterfaceActor iActor : Stream
+          .concat(sub.getDataOutputInterfaces().stream(), sub.getDataInputInterfaces().stream())
+          .collect(Collectors.toList())) {
         if (!iActor.getDataPort().getFifo().isHasADelay()) {
           Long scale;
           if (iActor instanceof DataInputInterface) {
-            scale = iActor.getGraphPort().getFifo().getSourcePort().getExpression().evaluate();
+            scale = iActor.getGraphPort().getFifo().getSourcePort().getExpression().evaluateAsLong();
           } else {
-            scale = iActor.getGraphPort().getFifo().getTargetPort().getExpression().evaluate();
+            scale = iActor.getGraphPort().getFifo().getTargetPort().getExpression().evaluateAsLong();
           }
           iActor.getGraphPort().setExpression(scale);
-          iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluate());
+          iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong());
         }
 
       }
@@ -340,9 +344,9 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
     pipDelay.setContainingGraph(sub.getContainingPiGraph());
     pipDelay.setLevel(PersistenceLevel.PERMANENT);
     if (dataPort.getFifo().getSourcePort().getContainingActor() instanceof DelayActor) {
-      pipDelay.setExpression(dataPort.getExpression().evaluate());
+      pipDelay.setExpression(dataPort.getExpression().evaluateAsLong());
     } else {
-      pipDelay.setExpression(dataPort.getExpression().evaluate() * pipelineStage);
+      pipDelay.setExpression(dataPort.getExpression().evaluateAsLong() * pipelineStage);
     }
     pipDelay.getActor().setContainingGraph(sub.getContainingPiGraph());
     graphPort.getFifo().setDelay(pipDelay);
@@ -375,7 +379,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
         // connect Join to dout
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out",
-            out.getExpression().evaluate() * originalLoopRv);
+            out.getExpression().evaluateAsLong() * originalLoopRv);
 
         jn.getDataOutputPorts().add(dout);
 
@@ -384,7 +388,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
         containingGraph.addFifo(fout);
 
         // connect oEmpty_0 to Join
-        final Long rateJoinIn = out.getExpression().evaluate() * originalLoopRv / duplicationValue;
+        final Long rateJoinIn = out.getExpression().evaluateAsLong() * originalLoopRv / duplicationValue;
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in_0", rateJoinIn);
 
         jn.getDataInputPorts().add(din);
@@ -425,14 +429,14 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort("in",
-            in.getExpression().evaluate() * originalLoopRv);
+            in.getExpression().evaluateAsLong() * originalLoopRv);
 
         frk.getDataInputPorts().add(din);
 
         final Fifo fin = PiMMUserFactory.instance.createFifo(in.getFifo().getSourcePort(), din, in.getFifo().getType());
         containingGraph.addFifo(fin);
 
-        final Long rateForkOut = in.getExpression().evaluate() * originalLoopRv / duplicationValue;
+        final Long rateForkOut = in.getExpression().evaluateAsLong() * originalLoopRv / duplicationValue;
 
         // connect fork to oEmpty_0
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort("out_0", rateForkOut);

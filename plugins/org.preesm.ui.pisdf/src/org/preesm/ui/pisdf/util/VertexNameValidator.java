@@ -85,28 +85,21 @@ public class VertexNameValidator implements IInputValidator {
    */
   @Override
   public String isValid(final String newVertexName) {
-    String message = null;
+    final String message;
     // Check if the name is not empty
-    if (newVertexName.length() < 1) {
+    if (newVertexName.isBlank()) {
       message = "/!\\ Name cannot be empty /!\\";
-      return message;
-    }
-
-    // Check if the name is not a C keyword
-    if (NameCheckerC.isCkeyword(newVertexName)) {
+    } else if (NameCheckerC.isCkeyword(newVertexName)) {
+      // Check if the name is not a C keyword
       message = "/!\\ Name <" + newVertexName + NameCheckerC.MESSAGE_C_KEYWORD_NAME_ERROR;
-      return message;
-    }
-    // Check if the name meets the model regex
-    if (!NameCheckerC.matchCvariableRegex(newVertexName)) {
+    } else if (!NameCheckerC.matchCvariableRegex(newVertexName)) {
+      // Check if the name meets the model regex
       message = "/!\\ Name <" + newVertexName + NameCheckerC.MESSAGE_VARIABLE_NAME_ERROR;
-      return message;
-    }
-
-    // Check if the name already exists
-    if (this.existingNames.contains(newVertexName)) {
+    } else if (this.existingNames.contains(newVertexName)) {
+      // Check if the name already exists
       message = "/!\\ An actor or a parameter with name " + newVertexName + " already exists /!\\";
-      return message;
+    } else {
+      message = null;
     }
     return message;
   }

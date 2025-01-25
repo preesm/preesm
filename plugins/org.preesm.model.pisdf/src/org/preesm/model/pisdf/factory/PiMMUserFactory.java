@@ -60,12 +60,12 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.DelayLinkedExpression;
 import org.preesm.model.pisdf.Dependency;
+import org.preesm.model.pisdf.DoubleExpression;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.LongExpression;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
@@ -73,6 +73,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 
 /**
@@ -223,7 +224,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   /**
    *
    */
-  public Parameter createParameter(final String name, final long evaluate) {
+  public Parameter createParameter(final String name, final double evaluate) {
     final Parameter createParameter = super.createParameter();
     final Expression createExpression = createExpression(evaluate);
     createParameter.setExpression(createExpression);
@@ -431,13 +432,15 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   public Expression createExpression() {
-    return createExpression(0L);
+    return createExpression(0d);
   }
 
   /**
    *
    */
   public Expression createExpression(final String value) {
+    // Clear expression evaluation cache when changing an expression
+    ExpressionEvaluator.clearExpressionCache();
     try {
       // try to convert the expression in its long value
       return createExpression(Long.parseLong(value));
@@ -451,10 +454,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   /**
    *
    */
-  public Expression createExpression(final long value) {
-    final LongExpression createLongExpression = super.createLongExpression();
-    createLongExpression.setValue(value);
-    return createLongExpression;
+  public Expression createExpression(final double value) {
+    // Clear expression evaluation cache when changing an expression
+    ExpressionEvaluator.clearExpressionCache();
+    final DoubleExpression createDoubleExpression = super.createDoubleExpression();
+    createDoubleExpression.setValue(value);
+    return createDoubleExpression;
   }
 
   @Override

@@ -74,7 +74,7 @@ public class SlamDesignPEtypeChecker {
    */
   public static boolean isOnlyCPU(final Design design) {
     final List<ProcessingElement> pes = design.getProcessingElements();
-    return (!pes.isEmpty() && pes.stream().allMatch(x -> (x instanceof CPU))
+    return (!pes.isEmpty() && pes.stream().allMatch(CPU.class::isInstance)
         && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
   }
 

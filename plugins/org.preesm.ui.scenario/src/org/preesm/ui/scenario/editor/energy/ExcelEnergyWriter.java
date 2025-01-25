@@ -112,7 +112,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
 
     try {
       final WorkbookSettings ws = new WorkbookSettings();
-      ws.setLocale(new Locale("en", "EN"));
+      ws.setLocale(Locale.ENGLISH);
       final WritableWorkbook workbook = Workbook.createWorkbook(os, ws);
       final WritableSheet sheet = workbook.createSheet("Energy", 0);
 

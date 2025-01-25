@@ -444,7 +444,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Fill delay buffer information
     final long workingBufferSize = delayBuffer.getNbToken();
-    final long delayCapacity = fifo.getDelay().getExpression().evaluate();
+    final long delayCapacity = fifo.getDelay().getExpression().evaluateAsLong();
     delayBuffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
         + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
     delayBuffer.setNbToken(delayCapacity + workingBufferSize);
@@ -457,7 +457,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     readBuffer.setName("read_to_" + delayBuffer.getName());
     readBuffer.setType(delayBuffer.getType());
     readBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
-    readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluate());
+    readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluateAsLong());
 
     // Initialize SubBuffer for writting into delay's fifo
     final SubBuffer writeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
@@ -584,7 +584,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
       iteratedBuffer.setBuffer(buffer);
       iteratedBuffer.setIter(this.iterMap.get(actor));
-      iteratedBuffer.setNbToken(dataPort.getExpression().evaluate());
+      iteratedBuffer.setNbToken(dataPort.getExpression().evaluateAsLong());
       iteratedBuffer.setType(buffer.getType());
       iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
       return iteratedBuffer;
@@ -601,7 +601,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
         + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
     buffer.setType(fifo.getType());
     buffer.setTokenTypeSizeInBit(this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType()));
-    buffer.setNbToken(fifo.getSourcePort().getExpression().evaluate() * this.repVector.get(fifo.getSource()));
+    buffer.setNbToken(fifo.getSourcePort().getExpression().evaluateAsLong() * this.repVector.get(fifo.getSource()));
 
     if (fifo.getDelay() != null) {
       // Is the fifo delayed?
@@ -650,7 +650,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
 
     // Build a constant
     final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
-    constant.setValue(parameter.getExpression().evaluate());
+    constant.setValue(parameter.getExpression().evaluateAsLong());
 
     // Set variable name to argument name
     constant.setName(arg.getName());

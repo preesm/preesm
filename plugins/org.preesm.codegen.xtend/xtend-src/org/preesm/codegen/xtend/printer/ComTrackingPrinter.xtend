@@ -79,7 +79,4 @@ class ComTrackingPrinter extends BlankPrinter {
 	'''
 	
 
-
-
-
 }

@@ -2,6 +2,7 @@
  * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  * Mickael Dardaillon [mickael.dardaillon@insa-rennes.fr] (2021 - 2024)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -105,22 +106,22 @@ public class AutoFillHeaderTemplatedFunctions {
       if (c == CorrespondingTemplateParameterType.NONE || c == CorrespondingTemplateParameterType.MULTIPLE) {
         templateParametersException(refinement, proto);
       }
-      if (o instanceof final Parameter param) {
-        final Long value = param.getExpression().evaluate();
-        evaluatedParams.add(value.toString());
-      } else if (o instanceof final String s) {
-        evaluatedParams.add(s);
-      } else if (o instanceof final Fifo f) {
-        if (c == CorrespondingTemplateParameterType.FIFO_TYPE) {
-          evaluatedParams.add(f.getType());
-        } else if (c == CorrespondingTemplateParameterType.FIFO_DEPTH) {
-          evaluatedParams.add(FpgaCodeGenerator.getFifoStreamSizeNameMacro(f));
-        } else {
-          templateParametersException(refinement, proto);
+      switch (o) {
+        case final Parameter param -> {
+          final Long value = param.getExpression().evaluateAsLong();
+          evaluatedParams.add(value.toString());
         }
-      } else {
+        case final String s -> evaluatedParams.add(s);
+        case final Fifo f -> {
+          switch (c) {
+            case CorrespondingTemplateParameterType.FIFO_TYPE -> evaluatedParams.add(f.getType());
+            case CorrespondingTemplateParameterType.FIFO_DEPTH ->
+              evaluatedParams.add(FpgaCodeGenerator.getFifoStreamSizeNameMacro(f));
+            default -> templateParametersException(refinement, proto);
+          }
+        }
         // could not evaluate the related object
-        templateParametersException(refinement, proto);
+        default -> templateParametersException(refinement, proto);
       }
     }
 

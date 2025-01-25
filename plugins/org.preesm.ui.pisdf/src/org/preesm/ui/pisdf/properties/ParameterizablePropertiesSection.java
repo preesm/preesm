@@ -42,7 +42,6 @@ import org.eclipse.emf.transaction.TransactionalEditingDomain;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.services.Graphiti;
 import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -53,7 +52,7 @@ import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.ConfigInputInterface;
-import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Configurable;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -132,6 +131,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     /**** EXPRESION ****/
     this.txtExpression = factory.createText(composite, "");
     data = new FormData();
+    data.height = TEXT_FIELD_HEIGHT;
     data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
     data.right = new FormAttachment(100, 0);
     data.top = new FormAttachment(this.lblNameObj);
@@ -143,7 +143,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.txtExpression, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblName);
+    data.top = new FormAttachment(this.lblNameObj);
     this.lblExpression.setLayoutData(data);
 
     /**** VALUE ****/
@@ -158,7 +158,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     data = new FormData();
     data.left = new FormAttachment(0, 0);
     data.right = new FormAttachment(this.lblValueObj, -ITabbedPropertyConstants.HSPACE);
-    data.top = new FormAttachment(this.lblExpression);
+    data.top = new FormAttachment(this.txtExpression);
     this.lblValue.setLayoutData(data);
 
   }
@@ -185,27 +185,26 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       return;
     }
     final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);
-    if (bo == null) {
-      return;
-    }
-    if (bo instanceof final InterfaceActor iActor) {
-      final DataPort dp = iActor.getDataPort();
-      updateDataPortProperties(dp, txtExpression);
-    } else if (bo instanceof final MoldableParameter mp) {
-      if (mp.getUserExpression().compareTo(this.txtExpression.getText()) != 0) {
+
+    switch (bo) {
+      case null -> {
+        return;
+      }
+      case final InterfaceActor iActor -> updateDataPortProperties(iActor.getDataPort(), txtExpression);
+      case final MoldableParameter mp when !mp.getUserExpression().equals(this.txtExpression.getText()) -> {
         setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
       }
-    } else if (bo instanceof final Parameter param) {
-      if ((bo instanceof ConfigInputInterface)) {
-        this.lblValueObj.setText(
-            "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
-      }
-      if (param.getValueExpression().getExpressionAsString().compareTo(this.txtExpression.getText()) != 0) {
+      case final ConfigInputInterface cii -> this.lblValueObj.setText(
+          "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
+      case final Parameter param when !param.getValueExpression().getExpressionAsString()
+          .equals(this.txtExpression.getText()) -> {
         setNewExpression(param, this.txtExpression.getText());
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
       }
-    } // end Parameter
+      default -> {
+        /* Nothing */ }
+    }
 
     refresh();
   }
@@ -218,10 +217,9 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
   @Override
   public void refresh() {
     final PictogramElement pictogramElement = getSelectedPictogramElement();
-    String elementName = null;
     Expression elementValueExpression = null;
     final boolean expressionHasFocus = this.txtExpression.isFocusControl();
-    final Point selelection = this.txtExpression.getSelection();
+    final Point selection = this.txtExpression.getSelection();
     this.txtExpression.setEnabled(false);
 
     if (pictogramElement == null) {
@@ -234,15 +232,13 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       return;
     }
 
-    if (businessObject instanceof final Parameter param) {
-      elementName = param.getName();
-      elementValueExpression = ((Parameter) businessObject).getValueExpression();
-    } else if (businessObject instanceof final InterfaceActor iface) {
-      elementName = iface.getName();
-      elementValueExpression = iface.getDataPort().getPortRateExpression();
-    } else {
-      throw new UnsupportedOperationException();
+    switch (businessObject) {
+      case final Parameter param -> elementValueExpression = param.getValueExpression();
+      case final InterfaceActor iface -> elementValueExpression = iface.getDataPort().getPortRateExpression();
+      default -> throw new UnsupportedOperationException();
     }
+
+    final String elementName = ((Configurable) businessObject).getName();
 
     this.lblNameObj.setText(elementName == null ? " " : elementName);
     if (elementValueExpression == null) {
@@ -258,42 +254,43 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       if (errorMP == null) {
         // we need to check, since isValid method is called only if an update is done
         try {
-          final long evaluate = mp.getExpression().evaluate();
-          lblValueObj.setText(Long.toString(evaluate));
-          txtExpression.setBackground(new Color(null, 255, 255, 255));
+          final double evaluate = mp.getExpression().evaluateAsDouble();
+          lblValueObj.setText(Double.toString(evaluate));
+          txtExpression.setBackground(BG_NORMAL_WHITE);
         } catch (final ExpressionEvaluationException e) {
           lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
-          txtExpression.setBackground(new Color(null, 240, 150, 150));
+          txtExpression.setBackground(BG_ERROR_RED);
         }
       } else {
         lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + errorMP.getMessage());
-        txtExpression.setBackground(new Color(null, 240, 150, 150));
+        txtExpression.setBackground(BG_ERROR_RED);
       }
     } else {
 
       final String eltExprString = elementValueExpression.getExpressionAsString();
-      if (this.txtExpression.getText().compareTo(eltExprString) != 0) {
+      if (this.txtExpression.getText().isBlank() && !eltExprString.isBlank()) {
         this.txtExpression.setText(eltExprString);
       }
 
       try {
         // try out evaluating the expression
-        final long evaluate = elementValueExpression.evaluate();
+        final double evaluate = elementValueExpression.evaluateAsDouble();
+
         // if evaluation went well, just write the result
         if (!(businessObject instanceof ConfigInputInterface)) {
-          this.lblValueObj.setText(Long.toString(evaluate));
+          this.lblValueObj.setText(Double.toString(evaluate));
         }
-        this.txtExpression.setBackground(new Color(null, 255, 255, 255));
+        this.txtExpression.setBackground(BG_NORMAL_WHITE);
       } catch (final ExpressionEvaluationException e) {
         // otherwise print error message and put red background
         this.lblValueObj.setText("Error : " + e.getMessage());
-        this.txtExpression.setBackground(new Color(null, 240, 150, 150));
+        this.txtExpression.setBackground(BG_ERROR_RED);
       }
     }
 
     if (expressionHasFocus) {
       this.txtExpression.setFocus();
-      this.txtExpression.setSelection(selelection);
+      this.txtExpression.setSelection(selection);
     }
   }
 

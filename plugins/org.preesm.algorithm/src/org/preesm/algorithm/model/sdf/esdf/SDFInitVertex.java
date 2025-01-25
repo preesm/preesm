@@ -66,7 +66,7 @@ public class SDFInitVertex extends SDFAbstractVertex {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.sdf.SDFAbstractVertex#clone()
+   * @see org.preesm.algorithm.model.sdf.SDFAbstractVertex#clone()
    */
   @Override
   public SDFInitVertex copy() {

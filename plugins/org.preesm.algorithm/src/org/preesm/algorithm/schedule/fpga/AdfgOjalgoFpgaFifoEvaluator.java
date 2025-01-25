@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021 - 2023)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2023 - 2024)
  * Dardaillon Mickael [mickael.dardaillon@insa-rennes.fr] (2022 - 2023)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -366,7 +366,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final Variable phiNeg = model.getVariable(ar.phiIndex * 2 + 1);
     final BigDecimal rawCurrentPhiPosWeight = phiPos.getContributionWeight();
     final long currentPhiPosWeight = rawCurrentPhiPosWeight != null ? rawCurrentPhiPosWeight.longValue() : 0L;
-    final long fifoProdSize = fifo.getSourcePort().getExpression().evaluate();
+    final long fifoProdSize = fifo.getSourcePort().getExpression().evaluateAsLong();
     final long ceilPhiRatio = typeSizeBits * ((fifoProdSize + ar.dCons - 1L) / ar.dCons);
     phiPos.weight(currentPhiPosWeight + ceilPhiRatio);
     phiNeg.weight(currentPhiPosWeight + ceilPhiRatio);
@@ -374,7 +374,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final Delay delay = fifo.getDelay();
     long delaySize = 0L;
     if (delay != null) {
-      delaySize = delay.getExpression().evaluate();
+      delaySize = delay.getExpression().evaluateAsLong();
     }
     // compute coefficients: lambda and others
     final BigFraction lambdaP = lambdaPerPort.get(fifo.getSourcePort());
@@ -385,7 +385,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     final long srcII = mapActorNormalizedInfos.get(src).oriII;
     final long tgtII = mapActorNormalizedInfos.get(tgt).oriII;
     final BigFraction aP = new BigFraction(fifoProdSize, srcII);
-    final BigFraction aC = new BigFraction(fifo.getTargetPort().getExpression().evaluate(), tgtII);
+    final BigFraction aC = new BigFraction(fifo.getTargetPort().getExpression().evaluateAsLong(), tgtII);
     // get phi variables
     final long coefSign = ar.phiNegate ? -1L : 1L;
     final int index_2 = ar.phiIndex * 2;

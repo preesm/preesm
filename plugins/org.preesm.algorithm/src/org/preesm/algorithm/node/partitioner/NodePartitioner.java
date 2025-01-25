@@ -86,9 +86,9 @@ public class NodePartitioner {
 
     // prevent wrong dependency assignment
     for (final Fifo fifo : graph.getAllFifos()) {
-      final Long realExpressionIn = fifo.getSourcePort().getExpression().evaluate();
+      final Long realExpressionIn = fifo.getSourcePort().getExpression().evaluateAsLong();
       fifo.getSourcePort().setExpression(realExpressionIn);
-      final Long realExpressionOut = fifo.getTargetPort().getExpression().evaluate();
+      final Long realExpressionOut = fifo.getTargetPort().getExpression().evaluateAsLong();
       fifo.getTargetPort().setExpression(realExpressionOut);
     }
     for (final Dependency dependencies : graph.getAllDependencies()) {

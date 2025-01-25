@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2022) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2021 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021 - 2022)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -47,7 +47,7 @@ import org.preesm.model.scenario.Scenario;
 /**
  * This class evaluates fifo dependencies and size as in the SDF model: all data are produced at the end while they are
  * consumed at the beginning of a firing.
- * 
+ *
  * @author ahonorat
  */
 public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
@@ -72,7 +72,7 @@ public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
   @Override
   protected long computeFifoSize(FifoInformations fifoInfos) {
     final long dataTypeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifoInfos.fifo.getType());
-    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluate();
+    final long prodRate = fifoInfos.fifo.getSourcePort().getPortRateExpression().evaluateAsLong();
 
     final long overlapDuration = fifoInfos.producer.finishTime - fifoInfos.consumer.startTime;
     if (overlapDuration <= 0) {
@@ -96,7 +96,7 @@ public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
         + fifoInfos.prodNorms.oriET;
 
     // 5. epilog
-    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluate();
+    final long consRate = fifoInfos.fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
     final long epilogSize = consRate * fifoInfos.nbFiringsConsForLastFiringProd;
     final long consIImax = Math.max(fifoInfos.consNorms.oriII, fifoInfos.consNorms.cycledII);
     final long epilogDuration = fifoInfos.nbFiringsConsForLastFiringProd * consIImax;
@@ -137,15 +137,13 @@ public class FifoEvaluatorAsArray extends AbstractAsapFpgaFifoEvaluator {
       } else if (firingProdOverlap > 0) {
         overlapSize = prodRate;
       } // else there is no prod so overlap size is 0L (it's only decreasing)
+    } else if (overlapProd < overlapCons) {
+      final long extraPeak = prodRate * (firingProdOverlap + firingConsOverlap - 1L) / firingConsOverlap;
+      overlapSize = extraPeak;
+    } else if (firingConsOverlap > 0) {
+      overlapSize = (overlapProd - overlapCons) + consRate;
     } else {
-      if (overlapProd < overlapCons) {
-        final long extraPeak = prodRate * (firingProdOverlap + firingConsOverlap - 1L) / firingConsOverlap;
-        overlapSize = extraPeak;
-      } else if (firingConsOverlap > 0) {
-        overlapSize = (overlapProd - overlapCons) + consRate;
-      } else {
-        overlapSize = overlapProd;
-      }
+      overlapSize = overlapProd;
     }
 
     // sums everything

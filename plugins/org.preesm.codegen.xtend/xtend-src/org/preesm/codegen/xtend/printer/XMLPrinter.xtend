@@ -278,6 +278,5 @@ class XMLPrinter extends BlankPrinter {
 	override printSubBufferDefinition(SubBuffer buffer) {
 		return printBufferDefinition(buffer)
 	}
-	
 
 }

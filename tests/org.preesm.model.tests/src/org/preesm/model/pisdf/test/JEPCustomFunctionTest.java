@@ -75,7 +75,7 @@ public class JEPCustomFunctionTest {
   @Test
   public void testEvaluation() {
     final Expression createExpression = PiMMUserFactory.instance.createExpression(input);
-    final long evaluate = createExpression.evaluate();
+    final long evaluate = createExpression.evaluateAsLong();
 
     Assert.assertEquals(expected, evaluate);
   }

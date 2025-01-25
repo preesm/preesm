@@ -143,8 +143,8 @@ public class TokenPackingAnalysis {
 
       final long nbDataInPacket = (long) Math.floor(test);
 
-      final long srcRate = fifo.getSourcePort().getExpression().evaluate();
-      final long tgtRate = fifo.getTargetPort().getExpression().evaluate();
+      final long srcRate = fifo.getSourcePort().getExpression().evaluateAsLong();
+      final long tgtRate = fifo.getTargetPort().getExpression().evaluateAsLong();
 
       // Check if packing ratio is a divisor of the source rate or target rate
       if (srcRate % nbDataInPacket == 0 || tgtRate % nbDataInPacket == 0) {
@@ -226,7 +226,8 @@ public class TokenPackingAnalysis {
     }
     if (512 <= depth && depth < 2048) {
       return (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
-    } else if (2048 <= depth && depth < 4096) {
+    }
+    if (2048 <= depth && depth < 4096) {
       long bram = (long) Math.ceil(Math.pow(2, Math.ceil(Math.log(depth) / Math.log(2))) * dataWidth / BRAM_18K);
 
       if ((dataWidth == 13 || dataWidth == 21 || dataWidth == 22 || dataWidth > 28) && (bram % 2 == 1)) {

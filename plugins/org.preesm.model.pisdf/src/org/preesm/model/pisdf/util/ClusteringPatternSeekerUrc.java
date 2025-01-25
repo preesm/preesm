@@ -161,7 +161,7 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
   public Boolean homogeneousFifo(Fifo fifo) {
     // Return true if rates are homogeneous and that no delay is involved
-    return (fifo.getSourcePort().getExpression().evaluate() == fifo.getTargetPort().getExpression().evaluate())
+    return (fifo.getSourcePort().getExpression().evaluateAsLong() == fifo.getTargetPort().getExpression().evaluateAsLong())
         && (fifo.getDelay() == null);
   }
 

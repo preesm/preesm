@@ -93,7 +93,6 @@ import org.preesm.codegen.printer.BlankPrinter
 import java.util.ArrayDeque
 import java.util.Deque
 
-
 class MPPA2ClusterPrinter extends BlankPrinter {
 
 	/**

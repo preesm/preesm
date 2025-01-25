@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2021) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2014 - 2024) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,6 +37,7 @@
  */
 package org.preesm.model.pisdf.check;
 
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
@@ -58,7 +60,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Instantiates a new fifo checker.
-   * 
+   *
    * @param throwExceptionLevel
    *          The maximum level of error throwing exceptions.
    * @param loggerLevel
@@ -97,9 +99,9 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
     long rateSource = 0L;
     long rateTarget = 0L;
     try {
-      rateSource = f.getSourcePort().getPortRateExpression().evaluate();
-      rateTarget = f.getTargetPort().getPortRateExpression().evaluate();
-    } catch (ExpressionEvaluationException e) {
+      rateSource = f.getSourcePort().getPortRateExpression().evaluateAsLong();
+      rateTarget = f.getTargetPort().getPortRateExpression().evaluateAsLong();
+    } catch (final ExpressionEvaluationException e) {
       reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Cannot evaluate expression on fifo [%s]: " + e.toString(),
           f.getId());
       return false;
@@ -109,6 +111,24 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
           f.getId());
       return false;
     }
+
+    if (!f.getSourcePort().getPortRateExpression().isExpressionInteger()) {
+      final String actorName = f.getSourcePort().getContainingActor().getName();
+      final String portName = f.getSourcePort().getName();
+      final double doubleRate = f.getSourcePort().getPortRateExpression().evaluateAsDouble();
+      final long longRate = f.getSourcePort().getPortRateExpression().evaluateAsLong();
+      PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
+          + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+    }
+    if (!f.getTargetPort().getPortRateExpression().isExpressionInteger()) {
+      final String actorName = f.getTargetPort().getContainingActor().getName();
+      final String portName = f.getTargetPort().getName();
+      final double doubleRate = f.getTargetPort().getPortRateExpression().evaluateAsDouble();
+      final long longRate = f.getTargetPort().getPortRateExpression().evaluateAsLong();
+      PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
+          + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+    }
+
     return true;
   }
 
@@ -124,7 +144,8 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
     if ("void".equals(fifoType)) {
       reportError(CheckerErrorLevel.FATAL_CODEGEN, f, "Fifo [%s] has void type.", f.getId());
       return false;
-    } else if (fifoType.contains("<") || fifoType.contains(">")) {
+    }
+    if (fifoType.contains("<") || fifoType.contains(">")) {
       reportError(CheckerErrorLevel.WARNING, f, "Fifo [%s] type seems to be templated, "
           + "be aware that template parameter evaluation is not yet available for fifo types.", f.getId());
     }

@@ -65,7 +65,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#clone()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#clone()
    */
   @Override
   public ExpressionEdgePropertyType copy() {
@@ -81,7 +81,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#setValue(java.lang.Object)
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#setValue(java.lang.Object)
    */
   @Override
   public void setValue(final Value val) {
@@ -103,7 +103,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#toString()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#toString()
    */
   @Override
   public String toString() {
@@ -113,7 +113,7 @@ public class ExpressionEdgePropertyType extends AbstractEdgePropertyType<Value> 
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.dftools.algorithm.model.AbstractEdgePropertyType#intValue()
+   * @see org.preesm.algorithm.model.AbstractEdgePropertyType#intValue()
    */
   @Override
   public long longValue() {
