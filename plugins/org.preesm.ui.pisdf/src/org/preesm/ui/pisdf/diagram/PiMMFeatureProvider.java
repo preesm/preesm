@@ -42,6 +42,8 @@ package org.preesm.ui.pisdf.diagram;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.graphiti.dt.IDiagramTypeProvider;
@@ -58,6 +60,7 @@ import org.eclipse.graphiti.features.IPasteFeature;
 import org.eclipse.graphiti.features.IReconnectionFeature;
 import org.eclipse.graphiti.features.IRemoveFeature;
 import org.eclipse.graphiti.features.IResizeShapeFeature;
+import org.eclipse.graphiti.features.ISaveImageFeature;
 import org.eclipse.graphiti.features.IUpdateFeature;
 import org.eclipse.graphiti.features.context.IAddContext;
 import org.eclipse.graphiti.features.context.IContext;
@@ -82,6 +85,7 @@ import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
 import org.eclipse.graphiti.ui.features.DefaultDeleteFeature;
 import org.eclipse.graphiti.ui.features.DefaultFeatureProvider;
+import org.eclipse.graphiti.ui.features.DefaultSaveImageFeature;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -750,4 +754,26 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     };
   }
 
+  /*
+   * (non-Javadoc)
+   *
+   * @see org.eclipse.graphiti.ui.features.DefaultFeatureProvider#getSaveImageFeature()
+   */
+  @Override
+  public ISaveImageFeature getSaveImageFeature() {
+    return new DefaultSaveImageFeature(this) {
+
+      /*
+       * (non-Javadoc)
+       *
+       * @see org.eclipse.graphiti.ui.features.DefaultSaveImageFeature#getDiagramExporters()
+       *
+       * Overridden to prevent SVG to be among the proposed type, GIF is still broken.
+       */
+      @Override
+      protected Map<String, Boolean> getDiagramExporters() {
+        return new HashMap<>();
+      }
+    };
+  }
 }
