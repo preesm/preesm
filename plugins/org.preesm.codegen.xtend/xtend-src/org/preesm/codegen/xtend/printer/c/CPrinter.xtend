@@ -832,6 +832,12 @@ class CPrinter extends BlankPrinter {
 	    context.put("USER_INCLUDES", findAllCHeaderFileNamesUsed.map["#include \""+ it +"\""].join("\n"));
 
 		var String constants = "#define NB_DESIGN_ELTS "+getEngine.archi.componentInstances.size+"\n#define NB_CORES "+getEngine.codeBlocks.size;
+
+		// Table pairing CoreId in architecture to semaphore id
+		constants = constants.concat("\nenum CORE_ID {\n\t");
+		constants = constants.concat(getEngine.codeBlocks.map[it as CoreBlock].map["PE_" + it.coreID + " /*" + it.name + "*/"].join(", "));
+		constants = constants.concat("\n};");
+
 		if(this.usingPapify == 1){
 			constants = constants.concat("\n\n#ifdef _PREESM_PAPIFY_MONITOR\n#include \"eventLib.h\"\n#endif");
 		}
@@ -1070,7 +1076,7 @@ class CPrinter extends BlankPrinter {
 	«IF (communication.comment.contains("\n"))» */
 	«ENDIF»«ENDIF»«IF communication.isRedundant»//«ENDIF»«communication.direction.toString.toLowerCase»«communication.delimiter.toString.toLowerCase.toFirstUpper»(«IF (communication.
 		direction == Direction::SEND && communication.delimiter == Delimiter::START) ||
-		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»«communication.sendStart.coreContainer.coreID», «communication.receiveStart.coreContainer.coreID»«ENDIF
+		(communication.direction == Direction::RECEIVE && communication.delimiter == Delimiter::END)»PE_«communication.sendStart.coreContainer.coreID», PE_«communication.receiveStart.coreContainer.coreID»«ENDIF
 		»); // «communication.sendStart.coreContainer.name» > «communication.receiveStart.coreContainer.name»
 	'''
 
