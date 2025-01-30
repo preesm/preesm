@@ -904,6 +904,7 @@ class CPrinter extends BlankPrinter {
 
 		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
+		const int CORE_ID[_PREESM_NBTHREADS_] = {«FOR coreBlock : engine.codeBlocks»«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»};
 
 		// application dependent includes
 		#include "preesm_gen.h"
@@ -1037,7 +1038,7 @@ class CPrinter extends BlankPrinter {
 			// Creating threads
 			for (int i = 0; i < _PREESM_NBTHREADS_; i++) {
 				if (i != _PREESM_MAIN_THREAD_) {
-					if(launch(i,&coreThreads[i],coreThreadComputations[i])) {
+					if(launch(CORE_ID[i],&coreThreads[i],coreThreadComputations[i])) {
 						printf("Error: could not launch thread %d\n",i);
 						return 1;
 					}
