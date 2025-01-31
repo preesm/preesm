@@ -39,6 +39,7 @@ import java.util.List;
 import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.ProcessingElement;
 
 /**
@@ -74,6 +75,34 @@ public class SlamDesignPEtypeChecker {
   public static boolean isOnlyCPU(final Design design) {
     final List<ProcessingElement> pes = design.getProcessingElements();
     return (!pes.isEmpty() && pes.stream().allMatch(CPU.class::isInstance)
+        && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
+  }
+
+  /**
+   * Checks if the design has CPU and GPU processing elements only (possibly not the same CPU/GPU).
+   *
+   * @param design
+   *          the design
+   * @return true if dual CPU GPU (at least one each)
+   */
+  public static boolean isDualCPUGPU(final Design design) {
+    final List<ProcessingElement> pes = design.getProcessingElements();
+    return (!pes.isEmpty() && pes.stream().anyMatch(CPU.class::isInstance)
+        && pes.stream().anyMatch(GPU.class::isInstance)
+        && pes.stream().allMatch(x -> ((x instanceof CPU) || (x instanceof GPU)))
+        && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
+  }
+
+  /**
+   * Checks if the design has CPU and GPU processing elements only (possibly not the same CPU/GPU).
+   *
+   * @param design
+   *          the design
+   * @return true if dual CPU GPU
+   */
+  public static boolean isEitherCPUGPU(final Design design) {
+    final List<ProcessingElement> pes = design.getProcessingElements();
+    return (!pes.isEmpty() && pes.stream().allMatch(x -> ((x instanceof CPU) || (x instanceof GPU)))
         && pes.stream().anyMatch(x -> !x.getInstances().isEmpty()));
   }
 

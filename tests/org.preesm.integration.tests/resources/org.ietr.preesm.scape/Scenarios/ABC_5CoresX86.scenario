@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.scape/Algo/ABC.pi"/>
+        <architecture url="/org.ietr.preesm.scape/Archi/5CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="ABC/A"/>
+            <task name="ABC/B"/>
+            <task name="ABC/C"/>
+            <task name="ABC/D"/>
+            <task name="ABC/E"/>
+            <task name="ABC/set"/>
+            <task name="ABC/get"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/A"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/B"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/C"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/D"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/E"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/set"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/get"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="ABC/D_lo__D_li"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

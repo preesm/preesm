@@ -70,6 +70,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.Dma;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.HierarchyPort;
 import org.preesm.model.slam.Link;
 import org.preesm.model.slam.Mem;
@@ -318,6 +319,26 @@ public class IPXACTDesignParser extends IPXACTParser {
           fpga.setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
           fpga.setPart(description.getSpecificParameter("slam:part"));
           fpga.setBoard(description.getSpecificParameter("slam:board"));
+        } else if (component instanceof GPU) {
+          try {
+            ((GPU) component).setMemSize(Integer.valueOf(description.getSpecificParameter("slam:memSize")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setMemSize(1);
+          }
+          try {
+            ((GPU) component)
+                .setDedicatedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:dedicatedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setDedicatedMemSpeed(1);
+          }
+          try {
+            ((GPU) component)
+                .setUnifiedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:unifiedMemSpeed")));
+          } catch (final NumberFormatException e) {
+            ((GPU) component).setUnifiedMemSpeed(1);
+          }
+
+          ((GPU) component).setMemoryToUse(description.getSpecificParameter("slam:memoryToUse"));
         }
       } catch (final NumberFormatException e) {
         throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"

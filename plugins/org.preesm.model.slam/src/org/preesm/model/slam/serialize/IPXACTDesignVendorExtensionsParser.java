@@ -533,6 +533,11 @@ public class IPXACTDesignVendorExtensionsParser {
       description.addSpecificParameter("slam:frequency", parent.getAttribute("slam:frequency"));
       description.addSpecificParameter("slam:part", parent.getAttribute("slam:part"));
       description.addSpecificParameter("slam:board", parent.getAttribute("slam:board"));
+    } else if (componentType.contains("GPU")) {
+      description.addSpecificParameter("slam:memSize", parent.getAttribute("slam:memSize"));
+      description.addSpecificParameter("slam:dedicatedMemSpeed", parent.getAttribute("slam:dedicatedMemSpeed"));
+      description.addSpecificParameter("slam:unifiedMemSpeed", parent.getAttribute("slam:unifiedMemSpeed"));
+      description.addSpecificParameter("slam:memoryToUse", parent.getAttribute("slam:memoryToUse"));
     }
 
     // Retrieving known specific parameters

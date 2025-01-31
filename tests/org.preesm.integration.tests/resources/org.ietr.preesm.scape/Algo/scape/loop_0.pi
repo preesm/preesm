@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph cluster="true" edgedefault="directed">
+        <data key="name">loop_0</data>
+        <node id="D" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="i" type="char"/>
+                <param direction="IN" isConfig="false" name="li" type="char"/>
+                <param direction="OUT" isConfig="false" name="o" type="char"/>
+                <param direction="OUT" isConfig="false" name="lo" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1.0" kind="input" name="i"/>
+            <port annotation="NONE" expr="1.0" kind="input" name="li"/>
+            <port annotation="NONE" expr="1.0" kind="output" name="o"/>
+            <port annotation="NONE" expr="1.0" kind="output" name="lo"/>
+        </node>
+        <node id="D_i" kind="src">
+            <port annotation="NONE" expr="12.0" kind="output" name="D_i"/>
+        </node>
+        <node id="D_lo__D_li_set" kind="src">
+            <port annotation="NONE" expr="1.0" kind="output" name="D_lo__D_li_set"/>
+        </node>
+        <node id="D_lo__D_li_get" kind="snk">
+            <port annotation="NONE" expr="1.0" kind="input" name="D_lo__D_li_get"/>
+        </node>
+        <node id="D_o" kind="snk">
+            <port annotation="NONE" expr="12.0" kind="input" name="D_o"/>
+        </node>
+        <node expr="1.0" getter="D_lo__D_li_get" id="D_lo__D_li" kind="delay" level="none" setter="D_lo__D_li_set">
+            <port annotation="NONE" expr="1.0" kind="input" name="set"/>
+            <port annotation="NONE" expr="1.0" kind="output" name="get"/>
+        </node>
+        <edge expr="1.0" kind="fifo" source="D" sourceport="lo" target="D" targetport="li" type="char">
+            <data key="delay">D_lo__D_li</data>
+        </edge>
+        <edge kind="fifo" source="D_i" sourceport="D_i" target="D" targetport="i" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li_set" sourceport="D_lo__D_li_set" target="D_lo__D_li" targetport="set" type="char"/>
+        <edge kind="fifo" source="D_lo__D_li" sourceport="get" target="D_lo__D_li_get" targetport="D_lo__D_li_get" type="char"/>
+        <edge kind="fifo" source="D" sourceport="o" target="D_o" targetport="D_o" type="char"/>
+    </graph>
+</graphml>

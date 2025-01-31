@@ -150,6 +150,7 @@ import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.SlamMessageRouteStep;
 
 /**
@@ -435,6 +436,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final ComponentInstance operator = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
+      if (operator instanceof GPU) {
+        return;
+      }
+
       if (!this.coreBlocks.containsKey(operator)) {
         throw new PreesmRuntimeException();
       }
