@@ -147,6 +147,7 @@ import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -423,7 +424,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     generateBuffers();
 
     // init coreBlocks
-    for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances()) {
+    for (final ComponentInstance cmp : this.archi.getOperatorComponentInstances().stream()
+        .filter(pe -> pe.getComponent() instanceof CPU).collect(Collectors.toList())) {
       this.coreBlocks.computeIfAbsent(cmp, CodegenModelUserFactory.eINSTANCE::createCoreBlock);
     }
 
@@ -437,6 +439,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       // If this is the first time this operator is encountered,
       // Create a Block and store it.
       if (operator instanceof GPU) {
+        // do not create a thread if the component is a GPU (or an accelerator)
         return;
       }
 

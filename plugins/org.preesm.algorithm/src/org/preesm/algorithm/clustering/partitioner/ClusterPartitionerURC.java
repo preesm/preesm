@@ -375,8 +375,9 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
   private static Long offLoadingCost(GPU gpu, List<AbstractActor> urc) {
     // If GPU parameters are different from 0, use their value, otherwise default to 1
-    final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 0 ? (long) gpu.getDedicatedMemSpeed() : 1;
-    final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 0 ? (long) gpu.getUnifiedMemSpeed() : 1;
+    final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 1 ? (long) gpu.getDedicatedMemSpeed()
+        : 1000000000;
+    final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 1 ? (long) gpu.getUnifiedMemSpeed() : 1000000000;
     final String memoryToUse = gpu.getMemoryToUse();
 
     Long sum = 0L;

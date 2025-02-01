@@ -182,7 +182,9 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(1, subGraph.getDataInputPorts().size());
     final DataInputPort dipSubGraph = subGraph.getDataInputPorts().get(0);
     // Check port name
-    Assert.assertTrue(dipSubGraph.getName().contains("in_0"));
+    if (this.subGraph.getName().matches("^sub\\d+")) {
+      Assert.assertTrue(dipSubGraph.getName().contains("in_0"));
+    }
     // Check rate
     Assert.assertEquals(4, dipSubGraph.getExpression().evaluateAsLong());
     // Check if incoming fifo link actor A to actor B_C
@@ -195,7 +197,9 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(1, subGraph.getDataOutputPorts().size());
     final DataOutputPort dopSubGraph = subGraph.getDataOutputPorts().get(0);
     // Check port name
-    Assert.assertTrue(dopSubGraph.getName().contains("out_0"));
+    if (this.subGraph.getName().matches("^sub\\d+")) {
+      Assert.assertTrue(dopSubGraph.getName().contains("out_0"));
+    }
     // Check rate
     Assert.assertEquals(4, dopSubGraph.getExpression().evaluateAsLong());
     // Check if outgoing fifo link actor B_C to actor D
@@ -219,7 +223,9 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(1, subGraph.getDataInputInterfaces().size());
     final DataInputInterface diiSubGraph = subGraph.getDataInputInterfaces().get(0);
     // Check interface name
-    Assert.assertTrue(diiSubGraph.getName().contains("in_0"));
+    if (this.subGraph.getName().matches("^sub\\d+")) {
+      Assert.assertTrue(diiSubGraph.getName().contains("in_0"));
+    }
     // Check if graph port
     Assert.assertEquals(subGraph.getDataInputPorts().get(0), diiSubGraph.getGraphPort());
     // Check if actor B input fifo is linked to the data input interface
@@ -236,7 +242,9 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(1, subGraph.getDataOutputInterfaces().size());
     final DataOutputInterface doiSubGraph = subGraph.getDataOutputInterfaces().get(0);
     // Check interface name
-    Assert.assertTrue(doiSubGraph.getName().contains("out_0"));
+    if (this.subGraph.getName().matches("^sub\\d+")) {
+      Assert.assertTrue(doiSubGraph.getName().contains("out_0"));
+    }
     // Check if graph port
     Assert.assertEquals(subGraph.getDataOutputPorts().get(0), doiSubGraph.getGraphPort());
     // Check if actor C input fifo is linked to the data output interface

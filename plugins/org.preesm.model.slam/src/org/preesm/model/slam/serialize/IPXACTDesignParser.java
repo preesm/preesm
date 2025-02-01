@@ -319,26 +319,24 @@ public class IPXACTDesignParser extends IPXACTParser {
           fpga.setFrequency(Integer.valueOf(description.getSpecificParameter("slam:frequency")));
           fpga.setPart(description.getSpecificParameter("slam:part"));
           fpga.setBoard(description.getSpecificParameter("slam:board"));
-        } else if (component instanceof GPU) {
+        } else if (component instanceof final GPU gpu) {
           try {
-            ((GPU) component).setMemSize(Integer.valueOf(description.getSpecificParameter("slam:memSize")));
+            gpu.setMemSize(Integer.valueOf(description.getSpecificParameter("slam:memSize")));
           } catch (final NumberFormatException e) {
-            ((GPU) component).setMemSize(1);
+            gpu.setMemSize(100);
           }
           try {
-            ((GPU) component)
-                .setDedicatedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:dedicatedMemSpeed")));
+            gpu.setDedicatedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:dedicatedMemSpeed")));
           } catch (final NumberFormatException e) {
-            ((GPU) component).setDedicatedMemSpeed(1);
+            gpu.setDedicatedMemSpeed(1000000000);
           }
           try {
-            ((GPU) component)
-                .setUnifiedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:unifiedMemSpeed")));
+            gpu.setUnifiedMemSpeed(Integer.valueOf(description.getSpecificParameter("slam:unifiedMemSpeed")));
           } catch (final NumberFormatException e) {
-            ((GPU) component).setUnifiedMemSpeed(1);
+            gpu.setUnifiedMemSpeed(1000000000);
           }
 
-          ((GPU) component).setMemoryToUse(description.getSpecificParameter("slam:memoryToUse"));
+          gpu.setMemoryToUse(description.getSpecificParameter("slam:memoryToUse"));
         }
       } catch (final NumberFormatException e) {
         throw new PreesmRuntimeException("Could not parse a numeric property of component instance <"
