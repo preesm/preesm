@@ -117,9 +117,9 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
 
     // this is currently true for all tasks implementing this abstraction and their derived classes
     // if a new subclass supports FPGA, this check will have to be duplicated in all subclasses
-    if (!SlamDesignPEtypeChecker.isEitherCPUGPU(architecture)) {
+    if (!SlamDesignPEtypeChecker.isOnlyCPU(architecture)) {
       throw new PreesmRuntimeException(
-          "This task must be called with architectures containing only CPU or GPU processing elements.");
+          "This task must be called with architectures containing only CPU processing elements.");
     }
 
     final AbcParameters abcParams = new AbcParameters(parameters);

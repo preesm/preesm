@@ -2,10 +2,8 @@ package org.preesm.algorithm.clustering.scape;
 
 import java.io.File;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
@@ -41,8 +39,7 @@ public class CodegenScape {
 
     new CodegenScapeBuilder(build, schedule, subGraph, stackSize);
     // Generate a C file if the cluster is mapped on CPU
-    if ((SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && !subGraph.isOnGPU())
-        || SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
+    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign())) {
       final String cfile = clusterName + ".c";
 
       final StringBuilder clusterCContent = buildCContent(build, subGraph);
@@ -52,20 +49,6 @@ public class CodegenScape {
     final String hfile = clusterName + ".h";
     final StringBuilder clusterHContent = buildHContent(build, subGraph);
     PreesmIOHelper.getInstance().print(clusterPath, hfile, clusterHContent);
-
-    // Generate a CU file if the cluster is mapped on GPU
-    if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign()) && subGraph.isOnGPU()) {
-      for (final ScapeSchedule sche : schedule) {
-        sche.setOnGPU(true);
-      }
-
-      final ScapeBuilder build2 = ScheduleFactory.eINSTANCE.createScapeBuilder();
-      new CodegenScapeBuilder(build2, schedule, subGraph, stackSize);
-
-      final String cufile = clusterName + ".cu";
-      final StringConcatenation clusterCuContent = buildCuContent(build2, subGraph);
-      PreesmIOHelper.getInstance().print(clusterPath, cufile, clusterCuContent);
-    }
   }
 
   /**
@@ -99,16 +82,8 @@ public class CodegenScape {
     }
     result.append("#include \"preesm_gen" + nodeId + ".h\"\n");
 
-    if (subGraph.isOnGPU()) {
-      result.append("#ifdef __cplusplus\n" + "extern \"C\" {\n" + "#endif \n\n");
-    }
-
     result.append(build.getInitFunc() + ";\n");
     result.append(build.getLoopFunc() + ";\n");
-
-    if (subGraph.isOnGPU()) {
-      result.append("#ifdef __cplusplus\n" + "}\n" + "#endif \n\n");
-    }
 
     result.append("#endif \n");
     return result;
@@ -196,60 +171,6 @@ public class CodegenScape {
     }
 
     result.append("}\n");
-    return result;
-  }
-
-  /**
-   * The .cu file contains scheduled functions call associated with the GPU actors contained in the cluster. Ewen
-   *
-   * @param build
-   *          Clustering structure
-   * @param subGraph
-   *          Graph to consider.
-   * @return The string content of the .cu file.
-   */
-  private StringConcatenation buildCuContent(ScapeBuilder build, PiGraph subGraph) {
-
-    final StringConcatenation result = new StringConcatenation();
-
-    result.append(header(subGraph));
-    result.append("#include " + "\"Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName()
-        + ".h\" \n\n");
-    result.append(printInit(build, subGraph));
-
-    final String loopFunc = build.getLoopFunc();
-    result.append(loopFunc + "{ \n\n", "");
-
-    final HashSet<String> buff = new HashSet<>();
-    for (final String buffer : build.getBuffer()) {
-      if (!buff.contains(buffer)) {
-        result.append(buffer + "\n ", "");
-        buff.add(buffer);
-      }
-    }
-    for (final String buffer : build.getDynmicBuffer()) {
-      result.append(buffer + "\n ", "");
-    }
-
-    result.append("// body \n ", "");
-    result.append("cudaDeviceSynchronize(); \n ", "");
-    final String body = build.getBody();
-    result.append(body + "\n\n ", "");
-
-    result.append("// GPU to CPU buffer synchro\n");
-
-    for (final String buffer : build.getOffloadBuffer()) {
-      result.append(buffer + "\n ", "");
-    }
-
-    result.append("// free buffer\n");
-
-    for (final String buffer : build.getFreeBuffer()) {
-      result.append(buffer + "\n ", "");
-    }
-
-    result.append("}\n", "");
-
     return result;
   }
 

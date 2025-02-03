@@ -118,7 +118,6 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       // compute mapping
       final Object[] result = ClusterPartitionerURC.mapping(srv, scenario, numberOfPEs, brv);
       final Long nPE = (Long) result[0];
-      final Boolean isOnGPU = (Boolean) result[1];
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
@@ -154,8 +153,6 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-      // map the cluster on the CPU or GPU according to timing
-      subGraph.setOnGPU(isOnGPU);
     }
 
     return this.graph;

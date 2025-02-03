@@ -52,7 +52,7 @@ import org.preesm.model.slam.TimingType;
 
 /**
  * This class apply the Scaling up of Cluster of Actors on Processing Element (SCAPE) transformation. Supported
- * processing elements are x86 CPU cores and cuda GPU kernels.
+ * processing elements are x86 CPU cores.
  *
  * @author orenaud
  * @author emichel
@@ -111,9 +111,6 @@ public class ClusteringScape extends ClusterPartitioner {
 
     // compute cluster-able level ID
     fulcrumLevelID = HierarchicalRoute.computeClusterableLevel(graph, scapeMode, levelNumber, hierarchicalLevelOrdered);
-
-    // initializes all actors on CPU by default
-    graph.getAllActors().forEach(actor -> actor.setOnGPU(false));
 
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
@@ -473,7 +470,6 @@ public class ClusteringScape extends ClusterPartitioner {
       functionArgument.setDirection(Direction.OUT);
       functionPrototype.getArguments().add(functionArgument);
     }
-    oEmpty.setOnGPU(g.isOnGPU());
 
     graph.replaceActor(g, oEmpty);
 
@@ -534,18 +530,10 @@ public class ClusteringScape extends ClusterPartitioner {
     // Compute the execution time a a cluster running on each architecture type
     for (final Component pe : archi.getProcessingElements()) {
       if (pe instanceof final CPU cpu) {
-        if (!cluster.isOnGPU()) {
-          clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
-              String.valueOf(ClusterPartitionerURC.timingCPU(cluster.getOnlyActors().stream()
-                  .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()), scenario,
-                  repetitionVector, cpu)));
-
-        } else {
-          clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
-              String.valueOf(ClusterPartitionerURC.timingGPU(cluster.getOnlyActors().stream()
-                  .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()),
-                  scenario)));
-        }
+        clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
+            String.valueOf(ClusterPartitionerURC.timingCPU(cluster.getOnlyActors().stream()
+                .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()), scenario,
+                repetitionVector, cpu)));
       }
     }
 

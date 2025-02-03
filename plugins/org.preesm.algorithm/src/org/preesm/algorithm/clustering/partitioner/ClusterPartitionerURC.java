@@ -44,7 +44,6 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -62,12 +61,9 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.GPU;
 import org.preesm.model.slam.TimingType;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  * This class provide an algorithm to cluster a PiSDF graph and balance actor firings of clustered actor between coarse
@@ -129,7 +125,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       // compute mapping
       final Object[] result = mapping(urc, scenario, numberOfPEs, brv);
       final Long nPE = (Long) result[0];
-      final Boolean isOnGPU = (Boolean) result[1];
 
       // apply scaling
       final Long scale = computeScalingFactor(
@@ -170,9 +165,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-      // map the cluster on the CPU or GPU according to timing
-      subGraph.setOnGPU(isOnGPU);
-
     }
 
     return this.graph;
@@ -310,34 +302,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
   public static Object[] mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs,
       Map<AbstractVertex, Long> brv) {
-    final Component cpu = scenario.getDesign().getOperatorComponentInstances().stream()
-        .map(ComponentInstance::getComponent).filter(CPU.class::isInstance).findFirst().orElseThrow();
-    final Long timingCPU = timingCPU(urc, scenario, brv, cpu);
-    final Long timingGPU = timingGPU(urc, scenario);
 
-    // check if all actors can be mapped onto GPU
-    final boolean isGPUPossible = urc.stream().allMatch(
-        act -> scenario.getPossibleMappings(act).stream().anyMatch(comp -> comp.getInstanceName().equals("GPU")));
-
-    if (timingCPU > timingGPU && isGPUPossible) {
-      for (final AbstractActor act : urc) {
-        for (final ComponentInstance comp : scenario.getPossibleMappings(act)) {
-          if (comp.getInstanceName().equals("GPU")) {
-            act.setOnGPU(true);
-          }
-        }
-      }
-    }
-    // END EWEN MODIFS
-
-    if (SlamDesignPEtypeChecker.isOnlyCPU(scenario.getDesign()) || timingCPU < timingGPU || !isGPUPossible) {
-
-      return new Object[] { (long) numberOfPEs, Boolean.FALSE };
-    }
-
-    final Long gpuCount = scenario.getDesign().getOperatorComponentInstances().stream()
-        .filter(opId -> opId.getComponent() instanceof GPU).count();
-    return new Object[] { gpuCount, Boolean.TRUE };
+    return new Object[] { (long) numberOfPEs, Boolean.FALSE };
   }
 
   public static Long timingCPU(List<AbstractActor> urc, Scenario scenario, Map<AbstractVertex, Long> brv,
@@ -352,60 +318,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         sum += scenario.getTimings().evaluateTimingOrDefault(aaa, cpu, TimingType.EXECUTION_TIME) * brv.get(actor);
       }
     }
-    return sum;
-  }
-
-  public static Long timingGPU(List<AbstractActor> urc, Scenario scenario) {
-    if (SlamDesignPEtypeChecker.isDualCPUGPU(scenario.getDesign())) {
-      final GPU gpu = (GPU) scenario.getDesign().getOperatorComponentInstances().stream()
-          .map(ComponentInstance::getComponent).filter(GPU.class::isInstance).findFirst().orElseThrow();
-
-      final Long offloading = offLoadingCost(gpu, urc);
-      final Long timing = urc.stream().filter(Actor.class::isInstance).mapToLong(actor -> {
-        final AbstractActor aaa = scenario.getTimings().getActorTimings().keySet().stream()
-            .filter(aa -> actor.getName().equals(aa.getName())).findFirst().orElse(null);
-
-        return scenario.getTimings().evaluateTimingOrDefault(aaa, gpu, TimingType.EXECUTION_TIME);
-      }).sum();
-      return offloading + timing;
-
-    }
-    return Long.MAX_VALUE;
-  }
-
-  private static Long offLoadingCost(GPU gpu, List<AbstractActor> urc) {
-    // If GPU parameters are different from 0, use their value, otherwise default to 1
-    final Long dedicatedMemSpeed = (long) gpu.getDedicatedMemSpeed() != 1 ? (long) gpu.getDedicatedMemSpeed()
-        : 1000000000;
-    final Long unifiedMemSpeed = (long) gpu.getUnifiedMemSpeed() != 1 ? (long) gpu.getUnifiedMemSpeed() : 1000000000;
-    final String memoryToUse = gpu.getMemoryToUse();
-
-    Long sum = 0L;
-    // build the list of PiGraph future DataPort
-    final List<DataPort> dataPortList = urc.stream().flatMap(actor -> actor.getAllDataPorts().stream())
-        .filter(port -> urc.contains(port.getFifo().getSource()) ^ urc.contains(port.getFifo().getTarget())).toList();
-
-    // Calculate sum for DataPorts
-    sum += dataPortList.stream().mapToLong(dataPort -> {
-      final Long gpuInputSize = dataPort.getPortRateExpression().evaluateAsLong();
-      return (long) (memoryToUse.equalsIgnoreCase("unified") ? ((double) gpuInputSize / unifiedMemSpeed)
-          : ((double) gpuInputSize / dedicatedMemSpeed));
-    }).sum();
-
-    // Calculate sum for actor outputs
-
-    sum += urc.stream().flatMap(act -> act.getDataOutputPorts().stream()).filter(outPort -> {
-      final Vertex act = outPort.getFifo().getSource();
-      final Vertex target = outPort.getFifo().getTarget();
-      final boolean onGpuAndNextOnCpu = !((AbstractActor) target).isOnGPU() && ((AbstractActor) act).isOnGPU();
-      final boolean onCpuAndNextOnGpu = ((AbstractActor) target).isOnGPU() && !((AbstractActor) act).isOnGPU();
-      return onGpuAndNextOnCpu || onCpuAndNextOnGpu;
-    }).mapToLong(outPort -> {
-      final Long gpuInputSize = outPort.getPortRateExpression().evaluateAsLong();
-      return (long) (memoryToUse.equalsIgnoreCase("unified") ? (double) gpuInputSize / unifiedMemSpeed
-          : (double) gpuInputSize / dedicatedMemSpeed);
-    }).sum();
-
     return sum;
   }
 
@@ -426,7 +338,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       final Long ratio = computeDelayRatio(subGraph);
       scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {
-      scale = ncDivisor(nPE, clustredActorRepetition);
+      scale = MathFunctionsHelper.gcd(nPE, clustredActorRepetition);
     }
     if (scale == 0L) {
       scale = 1L;
@@ -444,23 +356,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       }
     }
     return count;
-  }
-
-  /**
-   * Used to compute the greatest common divisor between 2 values
-   *
-   */
-
-  private static Long ncDivisor(Long nC, Long n) {
-    Long i;
-    Long ncDivisor = 0L;
-    for (i = 1L; i <= n; i++) {
-      if (n % i == 0 && (i >= nC)) {
-        ncDivisor = i;
-        break;
-      }
-    }
-    return ncDivisor;
   }
 
 }
