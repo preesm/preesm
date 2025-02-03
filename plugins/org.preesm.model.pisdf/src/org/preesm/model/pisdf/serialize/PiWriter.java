@@ -85,6 +85,7 @@ import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.reconnection.SubgraphOriginalActorTracker;
@@ -230,14 +231,13 @@ public class PiWriter {
 
     // Add the name in the data of the node
 
-    if (abstractActor instanceof final PiGraph piGraph) {
-      writePiGraphAsHActor(vertexElt, piGraph);
-    } else if (abstractActor instanceof final Actor actor) {
-      writeActor(vertexElt, actor);
-    } else if (abstractActor instanceof ExecutableActor) {
-      writeSpecialActor(vertexElt, abstractActor);
-    } else if (abstractActor instanceof final InterfaceActor iActor) {
-      writeInterfaceVertex(vertexElt, iActor);
+    switch (abstractActor) {
+      case final PiGraph piGraph -> writePiGraphAsHActor(vertexElt, piGraph);
+      case final Actor actor -> writeActor(vertexElt, actor);
+      case final SpecialActor specialActor -> writeSpecialActor(vertexElt, specialActor);
+      case final InterfaceActor iActor -> writeInterfaceVertex(vertexElt, iActor);
+      default -> {
+        /* Nothing */ }
     }
   }
 
@@ -708,27 +708,28 @@ public class PiWriter {
    * @param actor
    *          The {@link Actor} to serialize
    */
-  protected void writeSpecialActor(final Element vertexElt, final AbstractActor actor) {
-    String kind = null;
-    if (actor instanceof BroadcastActor) {
-      kind = PiIdentifiers.BROADCAST;
-    } else if (actor instanceof JoinActor) {
-      kind = PiIdentifiers.JOIN;
-    } else if (actor instanceof ForkActor) {
-      kind = PiIdentifiers.FORK;
-    } else if (actor instanceof RoundBufferActor) {
-      kind = PiIdentifiers.ROUND_BUFFER;
-    } else if (actor instanceof final EndActor endActor) {
-      kind = PiIdentifiers.END;
-      if (endActor.getInitReference() != null) {
-        vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, endActor.getInitReference().getName());
+  protected void writeSpecialActor(final Element vertexElt, final SpecialActor actor) {
+
+    final String kind = switch (actor) {
+      case final BroadcastActor brd -> PiIdentifiers.BROADCAST;
+      case final JoinActor join -> PiIdentifiers.JOIN;
+      case final ForkActor fork -> PiIdentifiers.FORK;
+      case final RoundBufferActor rb -> PiIdentifiers.ROUND_BUFFER;
+      case final EndActor endActor -> {
+        if (endActor.getInitReference() != null) {
+          vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, endActor.getInitReference().getName());
+        }
+        yield PiIdentifiers.END;
       }
-    } else if (actor instanceof final InitActor initActor) {
-      kind = PiIdentifiers.INIT;
-      if (initActor.getEndReference() != null) {
-        vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, initActor.getEndReference().getName());
+      case final InitActor initActor -> {
+        if (initActor.getEndReference() != null) {
+          vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, initActor.getEndReference().getName());
+        }
+        yield PiIdentifiers.INIT;
       }
-    }
+      default -> throw new IllegalArgumentException("Unexpected value: " + actor);
+    };
+
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, kind);
 
     writePorts(vertexElt, actor.getConfigInputPorts());
