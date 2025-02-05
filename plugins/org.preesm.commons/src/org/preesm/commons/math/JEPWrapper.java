@@ -145,18 +145,15 @@ public class JEPWrapper {
   private static double parse(final String allExpression, final JEP jep) throws ParseException {
     final Node parse = jep.parse(allExpression);
     final Object result = jep.evaluate(parse);
-    if (result instanceof Long) {
-      return (double) result;
-    }
-    if (result instanceof final Double dResult) {
-      if (Double.isInfinite(dResult)) {
+
+    return switch (result) {
+      case final Long lResult -> lResult;
+      case final Double dResult when Double.isInfinite(dResult) ->
         throw new ExpressionEvaluationException("Expression '" + allExpression + "' evaluated to infinity.");
-      }
-      return dResult;
-    }
-    if (result instanceof final Number number) {
-      return number.doubleValue();
-    }
-    throw new ExpressionEvaluationException("Unsupported result type " + result.getClass().getSimpleName());
+      case final Double dResult -> dResult;
+      case final Number number -> number.doubleValue();
+      default ->
+        throw new ExpressionEvaluationException("Unsupported result type " + result.getClass().getSimpleName());
+    };
   }
 }

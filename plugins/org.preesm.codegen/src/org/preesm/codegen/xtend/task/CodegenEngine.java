@@ -218,9 +218,6 @@ public class CodegenEngine {
           "Could not find a printer for language \"" + selectedPrinter + "\" and core type \"" + coreType + "\".");
     }
 
-    // if (!this.registeredPrintersAndBlocks.containsKey(foundPrinter)) {
-    // this.registeredPrintersAndBlocks.put(foundPrinter, new ArrayList<>());
-    // }
     this.registeredPrintersAndBlocks.computeIfAbsent(foundPrinter, fp -> new ArrayList<>());
 
     final List<Block> blocks = this.registeredPrintersAndBlocks.get(foundPrinter);

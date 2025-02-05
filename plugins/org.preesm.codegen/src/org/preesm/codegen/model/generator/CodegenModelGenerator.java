@@ -415,7 +415,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // 2 - Set CoreBlock ID
     // 3 - Put the buffer declaration in their right place
 
-    // -1 - Add all hosted MemoryObject back in te MemEx
+    // -1 - Add all hosted MemoryObject back in the MemEx
     restoreHostedVertices();
 
     // 0 - Create the Buffers of the MemEx
@@ -632,21 +632,17 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
 
     } else {
-      ActorPrototypes prototypes = null;
       // If the actor has an IDL refinement
-      if ((refinement instanceof final CodeRefinement cRef) && (cRef.getLanguage() == Language.IDL)) {
+      final ActorPrototypes prototypes = switch (refinement) {
         // Retrieve the prototypes associated to the actor
-        prototypes = getActorPrototypes(dagVertex);
-      } else if (refinement instanceof final ActorPrototypes actorProto) {
+        case final CodeRefinement cRef when cRef.getLanguage() == Language.IDL -> getActorPrototypes(dagVertex);
         // Or if we already extracted prototypes from a .h refinement
-        prototypes = actorProto;
-      }
+        case final ActorPrototypes actorProto -> actorProto;
+        default ->
+          throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
+              + " Associate a refinement to this actor before generating code.");
+      };
 
-      if (prototypes == null) {
-        // If the actor has no refinement
-        throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
-            + " Associate a refinement to this actor before generating code.");
-      }
       // Generate the loop functionCall
       final Prototype loopPrototype = prototypes.getLoopPrototype();
       if (loopPrototype == null) {
@@ -879,9 +875,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       mainBuffer.setType("char");
       mainBuffer.setTokenTypeSizeInBit(8); // char is 8 bits
 
-      // To be removed
-      // mainBuffer.setSizeInBit(size);
-      // mainBuffer.setNbToken((long) (size + 7L) / mainBuffer.getTypeSize());
       mainBuffer.setNbToken((long) Math.ceil((double) size / (double) mainBuffer.getTokenTypeSizeInBit()));
       this.mainBuffers.put(memoryBank, mainBuffer);
 
