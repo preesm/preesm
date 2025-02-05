@@ -16,6 +16,7 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class partition subdivide data-parallelism task in order to prepare the scaling of the SCAPE method. For more
@@ -26,8 +27,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "euclide.transfo.task.identifier", name = "Euclide Task",
-    inputs = { @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) })
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) })
 
 public class EuclideTransfoTask extends AbstractTaskImplementation {
 
@@ -35,7 +37,7 @@ public class EuclideTransfoTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph transfo = new EuclideTransfo(scenario).execute();
 
     for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
@@ -54,9 +56,9 @@ public class EuclideTransfoTask extends AbstractTaskImplementation {
     // Build output map
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
-    output.put("PiMM", transfo);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, transfo);
     // return scenario updated
-    output.put("scenario", scenario);
+    output.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
     return output;
   }

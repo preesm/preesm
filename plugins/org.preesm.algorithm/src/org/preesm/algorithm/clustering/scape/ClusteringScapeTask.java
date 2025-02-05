@@ -15,6 +15,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class cluster actors in order to match parallelism the target architecture.
@@ -29,8 +30,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "scape.task.identifier", name = "Clustering Task",
-    inputs = { @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
         @Port(name = "cMem", type = Map.class) },
 
     parameters = {
@@ -102,7 +104,7 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
     };
 
     // Task inputs
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Long stackSize = this.stack;
     final int clusterNumber = this.cluster;
 
@@ -113,10 +115,10 @@ public class ClusteringScapeTask extends AbstractTaskImplementation {
 
     final Map<String, Object> output = new HashMap<>();
     // return topGraph
-    output.put("PiMM", outputScenario.getAlgorithm());
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputScenario.getAlgorithm());
 
     // return scenario updated
-    output.put("scenario", scenario);
+    output.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
     output.put("cMem", clusterMemory);
     return output;

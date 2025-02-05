@@ -49,6 +49,7 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Partitioner Task
@@ -56,10 +57,12 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * @author dgageot
  *
  */
-@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
-        @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
+@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner", inputs = {
+    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+        description = "Input PiSDF graph"),
+    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+        description = "Output PiSDF graph") },
     parameters = { @Parameter(name = ClusterPartitionerTask.NB_PE,
         description = "The number of PEs in compute clusters. This information is used to balance actor firings"
             + " between coarse and fine-grained levels.",
@@ -73,8 +76,8 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
-    final PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final PiGraph inputGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Parameters
     final String nbPE = parameters.get(NB_PE);
@@ -88,7 +91,7 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
 
     // Build output map
     final Map<String, Object> output = new HashMap<>();
-    output.put("PiMM", outputGraph);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
 
     return output;
   }

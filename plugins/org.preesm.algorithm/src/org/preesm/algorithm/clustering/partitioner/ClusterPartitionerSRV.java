@@ -38,15 +38,12 @@ package org.preesm.algorithm.clustering.partitioner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
@@ -116,8 +113,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).build();
 
       // compute mapping
-      final Object[] result = ClusterPartitionerURC.mapping(srv, scenario, numberOfPEs, brv);
-      final Long nPE = (Long) result[0];
+      final Long nPE = (long) numberOfPEs;
 
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
@@ -126,25 +122,17 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       }
 
       // apply scaling
-      final Long scale = ClusterPartitionerURC.computeScalingFactor(
-          subGraph, brv.get(subGraph.getOnlyActors().stream()
-              .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()).get(0)),
-          nPE, scapeMode);
+      final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
+          brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
       for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-        din.getGraphPort()
-            .setExpression(din.getGraphPort().getExpression().evaluateAsLong()
-                * brv.get(subGraph.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-                    .collect(Collectors.toList()).get(0))
-                / scale);
+        din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
       }
       for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
-        dout.getGraphPort()
-            .setExpression(dout.getGraphPort().getExpression().evaluateAsLong()
-                * brv.get(subGraph.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-                    .collect(Collectors.toList()).get(0))
-                / scale);
+        dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong());
       }
 

@@ -3,7 +3,6 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -17,7 +16,6 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
@@ -108,8 +106,7 @@ public class EuclideTransfo {
         .filter(opId -> opId.getComponent() instanceof CPU).toList();
     Long coreEq = 0L;
     int actorNumber = 0;
-    for (final AbstractActor actor : inputGraph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final AbstractActor actor : inputGraph.getExecutableActors()) {
       // sink and source actor replace interface for SimSDP
       if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")
           && !(actor instanceof DelayActor)) {
@@ -149,8 +146,7 @@ public class EuclideTransfo {
     for (Long i = levelBound; i >= 0L; i--) {
       for (final PiGraph g : hierarchicalLevelOrdered.get(i)) {
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        for (final AbstractActor a : g.getOnlyActors().stream()
-            .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+        for (final AbstractActor a : g.getExecutableActors()) {
           // maybe not for Special Actor
           if (rv.get(a) % coreEquivalent > 0 && rv.get(a) > coreEquivalent) {
             euclide(a, rv, coreEquivalent);

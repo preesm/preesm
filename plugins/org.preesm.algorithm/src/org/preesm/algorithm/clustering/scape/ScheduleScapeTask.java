@@ -11,6 +11,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * This class computes the schedule of the cluster using the authentic APGAN method, which relies on Repetition Count
@@ -25,7 +26,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 @PreesmTask(id = "scape.scedule.task.identifier", name = "SCAPE schedule Task",
-    inputs = { @Port(name = "scenario", type = Scenario.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     outputs = { @Port(name = "schedule", type = List.class) })
 
 public class ScheduleScapeTask extends AbstractTaskImplementation {
@@ -33,7 +34,7 @@ public class ScheduleScapeTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final List<ScapeSchedule> schedule = new ScheduleScape(scenario.getAlgorithm()).execute();
     // Build output map
     final Map<String, Object> output = new HashMap<>();
@@ -49,7 +50,6 @@ public class ScheduleScapeTask extends AbstractTaskImplementation {
 
   @Override
   public String monitorMessage() {
-
     return "Starting Execution of Scheduling SCAPE Task";
   }
 

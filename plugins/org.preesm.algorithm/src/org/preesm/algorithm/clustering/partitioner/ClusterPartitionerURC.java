@@ -41,8 +41,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -51,12 +49,12 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -122,24 +120,14 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, urc, "urc_" + clusterId).build();
 
-      // compute mapping
-      final Object[] result = mapping(urc, scenario, numberOfPEs, brv);
-      final Long nPE = (Long) result[0];
+      final Long nPE = (long) numberOfPEs;
 
       // apply scaling
-      final Long scale = computeScalingFactor(
-          subGraph, brv.get(subGraph.getOnlyActors().stream()
-              .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()).get(0)),
-          nPE, scapeMode);
+      final Long scale = computeScalingFactor(subGraph, brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
 
-      for (final InterfaceActor iActor : Stream
-          .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-          .collect(Collectors.toList())) {
-        iActor.getGraphPort()
-            .setExpression(iActor.getGraphPort().getExpression().evaluateAsLong()
-                * brv.get(subGraph.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-                    .collect(Collectors.toList()).get(0))
-                / scale);
+      for (final DataInterface iActor : subGraph.getDataInterfaces()) {
+        iActor.getGraphPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong());
 
       }
@@ -225,17 +213,14 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     }
 
     subGraph.getAllDataPorts().forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
-    Stream.concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-        .collect(Collectors.toList())
+    subGraph.getDataInterfaces()
         .forEach(port -> port.setName(port.getName().substring(port.getName().indexOf('_') + 1)));
   }
 
   private Map<BroadcastActor, List<InterfaceActor>> redundantFIFOMap(PiGraph subGraph) {
     final Map<BroadcastActor, List<InterfaceActor>> sourceMap = new HashMap<>();
     // Identify the mergeable buffer
-    for (final InterfaceActor iActor : Stream
-        .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-        .collect(Collectors.toList())) {
+    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
       if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
         // Check if the map already contains the broadcast actor
         if (sourceMap.containsKey(broadcast)) {
@@ -254,9 +239,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   }
 
   public static void reduceMemExMatches(PiGraph subGraph, Long scale, Map<AbstractVertex, Long> rv) {
-    for (final InterfaceActor iActor : Stream
-        .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-        .collect(Collectors.toList())) {
+    for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
       if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
         final Long brdInput = broadcast.getDataInputPorts().get(0).getExpression().evaluateAsLong();
         final long interfaceRate = iActor.getGraphPort().getExpression().evaluateAsLong();
@@ -300,12 +283,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
   }
 
-  public static Object[] mapping(List<AbstractActor> urc, Scenario scenario, int numberOfPEs,
-      Map<AbstractVertex, Long> brv) {
-
-    return new Object[] { (long) numberOfPEs, Boolean.FALSE };
-  }
-
   public static Long timingCPU(List<AbstractActor> urc, Scenario scenario, Map<AbstractVertex, Long> brv,
       Component cpu) {
 
@@ -333,8 +310,8 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
     Long scale;
     if (scapeMode == ScapeMode.DATA
-        && Stream.concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-            .collect(Collectors.toList()).stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+
       final Long ratio = computeDelayRatio(subGraph);
       scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
     } else {

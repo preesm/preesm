@@ -50,6 +50,7 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Partitioner Task
@@ -58,8 +59,10 @@ import org.preesm.workflow.elements.Workflow;
  *
  */
 @PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner DATA",
-    inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+        description = "Scenario") },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+        description = "Output PiSDF graph") },
     parameters = {
         @Parameter(name = ClusterPartitionerTask.NB_PE,
             description = "The number of PEs in compute clusters. This information is used to balance actor firings"
@@ -79,7 +82,7 @@ public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
 
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph inputGraph = scenario.getAlgorithm();
     // Parameters
     final String nbPE = parameters.get(NB_PE);
@@ -105,7 +108,7 @@ public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
 
     // Build output map
     final Map<String, Object> output = new HashMap<>();
-    output.put("PiMM", outputGraph);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
 
     return output;
   }

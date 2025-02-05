@@ -39,8 +39,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -49,6 +47,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -56,7 +55,6 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
-import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -296,9 +294,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
 
     // Scale and pipeline each loop
     for (final PiGraph sub : pipList) {
-      for (final InterfaceActor iActor : Stream
-          .concat(sub.getDataOutputInterfaces().stream(), sub.getDataInputInterfaces().stream())
-          .collect(Collectors.toList())) {
+      for (final DataInterface iActor : sub.getDataInterfaces()) {
         if (!iActor.getDataPort().getFifo().isHasADelay()) {
           Long scale;
           if (iActor instanceof DataInputInterface) {

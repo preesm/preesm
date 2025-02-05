@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitioner;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerLOOP;
 import org.preesm.algorithm.clustering.partitioner.ClusterPartitionerSEQ;
@@ -28,11 +27,12 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
@@ -308,8 +308,7 @@ public class ClusteringScape extends ClusterPartitioner {
    * @return original actor
    */
   private Actor findCluster(String clusterName) {
-    for (final AbstractActor a : graph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final ExecutableActor a : graph.getExecutableActors()) {
       if (a.getName().equals(clusterName)) {
         return (Actor) a;
       }
@@ -368,8 +367,7 @@ public class ClusteringScape extends ClusterPartitioner {
 
   private Long mem(PiGraph g) {
     Long mem = 0L;
-    for (final AbstractActor a : g.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-        .collect(Collectors.toList())) {
+    for (final AbstractActor a : g.getExecutableActors()) {
       for (final DataOutputPort out : a.getDataOutputPorts()) {
         if (!(out.getFifo().getTarget() instanceof DataOutputInterface)) {
           final Long typeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(out.getFifo().getType());
@@ -471,7 +469,7 @@ public class ClusteringScape extends ClusterPartitioner {
       functionPrototype.getArguments().add(functionArgument);
     }
 
-    graph.replaceActor(g, oEmpty);
+    replaceActor(graph, g, oEmpty);
 
   }
 
@@ -531,8 +529,8 @@ public class ClusteringScape extends ClusterPartitioner {
     for (final Component pe : archi.getProcessingElements()) {
       if (pe instanceof final CPU cpu) {
         clusterTiming.get(pe).replace(TimingType.EXECUTION_TIME,
-            String.valueOf(ClusterPartitionerURC.timingCPU(cluster.getOnlyActors().stream()
-                .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList()), scenario,
+            String.valueOf(ClusterPartitionerURC.timingCPU(
+                cluster.getOnlyActors().stream().filter(ExecutableActor.class::isInstance).toList(), scenario,
                 repetitionVector, cpu)));
       }
     }
@@ -565,6 +563,50 @@ public class ClusteringScape extends ClusterPartitioner {
       }
     }
     return clusterScenario;
+  }
+
+  private static void replaceActor(PiGraph graph, AbstractActor oldActor, AbstractActor newActor) {
+
+    // val int oldActorNbConfigInputPorts
+
+    if (oldActor.getConfigInputPorts().size() != newActor.getConfigInputPorts().size()
+        || oldActor.getConfigOutputPorts().size() != newActor.getConfigOutputPorts().size()
+        || oldActor.getDataInputPorts().size() != newActor.getDataInputPorts().size()
+        || oldActor.getDataOutputPorts().size() != newActor.getDataOutputPorts().size()) {
+      throw new PreesmRuntimeException("Actor replacement does not match with the actor to replace.");
+    }
+
+    // Input configuration port
+    for (int index = 0; index < oldActor.getConfigInputPorts().size(); index++) {
+      // val Dependency dep = oldActor.configInputPorts.get(index).incomingDependency
+      oldActor.getConfigInputPorts().get(index).getIncomingDependency()
+          .setGetter(newActor.getConfigInputPorts().get(index));
+    }
+
+    // Output configuration port
+    // for (int index = 0; index < oldActor.getConfigOutputPorts().size(); index++) {
+    // List<Dependency> deps = oldActor.getConfigOutputPorts().get(index).getOutgoingDependencies();
+    // for (int jindex = 0; jindex < deps.size(); jindex++) {
+    // newActor.getConfigOutputPorts().add(deps.get(jindex).getGetter());
+    //
+    // }
+    // }
+
+    // Input data port
+    for (int index = 0; index < oldActor.getDataInputPorts().size(); index++) {
+      final Fifo fifo = oldActor.getDataInputPorts().get(index).getFifo();
+      fifo.setTargetPort(newActor.getDataInputPorts().get(index));
+    }
+
+    // Output data port
+    for (int index = 0; index < oldActor.getDataOutputPorts().size(); index++) {
+      final Fifo fifo = oldActor.getDataOutputPorts().get(index).getFifo();
+      fifo.setSourcePort(newActor.getDataOutputPorts().get(index));
+    }
+
+    graph.removeActor(oldActor);
+    graph.addActor(newActor);
+
   }
 
 }

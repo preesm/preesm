@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.apache.commons.math3.util.Pair;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
@@ -15,10 +14,9 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -61,8 +59,7 @@ public class ScheduleScape {
   private Map<String, Map<String, Long>> initRepetitionCountStr() {
     final Map<String, Map<String, Long>> repetitionCountStr = new LinkedHashMap<>();
 
-    for (final AbstractActor actor : graph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final ExecutableActor actor : graph.getExecutableActors()) {
       for (final Vertex successor : actor.getDirectSuccessors()) {
         if (!(successor instanceof DataOutputInterface)) {
           final Long rep = MathFunctionsHelper.gcd(brv.get(actor), brv.get(successor));
@@ -109,8 +106,7 @@ public class ScheduleScape {
    */
   private List<ScapeSchedule> str2schedule(String scheduleStr) {
     final List<ScapeSchedule> cs = new LinkedList<>();
-    final List<AbstractActor> actorList = graph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList());
+    final List<ExecutableActor> actorList = graph.getExecutableActors();
     final String scheduleMonoCore = scheduleStr.replace("/", ""); // doesn't deal with parallelism
     final String[] splitActor = scheduleMonoCore.split("\\*");
     String[] splitRate;
@@ -180,10 +176,8 @@ public class ScheduleScape {
    * @return combineName the APGAN schedule translation
    */
   private String scheduleStr() {
-    if (graph.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-        .collect(Collectors.toList()).size() == 1) {
-      return brv.get(graph.getOnlyActors().stream().filter(a -> a instanceof Actor || a instanceof SpecialActor)
-          .collect(Collectors.toList()).get(0)) + "(" + graph.getOnlyActors().get(0).getName() + ")";
+    if (graph.getExecutableActors().size() == 1) {
+      return brv.get(graph.getExecutableActors().get(0)) + "(" + graph.getOnlyActors().get(0).getName() + ")";
     }
 
     final int iter = brv.size();

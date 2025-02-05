@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Partitioner Task
@@ -55,8 +56,10 @@ import org.preesm.workflow.elements.Workflow;
  *
  */
 @PreesmTask(id = "cluster-partitioner-PIP", name = "Cluster Partitioner PIP",
-    inputs = { @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph") })
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+        description = "Scenario") },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+        description = "Output PiSDF graph") })
 
 public class ClusterPartitionerPIPTask extends ClusterPartitionerTask {
 
@@ -68,7 +71,7 @@ public class ClusterPartitionerPIPTask extends ClusterPartitionerTask {
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
 
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph inputGraph = scenario.getAlgorithm();
 
     // Parameters
@@ -86,15 +89,14 @@ public class ClusterPartitionerPIPTask extends ClusterPartitionerTask {
     PiBRV.printRV(brv);
     // Build output map
     final Map<String, Object> output = new HashMap<>();
-    output.put("PiMM", outputGraph);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
 
     return output;
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defaultParams = new LinkedHashMap<>();
-    return defaultParams;
+    return new LinkedHashMap<>();
   }
 
   @Override

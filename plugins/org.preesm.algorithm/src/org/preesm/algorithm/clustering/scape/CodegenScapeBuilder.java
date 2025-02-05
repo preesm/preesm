@@ -3,9 +3,7 @@ package org.preesm.algorithm.clustering.scape;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.model.pisdf.AbstractActor;
@@ -80,8 +78,7 @@ public class CodegenScapeBuilder {
   private void processCPUBuffer(PiGraph subGraph, ScapeBuilder build, Long stackSize) {
     Long count = 0L;
     final Map<AbstractVertex, Long> brv = PiBRV.compute(subGraph, BRVMethod.LCM);
-    for (final AbstractActor actor : subGraph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final AbstractActor actor : subGraph.getExecutableActors()) {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
 
@@ -192,13 +189,11 @@ public class CodegenScapeBuilder {
     final StringBuilder actorImplem = new StringBuilder("//" + sc.getActor().getName() + "\n");
 
     if (sc.getActor() instanceof final BroadcastActor brd) {
-
       actorImplem.append(processBroadcastActor(brd, sc.getRepetition()));
     } else if (sc.getActor() instanceof final ForkActor frk) {
       actorImplem.append(processForkActor(frk, sc.getRepetition()));
     } else if (sc.getActor() instanceof final JoinActor join) {
       actorImplem.append(processJoinActor(join, sc.getRepetition()));
-
     }
 
     return actorImplem;
@@ -536,9 +531,7 @@ public class CodegenScapeBuilder {
           .append("void " + "Cluster_" + subGraph.getContainingPiGraph().getName() + "_" + subGraph.getName() + "(");
     }
 
-    final int nbArg = subGraph.getParameters().size()
-        + Stream.concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-            .collect(Collectors.toList()).size();
+    final int nbArg = subGraph.getParameters().size() + subGraph.getDataInterfaces().size();
 
     if (nbArg == 0) {
       funcLoop.append(")");
@@ -550,9 +543,7 @@ public class CodegenScapeBuilder {
       funcLoop.append(",");
     }
 
-    for (final InterfaceActor dInterface : Stream
-        .concat(subGraph.getDataOutputInterfaces().stream(), subGraph.getDataInputInterfaces().stream())
-        .collect(Collectors.toList())) {
+    for (final InterfaceActor dInterface : subGraph.getDataInterfaces()) {
       funcLoop.append(dInterface.getDataPort().getFifo().getType() + " *" + dInterface.getName());
       funcLoop.append(",");
     }

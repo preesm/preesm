@@ -3,19 +3,17 @@ package org.preesm.algorithm.clustering.scape;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.preesm.algorithm.schedule.model.ScapeBuilder;
 import org.preesm.algorithm.schedule.model.ScapeSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.commons.files.PreesmIOHelper;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ExpressionHolder;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
@@ -71,8 +69,7 @@ public class CodegenScape {
 
     result.append("#ifndef " + upper + "\n");
     result.append("#define " + upper + "\n");
-    for (final AbstractActor actor : subGraph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final ExecutableActor actor : subGraph.getExecutableActors()) {
       if (actor instanceof final Actor a && a.getRefinement() != null) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
         if (result.indexOf("#include \"" + cHeaderRefinement.getFileName()) == -1) {
@@ -154,8 +151,7 @@ public class CodegenScape {
     }
     final String initFunc = build.getInitFunc();
     result.append(initFunc + "{\n");
-    for (final AbstractActor actor : subGraph.getOnlyActors().stream()
-        .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+    for (final ExecutableActor actor : subGraph.getExecutableActors()) {
       if (actor instanceof Actor) {
         final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
         if (cHeaderRefinement != null && cHeaderRefinement.getInitPrototype() != null) {
