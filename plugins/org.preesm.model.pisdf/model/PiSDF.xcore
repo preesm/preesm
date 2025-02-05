@@ -476,11 +476,14 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique AbstractActor[] getOnlyActors() {
 		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
 	}
+	op unique ExecutableActor[] getExecutableActors() {
+		return vertices.filter(ExecutableActor).toEList.unmodifiableView
+	}
 	op unique Delay[] getDelays() {
 		return vertices.filter(Delay).toEList.unmodifiableView
 	}
 	op unique AbstractActor[] getDelayActors() {
-		return (actors.filter(it|(it instanceof DelayActor))).toEList.unmodifiableView
+		return actors.filter(DelayActor).toEList.unmodifiableView
 	}
 	op unique Fifo[] getFifos() {
 		return edges.filter(Fifo).toEList.unmodifiableView
@@ -650,6 +653,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	op unique DataOutputInterface[] getDataOutputInterfaces() {
 		return actors.filter(DataOutputInterface).toEList.unmodifiableView
+	}
+	op unique DataInterface[] getDataInterfaces() {
+		return (dataInputInterfaces + dataOutputInterfaces).toEList.unmodifiableView
 	}
 	op unique ConfigOutputInterface[] getConfigOutputInterfaces() {
 		return actors.filter(ConfigOutputInterface).toEList.unmodifiableView

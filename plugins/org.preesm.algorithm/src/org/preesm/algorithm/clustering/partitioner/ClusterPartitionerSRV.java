@@ -38,17 +38,13 @@ package org.preesm.algorithm.clustering.partitioner;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusteringHelper;
-import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.brv.BRVMethod;
-import org.preesm.model.pisdf.brv.PiBRV;
-import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
-import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
+import org.preesm.model.pisdf.util.ClusteringPatternSeekerSrv;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
@@ -58,77 +54,93 @@ import org.preesm.model.slam.ComponentInstance;
  * and fine-grained parallelism. Resulting clusters are marked as PiSDF cluster, they have to be schedule with the
  * Cluster Scheduler.
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-public class ClusterPartitioner {
 
-  /**
-   * Input graph.
-   */
-  protected PiGraph        graph;
-  /**
-   * Workflow scenario.
-   */
-  protected final Scenario scenario;
-  /**
-   * Number of PEs in compute clusters.
-   */
-  protected final int      numberOfPEs;
+public class ClusterPartitionerSRV extends ClusterPartitioner {
+
+  private final Map<AbstractVertex, Long> brv;
+
+  private final int       clusterId;
+  private final ScapeMode scapeMode;
 
   /**
    * Builds a ClusterPartitioner object.
    *
    * @param graph
+   *
    *          Input graph.
    * @param scenario
    *          Workflow scenario.
    * @param numberOfPEs
    *          Number of processing elements in compute clusters.
+   * @param brv
+   *
+   *          repetition vector
+   * @param clusterId
+   *          cluster identification number
+   *
    */
-  public ClusterPartitioner(final PiGraph graph, final Scenario scenario, final int numberOfPEs) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.numberOfPEs = numberOfPEs;
+  public ClusterPartitionerSRV(final PiGraph graph, final Scenario scenario, final int numberOfPEs,
+      Map<AbstractVertex, Long> brv, int clusterId, ScapeMode scapeMode) {
+    super(graph, scenario, numberOfPEs);
+    this.brv = brv;
+    this.clusterId = clusterId;
+    this.scapeMode = scapeMode;
   }
 
   /**
    * @return Clustered PiGraph.
    */
+
+  @Override
   public PiGraph cluster() {
 
-    // Look for actor groups other than URC chains.
     // Retrieve URC chains in input graph and verify that actors share component constraints.
-    final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph,
-        PiBRV.compute(this.graph, BRVMethod.LCM)).originalSeek();
-    final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
-      if (!ClusteringHelper.getListOfCommonComponent(URC, this.scenario).isEmpty()) {
-        constrainedURCs.add(URC);
+    final List<
+        List<AbstractActor>> graphSRVs = new ClusteringPatternSeekerSrv(this.graph, this.numberOfPEs, this.brv).seek();
+    final List<List<AbstractActor>> constrainedSRVs = new LinkedList<>();
+    if (!graphSRVs.isEmpty()) {
+      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
+      if (!ClusteringHelper.getListOfCommonComponent(srv, this.scenario).isEmpty()) {
+        constrainedSRVs.add(srv);
       }
     }
+    // Cluster constrained SRV chains.
+    if (!graphSRVs.isEmpty()) {
+      final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
+      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, srv, "srv_" + clusterId).build();
 
-    // Cluster constrained URC chains.
-    long index = 0;
-    final List<PiGraph> subGraphs = new LinkedList<>();
-    for (final List<AbstractActor> URC : graphURCs) {
-      final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + index++).build();
+      // compute mapping
+      final Long nPE = (long) numberOfPEs;
+
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
-      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
-      subGraphs.add(subGraph);
-    }
 
-    // Compute BRV and balance actor firings between coarse and fine-grained parallelism.
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(this.graph, BRVMethod.LCM);
-    for (final PiGraph subgraph : subGraphs) {
-      final long factor = MathFunctionsHelper.gcd(brv.get(subgraph), this.numberOfPEs);
-      final String message = String.format("%1$s: firings balanced by %3$d, leaving %2$d firings at coarse-grained.",
-          subgraph.getName(), brv.get(subgraph) / factor, factor);
-      PreesmLogger.getLogger().log(Level.INFO, message);
-      new PiGraphFiringBalancer(subgraph, factor).balance();
+      // apply scaling
+      final Long scale = ClusterPartitionerURC.computeScalingFactor(subGraph,
+          brv.get(subGraph.getExecutableActors().get(0)), nPE, scapeMode);
+
+      for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
+        din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
+      }
+      for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
+        dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong()
+            * brv.get(subGraph.getExecutableActors().get(0)) / scale);
+        dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong());
+      }
+
+      subGraph.setClusterValue(true);
+      // Add constraints of the cluster in the scenario.
+      for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
+        this.scenario.getConstraints().addConstraint(component, subGraph);
+      }
     }
 
     return this.graph;

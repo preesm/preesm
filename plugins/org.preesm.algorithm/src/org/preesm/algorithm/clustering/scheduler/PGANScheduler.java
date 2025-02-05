@@ -41,7 +41,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.Pair;
 import org.preesm.algorithm.clustering.APGANAlgorithm;
 import org.preesm.algorithm.clustering.ClusteringHelper;
@@ -183,7 +182,7 @@ public class PGANScheduler {
     if (childSchedule == null) {
       // Retrieve all actors that are not interface
       final List<AbstractActor> actors = copiedCluster.getActors().stream().filter(x -> !(x instanceof InterfaceActor))
-          .collect(Collectors.toList());
+          .toList();
       // Throw an exception if there are more than one actor or if there is zero actor
       if (actors.isEmpty() || actors.size() > 1) {
         throw new PreesmRuntimeException("PGANScheduler: cannot reduce subgraph actor to an atomic one.");

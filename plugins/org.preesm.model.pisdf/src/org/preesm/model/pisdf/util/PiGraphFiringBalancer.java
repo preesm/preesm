@@ -37,12 +37,17 @@
  */
 package org.preesm.model.pisdf.util;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 
@@ -62,7 +67,10 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
   /**
    * Balancing factor.
    */
-  private final long balancingFactor;
+  private final long        balancingFactor;
+  Map<AbstractVertex, Long> brv                         = new HashMap<>();
+  Long                      hierarchicalActorRepetition = 0L;
+  Long                      actorRepetition             = 0L;
 
   /**
    * Builds a PiGraphFiringBalancer based on the subgraph to process.
@@ -89,6 +97,9 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
           "PiGraphFiringBalancer: balancing factor " + balancingFactor + " is not power of 2.");
     }
     this.balancingFactor = balancingFactor;
+    this.brv = PiBRV.compute(this.graph.getContainingPiGraph(), BRVMethod.LCM);
+    hierarchicalActorRepetition = brv.get(graph);
+    actorRepetition = brv.get(graph.getOnlyActors().get(0));
   }
 
   /**
@@ -129,8 +140,13 @@ public class PiGraphFiringBalancer extends PiMMSwitch<Boolean> {
   @Override
   public Boolean caseInterfaceActor(InterfaceActor interfaceActor) {
     // Explore inside data port and graph data port.
-    doSwitch(interfaceActor.getDataPort());
-    doSwitch(interfaceActor.getGraphPort());
+    final Long newExpression = (hierarchicalActorRepetition == 1L) ? (long) Math.round(1.0 * this.balancingFactor)
+        : (long) Math.round((float) interfaceActor.getGraphPort().getExpression().evaluateAsLong()
+            * hierarchicalActorRepetition / this.balancingFactor);
+    interfaceActor.getGraphPort().setExpression(newExpression);
+
+    interfaceActor.getDataPort().setExpression(newExpression);
+
     return true;
   }
 

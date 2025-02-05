@@ -1,8 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
- *
- * Dylan Gageot [gageot.dylan@gmail.com] (2020)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -43,51 +41,70 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Partitioner Task
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner", inputs = {
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-        description = "Input PiSDF graph"),
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+@PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner DATA",
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+        description = "Scenario") },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
         description = "Output PiSDF graph") },
-    parameters = { @Parameter(name = ClusterPartitionerTask.NB_PE,
-        description = "The number of PEs in compute clusters. This information is used to balance actor firings"
-            + " between coarse and fine-grained levels.",
-        values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
-public class ClusterPartitionerTask extends AbstractTaskImplementation {
+    parameters = {
+        @Parameter(name = ClusterPartitionerTask.NB_PE,
+            description = "The number of PEs in compute clusters. This information is used to balance actor firings"
+                + " between coarse and fine-grained levels.",
+            values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
+        @Parameter(name = ClusterPartitionerDATATask.CLUSTERING_PARAM,
+            description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
+                + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
+            values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }) })
+public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
 
-  public static final String NB_PE         = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE = "1";
+  public static final String CLUSTERING_PARAM        = "SCAPE mode";
+  public static final String CLUSTERING_MODE_DEFAULT = "0";         // SCAPE1
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
-    final PiGraph inputGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph inputGraph = scenario.getAlgorithm();
     // Parameters
     final String nbPE = parameters.get(NB_PE);
+    final String modeStr = parameters.get(ClusterPartitionerDATATask.CLUSTERING_PARAM);
 
+    final ScapeMode scapeMode = switch (modeStr) {
+      case "0" -> ScapeMode.DATA;
+      case "1" -> ScapeMode.DATA_PIPELINE;
+      case "2" -> ScapeMode.DATA_PIPELINE_HIERARCHY;
+      default -> throw new PreesmRuntimeException("Unrecognized Scape mode.");
+    };
+
+    Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
     // Cluster input graph
-    final PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE)).cluster();
-
+    new ClusterPartitionerURC(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0, scapeMode, false).cluster();
+    final PiGraph outputGraph = new ClusterPartitionerSRV(inputGraph, scenario, Integer.parseInt(nbPE), brv, 0,
+        scapeMode).cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);
+    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    PiBRV.printRV(brv);
 
     // Build output map
     final Map<String, Object> output = new HashMap<>();
@@ -100,12 +117,14 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(NB_PE, DEFAULT_NB_PE);
+    // non cluster default
+    defaultParams.put(CLUSTERING_PARAM, CLUSTERING_MODE_DEFAULT);
     return defaultParams;
   }
 
   @Override
   public String monitorMessage() {
-    return "Starting Execution of Cluster Partitioner Task";
+    return "Starting Execution of Cluster Partitioner Focusing Data Parallelism (URC+SRV) Task";
   }
 
 }

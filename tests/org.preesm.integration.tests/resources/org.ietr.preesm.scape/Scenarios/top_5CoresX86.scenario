@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.scape/Algo/top.pi"/>
+        <architecture url="/org.ietr.preesm.scape/Archi/5CoresX86.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.scape/Code/generated/"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="top/I"/>
+            <task name="top/h"/>
+            <task name="top/h/Z"/>
+            <task name="top/h/Y"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="top/I"/>
+            <task name="top/h"/>
+            <task name="top/h/Z"/>
+            <task name="top/h/Y"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="top/I"/>
+            <task name="top/h"/>
+            <task name="top/h/Z"/>
+            <task name="top/h/Y"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core3"/>
+            <task name="top/I"/>
+            <task name="top/h"/>
+            <task name="top/h/Z"/>
+            <task name="top/h/Y"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core4"/>
+            <task name="top/I"/>
+            <task name="top/h"/>
+            <task name="top/h/Z"/>
+            <task name="top/h/Y"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/I"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h_outD__h_inD"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h/Z"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h/Y"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h/inD"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h/outD"/>
+        <timing opname="x86" time="100"
+            timingtype="EXECUTION_TIME" vertexname="top/h/out"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="char" size="8"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+            <specialVertexOperator path="Core3"/>
+            <specialVertexOperator path="Core4"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

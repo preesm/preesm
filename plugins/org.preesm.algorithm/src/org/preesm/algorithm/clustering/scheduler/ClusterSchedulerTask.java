@@ -52,17 +52,21 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Scheduler Task
- * 
+ *
  * @author dgageot
  *
  */
-@PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler",
-    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiSDF graph"),
-        @Port(name = "scenario", type = Scenario.class, description = "Scenario") },
-    outputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Output PiSDF graph"),
+@PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler", inputs = {
+    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+        description = "Input PiSDF graph"),
+    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+    outputs = {
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+            description = "Output PiSDF graph"),
         @Port(name = "CS", type = Map.class, description = "Map of Cluster Schedule") },
     parameters = {
         @Parameter(name = "Target",
@@ -101,24 +105,24 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     // Task inputs
-    PiGraph inputGraph = (PiGraph) inputs.get("PiMM");
-    Scenario scenario = (Scenario) inputs.get("scenario");
+    final PiGraph inputGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // Parameters
-    String targetParameter = parameters.get(TARGET_CHOICE);
-    String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);
-    boolean optimizePerformance = optimizationParameter.contains(OPTIMIZATION_PERFORMANCE);
-    String parallelismParameter = parameters.get(PARALLELISM_CHOICE);
-    boolean parallelism = parallelismParameter.contains(PARALLELISM_TRUE);
+    final String targetParameter = parameters.get(TARGET_CHOICE);
+    final String optimizationParameter = parameters.get(OPTIMIZATION_CHOICE);
+    final boolean optimizePerformance = optimizationParameter.contains(OPTIMIZATION_PERFORMANCE);
+    final String parallelismParameter = parameters.get(PARALLELISM_CHOICE);
+    final boolean parallelism = parallelismParameter.contains(PARALLELISM_TRUE);
 
     // Build output map
-    Map<String, Object> output = new HashMap<>();
+    final Map<String, Object> output = new HashMap<>();
 
     // Depending on the type of target, schedule the whole graph or just clusters.
     Map<AbstractActor, Schedule> scheduleMap = null;
     if (targetParameter.contains(TARGET_INPUT_GRAPH)) {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling the input graph.");
-      PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
+      final PGANScheduler scheduler = new PGANScheduler(inputGraph, scenario, optimizePerformance, parallelism);
       scheduleMap = scheduler.scheduleInputGraph();
     } else {
       PreesmLogger.getLogger().log(Level.INFO, "Scheduling clusters.");
@@ -126,7 +130,7 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
     }
 
     // Print schedule results in console
-    for (Entry<AbstractActor, Schedule> entry : scheduleMap.entrySet()) {
+    for (final Entry<AbstractActor, Schedule> entry : scheduleMap.entrySet()) {
       String str = "Schedule for " + entry.getKey().getName() + ":";
       PreesmLogger.getLogger().log(Level.INFO, str);
       str = entry.getValue().shortPrint();
@@ -135,13 +139,13 @@ public class ClusterSchedulerTask extends AbstractTaskImplementation {
 
     // Register outputs
     output.put("CS", scheduleMap);
-    output.put("PiMM", inputGraph);
+    output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, inputGraph);
     return output;
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> defaultParams = new LinkedHashMap<>();
+    final Map<String, String> defaultParams = new LinkedHashMap<>();
     defaultParams.put(TARGET_CHOICE, DEFAULT_TARGET);
     defaultParams.put(OPTIMIZATION_CHOICE, DEFAULT_OPTIMIZATION);
     defaultParams.put(PARALLELISM_CHOICE, DEFAULT_PARALLELISM);

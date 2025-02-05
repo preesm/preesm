@@ -1,8 +1,6 @@
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2020) :
- *
- * Dylan Gageot [gageot.dylan@gmail.com] (2020)
- * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
+
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -39,56 +37,56 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.commons.doc.annotations.Value;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
-import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * Cluster Partitioner Task
  *
- * @author dgageot
+ * @author orenaud
  *
  */
-@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner", inputs = {
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-        description = "Input PiSDF graph"),
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+@PreesmTask(id = "cluster-partitioner-PIP", name = "Cluster Partitioner PIP",
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+        description = "Scenario") },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-        description = "Output PiSDF graph") },
-    parameters = { @Parameter(name = ClusterPartitionerTask.NB_PE,
-        description = "The number of PEs in compute clusters. This information is used to balance actor firings"
-            + " between coarse and fine-grained levels.",
-        values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }) })
-public class ClusterPartitionerTask extends AbstractTaskImplementation {
+        description = "Output PiSDF graph") })
 
-  public static final String NB_PE         = "Number of PEs in compute clusters";
-  public static final String DEFAULT_NB_PE = "1";
+public class ClusterPartitionerPIPTask extends ClusterPartitionerTask {
+
+  public static final String NON_CLUSTER_PARAM   = "Non-cluster actor";
+  public static final String NON_CLUSTER_DEFAULT = "";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
     // Task inputs
-    final PiGraph inputGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph inputGraph = scenario.getAlgorithm();
 
     // Parameters
-    final String nbPE = parameters.get(NB_PE);
+    final int nbPE = scenario.getDesign().getProcessingElements().size();
 
     // Cluster input graph
-    final PiGraph outputGraph = new ClusterPartitioner(inputGraph, scenario, Integer.parseInt(nbPE)).cluster();
 
+    new ClusterPartitionerSEQ(inputGraph, scenario, nbPE).cluster();
+    Map<AbstractVertex, Long> brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    final PiGraph outputGraph = new ClusterPartitionerLOOP(inputGraph, scenario, nbPE, brv, 0).cluster();
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,
         CheckerErrorLevel.FATAL_ALL);
     pgcc.check(outputGraph);
-
+    brv = PiBRV.compute(inputGraph, BRVMethod.LCM);
+    PiBRV.printRV(brv);
     // Build output map
     final Map<String, Object> output = new HashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, outputGraph);
@@ -98,14 +96,12 @@ public class ClusterPartitionerTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> defaultParams = new LinkedHashMap<>();
-    defaultParams.put(NB_PE, DEFAULT_NB_PE);
-    return defaultParams;
+    return new LinkedHashMap<>();
   }
 
   @Override
   public String monitorMessage() {
-    return "Starting Execution of Cluster Partitioner Task";
+    return "Starting Execution of Cluster Partitioner Focusing Pipeline Parallelism (Seq+Loop) Task";
   }
 
 }
