@@ -54,6 +54,7 @@ import org.eclipse.core.runtime.IPath
 import org.eclipse.core.runtime.Path
 import org.eclipse.emf.common.util.ECollections
 import org.eclipse.emf.common.util.EMap
+import org.preesm.commons.files.WorkspaceUtils
 import org.preesm.commons.model.PreesmCopyTracker
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.Parameter
@@ -125,14 +126,15 @@ class Scenario {
 		// com node ids are no more valid (they are extracted from the
 		// architecture)
 		if (archiPath !== null) {
-
 			// Extract the root object from the resource.
-			this.design = SlamParser.parseSlamDesign(archiPath);
+			val String fullArchiPath = WorkspaceUtils.getWorkspaceRelativePathFrom(scenarioURL, archiPath).toString;
+			this.design = SlamParser.parseSlamDesign(fullArchiPath);
 		}
 		// If the algorithm changes, parameters or variables are no more valid
 		// (they are set in the algorithm)
 		if (algoPath !== null) {
-			val PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(algoPath);
+			val String fullAlgoPath = WorkspaceUtils.getWorkspaceRelativePathFrom(scenarioURL, algoPath).toString;
+			val PiGraph newPiGraph = PiParser.getPiGraphWithReconnection(fullAlgoPath);
 			this.algorithm = newPiGraph;
 			getParameterValues().clear();
 			for (Parameter p : newPiGraph.getAllParameters()) {

@@ -59,11 +59,13 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -416,7 +418,10 @@ public class ScenarioParser {
    *          the url
    */
   private Design initializeArchitectureInformation(final String url) {
-    final Design design = SlamParser.parseSlamDesign(url);
+
+    final IPath archiPath = WorkspaceUtils.getWorkspaceRelativePathFrom(this.scenario.getScenarioURL(), url);
+
+    final Design design = SlamParser.parseSlamDesign(archiPath.toString());
     this.scenario.setDesign(design);
     return design;
   }

@@ -61,6 +61,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -278,7 +279,7 @@ public class PiParser {
 
     final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
     if ((memoryScript != null) && !memoryScript.isEmpty()) {
-      final IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
+      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(memoryScript));
       actor.setMemoryScriptPath(path.toString());
     }
 
@@ -296,7 +297,7 @@ public class PiParser {
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
-      final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
+      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(refinement));
       final String refinementExtension = path.getFileExtension();
       if (RefinementChecker.isAsupportedHeaderFileExtension(refinementExtension)) {
         parseHeaderRefinement(nodeElt, actor, path);
