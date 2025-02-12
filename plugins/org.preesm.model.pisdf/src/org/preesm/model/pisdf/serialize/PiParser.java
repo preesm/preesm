@@ -136,7 +136,7 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      final String message = "The architecture file \"" + uri + "\" has improper extension.";
+      final String message = "The algorithm file \"" + uri + "\" has improper extension.";
       throw new PreesmRuntimeException(message);
     }
 
