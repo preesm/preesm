@@ -40,6 +40,8 @@ package org.preesm.ui.scenario.editor.codegen;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -58,6 +60,7 @@ import org.eclipse.ui.forms.widgets.ExpandableComposite;
 import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.ui.fields.FieldUtils;
 import org.preesm.ui.scenario.editor.FileSelectionAdapter;
@@ -204,7 +207,22 @@ public class CodegenPage extends ScenarioPage {
       final Text text1 = (Text) e.getSource();
       colorRedIfFileAbsent(text1);
       final String path = FilenameUtils.separatorsToUnix(text1.getText());
-      CodegenPage.this.scenario.setCodegenDirectory(path);
+
+      final Matcher match = Pattern.compile("^\\/?[a-zA-Z1-9-_,\\.]+").matcher(path);
+
+      final String absolutePath;
+      final String projectName;
+
+      // If path is already absolute
+      if (match.find() && WorkspaceUtils.projectExists(match.group(0))) {
+        absolutePath = path;
+      } else {
+        // The path is project relative; appending the current project name to path
+        projectName = WorkspaceUtils.getProjectName(this.scenario.getScenarioURL());
+        absolutePath = WorkspaceUtils.getAbsolutePath(path, projectName);
+      }
+
+      CodegenPage.this.scenario.setCodegenDirectory(absolutePath);
       firePropertyChange(IEditorPart.PROP_DIRTY);
     });
 

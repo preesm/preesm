@@ -81,7 +81,7 @@ public class WorkspaceUtils {
     }
     absolute = "/" + projectName + "/" + relative;
 
-    return absolute;
+    return absolute.replace("//", "/").strip();
   }
 
   /**
@@ -337,5 +337,19 @@ public class WorkspaceUtils {
       }
     }
     return path;
+  }
+
+  public static String getProjectName(final String documentStr) {
+    final URI documentURI = URI.createPlatformResourceURI(documentStr, true);
+    return getProjectName(documentURI);
+  }
+
+  public static String getProjectName(final URI documentURI) {
+    // Get the project
+    final String platformString = documentURI.toPlatformString(true);
+    final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+    final IProject documentProject = documentFile.getProject();
+
+    return documentProject.getName();
   }
 }
