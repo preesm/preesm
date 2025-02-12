@@ -50,6 +50,8 @@ import org.preesm.model.slam.SlamPackage;
  */
 public class SlamParser {
 
+  private static final String ARCHI_EXT = "slam";
+
   private SlamParser() {
     // forbid instantiation
   }
@@ -64,21 +66,15 @@ public class SlamParser {
   public static Design parseSlamDesign(final String url) {
 
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    Object instance = extToFactoryMap.get("slam");
-    if (instance == null) {
-      instance = new IPXACTResourceFactoryImpl();
-      extToFactoryMap.put("slam", instance);
-    }
+    extToFactoryMap.computeIfAbsent(ARCHI_EXT, str -> new IPXACTResourceFactoryImpl());
 
-    if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-      EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-    }
+    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, s -> SlamPackage.eINSTANCE);
 
     Design slamDesign = null;
     final ResourceSet resourceSet = new ResourceSetImpl();
 
     final URI uri = URI.createPlatformResourceURI(url, true);
-    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("slam")) {
+    if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals(ARCHI_EXT)) {
       final String message = "The architecture file \"" + uri + "\" specified by the scenario has improper extension.";
       throw new PreesmRuntimeException(message);
     }

@@ -38,8 +38,6 @@
  */
 package org.preesm.ui.scenario.editor.codegen;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
@@ -117,9 +115,6 @@ public class CodegenPage extends ScenarioPage {
     layout.maxNumColumns = 4;
     layout.minNumColumns = 1;
     form.getBody().setLayout(layout);
-
-    final Set<String> algoExtensions = new LinkedHashSet<>();
-    algoExtensions.add("graphml");
 
     String codeGenDirStr = this.scenario.getCodegenDirectory();
     if (codeGenDirStr == null) {

@@ -118,7 +118,6 @@ public class OverviewPage extends ScenarioPage {
 
     final Set<String> algoExtensions = new LinkedHashSet<>();
     algoExtensions.add("pi");
-    algoExtensions.add("graphml");
 
     // Algorithm file chooser section
     final PiGraph algo = this.scenario.getAlgorithm();

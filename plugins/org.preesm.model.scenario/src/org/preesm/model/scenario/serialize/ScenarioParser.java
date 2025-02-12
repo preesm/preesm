@@ -148,7 +148,7 @@ public class ScenarioParser {
       this.dom = db.parse(file.getContents());
     } catch (final ParserConfigurationException | SAXException | IOException | CoreException e) {
 
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse file: " + e.getMessage(), e);
+      PreesmLogger.getLogger().log(Level.WARNING, e, () -> "Could not parse file: " + e.getMessage());
       return null;
     }
     this.scenario.setScenarioURL(file.getFullPath().toString());
