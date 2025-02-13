@@ -131,12 +131,12 @@ public class TimingsPage extends ScenarioPage {
     VALUE(4, "Value", 50);
 
     public final int    columnIndex;
-    public final String name;
+    public final String columnName;
     public final int    width;
 
-    TimingColumn(int columnIndex, String name, int width) {
+    TimingColumn(int columnIndex, String columnName, int width) {
       this.columnIndex = columnIndex;
-      this.name = name;
+      this.columnName = columnName;
       this.width = width;
     }
 
@@ -291,56 +291,59 @@ public class TimingsPage extends ScenarioPage {
     newTableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof final TableItem ti) {
-          final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
-          final String newValue = (String) value;
-          boolean dirty = false;
-          if (SETUP_TIME_TITLE.equals(property)) {
-            final long oldSetupTime = memInfo.getValue().getSetupTime();
-            try {
-              final long parseLong = Long.parseLong(newValue);
-              if (oldSetupTime != parseLong) {
-                dirty = true;
-                memInfo.getValue().setSetupTime(parseLong);
-              }
-            } catch (final NumberFormatException e) {
-              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Setup time values are Long typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
+        if (!(element instanceof final TableItem ti)) {
+          return;
+        }
+        final MemoryInfoImpl memInfo = (MemoryInfoImpl) ti.getData();
+        final String newValue = (String) value;
+        boolean dirty = false;
+        if (SETUP_TIME_TITLE.equals(property)) {
+          final long oldSetupTime = memInfo.getValue().getSetupTime();
+          try {
+            final long parseLong = Long.parseLong(newValue);
+            if (oldSetupTime != parseLong) {
+              dirty = true;
+              memInfo.getValue().setSetupTime(parseLong);
             }
-          } else if (TIME_PER_UNIT_TITLE.equals(property)) {
-            final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
-            try {
-              final double newUnitPerTime = Double.parseDouble(newValue);
-              final double newTimePerUnit = 1. / newUnitPerTime;
-              if (oldTimePerUnit != newTimePerUnit) {
-                dirty = true;
-                memInfo.getValue().setTimePerUnit(newTimePerUnit);
-              }
-            } catch (final NumberFormatException e) {
-              ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
-                  "Unit per time values are Double typed.",
-                  new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
-            }
+          } catch (final NumberFormatException e) {
+            ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                "Setup time values are Long typed.",
+                new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse long. " + e.getMessage()));
           }
+        } else if (TIME_PER_UNIT_TITLE.equals(property)) {
+          final double oldTimePerUnit = memInfo.getValue().getTimePerUnit();
+          try {
+            final double newUnitPerTime = Double.parseDouble(newValue);
+            final double newTimePerUnit = 1. / newUnitPerTime;
+            if (oldTimePerUnit != newTimePerUnit) {
+              dirty = true;
+              memInfo.getValue().setTimePerUnit(newTimePerUnit);
+            }
+          } catch (final NumberFormatException e) {
+            ErrorDialog.openError(TimingsPage.this.getEditorSite().getShell(), "Wrong number format",
+                "Unit per time values are Double typed.",
+                new Status(IStatus.ERROR, "org.preesm.ui.scenario", "Could not parse double. " + e.getMessage()));
+          }
+        }
 
-          if (dirty) {
-            firePropertyChange(IEditorPart.PROP_DIRTY);
-            newTableViewer.refresh();
-          }
+        if (dirty) {
+          firePropertyChange(IEditorPart.PROP_DIRTY);
+          newTableViewer.refresh();
         }
       }
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof final MemoryInfoImpl memInfo) {
-          if (SETUP_TIME_TITLE.equals(property)) {
-            return Long.toString(memInfo.getValue().getSetupTime());
-          }
-          if (TIME_PER_UNIT_TITLE.equals(property)) {
-            return Double.toString(1. / memInfo.getValue().getTimePerUnit());
-          }
+        if (!(element instanceof final MemoryInfoImpl memInfo)) {
+          return "";
         }
+        if (SETUP_TIME_TITLE.equals(property)) {
+          return Long.toString(memInfo.getValue().getSetupTime());
+        }
+        if (TIME_PER_UNIT_TITLE.equals(property)) {
+          return Double.toString(1. / memInfo.getValue().getTimePerUnit());
+        }
+
         return "";
       }
 
@@ -537,8 +540,8 @@ public class TimingsPage extends ScenarioPage {
     final String[] columnNames = new String[TimingColumn.values().length];
     for (final TimingColumn timingColumn : columnTypes) {
       final TableColumn column = new TableColumn(table, SWT.NONE, timingColumn.columnIndex);
-      columnNames[timingColumn.columnIndex] = timingColumn.name;
-      column.setText(timingColumn.name);
+      columnNames[timingColumn.columnIndex] = timingColumn.columnName;
+      column.setText(timingColumn.columnName);
       column.setWidth(timingColumn.width);
       columns[timingColumn.columnIndex] = column;
     }
@@ -583,7 +586,7 @@ public class TimingsPage extends ScenarioPage {
 
       @Override
       public boolean canModify(final Object element, final String property) {
-        return property.contentEquals(TimingColumn.EXPRESSION.name);
+        return property.contentEquals(TimingColumn.EXPRESSION.columnName);
       }
     });
 

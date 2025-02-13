@@ -219,7 +219,7 @@ public class SimulationPage extends ScenarioPage {
             SimulationPage.this.scenario.getSimulationInfo().setAverageDataSize(averageSize);
             propertyChanged(this, IEditorPart.PROP_DIRTY);
           } catch (final NumberFormatException ex) {
-            PreesmLogger.getLogger().log(Level.WARNING, "Could not parse integer " + text.getText(), ex);
+            PreesmLogger.getLogger().log(Level.WARNING, ex, () -> "Could not parse integer " + text.getText());
           }
         }
       };
