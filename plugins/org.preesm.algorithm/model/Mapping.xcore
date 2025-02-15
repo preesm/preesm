@@ -82,3 +82,20 @@ class MultiMappingEntry wraps java.util.Map$Entry {
 	refers AbstractActor key
 	refers ComponentInstance[] value
 }
+
+class SimSDPCoreMapping{
+	int ID
+	String coreType
+	Double coreFrequency
+	Double coreCommunicationRate
+	
+}
+
+class SimSDPNodeMapping{
+	int ID
+	String nodeName
+	Double nodeCommunicationRate
+	refers SimSDPCoreMapping[] cores
+	int nbCoreEquivalent
+	
+}

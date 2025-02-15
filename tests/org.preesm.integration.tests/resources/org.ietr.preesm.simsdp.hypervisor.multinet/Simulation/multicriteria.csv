@@ -1,0 +1,12 @@
+type;Cluster with crossbar:1:1:1
+finalLatency;260003409
+memory;94371840
+energy;1
+cost;1
+
+type;Cluster with crossbar:1:1:1
+finalLatency;260223641
+memory;246415360
+energy;1
+cost;1
+

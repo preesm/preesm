@@ -519,7 +519,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         } else if (delay != null) {
           if (!reset) {
             pipeSize += delay.getExpression().evaluateAsLong();
-            PreesmLogger.getLogger().warning(() -> "Reset fifo delay size and type of: " + f.getId());
+            PreesmLogger.getLogger().info(() -> "Reset fifo delay size and type of: " + f.getId());
           } else {
             pipeSize = delay.getExpression().evaluateAsLong() - pipeSize;
           }

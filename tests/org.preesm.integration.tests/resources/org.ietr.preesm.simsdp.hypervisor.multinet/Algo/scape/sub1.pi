@@ -1,0 +1,559 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">sub1</data>
+        <node expr="2048" id="N_SAMPLES" kind="param"/>
+        <node expr="3" id="SIGMA" kind="param"/>
+        <node expr="20" id="N_BLOCKS" kind="param"/>
+        <node id="Join_MAD_Computation0" kind="join">
+            <port annotation="NONE" expr="28672" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="12288" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="Join_MAD_Computation1" kind="join">
+            <port annotation="NONE" expr="28672" kind="input" name="in_0"/>
+            <port annotation="NONE" expr="12288" kind="input" name="in_1"/>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_0" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_0.h</data>
+            <loop name="sub1_src_in_0">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="28672" kind="output" name="out"/>
+        </node>
+        <node id="src_in_1" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_1.h</data>
+            <loop name="sub1_src_in_1">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_2" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_2.h</data>
+            <loop name="sub1_src_in_2">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_3" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_3.h</data>
+            <loop name="sub1_src_in_3">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="28672" kind="output" name="out"/>
+        </node>
+        <node id="src_in_4" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_4.h</data>
+            <loop name="sub1_src_in_4">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="12288" kind="output" name="out"/>
+        </node>
+        <node id="src_in_5" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub1/src_in_5.h</data>
+            <loop name="sub1_src_in_5">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="12288" kind="output" name="out"/>
+        </node>
+        <node id="STD_Computation2" kind="actor">
+            <data key="graph_desc">Code/include/stdCpt.h</data>
+            <loop name="STDCpt">
+                <param direction="IN" isConfig="true"
+                    name="N_SAMPLES" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="SIGMA" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="std_R_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="std_I_o" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="SIGMA"/>
+            <port annotation="NONE" expr="2048" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="2048" kind="output" name="std_R_o"/>
+            <port annotation="NONE" expr="2048" kind="output" name="std_I_o"/>
+        </node>
+        <node id="Fork_eu_STD_Computation0" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_STD_Computation1" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Brd_STD_I2" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="2048" kind="input" name="in"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_1"/>
+        </node>
+        <node id="Brd_STD_R2" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="2048" kind="input" name="in"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_2"/>
+        </node>
+        <node id="Brd_MAD_R2" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="2048" kind="input" name="in"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_2"/>
+        </node>
+        <node id="Fork_eu_Brd_MAD_R0" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Brd_MAD_I2" kind="broadcast">
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port annotation="NONE" expr="2048" kind="input" name="in"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="2048" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_Brd_MAD_I0" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="urc_0" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_0.h</data>
+            <loop name="Cluster_sub1_urc_0">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_STD_Computation0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_STD_Computation0_in_1" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Fork_eu_Brd_STD_R0_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Fork_eu_Brd_STD_R0_out_1" type="double"/>
+            </loop>
+            <init name="urc_0Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_STD_Computation0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_STD_Computation0_in_1"/>
+            <port annotation="NONE" expr="36864" kind="output" name="Fork_eu_Brd_STD_R0_out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="Fork_eu_Brd_STD_R0_out_1"/>
+        </node>
+        <node id="urc_1" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_1.h</data>
+            <loop name="Cluster_sub1_urc_1">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_STD_Computation1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_STD_Computation1_in_1" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Fork_eu_Brd_STD_I0_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Fork_eu_Brd_STD_I0_out_1" type="double"/>
+            </loop>
+            <init name="urc_1Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_STD_Computation1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_STD_Computation1_in_1"/>
+            <port annotation="NONE" expr="36864" kind="output" name="Fork_eu_Brd_STD_I0_out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="Fork_eu_Brd_STD_I0_out_1"/>
+        </node>
+        <node id="urc_2" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_2.h</data>
+            <loop name="Cluster_sub1_urc_2">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_R0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_R0_in_1" type="double"/>
+            </loop>
+            <init name="urc_2Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_STD_R0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_STD_R0_in_1"/>
+        </node>
+        <node id="urc_3" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_3.h</data>
+            <loop name="Cluster_sub1_urc_3">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_R1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_R1_in_1" type="double"/>
+            </loop>
+            <init name="urc_3Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_STD_R1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_STD_R1_in_1"/>
+        </node>
+        <node id="urc_4" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_4.h</data>
+            <loop name="Cluster_sub1_urc_4">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_I0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_I0_in_1" type="double"/>
+            </loop>
+            <init name="urc_4Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_STD_I0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_STD_I0_in_1"/>
+        </node>
+        <node id="urc_5" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_5.h</data>
+            <loop name="Cluster_sub1_urc_5">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_I1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_STD_I1_in_1" type="double"/>
+            </loop>
+            <init name="urc_5Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_STD_I1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_STD_I1_in_1"/>
+        </node>
+        <node id="urc_6" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_6.h</data>
+            <loop name="Cluster_sub1_urc_6">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_R0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_R0_in_1" type="double"/>
+            </loop>
+            <init name="urc_6Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_MAD_R0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_MAD_R0_in_1"/>
+        </node>
+        <node id="urc_7" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_7.h</data>
+            <loop name="Cluster_sub1_urc_7">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_R1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_R1_in_1" type="double"/>
+            </loop>
+            <init name="urc_7Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_MAD_R1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_MAD_R1_in_1"/>
+        </node>
+        <node id="urc_8" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_8.h</data>
+            <loop name="Cluster_sub1_urc_8">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_I0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_I0_in_1" type="double"/>
+            </loop>
+            <init name="urc_8Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_MAD_I0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_MAD_I0_in_1"/>
+        </node>
+        <node id="urc_9" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_urc_9.h</data>
+            <loop name="Cluster_sub1_urc_9">
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_I1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_Brd_MAD_I1_in_1" type="double"/>
+            </loop>
+            <init name="urc_9Init"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_Brd_MAD_I1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_Brd_MAD_I1_in_1"/>
+        </node>
+        <node id="srv_10" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_10.h</data>
+            <loop name="Cluster_sub1_srv_10">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="STD_Computation_raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="STD_Computation_raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="STD_Computation_std_R_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="STD_Computation_std_I_o" type="double"/>
+            </loop>
+            <init name="srv_10Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="STD_Computation_raw_data_real_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="STD_Computation_raw_data_im_i"/>
+            <port annotation="NONE" expr="12288" kind="output" name="STD_Computation_std_R_o"/>
+            <port annotation="NONE" expr="12288" kind="output" name="STD_Computation_std_I_o"/>
+        </node>
+        <node id="srv_11" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_11.h</data>
+            <loop name="Cluster_sub1_srv_11">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Brd_STD_I_in" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_STD_I_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_STD_I_out_1" type="double"/>
+            </loop>
+            <init name="srv_11Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="Brd_STD_I_in"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_STD_I_out_0"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_STD_I_out_1"/>
+        </node>
+        <node id="srv_12" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_12.h</data>
+            <loop name="Cluster_sub1_srv_12">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Brd_STD_R_in" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_STD_R_out_1" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_STD_R_out_2" type="double"/>
+            </loop>
+            <init name="srv_12Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="Brd_STD_R_in"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_STD_R_out_1"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_STD_R_out_2"/>
+        </node>
+        <node id="srv_13" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_13.h</data>
+            <loop name="Cluster_sub1_srv_13">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Brd_MAD_R_in" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_MAD_R_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_MAD_R_out_2" type="double"/>
+            </loop>
+            <init name="srv_13Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="Brd_MAD_R_in"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_MAD_R_out_0"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_MAD_R_out_2"/>
+        </node>
+        <node id="srv_14" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_14.h</data>
+            <loop name="Cluster_sub1_srv_14">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="MAD_Computation_raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="MAD_Computation_raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="MAD_Computation_mad_R_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="MAD_Computation_mad_I_o" type="double"/>
+            </loop>
+            <init name="srv_14Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="4096" kind="input" name="MAD_Computation_raw_data_real_i"/>
+            <port annotation="NONE" expr="4096" kind="input" name="MAD_Computation_raw_data_im_i"/>
+            <port annotation="NONE" expr="4096" kind="output" name="MAD_Computation_mad_R_o"/>
+            <port annotation="NONE" expr="4096" kind="output" name="MAD_Computation_mad_I_o"/>
+        </node>
+        <node id="srv_15" kind="actor">
+            <data key="graph_desc">Code/generated/sub1/Cluster_sub1_srv_15.h</data>
+            <loop name="Cluster_sub1_srv_15">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Brd_MAD_I_in" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_MAD_I_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_MAD_I_out_1" type="double"/>
+            </loop>
+            <init name="srv_15Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="Brd_MAD_I_in"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_MAD_I_out_0"/>
+            <port annotation="NONE" expr="12288" kind="output" name="Brd_MAD_I_out_1"/>
+        </node>
+        <edge kind="fifo" source="src_in_0" sourceport="out"
+            target="Join_MAD_Computation0" targetport="in_0" type="double"/>
+        <edge kind="fifo" source="src_in_3" sourceport="out"
+            target="Join_MAD_Computation1" targetport="in_0" type="double"/>
+        <edge kind="fifo" source="src_in_1" sourceport="out"
+            target="Fork_eu_STD_Computation0" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_STD_Computation0"
+            sourceport="out_1" target="STD_Computation2"
+            targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_2" sourceport="out"
+            target="Fork_eu_STD_Computation1" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_STD_Computation1"
+            sourceport="out_1" target="STD_Computation2"
+            targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="STD_Computation2"
+            sourceport="std_R_o" target="urc_0"
+            targetport="Join_eu_STD_Computation0_in_1" type="double"/>
+        <edge kind="fifo" source="urc_0"
+            sourceport="Fork_eu_Brd_STD_R0_out_1"
+            target="Brd_STD_R2" targetport="in" type="double"/>
+        <edge kind="fifo" source="STD_Computation2"
+            sourceport="std_I_o" target="urc_1"
+            targetport="Join_eu_STD_Computation1_in_1" type="double"/>
+        <edge kind="fifo" source="urc_1"
+            sourceport="Fork_eu_Brd_STD_I0_out_1"
+            target="Brd_STD_I2" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_STD_R2" sourceport="out_1"
+            target="urc_2" targetport="Join_eu_Brd_STD_R0_in_1" type="double"/>
+        <edge kind="fifo" source="Brd_STD_R2" sourceport="out_2"
+            target="urc_3" targetport="Join_eu_Brd_STD_R1_in_1" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_I2" sourceport="out_1"
+            target="urc_9" targetport="Join_eu_Brd_MAD_I1_in_1" type="double"/>
+        <edge kind="fifo" source="Fork_eu_STD_Computation0"
+            sourceport="out_0" target="srv_10"
+            targetport="STD_Computation_raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_STD_Computation1"
+            sourceport="out_0" target="srv_10"
+            targetport="STD_Computation_raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="srv_10"
+            sourceport="STD_Computation_std_R_o" target="urc_0"
+            targetport="Join_eu_STD_Computation0_in_0" type="double"/>
+        <edge kind="fifo" source="srv_10"
+            sourceport="STD_Computation_std_I_o" target="urc_1"
+            targetport="Join_eu_STD_Computation1_in_0" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_I2" sourceport="out_0"
+            target="urc_8" targetport="Join_eu_Brd_MAD_I0_in_1" type="double"/>
+        <edge kind="fifo" source="urc_1"
+            sourceport="Fork_eu_Brd_STD_I0_out_0" target="srv_11"
+            targetport="Brd_STD_I_in" type="double"/>
+        <edge kind="fifo" source="srv_11"
+            sourceport="Brd_STD_I_out_0" target="urc_4"
+            targetport="Join_eu_Brd_STD_I0_in_0" type="double"/>
+        <edge kind="fifo" source="srv_11"
+            sourceport="Brd_STD_I_out_1" target="urc_5"
+            targetport="Join_eu_Brd_STD_I1_in_0" type="double"/>
+        <edge kind="fifo" source="urc_0"
+            sourceport="Fork_eu_Brd_STD_R0_out_0" target="srv_12"
+            targetport="Brd_STD_R_in" type="double"/>
+        <edge kind="fifo" source="srv_12"
+            sourceport="Brd_STD_R_out_1" target="urc_2"
+            targetport="Join_eu_Brd_STD_R0_in_0" type="double"/>
+        <edge kind="fifo" source="srv_12"
+            sourceport="Brd_STD_R_out_2" target="urc_3"
+            targetport="Join_eu_Brd_STD_R1_in_0" type="double"/>
+        <edge kind="fifo" source="Brd_STD_I2" sourceport="out_0"
+            target="urc_4" targetport="Join_eu_Brd_STD_I0_in_1" type="double"/>
+        <edge kind="fifo" source="Fork_eu_Brd_MAD_R0"
+            sourceport="out_0" target="srv_13"
+            targetport="Brd_MAD_R_in" type="double"/>
+        <edge kind="fifo" source="srv_13"
+            sourceport="Brd_MAD_R_out_2" target="urc_7"
+            targetport="Join_eu_Brd_MAD_R1_in_0" type="double"/>
+        <edge kind="fifo" source="srv_13"
+            sourceport="Brd_MAD_R_out_0" target="urc_6"
+            targetport="Join_eu_Brd_MAD_R0_in_0" type="double"/>
+        <edge kind="fifo" source="src_in_4" sourceport="out"
+            target="srv_14"
+            targetport="MAD_Computation_raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_5" sourceport="out"
+            target="srv_14"
+            targetport="MAD_Computation_raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="srv_14"
+            sourceport="MAD_Computation_mad_R_o"
+            target="Join_MAD_Computation0" targetport="in_1" type="double"/>
+        <edge kind="fifo" source="srv_14"
+            sourceport="MAD_Computation_mad_I_o"
+            target="Join_MAD_Computation1" targetport="in_1" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_R2" sourceport="out_2"
+            target="urc_7" targetport="Join_eu_Brd_MAD_R1_in_1" type="double"/>
+        <edge kind="fifo" source="Fork_eu_Brd_MAD_I0"
+            sourceport="out_0" target="srv_15"
+            targetport="Brd_MAD_I_in" type="double"/>
+        <edge kind="fifo" source="srv_15"
+            sourceport="Brd_MAD_I_out_0" target="urc_8"
+            targetport="Join_eu_Brd_MAD_I0_in_0" type="double"/>
+        <edge kind="fifo" source="srv_15"
+            sourceport="Brd_MAD_I_out_1" target="urc_9"
+            targetport="Join_eu_Brd_MAD_I1_in_0" type="double"/>
+        <edge kind="fifo" source="Brd_MAD_R2" sourceport="out_0"
+            target="urc_6" targetport="Join_eu_Brd_MAD_R0_in_1" type="double"/>
+        <edge kind="fifo" source="Brd_STD_I2" sourceport="out_1"
+            target="urc_5" targetport="Join_eu_Brd_STD_I1_in_1" type="double"/>
+        <edge kind="fifo" source="Join_MAD_Computation0"
+            sourceport="out" target="Fork_eu_Brd_MAD_R0"
+            targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_Brd_MAD_R0"
+            sourceport="out_1" target="Brd_MAD_R2"
+            targetport="in" type="double"/>
+        <edge kind="fifo" source="Join_MAD_Computation1"
+            sourceport="out" target="Fork_eu_Brd_MAD_I0"
+            targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_Brd_MAD_I0"
+            sourceport="out_1" target="Brd_MAD_I2"
+            targetport="in" type="double"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="STD_Computation2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="SIGMA"
+            target="STD_Computation2" targetport="SIGMA"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_STD_I2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_STD_I2" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_STD_R2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_STD_R2" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_MAD_R2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_MAD_R2" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Brd_MAD_I2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Brd_MAD_I2" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_10" targetport="cfg_0"/>
+        <edge kind="dependency" source="SIGMA" target="srv_10" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_11" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_BLOCKS" target="srv_11" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_12" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_BLOCKS" target="srv_12" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_13" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_BLOCKS" target="srv_13" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_14" targetport="cfg_0"/>
+        <edge kind="dependency" source="SIGMA" target="srv_14" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="srv_15" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_BLOCKS" target="srv_15" targetport="cfg_1"/>
+    </graph>
+</graphml>

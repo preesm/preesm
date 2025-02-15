@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/org.ietr.preesm.simsdp.threadpartitioning/Algo/generated/sub1.pi"/>
+        <architecture url="/org.ietr.preesm.simsdp.threadpartitioning/Archi/Node1.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.simsdp.threadpartitioning/Code/generated/sub1"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="Core0"/>
+            <task name="sub1/MAD_Computation"/>
+            <task name="sub1/STD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/src_in_0"/>
+            <task name="sub1/src_in_1"/>
+            <task name="sub1/src_in_2"/>
+            <task name="sub1/src_in_3"/>
+            <task name="sub1/src_in_4"/>
+            <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/snk_out_0"/>
+            <task name="sub1/snk_out_1"/>
+            <task name="sub1/snk_out_2"/>
+            <task name="sub1/snk_out_3"/>
+            <task name="sub1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core1"/>
+            <task name="sub1/MAD_Computation"/>
+            <task name="sub1/STD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/src_in_0"/>
+            <task name="sub1/src_in_1"/>
+            <task name="sub1/src_in_2"/>
+            <task name="sub1/src_in_3"/>
+            <task name="sub1/src_in_4"/>
+            <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/snk_out_0"/>
+            <task name="sub1/snk_out_1"/>
+            <task name="sub1/snk_out_2"/>
+            <task name="sub1/snk_out_3"/>
+            <task name="sub1"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="Core2"/>
+            <task name="sub1/MAD_Computation"/>
+            <task name="sub1/STD_Computation"/>
+            <task name="sub1/Plot_Threshold"/>
+            <task name="sub1/src_in_0"/>
+            <task name="sub1/src_in_1"/>
+            <task name="sub1/src_in_2"/>
+            <task name="sub1/src_in_3"/>
+            <task name="sub1/src_in_4"/>
+            <task name="sub1/src_in_5"/>
+            <task name="sub1/src_in_6"/>
+            <task name="sub1/src_in_7"/>
+            <task name="sub1/snk_out_0"/>
+            <task name="sub1/snk_out_1"/>
+            <task name="sub1/snk_out_2"/>
+            <task name="sub1/snk_out_3"/>
+            <task name="sub1"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="/org.ietr.preesm.simsdp.threadpartitioning/Scenarios/generated/sub1.csv">
+        <timing opname="x86" time="476205"
+            timingtype="EXECUTION_TIME" vertexname="sub1/MAD_Computation"/>
+        <timing opname="x86" time="300964"
+            timingtype="EXECUTION_TIME" vertexname="sub1/STD_Computation"/>
+        <timing opname="x86" time="77213526"
+            timingtype="EXECUTION_TIME" vertexname="sub1/Plot_Threshold"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_0"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_1"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_2"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_3"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_4"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_5"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_6"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/src_in_7"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_0"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_1"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_2"/>
+        <timing opname="x86" time="1" timingtype="EXECUTION_TIME" vertexname="sub1/snk_out_3"/>
+        <memcpyspeed opname="x86" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>Core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="double" size="64"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="Core0"/>
+            <specialVertexOperator path="Core1"/>
+            <specialVertexOperator path="Core2"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>

@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <key attr.name="parameters" for="graph" id="parameters"/>
+    <key attr.name="variables" for="graph" id="variables"/>
+    <key attr.name="arguments" for="node" id="arguments"/>
+    <key attr.name="name" attr.type="string" for="graph"/>
+    <key attr.name="graph_desc" attr.type="string" for="node"/>
+    <graph edgedefault="directed">
+        <data key="name">sub2</data>
+        <node expr="40960" id="SIZE" kind="param"/>
+        <node expr="128000000" id="SAMPLE_RATE" kind="param"/>
+        <node expr="1" id="DISPLAY" kind="param"/>
+        <node expr="20" id="N_BLOCKS" kind="param"/>
+        <node expr="2048" id="N_SAMPLES" kind="param"/>
+        <node expr="4096" id="HEADER_SIZE" kind="param"/>
+        <node expr="0" id="MODE" kind="param"/>
+        <node id="Plot_Threshold" kind="actor">
+            <data key="graph_desc">Code/include/plotThreshold.h</data>
+            <loop name="PlotThreshold">
+                <param direction="IN" isConfig="true"
+                    name="SAMPLE_RATE" type="int"/>
+                <param direction="IN" isConfig="true" name="SIZE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="DISPLAY" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_I_i" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="SIZE"/>
+            <port kind="cfg_input" name="SAMPLE_RATE"/>
+            <port kind="cfg_input" name="DISPLAY"/>
+            <port annotation="NONE" expr="40960" kind="input" name="mad_R_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="std_R_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="mad_I_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="std_I_i"/>
+        </node>
+        <node id="Data_Restitution" kind="actor">
+            <data key="graph_desc">Code/include/dataRes.h</data>
+            <loop name="DataRes">
+                <param direction="IN" isConfig="true"
+                    name="N_BLOCKS" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="N_SAMPLES" type="int"/>
+                <param direction="IN" isConfig="true" name="SIZE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="HEADER_SIZE" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="filtered_real_data_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="filtered_im_data_i" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="SIZE"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="HEADER_SIZE"/>
+            <port annotation="NONE" expr="40960" kind="input" name="filtered_im_data_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="filtered_real_data_i"/>
+        </node>
+        <node id="Plot_Filtered_Data" kind="actor">
+            <data key="graph_desc">Code/include/plotFilteredData.h</data>
+            <loop name="PlotFilteredData">
+                <param direction="IN" isConfig="true" name="SIZE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="SAMPLE_RATE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="DISPLAY" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="filtered_real_data_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="filtered_im_data_i" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="DISPLAY"/>
+            <port kind="cfg_input" name="SIZE"/>
+            <port kind="cfg_input" name="SAMPLE_RATE"/>
+            <port annotation="NONE" expr="40960" kind="input" name="filtered_real_data_i"/>
+            <port annotation="NONE" expr="40960" kind="input" name="filtered_im_data_i"/>
+        </node>
+        <node id="src_in_0" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_0.h</data>
+            <loop name="sub2_src_in_0">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_1" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_1.h</data>
+            <loop name="sub2_src_in_1">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_2" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_2.h</data>
+            <loop name="sub2_src_in_2">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_3" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_3.h</data>
+            <loop name="sub2_src_in_3">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_4" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_4.h</data>
+            <loop name="sub2_src_in_4">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_5" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_5.h</data>
+            <loop name="sub2_src_in_5">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_6" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_6.h</data>
+            <loop name="sub2_src_in_6">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_7" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_7.h</data>
+            <loop name="sub2_src_in_7">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_8" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_8.h</data>
+            <loop name="sub2_src_in_8">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_9" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_9.h</data>
+            <loop name="sub2_src_in_9">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_10" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_10.h</data>
+            <loop name="sub2_src_in_10">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="src_in_11" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub2/src_in_11.h</data>
+            <loop name="sub2_src_in_11">
+                <param direction="OUT" isConfig="false"
+                    name="out" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960" kind="output" name="out"/>
+        </node>
+        <node id="RFI_Filter2" kind="actor">
+            <data key="graph_desc">Code/include/rfiFilter.h</data>
+            <loop name="RFIFilter">
+                <param direction="IN" isConfig="true" name="MODE" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="N_SAMPLES" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="mad_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="std_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_real_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="raw_data_im_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="filtered_real_data_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="filtered_im_data_o" type="double"/>
+            </loop>
+            <port kind="cfg_input" name="MODE"/>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port annotation="NONE" expr="2048" kind="input" name="mad_R_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="std_R_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="mad_I_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="std_I_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="raw_data_im_i"/>
+            <port annotation="NONE" expr="2048" kind="input" name="raw_data_real_i"/>
+            <port annotation="NONE" expr="2048" kind="output" name="filtered_real_data_o"/>
+            <port annotation="NONE" expr="2048" kind="output" name="filtered_im_data_o"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter0" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter1" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter2" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter3" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter4" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="Fork_eu_RFI_Filter5" kind="fork">
+            <port annotation="NONE" expr="40960" kind="input" name="in"/>
+            <port annotation="NONE" expr="36864" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="4096" kind="output" name="out_1"/>
+        </node>
+        <node id="urc_0" kind="actor">
+            <data key="graph_desc">Code/generated/sub2/Cluster_sub2_urc_0.h</data>
+            <loop name="Cluster_sub2_urc_0">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_RFI_Filter0_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_RFI_Filter0_in_1" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_Res_Real_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_Res_Real_out_1" type="double"/>
+            </loop>
+            <init name="urc_0Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_RFI_Filter0_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_RFI_Filter0_in_1"/>
+            <port annotation="NONE" expr="40960" kind="output" name="Brd_Res_Real_out_0"/>
+            <port annotation="NONE" expr="40960" kind="output" name="Brd_Res_Real_out_1"/>
+        </node>
+        <node id="urc_1" kind="actor">
+            <data key="graph_desc">Code/generated/sub2/Cluster_sub2_urc_1.h</data>
+            <loop name="Cluster_sub2_urc_1">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_RFI_Filter1_in_0" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="Join_eu_RFI_Filter1_in_1" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_Res_Im_out_0" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="Brd_Res_Im_out_1" type="double"/>
+            </loop>
+            <init name="urc_1Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="36864" kind="input" name="Join_eu_RFI_Filter1_in_0"/>
+            <port annotation="NONE" expr="4096" kind="input" name="Join_eu_RFI_Filter1_in_1"/>
+            <port annotation="NONE" expr="40960" kind="output" name="Brd_Res_Im_out_0"/>
+            <port annotation="NONE" expr="40960" kind="output" name="Brd_Res_Im_out_1"/>
+        </node>
+        <node id="srv_2" kind="actor">
+            <data key="graph_desc">Code/generated/sub2/Cluster_sub2_srv_2.h</data>
+            <loop name="Cluster_sub2_srv_2">
+                <param direction="IN" isConfig="true"
+                    name="cfg_0" type="int"/>
+                <param direction="IN" isConfig="true"
+                    name="cfg_1" type="int"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_mad_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_std_R_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_mad_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_std_I_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_raw_data_im_i" type="double"/>
+                <param direction="IN" isConfig="false"
+                    name="RFI_Filter_raw_data_real_i" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="RFI_Filter_filtered_real_data_o" type="double"/>
+                <param direction="OUT" isConfig="false"
+                    name="RFI_Filter_filtered_im_data_o" type="double"/>
+            </loop>
+            <init name="srv_2Init"/>
+            <port kind="cfg_input" name="cfg_0"/>
+            <port kind="cfg_input" name="cfg_1"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_mad_R_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_std_R_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_mad_I_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_std_I_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_raw_data_im_i"/>
+            <port annotation="NONE" expr="12288" kind="input" name="RFI_Filter_raw_data_real_i"/>
+            <port annotation="NONE" expr="12288" kind="output" name="RFI_Filter_filtered_real_data_o"/>
+            <port annotation="NONE" expr="12288" kind="output" name="RFI_Filter_filtered_im_data_o"/>
+        </node>
+        <edge kind="fifo" source="src_in_0" sourceport="out"
+            target="Plot_Threshold" targetport="mad_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_1" sourceport="out"
+            target="Plot_Threshold" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_2" sourceport="out"
+            target="Plot_Threshold" targetport="std_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_3" sourceport="out"
+            target="Plot_Threshold" targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="src_in_4" sourceport="out"
+            target="Plot_Threshold" targetport="mad_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_5" sourceport="out"
+            target="Plot_Threshold" targetport="std_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_6" sourceport="out"
+            target="Fork_eu_RFI_Filter0" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter0"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="mad_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_7" sourceport="out"
+            target="Fork_eu_RFI_Filter1" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter1"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="std_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_8" sourceport="out"
+            target="Fork_eu_RFI_Filter2" targetport="in" type="double"/>
+        <edge kind="fifo" source="RFI_Filter2"
+            sourceport="filtered_real_data_o" target="urc_0"
+            targetport="Join_eu_RFI_Filter0_in_1" type="double"/>
+        <edge kind="fifo" source="urc_0"
+            sourceport="Brd_Res_Real_out_0"
+            target="Plot_Filtered_Data"
+            targetport="filtered_real_data_i" type="double"/>
+        <edge kind="fifo" source="RFI_Filter2"
+            sourceport="filtered_im_data_o" target="urc_1"
+            targetport="Join_eu_RFI_Filter1_in_1" type="double"/>
+        <edge kind="fifo" source="urc_1"
+            sourceport="Brd_Res_Im_out_0"
+            target="Plot_Filtered_Data"
+            targetport="filtered_im_data_i" type="double"/>
+        <edge kind="fifo" source="urc_1"
+            sourceport="Brd_Res_Im_out_1"
+            target="Data_Restitution"
+            targetport="filtered_im_data_i" type="double"/>
+        <edge kind="fifo" source="urc_0"
+            sourceport="Brd_Res_Real_out_1"
+            target="Data_Restitution"
+            targetport="filtered_real_data_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter0"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_mad_R_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter1"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_std_R_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter5"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="srv_2"
+            sourceport="RFI_Filter_filtered_real_data_o"
+            target="urc_0" targetport="Join_eu_RFI_Filter0_in_0" type="double"/>
+        <edge kind="fifo" source="srv_2"
+            sourceport="RFI_Filter_filtered_im_data_o"
+            target="urc_1" targetport="Join_eu_RFI_Filter1_in_0" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter4"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter3"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_std_I_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter2"
+            sourceport="out_0" target="srv_2"
+            targetport="RFI_Filter_mad_I_i" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter2"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="mad_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_9" sourceport="out"
+            target="Fork_eu_RFI_Filter3" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter3"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="std_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_10" sourceport="out"
+            target="Fork_eu_RFI_Filter4" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter4"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="src_in_11" sourceport="out"
+            target="Fork_eu_RFI_Filter5" targetport="in" type="double"/>
+        <edge kind="fifo" source="Fork_eu_RFI_Filter5"
+            sourceport="out_1" target="RFI_Filter2"
+            targetport="raw_data_real_i" type="double"/>
+        <edge kind="dependency" source="SIZE"
+            target="Plot_Threshold" targetport="SIZE"/>
+        <edge kind="dependency" source="SAMPLE_RATE"
+            target="Plot_Threshold" targetport="SAMPLE_RATE"/>
+        <edge kind="dependency" source="DISPLAY"
+            target="Plot_Threshold" targetport="DISPLAY"/>
+        <edge kind="dependency" source="SIZE"
+            target="Data_Restitution" targetport="SIZE"/>
+        <edge kind="dependency" source="N_BLOCKS"
+            target="Data_Restitution" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="Data_Restitution" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="HEADER_SIZE"
+            target="Data_Restitution" targetport="HEADER_SIZE"/>
+        <edge kind="dependency" source="DISPLAY"
+            target="Plot_Filtered_Data" targetport="DISPLAY"/>
+        <edge kind="dependency" source="SIZE"
+            target="Plot_Filtered_Data" targetport="SIZE"/>
+        <edge kind="dependency" source="SAMPLE_RATE"
+            target="Plot_Filtered_Data" targetport="SAMPLE_RATE"/>
+        <edge kind="dependency" source="MODE"
+            target="RFI_Filter2" targetport="MODE"/>
+        <edge kind="dependency" source="N_SAMPLES"
+            target="RFI_Filter2" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS" target="urc_0" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_SAMPLES" target="urc_0" targetport="cfg_1"/>
+        <edge kind="dependency" source="N_BLOCKS" target="urc_1" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_SAMPLES" target="urc_1" targetport="cfg_1"/>
+        <edge kind="dependency" source="MODE" target="srv_2" targetport="cfg_0"/>
+        <edge kind="dependency" source="N_SAMPLES" target="srv_2" targetport="cfg_1"/>
+    </graph>
+</graphml>
