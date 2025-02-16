@@ -8,5 +8,5 @@
             <dftools:variable name="archi path" value="/Scenarios/initialisation.scenario"/>
         </dftools:data>
     </dftools:task>
-    <dftools:dataTransfer from="scenario" sourceport="void" targetport="void" to="hypervisor"/>
+    <dftools:dataTransfer from="scenario" sourceport="scenario" targetport="scenario" to="hypervisor"/>
 </dftools:workflow>

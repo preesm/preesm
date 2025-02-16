@@ -11,12 +11,19 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.preesm.algorithm.simsdp.simulator.NetworkInfo;
 import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.WorkflowManager;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * SimSDP is an iterative, heterogeneous, multi-core, multinode simulator. This class launches the workflows associated
@@ -31,12 +38,14 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  *
  */
 
-@PreesmTask(id = "hypervisor.task.identifier", name = "SimSDP Hypervisor", parameters = {
-    @Parameter(name = "Iteration", description = "Iteration", values = { @Value(name = "integer", effect = "...") }),
-    @Parameter(name = "Scenario path", description = "path of the scenario",
-        values = { @Value(name = "String", effect = "...") }),
-    @Parameter(name = "Multinet", description = "activate multinet node",
-        values = { @Value(name = "Boolean", effect = "...") }) })
+@PreesmTask(id = "hypervisor.task.identifier", name = "SimSDP Hypervisor",
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+
+    parameters = {
+        @Parameter(name = "Iteration", description = "Iteration",
+            values = { @Value(name = "integer", effect = "...") }),
+        @Parameter(name = "Multinet", description = "activate multinet node",
+            values = { @Value(name = "Boolean", effect = "...") }) })
 
 public class HypervisorTask extends AbstractTaskImplementation {
   // global task parameter
@@ -44,9 +53,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
   public static final String ITERATION_PARAM   = "Iteration";
   public static final String MULTINET_DEFAULT  = "false";
   public static final String MULTINET_PARAM    = "Multinet";
-
-  public static final String SCENARIO_PATH_DEFAULT = "";
-  public static final String SCENARIO_PATH_PARAM   = "archi path";
 
   // global file export data
 
@@ -64,7 +70,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
   Boolean multinet                 = false;
   Boolean parallelismFound         = false;
-  String  scenarioName             = "";
+  String  scenarioContentRoot      = "";
   int     parallelismMax           = 0;
   Double  bestFinalLatency         = Double.MAX_VALUE;
   Double  initialfinalLatencyOptim = Double.MAX_VALUE;
@@ -81,11 +87,14 @@ public class HypervisorTask extends AbstractTaskImplementation {
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     // retrieve inputs
-    iteration = Integer.parseInt(parameters.get(ITERATION_PARAM));
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
+    iteration = Integer.parseInt(parameters.get(ITERATION_PARAM));
     multinet = parameters.get(MULTINET_PARAM).equals("true");
-    scenarioName = parameters.get(SCENARIO_PATH_PARAM);
+
     project = "/" + workflow.getProjectName();
+    scenarioContentRoot = scenario.getScenarioURL().replace(project, "");
+
     final WorkflowManager workflowManager = new WorkflowManager();
     // clean project
     PreesmIOHelper.getInstance().deleteFolder(project + SIMULATION_PATH);
@@ -95,9 +104,9 @@ public class HypervisorTask extends AbstractTaskImplementation {
     archiParams.execute();
 
     // Perform multinet initialization if applicable
-    if (Boolean.TRUE.equals(multinet)) {
+    if (Boolean.TRUE.equals(multinet) && getComplexity(scenario.getAlgorithm())) {
       final long startTimeInit = System.currentTimeMillis();
-      // performMultinetInitialization(workflowManager, monitor, project, archiParams);
+      performMultinetInitialization(workflowManager, monitor, project, archiParams);
       initTime = System.currentTimeMillis() - startTimeInit;
 
     }
@@ -112,6 +121,14 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
     return new LinkedHashMap<>();
 
+  }
+
+  private boolean getComplexity(PiGraph graph) {
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+
+    final long sum = brv.values().stream().mapToLong(Long::longValue).sum();
+
+    return sum < 1000L;
   }
 
   private void executeSimulations(ArchiMoldableParameter archiParams, String project, IProgressMonitor monitor,
@@ -135,7 +152,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
         }
 
         // Refine core bounds if multinet is true
-        // refineCoreBoundsIfMultinet(coreIndex, nodeIndex, project);
+        refineCoreBoundsIfMultinet(coreIndex, nodeIndex, project);
 
       }
     }
@@ -160,7 +177,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
     final Pair<Integer, Integer> closestPair = findClosestPair(parallelismMaxTh, archiParams);
 
     // Run iterative partitioning and refine architecture
-    final int max = 8;// core;
+    final int max = 8;// represent the number of core to esquive complexity
     if (speedupMax < max) {
       iterativePartitioning(closestPair.getKey(), closestPair.getValue(), archiParams.getCoreFreqMax(), archiParams,
           true, monitor, workflowManager);
@@ -251,7 +268,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
       String initName) {
     final String workflowPath = project + WORKFLOW_PATH + initName + ".workflow";
 
-    final String scenarioPath = project + scenarioName;
+    final String scenarioPath = project + scenarioContentRoot;
     workflowManager.execute(workflowPath, scenarioPath, monitor, true);
 
   }
@@ -299,7 +316,7 @@ public class HypervisorTask extends AbstractTaskImplementation {
 
   private void nodePartitioningLauncher(WorkflowManager workflowManager, IProgressMonitor monitor, String project) {
     final String workflowPath = project + WORKFLOW_PATH + "NodePartitioning.workflow";
-    final String scenarioPath = project + scenarioName;
+    final String scenarioPath = project + scenarioContentRoot;
     workflowManager.execute(workflowPath, scenarioPath, monitor, true);
 
   }
@@ -310,10 +327,11 @@ public class HypervisorTask extends AbstractTaskImplementation {
     for (int i = 0; i < nbNode; i++) {
       final long startTimeThreadPartitioning = System.currentTimeMillis();
       String workflowPath = "";
+      // only simulate do not generate code for pipeline analysis
       if (Boolean.TRUE.equals(init3)) {
         workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning2.workflow";
       } else {
-        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning2.workflow";
+        workflowPath = project + WORKFLOW_PATH + "ThreadPartitioning.workflow";
       }
       final String scenarioPath = project + SCENARIO_GENERATED_PATH + "sub" + i + "_Node" + i + ".scenario";
       // it's possible that all node are not exploited
@@ -406,7 +424,6 @@ public class HypervisorTask extends AbstractTaskImplementation {
     parameters.put(ITERATION_PARAM, ITERATION_DEFAULT);
     parameters.put(MULTINET_PARAM, MULTINET_DEFAULT);
 
-    parameters.put(SCENARIO_PATH_PARAM, SCENARIO_PATH_DEFAULT);
     return parameters;
   }
 
