@@ -4,40 +4,10 @@
         <data key="name">sub0</data>
         <node expr="20.0" id="N_BLOCKS" kind="param"/>
         <node expr="2048.0" id="N_SAMPLES" kind="param"/>
-        <node expr="3.0" id="SIGMA" kind="param"/>
         <node expr="4096.0" id="HEADER_SIZE" kind="param"/>
         <node expr="40960.0" id="SIZE" kind="param"/>
         <node expr="1.0" id="DISPLAY" kind="param"/>
-        <node id="Fork_MAD_Computation1" kind="fork">
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-            <port annotation="NONE" expr="28672.0" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="12288.0" kind="output" name="out_1"/>
-        </node>
-        <node id="Brd_Acq_Im" kind="broadcast">
-            <port kind="cfg_input" name="N_BLOCKS"/>
-            <port kind="cfg_input" name="N_SAMPLES"/>
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_2"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_3"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_4"/>
-        </node>
-        <node id="Brd_Acq_Real" kind="broadcast">
-            <port kind="cfg_input" name="N_BLOCKS"/>
-            <port kind="cfg_input" name="N_SAMPLES"/>
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_1"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_2"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_3"/>
-            <port annotation="NONE" expr="40960.0" kind="output" name="out_4"/>
-        </node>
-        <node id="Fork_MAD_Computation0" kind="fork">
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-            <port annotation="NONE" expr="28672.0" kind="output" name="out_0"/>
-            <port annotation="NONE" expr="12288.0" kind="output" name="out_1"/>
-        </node>
+        <node expr="3.0" id="SIGMA" kind="param"/>
         <node id="Data_Acquisition" kind="actor">
             <data key="graph_desc">Code/include/dataAcq.h</data>
             <loop name="DataAcq">
@@ -55,6 +25,11 @@
             <port annotation="NONE" expr="40960.0" kind="output" name="raw_data_real_o"/>
             <port annotation="NONE" expr="40960.0" kind="output" name="raw_data_im_o"/>
         </node>
+        <node id="Fork_MAD_Computation1" kind="fork">
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+            <port annotation="NONE" expr="28672.0" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="12288.0" kind="output" name="out_1"/>
+        </node>
         <node id="Plot_RnI_Histo" kind="actor">
             <data key="graph_desc">Code/include/plotRnIHisto.h</data>
             <loop name="PlotRnIHisto">
@@ -67,6 +42,31 @@
             <port kind="cfg_input" name="DISPLAY"/>
             <port annotation="NONE" expr="40960.0" kind="input" name="raw_data_real_i"/>
             <port annotation="NONE" expr="40960.0" kind="input" name="raw_data_im_i"/>
+        </node>
+        <node id="Brd_Acq_Real" kind="broadcast">
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_2"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_3"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_4"/>
+        </node>
+        <node id="Brd_Acq_Im" kind="broadcast">
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_1"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_2"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_3"/>
+            <port annotation="NONE" expr="40960.0" kind="output" name="out_4"/>
+        </node>
+        <node id="Fork_MAD_Computation0" kind="fork">
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+            <port annotation="NONE" expr="28672.0" kind="output" name="out_0"/>
+            <port annotation="NONE" expr="12288.0" kind="output" name="out_1"/>
         </node>
         <node id="snk_out_0" kind="actor">
             <data key="graph_desc">Code/generated/interface/sub0/snk_out_0.h</data>
@@ -96,23 +96,23 @@
             </loop>
             <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
         </node>
-        <node id="snk_out_4" kind="actor">
-            <data key="graph_desc">Code/generated/interface/sub0/snk_out_4.h</data>
-            <loop name="sub0_snk_out_4">
-                <param direction="IN" isConfig="false" name="in" type="double"/>
-            </loop>
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-        </node>
-        <node id="snk_out_5" kind="actor">
-            <data key="graph_desc">Code/generated/interface/sub0/snk_out_5.h</data>
-            <loop name="sub0_snk_out_5">
-                <param direction="IN" isConfig="false" name="in" type="double"/>
-            </loop>
-            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
-        </node>
         <node id="snk_out_6" kind="actor">
             <data key="graph_desc">Code/generated/interface/sub0/snk_out_6.h</data>
             <loop name="sub0_snk_out_6">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+        </node>
+        <node id="snk_out_7" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub0/snk_out_7.h</data>
+            <loop name="sub0_snk_out_7">
+                <param direction="IN" isConfig="false" name="in" type="double"/>
+            </loop>
+            <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
+        </node>
+        <node id="snk_out_8" kind="actor">
+            <data key="graph_desc">Code/generated/interface/sub0/snk_out_8.h</data>
+            <loop name="sub0_snk_out_8">
                 <param direction="IN" isConfig="false" name="in" type="double"/>
             </loop>
             <port annotation="NONE" expr="40960.0" kind="input" name="in"/>
@@ -189,19 +189,19 @@
             <port annotation="NONE" expr="8192.0" kind="output" name="MAD_Computation_mad_R_o"/>
             <port annotation="NONE" expr="8192.0" kind="output" name="MAD_Computation_mad_I_o"/>
         </node>
+        <edge kind="fifo" source="Data_Acquisition" sourceport="raw_data_real_o" target="Brd_Acq_Real" targetport="in" type="double"/>
+        <edge kind="fifo" source="Data_Acquisition" sourceport="raw_data_im_o" target="Brd_Acq_Im" targetport="in" type="double"/>
         <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_0" target="Fork_MAD_Computation1" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_MAD_Computation1" sourceport="out_1" target="snk_out_0" targetport="in" type="double"/>
-        <edge kind="fifo" source="Data_Acquisition" sourceport="raw_data_im_o" target="Brd_Acq_Im" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_1" target="snk_out_1" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_2" target="Plot_RnI_Histo" targetport="raw_data_im_i" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_3" target="snk_out_2" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_4" target="snk_out_3" targetport="in" type="double"/>
-        <edge kind="fifo" source="Data_Acquisition" sourceport="raw_data_real_o" target="Brd_Acq_Real" targetport="in" type="double"/>
         <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_0" target="Plot_RnI_Histo" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_2" target="Plot_RnI_Histo" targetport="raw_data_im_i" type="double"/>
         <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_1" target="Fork_MAD_Computation0" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_2" target="snk_out_4" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_3" target="snk_out_5" targetport="in" type="double"/>
-        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_4" target="snk_out_6" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_2" target="snk_out_1" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_3" target="snk_out_2" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Real" sourceport="out_4" target="snk_out_3" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_1" target="snk_out_6" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_3" target="snk_out_7" targetport="in" type="double"/>
+        <edge kind="fifo" source="Brd_Acq_Im" sourceport="out_4" target="snk_out_8" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_MAD_Computation0" sourceport="out_1" target="snk_out_9" targetport="in" type="double"/>
         <edge kind="fifo" source="MAD_Computation2" sourceport="mad_I_o" target="urc_1" targetport="Join_eu_MAD_Computation1_in_1" type="double"/>
         <edge kind="fifo" source="Fork_eu_MAD_Computation1" sourceport="out_0" target="srv_2" targetport="MAD_Computation_raw_data_im_i" type="double"/>
@@ -213,16 +213,16 @@
         <edge kind="fifo" source="Fork_eu_MAD_Computation0" sourceport="out_1" target="MAD_Computation2" targetport="raw_data_real_i" type="double"/>
         <edge kind="fifo" source="Fork_MAD_Computation1" sourceport="out_0" target="Fork_eu_MAD_Computation1" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_MAD_Computation1" sourceport="out_1" target="MAD_Computation2" targetport="raw_data_im_i" type="double"/>
-        <edge kind="dependency" source="N_BLOCKS" target="Brd_Acq_Im" targetport="N_BLOCKS"/>
-        <edge kind="dependency" source="N_SAMPLES" target="Brd_Acq_Im" targetport="N_SAMPLES"/>
-        <edge kind="dependency" source="N_BLOCKS" target="Brd_Acq_Real" targetport="N_BLOCKS"/>
-        <edge kind="dependency" source="N_SAMPLES" target="Brd_Acq_Real" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="N_BLOCKS" target="Data_Acquisition" targetport="N_BLOCKS"/>
         <edge kind="dependency" source="N_SAMPLES" target="Data_Acquisition" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="HEADER_SIZE" target="Data_Acquisition" targetport="HEADER_SIZE"/>
         <edge kind="dependency" source="SIZE" target="Data_Acquisition" targetport="SIZE"/>
         <edge kind="dependency" source="SIZE" target="Plot_RnI_Histo" targetport="SIZE"/>
         <edge kind="dependency" source="DISPLAY" target="Plot_RnI_Histo" targetport="DISPLAY"/>
+        <edge kind="dependency" source="N_BLOCKS" target="Brd_Acq_Real" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES" target="Brd_Acq_Real" targetport="N_SAMPLES"/>
+        <edge kind="dependency" source="N_BLOCKS" target="Brd_Acq_Im" targetport="N_BLOCKS"/>
+        <edge kind="dependency" source="N_SAMPLES" target="Brd_Acq_Im" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="N_SAMPLES" target="MAD_Computation2" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="SIGMA" target="MAD_Computation2" targetport="SIGMA"/>
         <edge kind="dependency" source="N_SAMPLES" target="srv_2" targetport="cfg_0"/>

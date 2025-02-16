@@ -46,17 +46,19 @@ public class InternodeBuilder {
   private final List<PiGraph>           subGraphs;
   int                                   nodeIndex = 0;
   private final List<SimSDPNodeMapping> hierarchicalArchitecture;
+  private final Boolean                 isManualSub;
 
   private String codegenPath  = "";
   private String graphPath    = "";
   private String scenarioPath = "";
   private String archiPath    = "";
 
-  public InternodeBuilder(Scenario scenario, List<PiGraph> subGraphs,
-      List<SimSDPNodeMapping> hierarchicalArchitecture) {
+  public InternodeBuilder(Scenario scenario, List<PiGraph> subGraphs, List<SimSDPNodeMapping> hierarchicalArchitecture,
+      Boolean isManualSub) {
     this.subGraphs = subGraphs;
     this.scenario = scenario;
     this.hierarchicalArchitecture = hierarchicalArchitecture;
+    this.isManualSub = isManualSub;
   }
 
   public PiGraph execute() {
@@ -222,8 +224,12 @@ public class InternodeBuilder {
     final ArchitecturesGenerator a = new ArchitecturesGenerator(iProject);
     final Map<String, Integer> nodeList = new HashMap<>();
     nodeList.put("node", nodeIndex);
-    final Design topArchi = ArchitecturesGenerator.generateSimSDPArchitecture(nodeList, "top",
-        hierarchicalArchitecture.get(0).getNodeCommunicationRate(), 0);
+
+    final Design topArchi = Boolean.FALSE.equals(this.isManualSub)
+        ? ArchitecturesGenerator.generateSimSDPArchitecture(nodeList, "top",
+            hierarchicalArchitecture.get(0).getNodeCommunicationRate(), 0)
+        : ArchitecturesGenerator.generateSimSDPArchitecture(nodeList, "top", 10d, 0);
+
     a.saveArchitecture(topArchi);
     topArchi.setUrl(archiPath + "top.slam");
     // 4. generate scenario

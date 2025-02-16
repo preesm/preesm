@@ -36,24 +36,52 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 
 /**
  * Testing SimSDP Node Partitioner workflow
  *
  * @author orenaud
  */
+
+@RunWith(Parameterized.class)
 public class SimSDPNodePartitioningTest {
+  final String workflow;
+  final String scenario;
+  final String projectName;
+
+  public SimSDPNodePartitioningTest(final String workflow, final String scenario, final String projectName) {
+    this.scenario = scenario;
+    this.workflow = workflow;
+    this.projectName = projectName;
+  }
+
+  @Parameters(name = "{2} - {0} - {1}")
+  public static Collection<Object[]> data() {
+
+    final List<Object[]> params = new ArrayList<>();
+
+    final String testProjectName = "org.ietr.preesm.simsdp.nodepartitioning";
+    final String[] testScenarios = new String[] { "rfi.scenario", "init_manual.scenario" };
+    final String[] testWorkflows = new String[] { "NodePartitioning.workflow", "NodePartitioning_manual.workflow" };
+    for (int i = 0; i < testScenarios.length; i++) {
+      params.add(new Object[] { testWorkflows[i], testScenarios[i], testProjectName });
+    }
+
+    return params;
+  }
 
   @Test
-  public void testSimSDPNodePartitioningTest() throws IOException, CoreException {
-
-    final String workflow = "NodePartitioning.workflow";
-    final String scenario = "rfi.scenario";
-    final String projectName = "org.ietr.preesm.simsdp.nodepartitioning";
+  public void test() throws IOException, CoreException {
 
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;

@@ -31,7 +31,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             values = { @Value(name = "String", effect = "Read file") }),
         @Parameter(name = "Partitioning mode",
             description = "equivalentTimed : estimate balanced worload partitioning,"
-                + "random : random workload partitioning",
+                + "random : random workload partitioning" + "manual : manual partitioning",
             values = { @Value(name = "String", effect = "compute equivalent time") }),
 
     })
@@ -54,8 +54,9 @@ public class NodePartitionerTask extends AbstractTaskImplementation {
           "Please provide en temp CSV file, hierarchical architecture is not handle yet");
     }
     final String partitioningMode = parameters.get(NodePartitionerTask.PARTITIONING_MODE_PARAM);
-    if (!(partitioningMode.equals("equivalentTimed") || partitioningMode.equals("random"))) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Expecting equivalentTimed or random Partitioning mode");
+    if (!(partitioningMode.equals("equivalentTimed") || partitioningMode.equals("random")
+        || partitioningMode.equals("manual"))) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Expecting 'equivalentTimed', 'random' or 'manual' Partitioning mode");
     }
 
     final Scenario scenario = (Scenario) inputs.get("scenario");

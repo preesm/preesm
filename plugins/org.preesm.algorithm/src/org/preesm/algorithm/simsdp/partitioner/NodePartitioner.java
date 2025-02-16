@@ -111,61 +111,92 @@ public class NodePartitioner {
     archiPath = File.separator + uriString[1] + "/Archi/";
     simulationPath = File.separator + uriString[1] + "/Simulation/";
 
-    if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "In order to handle heterogeneous core frequencies add _f[i] in the slam processing element definition");
-    }
-    // Filter hierarchy
-    if (!graph.getAllChildrenGraphs().isEmpty()) {
-      graph = PiSDFFlattener.flatten(graph, false);
-      graph.getAllParameters().stream().filter(x -> x.getOutgoingDependencies() == null)
-          .forEach(x -> graph.removeParameter(x));
-      PreesmLogger.getLogger().log(Level.INFO,
-          "Hierarchical graphs are not handle yet, SimSDP employ the flattening process");
-    }
-    final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(scenario);
-    pipelineCycleInfo.execute();
-    // filter pipeline
-    if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
+    final Boolean isManualSub = this.partitioningMode.equals("manual");
+
+    if (Boolean.TRUE.equals(isManualSub)) {
+      exportArchitecture2();
     }
 
-    // pipelineCycleInfo.removeCycle();
+    if (Boolean.FALSE.equals(isManualSub)) {
+      if (!scenario.getDesign().getProcessingElements().stream().allMatch(x -> x.getVlnv().getName().contains("_f"))) {
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "In order to handle heterogeneous core frequencies add _f[i] in the slam processing element definition");
+      }
+      // Filter hierarchy
+      if (!graph.getAllChildrenGraphs().isEmpty()) {
+        graph = PiSDFFlattener.flatten(graph, false);
+        graph.getAllParameters().stream().filter(x -> x.getOutgoingDependencies() == null)
+            .forEach(x -> graph.removeParameter(x));
+        PreesmLogger.getLogger().log(Level.INFO,
+            "Hierarchical graphs are not handle yet, SimSDP employ the flattening process");
+      }
+      final PipelineCycleInfo pipelineCycleInfo = new PipelineCycleInfo(scenario);
+      pipelineCycleInfo.execute();
+      // filter pipeline
+      if (!pipelineCycleInfo.getPipelineDelays().isEmpty()) {
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            "SimSDP cannot compile if there are initial optimizations, please remove your pipelines");
+      }
 
-    // 1. compute the number of equivalent core
-    final int sumNodeEquivalent = fillNodeMapping();
-    if (graph.getActorIndex() < sumNodeEquivalent) {
-      final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
-      PreesmLogger.getLogger().log(Level.INFO, issue);
-    }
-    exportArchitecture();
-    // 2. compute cumulative equivalent time
-    brv = PiBRV.compute(graph, BRVMethod.LCM);// test
-    final boolean multinet = true;
-    if (!multinet) {
-      computeWorkload();
-    }
-    computeEqTime(sumNodeEquivalent);
-    // 3. sort actor in topological as soon as possible order
+      // pipelineCycleInfo.removeCycle();
 
-    computeTopoASAP();
-    scenario.setAlgorithm(graph);
-    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
-        CheckerErrorLevel.NONE);
-    pgcc.check(this.graph);
+      // 1. compute the number of equivalent core
+      final int sumNodeEquivalent = fillNodeMapping();
+      if (graph.getActorIndex() < sumNodeEquivalent) {
+        final String issue = "O(G_app)<O(G_archi) SimSDP 1.0 isn't appropriated (reduce archi or change method)";
+        PreesmLogger.getLogger().log(Level.INFO, issue);
+      }
+      exportArchitecture();
+      // 2. compute cumulative equivalent time
+      brv = PiBRV.compute(graph, BRVMethod.LCM);// test
+      final boolean multinet = true;
+      if (!multinet) {
+        computeWorkload();
+      }
+      computeEqTime(sumNodeEquivalent);
+      // 3. sort actor in topological as soon as possible order
+
+      computeTopoASAP();
+
+      scenario.setAlgorithm(graph);
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
+          CheckerErrorLevel.NONE);
+      pgcc.check(this.graph);
+    }
     // 4. construct subGraphs
-    final List<PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP).execute();
+    final List<
+        PiGraph> subs = new IntranodeBuilder(scenario, brv, timeEq, archiList, topoOrderASAP, isManualSub).execute();
     // 7. construct top
-    final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture).execute();
+    final PiGraph topGraph = new InternodeBuilder(scenario, subs, hierarchicalArchitecture, isManualSub).execute();
     // 9. generate main file
-    final int i = 0;
-    if (i == 1) {
+
+    if (Boolean.FALSE.equals(isManualSub)) {
       new CodegenSimSDP(scenario, topGraph, nodeNames, isHomogeneous);
     }
 
     return topGraph;
 
+  }
+
+  private void exportArchitecture2() {
+    final Design archi = scenario.getDesign();
+    int coreIDStart = 0;
+    for (int nodeId = 0; nodeId < graph.getChildrenGraphs().size(); nodeId++) {
+
+      final ArchitecturesGenerator a = new ArchitecturesGenerator(ScenarioBuilder.iproject(scenariiPath));
+
+      final Map<String, Integer> type2nb = new HashMap<>();
+      type2nb.put("x86_f1", archi.getProcessingElements().size());
+
+      final Design subArchi = ArchitecturesGenerator.generateSimSDPArchitecture(type2nb, "Node" + nodeId, 10d,
+          coreIDStart);
+
+      subArchi.setUrl(archiPath + "Node" + nodeId + ".slam");
+      archiList.add(subArchi);
+      a.saveArchitecture(subArchi);
+      a.generateAndSaveSimSDPArchitecture(type2nb, "Node" + nodeId, 10d, coreIDStart);
+      coreIDStart += archi.getProcessingElements().size();
+    }
   }
 
   private void exportArchitecture() {

@@ -71,6 +71,7 @@ public class IntranodeBuilder {
   private final Map<Integer, Long>                     equivalentTimings;
   private final List<Design>                           archiList;
   private final Map<Long, List<AbstractActor>>         topoOrderASAP;
+  private final Boolean                                isManualSub;
   private final Map<Integer, Map<AbstractActor, Long>> subs     = new HashMap<>();
   Map<Integer, Map<AbstractActor, Long>>               subsCopy = new HashMap<>();
   List<PiGraph>                                        sublist  = new ArrayList<>();
@@ -82,7 +83,7 @@ public class IntranodeBuilder {
   private static final String INTERFACE_PATH = "interface/sub";
 
   public IntranodeBuilder(Scenario scenario, Map<AbstractVertex, Long> brv, Map<Integer, Long> timeEq,
-      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP) {
+      List<Design> archiList, Map<Long, List<AbstractActor>> topoOrderASAP, Boolean isManualSub) {
 
     this.scenario = scenario;
     this.graph = scenario.getAlgorithm();
@@ -91,14 +92,20 @@ public class IntranodeBuilder {
     this.equivalentTimings = timeEq;
     this.archiList = archiList;
     this.topoOrderASAP = topoOrderASAP;
+    this.isManualSub = isManualSub;
   }
 
   public List<PiGraph> execute() {
     initPath();
+    if (Boolean.FALSE.equals(isManualSub)) {
+      computeSubs();
 
-    computeSubs();
-
-    computeSplits();
+      computeSplits();
+    } else {
+      // Step 3: Store the top graph to preserve inter-subgraph connections
+      this.topGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+      sublist.addAll(graph.getChildrenGraphs());
+    }
 
     constructSubs();
 
@@ -309,7 +316,7 @@ public class IntranodeBuilder {
 
   // Helper method to merge CFG (rename dependencies and ports for inter-subgraph connections)
   private void convertAndMergeConfigInput(PiGraph subgraph) {
-    final int i = 0;
+
     // Iterate through dependencies and rename setter names to getter names
     for (final Dependency dep : subgraph.getDependencies()) {
 
@@ -352,7 +359,7 @@ public class IntranodeBuilder {
         subgraph.removeParameter(cii);
       }
     }
-    final int b = 0;
+
   }
 
   /**
@@ -363,7 +370,6 @@ public class IntranodeBuilder {
    */
   private void graphExporter(PiGraph printgraph) {
     printgraph.setUrl(graphPath + printgraph.getName() + ".pi");
-    // PiBRV.compute(printgraph, BRVMethod.LCM);
 
     final IPath fromPortableString = Path.fromPortableString(graphPath);
     final IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(fromPortableString);

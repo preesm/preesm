@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph edgedefault="directed">
+        <data key="name">top</data>
+        <node id="sub0" kind="actor">
+            <data key="graph_desc">Algo/rfi.pi</data>
+        </node>
+    </graph>
+</graphml>

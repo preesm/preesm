@@ -1,12 +1,12 @@
 Step;Duration(ms)
 initialisation:0;0
-node partitioning:1:1;1485
-thread partitioning node0:1:1;1164
-thread partitioning node1:1:1;2525
-thread partitioning node2:1:1;1217
-simulation:1:1;288
-node partitioning:2:1;1386
-thread partitioning node0:2:1;1273
-thread partitioning node1:2:1;2181
-thread partitioning node2:2:1;1176
-simulation:2:1;258
+node partitioning:1:1;4543
+thread partitioning node0:1:1;1212
+thread partitioning node1:1:1;2272
+thread partitioning node2:1:1;1054
+simulation:1:1;275
+node partitioning:2:1;4910
+thread partitioning node0:2:1;1201
+thread partitioning node1:2:1;2146
+thread partitioning node2:2:1;1133
+simulation:2:1;204

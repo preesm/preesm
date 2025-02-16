@@ -2,29 +2,27 @@
 <graphml xmlns="http://graphml.graphdrawing.org/xmlns">
     <graph edgedefault="directed">
         <data key="name">sub2</data>
-        <node expr="40960.0" id="SIZE" kind="param"/>
-        <node expr="20.0" id="N_BLOCKS" kind="param"/>
-        <node expr="2048.0" id="N_SAMPLES" kind="param"/>
-        <node expr="4096.0" id="HEADER_SIZE" kind="param"/>
-        <node expr="1.28E8" id="SAMPLE_RATE" kind="param"/>
-        <node expr="1.0" id="DISPLAY" kind="param"/>
         <node expr="0.0" id="MODE" kind="param"/>
-        <node id="Data_Restitution" kind="actor">
-            <data key="graph_desc">Code/include/dataRes.h</data>
-            <loop name="DataRes">
-                <param direction="IN" isConfig="true" name="N_BLOCKS" type="int"/>
-                <param direction="IN" isConfig="true" name="N_SAMPLES" type="int"/>
+        <node expr="2048.0" id="N_SAMPLES" kind="param"/>
+        <node expr="1.0" id="DISPLAY" kind="param"/>
+        <node expr="40960.0" id="SIZE" kind="param"/>
+        <node expr="1.28E8" id="SAMPLE_RATE" kind="param"/>
+        <node expr="20.0" id="N_BLOCKS" kind="param"/>
+        <node expr="4096.0" id="HEADER_SIZE" kind="param"/>
+        <node id="Plot_Filtered_Data" kind="actor">
+            <data key="graph_desc">Code/include/plotFilteredData.h</data>
+            <loop name="PlotFilteredData">
                 <param direction="IN" isConfig="true" name="SIZE" type="int"/>
-                <param direction="IN" isConfig="true" name="HEADER_SIZE" type="int"/>
+                <param direction="IN" isConfig="true" name="SAMPLE_RATE" type="int"/>
+                <param direction="IN" isConfig="true" name="DISPLAY" type="int"/>
                 <param direction="IN" isConfig="false" name="filtered_real_data_i" type="double"/>
                 <param direction="IN" isConfig="false" name="filtered_im_data_i" type="double"/>
             </loop>
+            <port kind="cfg_input" name="DISPLAY"/>
             <port kind="cfg_input" name="SIZE"/>
-            <port kind="cfg_input" name="N_BLOCKS"/>
-            <port kind="cfg_input" name="N_SAMPLES"/>
-            <port kind="cfg_input" name="HEADER_SIZE"/>
-            <port annotation="NONE" expr="40960.0" kind="input" name="filtered_im_data_i"/>
+            <port kind="cfg_input" name="SAMPLE_RATE"/>
             <port annotation="NONE" expr="40960.0" kind="input" name="filtered_real_data_i"/>
+            <port annotation="NONE" expr="40960.0" kind="input" name="filtered_im_data_i"/>
         </node>
         <node id="Plot_Threshold" kind="actor">
             <data key="graph_desc">Code/include/plotThreshold.h</data>
@@ -49,20 +47,22 @@
             <port annotation="NONE" expr="40960.0" kind="input" name="mad_I_i"/>
             <port annotation="NONE" expr="40960.0" kind="input" name="std_I_i"/>
         </node>
-        <node id="Plot_Filtered_Data" kind="actor">
-            <data key="graph_desc">Code/include/plotFilteredData.h</data>
-            <loop name="PlotFilteredData">
+        <node id="Data_Restitution" kind="actor">
+            <data key="graph_desc">Code/include/dataRes.h</data>
+            <loop name="DataRes">
+                <param direction="IN" isConfig="true" name="N_BLOCKS" type="int"/>
+                <param direction="IN" isConfig="true" name="N_SAMPLES" type="int"/>
                 <param direction="IN" isConfig="true" name="SIZE" type="int"/>
-                <param direction="IN" isConfig="true" name="SAMPLE_RATE" type="int"/>
-                <param direction="IN" isConfig="true" name="DISPLAY" type="int"/>
+                <param direction="IN" isConfig="true" name="HEADER_SIZE" type="int"/>
                 <param direction="IN" isConfig="false" name="filtered_real_data_i" type="double"/>
                 <param direction="IN" isConfig="false" name="filtered_im_data_i" type="double"/>
             </loop>
-            <port kind="cfg_input" name="DISPLAY"/>
             <port kind="cfg_input" name="SIZE"/>
-            <port kind="cfg_input" name="SAMPLE_RATE"/>
-            <port annotation="NONE" expr="40960.0" kind="input" name="filtered_real_data_i"/>
+            <port kind="cfg_input" name="N_BLOCKS"/>
+            <port kind="cfg_input" name="N_SAMPLES"/>
+            <port kind="cfg_input" name="HEADER_SIZE"/>
             <port annotation="NONE" expr="40960.0" kind="input" name="filtered_im_data_i"/>
+            <port annotation="NONE" expr="40960.0" kind="input" name="filtered_real_data_i"/>
         </node>
         <node id="src_in_0" kind="actor">
             <data key="graph_desc">Code/generated/interface/sub2/src_in_0.h</data>
@@ -265,17 +265,17 @@
             <port annotation="NONE" expr="12288.0" kind="output" name="RFI_Filter_filtered_real_data_o"/>
             <port annotation="NONE" expr="12288.0" kind="output" name="RFI_Filter_filtered_im_data_o"/>
         </node>
-        <edge kind="fifo" source="src_in_0" sourceport="out" target="Plot_Threshold" targetport="mad_R_i" type="double"/>
-        <edge kind="fifo" source="src_in_1" sourceport="out" target="Plot_Threshold" targetport="raw_data_real_i" type="double"/>
-        <edge kind="fifo" source="src_in_2" sourceport="out" target="Plot_Threshold" targetport="std_R_i" type="double"/>
-        <edge kind="fifo" source="src_in_3" sourceport="out" target="Plot_Threshold" targetport="raw_data_im_i" type="double"/>
-        <edge kind="fifo" source="src_in_4" sourceport="out" target="Plot_Threshold" targetport="mad_I_i" type="double"/>
-        <edge kind="fifo" source="src_in_5" sourceport="out" target="Plot_Threshold" targetport="std_I_i" type="double"/>
-        <edge kind="fifo" source="src_in_6" sourceport="out" target="Fork_eu_RFI_Filter0" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_6" sourceport="out" target="Plot_Threshold" targetport="mad_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_7" sourceport="out" target="Plot_Threshold" targetport="raw_data_real_i" type="double"/>
+        <edge kind="fifo" source="src_in_8" sourceport="out" target="Plot_Threshold" targetport="std_R_i" type="double"/>
+        <edge kind="fifo" source="src_in_9" sourceport="out" target="Plot_Threshold" targetport="raw_data_im_i" type="double"/>
+        <edge kind="fifo" source="src_in_10" sourceport="out" target="Plot_Threshold" targetport="mad_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_11" sourceport="out" target="Plot_Threshold" targetport="std_I_i" type="double"/>
+        <edge kind="fifo" source="src_in_0" sourceport="out" target="Fork_eu_RFI_Filter0" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter0" sourceport="out_1" target="RFI_Filter2" targetport="mad_R_i" type="double"/>
-        <edge kind="fifo" source="src_in_7" sourceport="out" target="Fork_eu_RFI_Filter1" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_1" sourceport="out" target="Fork_eu_RFI_Filter1" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter1" sourceport="out_1" target="RFI_Filter2" targetport="std_R_i" type="double"/>
-        <edge kind="fifo" source="src_in_8" sourceport="out" target="Fork_eu_RFI_Filter2" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_2" sourceport="out" target="Fork_eu_RFI_Filter2" targetport="in" type="double"/>
         <edge kind="fifo" source="RFI_Filter2" sourceport="filtered_real_data_o" target="urc_0" targetport="Join_eu_RFI_Filter0_in_1" type="double"/>
         <edge kind="fifo" source="urc_0" sourceport="Brd_Res_Real_out_0" target="Plot_Filtered_Data" targetport="filtered_real_data_i" type="double"/>
         <edge kind="fifo" source="RFI_Filter2" sourceport="filtered_im_data_o" target="urc_1" targetport="Join_eu_RFI_Filter1_in_1" type="double"/>
@@ -291,22 +291,22 @@
         <edge kind="fifo" source="Fork_eu_RFI_Filter3" sourceport="out_0" target="srv_2" targetport="RFI_Filter_std_I_i" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter2" sourceport="out_0" target="srv_2" targetport="RFI_Filter_mad_I_i" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter2" sourceport="out_1" target="RFI_Filter2" targetport="mad_I_i" type="double"/>
-        <edge kind="fifo" source="src_in_9" sourceport="out" target="Fork_eu_RFI_Filter3" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_3" sourceport="out" target="Fork_eu_RFI_Filter3" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter3" sourceport="out_1" target="RFI_Filter2" targetport="std_I_i" type="double"/>
-        <edge kind="fifo" source="src_in_10" sourceport="out" target="Fork_eu_RFI_Filter4" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_4" sourceport="out" target="Fork_eu_RFI_Filter4" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter4" sourceport="out_1" target="RFI_Filter2" targetport="raw_data_im_i" type="double"/>
-        <edge kind="fifo" source="src_in_11" sourceport="out" target="Fork_eu_RFI_Filter5" targetport="in" type="double"/>
+        <edge kind="fifo" source="src_in_5" sourceport="out" target="Fork_eu_RFI_Filter5" targetport="in" type="double"/>
         <edge kind="fifo" source="Fork_eu_RFI_Filter5" sourceport="out_1" target="RFI_Filter2" targetport="raw_data_real_i" type="double"/>
+        <edge kind="dependency" source="DISPLAY" target="Plot_Filtered_Data" targetport="DISPLAY"/>
+        <edge kind="dependency" source="SIZE" target="Plot_Filtered_Data" targetport="SIZE"/>
+        <edge kind="dependency" source="SAMPLE_RATE" target="Plot_Filtered_Data" targetport="SAMPLE_RATE"/>
+        <edge kind="dependency" source="SIZE" target="Plot_Threshold" targetport="SIZE"/>
+        <edge kind="dependency" source="SAMPLE_RATE" target="Plot_Threshold" targetport="SAMPLE_RATE"/>
+        <edge kind="dependency" source="DISPLAY" target="Plot_Threshold" targetport="DISPLAY"/>
         <edge kind="dependency" source="SIZE" target="Data_Restitution" targetport="SIZE"/>
         <edge kind="dependency" source="N_BLOCKS" target="Data_Restitution" targetport="N_BLOCKS"/>
         <edge kind="dependency" source="N_SAMPLES" target="Data_Restitution" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="HEADER_SIZE" target="Data_Restitution" targetport="HEADER_SIZE"/>
-        <edge kind="dependency" source="SIZE" target="Plot_Threshold" targetport="SIZE"/>
-        <edge kind="dependency" source="SAMPLE_RATE" target="Plot_Threshold" targetport="SAMPLE_RATE"/>
-        <edge kind="dependency" source="DISPLAY" target="Plot_Threshold" targetport="DISPLAY"/>
-        <edge kind="dependency" source="DISPLAY" target="Plot_Filtered_Data" targetport="DISPLAY"/>
-        <edge kind="dependency" source="SIZE" target="Plot_Filtered_Data" targetport="SIZE"/>
-        <edge kind="dependency" source="SAMPLE_RATE" target="Plot_Filtered_Data" targetport="SAMPLE_RATE"/>
         <edge kind="dependency" source="MODE" target="RFI_Filter2" targetport="MODE"/>
         <edge kind="dependency" source="N_SAMPLES" target="RFI_Filter2" targetport="N_SAMPLES"/>
         <edge kind="dependency" source="N_BLOCKS" target="urc_0" targetport="cfg_0"/>
