@@ -993,28 +993,21 @@ class Fifo extends Edge {
 		// Removing the fifo that is currently holding the delay from its graph
 		if (oldFifo !== null) {
 			oldGraph = oldFifo.getContainingPiGraph()
-			if(oldGraph !== null) {
-				oldGraph.removeFifo(oldFifo)
-			}
+			oldGraph?.removeFifo(oldFifo)
 		}
 		// Removing the fifo that will receive the delay from its graph
-		if (newGraph !== null) {
-			newGraph.removeFifo(this)
-		}
+		newGraph?.removeFifo(this)
 		// Re-affecting the delay from oldFifo to newFifo
 		this.setDelay(newDelay)
 		hasADelay = true
 		// Re-adding the fifo that was holding the delay to its graph
-		if (newGraph !== null) {
-			newGraph.addFifo(this)
-		}
+		newGraph?.addFifo(this)
 		// Re-adding the fifo that was holding the delay to its graph
 		if (oldFifo !== null) {
-			if(oldGraph !== null) {
-				oldGraph.addFifo(oldFifo)
-			}
+			oldGraph?.addFifo(oldFifo)
 		}
 	}
+
 	/*
 	 * Return a {@link String} composed as follow:<br>
 	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
@@ -1225,9 +1218,7 @@ class Delay extends Configurable, ExpressionHolder {
 			} else {
 				super.setName(newName)
 			}
-			if (actor !== null) {
-				actor.setName(name)
-			}
+			actor?.setName(name)
 		}
 	}
 	/*

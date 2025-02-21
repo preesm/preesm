@@ -581,9 +581,7 @@ class PapifyConfig {
 		}
 	}
 	op void clear() {
-		if (papiData !== null) {
-			papiData.components.clear
-		}
+		papiData?.components.clear
 		papifyConfigGroupsActors.clear
 		papifyConfigGroupsPEs.clear
 	}
