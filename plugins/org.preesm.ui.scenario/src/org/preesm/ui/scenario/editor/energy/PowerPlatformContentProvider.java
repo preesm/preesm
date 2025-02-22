@@ -62,8 +62,7 @@ public class PowerPlatformContentProvider implements IStructuredContentProvider 
   @Override
   public Object[] getElements(final Object inputElement) {
 
-    if (inputElement instanceof Scenario) {
-      final Scenario inputScenario = (Scenario) inputElement;
+    if (inputElement instanceof final Scenario inputScenario) {
       final Design design = inputScenario.getDesign();
       final EnergyConfig energyConfig = inputScenario.getEnergyConfig();
 

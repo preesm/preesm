@@ -49,6 +49,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.URI;
 import org.preesm.commons.logger.PreesmLogger;
 
 /**
@@ -79,7 +81,7 @@ public class WorkspaceUtils {
     }
     absolute = "/" + projectName + "/" + relative;
 
-    return absolute;
+    return absolute.replace("//", "/").strip();
   }
 
   /**
@@ -291,5 +293,63 @@ public class WorkspaceUtils {
       final IFile file = folder.getFile(fileName);
       file.delete(true, null);
     }
+  }
+
+  /**
+   * Transform a project relative path to workspace relative path.
+   *
+   * @param documentStr
+   *          the current document name
+   * @param path
+   *          the IPath to transform
+   * @return the path to the file inside the project containing the parsed file if this file exists, path otherwise
+   */
+  public static IPath getWorkspaceRelativePathFrom(final String documentStr, final String path) {
+
+    final URI documentURI = URI.createPlatformResourceURI(documentStr, true);
+    return getWorkspaceRelativePathFrom(documentURI, new Path(path));
+  }
+
+  /**
+   * Transform a project relative path to workspace relative path.
+   *
+   * @param documentURI
+   *          the current document URI (should start with platform:/)
+   * @param path
+   *          the IPath to transform
+   * @return the path to the file inside the project containing the parsed file if this file exists, path otherwise
+   */
+  public static IPath getWorkspaceRelativePathFrom(final URI documentURI, final IPath path) {
+    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    // If the file pointed by path does not exist, we try to add the
+    // name of the project containing the file we parse to it
+    if (!root.getFile(path).exists()) {
+      // Get the project
+      final String platformString = documentURI.toPlatformString(true);
+      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+      final IProject documentProject = documentFile.getProject();
+      // Create a new path using the project name
+      final IPath newPath = new Path(documentProject.getName()).append(path);
+      // Check there is a file where newPath points, if yes, use it
+      // instead of path
+      if (root.getFile(newPath).exists()) {
+        return newPath;
+      }
+    }
+    return path;
+  }
+
+  public static String getProjectName(final String documentStr) {
+    final URI documentURI = URI.createPlatformResourceURI(documentStr, true);
+    return getProjectName(documentURI);
+  }
+
+  public static String getProjectName(final URI documentURI) {
+    // Get the project
+    final String platformString = documentURI.toPlatformString(true);
+    final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
+    final IProject documentProject = documentFile.getProject();
+
+    return documentProject.getName();
   }
 }

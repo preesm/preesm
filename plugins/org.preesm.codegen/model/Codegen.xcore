@@ -141,9 +141,7 @@ class SubBuffer extends Buffer {
 	op void reaffectCreator(Block creator) {
         super.reaffectCreator(creator);
 	    val Buffer parentBuffer = getContainer();
-	    if (parentBuffer !== null) {
-	      parentBuffer.getUsers().add(creator);
-	    }
+	    parentBuffer?.getUsers().add(creator)
     }
 }
 class DistributedBuffer extends Buffer{

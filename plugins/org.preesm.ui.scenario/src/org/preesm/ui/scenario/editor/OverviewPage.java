@@ -59,6 +59,7 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.ScrolledForm;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.commons.exceptions.PreesmException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -117,7 +118,6 @@ public class OverviewPage extends ScenarioPage {
 
     final Set<String> algoExtensions = new LinkedHashSet<>();
     algoExtensions.add("pi");
-    algoExtensions.add("graphml");
 
     // Algorithm file chooser section
     final PiGraph algo = this.scenario.getAlgorithm();
@@ -221,7 +221,7 @@ public class OverviewPage extends ScenarioPage {
         } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
           OverviewPage.this.scenario.update(null, path);
         }
-      } catch (PreesmException ex) {
+      } catch (final PreesmException ex) {
         PreesmLogger.getLogger().log(Level.SEVERE, ex.getMessage(), e);
       }
 
@@ -241,7 +241,9 @@ public class OverviewPage extends ScenarioPage {
 
   private void colorRedIfFileAbsent(final Text text) {
     final String textFieldContent = text.getText();
-    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(textFieldContent);
+    final String fullPath = WorkspaceUtils.getWorkspaceRelativePathFrom(scenario.getScenarioURL(), textFieldContent)
+        .toString();
+    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(fullPath);
     FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
   }
 

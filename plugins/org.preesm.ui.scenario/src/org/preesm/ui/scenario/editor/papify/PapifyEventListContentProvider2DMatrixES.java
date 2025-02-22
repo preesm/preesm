@@ -87,9 +87,8 @@ class PapifyEventListContentProvider2DMatrixES extends EditingSupport {
 
   @Override
   protected void setValue(final Object element, final Object value) {
-    if (element instanceof PapifyEventListTreeElement) {
-      final PapifyEventListTreeElement treeElement = (PapifyEventListTreeElement) element;
-      AbstractActor actorInstance = treeElement.actorPath;
+    if (element instanceof final PapifyEventListTreeElement treeElement) {
+      final AbstractActor actorInstance = treeElement.actorPath;
       final Map<String, PAPIEventStatus> statuses = treeElement.papiStatuses;
 
       final PAPIEventStatus actorStatus = statuses.get(this.eventName);

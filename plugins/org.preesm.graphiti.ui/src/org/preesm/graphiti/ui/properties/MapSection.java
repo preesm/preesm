@@ -221,11 +221,11 @@ public class MapSection extends AbstractSection {
       }
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model,
             "Change " + (this.key ? "name of value" : "value"));
         command.setValue(MapSection.this.parameterName, newMap);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
 
@@ -252,10 +252,10 @@ public class MapSection extends AbstractSection {
       newMap.put(dialog.getValue(), "");
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Add element from map");
         command.setValue(this.parameterName, newMap);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
   }
@@ -280,10 +280,10 @@ public class MapSection extends AbstractSection {
       newMap.remove(entry.getKey());
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Remove element from map");
         command.setValue(this.parameterName, newMap);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
   }

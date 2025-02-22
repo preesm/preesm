@@ -214,14 +214,10 @@ public class ScenariosGenerator {
     final Scenario scenario = ScenarioUserFactory.createScenario();
     // Handle factory registry
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    Object instance = extToFactoryMap.get("slam");
-    if (instance == null) {
-      instance = new IPXACTResourceFactoryImpl();
-      extToFactoryMap.put("slam", instance);
-    }
-    if (!EPackage.Registry.INSTANCE.containsKey(SlamPackage.eNS_URI)) {
-      EPackage.Registry.INSTANCE.put(SlamPackage.eNS_URI, SlamPackage.eINSTANCE);
-    }
+    extToFactoryMap.computeIfAbsent(ARCHI_EXT, str -> new IPXACTResourceFactoryImpl());
+
+    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, s -> SlamPackage.eINSTANCE);
+
     // Set algorithm and architecture
 
     final Design archi = SlamParser.parseSlamDesign(archiURL);

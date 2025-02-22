@@ -47,10 +47,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IProject;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
@@ -61,6 +57,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.preesm.commons.DomUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.WorkspaceUtils;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -135,7 +132,7 @@ public class PiParser {
 
     final URI uri = URI.createPlatformResourceURI(algorithmURL, true);
     if ((uri.fileExtension() == null) || !uri.fileExtension().contentEquals("pi")) {
-      final String message = "The architecture file \"" + uri + "\" has improper extension.";
+      final String message = "The algorithm file \"" + uri + "\" has improper extension.";
       throw new PreesmRuntimeException(message);
     }
 
@@ -278,7 +275,7 @@ public class PiParser {
 
     final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
     if ((memoryScript != null) && !memoryScript.isEmpty()) {
-      final IPath path = getWorkspaceRelativePathFrom(new Path(memoryScript));
+      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(memoryScript));
       actor.setMemoryScriptPath(path.toString());
     }
 
@@ -296,7 +293,7 @@ public class PiParser {
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
     if ((refinement != null) && !refinement.isEmpty()) {
-      final IPath path = getWorkspaceRelativePathFrom(new Path(refinement));
+      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(refinement));
       final String refinementExtension = path.getFileExtension();
       if (RefinementChecker.isAsupportedHeaderFileExtension(refinementExtension)) {
         parseHeaderRefinement(nodeElt, actor, path);
@@ -1124,32 +1121,5 @@ public class PiParser {
     graph.addActor(actor);
 
     return actor;
-  }
-
-  /**
-   * Transform a project relative path to workspace relative path.
-   *
-   * @param path
-   *          the IPath to transform
-   * @return the path to the file inside the project containing the parsed file if this file exists, path otherwise
-   */
-  private IPath getWorkspaceRelativePathFrom(final IPath path) {
-    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-    // If the file pointed by path does not exist, we try to add the
-    // name of the project containing the file we parse to it
-    if (!root.getFile(path).exists()) {
-      // Get the project
-      final String platformString = this.documentURI.toPlatformString(true);
-      final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
-      final IProject documentProject = documentFile.getProject();
-      // Create a new path using the project name
-      final IPath newPath = new Path(documentProject.getName()).append(path);
-      // Check there is a file where newPath points, if yes, use it
-      // instead of path
-      if (root.getFile(newPath).exists()) {
-        return newPath;
-      }
-    }
-    return path;
   }
 }

@@ -403,8 +403,8 @@ public class PapifyPage extends ScenarioPage {
       try {
         importData(text1);
       } catch (final Exception ex) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Could not import Papi data from file '" + text1.getText() + "'",
-            ex);
+        PreesmLogger.getLogger().log(Level.WARNING, ex,
+            () -> "Could not import Papi data from file '" + text1.getText() + "'");
       }
 
     });
@@ -418,8 +418,8 @@ public class PapifyPage extends ScenarioPage {
           try {
             importData(text);
           } catch (final Exception ex) {
-            PreesmLogger.getLogger().log(Level.WARNING, "Could not import Papi data from file '" + text.getText() + "'",
-                ex);
+            PreesmLogger.getLogger().log(Level.WARNING, ex,
+                () -> "Could not import Papi data from file '" + text.getText() + "'");
           }
         }
 
