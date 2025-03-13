@@ -195,12 +195,15 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
         setNewMoldableParameterUserExpression(mp, this.txtExpression.getText());
         getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
       }
-      case final ConfigInputInterface cii -> this.lblValueObj.setText(
-          "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
-      case final Parameter param when !param.getValueExpression().getExpressionAsString()
-          .equals(this.txtExpression.getText()) -> {
-        setNewExpression(param, this.txtExpression.getText());
-        getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+      case final Parameter param -> {
+        if (param instanceof ConfigInputInterface) {
+          this.lblValueObj.setText(
+              "Default value is a Long Integer, only used for the computation of subsequent parameters in the GUI.");
+        }
+        if (!param.getValueExpression().getExpressionAsString().equals(this.txtExpression.getText())) {
+          setNewExpression(param, this.txtExpression.getText());
+          getDiagramTypeProvider().getDiagramBehavior().refreshRenderingDecorators(pe);
+        }
       }
       default -> {
         /* Nothing */ }
