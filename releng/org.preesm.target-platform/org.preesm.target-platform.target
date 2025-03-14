@@ -3,31 +3,31 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2024-12"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.6.1.202407022008"/>
-			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.15.2.v20240812-1535"/>
-			<unit id="org.eclipse.egit.feature.group" version="7.1.0.202411261347-r"/>
-			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.40.0.v20240911-1442"/>
-			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.40.0.v20240911-1442"/>
+			<repository location="https://download.eclipse.org/releases/2025-03"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group" version="12.0.0.202502260302"/>
+			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.15.5.v20250124-1843"/>
+			<unit id="org.eclipse.egit.feature.group" version="7.2.0.202503040940-r"/>
+			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.41.0.v20241204-1212"/>
+			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.41.0.v20241204-1212"/>
 			<unit id="org.eclipse.emf.codegen.feature.group" version="2.26.0.v20240911-1027"/>
 			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.27.0.v20240911-1027"/>
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.31.0.v20241001-1300"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.40.0.v20241018-1213"/>
-			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2700.v20240929-1145"/>
+			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.32.0.v20241230-0826"/>
+			<unit id="org.eclipse.emf.sdk.feature.group" version="2.41.0.v20241204-1554"/>
+			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2800.v20250227-1734"/>
 			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202411181539"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.19.2.202311281543"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.19.2.202311281543"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.16.100.v20241120-1800"/>
-			<unit id="org.eclipse.platform.feature.group" version="4.34.0.v20241120-1800"/>
-			<unit id="org.eclipse.sdk.feature.group" version="4.34.0.v20241120-1800"/>
-			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="11.6.1.202406241230"/>
-			<unit id="org.eclipse.tm.terminal.view.feature.feature.group" version="11.6.1.202406241230"/>
-			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.37.0.v20241119-0857"/>
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.37.0.v20241119-0857"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.19.3.202502181516"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.19.3.202502181516"/>
+			<unit id="org.eclipse.pde.feature.group" version="3.16.200.v20250228-0140"/>
+			<unit id="org.eclipse.platform.feature.group" version="4.35.0.v20250228-0640"/>
+			<unit id="org.eclipse.sdk.feature.group" version="4.35.0.v20250228-0640"/>
+			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="12.0.0.202410081652"/>
+			<unit id="org.eclipse.tm.terminal.view.feature.feature.group" version="12.0.0.202501171425"/>
+			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.38.0.v20250226-0658"/>
+			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.38.0.v20250226-0658"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.5"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="21.0.5.v20241023-1957"/>
+			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.6"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="21.0.6.v20250130-0529"/>
 		</location>
 		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
 			<dependencies>
