@@ -49,7 +49,6 @@ import org.eclipse.graphiti.mm.pictograms.Anchor;
 import org.eclipse.graphiti.mm.pictograms.Connection;
 import org.eclipse.graphiti.mm.pictograms.Diagram;
 import org.eclipse.graphiti.mm.pictograms.PictogramElement;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -245,9 +244,16 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
     // If getter is the DataPort of a DataInterface, change getter to be the interface
     if (getter instanceof final DataPort dataPort && dataPort.getContainingActor() instanceof InterfaceActor) {
-      getterAnchor = getterAnchor.getParent().getAnchors().get(1);
-      getter = getPort(getterAnchor);
+
+      // Need to set the getter as the port associated to the parent container
+      // (which contains the DataPort square and the text box)
+      // Might always be null anyways
+      // And the targetPE to be the DataInterface graphical object
+      getter = getPort(getterAnchor.getParent().getAnchors().get(1));
       tgtPE = getterAnchor.getParent();
+    } else if (getBusinessObjectForPictogramElement(tgtPE) instanceof InterfaceActor) {
+      // if tgtPE is the pictogram element associated with InterfaceActor, change it to PE of DataPort
+      getterAnchor = getterAnchor.getParent().getAnchors().get(0);
     }
 
     // If getter port is null
@@ -289,12 +295,6 @@ public class CreateDependencyFeature extends AbstractCreateConnectionFeature {
 
     // Re-check if getter and setter are non-null (in case a port creation
     // failed or was aborted)
-
-    if (getter instanceof DataPort) {
-      MessageDialog.openWarning(null, "Preesm Error",
-          "Can not connect dependencies to data ports. Try connecting the dependency to the containing actor.");
-      return null;
-    }
 
     if (getter != null) {
       // Create new business object
