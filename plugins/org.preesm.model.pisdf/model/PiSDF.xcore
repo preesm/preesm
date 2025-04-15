@@ -1075,11 +1075,12 @@ class DataInputInterface extends DataInterface {
 		return InterfaceKind.DATA_INPUT
 	}
 	op DataOutputPort getDataPort() {
+		// Data in/out interfaces have only one data port
 		return super.getDataPort as DataOutputPort
 	}
 	op DataInputPort getGraphPort() {
 		return super.graphPort as DataInputPort
-	}
+	}s
 }
 
 class DataOutputInterface extends DataInterface {
@@ -1087,6 +1088,7 @@ class DataOutputInterface extends DataInterface {
 		return InterfaceKind.DATA_OUTPUT
 	}
 	op DataInputPort getDataPort() {
+		// Data in/out interfaces have only one data port
 		return super.getDataPort as DataInputPort
 	}
 	op DataOutputPort getGraphPort() {
