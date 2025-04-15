@@ -47,6 +47,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
@@ -97,7 +98,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
    *
    * @author ahonorat
    */
-  public static class AnalysisResultFPGA {
+  public static class AnalysisResultFPGA extends SynthesisResult {
     // given flattened graph
     public final PiGraph flatGraph;
     // given repetition vector of the flat graph
@@ -115,6 +116,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
 
     public AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
         final Map<InterfaceActor, Pair<Long, Long>> interfaceRates) {
+      super(null, null, null);
       this.flatGraph = flatGraph;
       this.flatBrv = flatBrv;
       this.interfaceRates = interfaceRates;
