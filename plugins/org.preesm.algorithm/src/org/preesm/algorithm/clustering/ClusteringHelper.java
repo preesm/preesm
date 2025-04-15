@@ -59,7 +59,6 @@ import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
@@ -264,7 +263,7 @@ public class ClusteringHelper {
   public static Fifo getOutsideIncomingFifo(final Fifo inFifo) {
     final AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
     if (sourceActor instanceof DataInputInterface) {
-      return ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
+      return ((DataInputInterface) sourceActor).getGraphPort().getIncomingFifo();
     }
     throw new PreesmRuntimeException(
         "ClusteringHelper: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
@@ -280,7 +279,7 @@ public class ClusteringHelper {
   public static Fifo getOutsideOutgoingFifo(final Fifo inFifo) {
     final AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
     if (targetActor instanceof DataOutputInterface) {
-      return ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
+      return ((DataOutputInterface) targetActor).getGraphPort().getOutgoingFifo();
     }
     throw new PreesmRuntimeException(
         "ClusteringHelper: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
@@ -350,6 +349,10 @@ public class ClusteringHelper {
       globalList.retainAll(componentList);
     }
     return globalList;
+  }
+
+  public static List<ComponentInstance> getArch(AbstractActor actor, Scenario scenario) {
+    return scenario.getConstraints().getPossibleMappings(actor);
   }
 
 }
