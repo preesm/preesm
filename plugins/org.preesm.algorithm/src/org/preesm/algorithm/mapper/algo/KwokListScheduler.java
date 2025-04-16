@@ -154,10 +154,14 @@ public class KwokListScheduler {
    * Returns the fastest operator in the list of candidates for this vertex.
    *
    * @param dag
+   *          the dag
    * @param archisimu
+   *          the archisimu
    * @param currentvertex
+   *          the current vertex
    * @param time
-   * @return
+   *          the time
+   * @return the fastest component
    */
   private ComponentInstance choseOperator(final MapperDAG dag, final LatencyAbc archisimu,
       final MapperDAGVertex currentvertex, long time) {
