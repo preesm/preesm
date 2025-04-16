@@ -116,6 +116,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
 
     public AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
         final Map<InterfaceActor, Pair<Long, Long>> interfaceRates) {
+      // TODO check if I can pass better args
       super(null, null, null);
       this.flatGraph = flatGraph;
       this.flatBrv = flatBrv;
