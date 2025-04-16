@@ -30,9 +30,10 @@ public class ClusterBuilder {
    *          the inspected graph
    * @param scenario
    *          the corresponding scenario
+   *
+   * @return the list of cluster actors created
    */
   public static List<AbstractActor> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
-
     /*
      * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
      * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
@@ -72,10 +73,13 @@ public class ClusterBuilder {
           // there is a non-fpga predecessor actor or no inputs at all, and an fpga successor actor
           final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(a -> a instanceof Actor)
               .map(a -> (Actor) a).toList();
+
           final boolean anyCPUPredecessor = predecessors.stream()
               .anyMatch(a -> scenario.getConstraints().getPossibleMappings(a).contains(refCPU));
+
           final List<Actor> successors = actor.getDirectSuccessors().stream().filter(a -> a instanceof Actor)
               .map(a -> (Actor) a).toList();
+
           final boolean anyFPGASuccessor = successors.stream()
               .anyMatch(a -> scenario.getConstraints().getPossibleMappings(a).contains(refFPGA));
 
@@ -107,9 +111,12 @@ public class ClusterBuilder {
         final String clusterName = "Merged" + actor.getName();
         final AbstractActor mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         listClusterActors.add(mergeActor);
+        scenario.getConstraints().addConstraint(refFPGA, mergeActor);
       }
 
     } while (!graph_is_fully_searched);
+
+    // new we add the cluster's mapping to the scenario
 
     return listClusterActors;
 
