@@ -52,6 +52,7 @@ import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
@@ -154,11 +155,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
       case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
       case VALUE_SCHEDULER_PERIODIC -> new PeriodicScheduler();
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
-      // actuellement pas possible, car inclure codegen.fpga cause une dépendance cyclique à résoudre
-      // solution potentielle : couper FpgaAnalysisMainTask.execute en une tâche de compil et une de codegen, à séparer.
-      // ça implique de modefier le code appelant ?
-      // case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaAnalysisMainTask();
-      // case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaAnalysisMainTask();
+      case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler();
+      case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler();
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
   }
