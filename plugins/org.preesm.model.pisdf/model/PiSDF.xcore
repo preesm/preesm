@@ -276,35 +276,28 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph#vertices} */
-	int parameterIndex = "0"
+	derived int parameterIndex get{
+		vertices.filter(Parameter).length
+	}
 
 	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph#vertices} */
-	int actorIndex = "0"
+	derived int actorIndex get{
+		vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
+	}
 
 	/* Index used to know where to insert {@link Delay} into the {@link PiGraph#vertices} */
-	int delayIndex = "0"
+	derived int delayIndex get{
+		vertices.filter(Delay).length
+	}
 
 	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph#edges} */
-	int fifoWithDelayIndex = "0"
+	derived int fifoWithDelayIndex get {
+		edges.filter(Fifo).filter(f | f.getDelay() !== null).length
+	}
 
 	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph#edges} */
-	int fifoWithoutDelayIndex = "0"
-
-	// Set of functions to update indexes. Theses functions are called by the observer.
-	op void updateActorIndex() {
-		actorIndex = vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
-	}
-	op void updateDelayIndex() {
-		delayIndex = vertices.filter(Delay).length
-	}
-	op void updateParameterIndex() {
-		parameterIndex = vertices.filter(Parameter).length
-	}
-	op void updateFifoWithDelayIndex() {
-		fifoWithDelayIndex = edges.filter(Fifo).filter(f | f.getDelay() !== null).length
-	}
-	op void updateFifoWithoutDelayIndex() {
-		fifoWithoutDelayIndex = edges.filter(Fifo).filter(f | f.getDelay() === null).length
+	derived int fifoWithoutDelayIndex get {
+		edges.filter(Fifo).filter(f | f.getDelay() === null).length
 	}
 
 	op boolean isCluster() {
@@ -346,22 +339,42 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link AbstractActor} was successfully added, false otherwise
 	 */
 	op unique boolean addActor(AbstractActor actor) {
-		if (!(actor instanceof DelayActor)) {
-			val int oldActorIndex = this.actorIndex
+		if (actor instanceof DelayActor) {
+			return vertices.add(actor)
+		} else {
 			try {
 				vertices.add(parameterIndex + actorIndex, actor)
 			} catch (IllegalArgumentException ignore) {
 				return false
 			}
-			// Dirty fix for when the observer isn't triggered for whatever bs reason
-			// Happens when actor is a PiGraph
-			if (oldActorIndex == this.actorIndex) {
-				PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " insertion.")
-				updateActorIndex()
+
+			if (actor instanceof InterfaceActor) {
+
+				var DataPort port
+
+				switch (actor.kind) {
+					case DATA_INPUT: {
+						port = PiMMUserFactory.instance.createDataInputPort
+						this.getDataInputPorts.add(port as DataInputPort)
+					}
+					case DATA_OUTPUT: {
+						port = PiMMUserFactory.instance.createDataOutputPort
+						this.getDataOutputPorts.add(port as DataOutputPort)
+					}
+					case CFG_OUTPUT: {
+						port = PiMMUserFactory.instance.createConfigOutputPort
+						this.getConfigOutputPorts.add(port as ConfigOutputPort)
+					}
+					default: {
+						return false
+					}
+				}
+
+				// Set the interface properties
+				port.name = actor.name
+				actor.graphPort = port
 			}
-			return actor.equals(vertices.get(parameterIndex + actorIndex - 1))
-		} else {
-			return vertices.add(actor)
+			return true
 		}
 	}
 
@@ -378,10 +391,18 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 */
 	op unique boolean addParameter(Parameter parameter) {
 		try {
-			vertices.add(parameterIndex, parameter)
+			vertices.add(parameterIndex, parameter) // can't do addFirst
 		} catch (IllegalArgumentException ignore) {
 			return false
 		}
+
+		if (parameter instanceof ConfigInputInterface) {
+			val ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort
+			port.name = parameter.name
+			this.configInputPorts.add(port)
+			parameter.graphPort = port
+		}
+
 		return true
 	}
 
@@ -395,13 +416,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Configurable} was successfully added, false otherwise
 	 */
 	op unique boolean addConfigurable(Configurable configurable) {
-
-		if (configurable instanceof AbstractActor) {
-			return addActor(configurable)
-		} else if (configurable instanceof Parameter) {
-			return addParameter(configurable)
+		switch configurable {
+			AbstractActor : return addActor(configurable)
+			Parameter : return addParameter(configurable)
+			default : throw new PreesmRuntimeException(configurable.toString + " cannot be added this way.")
 		}
-		throw new PreesmRuntimeException(configurable.toString + "is not a Configurable.")
 	}
 
 	/*
@@ -443,14 +462,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Fifo} was successfully added, false otherwise
 	 */
 	op unique boolean addFifo(Fifo fifo) {
-		var int index
-		if (fifo.hasADelay === true) {
-			index = fifoWithDelayIndex
-		} else {
-			index = fifoWithDelayIndex + fifoWithoutDelayIndex
-		}
 		try {
-			edges.add(index, fifo)
+			if (fifo.delayPresent) {
+				edges.add(fifoWithDelayIndex, fifo)
+			} else {
+				edges.add(fifoWithDelayIndex + fifoWithoutDelayIndex, fifo)
+			}
 		} catch (IllegalArgumentException ignore) {
 			return false
 		}
@@ -507,18 +524,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link AbstractActor} was successfully removed, false otherwise
 	 */
 	op unique boolean removeActor(AbstractActor actor) {
-		val int oldActorIndex = this.actorIndex
-		var boolean actorRemoved = false
-		if (vertices.contains(actor)) {
-			actorRemoved = vertices.remove(actor)
+		if (actor instanceof InterfaceActor) {
+			// We remove from both lists, but only one removal will actually occur at most.
+			this.dataInputPorts.remove(actor.graphPort)
+			this.dataOutputPorts.remove(actor.graphPort)
+			this.configOutputPorts.remove(actor.graphPort)
 		}
-		// Dirty fix for when the observer isn't triggered for whatever bs reason
-		// Happens when actor is a PiGraph
-		if (actorRemoved && (oldActorIndex == this.actorIndex) && !(actor instanceof DelayActor)) {
-			PreesmLogger.getLogger().warning("The GraphObserver didn't catch actor " + actor.getName() + " removal.")
-			updateActorIndex()
-		}
-		return actorRemoved
+		return vertices.remove(actor)
 	}
 
 	/*
@@ -549,11 +561,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Fifo} was successfully removed, false otherwise
 	 */
 	op unique boolean removeFifo(Fifo fifo) {
-		var boolean fifoRemoved = false
-		if (edges.contains(fifo)) {
-			fifoRemoved = edges.remove(fifo)
-		}
-		return fifoRemoved
+		return edges.remove(fifo)
 	}
 
 	/*
@@ -566,6 +574,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Parameter} was successfully removed, false otherwise
 	 */
 	op unique boolean removeParameter(Parameter param) {
+		if (param instanceof ConfigInputInterface) {
+			configInputPorts.remove(param.graphPort)
+		}
 		return vertices.remove(param)
 	}
 
@@ -919,13 +930,10 @@ class DataInputPort extends DataPort {
 		return PortKind.DATA_INPUT
 	}
 	op Fifo getFifo() {
-		return incomingFifo;
+		return incomingFifo
 	}
 	op DataOutputPort getOppositePort() {
-		if (incomingFifo !== null) {
-			return incomingFifo.sourcePort
-		}
-		return null
+		return incomingFifo?.sourcePort
 	}
 }
 
@@ -938,10 +946,7 @@ class DataOutputPort extends DataPort {
 		return outgoingFifo;
 	}
 	op DataInputPort getOppositePort() {
-		if (outgoingFifo !== null) {
-			return outgoingFifo.targetPort
-		}
-		return null
+		return outgoingFifo?.targetPort
 	}
 }
 
@@ -974,10 +979,10 @@ class Fifo extends Edge {
 		this.delay !== null
 	}
 
-	op Vertex getSource() {
+	op AbstractActor getSource() {
 		sourcePort.containingActor
 	}
-	op Vertex getTarget() {
+	op AbstractActor getTarget() {
 		targetPort.containingActor
 	}
 	op PiGraph getContainingPiGraph() {
@@ -985,44 +990,20 @@ class Fifo extends Edge {
 	}
 
 	/*
-	 * Assign the provided {@link Delay} to the current {@link Fifo}.<br>
-	 * Check if the provided {@link Delay} already belongs to a {@link Fifo} which belongs to a {@link PiGraph},<br>
-	 * and if so, re-assign the oldFifo as a {@link Fifo} without {@link Delay}.<br>
-	 * <br>
+	 * Removes and re-adds a {@link Fifo} from its containing {@link PiGraph}.
+	 * This ensures proper edge ordering.
 	 * 
-	 * Additionally, if the current {@link Fifo} belongs to a {@link PiGraph}, it is removed and re-added to ensure<br>
-	 * it is correctly placed within the {@link PiGraph#edges} list.
+	 * To be used after adding or removing a {@link Delay} from a {@link Fifo}.
 	 * 
-	 * @param newDelay
-	 * 			The {@link Delay} to assign to the current {@link Fifo}.
 	 */
-	op void assignDelay(Delay newDelay) {
-		if (newDelay === null) {
-			setDelay(null)
-			hasADelay = false
+	op void refreshFifo() {
+		val PiGraph piGraph = this.containingPiGraph
+
+		if (piGraph === null) {
 			return
 		}
-
-		val Fifo oldFifo = newDelay.getContainingFifo()
-		var PiGraph oldGraph = null
-		val Fifo newFifo = this
-		var PiGraph newGraph = newFifo.getContainingPiGraph()
-		// Removing the fifo that is currently holding the delay from its graph
-		if (oldFifo !== null) {
-			oldGraph = oldFifo.getContainingPiGraph()
-			oldGraph?.removeFifo(oldFifo)
-		}
-		// Removing the fifo that will receive the delay from its graph
-		newGraph?.removeFifo(this)
-		// Re-affecting the delay from oldFifo to newFifo
-		this.setDelay(newDelay)
-		hasADelay = true
-		// Re-adding the fifo that was holding the delay to its graph
-		newGraph?.addFifo(this)
-		// Re-adding the fifo that was holding the delay to its graph
-		if (oldFifo !== null) {
-			oldGraph?.addFifo(oldFifo)
-		}
+		piGraph.removeFifo(this)
+		piGraph.addFifo(this)
 	}
 
 	/*
@@ -1066,11 +1047,23 @@ class DataInputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_INPUT
 	}
+	op DataOutputPort getDataPort() {
+		return super.getDataPort as DataOutputPort
+	}
+	op DataInputPort getGraphPort(){
+		return super.graphPort as DataInputPort
+	}
 }
 
 class DataOutputInterface extends DataInterface {
 	op InterfaceKind getKind() {
 		return InterfaceKind.DATA_OUTPUT
+	}
+	op DataInputPort getDataPort() {
+		return super.getDataPort as DataInputPort
+	}
+	op DataOutputPort getGraphPort(){
+		return super.graphPort as DataOutputPort
 	}
 }
 
@@ -1175,12 +1168,10 @@ class Dependency extends Edge {
 	refers ISetter setter opposite outgoingDependencies
 	refers ConfigInputPort getter opposite incomingDependency
 	op Vertex getSource() {
-		if (setter instanceof Parameter) {
-			return setter as Parameter;
-		} else if (setter instanceof ConfigOutputPort) {
-			return (setter as ConfigOutputPort).containingActor
-		} else {
-			return null
+		return switch setter {
+			Parameter : setter as Parameter
+			ConfigOutputPort : (setter as ConfigOutputPort).containingActor
+			default : null
 		}
 	}
 	op Vertex getTarget() {

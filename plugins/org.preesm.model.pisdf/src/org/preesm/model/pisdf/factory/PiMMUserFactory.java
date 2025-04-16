@@ -95,24 +95,27 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
     if (copy instanceof final PiGraph piGraph) {
 
-      // Check if the PiGraph has an observer
-      if (piGraph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
-        copy.eAdapters().add(GraphObserver.getInstance());
-      }
+      // // Check if the PiGraph has an observer
+      // if (piGraph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
+      // copy.eAdapters().add(GraphObserver.getInstance());
+      // }
 
-      // Check for all subgraph in this PiGraph and its subgraph
-      for (final PiGraph graph : piGraph.getAllChildrenGraphs()) {
-        if (graph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
-          graph.eAdapters().add(GraphObserver.getInstance());
-        }
-      }
+      // // Check for all subgraph in this PiGraph and its subgraph
+      // for (final PiGraph graph : piGraph.getAllChildrenGraphs()) {
+      // if (graph.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
+      // graph.eAdapters().add(GraphObserver.getInstance());
+      // }
+      // }
 
       // Check for all fifos in this PiGraph and its subgraph
-      for (final Fifo fifo : piGraph.getAllFifos()) {
-        if (fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
-          fifo.eAdapters().add(GraphObserver.getInstance());
-        }
-      }
+      // for (final Fifo fifo : piGraph.getAllFifos()) {
+      // if (fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
+      // fifo.eAdapters().add(GraphObserver.getInstance());
+      // }
+      // }
+      piGraph.getAllFifos().parallelStream()
+          .filter(fifo -> fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance))
+          .forEach(fifo -> fifo.eAdapters().add(GraphObserver.getInstance()));
     }
 
     return copy;
@@ -361,7 +364,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final PiGraph res = super.createPiGraph();
     final Expression exp = createExpression();
     res.setExpression(exp);
-    res.eAdapters().add(GraphObserver.getInstance());
+    // res.eAdapters().add(GraphObserver.getInstance());
     return res;
   }
 
