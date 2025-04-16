@@ -91,7 +91,8 @@ public class KwokListScheduler {
   }
 
   /**
-   * schedule: Do a mapping with the help of the lists (CPN-Dominant list, Blocking node list and the FCP list) and the
+   * schedule: Do a mapping with the help of the lists (CPN-Dominant (Critical Path Node) list, Blocking node (node
+   * whose removal allows its follower(s) to start earlier) list and the FCP (Final Critical Path) list) and the
    * architecture. It can take one vertex already mapped with a particular operator chosen by the user and only one.
    *
    * @param dag
@@ -149,6 +150,15 @@ public class KwokListScheduler {
     return dag;
   }
 
+  /***
+   * Returns the fastest operator in the list of candidates for this vertex.
+   *
+   * @param dag
+   * @param archisimu
+   * @param currentvertex
+   * @param time
+   * @return
+   */
   private ComponentInstance choseOperator(final MapperDAG dag, final LatencyAbc archisimu,
       final MapperDAGVertex currentvertex, long time) {
     final ComponentInstance endReferenceOperator = getEndReferenceOperator(currentvertex);

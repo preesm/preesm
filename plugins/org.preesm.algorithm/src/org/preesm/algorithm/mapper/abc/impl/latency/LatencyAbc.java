@@ -84,7 +84,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
- * Abc that minimizes latency.
+ * Abc (Architecture Benchmark Computer) that minimizes latency.
  *
  * @author mpelcat
  */
