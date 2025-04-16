@@ -245,6 +245,9 @@ class Constraints {
 		}
 		groupConstraints.get(cmpInstance).addAll(actors);
 	}
+	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
+		return groupConstraints.filter[e | e.value.contains(actor)].map[e | e.key].toEList.unmodifiableView
+	}
 	op int nbConstrainsWithComp(String compType) {
 		return groupConstraints.filter[e | e.key.component.vlnv.name.equals(compType)].size;
 	}
