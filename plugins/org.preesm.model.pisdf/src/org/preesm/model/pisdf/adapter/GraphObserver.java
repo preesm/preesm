@@ -107,12 +107,8 @@ public class GraphObserver extends AdapterImpl {
 
       // Only the SET event is checked
       if (notification.getEventType() == Notification.SET) {
-        // If a delay as been added to the fifo
-        if (oldDelay == null) {
-          fifo.refreshFifo();
-        }
-      } else if (notification.getEventType() == Notification.UNSET) {
-        if (newDelay == null) {
+        // If the fifo changed fliped FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
+        if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
           fifo.refreshFifo();
         }
       }
