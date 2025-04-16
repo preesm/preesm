@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.BasicEList;
@@ -23,7 +24,12 @@ import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.MergingHeuristic;
 import org.preesm.algorithm.clustering.MinimalMergingHeuristic;
+import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
+import org.preesm.algorithm.schedule.sdf.HeterogeneousScheduler;
 import org.preesm.algorithm.synthesis.PreesmSynthesisTask;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -305,15 +311,35 @@ public class HeterogeneousTest {
 
   }
 
-  public String switchMapper(AbstractActor cluster, Scenario scenario) {
-    // ATTENTION
-    // pour que ça marche il faut que l'acteur cluster soit dans le scenario, et associé à un mapping
-    // ça veut dire que la phase de clustering doit modifier le scénario !
+  /**
+   * Selects the adapted scheduler for a given cluster based on its mapping arch
+   *
+   * @param cluster
+   *          the cluster to map
+   * @param scenario
+   *          the scenario
+   * @return the selected mapper's string name/identifier
+   **/
+  public String switchSchedulerMapper(AbstractActor cluster, Scenario scenario) {
     final List<ComponentInstance> mappings = ClusteringHelper.getArch(cluster, scenario);
+    // Pour le moment, je vais supposer qu'un cluster est mappé à une seule archi. Cela correspond à l'idée que le
+    // mapping "niveau archi" est fait entièrement lors de la phase de clustering, qui décide quel cluster est fait sur
+    // quel type de PE.
 
-    return switch() {
+    final ComponentInstance arch = mappings.getFirst();
 
+    if (arch.getComponent() instanceof CPU) {
+      return PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE; // temporaire
     }
+
+    if (arch.getComponent() instanceof FPGA) {
+      return AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR;
+    }
+    // temporaire
+
+    PreesmLogger.getLogger().log(Level.SEVERE, () -> "No mapper available for component " + arch.getInstanceName());
+    return null;
+
   }
 
   @Test
@@ -332,22 +358,27 @@ public class HeterogeneousTest {
     // clusterize the graph
     final List<AbstractActor> clustersList = ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
 
-    // locally schedule and map the clusters' graphs
+    // ------------------ locally schedule and map the clusters' graphs ------------------
+
     for (final AbstractActor cluster : clustersList) {
-      // find the right mapper and scheduler based on the cluster's shared archi : cpu, fpga, cgra...
-      final String localMapper = switchMapper(cluster);
-      final String localScheduler = switchScheduler(cluster);
+      // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
+      final String localSchedulerMapper = switchSchedulerMapper(cluster, scenario);
+      if (localSchedulerMapper == null) {
+        return;
+      }
 
       final Map<String, String> localParameters = new HashMap<>();
-      localParameters.put("scheduler", localScheduler);
-      localParameters.put("mapper", localMapper);
+      localParameters.put("scheduler", localSchedulerMapper);
+      localParameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
 
       final var synthesis = new PreesmSynthesisTask();
 
-      final Map<String, Object> localResults = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
+      final Map<String, Object> localResults = synthesis.execute(inputs, localParameters, monitor, nodeName, workflow);
+
     }
 
-    // replace hierarchical actors with placeholders
+    // ------------------ replace hierarchical actors with placeholders ------------------
+
     for (final AbstractActor actor : algo.getActors()) {
       if (actor instanceof PiGraph) {
         final Actor placeholder = PiMMFactory.createActor(actor.getName() + "_placeholder");
@@ -388,13 +419,12 @@ public class HeterogeneousTest {
 
     final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
 
-    /*
-     * final SynthesisResult schedule_mapping = HeterogeneousScheduler.schedule(algo, design, scenario);
-     *
-     * final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algo, schedule_mapping.schedule);
-     */
+    final SynthesisResult schedule_mapping = HeterogeneousScheduler.schedule(algo, design, scenario);
+
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algo, schedule_mapping.schedule);
 
     assertNotNull(results);
+    assertNotNull(scheduleOM);
 
     // vérifier que les éléments sont mappés où on le veut, et que la durée d'exécution est celle prévue
 
