@@ -171,9 +171,8 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       final DataInputInterface dii = PiMMUserFactory.instance.createDataInputInterface();
       final String nameIn = "delay_" + retainedDelay.getContainingFifo().getTargetPort().getName();
       dii.setName(nameIn);
-      dii.getDataOutputPorts().get(0).setName(nameIn);
-      dii.getGraphPort().setName(nameIn);
       subGraph.addActor(dii);
+
       // homogenize expression
       final Long expressionIn = retainedDelay.getContainingFifo().getTargetPort().getExpression().evaluateAsLong();
       dii.getDataOutputPorts().get(0).setExpression(expressionIn);
@@ -190,10 +189,9 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       // create output interface
       final DataOutputInterface dout = PiMMUserFactory.instance.createDataOutputInterface();
       final String nameOut = "delay_" + retainedDelay.getContainingFifo().getSourcePort().getName();
-      subGraph.addActor(dout);
       dout.setName(nameOut);
-      dout.getDataInputPorts().get(0).setName(nameOut);
-      dout.getGraphPort().setName(nameOut);
+      subGraph.addActor(dout);
+
       // homogenize expression
       final Long expressionOut = retainedDelay.getContainingFifo().getSourcePort().getExpression().evaluateAsLong();
       dout.getDataInputPorts().get(0).setExpression(expressionOut);

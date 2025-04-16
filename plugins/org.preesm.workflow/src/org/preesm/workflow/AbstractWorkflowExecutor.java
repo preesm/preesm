@@ -335,8 +335,8 @@ public abstract class AbstractWorkflowExecutor {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             nodeResult = false;
           } catch (final Exception e) {
-            getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
-                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
+            getLogger().log(Level.SEVERE, e, () -> "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
+                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.");
             nodeResult = false;
           }
         }
@@ -418,8 +418,8 @@ public abstract class AbstractWorkflowExecutor {
             getLogger().log(Level.SEVERE, e.getMessage(), e);
             nodeResult = false;
           } catch (final Exception e) {
-            getLogger().log(Level.SEVERE, "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
-                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.", e);
+            getLogger().log(Level.SEVERE, e, () -> "Unexpected Exception: " + e.getClass().getCanonicalName() + ":"
+                + e.getMessage() + "\n Contact Preesm developers if you cannot solve the problem.");
             nodeResult = false;
           }
         }
