@@ -293,24 +293,12 @@ public class GraphObserver extends AdapterImpl {
       // Only the SET event is checked
       if (notification.getEventType() == Notification.SET) {
         // If a delay as been added to the fifo
-        if ((oldDelay == null) && (newDelay != null)) {
-          // The delay was attached to the fifo
-          graph.removeFifo(fifo);
-          graph.addFifo(fifo);
-        } else if ((oldDelay != null) && (newDelay != null)) {
-          // The fifo had its delay replaced by another
-          // Nothing to do
+        if (oldDelay == null) {
+          fifo.refreshFifo();
         }
-        if ((oldDelay != null) && (newDelay == null)) {
-          // The delay was removed from the fifo
-
-          // Ensuring the Fifo to remove is still tagged as a Fifo with delay
-          // The Undo feature will untag the fifo before removing it from the graph
-
-          graph.removeFifo(fifo);
-          graph.addFifo(fifo);
-        } else {
-          // should never go there
+      } else if (notification.getEventType() == Notification.UNSET) {
+        if (newDelay == null) {
+          fifo.refreshFifo();
         }
       }
     }

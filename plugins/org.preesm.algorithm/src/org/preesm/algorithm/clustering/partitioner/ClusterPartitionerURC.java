@@ -305,7 +305,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
     Long scale;
     if (scapeMode == ScapeMode.DATA
-        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isHasADelay())) {
+        && subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isDelayPresent())) {
 
       final Long ratio = computeDelayRatio(subGraph);
       scale = MathFunctionsHelper.gcd(ratio, clustredActorRepetition);
@@ -321,7 +321,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   private static Long computeDelayRatio(PiGraph subGraph) {
     long count = 0L;
     for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
-      if (din.getGraphPort().getFifo().isHasADelay()) {
+      if (din.getGraphPort().getFifo().isDelayPresent()) {
         final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluateAsLong()
             / din.getGraphPort().getExpression().evaluateAsLong();
         count = Math.max(count, ratio);

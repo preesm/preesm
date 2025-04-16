@@ -64,7 +64,7 @@ public class MultiBranch {
       if (!(source instanceof DelayActor) && !(source instanceof DataInputInterface)
           && (source instanceof ExecutableActor
               && (source.getDataInputPorts().isEmpty() || source.getDataInputPorts().stream().allMatch(
-                  x -> x.getFifo().isHasADelay() || x.getFifo().getSource() instanceof DataInputInterface)))) {
+                  x -> x.getFifo().isDelayPresent() || x.getFifo().getSource() instanceof DataInputInterface)))) {
         sourceList.add(source);
       }
     }

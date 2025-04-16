@@ -331,7 +331,7 @@ public class PiMMHelper {
       final long ro = dpo.getExpression().evaluateAsLong();
       if (ri == 0 && ro == 0) {
         final Delay d = f.getDelay();
-        f.assignDelay(null);
+        f.setDelay(null);
         if (d != null) {
           piGraph.removeDelay(d);
         }
@@ -420,7 +420,7 @@ public class PiMMHelper {
     final StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
     for (final Delay d : toRemove) {
       final Fifo f = d.getContainingFifo();
-      f.assignDelay(null);
+      f.setDelay(null);
       piGraph.removeDelay(d);
       sb.append(d.getName() + "; ");
     }
@@ -518,18 +518,18 @@ public class PiMMHelper {
     // Add the getter FIFO
     // Connect the delay interface to the getter
     final Fifo fifoGetter = PiMMUserFactory.instance.createFifo(originalDelayActor.getDataOutputPort(),
-        (DataInputPort) getterOut.getDataPort(), type);
+        getterOut.getDataPort(), type);
     graph.addFifo(fifoSetter);
     graph.addFifo(fifoGetter);
 
     // 4. Now we create the feed back FIFO in the upper-level
     // 5. We set the expression of the corresponding ports on the graph
-    final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
+    final DataInputPort inPort = setterIn.getGraphPort();
     // Add the input port
     inPort.setExpression(delayExpression);
     inPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     // Add the output port
-    final DataOutputPort outPort = (DataOutputPort) getterOut.getGraphPort();
+    final DataOutputPort outPort = getterOut.getGraphPort();
     outPort.setExpression(delayExpression);
     outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Now set the source / target port of the FIFO
@@ -547,7 +547,7 @@ public class PiMMHelper {
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
 
-    fifoPersistence.assignDelay(delayPersistence);
+    fifoPersistence.setDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;

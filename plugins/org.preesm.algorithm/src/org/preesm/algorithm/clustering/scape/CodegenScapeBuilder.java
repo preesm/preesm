@@ -82,7 +82,7 @@ public class CodegenScapeBuilder {
       for (final DataOutputPort dout : actor.getDataOutputPorts()) {
         String buff = "";
 
-        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isHasADelay()
+        if (!(dout.getOutgoingFifo().getTarget() instanceof DataOutputInterface) && !dout.getFifo().isDelayPresent()
             && !dout.getContainingActor().getName().equals("single_source")) {
 
           final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
@@ -378,7 +378,7 @@ public class CodegenScapeBuilder {
   private String processClusteredDelay(ScapeSchedule sc) {
     final StringBuilder memcpy = new StringBuilder();
     for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
-      if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
+      if (out.getFifo().isDelayPresent() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
         memcpy.append(MEMCPY_TEXT + delay.getDelayActor().getSetterActor().getName() + ","
             + delay.getDelayActor().getGetterActor().getName() + ","
@@ -457,7 +457,7 @@ public class CodegenScapeBuilder {
       if (in.getFifo().getSource() instanceof final DataInputInterface din) {
         scale = din.getDataPort().getExpression().evaluateAsLong() / sc.getRepetition();
         buffname += din.getName();
-      } else if (in.getFifo().isHasADelay() && in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
+      } else if (in.getFifo().isDelayPresent() && in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = in.getFifo().getDelay();
         buffname += delay.getDelayActor().getSetterActor().getName();
       } else {
@@ -492,7 +492,7 @@ public class CodegenScapeBuilder {
         buffname += dout.getName();
 
         // Handle Delays
-      } else if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
+      } else if (out.getFifo().isDelayPresent() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
         buffname += delay.getDelayActor().getGetterActor().getName();
 

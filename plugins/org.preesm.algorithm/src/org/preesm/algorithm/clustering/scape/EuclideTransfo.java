@@ -180,7 +180,7 @@ public class EuclideTransfo {
     upperGraph.addActor(copyActor);
     int index = 0;
     for (final DataInputPort in : a.getDataInputPorts()) {
-      if (!in.getFifo().isHasADelay()) {
+      if (!in.getFifo().isDelayPresent()) {
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
         frk.setName("Fork_eu_" + a.getName() + index);
         upperGraph.addActor(frk);

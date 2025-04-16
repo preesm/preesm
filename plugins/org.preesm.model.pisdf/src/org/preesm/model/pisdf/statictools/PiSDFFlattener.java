@@ -454,7 +454,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     final Delay delay = fifo.getDelay();
     if (delay != null) {
       final Delay copy = copyDelay(delay);
-      newFifo.assignDelay(copy);
+      newFifo.setDelay(copy);
     }
     // Add the FIFO to the result
     this.result.addFifo(newFifo);
