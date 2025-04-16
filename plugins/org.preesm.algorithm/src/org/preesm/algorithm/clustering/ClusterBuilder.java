@@ -109,7 +109,9 @@ public class ClusterBuilder {
         // Now we can merge
         // TODO change name to a better one...
         final String clusterName = "Merged" + actor.getName();
-        final AbstractActor mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        final PiGraph mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        // TODO set better URL
+        mergeActor.setUrl("");
         listClusterActors.add(mergeActor);
         scenario.getConstraints().addConstraint(refFPGA, mergeActor);
       }
