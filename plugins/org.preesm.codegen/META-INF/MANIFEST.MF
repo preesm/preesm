@@ -17,14 +17,17 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.commons;visibility:=reexport,
  org.preesm.model.pisdf;visibility:=reexport,
  org.eclipse.jface.text;bundle-version="3.20.100",
- org.eclipse.ui.ide
+ org.eclipse.ui.ide,
+ org.eclipse.emf.common,
+ org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-Export-Package: org.preesm.codegen.model,
- org.preesm.codegen.format,
+Export-Package: org.preesm.codegen.format,
+ org.preesm.codegen.fpga,
+ org.preesm.codegen.model,
  org.preesm.codegen.model.clustering,
  org.preesm.codegen.model.generator,
  org.preesm.codegen.model.generator2,
