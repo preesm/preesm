@@ -101,10 +101,12 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
   public static final String VALUE_ALLOCATORS_SIMPLE = "simple";
   public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
 
-  public static final String VALUE_SCHEDULER_SIMPLE   = "simple";
-  public static final String VALUE_SCHEDULER_LEGACY   = "legacy";
-  public static final String VALUE_SCHEDULER_PERIODIC = "periodic";
-  public static final String VALUE_SCHEDULER_CHOCO    = "choco";
+  public static final String VALUE_SCHEDULER_SIMPLE      = "simple";
+  public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
+  public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
+  public static final String VALUE_SCHEDULER_CHOCO       = "choco";
+  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevalexact";
+  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
@@ -152,6 +154,11 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
       case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
       case VALUE_SCHEDULER_PERIODIC -> new PeriodicScheduler();
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
+      // actuellement pas possible, car inclure codegen.fpga cause une dépendance cyclique à résoudre
+      // solution potentielle : couper FpgaAnalysisMainTask.execute en une tâche de compil et une de codegen, à séparer.
+      // ça implique de modefier le code appelant ?
+      // case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaAnalysisMainTask();
+      // case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaAnalysisMainTask();
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
   }
