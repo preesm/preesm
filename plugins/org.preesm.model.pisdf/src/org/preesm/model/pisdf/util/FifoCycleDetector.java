@@ -212,7 +212,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
       final Delay delay = outgoingFifo.getDelay();
       if (delay != null) {
         final AbstractActor getter = delay.getGetterActor();
-        if (getter != null && !this.ignoredFifos.contains(delay.getActor().getDataOutputPort().getFifo())) {
+        if (getter != null && !this.ignoredFifos.contains(delay.getDelayActor().getDataOutputPort().getFifo())) {
           final Set<AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
           lSources.add(actor);
           successors.add(getter);
@@ -359,7 +359,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     for (final List<Fifo> edgeFifos : cycleFifosPerEdge) {
       indexFF += 1;
 
-      final boolean hasDelays = edgeFifos.stream().anyMatch(Fifo::isHasADelay);
+      final boolean hasDelays = edgeFifos.stream().anyMatch(Fifo::isDelayPresent);
 
       if (hasDelays) {
         // Keep the shortest list of feedback delay

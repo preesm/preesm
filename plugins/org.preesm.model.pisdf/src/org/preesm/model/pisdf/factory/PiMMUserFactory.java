@@ -331,7 +331,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     // 2. Set the default level of persistence (permanent)
     res.setLevel(PersistenceLevel.PERMANENT);
     // 3. Create the non executable actor associated with the Delay directly here
-    res.setActor(createDelayActor(res));
+    res.setDelayActor(createDelayActor(res));
 
     return res;
   }

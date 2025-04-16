@@ -169,19 +169,21 @@ public class EuclideTransfo {
    */
 
   private void euclide(AbstractActor a, Map<AbstractVertex, Long> rv, Long coreEquivalent) {
-    //
+
+    final PiGraph upperGraph = a.getContainingPiGraph();
+
     final Long rv2 = rv.get(a) % coreEquivalent; // rest
     final Long rv1 = rv.get(a) - rv2;// quotient * divisor
     // copy instance
     final AbstractActor copyActor = PiMMUserFactory.instance.copy(a);
     copyActor.setName(a.getName() + "2");
-    copyActor.setContainingGraph(a.getContainingGraph());
+    upperGraph.addActor(copyActor);
     int index = 0;
     for (final DataInputPort in : a.getDataInputPorts()) {
       if (!in.getFifo().isHasADelay()) {
         final ForkActor frk = PiMMUserFactory.instance.createForkActor();
         frk.setName("Fork_eu_" + a.getName() + index);
-        frk.setContainingGraph(a.getContainingGraph());
+        upperGraph.addActor(frk);
 
         // connect din to frk
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -193,7 +195,7 @@ public class EuclideTransfo {
         fin.setType(in.getFifo().getType());
         fin.setSourcePort(in.getFifo().getSourcePort());
         fin.setTargetPort(din);
-        fin.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fin);
 
         // connect fork to oEmpty_0
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
@@ -205,7 +207,7 @@ public class EuclideTransfo {
         fout.setType(in.getFifo().getType());
         fout.setSourcePort(dout);
         fout.setTargetPort(in);
-        fout.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fout);
 
         // connect fork to duplicated actors
         final DataOutputPort doutn = PiMMUserFactory.instance.createDataOutputPort();
@@ -216,7 +218,7 @@ public class EuclideTransfo {
         final Fifo foutn = PiMMUserFactory.instance.createFifo();
         foutn.setType(fin.getType());
         foutn.setSourcePort(doutn);
-        foutn.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(foutn);
         copyActor.getDataInputPorts().stream().filter(x -> x.getName().equals(in.getName()))
             .forEach(x -> x.setIncomingFifo(foutn));
 
@@ -226,27 +228,28 @@ public class EuclideTransfo {
         final Fifo fdin = PiMMUserFactory.instance.createFifo();
         final String type = in.getFifo().getType();
         fdin.setType(type);
-        fdin.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fdin);
         final Delay copyDelay = PiMMUserFactory.instance.copy(in.getFifo().getDelay());
         copyDelay.setName(in.getFifo().getDelay().getName() + "2");
-        copyDelay.setContainingGraph(a.getContainingGraph());
-        final DelayActor copyDelayActor = PiMMUserFactory.instance.copy(in.getFifo().getDelay().getActor());
-        copyDelayActor.setName(in.getFifo().getDelay().getActor().getName() + "2");
-        copyDelayActor.setContainingGraph(a.getContainingGraph());
-        copyDelay.setActor(copyDelayActor);
-        fdin.assignDelay(copyDelay);
+        final DelayActor copyDelayActor = PiMMUserFactory.instance.copy(in.getFifo().getDelay().getDelayActor());
+        copyDelayActor.setName(in.getFifo().getDelay().getDelayActor().getName() + "2");
+        copyDelay.setDelayActor(copyDelayActor);
+
+        upperGraph.addDelay(copyDelay);
+
+        fdin.setDelay(copyDelay);
         // the getter of the initial delay is moved to get the delay of the copied actor
-        final DataInputPort getterPort = in.getFifo().getDelay().getActor().getDataOutputPort().getFifo()
+        final DataInputPort getterPort = in.getFifo().getDelay().getDelayActor().getDataOutputPort().getFifo()
             .getTargetPort();
         // the setter of the copied delay is the output of the initial delay
         final Fifo fDelayActorIn = PiMMUserFactory.instance.createFifo();
         fDelayActorIn.setType(type);
-        fDelayActorIn.setContainingGraph(a.getContainingGraph());
-        fDelayActorIn.setSourcePort(in.getFifo().getDelay().getActor().getDataOutputPort());
+        upperGraph.addFifo(fDelayActorIn);
+        fDelayActorIn.setSourcePort(in.getFifo().getDelay().getDelayActor().getDataOutputPort());
         fDelayActorIn.setTargetPort(copyDelayActor.getDataInputPort());
         final Fifo fDelayActorOut = PiMMUserFactory.instance.createFifo();
         fDelayActorOut.setType(type);
-        fDelayActorOut.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fDelayActorOut);
         fDelayActorOut.setTargetPort(getterPort);
         fDelayActorOut.setSourcePort(copyDelayActor.getDataOutputPort());
 
@@ -260,10 +263,10 @@ public class EuclideTransfo {
     }
     index = 0;
     for (final DataOutputPort out : a.getDataOutputPorts()) {
-      if (!out.getFifo().isHasADelay()) {
+      if (!out.getFifo().isDelayPresent()) {
         final JoinActor jn = PiMMUserFactory.instance.createJoinActor();
         jn.setName("Join_eu_" + a.getName() + index);
-        jn.setContainingGraph(a.getContainingGraph());
+        upperGraph.addActor(jn);
 
         // connect Join to dout
         final DataOutputPort dout = PiMMUserFactory.instance.createDataOutputPort();
@@ -275,7 +278,7 @@ public class EuclideTransfo {
         fout.setType(out.getFifo().getType());
         fout.setSourcePort(dout);
         fout.setTargetPort(out.getFifo().getTargetPort());
-        fout.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fout);
 
         // connect oEmpty_0 to Join
         final DataInputPort din = PiMMUserFactory.instance.createDataInputPort();
@@ -286,7 +289,7 @@ public class EuclideTransfo {
         final Fifo fin = PiMMUserFactory.instance.createFifo();
         fin.setSourcePort(out);
         fin.setTargetPort(din);
-        fin.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(fin);
         out.getFifo().setType(fout.getType());
 
         // connect duplicated actors to Join
@@ -298,7 +301,7 @@ public class EuclideTransfo {
         final Fifo finn = PiMMUserFactory.instance.createFifo();
         finn.setType(fout.getType());
         finn.setTargetPort(dinn);
-        finn.setContainingGraph(a.getContainingGraph());
+        upperGraph.addFifo(finn);
         copyActor.getDataOutputPorts().stream().filter(x -> x.getName().equals(out.getName()))
             .forEach(x -> x.setOutgoingFifo(finn));
 
@@ -310,7 +313,7 @@ public class EuclideTransfo {
       copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
           .forEach(x -> PiMMUserFactory.instance.createDependency(cfg.getIncomingDependency().getSetter(), x));
       copyActor.getConfigInputPorts().stream().filter(x -> x.getName().equals(cfg.getName()))
-          .forEach(x -> x.getIncomingDependency().setContainingGraph(cfg.getIncomingDependency().getContainingGraph()));
+          .forEach(x -> cfg.getIncomingDependency().getContainingPiGraph().addDependency(x.getIncomingDependency()));
     }
 
     // remove empty introduced fifo

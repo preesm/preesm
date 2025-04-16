@@ -983,7 +983,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          The current FIFO
    */
   private void splitDelayActors(final Fifo fifo) {
-    final DelayActor delayActor = fifo.getDelay().getActor();
+    final DelayActor delayActor = fifo.getDelay().getDelayActor();
     final String delayExpression = fifo.getDelay().getExpression().getExpressionAsString();
     final PiGraph parentGraph = fifo.getContainingPiGraph();
     // 0. Check if the DelayActor need to add Init / End

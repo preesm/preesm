@@ -61,7 +61,7 @@ public class DelayActorTransform extends ActorConstructTransform {
   public static void transform(Scenario scenario, PiGraph flatGraph) {
     final List<Delay> delays = flatGraph.getAllDelays();
     for (final Delay delay : delays) {
-      if (delay.getActor().hasValidRefinement()) {
+      if (delay.getDelayActor().hasValidRefinement()) {
         throw new PreesmRuntimeException("FPGA codegen doesn't support delay with initialization in " + delay.getId());
       }
       delayActorInstantiation(scenario, flatGraph, delay);

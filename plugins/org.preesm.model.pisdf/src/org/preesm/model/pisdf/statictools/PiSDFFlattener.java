@@ -209,14 +209,14 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
       return;
     }
 
-    final DelayActor daExt = dExt.getActor();
+    final DelayActor daExt = dExt.getDelayActor();
     if (daExt == null) {
       throw new PreesmRuntimeException("Delay <" + dExt.getName() + "> without DelayActor.");
     }
 
     final Delay d = da.getLinkedDelay();
     final long value = d.getExpression().evaluateAsLong();
-    dExt.setActor(null);
+    dExt.setDelayActor(null);
     if (dExt.getExpression().evaluateAsLong() != value) {
       PreesmLogger.getLogger()
           .warning(() -> "A delay actor loop  on <" + da.getName() + "had a wrong delay size, it is removed anyway.");
@@ -226,7 +226,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
 
     final PersistenceLevel plExt = dExt.getLevel();
     d.setLevel(plExt);
-    d.setActor(daExt);
+    d.setDelayActor(daExt);
     graph.removeActorAndDependencies(da);
   }
 
@@ -490,8 +490,8 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     copy.setLevel(delay.getLevel());
     copy.setExpression(delay.getExpression().getExpressionAsString());
     // Copy DelayActor properties
-    final DelayActor actor = delay.getActor();
-    final DelayActor copyActor = copy.getActor();
+    final DelayActor actor = delay.getDelayActor();
+    final DelayActor copyActor = copy.getDelayActor();
     copyActor.setName(this.graphPrefix + actor.getName());
     // tracking is useful for FPGA hls codegen where refinements of delay actors are supported
     PreesmCopyTracker.trackCopy(actor, copyActor);

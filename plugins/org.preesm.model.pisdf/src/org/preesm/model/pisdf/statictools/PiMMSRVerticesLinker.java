@@ -599,7 +599,7 @@ public class PiMMSRVerticesLinker {
       // 0. Check if Delay has setter
       final Delay delay = this.fifo.getDelay();
       // 1. Get the DelayActor
-      final DelayActor delayActor = delay.getActor();
+      final DelayActor delayActor = delay.getDelayActor();
       final PiGraph resultGraph = vertexSinkSet.get(0).getContainingPiGraph();
       final PiGraph originalGraph = this.fifo.getContainingPiGraph();
       // 1.1 Now get the DelayActor associated to the setter of the delay
@@ -698,7 +698,7 @@ public class PiMMSRVerticesLinker {
       // 0. Check if Delay has setter
       final Delay delay = this.fifo.getDelay();
       // 1. Get the DelayActor
-      final DelayActor delayActor = delay.getActor();
+      final DelayActor delayActor = delay.getDelayActor();
       final PiGraph resultGraph = vertexSinkSet.get(0).getContainingPiGraph();
       // 1.1 Now get the DelayActor associated to the setter of the delay
       final PiGraph originalGraph = this.fifo.getContainingPiGraph();

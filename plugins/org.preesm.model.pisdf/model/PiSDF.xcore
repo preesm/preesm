@@ -416,6 +416,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Delay} was successfully added, false otherwise
 	 */
 	op unique boolean addDelay(Delay delay) {
+
+		if (delay.delayActor === null) {
+			throw new PreesmRuntimeException("A Delay cannot be added to a graph without it DelayActor.")
+		}
+
 		var boolean additionStatus = false
 		try {
 			vertices.add(parameterIndex + actorIndex + delayIndex, delay)
@@ -423,7 +428,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			return false
 		}
 		additionStatus = delay.equals(vertices.get(parameterIndex + actorIndex + delayIndex - 1))
-		return additionStatus && this.addActor(delay.getActor())
+		return additionStatus && this.addActor(delay.delayActor)
 	}
 
 	/*
@@ -526,8 +531,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Delay} its associated {@link DelayActor} were successfully removed, false otherwise
 	 */
 	op unique boolean removeDelay(Delay delay) {
-		val boolean delayRemoved = vertices.remove(delay.getActor()) && vertices.remove(delay)
-		return delayRemoved
+		if (vertices.contains(delay) && vertices.contains(delay.getDelayActor)) {
+			vertices.remove(delay.getDelayActor)
+			vertices.remove(delay)
+			return true
+		}
+		return false
 	}
 
 	/*
@@ -811,7 +820,7 @@ abstract class NonExecutableActor extends AbstractActor {
 }
 
 class DelayActor extends NonExecutableActor, RefinementContainer {
-	refers Delay linkedDelay opposite actor
+	refers Delay linkedDelay opposite delayActor
 	// Return parameter of delays
 	op Parameter[] getInputParameters() {
 		return linkedDelay.inputParameters
@@ -961,7 +970,9 @@ class Fifo extends Edge {
 	String ^type = "void"
 
 	/* Flag used to mark if the current {@link Fifo} is supposed to be associated with a {@link Delay} */
-	boolean hasADelay = "false"
+	derived boolean delayPresent get {
+		this.delay !== null
+	}
 
 	op Vertex getSource() {
 		sourcePort.containingActor
@@ -1189,29 +1200,29 @@ class Delay extends Configurable, ExpressionHolder {
 	op Expression getSizeExpression() {
 		return getExpression
 	}
-	refers DelayActor actor opposite linkedDelay
+	refers DelayActor delayActor opposite linkedDelay
 	refers Fifo containingFifo opposite delay
 	PersistenceLevel ^level = "permanent"
 	op boolean hasSetterActor() {
-		return Optional.ofNullable(actor).map[dataInputPort.incomingFifo !== null].orElse(false)
+		return Optional.ofNullable(getDelayActor).map[dataInputPort.incomingFifo !== null].orElse(false)
 	}
 	op boolean hasGetterActor() {
-		return Optional.ofNullable(actor).map[dataOutputPort.outgoingFifo !== null].orElse(false)
+		return Optional.ofNullable(getDelayActor).map[dataOutputPort.outgoingFifo !== null].orElse(false)
 	}
 	op boolean isDynamic() {
 		return hasSetterActor || hasGetterActor
 	}
 	op AbstractActor getGetterActor() {
-		return actor.getterActor
+		return getDelayActor.getterActor
 	}
 	op AbstractActor getSetterActor() {
-		return actor.setterActor
+		return getDelayActor.setterActor
 	}
 	op DataInputPort getGetterPort() {
-		return Optional.ofNullable(actor.dataOutputPort.outgoingFifo.targetPort).orElse(null)
+		return Optional.ofNullable(getDelayActor.dataOutputPort.outgoingFifo.targetPort).orElse(null)
 	}
 	op DataOutputPort getSetterPort() {
-		return Optional.ofNullable(actor.dataInputPort.incomingFifo.sourcePort).orElse(null)
+		return Optional.ofNullable(getDelayActor.dataInputPort.incomingFifo.sourcePort).orElse(null)
 	}
 	op unique void setName(String newName) {
 		if (newName !== null) {
@@ -1224,7 +1235,7 @@ class Delay extends Configurable, ExpressionHolder {
 			} else {
 				super.setName(newName)
 			}
-			actor?.setName(name)
+			getDelayActor?.setName(name)
 		}
 	}
 	/*

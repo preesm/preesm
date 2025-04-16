@@ -129,7 +129,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         iActor.getGraphPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong()
             * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong());
-
       }
 
       if (memoryOptim.equals(Boolean.TRUE)) {
@@ -141,7 +140,6 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
 
         // pseudo merge redundant FIFO
         mergeFIFO(subGraph);
-
       }
 
       // remove empty introduced FIFO
@@ -170,7 +168,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         // add a new broadcast inside cluster to retrieve the scaling
         final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
         brd.setName("Broadcast_Merge_" + map.getKey().getName());
-        brd.setContainingGraph(subGraph);
+        subGraph.addActor(brd);
         // connect interface to the new broadcast
         final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
         dataInputPort.setName("in");
@@ -181,7 +179,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         fin.setType(sourcePort.getFifo().getType());
         fin.setSourcePort((DataOutputPort) sourcePort);
         fin.setTargetPort(dataInputPort);
-        fin.setContainingGraph(subGraph);
+        subGraph.addFifo(fin);
         // connect broadcast to former targets
         for (final InterfaceActor iActor : map.getValue()) {
           final DataOutputPort dataOutputPort;
@@ -191,7 +189,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
             fout.setType(fin.getType());
             fout.setSourcePort(dataOutputPort);
             fout.setTargetPort((DataInputPort) targetPort0);
-            fout.setContainingGraph(subGraph);
+            subGraph.addFifo(fout);
           } else {
             dataOutputPort = iActor.getDataOutputPorts().get(0);
           }
@@ -201,7 +199,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
           if (!iActor.equals(map.getValue().get(0))) {
             final Fifo oldFifo = iActor.getGraphPort().getFifo();
             final DataOutputPort oldPort = iActor.getGraphPort().getFifo().getSourcePort();
-            ((AbstractActor) iActor.getGraphPort().getFifo().getSource()).getDataOutputPorts().remove(oldPort);
+            iActor.getGraphPort().getFifo().getSource().getDataOutputPorts().remove(oldPort);
             iActor.getGraphPort().getContainingActor().getContainingPiGraph().removeFifo(oldFifo);
           }
         }
@@ -253,7 +251,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         // add a new broadcast inside cluster to retrieve the scaling
         final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
         brd.setName("Broadcast_" + broadcast.getName());
-        brd.setContainingGraph(subGraph);
+        subGraph.addActor(brd);
         // connect interface to the new broadcast
         final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
         dataInputPort.setName("in");
@@ -264,7 +262,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         fin.setType(iActor.getDataPort().getFifo().getType());
         fin.setSourcePort(iActor.getDataPort().getFifo().getSourcePort());
         fin.setTargetPort(dataInputPort);
-        fin.setContainingGraph(subGraph);
+        subGraph.addFifo(fin);
         // connect broadcast to target
         final DataOutputPort dataOutputPort = PiMMUserFactory.instance.createDataOutputPort();
         dataOutputPort.setName("out");
@@ -275,12 +273,9 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         fout.setType(iActor.getDataPort().getFifo().getType());
         fout.setSourcePort(dataOutputPort);
         fout.setTargetPort(targetPort);
-        fout.setContainingGraph(subGraph);
-
+        subGraph.addFifo(fout);
       }
-
     }
-
   }
 
   public static Long timingCPU(List<AbstractActor> urc, Scenario scenario, Map<AbstractVertex, Long> brv,

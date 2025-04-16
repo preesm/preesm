@@ -153,7 +153,7 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(subGraph, fifoBC.getContainingPiGraph());
     // Check that the delay and its actor is contained in the subgraph
     Assert.assertEquals(subGraph, fifoBC.getDelay().getContainingPiGraph());
-    Assert.assertEquals(subGraph, fifoBC.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(subGraph, fifoBC.getDelay().getDelayActor().getContainingPiGraph());
     // Check that added fifo are also contained in the sugraph
     Assert.assertEquals(subGraph, actorB.getDataInputPorts().get(0).getFifo().getContainingPiGraph());
     Assert.assertEquals(subGraph, actorC.getDataOutputPorts().get(0).getFifo().getContainingPiGraph());
@@ -167,13 +167,13 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(topGraph, fifoAB.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
     Assert.assertEquals(topGraph, fifoAB.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoAB.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(topGraph, fifoAB.getDelay().getDelayActor().getContainingPiGraph());
     // 2. On fifo to actor D
     final Fifo fifoCD = actorD.getDataInputPorts().get(0).getFifo();
     Assert.assertEquals(topGraph, fifoCD.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
     Assert.assertEquals(topGraph, fifoCD.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoCD.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(topGraph, fifoCD.getDelay().getDelayActor().getContainingPiGraph());
   }
 
   @Test

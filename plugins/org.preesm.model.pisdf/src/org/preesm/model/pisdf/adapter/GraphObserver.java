@@ -296,7 +296,6 @@ public class GraphObserver extends AdapterImpl {
         if ((oldDelay == null) && (newDelay != null)) {
           // The delay was attached to the fifo
           graph.removeFifo(fifo);
-          fifo.setHasADelay(true);
           graph.addFifo(fifo);
         } else if ((oldDelay != null) && (newDelay != null)) {
           // The fifo had its delay replaced by another
@@ -307,10 +306,8 @@ public class GraphObserver extends AdapterImpl {
 
           // Ensuring the Fifo to remove is still tagged as a Fifo with delay
           // The Undo feature will untag the fifo before removing it from the graph
-          fifo.setHasADelay(true);
 
           graph.removeFifo(fifo);
-          fifo.setHasADelay(false);
           graph.addFifo(fifo);
         } else {
           // should never go there

@@ -407,8 +407,8 @@ public class PiMMHelper {
     for (final Fifo fifo : piGraph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
-      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
-      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      delay.getDelayActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getDelayActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       // 1. For the top graph, we convert every locally persistent delays to permanent ones.
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         delay.setLevel(PersistenceLevel.PERMANENT);
@@ -437,8 +437,8 @@ public class PiMMHelper {
     for (final Fifo fifo : graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       final String delayShortID = delay.getId();
-      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
-      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      delay.getDelayActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getDelayActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
           throw new PreesmRuntimeException(
@@ -512,8 +512,8 @@ public class PiMMHelper {
     // 3. Now we connect the newly created interfaces to the delay
     // Add the setter FIFO
     // Connect the setter interface to the delay
-    final DelayActor originalDelayActor = delay.getActor();
-    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo((DataOutputPort) setterIn.getDataPort(),
+    final DelayActor originalDelayActor = delay.getDelayActor();
+    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo(setterIn.getDataPort(),
         originalDelayActor.getDataInputPort(), type);
     // Add the getter FIFO
     // Connect the delay interface to the getter
@@ -542,7 +542,7 @@ public class PiMMHelper {
     delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
     delayPersistence.setExpression(delayExpression);
-    final DelayActor newDelayActor = delayPersistence.getActor();
+    final DelayActor newDelayActor = delayPersistence.getDelayActor();
     newDelayActor.setName(name);
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());

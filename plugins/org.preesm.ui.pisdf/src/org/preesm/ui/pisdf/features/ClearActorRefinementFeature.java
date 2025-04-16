@@ -107,7 +107,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
 
       final RefinementContainer rc = switch (bo) {
-        case final Delay delay -> delay.getActor();
+        case final Delay delay -> delay.getDelayActor();
         case final Actor a -> (RefinementContainer) bo;
         case final InitActor ia -> (RefinementContainer) bo;
         default -> null;
@@ -140,7 +140,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
 
       RefinementContainer rc = null;
       if (bo instanceof final Delay delay) {
-        rc = delay.getActor();
+        rc = delay.getDelayActor();
       } else if (bo instanceof Actor || bo instanceof InitActor) {
         rc = (RefinementContainer) bo;
       }

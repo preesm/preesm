@@ -113,7 +113,7 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     }
 
     // Get the candidate i.e. the following actor in the topological order
-    final AbstractActor candidate = (AbstractActor) base.getDataOutputPorts().get(0).getFifo().getTarget();
+    final AbstractActor candidate = base.getDataOutputPorts().get(0).getFifo().getTarget();
 
     // Check that the actually processed actor as only fifos outgoing to the candidate actor
     final boolean allOutputGoesToCandidate = base.getDataOutputPorts().stream()
@@ -198,18 +198,16 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
    */
   private Boolean process(AbstractActor base, Long rank) {
     // filter dummy single source starter
-    if (base.getName().equals("single_source") || base.getDataInputPorts().stream()
-        .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().equals("single_source"))) {
+    if (base.getName().equals("single_source")
+        || base.getDataInputPorts().stream().anyMatch(x -> x.getFifo().getSource().getName().equals("single_source"))) {
       return false;
     }
 
     // filter multinode interface
     if (base.getName().startsWith("urc_") || base.getName().startsWith("src_") || base.getName().startsWith("loop_")
         || base.getName().startsWith("snk_")
-        || base.getDataInputPorts().stream()
-            .anyMatch(x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("src_"))
-        || base.getDataInputPorts().stream().anyMatch(
-            x -> ((AbstractVertex) x.getFifo().getSource()).getName().startsWith("snk_"))
+        || base.getDataInputPorts().stream().anyMatch(x -> x.getFifo().getSource().getName().startsWith("src_"))
+        || base.getDataInputPorts().stream().anyMatch(x -> x.getFifo().getSource().getName().startsWith("snk_"))
         || base instanceof PiGraph) {
       return false;
     }
@@ -269,13 +267,11 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     // Iterate over all candidates at the current rank
     for (final AbstractActor candidate : this.topoOrderASAP.get(currentRank)) {
       // Check if adding this candidate would create a cycle
-      final Boolean noCycle = candidate.getDataInputPorts().stream()
-          .allMatch(x -> actorURC.contains(x.getFifo().getSource())
-              || getRank((AbstractActor) x.getFifo().getSource()) < getRank(base));
+      final Boolean noCycle = candidate.getDataInputPorts().stream().allMatch(
+          x -> actorURC.contains(x.getFifo().getSource()) || getRank(x.getFifo().getSource()) < getRank(base));
       // Check if the candidate satisfies the parallel conditions
-      final Boolean para = finisher.getDataOutputPorts().stream()
-          .allMatch(x -> x.getFifo().getTarget().equals(candidate)
-              || getRank((AbstractActor) x.getFifo().getTarget()) > getRank(candidate));
+      final Boolean para = finisher.getDataOutputPorts().stream().allMatch(
+          x -> x.getFifo().getTarget().equals(candidate) || getRank(x.getFifo().getTarget()) > getRank(candidate));
       // If candidate meets all criteria (same BRV as base, no cycles, parallel conditions, and not already part of a
       // URC)
       if (Boolean.TRUE.equals(
@@ -316,7 +312,7 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     // feed the 1st rank
     for (final AbstractActor a : graph.getActors()) {
       if (!(a instanceof DelayActor) && (a.getDataInputPorts().isEmpty()
-          || a.getDataInputPorts().stream().allMatch(x -> x.getFifo().isHasADelay()))) {
+          || a.getDataInputPorts().stream().allMatch(x -> x.getFifo().isDelayPresent()))) {
         rankList.add(a);
         fullList.remove(a);
       }

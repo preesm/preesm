@@ -269,7 +269,7 @@ public class AutoLayoutActors {
         // For delay with setter, the init actor must always be in the previous stage
         if ((incomingFifo != null) && (incomingFifo.getDelay() != null) && (incomingFifo.getDelay().hasSetterActor())) {
           hasUnstagedPredecessor |= !feedbackFifos.contains(incomingFifo)
-              && !processedActors.contains(incomingFifo.getDelay().getActor());
+              && !processedActors.contains(incomingFifo.getDelay().getDelayActor());
           hasUnstagedPredecessor |= !processedActors.contains(incomingFifo.getDelay().getSetterActor());
         }
         if (hasUnstagedPredecessor) {

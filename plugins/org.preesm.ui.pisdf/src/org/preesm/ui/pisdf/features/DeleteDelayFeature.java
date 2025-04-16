@@ -93,7 +93,7 @@ public class DeleteDelayFeature extends DeleteParameterizableFeature {
     // Transform the two connections linked to the delay back into a single
     // one before deleting the delay.
     if (delay != null) {
-      oppositeDelayActor = delay.getActor();
+      oppositeDelayActor = delay.getDelayActor();
 
       // if multiple selection and a delay is selected, it may have been removed previously by actor removal
       final Object[] allBusinessObjectsForPictogramElement = getAllBusinessObjectsForPictogramElement(pictogramElement);

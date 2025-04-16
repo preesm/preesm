@@ -128,7 +128,7 @@ public class CreateDelayFeature extends AbstractCustomFeature {
     final Delay newDelay = PiMMUserFactory.instance.createDelay();
     fifo.setDelay(newDelay);
     newDelay.setName(newDelay.getId());
-    newDelay.getActor().setName(newDelay.getId());
+    newDelay.getDelayActor().setName(newDelay.getId());
 
     final PiGraph graph = fifo.getContainingPiGraph();
     graph.addDelay(newDelay);

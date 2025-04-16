@@ -156,7 +156,7 @@ public class MoveAbstractActorFeature extends DefaultMoveShapeFeature
     final List<Object> listBOd = new ArrayList<>();
     for (final Object o : listBO) {
       if (o instanceof final Delay delay) {
-        listBOd.add(delay.getActor());
+        listBOd.add(delay.getDelayActor());
       } else {
         listBOd.add(o);
       }

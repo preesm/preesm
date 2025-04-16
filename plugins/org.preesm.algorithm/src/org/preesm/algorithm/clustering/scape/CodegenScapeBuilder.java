@@ -86,8 +86,7 @@ public class CodegenScapeBuilder {
             && !dout.getContainingActor().getName().equals("single_source")) {
 
           final String buffName = dout.getContainingActor().getName() + "_" + dout.getName() + "__"
-              + ((AbstractVertex) dout.getFifo().getTarget()).getName() + "_"
-              + dout.getFifo().getTargetPort().getName();
+              + dout.getFifo().getTarget().getName() + "_" + dout.getFifo().getTargetPort().getName();
           final Long nbToken = dout.getExpression().evaluateAsLong() * brv.get(dout.getContainingActor());
           if (count < stackSize) {
             buff = dout.getOutgoingFifo().getType() + " " + buffName + "[" + nbToken + "];\n";
@@ -220,7 +219,7 @@ public class CodegenScapeBuilder {
       scaleIn = din.getDataPort().getExpression().evaluateAsLong() / repetition;
       inBuffName = din.getName();
     } else {
-      final String srcActor = ((AbstractVertex) brd.getDataInputPorts().get(0).getFifo().getSource()).getName() + "_"
+      final String srcActor = brd.getDataInputPorts().get(0).getFifo().getSource().getName() + "_"
           + brd.getDataInputPorts().get(0).getFifo().getSourcePort().getName();
       final String snkActor = brd.getName() + "_" + brd.getDataInputPorts().get(0).getName();
       inBuffName = srcActor + "__" + snkActor;
@@ -237,7 +236,7 @@ public class CodegenScapeBuilder {
         outBuffName = dout.getName();
         scaleOut = dout.getDataPort().getExpression().evaluateAsLong() / repetition;
       } else {
-        final String targetActorName = ((AbstractActor) out.getFifo().getTarget()).getName();
+        final String targetActorName = out.getFifo().getTarget().getName();
         final String targetActorPortName = out.getFifo().getTargetPort().getName();
         outBuffName = out.getContainingActor().getName() + "_" + out.getName() + "__" + targetActorName + "_"
             + targetActorPortName;
@@ -277,7 +276,7 @@ public class CodegenScapeBuilder {
       scaleIn = din.getDataPort().getExpression().evaluateAsLong() / repetition;
       inBuffName = din.getName();
     } else {
-      final String srcActor = ((AbstractVertex) frk.getDataInputPorts().get(0).getFifo().getSource()).getName() + "_"
+      final String srcActor = frk.getDataInputPorts().get(0).getFifo().getSource().getName() + "_"
           + frk.getDataInputPorts().get(0).getFifo().getSourcePort().getName();
       final String snkActor = frk.getName() + "_" + frk.getDataInputPorts().get(0).getName();
       inBuffName = srcActor + "__" + snkActor;
@@ -333,7 +332,7 @@ public class CodegenScapeBuilder {
       outBuffName = dout.getName();
     } else {
       final String srcActor = join.getName() + "_" + join.getDataOutputPorts().get(0).getName();
-      final String snkActor = ((AbstractVertex) join.getDataOutputPorts().get(0).getFifo().getTarget()).getName() + "_"
+      final String snkActor = join.getDataOutputPorts().get(0).getFifo().getTarget().getName() + "_"
           + join.getDataOutputPorts().get(0).getFifo().getTargetPort().getName();
       outBuffName = srcActor + "__" + snkActor;
     }
@@ -350,8 +349,8 @@ public class CodegenScapeBuilder {
         inBuffName = din.getName();
         scaleIn = din.getDataPort().getExpression().evaluateAsLong() / repetition;
       } else {
-        inBuffName = ((AbstractVertex) in.getFifo().getSource()).getName() + "_"
-            + in.getFifo().getSourcePort().getName() + "__" + join.getName() + "_" + in.getName();
+        inBuffName = in.getFifo().getSource().getName() + "_" + in.getFifo().getSourcePort().getName() + "__"
+            + join.getName() + "_" + in.getName();
       }
 
       iterOut = String.valueOf(ret);
@@ -381,8 +380,8 @@ public class CodegenScapeBuilder {
     for (final DataOutputPort out : sc.getActor().getDataOutputPorts()) {
       if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
-        memcpy.append(MEMCPY_TEXT + delay.getActor().getSetterActor().getName() + ","
-            + delay.getActor().getGetterActor().getName() + ","
+        memcpy.append(MEMCPY_TEXT + delay.getDelayActor().getSetterActor().getName() + ","
+            + delay.getDelayActor().getGetterActor().getName() + ","
             + out.getFifo().getDelay().getExpression().evaluateAsLong() + ");\n");
       }
     }
@@ -460,11 +459,11 @@ public class CodegenScapeBuilder {
         buffname += din.getName();
       } else if (in.getFifo().isHasADelay() && in.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = in.getFifo().getDelay();
-        buffname += delay.getActor().getSetterActor().getName();
+        buffname += delay.getDelayActor().getSetterActor().getName();
       } else {
 
-        buffname += ((AbstractVertex) in.getFifo().getSource()).getName() + "_" + in.getFifo().getSourcePort().getName()
-            + "__" + sc.getActor().getName() + "_" + in.getName();
+        buffname += in.getFifo().getSource().getName() + "_" + in.getFifo().getSourcePort().getName() + "__"
+            + sc.getActor().getName() + "_" + in.getName();
 
       }
 
@@ -495,12 +494,12 @@ public class CodegenScapeBuilder {
         // Handle Delays
       } else if (out.getFifo().isHasADelay() && out.getFifo().getDelay().getLevel().equals(PersistenceLevel.NONE)) {
         final Delay delay = out.getFifo().getDelay();
-        buffname += delay.getActor().getGetterActor().getName();
+        buffname += delay.getDelayActor().getGetterActor().getName();
 
         // Default case
       } else {
-        buffname += sc.getActor().getName() + "_" + out.getName() + "__"
-            + ((AbstractVertex) out.getFifo().getTarget()).getName() + "_" + out.getFifo().getTargetPort().getName();
+        buffname += sc.getActor().getName() + "_" + out.getName() + "__" + out.getFifo().getTarget().getName() + "_"
+            + out.getFifo().getTargetPort().getName();
       }
 
       // Adjust for loop presence

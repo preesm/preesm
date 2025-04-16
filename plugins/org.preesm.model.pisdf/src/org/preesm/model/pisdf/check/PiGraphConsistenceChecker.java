@@ -318,7 +318,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   @Override
   public Boolean caseDelayActor(final DelayActor actor) {
     final Delay linkedDelay = actor.getLinkedDelay();
-    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getActor() == actor;
+    final boolean hasLinkedDelay = linkedDelay != null && linkedDelay.getDelayActor() == actor;
     final boolean delayProperlyContained = actor.getContainingPiGraph().getDelays().contains(linkedDelay);
 
     final boolean delayActorValid = hasLinkedDelay && delayProperlyContained;
@@ -335,7 +335,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   @Override
   public Boolean caseDelay(final Delay delay) {
-    final DelayActor actor = delay.getActor();
+    final DelayActor actor = delay.getDelayActor();
     final boolean actorLinkedProperly = actor != null && actor.getLinkedDelay() == delay;
     final boolean delayActorProperlyContained = delay.getContainingPiGraph().getActors().contains(actor);
     final boolean delayValid = actorLinkedProperly && delayActorProperlyContained;

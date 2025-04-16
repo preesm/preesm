@@ -330,7 +330,7 @@ public class PiWriter {
     final Element vertexElt = appendChild(graphElt, PiIdentifiers.NODE);
 
     // Set the unique ID of the node (equal to the vertex name)
-    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getActor().getName());
+    vertexElt.setAttribute(PiIdentifiers.DELAY_NAME, delay.getDelayActor().getName());
 
     // Set the delay attribute to the node
     vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.DELAY);
@@ -339,7 +339,7 @@ public class PiWriter {
     vertexElt.setAttribute(PiIdentifiers.DELAY_PERSISTENCE_LEVEL, delay.getLevel().getLiteral());
 
     // Write setter and getter names if delay has any
-    final DelayActor actor = delay.getActor();
+    final DelayActor actor = delay.getDelayActor();
     final String setterName = delay.hasSetterActor() ? actor.getSetterActor().getName() : "";
     vertexElt.setAttribute(PiIdentifiers.DELAY_SETTER, setterName);
     final String getterName = delay.hasGetterActor() ? actor.getGetterActor().getName() : "";
@@ -417,7 +417,7 @@ public class PiWriter {
     }
 
     if (target instanceof final Delay d) {
-      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getActor().getName());
+      dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, d.getDelayActor().getName());
     }
   }
 
@@ -445,7 +445,7 @@ public class PiWriter {
     fifoElt.setAttribute(PiIdentifiers.FIFO_TARGET_PORT, fifo.getTargetPort().getName());
 
     if (fifo.getDelay() != null) {
-      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getActor().getName());
+      writeDataElt(fifoElt, PiIdentifiers.DELAY, fifo.getDelay().getDelayActor().getName());
       fifoElt.setAttribute(PiIdentifiers.DELAY_EXPRESSION, fifo.getDelay().getSizeExpression().getExpressionAsString());
     }
   }
