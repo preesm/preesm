@@ -50,6 +50,7 @@ import org.preesm.model.slam.DataLink;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.TimingType;
 import org.preesm.model.slam.VLNV;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -113,6 +114,7 @@ public class HeterogeneousTest {
     algo = PiMMFactory.createPiGraph();
     design = SLAMFactory.createDesign();
 
+    algo.setUrl("");
     scenario.setAlgorithm(algo);
     scenario.setDesign(design);
 
@@ -172,6 +174,8 @@ public class HeterogeneousTest {
 
       scenario.getTimings().setExecutionTime(a, cpu1.getComponent(), 10);
       scenario.getTimings().setExecutionTime(a, fpga1.getComponent(), 10);
+      scenario.getTimings().setTiming(a, cpu1.getComponent(), TimingType.INITIATION_INTERVAL, "10");
+      scenario.getTimings().setTiming(a, fpga1.getComponent(), TimingType.INITIATION_INTERVAL, "10");
     }
 
     createFifoLink(listActors.get(0), listActors.get(1), 10, 10, "int", algo);
@@ -308,7 +312,6 @@ public class HeterogeneousTest {
     assertEquals(8, ((PiGraph) hetero_graph.getFirst()).getActors().size()); // 4 actors + 4 data interfaces
     assertEquals(0, hetero_graph.getFirst().getConfigInputPorts().size());
     assertNotNull(listActors.get(6).getDataInputPorts().getFirst().getFifo().getSourcePort());
-
   }
 
   /**
@@ -356,11 +359,11 @@ public class HeterogeneousTest {
     final Workflow workflow = new Workflow(); // pas utilisé non plus donc raf
 
     // clusterize the graph
-    final List<AbstractActor> clustersList = ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
+    final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
 
     // ------------------ locally schedule and map the clusters' graphs ------------------
 
-    for (final AbstractActor cluster : clustersList) {
+    for (final PiGraph cluster : clustersList) {
       // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
       final String localSchedulerMapper = switchSchedulerMapper(cluster, scenario);
       if (localSchedulerMapper == null) {
@@ -370,10 +373,15 @@ public class HeterogeneousTest {
       final Map<String, String> localParameters = new HashMap<>();
       localParameters.put("scheduler", localSchedulerMapper);
       localParameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
+      final Map<String, Object> localInputs = new HashMap<>();
+      localInputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, design);
+      localInputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
+      localInputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, cluster);
 
       final var synthesis = new PreesmSynthesisTask();
 
-      final Map<String, Object> localResults = synthesis.execute(inputs, localParameters, monitor, nodeName, workflow);
+      final Map<String,
+          Object> localResults = synthesis.execute(localInputs, localParameters, monitor, nodeName, workflow);
 
     }
 
@@ -390,7 +398,7 @@ public class HeterogeneousTest {
     }
 
     // On retire la fpga de la liste d'archi pour que le scheduling CPU ne râle pas
-    design.getComponentHolder().getComponents().remove(fpga1.getComponent());
+    // design.getComponentHolder().getComponents().remove(fpga1.getComponent());
 
     // vieille api
     /*
