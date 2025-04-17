@@ -33,14 +33,14 @@ public class ClusterBuilder {
    *
    * @return the list of cluster actors created
    */
-  public static List<AbstractActor> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
+  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
     /*
      * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
      * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
      * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
-    final List<AbstractActor> listClusterActors = new LinkedList<>();
+    final List<PiGraph> listClusterActors = new LinkedList<>();
 
     final EList<AbstractActor> listActors = graph.getActors();
     final Map<AbstractActor,
