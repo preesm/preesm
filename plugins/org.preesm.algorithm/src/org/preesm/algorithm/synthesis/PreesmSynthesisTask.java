@@ -155,8 +155,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
       case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
       case VALUE_SCHEDULER_PERIODIC -> new PeriodicScheduler();
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
-      case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler();
-      case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler();
+      case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_LINEAR);
+      case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_EXACT);
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
   }
