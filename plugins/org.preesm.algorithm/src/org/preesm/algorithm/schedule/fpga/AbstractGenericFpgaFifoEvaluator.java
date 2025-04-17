@@ -47,6 +47,8 @@ import java.util.Set;
 import java.util.SortedMap;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.IStatGenerator;
+import org.preesm.algorithm.mapping.model.impl.MappingFactoryImpl;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -118,7 +120,10 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     public AnalysisResultFPGA(final PiGraph flatGraph, final Map<AbstractVertex, Long> flatBrv,
         final Map<InterfaceActor, Pair<Long, Long>> interfaceRates) {
       // TODO check if I can pass better args
-      super(null, null, null);
+      // TODO voir si une autre classe de schedule que ParallelHiearchicalScheduleImpl est plus adaptée
+      // TODO remplacer le 2e null par un StagedActorScheduleImpl
+      super(MappingFactoryImpl.eINSTANCE.createMapping(), null, null);
+      final Schedule truc = new AbstractGenericFpgaFifoEvaluator();
       this.flatGraph = flatGraph;
       this.flatBrv = flatBrv;
       this.interfaceRates = interfaceRates;
