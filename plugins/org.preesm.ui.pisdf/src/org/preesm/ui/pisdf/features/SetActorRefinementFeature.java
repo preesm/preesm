@@ -171,7 +171,7 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
     boolean acceptPiFiles = false;
     switch (bo) {
       case final Delay delay -> {
-        rc = delay.getActor();
+        rc = delay.getDelayActor();
         if (rc == null) {
           return;
         }

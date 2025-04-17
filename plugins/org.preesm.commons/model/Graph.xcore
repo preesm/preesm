@@ -64,7 +64,7 @@ type double wraps double
  *
  **************************************/
 interface Vertex {
-	container Graph containingGraph opposite vertices
+	container readonly Graph containingGraph opposite vertices
 	op Edge[] getOutgoingEdges() {
 		return containingGraph.edges.filter[it.source === this].toEList.unmodifiableEList
 	}
@@ -80,7 +80,7 @@ interface Vertex {
 }
 
 interface Edge {
-	container Graph containingGraph opposite edges
+	container readonly Graph containingGraph opposite edges
 	op Vertex getSource()
 	op Vertex getTarget()
 }

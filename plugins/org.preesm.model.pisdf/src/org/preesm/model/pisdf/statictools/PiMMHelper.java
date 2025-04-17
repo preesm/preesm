@@ -331,7 +331,7 @@ public class PiMMHelper {
       final long ro = dpo.getExpression().evaluateAsLong();
       if (ri == 0 && ro == 0) {
         final Delay d = f.getDelay();
-        f.assignDelay(null);
+        f.setDelay(null);
         if (d != null) {
           piGraph.removeDelay(d);
         }
@@ -407,8 +407,8 @@ public class PiMMHelper {
     for (final Fifo fifo : piGraph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // 0. Rename all the data ports of delay actors
-      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
-      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      delay.getDelayActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getDelayActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       // 1. For the top graph, we convert every locally persistent delays to permanent ones.
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         delay.setLevel(PersistenceLevel.PERMANENT);
@@ -420,7 +420,7 @@ public class PiMMHelper {
     final StringBuilder sb = new StringBuilder("Following delays are removed since their size is 0: ");
     for (final Delay d : toRemove) {
       final Fifo f = d.getContainingFifo();
-      f.assignDelay(null);
+      f.setDelay(null);
       piGraph.removeDelay(d);
       sb.append(d.getName() + "; ");
     }
@@ -437,8 +437,8 @@ public class PiMMHelper {
     for (final Fifo fifo : graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       final String delayShortID = delay.getId();
-      delay.getActor().getDataInputPort().setName(fifo.getTargetPort().getName());
-      delay.getActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
+      delay.getDelayActor().getDataInputPort().setName(fifo.getTargetPort().getName());
+      delay.getDelayActor().getDataOutputPort().setName(fifo.getSourcePort().getName());
       if (delay.getLevel().equals(PersistenceLevel.LOCAL)) {
         if (delay.hasGetterActor() || delay.hasSetterActor()) {
           throw new PreesmRuntimeException(
@@ -512,24 +512,24 @@ public class PiMMHelper {
     // 3. Now we connect the newly created interfaces to the delay
     // Add the setter FIFO
     // Connect the setter interface to the delay
-    final DelayActor originalDelayActor = delay.getActor();
-    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo((DataOutputPort) setterIn.getDataPort(),
+    final DelayActor originalDelayActor = delay.getDelayActor();
+    final Fifo fifoSetter = PiMMUserFactory.instance.createFifo(setterIn.getDataPort(),
         originalDelayActor.getDataInputPort(), type);
     // Add the getter FIFO
     // Connect the delay interface to the getter
     final Fifo fifoGetter = PiMMUserFactory.instance.createFifo(originalDelayActor.getDataOutputPort(),
-        (DataInputPort) getterOut.getDataPort(), type);
+        getterOut.getDataPort(), type);
     graph.addFifo(fifoSetter);
     graph.addFifo(fifoGetter);
 
     // 4. Now we create the feed back FIFO in the upper-level
     // 5. We set the expression of the corresponding ports on the graph
-    final DataInputPort inPort = (DataInputPort) setterIn.getGraphPort();
+    final DataInputPort inPort = setterIn.getGraphPort();
     // Add the input port
     inPort.setExpression(delayExpression);
     inPort.setAnnotation(PortMemoryAnnotation.WRITE_ONLY);
     // Add the output port
-    final DataOutputPort outPort = (DataOutputPort) getterOut.getGraphPort();
+    final DataOutputPort outPort = getterOut.getGraphPort();
     outPort.setExpression(delayExpression);
     outPort.setAnnotation(PortMemoryAnnotation.READ_ONLY);
     // Now set the source / target port of the FIFO
@@ -542,12 +542,12 @@ public class PiMMHelper {
     delayPersistence.setName(name);
     delayPersistence.setLevel(PersistenceLevel.NONE);
     delayPersistence.setExpression(delayExpression);
-    final DelayActor newDelayActor = delayPersistence.getActor();
+    final DelayActor newDelayActor = delayPersistence.getDelayActor();
     newDelayActor.setName(name);
     newDelayActor.getDataInputPort().setName(originalDelayActor.getDataInputPort().getName());
     newDelayActor.getDataOutputPort().setName(originalDelayActor.getDataOutputPort().getName());
 
-    fifoPersistence.assignDelay(delayPersistence);
+    fifoPersistence.setDelay(delayPersistence);
     graph.getContainingPiGraph().addDelay(delayPersistence);
 
     return delayPersistence;

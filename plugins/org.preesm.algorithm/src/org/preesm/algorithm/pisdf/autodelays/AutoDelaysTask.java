@@ -510,9 +510,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         Delay delay = f.getDelay();
         if (delay == null && !reset) {
           delay = PiMMUserFactory.instance.createDelay();
-          f.assignDelay(delay);
+          f.setDelay(delay);
           delay.setName(delay.getId());
-          delay.getActor().setName(delay.getId());
+          delay.getDelayActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
           PreesmLogger.getLogger().info(() -> "Set fifo delay size and type of: " + f.getId());
@@ -582,9 +582,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         Delay delay = f.getDelay();
         if (delay == null) {
           delay = PiMMUserFactory.instance.createDelay();
-          f.assignDelay(delay);
+          f.setDelay(delay);
           delay.setName(delay.getId());
-          delay.getActor().setName(delay.getId());
+          delay.getDelayActor().setName(delay.getId());
           final PiGraph graphFifo = f.getContainingPiGraph();
           graphFifo.addDelay(delay);
           PreesmLogger.getLogger().info(() -> "[in Cycle] Set fifo delay size and type of: " + f.getId());

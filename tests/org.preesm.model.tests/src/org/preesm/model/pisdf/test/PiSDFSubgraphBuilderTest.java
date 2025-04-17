@@ -153,7 +153,7 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(subGraph, fifoBC.getContainingPiGraph());
     // Check that the delay and its actor is contained in the subgraph
     Assert.assertEquals(subGraph, fifoBC.getDelay().getContainingPiGraph());
-    Assert.assertEquals(subGraph, fifoBC.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(subGraph, fifoBC.getDelay().getDelayActor().getContainingPiGraph());
     // Check that added fifo are also contained in the sugraph
     Assert.assertEquals(subGraph, actorB.getDataInputPorts().get(0).getFifo().getContainingPiGraph());
     Assert.assertEquals(subGraph, actorC.getDataOutputPorts().get(0).getFifo().getContainingPiGraph());
@@ -167,13 +167,13 @@ public class PiSDFSubgraphBuilderTest {
     Assert.assertEquals(topGraph, fifoAB.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
     Assert.assertEquals(topGraph, fifoAB.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoAB.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(topGraph, fifoAB.getDelay().getDelayActor().getContainingPiGraph());
     // 2. On fifo to actor D
     final Fifo fifoCD = actorD.getDataInputPorts().get(0).getFifo();
     Assert.assertEquals(topGraph, fifoCD.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
     Assert.assertEquals(topGraph, fifoCD.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoCD.getDelay().getActor().getContainingPiGraph());
+    Assert.assertEquals(topGraph, fifoCD.getDelay().getDelayActor().getContainingPiGraph());
   }
 
   @Test
@@ -312,19 +312,19 @@ public class PiSDFSubgraphBuilderTest {
     final Delay delayAC = PiMMUserFactory.instance.createDelay();
     delayAC.setExpression(16);
     final Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
-    fifoAB.assignDelay(delayAC);
+    fifoAB.setDelay(delayAC);
     chainedActorGraph.addDelay(delayAC);
     // Set delay to fifo BC
     final Delay delayBC = PiMMUserFactory.instance.createDelay();
     delayBC.setExpression(2);
     final Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
-    fifoBC.assignDelay(delayBC);
+    fifoBC.setDelay(delayBC);
     chainedActorGraph.addDelay(delayBC);
     // Set delay to fifo CD
     final Delay delayCD = PiMMUserFactory.instance.createDelay();
     delayCD.setExpression(4);
     final Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
-    fifoCD.assignDelay(delayCD);
+    fifoCD.setDelay(delayCD);
     chainedActorGraph.addDelay(delayCD);
     // Create a list for the 3 fifos to easily add them to the top graph
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);

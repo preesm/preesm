@@ -255,10 +255,10 @@ public class PGANScheduler {
     for (final Fifo fifo : graph.getFifosWithDelay()) {
       final Delay delay = fifo.getDelay();
       // If delay has getter/setter, throw an exception
-      if (delay.getActor().getDataInputPort().getIncomingFifo() != null
-          || delay.getActor().getDataOutputPort().getOutgoingFifo() != null) {
+      if (delay.getDelayActor().getDataInputPort().getIncomingFifo() != null
+          || delay.getDelayActor().getDataOutputPort().getOutgoingFifo() != null) {
         throw new PreesmRuntimeException(
-            "PGANScheduler: getter/setter are not handled on [" + delay.getActor().getName() + "]");
+            "PGANScheduler: getter/setter are not handled on [" + delay.getDelayActor().getName() + "]");
       }
     }
 

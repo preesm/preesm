@@ -62,17 +62,14 @@ public class EditPartFactoryImpl implements EditPartFactory {
    */
   @Override
   public EditPart createEditPart(final EditPart context, final Object model) {
-    AbstractGraphicalEditPart child = null;
 
-    if (model instanceof Graph) {
-      child = new GraphEditPart();
-    } else if (model instanceof Vertex) {
-      child = new VertexEditPart();
-    } else if (model instanceof Edge) {
-      child = new EdgeEditPart();
-    } else if (model instanceof IStatus) {
-      child = new StatusEditPart();
-    }
+    final AbstractGraphicalEditPart child = switch (model) {
+      case final Graph g -> new GraphEditPart();
+      case final Vertex v -> new VertexEditPart();
+      case final Edge e -> new EdgeEditPart();
+      case final IStatus is -> new GraphEditPart();
+      default -> null;
+    };
 
     if (child != null) {
       child.setModel(model);

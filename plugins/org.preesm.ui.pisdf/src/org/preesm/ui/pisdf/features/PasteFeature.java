@@ -138,9 +138,9 @@ public class PasteFeature extends AbstractPasteFeature {
 
       // If the vertex to copy is a Delay, creating a copy of the DelayActor and attaching it to the Delay copy
       if (vertex instanceof final Delay delay) {
-        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(delay.getActor());
+        final DelayActor delayActorCopy = PiMMUserFactory.instance.copy(delay.getDelayActor());
         delayActorCopy.setName(name); // Delay and associated DelayActor have the same name
-        ((Delay) copy).setActor(delayActorCopy);
+        ((Delay) copy).setDelayActor(delayActorCopy);
       }
 
       final Pair<Integer, Integer> pair = calculatePositions.get(vertexCopy);
@@ -361,7 +361,7 @@ public class PasteFeature extends AbstractPasteFeature {
     }
 
     // add input port anchors
-    final DelayActor actor = delayCopy.getActor();
+    final DelayActor actor = delayCopy.getDelayActor();
     final EList<DataPort> delayPorts = actor.getAllDataPorts();
     for (final DataPort port : delayPorts) {
       final IPeService peService = GraphitiUi.getPeService();
@@ -397,13 +397,13 @@ public class PasteFeature extends AbstractPasteFeature {
       final AbstractActor targetCopy;
 
       if (source instanceof final DelayActor sourceDelayActor) {
-        sourceCopy = ((Delay) this.copiedObjects.get(sourceDelayActor.getLinkedDelay())).getActor();
+        sourceCopy = ((Delay) this.copiedObjects.get(sourceDelayActor.getLinkedDelay())).getDelayActor();
       } else {
         sourceCopy = (AbstractActor) this.copiedObjects.get(source);
       }
 
       if (target instanceof final DelayActor targetDelayActor) {
-        targetCopy = ((Delay) this.copiedObjects.get(targetDelayActor.getLinkedDelay())).getActor();
+        targetCopy = ((Delay) this.copiedObjects.get(targetDelayActor.getLinkedDelay())).getDelayActor();
       } else {
         targetCopy = (AbstractActor) this.copiedObjects.get(target);
       }

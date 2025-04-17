@@ -222,7 +222,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final PictogramElement sourcePe = context.getSourcePictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(sourcePe);
     if (obj instanceof final Delay delay) {
-      final DelayActor actor = delay.getActor();
+      final DelayActor actor = delay.getDelayActor();
       return actor.getDataOutputPort();
     }
     return getPort(sourceAnchor);
@@ -232,7 +232,7 @@ public class CreateFifoFeature extends AbstractCreateConnectionFeature {
     final PictogramElement targetPe = context.getTargetPictogramElement();
     final Object obj = getBusinessObjectForPictogramElement(targetPe);
     if (obj instanceof final Delay delay) {
-      final DelayActor actor = delay.getActor();
+      final DelayActor actor = delay.getDelayActor();
       return actor.getDataInputPort();
     }
     return getPort(targetAnchor);

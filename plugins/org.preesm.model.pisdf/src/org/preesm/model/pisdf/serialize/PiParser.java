@@ -624,7 +624,6 @@ public class PiParser {
       }
       // Adds the delay to the FIFO (and sets the FIFO of the delay at the same time)
       fifo.setDelay(delay);
-      fifo.setHasADelay(true);
     }
 
     // Add the new Fifo to the graph
@@ -655,7 +654,7 @@ public class PiParser {
     delay.setLevel(PersistenceLevel.get(persistenceLevel));
 
     // 5. Setting properties of the non executable actor associated with the delay
-    final DelayActor delayActor = delay.getActor();
+    final DelayActor delayActor = delay.getDelayActor();
 
     // 5.1 Setting name of input port
     final NodeList childList = nodeElt.getChildNodes();

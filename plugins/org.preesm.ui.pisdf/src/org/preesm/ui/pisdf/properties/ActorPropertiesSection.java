@@ -548,7 +548,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
     AbstractActor executableActor = null;
     if (bo instanceof final Delay delay) {
-      executableActor = delay.getActor();
+      executableActor = delay.getDelayActor();
     } else {
       executableActor = (AbstractActor) bo;
     }
@@ -566,7 +566,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       boolean enabled = true;
       if (bo instanceof final Delay delay) {
         enabled = delay.getLevel() == PersistenceLevel.PERMANENT;
-        refinement = delay.getActor().getRefinement();
+        refinement = delay.getDelayActor().getRefinement();
       } else {
         refinement = ((RefinementContainer) bo).getRefinement();
       }

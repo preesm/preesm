@@ -64,7 +64,7 @@ public class MultiBranch {
       if (!(source instanceof DelayActor) && !(source instanceof DataInputInterface)
           && (source instanceof ExecutableActor
               && (source.getDataInputPorts().isEmpty() || source.getDataInputPorts().stream().allMatch(
-                  x -> x.getFifo().isHasADelay() || x.getFifo().getSource() instanceof DataInputInterface)))) {
+                  x -> x.getFifo().isDelayPresent() || x.getFifo().getSource() instanceof DataInputInterface)))) {
         sourceList.add(source);
       }
     }
@@ -76,7 +76,7 @@ public class MultiBranch {
 
     final Actor src = PiMMUserFactory.instance.createActor();
     src.setName("single_source");
-    src.setContainingGraph(graph);
+    graph.addActor(src);
     int indexOutput = 0;
     // connect to multiple sources
     for (final AbstractActor actor : sourceList) {
@@ -95,7 +95,7 @@ public class MultiBranch {
 
       // connect
       final Fifo fifo = PiMMUserFactory.instance.createFifo(dout, din, "char");
-      fifo.setContainingGraph(graph);
+      graph.addFifo(fifo);
 
       indexOutput++;
     }
@@ -115,7 +115,7 @@ public class MultiBranch {
         // delete port
 
         for (final DataOutputPort dout : dummySrc.getDataOutputPorts()) {
-          final AbstractActor a = (AbstractActor) dout.getFifo().getTarget();
+          final AbstractActor a = dout.getFifo().getTarget();
           a.getDataInputPorts().remove(dout.getFifo().getTargetPort());
           final Fifo f = dout.getFifo();
           graph.removeFifo(f);

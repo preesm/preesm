@@ -332,51 +332,46 @@ public class ScriptRunner {
     // Retrieve the original sdf folder
     // Identify all actors with a memory Script
     for (final DAGVertex dagVertex : dag.vertexSet()) {
-      if (dagVertex.getKind() != null) {
-        switch (dagVertex.getKind()) {
-          case DAGVertex.DAG_VERTEX:
-            final String pathString = dagVertex.getPropertyBean().getValue(SDFVertex.MEMORY_SCRIPT);
-            if (pathString != null) {
+      if (dagVertex.getKind() == null) {
+        continue;
+      }
 
-              // Retrieve the script path as a relative path to the
-              // graphml
-              URL scriptFile = scriptFiles.get(pathString);
-              if (scriptFile == null) {
-                scriptFile = URLResolver.findFirst(pathString);
-              }
-              if (scriptFile != null) {
-                scriptFiles.put(pathString, scriptFile);
-                this.scriptedVertices.put(dagVertex, scriptFile);
-              } else {
-                final String message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" + pathString
-                    + "\". Change it in the graphml editor.";
-                ScriptRunner.logger.log(Level.WARNING, message);
-              }
+      switch (dagVertex.getKind()) {
+        case DAGVertex.DAG_VERTEX -> {
+          final String pathString = dagVertex.getPropertyBean().getValue(SDFVertex.MEMORY_SCRIPT);
+          if (pathString != null) {
+
+            // Retrieve the script path as a relative path to the graphml
+            URL scriptFile = scriptFiles.get(pathString);
+            if (scriptFile == null) {
+              scriptFile = URLResolver.findFirst(pathString);
             }
-            break;
-          case MapperDAGVertex.DAG_FORK_VERTEX:
-            associateScriptToSpecialVertex(dagVertex, "fork", specialScriptFiles.get(ScriptRunner.FORK));
-            break;
-          case MapperDAGVertex.DAG_JOIN_VERTEX:
-            associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(ScriptRunner.JOIN));
-            break;
-          case MapperDAGVertex.DAG_BROADCAST_VERTEX:
-            final String specialType = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
-            switch (specialType) {
-              case MapperDAGVertex.SPECIAL_TYPE_BROADCAST:
-                associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
-                break;
-              case MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER:
-                associateScriptToSpecialVertex(dagVertex, "roundbuffer",
-                    specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
-                break;
-              default:
-                throw new PreesmRuntimeException();
+            if (scriptFile != null) {
+              scriptFiles.put(pathString, scriptFile);
+              this.scriptedVertices.put(dagVertex, scriptFile);
+            } else {
+              final String message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" + pathString
+                  + "\". Change it in the graphml editor.";
+              ScriptRunner.logger.log(Level.WARNING, message);
             }
-            break;
-          default:
-            // nothing to do
+          }
         }
+        case MapperDAGVertex.DAG_FORK_VERTEX ->
+          associateScriptToSpecialVertex(dagVertex, "fork", specialScriptFiles.get(ScriptRunner.FORK));
+        case MapperDAGVertex.DAG_JOIN_VERTEX ->
+          associateScriptToSpecialVertex(dagVertex, "join", specialScriptFiles.get(ScriptRunner.JOIN));
+        case MapperDAGVertex.DAG_BROADCAST_VERTEX -> {
+          final String specialType = dagVertex.getPropertyBean().getValue(MapperDAGVertex.SPECIAL_TYPE);
+          switch (specialType) {
+            case MapperDAGVertex.SPECIAL_TYPE_BROADCAST ->
+              associateScriptToSpecialVertex(dagVertex, "broadcast", specialScriptFiles.get(ScriptRunner.BROADCAST));
+            case MapperDAGVertex.SPECIAL_TYPE_ROUNDBUFFER -> associateScriptToSpecialVertex(dagVertex, "roundbuffer",
+                specialScriptFiles.get(ScriptRunner.ROUNDBUFFER));
+            default -> throw new PreesmRuntimeException();
+          }
+        }
+        default -> {
+          /* nothing to do */ }
       }
     }
 
@@ -730,10 +725,8 @@ public class ScriptRunner {
       this.log = this.log + "- From " + bufferList.size() + " buffers to " + buffers.size() + " buffers." + "\n";
       this.log = this.log + "- From " + (before + 7L) / 8L + " bytes to " + (after + 7L) / 8L + " bytes ("
           + ((100.0 * (before - after)) / before) + "%)" + "\n\n";
-    }
 
-    // Log unapplied matches (if any)
-    if (isGenerateLog()) {
+      // Log unapplied matches (if any)
       this.log = this.log + "### Unapplied matches:" + "\n>";
       final List<Match> logged = new ArrayList<>();
 
@@ -1953,11 +1946,11 @@ public class ScriptRunner {
       // Find unused write_only edges
       final EdgeAggregate aggregate = mObj.getEdge().getAggregate();
       return aggregate.stream().allMatch(dagEdge -> {
-        Object o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.SOURCE_PORT_MODIFIER);
+        Object o = dagEdge.getPropertyStringValue(SDFEdge.SOURCE_PORT_MODIFIER);
         String str = o != null ? o.toString() : "";
         final boolean b1 = str.contains(SDFEdge.MODIFIER_WRITE_ONLY);
 
-        o = ((DAGEdge) dagEdge).getPropertyStringValue(SDFEdge.TARGET_PORT_MODIFIER);
+        o = dagEdge.getPropertyStringValue(SDFEdge.TARGET_PORT_MODIFIER);
         str = o != null ? o.toString() : "";
         final boolean b2 = str.contains(SDFEdge.MODIFIER_UNUSED);
         return b1 && b2;

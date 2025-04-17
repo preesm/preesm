@@ -99,7 +99,7 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       RefinementContainer rc = null;
       if (bo instanceof final Delay delay) {
-        rc = delay.getActor();
+        rc = delay.getDelayActor();
       } else if (bo instanceof Actor || bo instanceof InitActor) {
         rc = (RefinementContainer) bo;
       }
@@ -132,7 +132,7 @@ public class OpenRefinementFeature extends AbstractCustomFeature {
     final Object bo = getBusinessObjectForPictogramElement(pes[0]);
     RefinementContainer rc = null;
     if (bo instanceof final Delay delay) {
-      rc = delay.getActor();
+      rc = delay.getDelayActor();
     } else if (bo instanceof Actor || bo instanceof InitActor) {
       rc = (RefinementContainer) bo;
     }

@@ -39,7 +39,6 @@ package org.preesm.algorithm.schedule.fpga;
 import java.util.List;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -76,7 +75,7 @@ public final class TokenPackingTransform extends ActorConstructTransform {
     res.flatGraph.addActor(unpacker);
 
     // Map packer and unpacker to FPGA targeted by packed actor
-    final ComponentInstance target = scenario.getPossibleMappings((AbstractActor) fifo.getTarget()).get(0);
+    final ComponentInstance target = scenario.getPossibleMappings(fifo.getTarget()).get(0);
     scenario.getConstraints().addConstraint(target, packer);
     scenario.getConstraints().addConstraint(target, unpacker);
 
@@ -94,9 +93,9 @@ public final class TokenPackingTransform extends ActorConstructTransform {
 
     // Connect size parameters
     final Parameter unpacked = PiMMUserFactory.instance.createParameter(fifo.getId() + "_unpacked", unpackedSize);
-    unpacked.setContainingGraph(res.flatGraph);
+    res.flatGraph.addParameter(unpacked);
     final Parameter packed = PiMMUserFactory.instance.createParameter(fifo.getId() + "_packed", packedSize);
-    packed.setContainingGraph(res.flatGraph);
+    res.flatGraph.addParameter(packed);
     connectParameter(packer, unpacked, "IN_W");
     connectParameter(packer, packed, "OUT_W");
     connectParameter(unpacker, packed, "IN_W");

@@ -193,7 +193,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       this.subGraph.addActor(inputInterface);
 
       // Setup input of hierarchical actor
-      final DataInputPort inputPort = (DataInputPort) inputInterface.getGraphPort();
+      final DataInputPort inputPort = inputInterface.getGraphPort();
       inputPort.setName(inputName); // same name than DataInputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
@@ -210,7 +210,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       final Delay oldDelay = oldFifo.getDelay();
       this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        incomingFifo.assignDelay(oldDelay);
+        incomingFifo.setDelay(oldDelay);
       }
       this.parentGraph.addFifo(incomingFifo);
       final String dataType = oldFifo.getType();
@@ -218,7 +218,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       incomingFifo.setType(dataType);
 
       // Setup inside communication with DataInputInterface
-      final DataOutputPort outputPort = (DataOutputPort) inputInterface.getDataPort();
+      final DataOutputPort outputPort = inputInterface.getDataPort();
       outputPort.setExpression(portExpression);
       final Fifo insideOutgoingFifo = PiMMUserFactory.instance.createFifo();
       outputPort.setOutgoingFifo(insideOutgoingFifo);
@@ -247,7 +247,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       this.subGraph.addActor(outputInterface);
 
       // Setup output of hierarchical actor
-      final DataOutputPort outputPort = (DataOutputPort) outputInterface.getGraphPort();
+      final DataOutputPort outputPort = outputInterface.getGraphPort();
       outputPort.setName(outputName); // same name than DataOutputInterface
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
@@ -265,14 +265,14 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       final Delay oldDelay = oldFifo.getDelay();
       this.parentGraph.removeFifo(oldFifo); // remove FIFO from containing graph
       if (oldDelay != null) {
-        outsideOutgoingFifo.assignDelay(oldDelay);
+        outsideOutgoingFifo.setDelay(oldDelay);
       }
       final String dataType = oldFifo.getType();
       outsideOutgoingFifo.setTargetPort(oldFifo.getTargetPort());
       outsideOutgoingFifo.setType(dataType);
 
       // Setup inside communication with DataOutputInterface
-      final DataInputPort inputDataPort = (DataInputPort) outputInterface.getDataPort();
+      final DataInputPort inputDataPort = outputInterface.getDataPort();
       inputDataPort.setExpression(portExpression);
       final Fifo insideIncomingFifo = PiMMUserFactory.instance.createFifo();
       inputDataPort.setIncomingFifo(insideIncomingFifo);
@@ -363,7 +363,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
         this.subGraph.addDelay(delay);
         if (delay.getLevel().equals(PersistenceLevel.NONE) && delay.hasGetterActor()) {
 
-          for (final Port delayPort : delay.getActor().getAllPorts()) {
+          for (final Port delayPort : delay.getDelayActor().getAllPorts()) {
             doSwitch(delayPort);
           }
         }
