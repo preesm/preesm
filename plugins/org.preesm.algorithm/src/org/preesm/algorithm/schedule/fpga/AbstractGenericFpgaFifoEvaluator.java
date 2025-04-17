@@ -62,6 +62,7 @@ import org.preesm.model.pisdf.statictools.PiMMHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.TimingType;
 
 /**
@@ -207,7 +208,10 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
   protected static Map<AbstractActor, ActorNormalizedInfos> checkAndSetActorNormalizedInfosInCC(
       final List<AbstractActor> cc, final Scenario scenario, final Map<AbstractVertex, Long> brv) {
 
-    final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
+    // filter to get the first fpga in a possibly heterogeneous group
+    // final ComponentInstance fpga = scenario.getDesign().getComponentInstances().get(0);
+    final ComponentInstance fpga = scenario.getDesign().getComponentInstances().stream()
+        .filter(f -> f.getComponent() instanceof FPGA).toList().get(0);
     final Map<AbstractActor, ActorNormalizedInfos> mapInfos = new LinkedHashMap<>();
     // check and set standard infos
     for (final AbstractActor aa : cc) {
