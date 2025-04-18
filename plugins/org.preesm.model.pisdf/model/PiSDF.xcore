@@ -1053,7 +1053,7 @@ class DataInputInterface extends DataInterface {
 	}
 	op DataInputPort getGraphPort(){
 		return super.graphPort as DataInputPort
-	}s
+	}
 }
 
 class DataOutputInterface extends DataInterface {
