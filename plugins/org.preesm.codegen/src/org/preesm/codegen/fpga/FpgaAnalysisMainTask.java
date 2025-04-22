@@ -53,8 +53,6 @@ import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis;
 import org.preesm.algorithm.schedule.fpga.TokenPackingAnalysis.PackedFifoConfig;
 import org.preesm.algorithm.schedule.fpga.TokenPackingTransform;
-import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -101,7 +99,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           description = "Whether or not the tokens should be packed to otpimize bram usage.", values = {
             @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE, effect = "False disables this feature.") }) })
 
-public class FpgaAnalysisMainTask extends AbstractTaskImplementation implements IScheduler {
+public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 
   public static final String SHOW_SCHED_PARAM_NAME  = "Show schedule ?";
   public static final String SHOW_SCHED_PARAM_VALUE = "false";
@@ -178,24 +176,6 @@ public class FpgaAnalysisMainTask extends AbstractTaskImplementation implements 
     FpgaCodeGenerator.generateFiles(scenario, fpga, res);
 
     return new HashMap<>();
-  }
-
-  /***
-   * calls the execute() methode. This methode exists only to make the class have a scheduleAndMap() method, which is
-   * mandatory to inherit from IScheduler.
-   */
-  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
-    // TODO finir
-    final Map<String, Object> inputs = new HashMap<>();
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, piGraph);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, slamDesign);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-
-    Map<String, Object> outputMap = new HashMap<>();
-    outputMap = execute(inputs, getDefaultParameters(), null, FIFO_EVAL_PARAM_NAME, null);
-    final SynthesisResult res = new SynthesisResult(null, null, null);
-
-    return res;
   }
 
   /**
