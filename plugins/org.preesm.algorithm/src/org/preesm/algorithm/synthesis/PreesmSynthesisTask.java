@@ -130,6 +130,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
 
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
+    // foire car schedule est vide pour les fpga
     comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Allocating Memory - " + allocationName);
