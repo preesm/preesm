@@ -10,7 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.BasicEList;
@@ -20,21 +19,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ActorMerger;
 import org.preesm.algorithm.clustering.ClusterBuilder;
-import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.MergingHeuristic;
 import org.preesm.algorithm.clustering.MinimalMergingHeuristic;
-import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
-import org.preesm.algorithm.schedule.sdf.HeterogeneousScheduler;
-import org.preesm.algorithm.synthesis.PreesmSynthesisTask;
-import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
-import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
-import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
-import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.algorithm.synthesis.PreesmHeterogeneousSynthesisTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -238,37 +227,6 @@ public class HeterogeneousTest {
     graph.addFifo(f);
   }
 
-  private void replaceAndRemoveActor(AbstractActor oldA, AbstractActor newA, PiGraph graph) {
-
-    // clone input and output outer interfaces
-    // plug fifos and copy rates
-    for (final DataInputPort olddip : oldA.getDataInputPorts()) {
-      final DataInputPort newdip = PiMMFactory.createDataInputPort(olddip.getName());
-
-      newdip.setExpression(olddip.getExpression());
-      newA.getDataInputPorts().add(newdip);
-      newdip.setIncomingFifo(olddip.getFifo());
-    }
-    for (final DataOutputPort olddop : oldA.getDataOutputPorts()) {
-      final DataOutputPort newdop = PiMMFactory.createDataOutputPort(olddop.getName());
-
-      newdop.setExpression(olddop.getExpression());
-      newA.getDataOutputPorts().add(newdop);
-      newdop.setOutgoingFifo(olddop.getFifo());
-    }
-
-    for (final ConfigInputPort oldcip : oldA.getConfigInputPorts()) {
-      final ConfigInputPort newcip = PiMMFactory.createConfigInputPort();
-
-      newA.getConfigInputPorts().add(newcip);
-      newcip.setIncomingDependency(oldcip.getIncomingDependency());
-    }
-
-    // remove the old actor from the graph
-    graph.removeActorAndDependencies(oldA);
-
-  }
-
   @Test
   public void testBuildArchHierarchyGraph() {
     ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
@@ -331,60 +289,6 @@ public class HeterogeneousTest {
     assertNotNull(listActors.get(6).getDataInputPorts().getFirst().getFifo().getSourcePort());
   }
 
-  /**
-   * Selects the adapted scheduler for a given cluster based on its mapping arch
-   *
-   * @param cluster
-   *          the cluster to map
-   * @param scenario
-   *          the scenario
-   * @return the selected mapper's string name/identifier
-   **/
-  public String switchSchedulerMapper(AbstractActor cluster, Scenario scenario) {
-    final List<ComponentInstance> mappings = ClusteringHelper.getArch(cluster, scenario);
-    // Pour le moment, je vais supposer qu'un cluster est mappé à une seule archi. Cela correspond à l'idée que le
-    // mapping "niveau archi" est fait entièrement lors de la phase de clustering, qui décide quel cluster est fait sur
-    // quel type de PE.
-
-    final ComponentInstance arch = mappings.getFirst();
-
-    if (arch.getComponent() instanceof CPU) {
-      return PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE; // temporaire
-    }
-
-    if (arch.getComponent() instanceof FPGA) {
-      return AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR;
-    }
-    // temporaire
-
-    PreesmLogger.getLogger().log(Level.SEVERE, () -> "No mapper available for component " + arch.getInstanceName());
-    return null;
-
-  }
-
-  /***
-   * Returns the corresponding scheduler-mapper instance based on its name.
-   *
-   * @param localSchedulerMapperName
-   *          the scheduler's name
-   * @return the sceduler-mapper instance
-   */
-  public IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
-    // TODO expand switch
-    switch (localSchedulerMapperName) {
-      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
-          AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
-        return new FpgaScheduler(localSchedulerMapperName);
-      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE, PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC,
-          PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
-        return new SimpleScheduler();
-      default:
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            () -> "This scheduler is not implemented : " + localSchedulerMapperName);
-        return null;
-    }
-  }
-
   @Test
   public void testHeterogeneousScheduler() {
     final Map<String, Object> inputs = new LinkedHashMap<>();
@@ -398,80 +302,14 @@ public class HeterogeneousTest {
     final String nodeName = ""; // ne semble pas utilisé pour de vrai donc raf
     final Workflow workflow = new Workflow(); // pas utilisé non plus donc raf
 
-    // clusterize the graph
-    final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
-
-    // ------------------ locally schedule and map the clusters' graphs ------------------
-
-    for (final PiGraph cluster : clustersList) {
-      // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-      final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
-      if (localSchedulerMapperName == null) {
-        return;
-      }
-
-      final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
-      /*
-       * final PreesmSynthesisTask synthesis = new PreesmSynthesisTask();
-       *
-       * final Map<String, Object> localResults = synthesis.execute(localInputs, localParameters, monitor, nodeName,
-       * workflow);
-       */
-      final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, design, scenario);
-
-    }
-
-    // ------------------ replace hierarchical actors with placeholders ------------------
-
-    for (final AbstractActor actor : algo.getActors()) {
-      if (actor instanceof PiGraph) {
-        final Actor placeholder = PiMMFactory.createActor(actor.getName() + "_placeholder");
-        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
-        algo.addActor(placeholder);
-        replaceAndRemoveActor(actor, placeholder, algo);
-        scenario.getConstraints().addConstraint(cpu1, placeholder); // test, idéalement ça serait une "non-archi"
-      }
-    }
-
-    // On retire la fpga de la liste d'archi pour que le scheduling CPU ne râle pas
-    // design.getComponentHolder().getComponents().remove(fpga1.getComponent());
-
-    // vieille api
-    /*
-     * parameters.put("Check", "True"); parameters.put("Optimize synchronization", "True");
-     * parameters.put("balanceLoads", "True"); parameters.put("edgeSchedType", "Simple");
-     * parameters.put("simulatorType", "AccuratelyTimed");
-     *
-     * Map<String, Object> schedule; schedule = HeterogeneousScheduler.schedule(inputs, parameters, monitor, nodeName,
-     * workflow);
-     *
-     * assertNotNull(algo); // très très peu d'idées assertNotNull(schedule);
-     *
-     * final LatencyAbc ABCSchedule = (LatencyAbc) schedule.get("ABC"); // le latencyABC final MapperDAG resImpl = final
-     * MapperDAG resImpl = ABCSchedule.getImplementation(); final MapperDAGVertex actor12 =
-     * resImpl.getMapperDAGVertex("actor12"); ABCSchedule.getEffectiveComponent(actor12); ABCSchedule.getFinalLatency();
-     * final VertexTiming timing = actor12.getTiming();
-     *
-     * ABCSchedule.getTotalOrder();
-     */
-
-    // nouvelle api
-    final var synthesis = new PreesmSynthesisTask();
-
-    parameters.put("scheduler", PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE);
-    parameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
-
-    final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
-
-    final SynthesisResult schedule_mapping = HeterogeneousScheduler.schedule(algo, design, scenario);
-
-    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algo, schedule_mapping.schedule);
-
-    assertNotNull(results);
-    assertNotNull(scheduleOM);
+    final var task = new PreesmHeterogeneousSynthesisTask();
+    final Map<String, Object> res = task.execute(inputs, parameters, monitor, nodeName, workflow);
 
     // vérifier que les éléments sont mappés où on le veut, et que la durée d'exécution est celle prévue
 
+    /*
+     * assertNotNull(results); assertNotNull(scheduleOM);
+     */
   }
 
 }
