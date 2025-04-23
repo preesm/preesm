@@ -5,7 +5,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,12 +28,16 @@ import org.preesm.algorithm.schedule.sdf.HeterogeneousScheduler;
 import org.preesm.algorithm.synthesis.PreesmSynthesisTask;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
@@ -222,11 +225,12 @@ public class HeterogeneousTest {
   private void createFifoLink(AbstractActor source, AbstractActor sink, int rateSource, int rateSink, String type,
       PiGraph graph) {
 
-    final DataOutputPort sourceOut = PiMMFactory.createDataOutputPort(source.getName() + "To" + sink.getName());
+    final DataOutputPort sourceOut = PiMMFactory
+        .createDataOutputPort(source.getName() + "To" + sink.getName() + "_Source");
     sourceOut.setExpression(rateSource);
     source.getDataOutputPorts().add(sourceOut);
 
-    final DataInputPort sinkIn = PiMMFactory.createDataInputPort(source.getName() + "To" + sink.getName());
+    final DataInputPort sinkIn = PiMMFactory.createDataInputPort(source.getName() + "To" + sink.getName() + "_Sink");
     sinkIn.setExpression(rateSink);
     sink.getDataInputPorts().add(sinkIn);
 
@@ -272,6 +276,19 @@ public class HeterogeneousTest {
     assertEquals(8, algo.getActors().size());
     final List<AbstractActor> listHierActors = algo.getActors().stream().filter(a -> a instanceof PiGraphImpl).toList();
     assertEquals(3, listHierActors.size());
+
+    // check all actors have a rate of 10 in all their data ports
+    algo.getActors().stream().flatMap(actor -> actor.getAllDataPorts().stream())
+        .map(dp -> dp.getExpression().evaluateAsLong()).allMatch(t -> t == 10);
+
+    // get all subactors whose rate is null and print them
+    final var nullExpressions = algo.getActors().stream().filter(PiGraph.class::isInstance).map(PiGraph.class::cast)
+        .flatMap(g -> g.getActors().stream()).flatMap(a -> a.getAllDataPorts().stream())
+        .filter(dp -> dp.getExpression() == null).toList();
+    for (final DataPort dp : nullExpressions) {
+      System.out.print(dp.getName());
+    }
+    assertTrue(nullExpressions.isEmpty());
 
   }
 
@@ -345,6 +362,29 @@ public class HeterogeneousTest {
 
   }
 
+  /***
+   * Returns the corresponding scheduler-mapper instance based on its name.
+   *
+   * @param localSchedulerMapperName
+   *          the scheduler's name
+   * @return the sceduler-mapper instance
+   */
+  public IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
+    // TODO expand switch
+    switch (localSchedulerMapperName) {
+      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
+          AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
+        return new FpgaScheduler(localSchedulerMapperName);
+      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE, PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC,
+          PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
+        return new SimpleScheduler();
+      default:
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            () -> "This scheduler is not implemented : " + localSchedulerMapperName);
+        return null;
+    }
+  }
+
   @Test
   public void testHeterogeneousScheduler() {
     final Map<String, Object> inputs = new LinkedHashMap<>();
@@ -365,23 +405,19 @@ public class HeterogeneousTest {
 
     for (final PiGraph cluster : clustersList) {
       // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-      final String localSchedulerMapper = switchSchedulerMapper(cluster, scenario);
-      if (localSchedulerMapper == null) {
+      final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+      if (localSchedulerMapperName == null) {
         return;
       }
 
-      final Map<String, String> localParameters = new HashMap<>();
-      localParameters.put("scheduler", localSchedulerMapper);
-      localParameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
-      final Map<String, Object> localInputs = new HashMap<>();
-      localInputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, design);
-      localInputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-      localInputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, cluster);
-
-      final var synthesis = new PreesmSynthesisTask();
-
-      final Map<String,
-          Object> localResults = synthesis.execute(localInputs, localParameters, monitor, nodeName, workflow);
+      final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
+      /*
+       * final PreesmSynthesisTask synthesis = new PreesmSynthesisTask();
+       *
+       * final Map<String, Object> localResults = synthesis.execute(localInputs, localParameters, monitor, nodeName,
+       * workflow);
+       */
+      final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, design, scenario);
 
     }
 
