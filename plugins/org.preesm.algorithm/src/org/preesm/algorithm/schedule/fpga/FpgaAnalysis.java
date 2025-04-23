@@ -41,6 +41,8 @@ import java.util.Map;
 import java.util.Objects;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -55,8 +57,9 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
+import org.preesm.model.slam.Design;
 
-public class FpgaAnalysis {
+public class FpgaAnalysis implements IScheduler {
   private FpgaAnalysis() {
     // forbid instantiation
   }
@@ -125,5 +128,11 @@ public class FpgaAnalysis {
       }
     });
     return result;
+  }
+
+  @Override
+  public SynthesisResult scheduleAndMap(PiGraph piGraph, Design slamDesign, Scenario scenario) {
+    // TODO make the fifo evaluator choosable
+    return checkAndAnalyzeAlgorithm(piGraph, scenario, AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT);
   }
 }
