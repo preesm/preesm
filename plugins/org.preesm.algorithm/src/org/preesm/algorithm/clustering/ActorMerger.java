@@ -10,7 +10,6 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
-import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
@@ -32,6 +31,7 @@ public class ActorMerger {
 
     final PiGraph innerSDF = PiMMFactory.createPiGraph();
     innerSDF.setName(name);
+    graph.addActor(innerSDF);
 
     for (final AbstractActor a : actorsToMerge) { // ça les retire automatiquement de graph
       innerSDF.addActor(a);
@@ -41,7 +41,6 @@ public class ActorMerger {
 
     // extract input and output interfaces for the new hierarchical actor
     for (final AbstractActor actor : actorsToMerge) {
-
       actor.getDataInputPorts().stream().forEach(dip -> {
         // if the fifo connects one inner and one outer actor, we have to connect them through the graph ports
         if (!(actorsToMerge.contains(dip.getIncomingFifo().getSource()))) {
@@ -54,18 +53,13 @@ public class ActorMerger {
           innerInterface.getGraphPort().setIncomingFifo(dip.getFifo()); // set the outer port's incoming fifo
 
           // set outer port's rate : inner port's rate times actor's repetition value
-          final Expression innerRate = dip.getExpression(); // get the inner port's rate formula
-          final String outerPortRate = "(" + innerRate.getExpressionAsString() + ")" + "*" + brv.get(actor).toString();
-          final Expression outerPortExpression = PiMMFactory.createExpression(outerPortRate);
-
-          innerInterface.getGraphPort().setExpression(outerPortExpression);
-          // met le taux de l'interface interne à celui de l'acteur lié
-          innerInterface.getDataPort().setExpression(dip.getExpression());
+          final String innerRate = dip.getExpression().getExpressionAsString(); // get the inner port's rate formula
+          final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
+          innerInterface.getGraphPort().setExpression(outerPortRate);
+          innerInterface.getDataPort().setExpression(innerRate);
 
           final Fifo internalFifo = PiMMFactory.createFifo(innerInterface.getDataPort(), dip, FifoDataType);
           innerSDF.addFifo(internalFifo);
-          // No idea why, but the process seems to null dip's expression, so I save it and re-assign it at the end
-          dip.setExpression(innerRate);
 
         } else { // if the fifo connects 2 inner actors, add it to the inner graph (which removes it from the outer one)
           innerSDF.addFifo(dip.getIncomingFifo());
@@ -82,14 +76,12 @@ public class ActorMerger {
           final DataOutputInterface innerInterface = PiMMFactory.createDataOutputInterface(dop.getName());
           innerSDF.addActor(innerInterface);
 
-          final String FifoDataType = dop.getFifo().getType();
+          final String fifoDataType = dop.getFifo().getType();
 
           // set outer port's rate : inner port's rate times actor's repetition value
-          final Expression innerRate = dop.getExpression(); // get the inner port's rate formula
-          final String outerPortRate = "(" + innerRate.getExpressionAsString() + ")" + "*" + brv.get(actor).toString();
-          final var outerPortExpression = PiMMFactory.createExpression(outerPortRate);
-          innerInterface.getGraphPort().setExpression(outerPortExpression);
-          // met le taux de l'interface interne à celui de l'acteur lié
+          final String innerRate = dop.getExpression().getExpressionAsString(); // get the inner port's rate formula
+          final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
+          innerInterface.getGraphPort().setExpression(outerPortRate);
           innerInterface.getDataPort().setExpression(innerRate);
 
           // first plug the old fifo in to the new interface to avoid conflict (can't have 2 fifos linked to 1
@@ -97,9 +89,8 @@ public class ActorMerger {
           // then create a new fifo to connect the inner actor to the hierar. interface
           innerInterface.getGraphPort().setOutgoingFifo(dop.getFifo());
 
-          final Fifo internalFifo = PiMMFactory.createFifo(dop, innerInterface.getDataPort(), FifoDataType);
+          final Fifo internalFifo = PiMMFactory.createFifo(dop, innerInterface.getDataPort(), fifoDataType);
           innerSDF.addFifo(internalFifo);
-          dop.setExpression(innerRate);
 
         } else {
           innerSDF.addFifo(dop.getOutgoingFifo());
@@ -138,8 +129,6 @@ public class ActorMerger {
         innerDep.setSetter(innerCii);
       });
     }
-
-    graph.addActor(innerSDF);
 
     return innerSDF;
 
