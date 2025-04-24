@@ -261,7 +261,7 @@ public class ClusteringHelper {
    * @return outside incoming fifo
    */
   public static Fifo getOutsideIncomingFifo(final Fifo inFifo) {
-    final AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
+    final AbstractActor sourceActor = inFifo.getSource();
     if (sourceActor instanceof DataInputInterface) {
       return ((DataInputInterface) sourceActor).getGraphPort().getIncomingFifo();
     }
@@ -277,7 +277,7 @@ public class ClusteringHelper {
    * @return outside outgoing fifo
    */
   public static Fifo getOutsideOutgoingFifo(final Fifo inFifo) {
-    final AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
+    final AbstractActor targetActor = inFifo.getTarget();
     if (targetActor instanceof DataOutputInterface) {
       return ((DataOutputInterface) targetActor).getGraphPort().getOutgoingFifo();
     }
@@ -359,7 +359,7 @@ public class ClusteringHelper {
    *          the scenario
    * @return the list of components actor is mappable to, based on the scenario mappings
    */
-  public static List<ComponentInstance> getArch(AbstractActor actor, Scenario scenario) {
+  public static List<ComponentInstance> getMappings(AbstractActor actor, Scenario scenario) {
     return scenario.getConstraints().getPossibleMappings(actor);
   }
 
