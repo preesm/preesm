@@ -8,8 +8,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
-import org.preesm.algorithm.schedule.sdf.HeterogeneousScheduler;
-import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
@@ -35,7 +33,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
-  // ComponentInstance cpu1;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -69,28 +66,19 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     // cpu1.setInstanceName("cpu1");
     // cpu1.setHardwareId(0);
 
+    // find any cpu in scenario, whatever
+    final var anyCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU)
+        .toList().getFirst();
+
     for (final AbstractActor actor : algorithm.getActors()) {
       if (actor instanceof PiGraph) {
         final Actor placeholder = PiMMFactory.createActor(actor.getName() + "_placeholder");
         placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
         algorithm.addActor(placeholder);
         replaceAndRemoveActor(actor, placeholder, algorithm);
-        scenario.getConstraints().addConstraint(cpu1, placeholder); // test, idéalement ça serait une "non-archi"
+        scenario.getConstraints().addConstraint(anyCPU, placeholder); // test, idéalement ça serait une "non-archi"
       }
     }
-
-    // On retire la fpga de la liste d'archi pour que le scheduling CPU ne râle pas
-    // final List<ComponentInstance> cloneList = new LinkedList(architecture.getComponentInstances());
-    // for (final var comp : cloneList) {
-    // if (!(comp.getComponent() instanceof CPU)) {
-    // architecture.getComponentInstances().remove(comp);
-    // }
-    // }
-    // for (final var comp : architecture.getComponentHolder().getComponents()) {
-    // if (!(comp.getInstances().getFirst() instanceof CPU)) {
-    // architecture.getComponentHolder().getComponents().remove(comp);
-    // }
-    // }
 
     // nouvelle api
     final var synthesis = new PreesmSynthesisTask();
@@ -99,10 +87,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     parameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
 
     final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
-
-    final SynthesisResult schedule_mapping = HeterogeneousScheduler.schedule(algorithm, architecture, scenario);
-
-    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, schedule_mapping.schedule);
 
     return new HashMap<>();
 
