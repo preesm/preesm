@@ -52,7 +52,6 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 
 /**
@@ -68,9 +67,9 @@ public class SimpleScheduler extends AbstractScheduler {
   @Override
   protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
 
-    if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
-      throw new PreesmSchedulingException("This task must be called with a CPU architecture, abandon.");
-    }
+    // if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
+    // throw new PreesmSchedulingException("This task must be called with a CPU architecture, abandon.");
+    // }
 
     final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
     final Mapping resultMapping = MappingFactory.eINSTANCE.createMapping();
