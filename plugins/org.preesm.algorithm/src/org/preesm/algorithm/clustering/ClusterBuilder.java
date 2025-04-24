@@ -56,34 +56,52 @@ public class ClusterBuilder {
     final ComponentInstance refFPGA = scenario.getDesign().getComponentInstances().stream()
         .filter(c -> c.getComponent() instanceof FPGA).findFirst().orElse(null);
 
+    // list all processing elements (i.e component instances) used in the architecture
+    final EList<ComponentInstance> componentList = scenario.getDesign().getComponentInstances();
+    // find all, non-cpu PEs (the ones whose actors we want to cluster)
+    final List<
+        ComponentInstance> nonCpuList = componentList.stream().filter(c -> !(c.getComponent() instanceof CPU)).toList();
+
     int i = 0;
     // visit all actors to search those that can act as seeds
     do {
       boolean seed_found = false;
       AbstractActor actor;
+      ComponentInstance refArch;
 
       // try to find a valid, non-visited seed
       do {
         actor = listActors.get(i);
         i++;
 
-        // check actor has not been tested before, and if it is mapped to fpga
-        if (!actorIsVisited.get(actor) && ClusteringHelper.getArch(actor, scenario).contains(refFPGA)) {
+        // all the PEs actor is mappable to that are not CPUs
+        final var nonCpuMappings = ClusteringHelper.getMappings(actor, scenario).stream()
+            .filter(c -> !(c.getComponent() instanceof CPU)).toList();
+
+        // check actor has not been tested before, and if it is mapped to a non-CPU PE
+        if (!actorIsVisited.get(actor) && !nonCpuMappings.isEmpty()) {
+
           // check if it is a valid seed :
           // there is a non-fpga predecessor actor or no inputs at all, and an fpga successor actor
-          final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(a -> a instanceof Actor)
+          final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
               .map(a -> (Actor) a).toList();
+
+          // decide which arch will be used to clusterize
+          refArch = seedArchHeuristic(graph, scenario, actor);
 
           final boolean anyCPUPredecessor = predecessors.stream()
               .anyMatch(a -> scenario.getConstraints().getPossibleMappings(a).contains(refCPU));
 
-          final List<Actor> successors = actor.getDirectSuccessors().stream().filter(a -> a instanceof Actor)
+          final List<Actor> successors = actor.getDirectSuccessors().stream().filter(Actor.class::isInstance)
               .map(a -> (Actor) a).toList();
 
-          final boolean anyFPGASuccessor = successors.stream()
-              .anyMatch(a -> scenario.getConstraints().getPossibleMappings(a).contains(refFPGA));
+          // cannot use refArch in .contains() because FUCK JAVA
+          final var refArchClone = refArch;
 
-          seed_found = (anyCPUPredecessor || predecessors.isEmpty()) && anyFPGASuccessor;
+          final boolean anyRefArchSuccessor = successors.stream()
+              .anyMatch(a -> scenario.getConstraints().getPossibleMappings(a).contains(refArchClone));
+
+          seed_found = (anyCPUPredecessor || predecessors.isEmpty()) && anyRefArchSuccessor;
         }
 
         if (i == listActors.size()) {
@@ -124,6 +142,27 @@ public class ClusterBuilder {
 
   }
 
+  /***
+   * The heuristic that decides which of the PEs available as maping for actor will be used to start the clustering.
+   *
+   * @param graph
+   *          the algorithm graph
+   * @param scenario
+   *          the scenario
+   * @param actor
+   *          the actor
+   * @return the component chosen
+   */
+  private static ComponentInstance seedArchHeuristic(PiGraph graph, Scenario scenario, AbstractActor actor) {
+    // TODO make it smarter (or at least non-trivial)
+    if (ClusteringHelper.getMappings(actor, scenario).stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
+      return ClusteringHelper.getMappings(actor, scenario).stream().filter(c -> c.getComponent() instanceof FPGA)
+          .toList().getFirst();
+    }
+    return ClusteringHelper.getMappings(actor, scenario).getFirst();
+
+  }
+
   /**
    * This function will build a list of actors that can be merged with the seed actor.
    *
@@ -145,7 +184,7 @@ public class ClusterBuilder {
 
     final List<AbstractActor> seedSuccessorsSameArch = seed.getDataOutputPorts().stream()
         .map(dop -> dop.getOppositePort().getContainingActor())
-        .filter(a -> ClusteringHelper.getArch(a, scenario).contains(refArchi)).toList();
+        .filter(a -> ClusteringHelper.getMappings(a, scenario).contains(refArchi)).toList();
 
     for (final AbstractActor actor : seedSuccessorsSameArch) {
 
