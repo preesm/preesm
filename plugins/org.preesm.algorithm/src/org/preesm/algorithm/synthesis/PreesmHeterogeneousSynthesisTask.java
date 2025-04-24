@@ -26,6 +26,7 @@ import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.SlamFactory;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -33,6 +34,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation {
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
+  SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
+  // ComponentInstance cpu1;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -57,6 +60,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     }
 
     // ------------------ replace hierarchical actors with placeholders ------------------
+    // get some cpu architecture that will please the scheduler
+    // cpu1 = SlamFactory.eINSTANCE.createComponentInstance();
+    // final CPU cpu = SlamFactory.eINSTANCE.createCPU();
+    // final VLNV vlnvcpu = SlamFactory.eINSTANCE.createVLNV();
+    // cpu.setVlnv(vlnvcpu);
+    // cpu1.setComponent(cpu);
+    // cpu1.setInstanceName("cpu1");
+    // cpu1.setHardwareId(0);
 
     for (final AbstractActor actor : algorithm.getActors()) {
       if (actor instanceof PiGraph) {
@@ -64,31 +75,22 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
         placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
         algorithm.addActor(placeholder);
         replaceAndRemoveActor(actor, placeholder, algorithm);
-        // scenario.getConstraints().addConstraint(cpu1, placeholder); // test, idéalement ça serait une "non-archi"
+        scenario.getConstraints().addConstraint(cpu1, placeholder); // test, idéalement ça serait une "non-archi"
       }
     }
 
     // On retire la fpga de la liste d'archi pour que le scheduling CPU ne râle pas
-    // design.getComponentHolder().getComponents().remove(fpga1.getComponent());
-
-    // vieille api
-    /*
-     * parameters.put("Check", "True"); parameters.put("Optimize synchronization", "True");
-     * parameters.put("balanceLoads", "True"); parameters.put("edgeSchedType", "Simple");
-     * parameters.put("simulatorType", "AccuratelyTimed");
-     *
-     * Map<String, Object> schedule; schedule = HeterogeneousScheduler.schedule(inputs, parameters, monitor, nodeName,
-     * workflow);
-     *
-     * assertNotNull(algo); // très très peu d'idées assertNotNull(schedule);
-     *
-     * final LatencyAbc ABCSchedule = (LatencyAbc) schedule.get("ABC"); // le latencyABC final MapperDAG resImpl = final
-     * MapperDAG resImpl = ABCSchedule.getImplementation(); final MapperDAGVertex actor12 =
-     * resImpl.getMapperDAGVertex("actor12"); ABCSchedule.getEffectiveComponent(actor12); ABCSchedule.getFinalLatency();
-     * final VertexTiming timing = actor12.getTiming();
-     *
-     * ABCSchedule.getTotalOrder();
-     */
+    // final List<ComponentInstance> cloneList = new LinkedList(architecture.getComponentInstances());
+    // for (final var comp : cloneList) {
+    // if (!(comp.getComponent() instanceof CPU)) {
+    // architecture.getComponentInstances().remove(comp);
+    // }
+    // }
+    // for (final var comp : architecture.getComponentHolder().getComponents()) {
+    // if (!(comp.getInstances().getFirst() instanceof CPU)) {
+    // architecture.getComponentHolder().getComponents().remove(comp);
+    // }
+    // }
 
     // nouvelle api
     final var synthesis = new PreesmSynthesisTask();
