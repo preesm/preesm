@@ -10,6 +10,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 
+@Deprecated
+// not sure it's useless, but it probably is
 public class HeterogeneousScheduler {
   // old API
   public static Map<String, Object> schedule(final Map<String, Object> inputs, final Map<String, String> parameters,
