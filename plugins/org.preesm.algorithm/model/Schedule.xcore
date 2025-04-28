@@ -91,7 +91,7 @@ interface Schedule {
 	}
 	/*
 	 * Returns the number of extra top iterations this schedule can cross. It is used to
-	 * represent software pipelined schedules (see {@link StagedSchedule}) or to pipeline
+	 * represent software pipelined schedules or to pipeline
 	 * the execution of actors (see {@link StagedActorSchedule}).
 	 *
 	 * Default value is the sum of its children.

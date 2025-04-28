@@ -207,7 +207,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   }
 
   /**
-   * Getter of the property <tt>sinks</tt>.
+   * Getter of the property <code>sinks</code>.
    *
    * @return Returns the sinks.
    */
@@ -251,7 +251,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   public abstract SDFAbstractVertex copy();
 
   /**
-   * Getter of the property <tt>sources</tt>.
+   * Getter of the property <code>sources</code>.
    *
    * @return Returns the sources.
    */
@@ -309,7 +309,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   }
 
   /**
-   * Setter of the property <tt>sinks</tt>.
+   * Setter of the property <code>sinks</code>.
    *
    * @param sinks
    *          The sinks to set.
@@ -319,7 +319,7 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
   }
 
   /**
-   * Setter of the property <tt>sources</tt>.
+   * Setter of the property <code>sources</code>.
    *
    * @param sources
    *          The sources to set.
@@ -381,8 +381,6 @@ public abstract class SDFAbstractVertex extends AbstractVertex<SDFGraph> {
    * @return true, if successful
    * @throws PreesmException
    *           the SDF 4 J exception
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    */
   @SuppressWarnings({ "unchecked", "rawtypes" })
   public boolean validateModel() {

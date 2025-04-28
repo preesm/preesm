@@ -106,14 +106,13 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
    *
    * @param vertex
    *          the vertex
-   * @return the subset of vertices adjacent to vertex.
+   * @return the immutable subset of vertices adjacent to vertex.
    *
-   * @warning <b>The returned subset must not be modified. Make a copy for local use.</b>
    */
   public Set<V> adjacentVerticesOf(final V vertex) {
     // If this node was already treated
     if (this.adjacentVerticesBackup.containsKey(vertex)) {
-      return this.adjacentVerticesBackup.get(vertex);
+      return Set.copyOf(this.adjacentVerticesBackup.get(vertex));
     }
 
     // Else, treat the node
@@ -131,7 +130,7 @@ public abstract class AbstractMaximumWeightCliqueSolver<V extends IWeightedVerte
 
     // Save the result.
     this.adjacentVerticesBackup.put(vertex, result);
-    return result;
+    return Set.copyOf(result);
   }
 
   public Set<V> getHeaviestClique() {

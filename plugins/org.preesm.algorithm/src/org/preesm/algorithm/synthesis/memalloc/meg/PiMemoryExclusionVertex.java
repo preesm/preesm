@@ -73,8 +73,9 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
    * <code>
    * List&lt;Pair&lt;MemoryExclusionVertex,Pair&lt;Range,Range&gt;&gt;</code> <br>
    * This {@link List} stores {@link Pair} of {@link PiMemoryExclusionVertex} and {@link Pair}. Each {@link Pair}
-   * corresponds to a {@link Range} of real tokens of the memory object and their position in the actual
-   * {@link PiMemoryExclusionVertex} (i.e. the key of the first {@link Pair}). <br>
+   * corresponds to a {@link org.preesm.algorithm.synthesis.memalloc.script.PiRange Range} of real tokens of the memory
+   * object and their position in the actual {@link PiMemoryExclusionVertex} (i.e. the key of the first {@link Pair}).
+   * <br>
    * For the host memory object, this property gives the position of the range of bits of the host within the memory
    * allocated for it.<br>
    * For hosted memory object, this property gives the position of the range(s) of bits of the hosted memory object
@@ -241,8 +242,8 @@ public class PiMemoryExclusionVertex extends AbstractVertex<PiMemoryExclusionGra
 
   @Override
   public PiMemoryExclusionVertex getClone() {
-    PiMemoryExclusionVertex copy;
-    copy = new PiMemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(), this.getScenario());
+    final PiMemoryExclusionVertex copy = new PiMemoryExclusionVertex(this.getSource(), this.getSink(), this.getWeight(),
+        this.getScenario());
     copy.edge = this.edge;
     return copy;
   }

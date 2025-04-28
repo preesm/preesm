@@ -112,8 +112,6 @@ public class Argument {
    * Int value.
    *
    * @return the int
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    * @throws ExpressionEvaluationException
    *           the no integer value exception
    */

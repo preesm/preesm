@@ -156,7 +156,7 @@ public class CodegenHierarchicalModelGenerator {
   private final BiMap<DAGVertex, Call> dagVertexCalls;
 
   /**
-   * {@link PreesmScenario Scenario}.
+   * {@link Scenario}.
    */
   private final Scenario scenario;
 
@@ -579,7 +579,7 @@ public class CodegenHierarchicalModelGenerator {
       bufIter.reaffectContainer(((SubBuffer) variable).getContainer());
       bufIter.setIter(currentIterVar);
       bufIter.setTokenTypeSizeInBit(((SubBuffer) variable).getTokenTypeSizeInBit());
-      bufIter.setType(((SubBuffer) variable).getType());
+      bufIter.setType(variable.getType());
       bufIter.setOffsetInBit(((SubBuffer) variable).getOffsetInBit());
       bufIter.setIterSize(bufIterSize);
       bufIter.setNbToken(bufSize);

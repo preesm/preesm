@@ -36,7 +36,6 @@ package org.preesm.commons.files;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
 import java.util.NoSuchElementException;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.FileLocator;
@@ -49,7 +48,7 @@ import org.preesm.commons.exceptions.PreesmResourceException;
  * <p>
  * Set of methods to help developers locate, load or read resources from the Preesm source code (or binary) base. This
  * is useful for loading templates, test inputs, default scripts, etc. This helper is not intended to be used for
- * writing files. Entry point is the {@link #resolve(String, List, Object)} method.
+ * writing files. Entry point is the {@link #resolve(String, Class)} method.
  * </p>
  *
  * <p>
@@ -60,14 +59,13 @@ import org.preesm.commons.exceptions.PreesmResourceException;
  * </p>
  *
  * <p>
- * A sample call would look like
+ * A sample call would look like:
  *
  * <pre>
  * final URL url = PreesmResourcesHelper.getInstance().resolve("GanttHelp.html", "org.preesm.algorithm",
  *     GanttPlotter.class);
  * final String content = PreesmResourcesHelper.getInstance().read(url);
  * </pre>
- * </p>
  *
  * <p>
  * To find helper methods for input/output (algorithm, generated code, etc.), see {@link PreesmIOHelper}.
@@ -181,10 +179,6 @@ public class PreesmResourcesHelper {
     final ClassLoader classLoader = projectClass.getClassLoader();
     // no need to prefix the resource path with RESOURCE_PATH since the resource folder
     // should already be included in the classpath
-    final URL url = classLoader.getResource(resource);
-    if (url == null) {
-      return null;
-    }
-    return url;
+    return classLoader.getResource(resource);
   }
 }

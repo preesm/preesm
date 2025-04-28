@@ -93,8 +93,7 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
   }
 
   /**
-   * Returns the transformation associated with this {@link TaskNode}. Note that it is only valid if
-   * {@link #isTransformationPossible()} returns true.
+   * Returns the transformation associated with this {@link TaskNode}.
    *
    * @return The transformation associated with this transformation node, or <code>null</code> if the transformation is
    *         not valid.

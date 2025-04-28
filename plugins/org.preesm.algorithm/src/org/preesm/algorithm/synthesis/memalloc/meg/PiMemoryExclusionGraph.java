@@ -58,8 +58,6 @@ import org.jgrapht.generate.ComplementGraphGenerator;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
-import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 import org.preesm.algorithm.model.PropertySource;
@@ -91,7 +89,6 @@ import org.preesm.model.slam.ComponentInstance;
  * <li>Undirected edges that signify that two memory transfers might be concurrent, and thus can not share the same
  * resource.</li>
  * </ul>
- * </p>
  *
  * @author kdesnos
  *
@@ -114,7 +111,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   /**
    * Property to store the merged memory objects resulting from the script processing. The stored object is a:<br>
    * <code>
-   * Map&lt;MemoryExclusionVertex,Set&ltMemoryExclusionVertex&gt;&gt;
+   * Map&lt;MemoryExclusionVertex,Set&lt;MemoryExclusionVertex&gt;&gt;
    * </code><br>
    * <br>
    * This {@link Map} associates of {@link PiMemoryExclusionVertex} that contain merged {@link PiMemoryExclusionVertex}
@@ -139,13 +136,13 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   private final transient Map<String, Set<PiMemoryExclusionVertex>> verticesPredecessors = new LinkedHashMap<>();
 
   /**
-   * {@link PiMemoryExclusionVertex} of the {@link MemoryExclusionGraph} in the scheduling order retrieved in the
+   * {@link PiMemoryExclusionVertex} of the {@link PiMemoryExclusionGraph} in the scheduling order retrieved in the
    * {@link #updateWithSchedule(DirectedAcyclicGraph)} method.
    */
   private transient List<PiMemoryExclusionVertex> memExVerticesInSchedulingOrder = null;
 
   /**
-   * The {@link PropertyBean} that stores the properties of the {@link MemoryExclusionGraph}.
+   * The {@link PropertyBean} that stores the properties of the {@link PiMemoryExclusionGraph}.
    */
   private final transient PropertyBean properties = new PropertyBean();
 
@@ -198,7 +195,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
 
   /**
    * Build the memory objects corresponding to the fifos of the input {@link DirectedAcyclicGraph}. The new memory
-   * objects are added to the {@link MemoryExclusionGraph}. This method creates 1 or 2 {@link PiMemoryExclusionVertex}
+   * objects are added to the {@link PiMemoryExclusionGraph}. This method creates 1 or 2 {@link PiMemoryExclusionVertex}
    * for each pair of init/end {@link DAGVertex} encountered in the graph.
    *
    * @param dag
@@ -266,7 +263,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * Method to build the graph based on a DirectedAcyclicGraph.
    *
    * @param dag
-   *          This DirectedAcyclicGraph is analyzed to create the nodes and edges of the MemoryExclusionGraph. The DAG
+   *          This DirectedAcyclicGraph is analyzed to create the nodes and edges of the PiMemoryExclusionGraph. The DAG
    *          used must be the output of a scheduling process. This property ensures that all preceding nodes of a
    *          "merge" node are treated before treating the "merge" node. The DAG will be modified by this function.
    */
@@ -357,7 +354,6 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * of the List is duplicated, but not its content.
    *
    * @return the object
-   * @override
    */
   @Override
   public PiMemoryExclusionGraph copy() {
@@ -365,7 +361,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * This method puts the {@link MemoryExclusionGraph} back to its state before any memory allocation was performed.
+   * This method puts the {@link PiMemoryExclusionGraph} back to its state before any memory allocation was performed.
    * Tasks performed are:
    * <ul>
    * <li>Put back the host memory objects that were replaced by their content during memory allocation.</li>
@@ -376,44 +372,45 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hostVertices = getPropertyBean()
         .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     // Scan host vertices
-    if (hostVertices != null) {
-      for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> entry : hostVertices.entrySet()) {
-        final PiMemoryExclusionVertex hostVertex = entry.getKey();
-        final Set<PiMemoryExclusionVertex> value = entry.getValue();
-        // Put the host back to its original size (if it was changed, i.e. if it was allocated)
-        final Object hostSizeObj = hostVertex.getPropertyBean().getValue(PiMemoryExclusionVertex.HOST_SIZE);
-        if (hostSizeObj != null) {
-          final long hostSize = (long) hostSizeObj;
-          hostVertex.setWeight(hostSize);
-          hostVertex.getPropertyBean().removeProperty(PiMemoryExclusionVertex.HOST_SIZE);
+    if (hostVertices == null) {
+      return;
+    }
+    for (final Entry<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> entry : hostVertices.entrySet()) {
+      final PiMemoryExclusionVertex hostVertex = entry.getKey();
+      final Set<PiMemoryExclusionVertex> value = entry.getValue();
+      // Put the host back to its original size (if it was changed, i.e. if it was allocated)
+      final Object hostSizeObj = hostVertex.getPropertyBean().getValue(PiMemoryExclusionVertex.HOST_SIZE);
+      if (hostSizeObj == null) {
+        continue;
+      }
+      final long hostSize = (long) hostSizeObj;
+      hostVertex.setWeight(hostSize);
+      hostVertex.getPropertyBean().removeProperty(PiMemoryExclusionVertex.HOST_SIZE);
 
-          // Scan merged vertices
-          for (final PiMemoryExclusionVertex mergedVertex : value) {
-            // If the merged vertex was in the graph (i.e. it was already allocated)
-            if (containsVertex(mergedVertex)) {
-              // Add exclusions between host and adjacent vertex of the merged vertex
-              for (final PiMemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
-                this.addEdge(hostVertex, adjacentVertex);
-              }
-              // Remove it from the MEG
-              removeVertex(mergedVertex);
+      // Scan merged vertices
+      for (final PiMemoryExclusionVertex mergedVertex : value) {
+        // If the merged vertex was in the graph (i.e. it was already allocated)
+        if (containsVertex(mergedVertex)) {
+          // Add exclusions between host and adjacent vertex of the merged vertex
+          for (final PiMemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
+            this.addEdge(hostVertex, adjacentVertex);
+          }
+          // Remove it from the MEG
+          removeVertex(mergedVertex);
 
-              // If the merged vertex is not split
-              if (mergedVertex.getWeight() != 0) {
-                // Put it back to its real weight
-                final long emptySpace = mergedVertex.getPropertyBean()
-                    .getValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-                mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
-              } else {
-                // The vertex was divided. Remove all fake mobjects
-                final List<PiMemoryExclusionVertex> fakeMobjects = mergedVertex.getPropertyBean()
-                    .getValue(PiMemoryExclusionVertex.FAKE_MOBJECT);
-                for (final PiMemoryExclusionVertex fakeMobj : fakeMobjects) {
-                  removeVertex(fakeMobj);
-                }
-                fakeMobjects.clear();
-              }
+          // If the merged vertex is not split
+          if (mergedVertex.getWeight() != 0) {
+            // Put it back to its real weight
+            final long emptySpace = mergedVertex.getPropertyBean().getValue(PiMemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+            mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
+          } else {
+            // The vertex was divided. Remove all fake mobjects
+            final List<PiMemoryExclusionVertex> fakeMobjects = mergedVertex.getPropertyBean()
+                .getValue(PiMemoryExclusionVertex.FAKE_MOBJECT);
+            for (final PiMemoryExclusionVertex fakeMobj : fakeMobjects) {
+              removeVertex(fakeMobj);
             }
+            fakeMobjects.clear();
           }
         }
       }
@@ -421,25 +418,26 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * This methods returns a clone of the calling {@link MemoryExclusionGraph} where attributes and properties are copied
-   * as follows:
+   * This methods returns a clone of the calling {@link PiMemoryExclusionGraph} where attributes and properties are
+   * copied as follows:
    * <ul>
-   * <li>Deep copy (object is duplicated):</li>
+   * <li>Deep copy (object is duplicated):
    * <ul>
    * <li>List of Vertices (List of PiMemoryExclusionVertex)</li>
    * <li>MemoryExclusionVertex</li>
    * <li>Property of PiMemoryExclusionVertex</li>
    * <li>List of exclusions</li>
-   * <li>{@link #adjacentVerticesBackup}</li>
    * <li>{@link #properties propertyBean} (but not all properties are deeply copied)</li>
    * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property</li>
-   * <li>{@link #dagVerticesInSchedulingOrder}</li>
+   * <li>{@link #memExVerticesInSchedulingOrder}</li>
    * </ul>
-   * <li>Shallow copy (reference to the object is copied):</li>
+   * </li>
+   * <li>Shallow copy (reference to the object is copied):
    * <ul>
    * <li>{@link #SOURCE_DAG} property</li>
    * <li>{@link #verticesPredecessors} list</li>
    * </ul>
+   * </li>
    * </ul>
    * .
    *
@@ -482,16 +480,16 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * This method clones the {@link PropertyBean} of the current {@link MemoryExclusionGraph} into the clone
-   * {@link MemoryExclusionGraph} passed as a parameter. The mObjMap parameter is used to make properties of the clone
+   * This method clones the {@link PropertyBean} of the current {@link PiMemoryExclusionGraph} into the clone
+   * {@link PiMemoryExclusionGraph} passed as a parameter. The mObjMap parameter is used to make properties of the clone
    * reference only cloned {@link PiMemoryExclusionVertex} (and not {@link PiMemoryExclusionVertex} of the original
-   * {@link MemoryExclusionGraph}).
+   * {@link PiMemoryExclusionGraph}).
    *
    * @param result
-   *          The clone {@link MemoryExclusionGraph} created in the {@link #deepClone()} method.
+   *          The clone {@link PiMemoryExclusionGraph} created in the {@link #deepClone()} method.
    * @param mObjMap
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
-   *          {@link PiMemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
+   *          {@link PiMemoryExclusionVertex} of the current {@link PiMemoryExclusionGraph} to their clone.
    */
   private void deepCloneMegProperties(final PiMemoryExclusionGraph result,
       final Map<PiMemoryExclusionVertex, PiMemoryExclusionVertex> mObjMap) {
@@ -556,7 +554,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    *
    * @param mObjMap
    *          <code>Map&lt;MemoryExclusionVertex,MemoryExclusionVertex&gt;</code> associating original
-   *          {@link PiMemoryExclusionVertex} of the current {@link MemoryExclusionGraph} to their clone.
+   *          {@link PiMemoryExclusionVertex} of the current {@link PiMemoryExclusionGraph} to their clone.
    */
   private void deepCloneVerticesProperties(final Map<PiMemoryExclusionVertex, PiMemoryExclusionVertex> mObjMap) {
     for (final Entry<PiMemoryExclusionVertex, PiMemoryExclusionVertex> entry : mObjMap.entrySet()) {
@@ -643,7 +641,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * {@link #deepRemoveVertex(MemoryExclusionVertex)} for a {@link Collection} of {@link PiMemoryExclusionVertex}.
+   * deepRemoveVertex(MemoryExclusionVertex) for a {@link Collection} of {@link PiMemoryExclusionVertex}.
    *
    * @param vertices
    *          the {@link Collection} of {@link PiMemoryExclusionVertex} removed from the graph.
@@ -720,8 +718,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * Gets the mem ex vertices in scheduling order.
    *
    * @return a copy of the {@link #memExVerticesInSchedulingOrder} or <code>null</code> if the
-   *         {@link MemoryExclusionGraph MemEx} was not {@link #updateWithSchedule(DirectedAcyclicGraph) updated with a
-   *         schedule}
+   *         {@link PiMemoryExclusionGraph MemEx} was not {@link #updateWithSchedule(PiGraph, Schedule, Mapping) updated
+   *         with a schedule}
    */
   public List<PiMemoryExclusionVertex> getMemExVerticesInSchedulingOrder() {
     if (this.memExVerticesInSchedulingOrder == null) {
@@ -741,7 +739,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * Returns the total number of {@link PiMemoryExclusionVertex} in the {@link MemoryExclusionGraph} including these
+   * Returns the total number of {@link PiMemoryExclusionVertex} in the {@link PiMemoryExclusionGraph} including these
    * merged as a result of a buffer merging operation, and stored in the {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
    *
    * @return the total number of vertices
@@ -751,8 +749,9 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * Returns the {@link Set} of all {@link PiMemoryExclusionVertex} in the {@link MemoryExclusionGraph}, including these
-   * merged as a result of a buffer merging operation, and stored in the {@value #HOST_MEMORY_OBJECT_PROPERTY} property.
+   * Returns the {@link Set} of all {@link PiMemoryExclusionVertex} in the {@link PiMemoryExclusionGraph}, including
+   * these merged as a result of a buffer merging operation, and stored in the {@value #HOST_MEMORY_OBJECT_PROPERTY}
+   * property.
    *
    * @return the total set of vertices
    */
@@ -773,7 +772,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * parameter.
    *
    * @param memObject
-   *          a {@link PiMemoryExclusionVertex} searched in the {@link MemoryExclusionGraph}
+   *          a {@link PiMemoryExclusionVertex} searched in the {@link PiMemoryExclusionGraph}
    * @return an equal {@link PiMemoryExclusionVertex} from the {@link #vertexSet()}, null if there is no such vertex.
    */
   public PiMemoryExclusionVertex getVertex(final PiMemoryExclusionVertex memObject) {
@@ -787,8 +786,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
 
   /**
    * Method used to update the exclusions between memory objects corresponding to Delay heads and other memory objects
-   * of the {@link MemoryExclusionGraph}. Exclusions will be removed from the exclusion graph, but no exclusions will be
-   * added.
+   * of the {@link PiMemoryExclusionGraph}. Exclusions will be removed from the exclusion graph, but no exclusions will
+   * be added.
    */
   private void updateDelayMemObjectWithSchedule(final PiGraph inputDAG, final Schedule schedule, final Mapping mapping,
       final ScheduleOrderManager orderMngr) {
@@ -799,8 +798,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     final Set<InitActor> initVertices = new LinkedHashSet<>();
 
     for (final AbstractActor currentVertex : orderedActors) {
-      if (currentVertex instanceof InitActor) {
-        initVertices.add((InitActor) currentVertex);
+      if (currentVertex instanceof final InitActor initActor) {
+        initVertices.add(initActor);
       }
     }
 
@@ -859,8 +858,8 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
   }
 
   /**
-   * This function update a {@link MemoryExclusionGraph MemEx} by taking scheduling information contained in a
-   * {@link DirectedAcyclicGraph DAG} into account. <br>
+   * This function update a {@link PiMemoryExclusionGraph MemEx} by taking scheduling information contained in a
+   * {@link PiGraph DAG} into account. <br>
    * <br>
    * It is important to note that only scheduling order of actors on each core is taken into account in order to remove
    * exclusions. The scheduling order of communication primitives is currently ignored when removing exclusions because
@@ -873,7 +872,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
    * done with memory object lifetime) could be done to remove unnecessary exclusions.
    *
    * @param dag
-   *          the {@link DirectedAcyclicGraph DAG} used (will not be modified)
+   *          the {@link PiGraph DAG} used (will not be modified)
    */
   public void updateWithSchedule(final PiGraph dag, final Schedule schedule, final Mapping mapping) {
 

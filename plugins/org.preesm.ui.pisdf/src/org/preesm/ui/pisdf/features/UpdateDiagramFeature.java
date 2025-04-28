@@ -60,8 +60,8 @@ import org.preesm.model.pisdf.SpecialActor;
  * </p>
  *
  * @author Antoine Lorence
- * @see OrccDiagramTypeProvider#isAutoUpdateAtStartup() Code adapted from ORCC (net.sf.orcc.xdf.ui.features,
- *      https://github.com/orcc/orcc)
+ * @see "OrccDiagramTypeProvider#isAutoUpdateAtStartup() Code adapted from ORCC (net.sf.orcc.xdf.ui.features,
+ *      https://github.com/orcc/orcc)"
  */
 public class UpdateDiagramFeature extends DefaultUpdateDiagramFeature {
 

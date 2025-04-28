@@ -613,7 +613,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
    *          the removed {@link SDFEdge}
    * @return <code>true</code> if the edge was correctly removed, <code>false</code> else.
    *
-   * @see AbstractGraph#removeEdge(SDFEdge)
+   * @see AbstractGraph#removeEdge(AbstractEdge)
    *
    *
    */
@@ -623,27 +623,22 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
     final SDFAbstractVertex targetVertex = edge.getTarget();
     final boolean res = super.removeEdge(edge);
     if (res) {
-      if (sourceVertex instanceof final SDFVertex sdfVertex) {
-        sdfVertex.removeSink(edge);
-      }
-      if (targetVertex instanceof final SDFVertex sdfVertex) {
-        sdfVertex.removeSource(edge);
+
+      switch (sourceVertex) {
+        case final SDFVertex sdfVertex -> sdfVertex.removeSink(edge);
+        case final SDFForkVertex sdfFork -> sdfFork.connectionRemoved(edge);
+        case final SDFBroadcastVertex sdfBrd when !(sourceVertex instanceof SDFRoundBufferVertex) ->
+          sdfBrd.connectionRemoved(edge);
+        default -> {
+          /* Nothing */ }
       }
 
-      if (sourceVertex instanceof final SDFForkVertex sdfFork) {
-        sdfFork.connectionRemoved(edge);
-      }
-      if (targetVertex instanceof final SDFJoinVertex sdfJoin) {
-        sdfJoin.connectionRemoved(edge);
-      }
-
-      // Beware of the Broadcast - RoundBuffer inheritance
-      if ((sourceVertex instanceof final SDFBroadcastVertex sdfBrd)
-          && !(sourceVertex instanceof SDFRoundBufferVertex)) {
-        sdfBrd.connectionRemoved(edge);
-      }
-      if (targetVertex instanceof final SDFRoundBufferVertex sdfRb) {
-        sdfRb.connectionRemoved(edge);
+      switch (targetVertex) {
+        case final SDFVertex sdfVertex -> sdfVertex.removeSource(edge);
+        case final SDFJoinVertex sdfJoin -> sdfJoin.connectionRemoved(edge);
+        case final SDFRoundBufferVertex sdfRb -> sdfRb.connectionRemoved(edge);
+        default -> {
+          /* Nothing */ }
       }
 
     }
@@ -663,8 +658,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   /*
    * (non-Javadoc)
    *
-   * @see org.preesm.algorithm.model.IModelObserver#update(org.preesm.algorithm.model.AbstractGraph,
-   * java.lang.Object)
+   * @see org.preesm.algorithm.model.IModelObserver#update(org.preesm.algorithm.model.AbstractGraph, java.lang.Object)
    */
   @SuppressWarnings("rawtypes")
   @Override

@@ -70,8 +70,8 @@ public class PolygonPortAnchor extends AbstractConnectionAnchor {
   }
 
   /**
-   * Gets a Rectangle from {@link #getBox()} and returns the Point where a line from the center of the Rectangle to the
-   * Point <i>reference</i> intersects the Rectangle.
+   * Gets a Rectangle from {@link #getOwner()} and returns the Point where a line from the center of the Rectangle to
+   * the Point <i>reference</i> intersects the Rectangle.
    *
    * @param reference
    *          The reference point
@@ -80,11 +80,10 @@ public class PolygonPortAnchor extends AbstractConnectionAnchor {
   @Override
   public Point getLocation(final Point reference) {
     Polygon owner;
-    if (getOwner() instanceof VertexFigure) {
-      owner = (Polygon) getOwner().getChildren().get(0);
-    } else {
+    if (!(getOwner() instanceof VertexFigure)) {
       throw new NullPointerException();
     }
+    owner = (Polygon) getOwner().getChildren().get(0);
 
     final Point center = getReferencePoint();
     if ((reference.x == center.x) && (reference.y == center.y)) {
@@ -142,9 +141,8 @@ public class PolygonPortAnchor extends AbstractConnectionAnchor {
     final Point reference = this.mgr.getReferencePoint(this);
     if (reference == null) {
       return super.getReferencePoint();
-    } else {
-      return reference;
     }
+    return reference;
   }
 
 }

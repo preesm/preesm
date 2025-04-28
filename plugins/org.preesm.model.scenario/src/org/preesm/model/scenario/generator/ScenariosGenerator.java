@@ -78,10 +78,10 @@ import org.preesm.model.slam.serialize.SlamParser;
 import org.w3c.dom.Document;
 
 /**
- * Class to generate a set of PreesmScenarios from several architectures and algorithms
+ * Class to generate a set of Scenarios from several architectures and algorithms
  *
  * <p>
- * A PreesmScenario is generated for each possible pair of algorithm and architecture.
+ * A Scenario is generated for each possible pair of algorithm and architecture.
  * </p>
  *
  * <p>
@@ -125,9 +125,9 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Generates a set of PreesmScenario from an IProject.
+   * Generates a set of Scenario from an IProject.
    *
-   * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
+   * @return a set of Scenario, one for each possible pair of architecture and algorithm
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
@@ -140,13 +140,13 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Generate a set of PreesmScenarios from an architecture folder and from an algorithm folder.
+   * Generate a set of Scenarios from an architecture folder and from an algorithm folder.
    *
    * @param archiDir
    *          the IFolder containing the architectures
    * @param algoDir
    *          the IFolder containing the algorithms
-   * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
+   * @return a set of Scenario, one for each possible pair of architecture and algorithm
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
@@ -174,13 +174,13 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Generates a set of PreesmScenario from a set of architectures URL and a set of algorithms URL.
+   * Generates a set of Scenario from a set of architectures URL and a set of algorithms URL.
    *
    * @param archis
    *          the set of architectures URL
    * @param algos
    *          the set of algorithms URL
-   * @return a set of PreesmScenario, one for each possible pair of architecture and algorithm
+   * @return a set of Scenario, one for each possible pair of architecture and algorithm
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
@@ -197,20 +197,20 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Create a PreesmScenario for a given pair of architecture and algorithm.
+   * Create a Scenario for a given pair of architecture and algorithm.
    *
    * @param archiURL
    *          the URL of the given architecture
    * @param algoURL
    *          the URL of the algorithm
-   * @return a PreesmScenario for the architecture and algorithm, initialized with default values
+   * @return a Scenario for the architecture and algorithm, initialized with default values
    * @throws CoreException
    *           the core exception
    * @throws FileNotFoundException
    *           the file not found exception
    */
   private Scenario createScenario(final IProject project, final String archiURL, final String algoURL) {
-    // Create a new PreesmScenario
+    // Create a new Scenario
     final Scenario scenario = ScenarioUserFactory.createScenario();
     // Handle factory registry
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -255,10 +255,10 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Set default values to constraints and timings of a PreesmScenario wrt. a PiSDF algorithm and an architecture
+   * Set default values to constraints and timings of a Scenario wrt. a PiSDF algorithm and an architecture
    *
    * @param scenario
-   *          the PreesmScenario to fill
+   *          the Scenario to fill
    * @param archi
    *          the Design to take into account
    * @param algoURL
@@ -291,7 +291,7 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Generates a set of PreesmScenario from an IProject and save them in a folder.
+   * Generates a set of Scenario from an IProject and save them in a folder.
    *
    * @throws CoreException
    *           the core exception
@@ -303,12 +303,12 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Save a set of PreesmScenarios in a given IFolder.
+   * Save a set of Scenarios in a given IFolder.
    *
    * @param scenarios
-   *          the set of PreesmScenarios to save
+   *          the set of Scenarios to save
    * @param scenarioDir
-   *          the IFolder where to save the PreesmScenarios
+   *          the IFolder where to save the Scenarios
    * @throws CoreException
    *           the core exception
    */
@@ -325,12 +325,12 @@ public class ScenariosGenerator {
   }
 
   /**
-   * Save a given PreesmScenario in a given IFile.
+   * Save a given Scenario in a given IFile.
    *
    * @param scenario
-   *          the PreesmScenario to save
+   *          the Scenario to save
    * @param scenarioFile
-   *          the IFile in which to save the PreesmScenario
+   *          the IFile in which to save the Scenario
    */
   private void saveScenario(final Scenario scenario, final IFile scenarioFile) {
     final ScenarioWriter writer = new ScenarioWriter(scenario);

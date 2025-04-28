@@ -64,13 +64,13 @@ import org.preesm.ui.scenario.editor.ScenarioPage;
 import org.preesm.ui.scenario.editor.utils.VertexLexicographicalComparator;
 
 /**
- * This page contains parameters informations of the {@link PreesmScenario}.
+ * This page contains parameters informations of the Preesm {@link Scenario}.
  *
  * @author jheulot
  */
 public class PiParametersPage extends ScenarioPage {
 
-  /** The {@link PreesmScenario}. */
+  /** The {@link Scenario}. */
   private Scenario scenario = null;
 
   /** The table viewer. */
@@ -166,9 +166,9 @@ public class PiParametersPage extends ScenarioPage {
     this.tableViewer.setCellModifier(new ICellModifier() {
       @Override
       public void modify(final Object element, final String property, final Object value) {
-        if (element instanceof TableItem) {
+        if (element instanceof final TableItem tableItem) {
           @SuppressWarnings("unchecked")
-          Entry<Parameter, String> param = (Entry<Parameter, String>) ((TableItem) element).getData();
+          final Entry<Parameter, String> param = (Entry<Parameter, String>) tableItem.getData();
           String newValue = (String) value;
           if (!newValue.equals(param.getValue())) {
             if (newValue.isEmpty()) {
@@ -183,9 +183,7 @@ public class PiParametersPage extends ScenarioPage {
 
       @Override
       public Object getValue(final Object element, final String property) {
-        if (element instanceof Entry) {
-          @SuppressWarnings("unchecked")
-          final Entry<Parameter, String> param = (Entry<Parameter, String>) element;
+        if (element instanceof final Entry<?, ?> param) {
           return param.getValue();
         }
         return "";

@@ -83,7 +83,6 @@ import org.preesm.model.slam.ComponentInstance;
  * <li>Undirected edges that signify that two memory transfers might be concurrent, and thus can not share the same
  * resource.</li>
  * </ul>
- * </p>
  *
  * @author kdesnos
  *
@@ -106,7 +105,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   /**
    * Property to store the merged memory objects resulting from the script processing. The stored object is a:<br>
    * <code>
-   * Map&lt;MemoryExclusionVertex,Set&ltMemoryExclusionVertex&gt;&gt;
+   * Map&lt;MemoryExclusionVertex,Set&lt;MemoryExclusionVertex&gt;&gt;
    * </code><br>
    * <br>
    * This {@link Map} associates of {@link MemoryExclusionVertex} that contain merged {@link MemoryExclusionVertex} to
@@ -442,7 +441,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * of the List is duplicated, but not its content.
    *
    * @return the object
-   * @override
    */
   @Override
   public MemoryExclusionGraph copy() {
@@ -509,7 +507,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * This methods returns a clone of the calling {@link MemoryExclusionGraph} where attributes and properties are copied
    * as follows:
    * <ul>
-   * <li>Deep copy (object is duplicated):</li>
+   * <li>Deep copy (object is duplicated):
    * <ul>
    * <li>List of Vertices (List of MemoryExclusionVertex)</li>
    * <li>MemoryExclusionVertex</li>
@@ -518,15 +516,16 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * <li>{@link #adjacentVerticesBackup}</li>
    * <li>{@link #properties propertyBean} (but not all properties are deeply copied)</li>
    * <li>{@link #HOST_MEMORY_OBJECT_PROPERTY} property</li>
-   * <li>{@link #dagVerticesInSchedulingOrder}</li>
+   * <li>{@link #memExVerticesInSchedulingOrder}</li>
    * </ul>
-   * <li>Shallow copy (reference to the object is copied):</li>
+   * </li>
+   * <li>Shallow copy (reference to the object is copied):
    * <ul>
    * <li>{@link #SOURCE_DAG} property</li>
    * <li>{@link #verticesPredecessors} list</li>
    * </ul>
+   * </li>
    * </ul>
-   * .
    *
    * @return the memory exclusion graph
    */
@@ -734,7 +733,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   }
 
   /**
-   * {@link #deepRemoveVertex(MemoryExclusionVertex)} for a {@link Collection} of {@link MemoryExclusionVertex}.
+   * #deepRemoveVertex(MemoryExclusionVertex) for a {@link Collection} of {@link MemoryExclusionVertex}.
    *
    * @param vertices
    *          the {@link Collection} of {@link MemoryExclusionVertex} removed from the graph.
@@ -925,7 +924,6 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
    * @param arg0
    *          the arg 0
    * @return true, if successful
-   * @override
    */
   @Override
   public boolean removeAllVertices(final Collection<? extends MemoryExclusionVertex> arg0) {
@@ -1033,9 +1031,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // This map is used along the scan of the vertex of the dag. Its purpose is to store the last vertex scheduled on
     // each component. This way, when a new vertex is executed on this instance is encountered, an edge can be added
     // between it and the previous one.
-    Map<ComponentInstance, DAGVertex> lastVerticesScheduled;
-    lastVerticesScheduled = new LinkedHashMap<>();
-
+    final Map<ComponentInstance, DAGVertex> lastVerticesScheduled = new LinkedHashMap<>();
     // Scan the dag and add new precedence edges caused by the schedule
     final Set<DAGEdge> addedEdges = new LinkedHashSet<>();
     for (final DAGVertex currentVertex : verticesMap) {
@@ -1110,9 +1106,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // component. This way, when a new vertex is executed on this
     // instance is encountered, an edge can be added between it and
     // the previous one.
-    Map<ComponentInstance, DAGVertex> lastVerticesScheduled;
-    lastVerticesScheduled = new LinkedHashMap<>();
-
+    final Map<ComponentInstance, DAGVertex> lastVerticesScheduled = new LinkedHashMap<>();
     // Same a verticesPredecessors but only store predecessors that results
     // from scheduling info
     final Map<String, Set<MemoryExclusionVertex>> newVerticesPredecessors = new LinkedHashMap<>();

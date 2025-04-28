@@ -205,7 +205,7 @@ public class TopologicalRanking {
    * Computes a map of actors sorted per rank (ASAP or ALAP).
    *
    * @param topoRanks
-   *          Ranks computed by {@link #topologicalASAPranking} or {@link #topologicalALAPranking}.
+   *          Ranks computed by {@link #topologicalAsapRanking} or {@link #topologicalAsapRankingT}.
    * @param reverse
    *          true if considering ALAP ranks, false if considering ASAP ranks.
    * @param maxRank

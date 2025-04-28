@@ -47,7 +47,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.emf.common.util.URI;
@@ -123,8 +122,8 @@ public class PiParser {
    * @param algorithmURL
    *          URL of the Algorithm.
    * @return the {@link PiGraph} algorithm.
-   * @throws CoreException
-   *           the core exception
+   * @throws PreesmRuntimeException
+   *           the PreesmRuntimeException exception
    */
   public static PiGraph getPiGraph(final String algorithmURL) {
     PiGraph pigraph = null;

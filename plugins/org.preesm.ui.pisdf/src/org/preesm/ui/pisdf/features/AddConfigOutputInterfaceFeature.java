@@ -60,7 +60,7 @@ import org.preesm.model.pisdf.PiGraph;
 
 // TODO: Auto-generated Javadoc
 /**
- * Add feature to add a new {@link ConfigOutInterface} to the {@link PiGraph}.
+ * Add feature to add a new {@link ConfigOutputInterface} to the {@link PiGraph}.
  *
  * @author kdesnos
  */

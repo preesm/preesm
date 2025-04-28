@@ -74,7 +74,7 @@ import org.preesm.graphiti.ui.figure.shapes.ShapeFactory;
  * Creates the Palette on the GUI with all the tools and the appropriate icons icons have to be in the same directory as
  * the Model.
  *
- * @author Samuel Beaussier & Nicolas Isch
+ * @author Samuel Beaussier &amp; Nicolas Isch
  */
 public class GraphitiPalette {
 

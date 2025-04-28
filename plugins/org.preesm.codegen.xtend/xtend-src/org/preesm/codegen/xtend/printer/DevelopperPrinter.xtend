@@ -77,7 +77,7 @@ import org.preesm.codegen.model.SectionBlock
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
  * {@link CodegenAbstractPrinter} where all print methods print
- * "<What_I_Print>". The only purpose of this class is to ease the developer
+ * {@literal "<What_I_Print>"}. The only purpose of this class is to ease the developer
  * life by providing him with a dummy implementation that can help him see
  * what is printed.
  *
@@ -87,7 +87,7 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	/**
 	 * Default implementation: does nothing.
-	 * @see CodegenAbstractPrinter#createSecondaryFiles(List, List)
+	 * @see CodegenAbstractPrinter#createSecondaryFiles(List, Collection)
 	 */
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		return new LinkedHashMap<String,CharSequence>
@@ -102,7 +102,7 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 
 	/**
 	 * Default implementation: does nothing.
-	 * @see CodegenAbstractPrinter#preProcessing(List,List)
+	 * @see CodegenAbstractPrinter#preProcessing(List, Collection)
 	 */
 	override preProcessing(List<Block> printerBlocks, Collection<Block> allBlocks) {}
 

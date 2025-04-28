@@ -50,7 +50,7 @@ public class GraphitiClipboard {
     // forbid instantiation
   }
 
-  /** The event name used for {@link GraphitiClipboard#fireContentsSet()}. */
+  /** The event name used for {@link PasteAction#propertyChange(java.beans.PropertyChangeEvent)}. */
   public static final String CONTENTS_SET_EVENT = "ContentsSet";
 
   /** The instance. */

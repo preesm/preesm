@@ -95,27 +95,26 @@ public class GraphSimulationHelper {
         - (long) actor.getPropertyBean().getValue(GraphSimulationHelper.EXECUTION_COUNTER_PROPERTY);
     if (maxExecutions <= 0) {
       return 0;
-    } else {
-      for (final SDFInterfaceVertex input : actor.getSources()) {
-        final SDFEdge edge = actor.getAssociatedEdge(input);
-        // compute the max number of executions that edge delays allow
-        final long n = edge.getDelay().longValue() / edge.getCons().longValue();
-        final double newStartDate = (double) edge.getSource().getPropertyBean()
-            .getValue(GraphSimulationHelper.FINISH_DATE_PROPERTY);
-        // if n = 0, it means that the actor is not ready to be fired
-        if (n < maxExecutions) {
-          maxExecutions = n;
-          if (maxExecutions == 0) {
-            return 0;
-          }
-        }
-        if (newStartDate > maxStartDate) {
-          maxStartDate = newStartDate;
+    }
+    for (final SDFInterfaceVertex input : actor.getSources()) {
+      final SDFEdge edge = actor.getAssociatedEdge(input);
+      // compute the max number of executions that edge delays allow
+      final long n = edge.getDelay().longValue() / edge.getCons().longValue();
+      final double newStartDate = (double) edge.getSource().getPropertyBean()
+          .getValue(GraphSimulationHelper.FINISH_DATE_PROPERTY);
+      // if n = 0, it means that the actor is not ready to be fired
+      if (n < maxExecutions) {
+        maxExecutions = n;
+        if (maxExecutions == 0) {
+          return 0;
         }
       }
-      actor.setPropertyValue(GraphSimulationHelper.START_DATE_PROPERTY, maxStartDate);
-      return maxExecutions;
+      if (newStartDate > maxStartDate) {
+        maxStartDate = newStartDate;
+      }
     }
+    actor.setPropertyValue(GraphSimulationHelper.START_DATE_PROPERTY, maxStartDate);
+    return maxExecutions;
   }
 
   /**
@@ -149,7 +148,7 @@ public class GraphSimulationHelper {
    * Before calling this method, you should verify if the actor is ready to be fired n times. In case of insufficient
    * data tokens on its input edges, it will results to a negative delays on the edges.
    *
-   * if n < 0 it will cancel n executions == remove data tokens from the output edges and restore them in the input
+   * if n &lt; 0 it will cancel n executions == remove data tokens from the output edges and restore them in the input
    * edges.
    *
    * @param actor

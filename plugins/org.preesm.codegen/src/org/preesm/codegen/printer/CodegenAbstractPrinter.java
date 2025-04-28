@@ -88,8 +88,8 @@ import org.preesm.model.slam.ComponentInstance;
 /**
  * The {@link CodegenAbstractPrinter} is used to visit a {@link CodegenPackage Codegen model}. To use a printer, the
  * following function calls should be used:<br>
- * 1. Call {@link #preProcessing(List)} on a {@link List} containing all printed {@link Block blocks}.<br>
- * 2. Call {@link #doSwitch()} on each {@link Block} to print.
+ * 1. Call {@link #preProcessing(List, Collection)} on a {@link List} containing all printed {@link Block blocks}.<br>
+ * 2. Call {@link #doSwitch(EObject)} on each {@link Block} to print.
  *
  * @author kdesnos
  *
@@ -282,8 +282,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   /**
    * Method called before printing a set of {@link Block blocks}. This method can perform some printer specific
    * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
-   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
-   * {@link Block} to print after the pre-processing to do so.
+   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch(EObject)} on
+   * each {@link Block} to print after the pre-processing to do so.
    *
    * @param printerBlocks
    *          The list of {@link Block blocks} that will be printer by the printer
@@ -315,8 +315,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   /**
    * Method called after printing a set of {@link Block blocks}. This method can perform some printer specific
    * modification on the blocks passed as parameters. For example, it can be used to insert instrumentation primitives
-   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch()} on each
-   * {@link Block} to print after the pre-processing to do so.
+   * in the code. This method will NOT print the code of the {@link Block blocks}, use {@link #doSwitch(EObject)} on
+   * each {@link Block} to print after the pre-processing to do so.
    *
    */
   public CharSequence postProcessing(final CharSequence charSeq) {
@@ -1102,7 +1102,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param variableList
    *          the {@link List} of {@link Variable} that were printed before calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printDefinitionsFooter(List<Variable> variableList);
 
@@ -1112,7 +1112,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param variableList
    *          the {@link List} of {@link Variable} that will be printed after calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printDefinitionsHeader(List<Variable> variableList);
 
@@ -1121,7 +1121,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param fifoCall
    *          the printed {@link FifoCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFifoCall(FifoCall fifoCall);
 
@@ -1141,17 +1141,17 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param functionCall
    *          the printed {@link FunctionCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFunctionCall(FunctionCall functionCall);
 
   /**
-   * Method called right before {@link #printFunctionCall}
+   * Method called right before {@link #printFunctionCall}.
    */
   public abstract CharSequence printPreFunctionCall(FunctionCall functionCall);
 
   /**
-   * Method called right after {@link #printFunctionCall}
+   * Method called right after {@link #printFunctionCall}.
    */
   public abstract CharSequence printPostFunctionCall(FunctionCall functionCall);
 
@@ -1160,7 +1160,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param papifyFunctionCall
    *          the printed {@link PapifyFunctionCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printPapifyFunctionCall(PapifyFunctionCall papifyFunctionCall);
 
@@ -1171,7 +1171,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param call
    *          the printed {@link SpecialCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printJoin(SpecialCall call);
 
@@ -1180,7 +1180,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param loopBlock
    *          the {@link LoopBlock} whose {@link CodeElt} were printed before calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printLoopBlockFooter(LoopBlock loopBlock);
 
@@ -1189,7 +1189,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link LoopBlock} whose {@link CodeElt} will be printed after calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printLoopBlockHeader(LoopBlock block);
 
@@ -1198,7 +1198,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link FiniteLoopBlock} whose {@link CodeElt} were printed before calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFiniteLoopBlockFooter(FiniteLoopBlock block);
 
@@ -1207,7 +1207,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link FiniteLoopBlock} whose {@link CodeElt} will be printed after calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFiniteLoopBlockHeader(FiniteLoopBlock block);
 
@@ -1216,7 +1216,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link ClusterBlock} whose {@link CodeElt} were printed before calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printClusterBlockFooter(ClusterBlock block);
 
@@ -1225,7 +1225,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link ClusterBlock} whose {@link CodeElt} will be printed after calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printClusterBlockHeader(ClusterBlock block);
 
@@ -1234,7 +1234,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link SectionBlock} whose {@link CodeElt} were printed before calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSectionBlockFooter(SectionBlock block);
 
@@ -1243,37 +1243,37 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param block
    *          the {@link SectionBlock} whose {@link CodeElt} will be printed after calling this method.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSectionBlockHeader(SectionBlock block);
 
   /**
    * Method called to print a {@link NullBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
-   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
    *
    * @param nullBuffer
    *          the {@link NullBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printNullBuffer(NullBuffer nullBuffer);
 
   /**
    * Method called to print a {@link NullBuffer} within the {@link CoreBlock#getDeclarations() declaration}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param nullBuffer
    *          the {@link NullBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printNullBufferDeclaration(NullBuffer nullBuffer);
 
   /**
    * Method called to print a {@link NullBuffer} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param nullBuffer
    *          the {@link NullBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printNullBufferDefinition(NullBuffer nullBuffer);
 
@@ -1284,7 +1284,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param call
    *          the printed {@link SpecialCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printRoundBuffer(SpecialCall call);
 
@@ -1293,7 +1293,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param communication
    *          the printed {@link SharedMemoryCommunication}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSharedMemoryCommunication(SharedMemoryCommunication communication);
 
@@ -1302,7 +1302,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param communication
    *          the printed {@link DistributedMemoryCommunication}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printDistributedMemoryCommunication(DistributedMemoryCommunication communication);
 
@@ -1311,137 +1311,136 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    *
    * @param specialCall
    *          the printed {@link SpecialCall}.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSpecialCall(SpecialCall specialCall);
 
   /**
    * Method called to print a {@link SubBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
-   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
    *
    * @param subBuffer
    *          the {@link SubBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSubBuffer(SubBuffer subBuffer);
 
   /**
    * Method called to print a {@link SubBuffer} within the {@link CoreBlock#getDeclarations() declaration}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param subBuffer
    *          the {@link SubBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSubBufferDeclaration(SubBuffer subBuffer);
 
   /**
    * Method called to print a {@link SubBuffer} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param subBuffer
    *          the {@link SubBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printSubBufferDefinition(SubBuffer subBuffer);
 
   /**
    * Method called to print a {@link BufferIterator} outside the {@link CoreBlock#getDefinitions() definition} or the
-   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
    *
    * @param bufferIterator
    *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printBufferIterator(BufferIterator bufferIterator);
 
   /**
    * Method called to print a {@link IteratedBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
-   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}
+   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
    *
    * @param iteratedBuffer
    *          the {@link IteratedBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer);
 
   /**
    * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDeclarations() declaration}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param bufferIterator
    *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printBufferIteratorDeclaration(BufferIterator bufferIterator);
 
   /**
    * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param bufferIterator
    *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator);
 
   /**
-   * Method called to print a {@link DataTansferAction} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link LoopBlock} of a {@link CoreBlock}
+   * Method called to print a {@link DataTransferAction} within the {@link CoreBlock#getDefinitions() definition}
+   * {@link LoopBlock} of a {@link CoreBlock}.
    *
    * @param action
    *          the {@link DataTransferAction} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printDataTansfer(final DataTransferAction action);
 
   /**
    * Method called to print a {@link OutputDataTransfer} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link LoopBlock} of a {@link CoreBlock}
+   * {@link LoopBlock} of a {@link CoreBlock}.
    *
    * @param action
    *          the {@link OutputDataTransfer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printOutputDataTransfer(final OutputDataTransfer action);
 
   /**
    * Method called to print a {@link RegisterSetUpAction} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link LoopBlock} of a {@link CoreBlock}
+   * {@link LoopBlock} of a {@link CoreBlock}.
    *
    * @param action
    *          the {@link RegisterSetUpAction} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printRegisterSetUp(final RegisterSetUpAction action);
 
   /**
    * Method called to print a {@link FpgaLoadAction} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param action
    *          the {@link FpgaLoadAction} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFpgaLoad(final FpgaLoadAction action);
 
   /**
    * Method called to print a {@link FreeDataTransferBuffer} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}
+   * {@link CallBlock} of a {@link CoreBlock}.
    *
    * @param action
    *          the {@link FreeDataTransferBuffer} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printFreeDataTransferBuffer(final FreeDataTransferBuffer action);
 
   /**
-   * Method called to print a {@link GlobalBufferDeclaration} within the {@link InitBlock#getDefinitions() definition}
-   * {@link InitBlock} of a {@link InitBlock}
+   * Method called to print a {@link GlobalBufferDeclaration} within the {@link CallBlock#getDefinitions() definition}.
    *
    * @param action
    *          the {@link GlobalBufferDeclaration} to print.
-   * @return the printed {@link CharSequence}
+   * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
 }

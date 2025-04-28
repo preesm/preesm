@@ -48,7 +48,7 @@ import org.preesm.graphiti.ui.actions.SetRefinementAction;
 /**
  * Build the context menu which is opened when right click with mouse.
  *
- * @author Samuel Beaussier & Nicolas Isch
+ * @author Samuel Beaussier &amp; Nicolas Isch
  */
 public class GraphEditorContextMenuProvider extends ContextMenuProvider {
 

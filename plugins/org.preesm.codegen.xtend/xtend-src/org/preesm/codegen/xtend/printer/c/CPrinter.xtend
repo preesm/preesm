@@ -761,8 +761,8 @@ class CPrinter extends BlankPrinter {
 	 *            the source {@link Buffer}
 	 * @param inOffset
 	 *            the offset in the source {@link Buffer}
-	 * @param size
-	 *            the amount of memory to copy
+	 * @param nbToken
+	 *            the amount of token to copy
 	 * @param type
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)

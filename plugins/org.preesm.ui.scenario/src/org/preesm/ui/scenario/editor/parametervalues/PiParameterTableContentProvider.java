@@ -42,9 +42,6 @@ import org.eclipse.jface.viewers.Viewer;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * This class provides the elements displayed in {@link ActorTree}. Each element is a {@link ActorNode}. This tree is
- * used in scenario editor to edit parameters
- *
  * @author jheulot
  */
 public class PiParameterTableContentProvider implements IStructuredContentProvider {

@@ -234,7 +234,7 @@ public class PiMatch {
   }
 
   /**
-   * Set the {@link #_type type} of the current {@link PiMatch}. If the type is <code>BACKWARD</code> a new list is
+   * Set the {@link #type type} of the current {@link PiMatch}. If the type is <code>BACKWARD</code> a new list is
    * created for the {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise mergeableLocalRanges is set to
    * <code>null</code>.
    */
@@ -269,8 +269,8 @@ public class PiMatch {
    * Get the indivisible {@link PiRange} in which the current {@link PiMatch} falls. This method has no side-effects.
    *
    * @return the {@link PiRange} resulting from the {@link PiRange#lazyUnion(List,PiRange) lazyUnion} of the
-   *         {@link PiMatch#getLocalRange() localRange} and the {@link PiBuffer#getIndivisibleRanges()
-   *         indivisibleRanges} of the {@link PiMatch#getLocalBuffer() localBuffer}.
+   *         {@link PiMatch#getLocalRange() localRange} and the {@link PiBuffer#indivisibleRanges} of the
+   *         {@link PiMatch#getLocalBuffer() localBuffer}.
    *
    */
   public PiRange getLocalIndivisibleRange() {
@@ -366,11 +366,10 @@ public class PiMatch {
     }
     if (getType() == MatchType.FORWARD) {
       return true;
-    } else {
-      final List<PiRange> mustBeMergeableRanges = PiRange.intersection(getMergeableLocalRanges(), impactedTokens);
-      final List<PiRange> mergeableRanges = PiRange.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
-      return PiRange.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
     }
+    final List<PiRange> mustBeMergeableRanges = PiRange.intersection(getMergeableLocalRanges(), impactedTokens);
+    final List<PiRange> mergeableRanges = PiRange.intersection(getLocalBuffer().mergeableRanges, impactedTokens);
+    return PiRange.difference(mustBeMergeableRanges, mergeableRanges).isEmpty();
   }
 
   /**

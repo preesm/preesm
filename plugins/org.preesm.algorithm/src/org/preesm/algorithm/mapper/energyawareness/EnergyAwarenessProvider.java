@@ -101,7 +101,8 @@ public class EnergyAwarenessProvider {
   String nextChange    = "";
 
   /**
-   * @brief This constructor initializes everything related to energy awareness in mapping/scheduling process
+   * This constructor initializes everything related to energy awareness in mapping/scheduling process
+   *
    * @param scenarioOriginal
    *          original {@link Scenario}
    */
@@ -137,7 +138,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * @brief update scenario mapping with the current configuration
+   * Update scenario mapping with the current configuration
    */
   public void updateScenario() {
 
@@ -163,7 +164,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * @brief Checks if the energy awareness algorithm has already finished
+   * Checks if the energy awareness algorithm has already finished
    */
   public boolean hasFinished() {
     return this.finished;
@@ -216,7 +217,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * @brief Computes the next configuration to perform mapping/scheduling
+   * Computes the next configuration to perform mapping/scheduling
    */
   public void computeNextConfig() {
     if (this.coresUsedOfEachType.isEmpty()) {
@@ -233,7 +234,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * @brief this method checks which is the best mapping and returns its value
+   * This method checks which is the best mapping and returns its value
    */
 
   public Map<String, Object> getFinalMapping() {
@@ -255,7 +256,7 @@ public class EnergyAwarenessProvider {
   }
 
   /**
-   * @brief this method updates the scenario and returns it
+   * This method updates the scenario and returns it
    */
 
   public Scenario getFinalScenario() {

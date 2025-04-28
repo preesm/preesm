@@ -69,7 +69,7 @@ public class ModelGraphFactory {
    * @param model
    *          the model
    * @return the model
-   * @throws Exception
+   * @throws PreesmRuntimeException
    *           one of the following exception InstantiationException, IllegalAccessException, IllegalArgumentException,
    *           InvocationTargetException, NoSuchMethodException, SecurityException
    */

@@ -113,8 +113,6 @@ public class Variable implements CloneableProperty<Variable> {
    * Int value.
    *
    * @return the int
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    * @throws ExpressionEvaluationException
    *           the no integer value exception
    */

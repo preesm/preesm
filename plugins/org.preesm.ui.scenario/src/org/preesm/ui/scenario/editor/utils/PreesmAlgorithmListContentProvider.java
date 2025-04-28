@@ -40,7 +40,6 @@ package org.preesm.ui.scenario.editor.utils;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -78,8 +77,6 @@ public class PreesmAlgorithmListContentProvider implements IStructuredContentPro
    * @param inputScenario
    *          the input scenario
    * @return the sorted PISDF vertices
-   * @throws CoreException
-   *           the core exception
    */
   public static List<AbstractActor> getSortedPISDFVertices(final Scenario inputScenario) {
     final PiGraph currentGraph = inputScenario.getAlgorithm();

@@ -233,8 +233,8 @@ public class Match {
   }
 
   /**
-   * Set the {@link #_type type} of the current {@link Match}. If the type is <code>BACKWARD</code> a new list is
-   * created for the {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise mergeableLocalRanges is set to
+   * Set the {@link #type type} of the current {@link Match}. If the type is <code>BACKWARD</code> a new list is created
+   * for the {@link #getMergeableLocalRanges() mergeableLocalRanges}. Otherwise mergeableLocalRanges is set to
    * <code>null</code>.
    */
   public List<Range> setType(final MatchType newType) {
@@ -268,8 +268,8 @@ public class Match {
    * Get the indivisible {@link Range} in which the current {@link Match} falls. This method has no side-effects.
    *
    * @return the {@link Range} resulting from the {@link Range#lazyUnion(List,Range) lazyUnion} of the
-   *         {@link Match#getLocalRange() localRange} and the {@link Buffer#getIndivisibleRanges() indivisibleRanges} of
-   *         the {@link Match#getLocalBuffer() localBuffer}.
+   *         {@link Match#getLocalRange() localRange} and the {@link Buffer#indivisibleRanges indivisibleRanges} of the
+   *         {@link Match#getLocalBuffer() localBuffer}.
    *
    */
   public Range getLocalIndivisibleRange() {

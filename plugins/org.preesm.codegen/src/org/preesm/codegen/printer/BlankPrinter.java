@@ -84,7 +84,7 @@ public class BlankPrinter extends CodegenAbstractPrinter {
   /**
    * Default implementation: does nothing.
    *
-   * @see CodegenAbstractPrinter#createSecondaryFiles(List,List)
+   * @see CodegenAbstractPrinter#createSecondaryFiles(List, Collection)
    */
   public Map<String, CharSequence> createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
     return new LinkedHashMap<>();

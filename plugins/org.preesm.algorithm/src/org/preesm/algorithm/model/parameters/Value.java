@@ -47,8 +47,6 @@ public interface Value {
    * Gives the integer value of this expression.
    *
    * @return The integer value of the expression
-   * @throws InvalidExpressionException
-   *           When expression can't be solved
    * @throws ExpressionEvaluationException
    *           the no integer value exception
    */

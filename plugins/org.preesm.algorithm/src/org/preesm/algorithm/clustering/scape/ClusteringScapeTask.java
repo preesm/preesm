@@ -20,11 +20,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 /**
  * This class cluster actors in order to match parallelism the target architecture.
  *
- * @see conference paper: "SCAPE: HW-Aware Clustering of Dataflow Actors for Tunable Scheduling
- *      Complexity", published at DASIP 2023, "Automated Clustering and Pipelining of Dataflow Actors for Controlled
- *      Scheduling Complexity" published at EUSIPCO 2023, and,
- *      "Automated Level-Based Clustering of Dataflow Actors for Controlled Scheduling Complexity", published at JSA
- *      2023
+ * @see "conference paper: &quot;SCAPE: HW-Aware Clustering of Dataflow Actors for Tunable Scheduling Complexity&quot;,
+ *      published at DASIP 2023, &quot;Automated Clustering and Pipelining of Dataflow Actors for Controlled Scheduling
+ *      Complexity&quot; published at EUSIPCO 2023, and, &quot;Automated Level-Based Clustering of Dataflow Actors for
+ *      Controlled Scheduling Complexity&quot;, published at JSA 2023"
  *
  * @author orenaud
  *

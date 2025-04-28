@@ -55,7 +55,7 @@ import org.eclipse.graphiti.mm.pictograms.ContainerShape;
 import org.preesm.model.pisdf.Dependency;
 
 /**
- * Delete feature for {@link Parameterizable}s elements.
+ * Delete feature for {@link org.preesm.model.pisdf.Parameterizable Parameterizables} elements.
  *
  * @author kdesnos
  *
@@ -74,7 +74,7 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
 
   /**
    * Fill the map with connections to delete.
-   * 
+   *
    * @param delFeatures
    *          Map.
    * @param connecs
@@ -95,7 +95,8 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
   }
 
   /**
-   * Method to delete the {@link Dependency} connected to the deleted {@link Parameterizable} element.
+   * Method to delete the {@link Dependency} connected to the deleted {@link org.preesm.model.pisdf.Parameterizable
+   * Parameterizable} element.
    *
    * @param cba
    *          the {@link ChopboxAnchor} of the deleted element
@@ -103,7 +104,7 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
   protected void deleteConnectedConnection(final Anchor cba) {
     // First, the list of connections is scanned in order to fill a map with
     // the deleteFeatures and their context.
-    Map<IDeleteFeature, IDeleteContext> delFeatures = new LinkedHashMap<>();
+    final Map<IDeleteFeature, IDeleteContext> delFeatures = new LinkedHashMap<>();
     fillDeleteMap(delFeatures, cba.getOutgoingConnections());
     fillDeleteMap(delFeatures, cba.getIncomingConnections());
 
@@ -132,22 +133,14 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
     final EList<Anchor> anchors = cs.getAnchors();
     for (final Anchor anchor : anchors) {
 
+      // hack ... should be the same behavior for all anchor type
       switch (anchor) {
+        // case ConfigInputInterface
         case final ChopboxAnchor cba -> deleteConnectedConnection(anchor);
+        // case ConfigInputInterface
         case final BoxRelativeAnchor bra -> deleteConnectedConnection(anchor);
         default -> throw new UnsupportedOperationException("Unsupported anchor type");
       }
-
-      // // hack ... should be the same behavior for all anchor type
-      // if (anchor instanceof ChopboxAnchor) {
-      // // case Parameter or Actor
-      // deleteConnectedConnection(anchor);
-      // } else if (anchor instanceof BoxRelativeAnchor) {
-      // // case ConfigInputInterface
-      // deleteConnectedConnection(anchor);
-      // } else {
-      // throw new UnsupportedOperationException("Unsupported anchor type");
-      // }
     }
   }
 
