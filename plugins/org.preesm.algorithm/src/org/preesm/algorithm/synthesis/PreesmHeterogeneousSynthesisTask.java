@@ -21,10 +21,12 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.SlamFactory;
+import org.preesm.model.slam.TimingType;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -47,6 +49,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     // ------------------ locally schedule and map the clusters' graphs ------------------
 
+    final Map<PiGraph, SynthesisResult> localSchedulings = new HashMap<>();
+
     for (final PiGraph cluster : clustersList) {
       // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
       final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
@@ -54,30 +58,37 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
 
       final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
+      localSchedulings.put(cluster, res);
     }
 
     // ------------------ replace hierarchical actors with placeholders ------------------
-    // get some cpu architecture that will please the scheduler
-    // cpu1 = SlamFactory.eINSTANCE.createComponentInstance();
-    // final CPU cpu = SlamFactory.eINSTANCE.createCPU();
-    // final VLNV vlnvcpu = SlamFactory.eINSTANCE.createVLNV();
-    // cpu.setVlnv(vlnvcpu);
-    // cpu1.setComponent(cpu);
-    // cpu1.setInstanceName("cpu1");
-    // cpu1.setHardwareId(0);
 
     // find any cpu in scenario, whatever
     final var anyCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU)
         .toList().getFirst();
 
-    for (final AbstractActor actor : algorithm.getActors()) {
-      if (actor instanceof PiGraph) {
-        final Actor placeholder = PiMMFactory.createActor(actor.getName() + "_placeholder");
-        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
-        algorithm.addActor(placeholder);
-        replaceAndRemoveActor(actor, placeholder, algorithm);
-        scenario.getConstraints().addConstraint(anyCPU, placeholder); // test, idéalement ça serait une "non-archi"
+    for (final PiGraph subGraph : algorithm.getActors().stream().filter(a -> a instanceof PiGraph).map(a -> (PiGraph) a)
+        .toList()) {
+      final Actor placeholder = PiMMFactory.createActor(subGraph.getName() + "_placeholder");
+      placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
+
+      // set the placeholder's characteristics we need for global scheduling :
+      // - latency/throughput
+      int latency = 0;
+      // check if it is executed of FPGA. If so we have to find (or fabricate) its latency
+      if (ClusteringHelper.getMappings(subGraph, scenario).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
+        latency = computeFpgaGraphLatency(subGraph);
       }
+
+      algorithm.addActor(placeholder);
+      replaceAndRemoveActor(subGraph, placeholder, algorithm);
+
+      // for now, let's suppose II = Latency
+      final Component component = ClusteringHelper.getMappings(subGraph, scenario).getFirst().getComponent();
+      scenario.getTimings().setExecutionTime(placeholder, component, 10);
+      scenario.getTimings().setTiming(placeholder, component, TimingType.INITIATION_INTERVAL, "10");
+      scenario.getConstraints().addConstraint(anyCPU, placeholder); // test, idéalement ça serait une "non-archi"
+
     }
 
     // nouvelle api
@@ -88,7 +99,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
 
-    return new HashMap<>();
+    return results;
 
   }
 
@@ -115,10 +126,10 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    * @return the selected mapper's string name/identifier
    **/
   private String switchSchedulerMapper(AbstractActor cluster, Scenario scenario) {
-    final List<ComponentInstance> mappings = ClusteringHelper.getArch(cluster, scenario);
+    final List<ComponentInstance> mappings = ClusteringHelper.getMappings(cluster, scenario);
     // Pour le moment, je vais supposer qu'un cluster est mappé à une seule archi. Cela correspond à l'idée que le
     // mapping "niveau archi" est fait entièrement lors de la phase de clustering, qui décide quel cluster est fait sur
-    // quel type de PE.
+    // quel type de PE (ex : tel acteur va sur fpga, mais ne choisit pas quelle fpga).
 
     final ComponentInstance arch = mappings.getFirst();
 
@@ -127,7 +138,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     }
 
     if (arch.getComponent() instanceof FPGA) {
-      return AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR;
+      return AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR; // temporaire
     }
     // temporaire
 
@@ -198,6 +209,18 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     // remove the old actor from the graph
     graph.removeActorAndDependencies(oldA);
 
+  }
+
+  /***
+   * computes, or at least approximates/overestimates, an FPGA graph's latency
+   *
+   * @param graph
+   *          the graph
+   * @return the latency
+   */
+  private int computeFpgaGraphLatency(PiGraph graph) {
+    // TODO actually code it
+    return 42;
   }
 
 }
