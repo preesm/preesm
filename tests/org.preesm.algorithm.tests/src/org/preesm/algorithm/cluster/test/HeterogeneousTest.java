@@ -135,6 +135,8 @@ public class HeterogeneousTest {
 
     design.getComponentInstances().add(cpu1);
     design.getComponentInstances().add(fpga1);
+    scenario.getSimulationInfo().setMainComNode(mem1);
+    scenario.getSimulationInfo().setMainOperator(cpu1);
 
     final DataLink link1 = SLAMFactory.createDataLink();
     link1.setDirected(false);
