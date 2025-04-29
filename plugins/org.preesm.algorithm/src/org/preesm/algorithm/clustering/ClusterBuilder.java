@@ -67,7 +67,7 @@ public class ClusterBuilder {
     do {
       boolean seed_found = false;
       AbstractActor actor;
-      ComponentInstance refArch;
+      ComponentInstance refArch = null;
 
       // try to find a valid, non-visited seed
       do {
@@ -113,11 +113,15 @@ public class ClusterBuilder {
       if (seed_found) {
         actorIsVisited.put(actor, true);
 
+        // once again, fuck java
+        final var refArchClone = refArch;
+
         // now we have a seed, let's build a list of all the actors we want to merge
         // they will be all (un)direct successors of the seed with only fpga inputs
         final Set<AbstractActor> visitedActors = new HashSet<>();
         final MergingHeuristic heuristic = new MinimalMergingHeuristic();
-        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, refFPGA, visitedActors, heuristic);
+        final Set<
+            AbstractActor> actorsToMerge = buildMergeList(actor, scenario, refArchClone, visitedActors, heuristic);
 
         // mark the merged actors as visited
         for (final AbstractActor a : actorsToMerge) {
@@ -131,7 +135,7 @@ public class ClusterBuilder {
         // TODO set better URL
         mergeActor.setUrl("");
         listClusterActors.add(mergeActor);
-        scenario.getConstraints().addConstraint(refFPGA, mergeActor);
+        scenario.getConstraints().addConstraint(refArchClone, mergeActor);
       }
 
     } while (!graph_is_fully_searched);
