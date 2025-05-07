@@ -21,16 +21,17 @@ jobs:
         java-version: [21]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Git Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: ${{ matrix.java-version }}
-
-      - name: Git Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+          cache: 'maven'
 
       # This step should soon be unnecessary: https://github.com/actions/runner-images/issues/11093
       - name: Set up Maven
@@ -38,24 +39,24 @@ jobs:
         with:
           maven-version: 3.9.9
 
-      - name: Restore m2 cache # Only trigger on feature branch
-        if: github.ref != 'refs/heads/develop'
-        uses: actions/cache/restore@v4
-        with:
-          key: ${{ matrix.os }}-maven-m2- # This lookup will fail, the restore-keys entry will be used, falling back on the most recent cache
-          path: ~/.m2/repository
-          restore-keys: ${{ matrix.os }}-maven-m2-
+      # - name: Restore m2 cache # Only trigger on feature branch
+      #   if: github.ref != 'refs/heads/develop'
+      #   uses: actions/cache/restore@v4
+      #   with:
+      #     key: ${{ matrix.os }}-maven-m2- # This lookup will fail, the restore-keys entry will be used, falling back on the most recent cache
+      #     path: ~/.m2/repository
+      #     restore-keys: ${{ matrix.os }}-maven-m2-
 
       - name: Build & Test
         shell: bash
         run: releng/build_and_test.sh --ci
 
-      - name: Save m2 cache # Only trigger on develop unscheduled
-        if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
-        uses: actions/cache/save@v4
-        with:
-          path: ~/.m2/repository
-          key: ${{ matrix.os }}-maven-m2-${{ github.run_id }}
+      # - name: Save m2 cache # Only trigger on develop unscheduled
+      #   if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
+      #   uses: actions/cache/save@v4
+      #   with:
+      #     path: ~/.m2/repository
+      #     key: ${{ matrix.os }}-maven-m2-${{ github.run_id }}
 
       - name: Analyze with SONAR
         env:
