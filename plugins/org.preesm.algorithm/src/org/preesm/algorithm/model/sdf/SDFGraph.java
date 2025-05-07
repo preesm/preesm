@@ -663,22 +663,18 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
   @SuppressWarnings("rawtypes")
   @Override
   public void update(final AbstractGraph<?, ?> observable, final Object arg) {
-    if (arg == null) {
-      return;
-    }
-    if (arg instanceof final AbstractVertex av) {
-      if (observable.vertexSet().contains(arg)) {
+
+    switch (arg) {
+      case final AbstractVertex av when observable.vertexSet().contains(av) -> {
         final SDFVertex newVertex = new SDFVertex(null);
         newVertex.setName(av.getName());
         newVertex.setId(av.getId());
         newVertex.setRefinement(av.getRefinement());
         addVertex(newVertex);
-      } else {
-        removeVertex(getVertex(av.getName()));
       }
-    } else if (arg instanceof AbstractEdge) {
+      case final AbstractVertex av -> removeVertex(getVertex(av.getName()));
 
-      if (arg instanceof final SDFEdge sdfEdge) {
+      case final SDFEdge sdfEdge -> {
         final SDFAbstractVertex source = sdfEdge.getSource();
         final SDFAbstractVertex target = sdfEdge.getTarget();
         final SDFAbstractVertex newSource = getVertex(source.getName());
@@ -692,8 +688,8 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
                   && e.getTargetInterface().getName().equals(sdfEdge.getTargetInterface().getName()))
               .findAny().ifPresent(this::removeEdge);
         }
-
-      } else if (arg instanceof final DAGEdge dagEdge) {
+      }
+      case final DAGEdge dagEdge -> {
         final DAGVertex source = dagEdge.getSource();
         final DAGVertex target = dagEdge.getTarget();
         final SDFAbstractVertex newSource = getVertex(source.getName());
@@ -707,14 +703,12 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         } else {
           this.removeAllEdges(newSource, newTarget);
         }
-
       }
+      case final String str when observable.getPropertyBean().getValue(str) != null ->
+        getPropertyBean().setValue(str, observable.getPropertyBean().getValue(str));
 
-    } else if (arg instanceof final String str) {
-      final Object property = observable.getPropertyBean().getValue(str);
-      if (property != null) {
-        getPropertyBean().setValue(str, property);
-      }
+      case null, default -> {
+        /* Nothing */ }
     }
 
   }
