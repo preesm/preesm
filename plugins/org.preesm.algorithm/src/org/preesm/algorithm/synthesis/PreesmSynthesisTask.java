@@ -147,7 +147,6 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     outputs.put("Schedule", scheduleAndMap.schedule);
     outputs.put("Mapping", scheduleAndMap.mapping);
     outputs.put("Allocation", memalloc);
-    // afficher le gantt
 
     return outputs;
   }
