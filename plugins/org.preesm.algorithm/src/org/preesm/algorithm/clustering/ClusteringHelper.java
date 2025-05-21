@@ -351,16 +351,4 @@ public class ClusteringHelper {
     return globalList;
   }
 
-  /***
-   *
-   * @param actor
-   *          the actor
-   * @param scenario
-   *          the scenario
-   * @return the list of components actor is mappable to, based on the scenario mappings
-   */
-  public static List<ComponentInstance> getMappings(AbstractActor actor, Scenario scenario) {
-    return scenario.getConstraints().getPossibleMappings(actor);
-  }
-
 }
