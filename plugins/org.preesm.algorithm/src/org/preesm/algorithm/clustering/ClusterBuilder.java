@@ -75,7 +75,7 @@ public class ClusterBuilder {
         i++;
 
         // all the PEs actor is mappable to that are not CPUs
-        final var nonCpuMappings = ClusteringHelper.getMappings(actor, scenario).stream()
+        final var nonCpuMappings = scenario.getPossibleMappings(actor).stream()
             .filter(c -> !(c.getComponent() instanceof CPU)).toList();
 
         // check actor has not been tested before, and if it is mapped to a non-CPU PE
@@ -159,11 +159,11 @@ public class ClusterBuilder {
    */
   private static ComponentInstance seedArchHeuristic(PiGraph graph, Scenario scenario, AbstractActor actor) {
     // TODO make it smarter (or at least non-trivial)
-    if (ClusteringHelper.getMappings(actor, scenario).stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
-      return ClusteringHelper.getMappings(actor, scenario).stream().filter(c -> c.getComponent() instanceof FPGA)
-          .toList().getFirst();
+    if (scenario.getPossibleMappings(actor).stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
+      return scenario.getPossibleMappings(actor).stream().filter(c -> c.getComponent() instanceof FPGA).toList()
+          .getFirst();
     }
-    return ClusteringHelper.getMappings(actor, scenario).getFirst();
+    return scenario.getPossibleMappings(actor).getFirst();
 
   }
 
@@ -188,7 +188,7 @@ public class ClusterBuilder {
 
     final List<AbstractActor> seedSuccessorsSameArch = seed.getDataOutputPorts().stream()
         .map(dop -> dop.getOppositePort().getContainingActor())
-        .filter(a -> ClusteringHelper.getMappings(a, scenario).contains(refArchi)).toList();
+        .filter(a -> scenario.getPossibleMappings(a).contains(refArchi)).toList();
 
     for (final AbstractActor actor : seedSuccessorsSameArch) {
 
