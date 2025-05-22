@@ -76,7 +76,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <jacoco-version>0.8.12</jacoco-version>
-      <tycho-version>4.0.10</tycho-version>
+      <tycho-version>4.0.13</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>5.0.0.4389</sonar-version>
       <checkstyle-version>10.21.1</checkstyle-version>
