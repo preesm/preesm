@@ -81,7 +81,6 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
  *
@@ -138,9 +137,9 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping) {
 
-    if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
-      throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
-    }
+    // if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
+    // throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
+    // }
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
 
     // *************
