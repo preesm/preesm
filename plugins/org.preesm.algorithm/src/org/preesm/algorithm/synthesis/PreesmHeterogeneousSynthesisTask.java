@@ -6,17 +6,19 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.clustering.ClusterBuilder;
-import org.preesm.algorithm.mapper.ui.stats.AbstractStatGenerator;
-import org.preesm.algorithm.mapper.ui.stats.StatGeneratorPrecomputed;
-import org.preesm.algorithm.mapper.ui.stats.StatGeneratorSynthesis;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.Port;
+import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -37,6 +39,33 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
+/**
+ *
+ * @author jmorin
+ *
+ */
+@PreesmTask(id = "heterogeneous-synthesis", name = "Heterogeneous Synthesis", category = "Synthesis",
+    shortDescription = "Schedule and map actors on heterogeneous architecture, no allocation, no codegen",
+    description = "",
+
+    parameters = {
+        @Parameter(name = "scheduler",
+            description = "Scheduler used to schedule and map the tasks. NOT WORKING FOR NOW.",
+            values = { @Value(name = "simple", effect = "Naive greedy list scheduler."),
+                @Value(name = "legacy", effect = "See workflow task pisdf-mapper.list."),
+                @Value(name = "periodic",
+                    effect = "List scheduler (without communication times) respecting actor or graph periods, if any."),
+                @Value(name = "choco",
+                    effect = "Optimal scheduler (without communication times) "
+                        + "respecting actor or graph periods, if any.") }),
+        @Parameter(name = "allocation", description = "Allocate the memory for buffers. NOT WONKING FOR NOW.",
+            values = { @Value(name = "simple"), @Value(name = "legacy") }) },
+
+    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
+        @Port(name = "scenario", type = Scenario.class) },
+    outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
+        @Port(name = "Allocation", type = Allocation.class) })
+
 public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation {
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
@@ -49,6 +78,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final String schedulerType = parameters.get("scheduler");
 
     // later used to compute the gantt
     // final Mapping mappings = MappingFactory.eINSTANCE.createMapping();
@@ -110,18 +140,21 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     }
 
+    // ------------------ schedule the global graph ------------------
     // nouvelle api
     final var synthesis = new PreesmSynthesisTask();
 
-    parameters.put("scheduler", PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE);
-    parameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_SIMPLE);
+    parameters.put("scheduler", PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY);
+    parameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_LEGACY);
 
     final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
+
     // afficher le gantt
 
     // get back the actor's execution timings
     final ParallelHiearchicalSchedule schedule = (ParallelHiearchicalSchedule) results.get("Schedule");
     final Mapping mapping = (Mapping) results.get("Mapping");
+    final Allocation memAlloc = (Allocation) results.get("Allocation");
     int i = 0;
     for (final AbstractActor a : algorithm.getActors()) {
       final int timing = 10; // scenario.getTimings().getTiming(a, anyCPU.getComponent(), TimingType.EXECUTION_TIME)
@@ -129,14 +162,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       execTimings.put(a, aet);
       i++;
     }
-
-    final LatencyCost latCost = new LatencyCost(50L, execTimings);
-    final StatGeneratorSynthesis GanttStats = new StatGeneratorSynthesis(architecture, scenario, mapping, null,
-        latCost);
-
-    // for an heterogeneous arch, I assume we don't want to use an ABC here ?
-    final AbstractStatGenerator heteroStats = new StatGeneratorPrecomputed(architecture, scenario, 10, 10, 100, 2,
-        new HashMap<>(), new HashMap<>(), GanttStats.getGanttData());
 
     return results;
 
@@ -171,16 +196,12 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final ComponentInstance arch = mappings.getFirst();
 
-    if (arch.getComponent() instanceof CPU) {
-      return PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE; // temporaire
-    }
-
-    if (arch.getComponent() instanceof FPGA) {
-      return AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR; // temporaire
-    }
-    // temporaire
-
-    throw new PreesmSynthesisException("No mapper available for component " + arch.getInstanceName());
+    // TODO find a way to have different choices for a type of archi. Ex : for fpga, exact or linear.
+    return switch (arch.getComponent()) {
+      case final CPU cpu -> PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY;
+      case final FPGA fpga -> PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR;
+      default -> throw new PreesmSynthesisException("No mapper available for component " + arch.getInstanceName());
+    };
 
   }
 
