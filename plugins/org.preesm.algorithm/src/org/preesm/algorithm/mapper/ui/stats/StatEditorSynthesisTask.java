@@ -95,6 +95,8 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
+    final Map<String, Object> output = new LinkedHashMap<>();
+
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
     final Design architecture = (Design) inputs.get("architecture");
@@ -115,6 +117,7 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
           scheduleOM);
+      output.put("Timings", evaluate);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
 
       PreesmLogger.getLogger().info("-- Output of Gantt");
@@ -154,8 +157,7 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
     }
 
-    // no output
-    return new LinkedHashMap<>();
+    return output;
 
   }
 
