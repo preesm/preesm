@@ -69,7 +69,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -118,10 +117,10 @@ public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation 
     // this is currently true for all tasks implementing this abstraction and their derived classes
     // if a new subclass supports FPGA, this check will have to be duplicated in all subclasses
 
-    if (!SlamDesignPEtypeChecker.isOnlyCPU(architecture)) {
-      throw new PreesmRuntimeException(
-          "This task must be called with architectures containing only CPU processing elements.");
-    }
+    // if (!SlamDesignPEtypeChecker.isOnlyCPU(architecture)) {
+    // throw new PreesmRuntimeException(
+    // "This task must be called with architectures containing only CPU processing elements.");
+    // }
 
     final AbcParameters abcParams = new AbcParameters(parameters);
 
