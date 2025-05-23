@@ -21,13 +21,11 @@ import org.preesm.algorithm.clustering.ActorMerger;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.clustering.MergingHeuristic;
 import org.preesm.algorithm.clustering.MinimalMergingHeuristic;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.PreesmHeterogeneousSynthesisTask;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -50,14 +48,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public class HeterogeneousTest {
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
+  SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
   Scenario              scenario;
   PiGraph               algo;
-  Design                design;
+  Design                heteroDesign;
   List<AbstractActor>   listActors;
   ComponentInstance     cpu1;
   ComponentInstance     fpga1;
   ComNode               mem;
-  SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
 
   @Before
   public void setup() {
@@ -102,13 +100,15 @@ public class HeterogeneousTest {
     // │ c3 │
     // └─────────────────┘
 
+    // ---------- heterogeneous design ----------
+
     scenario = ScenarioUserFactory.createScenario();
     algo = PiMMFactory.createPiGraph();
-    design = SLAMFactory.createDesign();
+    heteroDesign = SLAMFactory.createDesign();
 
     algo.setUrl("");
     scenario.setAlgorithm(algo);
-    scenario.setDesign(design);
+    scenario.setDesign(heteroDesign);
 
     cpu1 = SlamFactory.eINSTANCE.createComponentInstance();
     final CPU cpu = SlamFactory.eINSTANCE.createCPU();
@@ -133,8 +133,8 @@ public class HeterogeneousTest {
     mem1.setInstanceName("shared_mem");
     mem1.setHardwareId(2);
 
-    design.getComponentInstances().add(cpu1);
-    design.getComponentInstances().add(fpga1);
+    heteroDesign.getComponentInstances().add(cpu1);
+    heteroDesign.getComponentInstances().add(fpga1);
     scenario.getSimulationInfo().setMainComNode(mem1);
     scenario.getSimulationInfo().setMainOperator(cpu1);
 
@@ -143,19 +143,19 @@ public class HeterogeneousTest {
     link1.setSourceComponentInstance(cpu1);
     link1.setDestinationComponentInstance(mem1);
     link1.setUuid("4");
-    design.getLinks().add(link1);
+    heteroDesign.getLinks().add(link1);
 
     final DataLink link2 = SLAMFactory.createDataLink();
     link2.setDirected(false);
     link2.setSourceComponentInstance(fpga1);
     link2.setDestinationComponentInstance(mem1);
     link2.setUuid("5");
-    design.getLinks().add(link2);
+    heteroDesign.getLinks().add(link2);
 
     final ComponentHolder CmpHolder = SLAMFactory.createComponentHolder();
     CmpHolder.getComponents().add(fpga);
     CmpHolder.getComponents().add(cpu);
-    design.setComponentHolder(CmpHolder);
+    heteroDesign.setComponentHolder(CmpHolder);
 
     listActors = new BasicEList<>();
 
@@ -172,19 +172,19 @@ public class HeterogeneousTest {
       scenario.getTimings().setTiming(a, fpga1.getComponent(), TimingType.INITIATION_INTERVAL, "10");
     }
 
-    createFifoLink(listActors.get(0), listActors.get(1), 10, 10, "int", algo);
-    createFifoLink(listActors.get(0), listActors.get(2), 10, 10, "int", algo);
-    createFifoLink(listActors.get(1), listActors.get(3), 10, 10, "int", algo);
-    createFifoLink(listActors.get(2), listActors.get(3), 10, 10, "int", algo);
-    createFifoLink(listActors.get(3), listActors.get(5), 10, 10, "int", algo);
-    createFifoLink(listActors.get(4), listActors.get(5), 10, 10, "int", algo);
-    createFifoLink(listActors.get(5), listActors.get(6), 10, 10, "int", algo);
-    createFifoLink(listActors.get(5), listActors.get(7), 10, 10, "int", algo);
-    createFifoLink(listActors.get(5), listActors.get(8), 10, 10, "int", algo);
-    createFifoLink(listActors.get(6), listActors.get(9), 10, 10, "int", algo);
-    createFifoLink(listActors.get(6), listActors.get(10), 10, 10, "int", algo);
-    createFifoLink(listActors.get(7), listActors.get(11), 10, 10, "int", algo);
-    createFifoLink(listActors.get(7), listActors.get(12), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(1), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(2), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(1), listActors.get(3), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(2), listActors.get(3), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(3), listActors.get(5), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(4), listActors.get(5), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(6), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(7), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(8), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(9), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(10), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(11), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(12), 10, 10, "int", algo);
 
     final EList<AbstractActor> cpuActors = new BasicEList<>();
     cpuActors.add(listActors.get(3));
@@ -205,28 +205,11 @@ public class HeterogeneousTest {
 
     scenario.getConstraints().addConstraints(cpu1, cpuActors);
     scenario.getConstraints().addConstraints(fpga1, fpgaActors);
-
   }
 
   @After
   public void teardown() {
-    System.out.println("fin des tests");
-  }
-
-  private void createFifoLink(AbstractActor source, AbstractActor sink, int rateSource, int rateSink, String type,
-      PiGraph graph) {
-
-    final DataOutputPort sourceOut = PiMMFactory
-        .createDataOutputPort(source.getName() + "To" + sink.getName() + "_Source");
-    sourceOut.setExpression(rateSource);
-    source.getDataOutputPorts().add(sourceOut);
-
-    final DataInputPort sinkIn = PiMMFactory.createDataInputPort(source.getName() + "To" + sink.getName() + "_Sink");
-    sinkIn.setExpression(rateSink);
-    sink.getDataInputPorts().add(sinkIn);
-
-    final Fifo f = PiMMFactory.createFifo(sourceOut, sinkIn, type);
-    graph.addFifo(f);
+    System.out.println("test fini");
   }
 
   @Test
@@ -295,10 +278,11 @@ public class HeterogeneousTest {
   public void testHeterogeneousScheduler() {
     final Map<String, Object> inputs = new LinkedHashMap<>();
     inputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algo);
-    inputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, design);
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, heteroDesign);
     inputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
-    final Map<String, String> parameters = new LinkedHashMap<>(); // params copiés de preesm
+    final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put("scheduler", "legacy");
 
     final IProgressMonitor monitor = new NullProgressMonitor(); // constucteur au pif
     final String nodeName = ""; // ne semble pas utilisé pour de vrai donc raf
@@ -309,9 +293,7 @@ public class HeterogeneousTest {
 
     // vérifier que les éléments sont mappés où on le veut, et que la durée d'exécution est celle prévue
 
-    /*
-     * assertNotNull(results); assertNotNull(scheduleOM);
-     */
+    final Schedule resSchedule = (Schedule) res.get("Schedule");
   }
 
 }
