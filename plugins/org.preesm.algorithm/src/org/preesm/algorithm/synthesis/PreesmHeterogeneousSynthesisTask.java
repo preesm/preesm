@@ -1,6 +1,7 @@
 package org.preesm.algorithm.synthesis;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -9,16 +10,22 @@ import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
+import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
+import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -67,6 +74,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Port(name = "Allocation", type = Allocation.class) })
 
 public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation {
+
+  public static final String VALUE_ALLOCATORS_SIMPLE = "simple";
+  public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
+
+  public static final String VALUE_SCHEDULER_SIMPLE      = "simple";
+  public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
+  public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
+  public static final String VALUE_SCHEDULER_CHOCO       = "choco";
+  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevalexact";
+  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
@@ -141,30 +158,44 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     }
 
     // ------------------ schedule the global graph ------------------
-    // nouvelle api
-    final var synthesis = new PreesmSynthesisTask();
+    // partially copied from PreesmSynthesisTask, gradually copy code from there to construct a working task body
 
-    parameters.put("scheduler", PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY);
-    parameters.put("allocation", PreesmSynthesisTask.VALUE_ALLOCATORS_LEGACY);
+    final Map<String, Object> outputs = new LinkedHashMap<>();
 
-    final Map<String, Object> results = synthesis.execute(inputs, parameters, monitor, nodeName, workflow);
+    final String schedulerName = parameters.get("scheduler").toLowerCase();
 
-    // afficher le gantt
+    final IScheduler scheduler = selectScheduler(schedulerName);
 
-    // get back the actor's execution timings
-    final ParallelHiearchicalSchedule schedule = (ParallelHiearchicalSchedule) results.get("Schedule");
-    final Mapping mapping = (Mapping) results.get("Mapping");
-    final Allocation memAlloc = (Allocation) results.get("Allocation");
-    int i = 0;
-    for (final AbstractActor a : algorithm.getActors()) {
-      final int timing = 10; // scenario.getTimings().getTiming(a, anyCPU.getComponent(), TimingType.EXECUTION_TIME)
-      final ActorExecutionTiming aet = new ActorExecutionTiming(a, i, timing);
-      execTimings.put(a, aet);
-      i++;
-    }
+    PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
-    return results;
+    // final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 
+    outputs.put("Schedule", scheduleAndMap.schedule);
+    outputs.put("Mapping", scheduleAndMap.mapping);
+
+    return outputs;
+
+  }
+
+  private IScheduler selectScheduler(final String schedulerName) {
+    return switch (schedulerName) {
+      case VALUE_SCHEDULER_SIMPLE -> new SimpleScheduler();
+      case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
+      case VALUE_SCHEDULER_PERIODIC -> new PeriodicScheduler();
+      case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
+      case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_LINEAR);
+      case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_EXACT);
+      default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
+    };
+  }
+
+  private IMemoryAllocation selectAllocation(final String allocationName) {
+    return switch (allocationName) {
+      case VALUE_ALLOCATORS_SIMPLE -> new SimpleMemoryAllocation();
+      case VALUE_ALLOCATORS_LEGACY -> new LegacyMemoryAllocation();
+      default -> throw new PreesmRuntimeException("unknown allocation: " + allocationName);
+    };
   }
 
   @Override
