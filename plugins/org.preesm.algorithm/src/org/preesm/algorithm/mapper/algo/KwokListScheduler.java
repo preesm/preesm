@@ -104,7 +104,7 @@ public class KwokListScheduler {
    * @param operatorfcp
    *          the operatorfcp
    * @param fcpvertex
-   *          the fcpvertex
+   *          the fcpvertex (Final Critical Path)
    * @return : Implemented MapperDAG
    * @throws PreesmException
    *           the workflow exception
@@ -131,6 +131,8 @@ public class KwokListScheduler {
           archisimu.map(currentvertex, groupOperators.get(0), true, false);
         }
       } else {
+        // fcpvertex has the null value passed from the method call inListSchedulingMappingFromDAG, so this part is what
+        // gets executed most of the times
 
         final long time = Long.MAX_VALUE;
         // Choose the operator

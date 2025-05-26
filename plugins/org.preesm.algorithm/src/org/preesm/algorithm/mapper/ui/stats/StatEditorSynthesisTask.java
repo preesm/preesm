@@ -117,7 +117,6 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
           scheduleOM);
-      output.put("Timings", evaluate);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
 
       PreesmLogger.getLogger().info("-- Output of Gantt");
