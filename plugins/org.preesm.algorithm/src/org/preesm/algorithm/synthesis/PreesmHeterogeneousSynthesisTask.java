@@ -104,7 +104,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     // clusterize the graph
     final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
 
-    // ------------------ locally schedule and map the clusters' graphs ------------------
+    // -------------------------------------------------------------------------------------
+    /* ------------------ locally schedule and map the clusters' graphs ------------------ */
 
     final Map<PiGraph, SynthesisResult> localSchedulings = new HashMap<>();
 
@@ -118,7 +119,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       localSchedulings.put(cluster, res);
     }
 
-    // ------------------ replace hierarchical actors with placeholders ------------------
+    // --------------------------------------------------------------------------------------
+    /* ------------------- replace hierarchical actors with placeholders ------------------- */
 
     // find any cpu in scenario, whatever
     ComponentInstance anyCPU;
@@ -169,10 +171,13 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
-    // final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
+    final IMemoryAllocation alloc = new LegacyMemoryAllocation();
+    final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
+        scheduleAndMap.mapping);
 
     outputs.put("Schedule", scheduleAndMap.schedule);
     outputs.put("Mapping", scheduleAndMap.mapping);
+    outputs.put("Allocation", memalloc);
 
     return outputs;
 

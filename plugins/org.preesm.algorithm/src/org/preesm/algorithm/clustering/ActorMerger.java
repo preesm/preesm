@@ -16,6 +16,12 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 
+/**
+ *
+ * @author jmorin
+ *
+ */
+
 public class ActorMerger {
   /**
    *

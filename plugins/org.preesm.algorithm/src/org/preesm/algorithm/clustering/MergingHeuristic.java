@@ -3,6 +3,12 @@ package org.preesm.algorithm.clustering;
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
 
+/**
+*
+* @author jmorin
+*
+*/
+
 /***
  * An interface for all merging heuristics used in the clustering phase. The merging test can be different for
  * predecessor actors than for successor actors. See the assess method's description for details.
