@@ -8,6 +8,12 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
+/**
+ *
+ * @author jmorin
+ *
+ */
+
 public class MinimalMergingHeuristic extends MergingHeuristic {
 
   /***
@@ -27,6 +33,7 @@ public class MinimalMergingHeuristic extends MergingHeuristic {
     if (position == MergingHeuristic.successor) {
       // check if the actor can be added to the merger list
       // (i.e it only has predecessors with the same arch as the seed)
+
       final List<AbstractActor> actorPredecessorsNotSameArchi = actor.getDataInputPorts().stream()
           .map(dip -> dip.getOppositePort().getContainingActor()) // get all predecessor actors
           .filter(a -> !(scenario.getConstraints().getPossibleMappings(a).contains(refArchi))).toList();
@@ -34,6 +41,7 @@ public class MinimalMergingHeuristic extends MergingHeuristic {
 
       return actorPredecessorsNotSameArchi.isEmpty();
     }
+    // if it's a predecessor just check if it of the same arch
     return scenario.getConstraints().getPossibleMappings(actor).contains(refArchi);
   }
 }
