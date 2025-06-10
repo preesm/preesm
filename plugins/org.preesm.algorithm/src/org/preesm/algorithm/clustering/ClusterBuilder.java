@@ -14,9 +14,17 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
+
+/**
+ *
+ * @author jmorin
+ *
+ */
 
 public class ClusterBuilder {
 
@@ -46,23 +54,23 @@ public class ClusterBuilder {
     final Map<AbstractActor,
         Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
-    boolean graph_is_fully_searched = false;
-
-    // final Map<ComponentInstance, List<AbstractActor>> mappings = (Map<ComponentInstance, List<AbstractActor>>)
-    // scenario.getConstraints().getGroupConstraints();
-
-    final ComponentInstance refCPU = scenario.getDesign().getComponentInstances().stream()
-        .filter(c -> c.getComponent() instanceof CPU).findFirst().orElse(null);
+    final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
+    final Component refCPUArch = refCPU.getComponent();
     final ComponentInstance refFPGA = scenario.getDesign().getComponentInstances().stream()
         .filter(c -> c.getComponent() instanceof FPGA).findFirst().orElse(null);
 
     // list all processing elements (i.e component instances) used in the architecture
     final EList<ComponentInstance> componentList = scenario.getDesign().getComponentInstances();
-    // find all, non-cpu PEs (the ones whose actors we want to cluster)
-    final List<
-        ComponentInstance> nonCpuList = componentList.stream().filter(c -> !(c.getComponent() instanceof CPU)).toList();
+
+    // find all non-main cpu PEs (the ones whose actors we want to cluster)
+    // E.G if the main proc is x86, ARM proc will be listed and conversely, as well as all fpgas.
+    final List<ComponentInstance> nonX86List = componentList.stream()
+        .filter(c -> !(c.getComponent().equals(refCPUArch)) && c.getComponent() instanceof ProcessingElement).toList();
+    final List<ComponentInstance> nonCpuList = componentList.stream()
+        .filter(c -> !(c.getComponent() instanceof CPU && c.getComponent() instanceof ProcessingElement)).toList();
 
     int i = 0;
+    boolean graph_is_fully_searched = false;
     // visit all actors to search those that can act as seeds
     do {
       boolean seed_found = false;
