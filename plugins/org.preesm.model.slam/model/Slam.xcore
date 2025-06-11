@@ -166,6 +166,9 @@ class ComponentInstance extends ParameterizedElement {
 	op String toString() {
 		return instanceName+":"+component.vlnv.name
 	}
+	op String getDefinition() {
+		return component.vlnv.name
+	}
 }
 
 class VLNVedElement {

@@ -435,7 +435,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 
 		if (parameter instanceof ConfigInputInterface) {
-			val ConfigInputPort port = PiMMUserFactory.instance.createConfigInputPort
+			val ConfigInputPort port = PiMMFactory.eINSTANCE.createConfigInputPort
 			port.name = parameter.name
 			this.configInputPorts.add(port)
 			parameter.graphPort = port
