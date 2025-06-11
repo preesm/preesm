@@ -83,7 +83,13 @@ public abstract class AbstractScheduler implements IScheduler {
     /*
      * Check graph
      */
-    final PiGraph originalPiGraph = PreesmCopyTracker.getOriginalSource(piGraph);
+    // find the top graph
+    PiGraph parentGraph = piGraph;
+    while (parentGraph.getContainingPiGraph() != null) {
+      parentGraph = parentGraph.getContainingPiGraph();
+    }
+    final PiGraph originalPiGraph = PreesmCopyTracker.getOriginalSource(parentGraph);
+
     if (originalPiGraph != scenario.getAlgorithm()) {
       throw new PreesmSynthesisException("Input PiSDF graph is not derived from the scenario algorithm.");
     }
