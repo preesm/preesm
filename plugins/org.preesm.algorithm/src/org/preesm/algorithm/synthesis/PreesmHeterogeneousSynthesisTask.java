@@ -9,6 +9,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
@@ -92,10 +93,12 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final PiGraph original_algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final String schedulerType = parameters.get("scheduler");
+
+    final PiGraph algorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(original_algorithm);
 
     // later used to compute the gantt
     // final Mapping mappings = MappingFactory.eINSTANCE.createMapping();
@@ -171,7 +174,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
-    final IMemoryAllocation alloc = new LegacyMemoryAllocation();
+    IMemoryAllocation alloc;
+    final Map<String, String> memAllocParams = new HashMap<>();
+    if (parameters.containsKey(MemoryScriptTask.PARAM_LOG)) {
+      memAllocParams.put(MemoryScriptTask.PARAM_LOG, parameters.get(MemoryScriptTask.PARAM_LOG));
+      alloc = new LegacyMemoryAllocation(memAllocParams);
+    } else {
+      alloc = new LegacyMemoryAllocation();
+    }
     final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
 
