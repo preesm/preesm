@@ -46,6 +46,7 @@ import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -118,10 +119,12 @@ public abstract class AbstractScheduler implements IScheduler {
       final Schedule schedule, final Mapping mapping) {
 
     // make sure all actors have been scheduled and schedule contains only actors from the input graph
-    final List<AbstractActor> piGraphAllActors = new ArrayList<>(piGraph.getAllActors());
+    final List<AbstractActor> piGraphAllActors = new ArrayList<>(
+        piGraph.getAllActors().stream().filter(a -> a instanceof Actor).toList());
 
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
-    final List<AbstractActor> scheduledActors = new ArrayList<>(actors);
+    final List<
+        AbstractActor> scheduledActors = new ArrayList<>(actors.stream().filter(a -> a instanceof Actor).toList());
     if (!piGraphAllActors.containsAll(scheduledActors)) {
       throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
     }
