@@ -323,7 +323,7 @@ public class WorkspaceUtils {
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     // If the file pointed by path does not exist, we try to add the
     // name of the project containing the file we parse to it
-    if (!root.getFile(path).exists()) {
+    if ((!path.isEmpty()) && (!root.getFile(path).exists())) {
       // Get the project
       final String platformString = documentURI.toPlatformString(true);
       final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));

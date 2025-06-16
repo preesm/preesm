@@ -243,7 +243,7 @@ public class OverviewPage extends ScenarioPage {
     final String textFieldContent = text.getText();
     final String fullPath = WorkspaceUtils.getWorkspaceRelativePathFrom(scenario.getScenarioURL(), textFieldContent)
         .toString();
-    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(fullPath);
+    final boolean testPathValidInWorkspace = FieldUtils.testPathValidInWorkspace(fullPath) && !fullPath.isBlank();
     FieldUtils.colorRedOnCondition(text, !testPathValidInWorkspace);
   }
 
