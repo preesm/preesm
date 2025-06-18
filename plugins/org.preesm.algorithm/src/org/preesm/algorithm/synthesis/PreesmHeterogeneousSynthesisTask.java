@@ -33,11 +33,11 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
@@ -72,7 +72,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
-        @Port(name = "Allocation", type = Allocation.class) })
+        @Port(name = "Allocation", type = Allocation.class), @Port(name = "HPiSDF", type = PiGraph.class) })
 
 public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation {
 
@@ -96,69 +96,72 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final PiGraph original_algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    final String schedulerType = parameters.get("scheduler");
 
     final PiGraph algorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(original_algorithm);
 
     // later used to compute the gantt
-    // final Mapping mappings = MappingFactory.eINSTANCE.createMapping();
     final Map<AbstractActor, ActorExecutionTiming> execTimings = new HashMap<>();
 
-    // clusterize the graph
-    final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
+    final boolean CLUSTERIZE = parameters.get("clusterize").equals("true");
 
-    // -------------------------------------------------------------------------------------
-    /* ------------------ locally schedule and map the clusters' graphs ------------------ */
+    if (CLUSTERIZE) {
+      // clusterize the graph
+      final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
 
-    final Map<PiGraph, SynthesisResult> localSchedulings = new HashMap<>();
+      // -------------------------------------------------------------------------------------
+      // ------------------- locally schedule and map the clusters' graphs -------------------
 
-    for (final PiGraph cluster : clustersList) {
-      // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-      final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+      final Map<PiGraph, SynthesisResult> localSchedulings = new HashMap<>();
 
-      final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
+      for (final PiGraph cluster : clustersList) {
+        // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
+        final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
 
-      final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
-      localSchedulings.put(cluster, res);
-    }
+        final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
 
-    // --------------------------------------------------------------------------------------
-    /* ------------------- replace hierarchical actors with placeholders ------------------- */
-
-    // find any cpu in scenario, whatever
-    ComponentInstance anyCPU;
-    if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
-      anyCPU = scenario.getSimulationInfo().getMainOperator();
-    } else {
-      anyCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
-          .getFirst();
-    }
-
-    // iterate over clusters (PiGraphs for now, maybe something else later to avoid confusion with simple hier. actors)
-    for (final PiGraph subGraph : algorithm.getActors().stream().filter(a -> a instanceof PiGraph).map(a -> (PiGraph) a)
-        .toList()) {
-      final Actor placeholder = PiMMFactory.createActor(subGraph.getName() + "_placeholder");
-      placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
-
-      // set the placeholder's characteristics we need for global scheduling :
-      // - latency/throughput
-      int latency = 0;
-
-      // check if it is executed of FPGA. If so we have to find (or fabricate) its latency
-      if (scenario.getPossibleMappings(subGraph).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
-        latency = computeFpgaGraphLatency(subGraph);
+        final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
+        localSchedulings.put(cluster, res);
       }
 
-      // mappings.getMappings().put(placeholder, scenario.getPossibleMappings(subGraph));
+      // --------------------------------------------------------------------------------------
+      // -------------------- replace hierarchical actors with placeholders -------------------
 
-      algorithm.addActor(placeholder);
-      replaceAndRemoveActor(subGraph, placeholder, algorithm);
+      // find the main PE
+      ComponentInstance mainCPU;
+      if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
+        mainCPU = scenario.getSimulationInfo().getMainOperator();
+      } else {
+        mainCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
+            .getFirst();
+      }
 
-      // for now, let's suppose II = Latency
-      final Component component = scenario.getPossibleMappings(subGraph).getFirst().getComponent();
-      scenario.getTimings().setExecutionTime(placeholder, component, 10);
-      scenario.getTimings().setTiming(placeholder, component, TimingType.INITIATION_INTERVAL, "10");
-      scenario.getConstraints().addConstraint(anyCPU, placeholder); // test, idéalement ça serait une "non-archi"
+      // iterate over clusters (PiGraphs for now, maybe something else later to avoid confusion with simple hier.
+      // actors)
+      for (final PiGraph subGraph : algorithm.getActors().stream().filter(a -> a instanceof PiGraph)
+          .map(a -> (PiGraph) a).toList()) {
+        final Actor placeholder = PiMMFactory.createActor(subGraph.getName() + "_placeholder");
+        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
+
+        // set the placeholder's characteristics we need for global scheduling : // - latency/throughput
+        int latency = 0;
+
+        // check if it is executed of FPGA. If so we have to find (or fabricate) its latency
+        if (scenario.getPossibleMappings(subGraph).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
+          latency = computeFpgaGraphLatency(subGraph);
+        } else {
+          // On est d'accord que c'est bien la durée d'un firing de l'acteur ?
+          latency = localSchedulings.get(subGraph).schedule.getSpan();
+        }
+
+        algorithm.addActor(placeholder);
+        replaceAndRemoveActor(subGraph, placeholder, algorithm);
+
+        // for now, let's suppose II = Latency
+        scenario.getConstraints().addConstraint(mainCPU, placeholder); // test,idéalement ça serait une "non-archi"
+        scenario.getTimings().setExecutionTime(placeholder, mainCPU.getComponent(), latency);
+        scenario.getTimings().setTiming(placeholder, mainCPU.getComponent(), TimingType.INITIATION_INTERVAL,
+            Integer.toString(latency));
+      }
 
     }
 
@@ -171,7 +174,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final IScheduler scheduler = selectScheduler(schedulerName);
 
-    PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
+    PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling -- " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
 
     IMemoryAllocation alloc;
@@ -188,6 +191,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     outputs.put("Schedule", scheduleAndMap.schedule);
     outputs.put("Mapping", scheduleAndMap.mapping);
     outputs.put("Allocation", memalloc);
+    outputs.put("HPiSDF", algorithm);
 
     return outputs;
 
@@ -287,8 +291,10 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    */
   private void replaceAndRemoveActor(AbstractActor oldA, AbstractActor newA, PiGraph graph) {
 
+    // TODO brancher les dépendances dans le placeholder
     // clone input and output outer interfaces
     // plug fifos and copy rates
+
     for (final DataInputPort olddip : oldA.getDataInputPorts()) {
       final DataInputPort newdip = PiMMFactory.createDataInputPort(olddip.getName());
 
@@ -305,13 +311,17 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     }
 
     for (final ConfigInputPort oldcip : oldA.getConfigInputPorts()) {
+      // create a new dependency that will be plugged to a new config port
       final ConfigInputPort newcip = PiMMFactory.createConfigInputPort();
+      newcip.setName(oldcip.getName());
+
+      final Dependency newDep = PiMMFactory.createDependency(oldcip.getIncomingDependency().getSetter(), newcip);
 
       newA.getConfigInputPorts().add(newcip);
-      newcip.setIncomingDependency(oldcip.getIncomingDependency());
+      graph.addDependency(newDep);
     }
 
-    // remove the old actor from the graph
+    // remove the old cluster actor from the graph
     graph.removeActorAndDependencies(oldA);
 
   }
