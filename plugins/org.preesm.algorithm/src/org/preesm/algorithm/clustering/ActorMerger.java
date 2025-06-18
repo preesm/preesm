@@ -6,6 +6,7 @@ import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -105,36 +106,46 @@ public class ActorMerger {
 
       // });
 
-      actor.getConfigInputPorts().stream().forEach(cip -> {
-        // récupérer toutes les dépendences (paramètres) de l'acteur
-        final Dependency innerDep = cip.getIncomingDependency();
+      for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+        // récupérer toutes les dépendances (paramètres) de l'acteur
+        final Dependency outerDep = cip.getIncomingDependency();
 
-        // change graph dependency ownership to inner graph
-        graph.removeDependency(innerDep); // useless ?
-        innerSDF.addDependency(innerDep);
-
-        // check if parameter has already been added to the inner graph earlier
+        // check if there already is a configIputPort plugged to this parameter (because another actor uses it)
         final Optional<ConfigInputInterface> optParam = innerSDF.getConfigInputInterfaces().stream()
-            .filter(cii -> cii.getName().equals(((Parameter) innerDep.getSource()).getName())).findAny();
+            .filter(cii -> cii.getName().equals(((Parameter) outerDep.getSource()).getName())).findAny();
 
         ConfigInputInterface innerCii;
 
         if (optParam.isEmpty()) {
-          innerCii = PiMMFactory
-              .createConfigInputInterface(((Parameter) (cip.getIncomingDependency().getSetter())).getName());
+          // create new configInputInterface for the inside
+          innerCii = PiMMFactory.createConfigInputInterface(((Parameter) (outerDep.getSetter())).getName());
 
-          final Dependency outerDep = PiMMFactory.createDependency(innerDep.getSetter(), innerCii.getGraphPort());
-          graph.addDependency(outerDep);
           innerSDF.addParameter(innerCii);
-          // On suppose qu'il y a un check de l'unicité lors de l'ajout (vérifier mais semble bon)
+          /*
+           * // the old interface is plugged into the innerSDF's config GraphPort, from outside.
+           * outerDep.setGetter(innerCii.getGraphPort());
+           */
+
+          // create a new config link from the original parameter to the new inner one
+          final Dependency newOuterDep = PiMMFactory.createDependency(outerDep.getSetter(), innerCii.getGraphPort());
+          graph.addDependency(newOuterDep);
 
         } else {
           innerCii = optParam.get();
         }
 
+        // link the outerDep inside, making it the inner dep
+        final Dependency innerDep = outerDep;
+        innerDep.setGetter(cip);
         innerDep.setSetter(innerCii);
-      });
+        innerSDF.addDependency(innerDep);
+
+        final var truc = PiMMFactory.createActor();
+      }
     }
+
+    final var nullGetterDependencies = graph.getParameters().stream()
+        .flatMap(param -> param.getOutgoingDependencies().stream()).filter(dep -> dep.getGetter() == null).toList();
 
     return innerSDF;
 
