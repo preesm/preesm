@@ -21,6 +21,8 @@ import org.preesm.algorithm.clustering.ActorMerger;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.clustering.MergingHeuristic;
 import org.preesm.algorithm.clustering.MinimalMergingHeuristic;
+import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.PreesmHeterogeneousSynthesisTask;
 import org.preesm.model.pisdf.AbstractActor;
@@ -172,19 +174,19 @@ public class HeterogeneousTest {
       scenario.getTimings().setTiming(a, fpga1.getComponent(), TimingType.INITIATION_INTERVAL, "10");
     }
 
-    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(1), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(2), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(1), listActors.get(3), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(2), listActors.get(3), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(3), listActors.get(5), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(4), listActors.get(5), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(6), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(7), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(8), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(9), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(10), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(11), 10, 10, "int", algo);
-    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(12), 10, 10, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(1), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(0), listActors.get(2), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(1), listActors.get(3), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(2), listActors.get(3), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(3), listActors.get(5), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(4), listActors.get(5), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(6), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(7), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(5), listActors.get(8), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(9), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(6), listActors.get(10), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(11), 1, 1, "int", algo);
+    ClusterTestHelper.createFifoLink(listActors.get(7), listActors.get(12), 1, 1, "int", algo);
 
     final EList<AbstractActor> cpuActors = new BasicEList<>();
     cpuActors.add(listActors.get(3));
@@ -216,9 +218,9 @@ public class HeterogeneousTest {
   public void testBuildArchHierarchyGraph() {
     ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
 
-    assertEquals(8, algo.getActors().size());
+    assertEquals(7, algo.getActors().size());
     final List<AbstractActor> listHierActors = algo.getActors().stream().filter(a -> a instanceof PiGraphImpl).toList();
-    assertEquals(3, listHierActors.size());
+    assertEquals(2, listHierActors.size());
 
     // check all actors have a rate of 10 in all their data ports
     algo.getActors().stream().flatMap(actor -> actor.getAllDataPorts().stream())
@@ -289,11 +291,16 @@ public class HeterogeneousTest {
     final Workflow workflow = new Workflow(); // pas utilisé non plus donc raf
 
     final var task = new PreesmHeterogeneousSynthesisTask();
+
+    // ce n'est pas la valeur FALSE pour le mettre à false, mais du vide...
+    parameters.put(MemoryScriptTask.PARAM_LOG, "");
     final Map<String, Object> res = task.execute(inputs, parameters, monitor, nodeName, workflow);
 
     // vérifier que les éléments sont mappés où on le veut, et que la durée d'exécution est celle prévue
 
     final Schedule resSchedule = (Schedule) res.get("Schedule");
+    final Mapping resMapping = (Mapping) res.get("Mapping");
+
   }
 
 }

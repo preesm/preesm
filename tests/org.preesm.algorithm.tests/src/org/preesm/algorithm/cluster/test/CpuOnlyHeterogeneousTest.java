@@ -14,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ClusterBuilder;
+import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.PreesmHeterogeneousSynthesisTask;
@@ -245,6 +246,8 @@ public class CpuOnlyHeterogeneousTest {
     final Workflow workflow = new Workflow(); // pas utilisé non plus donc raf
 
     final PreesmHeterogeneousSynthesisTask task = new PreesmHeterogeneousSynthesisTask();
+    // ce n'est pas la valeur FALSE pour le mettre à false, mais du vide...
+    parameters.put(MemoryScriptTask.PARAM_LOG, "");
     final Map<String, Object> res = task.execute(inputs, parameters, monitor, nodeName, workflow);
 
     // final PreesmSynthesisTask refTask = new PreesmSynthesisTask();
