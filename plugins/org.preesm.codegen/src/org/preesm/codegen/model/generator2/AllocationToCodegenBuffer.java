@@ -230,6 +230,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
   private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
 
+  // map physical buffer to codegen buffer
   private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb            = new DualHashBidiMap<>();
   private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
 

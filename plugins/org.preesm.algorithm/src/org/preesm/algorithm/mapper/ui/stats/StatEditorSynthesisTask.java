@@ -60,6 +60,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -115,6 +116,8 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().info(" -- Latency evaluation");
       final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, schedule);
 
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+      pgcc.check(algorithm);
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
           scheduleOM);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
