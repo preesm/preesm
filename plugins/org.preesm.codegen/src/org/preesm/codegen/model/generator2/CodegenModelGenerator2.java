@@ -85,6 +85,7 @@ import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.EndActor;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -253,7 +254,8 @@ public class CodegenModelGenerator2 {
       final List<AbstractActor> totallyOrderedActors) {
     // iterate in order
 
-    for (final AbstractActor actor : totallyOrderedActors) {
+    // need to keep only the executable actors because e.g interfaces have no code associated
+    for (final AbstractActor actor : totallyOrderedActors.stream().filter(a -> a instanceof ExecutableActor).toList()) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
