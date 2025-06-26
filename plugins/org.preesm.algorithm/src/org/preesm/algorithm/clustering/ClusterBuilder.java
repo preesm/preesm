@@ -87,8 +87,8 @@ public class ClusterBuilder {
         if (!actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
 
           /*
-           * check if it is a valid seed : there is a non-fpga predecessor actor or no inputs at all, and an fpga
-           * successor actor
+           * check if it is a valid seed : there is a non-main arch predecessor actor or no inputs at all, and a
+           * non-main arch successor actor
            */
 
           final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
