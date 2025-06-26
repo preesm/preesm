@@ -5,6 +5,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -12,16 +14,18 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.LegacyMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.SimpleMemoryAllocation;
+import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.schedule.algos.ChocoScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
-import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
@@ -35,6 +39,7 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
@@ -72,7 +77,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
         @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
-        @Port(name = "Allocation", type = Allocation.class), @Port(name = "HPiSDF", type = PiGraph.class) })
+        @Port(name = "Allocation", type = Allocation.class), @Port(name = "HPiSDF", type = PiGraph.class),
+        @Port(name = "localSyntheses", type = Map.class) })
 
 public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation {
 
@@ -99,10 +105,10 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final PiGraph algorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(original_algorithm);
 
-    // later used to compute the gantt
-    final Map<AbstractActor, ActorExecutionTiming> execTimings = new HashMap<>();
+    // stores a PiGraph (a cluster) with the associated place holder actor and its synthesis result
+    final Map<PiGraph, Pair<Actor, SynthesisResult>> localSynthesesMap = new HashMap<>();
 
-    final boolean CLUSTERIZE = parameters.get("clusterize").equals("true");
+    final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
 
     if (CLUSTERIZE) {
       // clusterize the graph
@@ -111,21 +117,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
-      final Map<PiGraph, SynthesisResult> localSchedulings = new HashMap<>();
-
-      for (final PiGraph cluster : clustersList) {
-        // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-        final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
-
-        final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
-
-        final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
-        localSchedulings.put(cluster, res);
-      }
-
-      // --------------------------------------------------------------------------------------
-      // -------------------- replace hierarchical actors with placeholders -------------------
-
+      final IMemoryAllocation alloc = new LegacyMemoryAllocation();
       // find the main PE
       ComponentInstance mainCPU;
       if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
@@ -134,33 +126,63 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
         mainCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
             .getFirst();
       }
+      // TODO find an adapted accelerator, not just any non-x86 core
+      final ComponentInstance accelerator = architecture.getComponentInstances().stream()
+          .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
 
-      // iterate over clusters (PiGraphs for now, maybe something else later to avoid confusion with simple hier.
-      // actors)
-      for (final PiGraph subGraph : algorithm.getActors().stream().filter(a -> a instanceof PiGraph)
-          .map(a -> (PiGraph) a).toList()) {
-        final Actor placeholder = PiMMFactory.createActor(subGraph.getName() + "_placeholder");
-        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement()); // empty refinement for now
+      for (final PiGraph cluster : clustersList) {
+        // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
+        final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
 
-        // set the placeholder's characteristics we need for global scheduling : // - latency/throughput
-        int latency = 0;
+        final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
 
-        // check if it is executed of FPGA. If so we have to find (or fabricate) its latency
-        if (scenario.getPossibleMappings(subGraph).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
-          latency = computeFpgaGraphLatency(subGraph);
+        final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
+        final var localSchedule = res.schedule;
+        final var localMapping = res.mapping;
+
+        final Allocation allocation = alloc.allocateMemory(cluster, architecture, scenario, res.schedule, res.mapping);
+
+        final SynthesisResult localSynthesisResult = new SynthesisResult(res.mapping, res.schedule, allocation);
+
+        // --------------------------------------------------------------------------------------
+        // -------------------- replace hierarchical actors with placeholders -------------------
+        // --------------------------------------------------------------------------------------
+
+        final Actor placeholder = PiMMFactory.createActor(cluster.getName() + "_placeholder");
+        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement());
+
+        // set the placeholder's characteristics we need for global scheduling :
+        // - latency/throughput
+        long latency = 100;
+
+        // check if it is executed on FPGA. If so we have to find (or fabricate) its latency
+
+        if (scenario.getPossibleMappings(cluster).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
+          latency = computeFpgaGraphLatency(cluster);
         } else {
+          final ScheduleOrderManager localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
+
+          final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+          // TODO vérifier si ça sert à quelque chose ? Possiblement redondant
+          pgcc.check(cluster);
+
           // On est d'accord que c'est bien la durée d'un firing de l'acteur ?
-          latency = localSchedulings.get(subGraph).schedule.getSpan();
+          final LatencyCost localLatency = new SimpleLatencyEvaluation().evaluate(cluster, architecture, scenario,
+              localMapping, localScheduleOM);
+          // Besoin de convertir le graphe local en SrDAG pour calculer sa latence ?
+          latency = localLatency.getValue();
         }
 
         algorithm.addActor(placeholder);
-        replaceAndRemoveActor(subGraph, placeholder, algorithm);
+        replaceAndRemoveActor(cluster, placeholder, algorithm);
 
         // for now, let's suppose II = Latency
-        scenario.getConstraints().addConstraint(mainCPU, placeholder); // test,idéalement ça serait une "non-archi"
+        scenario.getConstraints().addConstraint(accelerator, placeholder); // test, idéalement ça serait une "non-archi"
         scenario.getTimings().setExecutionTime(placeholder, mainCPU.getComponent(), latency);
         scenario.getTimings().setTiming(placeholder, mainCPU.getComponent(), TimingType.INITIATION_INTERVAL,
-            Integer.toString(latency));
+            Long.toString(latency));
+
+        localSynthesesMap.put(cluster, new ImmutablePair<>(placeholder, localSynthesisResult));
       }
 
     }
@@ -192,6 +214,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     outputs.put("Mapping", scheduleAndMap.mapping);
     outputs.put("Allocation", memalloc);
     outputs.put("HPiSDF", algorithm);
+    outputs.put("localSyntheses", localSynthesesMap);
 
     return outputs;
 
