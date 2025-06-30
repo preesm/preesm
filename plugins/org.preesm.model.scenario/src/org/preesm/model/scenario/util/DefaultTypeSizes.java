@@ -95,11 +95,11 @@ public final class DefaultTypeSizes {
 
   /**
    * Returns the type size in bits of the provided typename if it is known, or the default
-   * {@link ScenarioConstants.DEFAULT_DATA_TYPE_SIZE} otherwise.
+   * {@link ScenarioConstants#DEFAULT_DATA_TYPE_SIZE} otherwise.
    *
    * @param typeName
    *          To be checked.
-   * @return The size of the type name if known, default {@link ScenarioConstants.DEFAULT_DATA_TYPE_SIZE} otherwise.
+   * @return The size of the type name if known, default {@link ScenarioConstants#DEFAULT_DATA_TYPE_SIZE} otherwise.
    */
   public final long getTypeSizeOrDefault(final String typeName) {
 

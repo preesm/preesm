@@ -71,8 +71,6 @@ public class ExpressionValue implements Value {
    * Gives the long value of this expression.
    *
    * @return The long value of the expression
-   * @throws InvalidExpressionException
-   *           When expression can't be solved
    * @throws ExpressionEvaluationException
    *           the no integer value exception
    */

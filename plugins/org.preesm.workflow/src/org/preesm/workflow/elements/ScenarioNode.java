@@ -100,8 +100,6 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    *
    * @param scenario
    *          the scenario
-   * @param element
-   *          the element
    * @return True if the prototype was correctly set.
    */
   @Override

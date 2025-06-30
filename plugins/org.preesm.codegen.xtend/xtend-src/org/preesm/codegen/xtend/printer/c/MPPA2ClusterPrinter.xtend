@@ -44,15 +44,18 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.io.StringWriter
 import java.net.URL
+import java.util.ArrayDeque
 import java.util.Arrays
+import java.util.Deque
 import java.util.Collection
 import java.util.Date
 import java.util.LinkedHashMap
 import java.util.LinkedHashSet
 import java.util.List
+import java.util.Map
 import java.util.Set
-import org.apache.velocity.VelocityContext
 import org.apache.velocity.app.VelocityEngine
+import org.apache.velocity.VelocityContext
 import org.eclipse.emf.common.util.EList
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
@@ -77,21 +80,18 @@ import org.preesm.codegen.model.SharedMemoryCommunication
 import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
-import org.preesm.commons.exceptions.PreesmRuntimeException
-import org.preesm.commons.files.PreesmResourcesHelper
-import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.codegen.model.PapifyAction
 import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.RegisterSetUpAction
-import java.util.Map
 import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.printer.BlankPrinter
-import java.util.ArrayDeque
-import java.util.Deque
+import org.preesm.commons.exceptions.PreesmRuntimeException
+import org.preesm.commons.files.PreesmResourcesHelper
+import org.preesm.model.pisdf.util.CHeaderUsedLocator
 
 class MPPA2ClusterPrinter extends BlankPrinter {
 
@@ -621,8 +621,8 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	 *            the source {@link Buffer}
 	 * @param inOffset
 	 *            the offset in the source {@link Buffer}
-	 * @param size
-	 *            the amount of memory to copy
+	 * @param nbToken
+	 *            the amount of token to copy
 	 * @param type
 	 *            the type of objects copied
 	 * @return a {@link CharSequence} containing the memcpy call (if any)

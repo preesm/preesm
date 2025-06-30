@@ -76,8 +76,8 @@ public class PiRange implements CloneableProperty<PiRange> {
   }
 
   /**
-   * {@link PiRange#difference(PiRange,PiRange) Subtract} the given {@link PiRange} from all {@link PiRange ranges}
-   * stored in the {@link List}. Parameters are not modified by this method.
+   * {@link PiRange#difference(List ,PiRange) Subtract} the given {@link PiRange} from all {@link PiRange ranges} stored
+   * in the {@link List}. Parameters are not modified by this method.
    *
    * @param ranges
    *          {@link List} of {@link PiRange}.
@@ -271,7 +271,7 @@ public class PiRange implements CloneableProperty<PiRange> {
   }
 
   /**
-   * Same as {@link PiRange#union(List,PiRange)} except that {@link PiRange#isContiguous(PiRange) contiguous}
+   * Same as {@link PiRange#union(List,PiRange)} except that {@link PiRange#isContiguous(PiRange, PiRange) contiguous}
    * {@link PiRange ranges} are not merged.
    *
    * @param ranges

@@ -158,7 +158,7 @@ public class Graph extends AbstractObject {
    * @param child
    *          The vertex to add
    * @return true if the vertex is added, false if command failed
-   * @see AbstractBaseGraph#addVertex(Vertex)
+   * @see AbstractBaseGraph#addVertex(Object)
    */
   public boolean addVertex(final Vertex child) {
     final boolean res = this.concreteGraph.addVertex(child);
@@ -246,7 +246,7 @@ public class Graph extends AbstractObject {
    * @param vertex
    *          the vertex
    * @return the sets the
-   * @see AbstractBaseGraph#incomingEdgesOf(Vertex)
+   * @see AbstractBaseGraph#incomingEdgesOf(Object)
    */
   public Set<Edge> incomingEdgesOf(final Vertex vertex) {
     return this.concreteGraph.incomingEdgesOf(vertex);
@@ -267,7 +267,7 @@ public class Graph extends AbstractObject {
    * @param vertex
    *          the vertex
    * @return the sets the
-   * @see AbstractBaseGraph#outgoingEdgesOf(Vertex)
+   * @see AbstractBaseGraph#outgoingEdgesOf(Object)
    */
   public Set<Edge> outgoingEdgesOf(final Vertex vertex) {
     return this.concreteGraph.outgoingEdgesOf(vertex);
@@ -279,7 +279,7 @@ public class Graph extends AbstractObject {
    * @param edge
    *          the edge
    * @return true, if successful
-   * @see AbstractBaseGraph#removeEdge(Edge)
+   * @see AbstractBaseGraph#removeEdge(Object)
    */
   public boolean removeEdge(final Edge edge) {
     final Vertex source = edge.getSource();
@@ -296,7 +296,7 @@ public class Graph extends AbstractObject {
    * @param child
    *          the child
    * @return true, if successful
-   * @see AbstractBaseGraph#removeVertex(Graph)
+   * @see AbstractBaseGraph#removeVertex(Object)
    */
   public boolean removeVertex(final Vertex child) {
     final boolean res = this.concreteGraph.removeVertex(child);

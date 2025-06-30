@@ -160,7 +160,7 @@ public class ScriptRunner {
 
   /**
    * Check the results obtained when running the {@link #run()} method. Checks are performed according to the current
-   * {@link #setCheckPolicy(CheckPolicy)}. The {@link #checkResult(File,Pair)} method is used to perform the checks.
+   * {@link #setCheckPolicy(CheckPolicy)}. The {@link #checkResult(URL, Pair)} method is used to perform the checks.
    * Vertices whose script results do not pass the checks are removed from the {@link #scriptResults} map.
    */
   public void check() {
@@ -1614,16 +1614,16 @@ public class ScriptRunner {
   }
 
   /**
-   * This method run the scripts that were found during the call to {@link #findScripts()}. As a result, the
-   * {@link #scriptResults} is filled.<br>
+   * This method run the scripts that were found during the call to {@link #findScripts(DirectedAcyclicGraph)}. As a
+   * result, the {@link #scriptResults} is filled.<br>
    * <br>
    *
    * If the execution of a script fails, the {@link Interpreter} error message will be printed in the {@link Logger log}
    * as a warning.<br>
    * <br>
-   * The {@link #check(List,List)} method is also used after each script execution to verify the validity of the script
-   * results. If the results are not valid, they will not be stored in the {@link #scriptResults} {@link Map}, and a
-   * warning will be printed in the {@link Logger log}.
+   * The {@link #checkResult(URL, Pair)} method is also used after each script execution to verify the validity of the
+   * script results. If the results are not valid, they will not be stored in the {@link #scriptResults} {@link Map},
+   * and a warning will be printed in the {@link Logger log}.
    */
   public void run() throws EvalError {
     // For each vertex with a script
@@ -1749,14 +1749,14 @@ public class ScriptRunner {
 
       // Logger is used to display messages in the console
       final String message = error.getMessage() + "\n" + error.getCause();
-      ScriptRunner.logger.log(Level.WARNING, "Parse error in " + dagVertex.getName() + " memory script:\n" + message,
-          error);
+      ScriptRunner.logger.log(Level.WARNING, error,
+          () -> "Parse error in " + dagVertex.getName() + " memory script:\n" + message);
     } catch (final EvalError error) {
 
       // Logger is used to display messages in the console
       final String message = error.getMessage() + "\n" + error.getCause();
-      ScriptRunner.logger.log(Level.WARNING, "Evaluation error in " + dagVertex.getName() + " memory script:\n[Line "
-          + error.getErrorLineNumber() + "] " + message, error);
+      ScriptRunner.logger.log(Level.WARNING, error, () -> "Evaluation error in " + dagVertex.getName()
+          + " memory script:\n[Line " + error.getErrorLineNumber() + "] " + message);
     } catch (final IOException exception) {
       ScriptRunner.logger.log(Level.WARNING, exception.getMessage(), exception);
     }

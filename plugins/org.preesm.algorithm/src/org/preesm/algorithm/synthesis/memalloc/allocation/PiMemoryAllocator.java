@@ -85,6 +85,7 @@ public abstract class PiMemoryAllocator {
    *          The {@link PiMemoryExclusionGraph} whose {@link PiMemoryExclusionVertex} must be aligned. The size of the
    *          {@link PiMemoryExclusionVertex} might be modified by this method.
    * @param alignment
+   *          <ul>
    *          <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    *          <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array
    *          of int32 should begin at an offset (i.e. an address) that is a multiple of 4.</li>
@@ -92,6 +93,7 @@ public abstract class PiMemoryAllocator {
    *          arrays will begin at an offset that is a multiple of N. It does not mean that ALL array elements are
    *          aligned on N, only the first element. If an array has a data type different than 1, then the least common
    *          multiple of the two values is used to align the data.</li>
+   *          </ul>
    * @return the total amount of memory added to the {@link PiMemoryExclusionVertex}
    */
   public static long alignSubBuffers(final PiMemoryExclusionGraph meg, final long alignment) {
@@ -278,11 +280,11 @@ public abstract class PiMemoryAllocator {
    * This method will perform the memory allocation of graph edges and store the result in the allocation LinkedHashMap.
    *
    * <p>
-   * This method does not call {@link #alignSubBuffers(PiMemoryExclusionGraph)}. To ensure a correct alignment, the
-   * {@link #alignSubBuffers(PiMemoryExclusionGraph)} method must be called before the {@link #allocate()} method. The
-   * {@link #inputExclusionGraph} might be modified by calling this function. (new {@link PiMemoryExclusionVertex} might
-   * be added because of HostMemoryObjects). To put the {@link #inputExclusionGraph} back in its original state, call
-   * the deallocate method.
+   * This method does not call {@link #alignSubBuffers(PiMemoryExclusionGraph, long)}. To ensure a correct alignment,
+   * the {@link #alignSubBuffers(PiMemoryExclusionGraph, long)} method must be called before the {@link #allocate()}
+   * method. The {@link #inputExclusionGraph} might be modified by calling this function. (new
+   * {@link PiMemoryExclusionVertex} might be added because of HostMemoryObjects). To put the
+   * {@link #inputExclusionGraph} back in its original state, call the deallocate method.
    * </p>
    */
   public abstract void allocate();
@@ -635,11 +637,12 @@ public abstract class PiMemoryAllocator {
   }
 
   /**
-   * This method is responsible for checking the conformity of a memory allocation with the following constraints :
+   * This method is responsible for checking the conformity of a memory allocation with the following constraints:
+   * <ul>
    * <li>An input buffer of an actor can not share a memory space with an output.
    * <li>As all actors are considered self-scheduled, buffers in parallel branches of the DAG can not share the same
    * memory space.
-   *
+   * </ul>
    *
    * @return The list of conflicting memory elements. Empty list if allocation follow the rules.
    */
@@ -648,9 +651,7 @@ public abstract class PiMemoryAllocator {
       throw new PreesmRuntimeException("Cannot check memory allocation because no allocation was performed.");
     }
 
-    Map<PiMemoryExclusionVertex, Long> conflictingElements;
-    conflictingElements = new LinkedHashMap<>();
-
+    final Map<PiMemoryExclusionVertex, Long> conflictingElements = new LinkedHashMap<>();
     // Check that no edge of the exclusion graph is violated
     for (final DefaultEdge edge : this.inputExclusionGraph.edgeSet()) {
       final PiMemoryExclusionVertex source = this.inputExclusionGraph.getEdgeSource(edge);
@@ -692,6 +693,7 @@ public abstract class PiMemoryAllocator {
   /**
    * Get the value of the {@link #alignment} attribute.
    *
+   * <ul>
    * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    * <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array of int32
    * should begin at an offset (i.e. an address) that is a multiple of 4.</li>
@@ -699,6 +701,7 @@ public abstract class PiMemoryAllocator {
    * begin at an offset that is a multiple of N. It does not mean that ALL array elements are aligned on N, only the
    * first element.If an array has a data type different than 1, then the least common multiple of the two values is
    * used to align the data</li>
+   * </ul>
    *
    * @return the value of the {@link #alignment} attribute.
    */
@@ -778,6 +781,7 @@ public abstract class PiMemoryAllocator {
    * Set the value of the {@link #alignment} attribute.
    *
    * @param alignment
+   *          <ul>
    *          <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    *          <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array
    *          of int32 should begin at an offset (i.e. an address) that is a multiple of 4.</li>
@@ -785,6 +789,7 @@ public abstract class PiMemoryAllocator {
    *          arrays will begin at an offset that is a multiple of N. It does not mean that ALL array elements are
    *          aligned on N, only the first element.If an array has a data type different than 1, then the least common
    *          multiple of the two values is used to align the data</li>
+   *          </ul>
    */
   public void setAlignment(final long alignment) {
     this.alignment = alignment;

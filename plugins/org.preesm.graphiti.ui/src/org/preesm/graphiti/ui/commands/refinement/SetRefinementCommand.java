@@ -117,7 +117,6 @@ public class SetRefinementCommand extends Command {
    *
    * @param selection
    *          the new selection
-   * @see RefinementManager#setSelection(ISelection)
    */
   public void setSelection(final ISelection selection) {
     if (selection instanceof final IStructuredSelection sSelection) {

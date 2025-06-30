@@ -111,7 +111,7 @@ class InstrumentedCPrinter extends CPrinter {
 	 * - A shared {@link Buffer} that stores all measured durations.<br>
 	 * - Calls to two <code>dumpTime(ID, Buffer)</code> around each actor firings.<br>
 	 *
-	 * @param blocks
+	 * @param printerBlocks
 	 * 			List of the blocks printed by the printer. (will be
 	 * 			modified)
 	 */

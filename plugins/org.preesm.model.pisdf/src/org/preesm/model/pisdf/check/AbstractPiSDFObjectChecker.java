@@ -101,7 +101,7 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
    * Report an error.
    *
    * @param level
-   *          Level of the error (if {@link CheckerErrorLevel.NONE}, returns immediately).
+   *          Level of the error (if {@link CheckerErrorLevel#NONE}, returns immediately).
    * @param obj
    *          PiSDF object related to the error.
    * @param messageFormat

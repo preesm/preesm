@@ -115,7 +115,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Getter of the property <tt>cons</tt>.
+   * Getter of the property <code>cons</code>.
    *
    * @return Returns the cons.
    */
@@ -128,7 +128,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Getter of the property <tt>delay</tt>.
+   * Getter of the property <code>delay</code>.
    *
    * @return Returns the delay.
    */
@@ -141,7 +141,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Getter of the property <tt>prod</tt>.
+   * Getter of the property <code>prod</code>.
    *
    * @return Returns the prod.
    */
@@ -154,7 +154,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Getter of the property <tt>dataSize</tt>.
+   * Getter of the property <code>dataSize</code>.
    *
    * @return Returns the data size.
    */
@@ -163,7 +163,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Getter of the property <tt>DATA_TYPE</tt>.
+   * Getter of the property <code>DATA_TYPE</code>.
    *
    * @return Returns the prod.
    */
@@ -208,7 +208,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Setter of the property <tt>cons</tt>.
+   * Setter of the property <code>cons</code>.
    *
    * @param cons
    *          The cons to set.
@@ -221,7 +221,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Setter of the property <tt>delay</tt>.
+   * Setter of the property <code>delay</code>.
    *
    * @param delay
    *          The delay to set.
@@ -262,7 +262,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Setter of the property <tt>prod</tt>.
+   * Setter of the property <code>prod</code>.
    *
    * @param prod
    *          The prod to set.
@@ -275,7 +275,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Setter of the property <tt>DATA_TYPE</tt>.
+   * Setter of the property <code>DATA_TYPE</code>.
    *
    * @param type
    *          The type to set.
@@ -285,7 +285,7 @@ public class SDFEdge extends AbstractEdge<SDFGraph, SDFAbstractVertex> {
   }
 
   /**
-   * Setter of the property <tt>DATA_SIZE</tt>.
+   * Setter of the property <code>DATA_SIZE</code>.
    *
    * @param type
    *          The type to set.

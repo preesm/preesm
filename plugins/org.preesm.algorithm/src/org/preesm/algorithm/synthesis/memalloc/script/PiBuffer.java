@@ -353,9 +353,9 @@ public class PiBuffer {
    * <p>
    * May be called from a BeanShell memory script.
    *
-   * @exception Exception
+   * @exception PreesmRuntimeException
    *              may be thrown if the matched ranges both have elements outside of their {@link PiBuffer} indexes
-   *              ({@link #_maxIndex} and {@link #_minIndex}).
+   *              ({@link #maxIndex} and {@link #minIndex}).
    *
    *
    * @param localIdx

@@ -156,7 +156,7 @@ public class FifoBreakingCycleDetector {
    *          set, must be initialized and empty.
    * @param sb
    *          String of actors built thanks the type list, in the same order as actors in the cycle, but ommiting
-   *          {@link CycleNodeType.NONE}. To be set, must be initialized and empty.
+   *          {@link CycleNodeType#NONE}. To be set, must be initialized and empty.
    * @return number of actors being both an entry and an exit.
    */
   public static int computeCycleString(final List<AbstractActor> cycle, final List<AbstractActor> actorsWithEntries,

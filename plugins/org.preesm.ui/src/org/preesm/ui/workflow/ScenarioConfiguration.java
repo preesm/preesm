@@ -37,8 +37,7 @@
 package org.preesm.ui.workflow;
 
 /**
- * Representing the configuration for the scenario retrieved from launch tab. It feeds a {@link ScenarioRetriever} to
- * create the input scenario.
+ * Representing the configuration for the scenario retrieved from launch tab.
  *
  * @author mpelcat
  *

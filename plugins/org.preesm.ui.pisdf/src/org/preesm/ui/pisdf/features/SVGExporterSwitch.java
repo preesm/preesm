@@ -271,8 +271,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.
-   * Parameter)
+   * @see PiMMSwitch#caseParameter(Parameter)
    */
   @Override
   public Integer caseParameter(final Parameter p) {
@@ -304,8 +303,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseParameter(org.ietr.preesm.experiment.model.pimm.
-   * Parameter)
+   * @see PiMMSwitch#caseMoldableParameter(MoldableParameter)
    */
   @Override
   public Integer caseMoldableParameter(final MoldableParameter p) {
@@ -379,8 +377,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataInputInterface(org.ietr.preesm.experiment.model.
-   * pimm.DataInputInterface)
+   * @see PiMMSwitch#caseDataInputInterface(DataInputInterface)
    */
   @Override
   public Integer caseDataInputInterface(final DataInputInterface dii) {
@@ -432,9 +429,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDataOutputInterface(org.ietr.preesm.experiment.model.
-   * pimm.DataOutputInterface)
+   * @see PiMMSwitch#caseDataOutputInterface(DataOutputInterface)
    */
   @Override
   public Integer caseDataOutputInterface(final DataOutputInterface doi) {
@@ -533,9 +528,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseConfigOutputInterface(org.ietr.preesm.experiment.model.
-   * pimm.ConfigOutputInterface)
+   * @see PiMMSwitch#caseConfigOutputInterface(ConfigOutputInterface)
    */
   @Override
   public Integer caseConfigOutputInterface(final ConfigOutputInterface coi) {
@@ -799,8 +792,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseDependency(org.ietr.preesm.experiment.model.pimm.
-   * Dependency)
+   * @see PiMMSwitch#caseDependency(Dependency)
    */
   @Override
   public Integer caseDependency(final Dependency d) {
@@ -824,7 +816,7 @@ public class SVGExporterSwitch extends PiMMSwitch<Integer> {
   /*
    * (non-Javadoc)
    *
-   * @see org.ietr.preesm.experiment.model.pimm.util.PiMMSwitch#caseFifo(org.ietr.preesm.experiment.model.pimm.Fifo)
+   * @see PiMMSwitch#caseFifo(Fifo)
    */
   @Override
   public Integer caseFifo(final Fifo f) {

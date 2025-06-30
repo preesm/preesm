@@ -74,9 +74,8 @@ public class OpenRefinementCommand extends Command {
   public boolean canExecute() {
     if (this.vertex == null) {
       return false;
-    } else {
-      return this.policy.getRefinement(this.vertex) != null;
     }
+    return this.policy.getRefinement(this.vertex) != null;
   }
 
   /*
@@ -118,14 +117,12 @@ public class OpenRefinementCommand extends Command {
    *
    * @param selection
    *          the new selection
-   * @see RefinementManager#setSelection(ISelection)
    */
   public void setSelection(final ISelection selection) {
     this.vertex = null;
-    if (selection instanceof IStructuredSelection) {
-      final Object obj = ((IStructuredSelection) selection).getFirstElement();
-      if (obj instanceof VertexEditPart) {
-        final VertexEditPart part = (VertexEditPart) obj;
+    if (selection instanceof final IStructuredSelection iStructSel) {
+      final Object obj = iStructSel.getFirstElement();
+      if (obj instanceof final VertexEditPart part) {
         this.vertex = (Vertex) part.getModel();
         this.policy = this.vertex.getConfiguration().getRefinementPolicy();
       }

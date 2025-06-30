@@ -160,7 +160,7 @@ public class PiMMUtil {
    * @param ga
    *          the {@link GraphicsAlgorithm}
    * @param iDiagramEditor
-   *          the {@link IDiagramEditor}
+   *          the {@link IDiagramBehavior}
    * @param message
    *          the message to put in the tooltip
    */

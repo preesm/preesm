@@ -124,7 +124,7 @@ public abstract class PreesmLogger extends Logger {
    *          the variables
    */
   public static void logFromProperty(Level level, String msgKey, String... variables) {
-    getLogger().log(level, PreesmMessages.getString(msgKey, variables));
+    getLogger().log(level, () -> PreesmMessages.getString(msgKey, variables));
   }
 
   /**

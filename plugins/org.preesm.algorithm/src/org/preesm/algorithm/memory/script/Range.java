@@ -76,7 +76,7 @@ public class Range implements CloneableProperty<Range> {
   }
 
   /**
-   * {@link Range#difference(Range,Range) Subtract} the given {@link Range} from all {@link Range ranges} stored in the
+   * {@link Range#difference(Range) Subtract} the given {@link Range} from all {@link Range ranges} stored in the
    * {@link List}. Parameters are not modified by this method.
    *
    * @param ranges
@@ -270,8 +270,8 @@ public class Range implements CloneableProperty<Range> {
   }
 
   /**
-   * Same as {@link Range#union(List,Range)} except that {@link Range#isContiguous(Range) contiguous} {@link Range
-   * ranges} are not merged.
+   * Same as {@link Range#union(List,Range)} except that {@link Range#isContiguous(Range, Range) contiguous}
+   * {@link Range ranges} are not merged.
    *
    * @param ranges
    *          The {@link List} of {@link Range} to update.

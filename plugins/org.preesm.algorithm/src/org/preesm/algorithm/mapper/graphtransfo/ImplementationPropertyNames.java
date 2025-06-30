@@ -130,7 +130,7 @@ public final class ImplementationPropertyNames {
   public static final String SEND_RECEIVE_OPERATOR_ADDRESS = "Operator_address";
 
   /**
-   * {@link OperatorDefinition} of the operator executing the send or receive.
+   * OperatorDefinition of the operator executing the send or receive.
    */
   public static final String SEND_RECEIVE_OPERATOR_DEF = "OperatorDef";
 

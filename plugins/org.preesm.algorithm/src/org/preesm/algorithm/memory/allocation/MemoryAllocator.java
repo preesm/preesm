@@ -86,13 +86,16 @@ public abstract class MemoryAllocator {
    *          The {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} must be aligned. The size of the
    *          {@link MemoryExclusionVertex} might be modified by this method.
    * @param alignment
+   *          The alignment in bit:
+   *          <ul>
    *          <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    *          <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array
-   *          of int32 should begin at an offset (i.e. an address) that is a multiple of 4.</li>
+   *          of int32 should begin at an offset (i.e. an address) that is a multiple of 32 bits.</li>
    *          <li><b>{@link #alignment}= N</b>: All data should be aligned to the given value N. This means that all
    *          arrays will begin at an offset that is a multiple of N. It does not mean that ALL array elements are
    *          aligned on N, only the first element. If an array has a data type different than 1, then the least common
    *          multiple of the two values is used to align the data.</li>
+   *          </ul>
    * @return the total amount of memory added to the {@link MemoryExclusionVertex}
    */
   public static long alignSubBuffers(final MemoryExclusionGraph meg, final long alignment) {
@@ -285,11 +288,11 @@ public abstract class MemoryAllocator {
    * This method will perform the memory allocation of graph edges and store the result in the allocation LinkedHashMap.
    *
    * <p>
-   * This method does not call {@link #alignSubBuffers(MemoryExclusionGraph)}. To ensure a correct alignment, the
-   * {@link #alignSubBuffers(MemoryExclusionGraph)} method must be called before the {@link #allocate()} method. The
-   * {@link #inputExclusionGraph} might be modified by calling this function. (new {@link MemoryExclusionVertex} might
-   * be added because of HostMemoryObjects). To put the {@link #inputExclusionGraph} back in its original state, call
-   * the deallocate method.
+   * This method does not call {@link #alignSubBuffers(MemoryExclusionGraph, long)}. To ensure a correct alignment, the
+   * {@link #alignSubBuffers(MemoryExclusionGraph, long)} method must be called before the {@link #allocate()} method.
+   * The {@link #inputExclusionGraph} might be modified by calling this function. (new {@link MemoryExclusionVertex}
+   * might be added because of HostMemoryObjects). To put the {@link #inputExclusionGraph} back in its original state,
+   * call the deallocate method.
    * </p>
    */
   public abstract void allocate();
@@ -647,10 +650,11 @@ public abstract class MemoryAllocator {
 
   /**
    * This method is responsible for checking the conformity of a memory allocation with the following constraints :
+   * <ul>
    * <li>An input buffer of an actor can not share a memory space with an output.
    * <li>As all actors are considered self-scheduled, buffers in parallel branches of the DAG can not share the same
    * memory space.
-   *
+   * </ul>
    *
    * @return The list of conflicting memory elements. Empty list if allocation follow the rules.
    */
@@ -659,9 +663,7 @@ public abstract class MemoryAllocator {
       throw new PreesmRuntimeException("Cannot check memory allocation because no allocation was performed.");
     }
 
-    Map<MemoryExclusionVertex, Long> conflictingElements;
-    conflictingElements = new LinkedHashMap<>();
-
+    final Map<MemoryExclusionVertex, Long> conflictingElements = new LinkedHashMap<>();
     // Check that no edge of the exclusion graph is violated
     for (final DefaultEdge edge : this.inputExclusionGraph.edgeSet()) {
       final MemoryExclusionVertex source = this.inputExclusionGraph.getEdgeSource(edge);
@@ -702,6 +704,7 @@ public abstract class MemoryAllocator {
   /**
    * Get the value of the {@link #alignment} attribute.
    *
+   * <ul>
    * <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    * <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array of int32
    * should begin at an offset (i.e. an address) that is a multiple of 4.</li>
@@ -709,6 +712,7 @@ public abstract class MemoryAllocator {
    * begin at an offset that is a multiple of N. It does not mean that ALL array elements are aligned on N, only the
    * first element.If an array has a data type different than 1, then the least common multiple of the two values is
    * used to align the data</li>
+   * </ul>
    *
    * @return the value of the {@link #alignment} attribute.
    */
@@ -783,6 +787,7 @@ public abstract class MemoryAllocator {
    * Set the value of the {@link #alignment} attribute.
    *
    * @param alignment
+   *          <ul>
    *          <li><b>{@link #alignment}=-1</b>: Data should not be aligned.</li>
    *          <li><b>{@link #alignment}= 0</b>: Data should be aligned according to its own type. For example, an array
    *          of int32 should begin at an offset (i.e. an address) that is a multiple of 4.</li>
@@ -790,6 +795,7 @@ public abstract class MemoryAllocator {
    *          arrays will begin at an offset that is a multiple of N. It does not mean that ALL array elements are
    *          aligned on N, only the first element.If an array has a data type different than 1, then the least common
    *          multiple of the two values is used to align the data</li>
+   *          </ul>
    */
   public void setAlignment(final long alignment) {
     this.alignment = alignment;

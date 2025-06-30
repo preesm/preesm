@@ -156,8 +156,7 @@ import org.preesm.model.slam.SlamMessageRouteStep;
  * The objective of this class is to generate an intermediate model that will be used to print the generated code. <br>
  * The generation of the intermediate model is based on elements resulting from a workflow execution: an {@link Design
  * architecture}, a scheduled {@link DirectedAcyclicGraph DAG}, a {@link MemoryExclusionGraph Memory Allocation} and a
- * {@link PreesmScenario scenario}. The generated model is composed of objects of the {@link CodegenPackage Codegen EMF
- * model}.
+ * {@link Scenario}. The generated model is composed of objects of the {@link CodegenPackage Codegen EMF model}.
  *
  *
  * @author kdesnos
@@ -256,13 +255,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * </ul>
    *
    * @param archi
-   *          See {@link AbstractCodegenPrinter#archi}
+   *          See {@link AbstractCodegenModelGenerator#archi}
    * @param algo
-   *          See {@link AbstractCodegenPrinter#dag}
+   *          See {@link AbstractCodegenModelGenerator#algo}
    * @param megs
-   *          See {@link AbstractCodegenPrinter#megs}
+   *          See {@link AbstractCodegenModelGenerator#megs}
    * @param scenario
-   *          See {@link AbstractCodegenPrinter#scenario}
+   *          See {@link AbstractCodegenModelGenerator#scenario}
    */
   public CodegenModelGenerator(final Design archi, final MapperDAG algo, final Map<String, MemoryExclusionGraph> megs,
       final Scenario scenario, final Map<AbstractActor, Schedule> scheduleMapping) {
@@ -396,8 +395,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   /**
    * Method to generate the intermediate model of the codegen based on the {@link Design architecture}, the
-   * {@link MemoryExclusionGraph MemEx graph} , the {@link DirectedAcyclicGraph DAG} and the {@link PreesmScenario
-   * scenario}.
+   * {@link MemoryExclusionGraph MemEx graph} , the {@link DirectedAcyclicGraph DAG} and the {@link Scenario}.
    *
    * @return a set of {@link Block blocks}. Each of these block corresponds to a part of the code to generate:
    *         <ul>

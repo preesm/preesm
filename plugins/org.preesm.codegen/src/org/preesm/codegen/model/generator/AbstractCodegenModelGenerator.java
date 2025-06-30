@@ -73,7 +73,7 @@ public abstract class AbstractCodegenModelGenerator {
   protected Map<String, MemoryExclusionGraph> megs;
 
   /**
-   * {@link PreesmScenario Scenario} at the origin of the call to the {@link AbstractCodegenPrinter Code Generator}.
+   * {@link Scenario} at the origin of the call to the {@link AbstractCodegenPrinter Code Generator}.
    */
   protected Scenario scenario;
 

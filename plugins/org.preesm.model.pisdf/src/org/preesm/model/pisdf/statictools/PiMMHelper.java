@@ -399,8 +399,6 @@ public class PiMMHelper {
 
   /**
    * Remove the persistence levels and replace them with the appropriate interfaces.
-   *
-   * @ the PiMMHandlerException exception
    */
   public static void removePersistence(final PiGraph piGraph) {
     final List<Delay> toRemove = new ArrayList<>();

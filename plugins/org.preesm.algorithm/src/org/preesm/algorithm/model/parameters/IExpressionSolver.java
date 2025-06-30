@@ -53,8 +53,6 @@ public interface IExpressionSolver {
    * @param caller
    *          The Expression calling the solver
    * @return The long value of the solved expression
-   * @throws InvalidExpressionException
-   *           the invalid expression exception
    * @throws ExpressionEvaluationException
    *           the no integer value exception
    */

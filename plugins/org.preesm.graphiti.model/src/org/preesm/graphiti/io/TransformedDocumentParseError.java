@@ -69,8 +69,8 @@ public class TransformedDocumentParseError extends Exception {
    * @param message
    *          the detail message (which is saved for later retrieval by the {@link #getMessage()} method).
    * @param cause
-   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt> value
-   *          is permitted, and indicates that the cause is nonexistent or unknown.)
+   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <code>null</code>
+   *          value is permitted, and indicates that the cause is nonexistent or unknown.)
    */
   public TransformedDocumentParseError(final String message, final Throwable cause) {
     super(message, cause);
@@ -78,13 +78,13 @@ public class TransformedDocumentParseError extends Exception {
 
   /**
    * Constructs a new exception with the specified cause and a detail message of
-   * <tt>(cause==null ? null : cause.toString())</tt> (which typically contains the class and detail message of
-   * <tt>cause</tt>). This constructor is useful for exceptions that are little more than wrappers for other throwables
-   * (for example, {@link java.security.PrivilegedActionException}).
+   * <code>(cause==null ? null : cause.toString())</code> (which typically contains the class and detail message of
+   * <code>cause</code>). This constructor is useful for exceptions that are little more than wrappers for other
+   * throwables (for example, {@link java.security.PrivilegedActionException}).
    *
    * @param cause
-   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <tt>null</tt> value
-   *          is permitted, and indicates that the cause is nonexistent or unknown.)
+   *          the cause (which is saved for later retrieval by the {@link #getCause()} method). (A <code>null</code>
+   *          value is permitted, and indicates that the cause is nonexistent or unknown.)
    */
   public TransformedDocumentParseError(final Throwable cause) {
     super(cause);

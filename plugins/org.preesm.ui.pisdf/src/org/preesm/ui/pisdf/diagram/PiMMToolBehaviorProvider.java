@@ -106,7 +106,7 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
    * The default constructor of {@link PiMMToolBehaviorProvider}.
    *
    * @param diagramTypeProvider
-   *          the {@link DiagramTypeWizardPage}
+   *          the {@link PiMMDiagramTypeProvider}
    */
   public PiMMToolBehaviorProvider(final IDiagramTypeProvider diagramTypeProvider) {
     super(diagramTypeProvider);

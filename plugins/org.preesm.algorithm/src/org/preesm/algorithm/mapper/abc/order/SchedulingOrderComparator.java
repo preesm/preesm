@@ -52,15 +52,14 @@ public class SchedulingOrderComparator implements Comparator<DAGVertex> {
    * Compare.
    *
    * @param v1
-   *          the v 1
+   *          the vertex 1
    * @param v2
-   *          the v 2
+   *          the vertex 2
    * @return the int
-   * @Override compare
    */
   @Override
   public int compare(final DAGVertex v1, final DAGVertex v2) {
-    int difference = 0;
+    int difference;
 
     difference = ((MapperDAGVertex) v1).getTotalOrder() - ((MapperDAGVertex) v2).getTotalOrder();
 

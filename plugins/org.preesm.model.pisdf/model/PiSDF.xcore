@@ -275,27 +275,27 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	boolean clusterValue = "false"
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
-	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph#vertices} */
+	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
 	derived int parameterIndex get{
 		vertices.filter(Parameter).length
 	}
 
-	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph#vertices} */
+	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph} vertex list */
 	derived int actorIndex get{
 		vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
 	}
 
-	/* Index used to know where to insert {@link Delay} into the {@link PiGraph#vertices} */
+	/* Index used to know where to insert {@link Delay} into the {@link PiGraph} vertex list */
 	derived int delayIndex get{
 		vertices.filter(Delay).length
 	}
 
-	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph#edges} */
+	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph} edge list */
 	derived int fifoWithDelayIndex get {
 		edges.filter(Fifo).filter(f | f.getDelay() !== null).length
 	}
 
-	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph#edges} */
+	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph} edge list */
 	derived int fifoWithoutDelayIndex get {
 		edges.filter(Fifo).filter(f | f.getDelay() === null).length
 	}
@@ -334,7 +334,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * <br>
 	 * 
 	 * @param actor
-	 * 			The {@link AbstractActor} to be added to {@link PiGraph#vertices}
+	 * 			The {@link AbstractActor} to be added to {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link AbstractActor} was successfully added, false otherwise
 	 */
@@ -385,7 +385,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * <br>
 	 * 
 	 * @param parameter
-	 * 			The {@link Parameter} to be added to {@link PiGraph#vertices}
+	 * 			The {@link Parameter} to be added to {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link Parameter} was successfully added, false otherwise
 	 */
@@ -411,7 +411,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * <br>
 	 *
 	 * @param configurable
-	 * 			The {@link Configurable} to be added to {@link PiGraph#vertices}
+	 * 			The {@link Configurable} to be added to {@link PiGraph} vertex list
 	 *
 	 * @return true is the {@link Configurable} was successfully added, false otherwise
 	 */
@@ -429,8 +429,8 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * {@link Parameter} => {@link AbstractActor} => {@link Delay} => {@link DelayActor} order.
 	 * <br>
 	 * 
-	 * @param actor
-	 * 			The {@link Delay} to be added to {@link PiGraph#vertices}
+	 * @param delay
+	 * 			The {@link Delay} to be added to {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link Delay} was successfully added, false otherwise
 	 */
@@ -457,7 +457,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * <br>
 	 * 
 	 * @param fifo
-	 * 			The {@link Fifo} to be added to {@link PiGraph#edges}
+	 * 			The {@link Fifo} to be added to {@link PiGraph} edge list
 	 * 
 	 * @return true is the {@link Fifo} was successfully added, false otherwise
 	 */
@@ -475,13 +475,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Add the {@link Dependency} at the end of the {@link PiGraph#edges} list,<br>
+	 * Add the {@link Dependency} at the end of the {@link PiGraph} edge list list,<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder edges in a<br>
 	 * {@link Fifo} with {@link Delay} => {@link Fifo} without {@link Delay} => {@link Dependency} order.
 	 * <br>
 	 * 
-	 * @param fifo
-	 * 			The {@link Dependency} to be added to {@link PiGraph#edges}
+	 * @param dependency
+	 * 			The {@link Dependency} to be added to {@link PiGraph} edge list
 	 * 
 	 * @return true is the {@link Dependency} was successfully added, false otherwise
 	 */
@@ -515,11 +515,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Removes the {@link AbstractActor} from the {@link Pigraph#vertices} list,<br>
-	 * <br>
+	 * Removes the {@link AbstractActor} from the {@link PiGraph} vertex list list,<br>
+	 * <br>fifo
 	 * 
 	 * @param actor
-	 * 			The {@link AbstractActor} to be removed from {@link PiGraph#vertices}
+	 * 			The {@link AbstractActor} to be removed from {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link AbstractActor} was successfully removed, false otherwise
 	 */
@@ -534,11 +534,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Removes the {@link Delay} and its associated {@link DelayActor} from the {@link Pigraph#vertices} list,<br>
+	 * Removes the {@link Delay} and its associated {@link DelayActor} from the {@link PiGraph} vertex list,<br>
 	 * <br>
 	 * 
 	 * @param delay
-	 * 			The {@link Delay} to be removed from {@link PiGraph#vertices}
+	 * 			The {@link Delay} to be removed from {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link Delay} its associated {@link DelayActor} were successfully removed, false otherwise
 	 */
@@ -552,11 +552,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Removes the {@link Fifo} from the {@link Pigraph#edges} list,<br>
+	 * Removes the {@link Fifo} from the {@link PiGraph} edge list,<br>
 	 * <br>
 	 * 
 	 * @param fifo
-	 * 			The {@link Fifo} to be removed from {@link PiGraph#edges}
+	 * 			The {@link Fifo} to be removed from {@link PiGraph} edge list
 	 * 
 	 * @return true is the {@link Fifo} was successfully removed, false otherwise
 	 */
@@ -565,11 +565,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Removes the {@link Parameter} from the {@link Pigraph#vertices} list,<br>
+	 * Removes the {@link Parameter} from the {@link PiGraph} vertex list,<br>
 	 * <br>
 	 * 
 	 * @param param
-	 * 			The {@link Parameter} to be removed from {@link PiGraph#vertices}
+	 * 			The {@link Parameter} to be removed from {@link PiGraph} vertex list
 	 * 
 	 * @return true is the {@link Parameter} was successfully removed, false otherwise
 	 */
@@ -581,11 +581,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 
 	/*
-	 * Removes the {@link Dependency} from the {@link Pigraph#edges} list,<br>
+	 * Removes the {@link Dependency} from the {@link PiGraph} edge list,<br>
 	 * <br>
 	 * 
 	 * @param dep
-	 * 			The {@link Dependency} to be removed from {@link PiGraph#edges}
+	 * 			The {@link Dependency} to be removed from {@link PiGraph} edge list
 	 * 
 	 * @return true is the {@link Dependency} was successfully removed, false otherwise
 	 */
@@ -1008,7 +1008,7 @@ class Fifo extends Edge {
 
 	/*
 	 * Return a {@link String} composed as follow:<br>
-	 * "&ltSourceName&gt[.&ltSourcePortName&gt]-&ltTargetName&gt[.&ltTargetPortName&gt]" <br>
+	 * "&lt;SourceName&gt;[&lt;SourcePortName&gt;]-&lt;TargetName&gt;[&lt;TargetPortName&gt;]" <br>
 	 * <br>
 	 * This ID should be unique since each {@link Port} can only have one {@link Fifo} connected to them. Moreover, a {@link Port} with no name is always the
 	 * unique data {@link Port} of its owner.

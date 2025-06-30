@@ -79,13 +79,14 @@ import org.w3c.dom.Element;
 
 @PreesmTask(id = "pisdf-brv-export", name = "PiSDF BRV Exporter",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class) }, outputs = { @Port(name = "PiMM", type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = "path", values = { @Value(name = "/stats/xml/", effect = "default value") }) })
 public class BRVExporter extends AbstractTaskImplementation {
 
   /**
-   * @see StatsExporterTask
+   * @see org.preesm.algorithm.mapper.stats.exporter.StatsExporterTask
    */
   public static final String DEFAULT_PATH = "/stats/xml/";
 

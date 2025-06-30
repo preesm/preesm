@@ -49,9 +49,9 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiMMPackage;
 
 /**
- * The purpose of this {@link Adapter} is to observe the {@link Vertex} list and {@link Edge} of a {@link PiGraph} to
- * detect the addition, the deletion and the renaming of {@link PiGraph} element in order to automatically compute the
- * repercussions on {@link PiGraph} and storage indexes. <br>
+ * The purpose of this {@link Adapter} is to observe the {@link Edge} list of a {@link PiGraph} to detect the addition,
+ * the deletion and the renaming of {@link PiGraph} element in order to automatically compute the repercussions on
+ * {@link PiGraph} and storage indexes. <br>
  * <br>
  *
  * The observer is also used on {@link PiGraph} {@link Fifo} to track the addition/removal of {@link Delay}.
@@ -96,6 +96,10 @@ public class GraphObserver extends AdapterImpl {
         && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
 
       final PiGraph graph = fifo.getContainingPiGraph();
+
+      if (notification.getEventType() != Notification.SET) {
+        System.out.print("");
+      }
 
       // if the fifo isn't in a graph, nothing to do
       if (graph == null) {

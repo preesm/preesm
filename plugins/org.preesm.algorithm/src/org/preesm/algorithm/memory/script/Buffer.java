@@ -190,14 +190,18 @@ public class Buffer {
           // at most one candidate can satisfy the conditions
           remMatch = null;
           if (candidateSet != null) {
-            for (final Match candidate : candidateSet) {
-              // same target
-              if (candidate.getRemoteBuffer().equals(match.getRemoteBuffer())
-                  && (candidate.getRemoteIndex() == (match.getRemoteIndex() + match.getLength()))) {
-                remMatch = candidate;
-                break;
-              }
-            }
+            // for (final Match candidate : candidateSet) {
+            // // same target
+            // if (candidate.getRemoteBuffer().equals(match.getRemoteBuffer())
+            // && (candidate.getRemoteIndex() == (match.getRemoteIndex() + match.getLength()))) {
+            // remMatch = candidate;
+            // break;
+            // }
+            // }
+            remMatch = candidateSet.stream()
+                .filter(candidate -> (candidate.getRemoteBuffer().equals(match.getRemoteBuffer())
+                    && (candidate.getRemoteIndex() == (match.getRemoteIndex() + match.getLength()))))
+                .findFirst().orElse(null);
           }
           if (remMatch != null) {
 
@@ -353,10 +357,9 @@ public class Buffer {
    * <p>
    * May be called from a BeanShell memory script.
    *
-   * @exception Exception
+   * @exception PreesmRuntimeException
    *              may be thrown if the matched ranges both have elements outside of their {@link Buffer} indexes
-   *              ({@link #_maxIndex} and {@link #_minIndex}).
-   *
+   *              ({@link #maxIndex} and {@link #minIndex}).
    *
    * @param localIdx
    *          start index of the matched range for the local {@link Buffer}.
