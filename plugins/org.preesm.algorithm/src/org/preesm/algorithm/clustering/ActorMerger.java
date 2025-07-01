@@ -19,7 +19,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 
 /**
  *
- * @author jmorin
+ * @author jamorin
  *
  */
 
@@ -60,8 +60,11 @@ public class ActorMerger {
           innerInterface.getGraphPort().setIncomingFifo(dip.getFifo()); // set the outer port's incoming fifo
 
           // set outer port's rate : inner port's rate times actor's repetition value
-          final String innerRate = dip.getExpression().getExpressionAsString(); // get the inner port's rate formula
-          final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
+          // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
+          final long innerRate = dip.getExpression().evaluateAsLong();
+          final long outerPortRate = innerRate * brv.get(actor);
+          // final String innerRate = dip.getExpression().getExpressionAsString(); // get the inner port's rate formula
+          // final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
           innerInterface.getGraphPort().setExpression(outerPortRate);
           innerInterface.getDataPort().setExpression(innerRate);
 
@@ -75,10 +78,11 @@ public class ActorMerger {
 
       for (final DataOutputPort dop : actor.getDataOutputPorts().stream()
           .filter(dop -> !(actorsToMerge.contains(dop.getOutgoingFifo().getTarget()))).toList()) {
-        /*
-         * actor.getDataOutputPorts().stream().filter(dop ->
-         * !(actorsToMerge.contains(dop.getOutgoingFifo().getTarget()))) .forEach(dop -> {
-         */
+
+        // Il faut aussi ajouter aux nouvelles interfaces d'I/O créées les dépendances aux acteurs auxquels ils sont
+        // liés, pour les taux paramétrés de leurs fifos
+        // Ou plus simplement, on évalue l'expression en double à ce moment
+
         if (!(actorsToMerge.contains(dop.getOutgoingFifo().getTarget()))) {
           final DataOutputInterface innerInterface = PiMMFactory.createDataOutputInterface(dop.getName());
           innerSDF.addActor(innerInterface);
@@ -86,8 +90,11 @@ public class ActorMerger {
           final String fifoDataType = dop.getFifo().getType();
 
           // set outer port's rate : inner port's rate times actor's repetition value
-          final String innerRate = dop.getExpression().getExpressionAsString(); // get the inner port's rate formula
-          final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
+          // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
+          // final String innerRate = dop.getExpression().getExpressionAsString(); // get the inner port's rate formula
+          // final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
+          final long innerRate = dop.getExpression().evaluateAsLong();
+          final long outerPortRate = innerRate * brv.get(actor);
           innerInterface.getGraphPort().setExpression(outerPortRate);
           innerInterface.getDataPort().setExpression(innerRate);
 
@@ -104,8 +111,6 @@ public class ActorMerger {
         }
       }
 
-      // });
-
       for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
         // récupérer toutes les dépendances (paramètres) de l'acteur
         final Dependency outerDep = cip.getIncomingDependency();
@@ -121,13 +126,10 @@ public class ActorMerger {
           innerCii = PiMMFactory.createConfigInputInterface(((Parameter) (outerDep.getSetter())).getName());
 
           innerSDF.addParameter(innerCii);
-          /*
-           * // the old interface is plugged into the innerSDF's config GraphPort, from outside.
-           * outerDep.setGetter(innerCii.getGraphPort());
-           */
 
           // create a new config link from the original parameter to the new inner one
           final Dependency newOuterDep = PiMMFactory.createDependency(outerDep.getSetter(), innerCii.getGraphPort());
+          // innerCii.setExpression(((Parameter) outerDep.getSetter()).getExpression());
           graph.addDependency(newOuterDep);
 
         } else {
@@ -143,9 +145,6 @@ public class ActorMerger {
         final var truc = PiMMFactory.createActor();
       }
     }
-
-    final var nullGetterDependencies = graph.getParameters().stream()
-        .flatMap(param -> param.getOutgoingDependencies().stream()).filter(dep -> dep.getGetter() == null).toList();
 
     return innerSDF;
 
