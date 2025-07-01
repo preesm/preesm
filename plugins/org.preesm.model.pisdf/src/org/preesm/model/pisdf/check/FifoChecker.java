@@ -117,16 +117,24 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
       final String portName = f.getSourcePort().getName();
       final double doubleRate = f.getSourcePort().getPortRateExpression().evaluateAsDouble();
       final long longRate = f.getSourcePort().getPortRateExpression().evaluateAsLong();
-      PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
-          + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+      if (!(Double.isNaN(doubleRate) && longRate == 0)) {
+        // This if allows to check if there has been a division by 0, likely because the local parameters are set to 0
+        // in a subGraph. Does not make the difference with a mistake division by 0 though.
+        PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
+            + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+      }
     }
     if (!f.getTargetPort().getPortRateExpression().isExpressionInteger()) {
       final String actorName = f.getTargetPort().getContainingActor().getName();
       final String portName = f.getTargetPort().getName();
       final double doubleRate = f.getTargetPort().getPortRateExpression().evaluateAsDouble();
       final long longRate = f.getTargetPort().getPortRateExpression().evaluateAsLong();
-      PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
-          + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+      if (!(Double.isNaN(doubleRate) && longRate == 0)) {
+        // This if allows to check if there has been a division by 0, likely because the local parameters are set to 0
+        // in a subGraph. Does not make the difference with a mistake division by 0 though.
+        PreesmLogger.getLogger().warning(() -> "Port " + portName + " of Actor " + actorName
+            + " has a non-integer rate of " + doubleRate + ".\nPort rate will default to " + longRate);
+      }
     }
 
     return true;
