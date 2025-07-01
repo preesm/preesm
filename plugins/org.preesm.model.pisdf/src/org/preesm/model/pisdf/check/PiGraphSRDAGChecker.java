@@ -36,6 +36,7 @@
 
 package org.preesm.model.pisdf.check;
 
+import org.eclipse.emf.common.util.EList;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.FifoCycleDetector;
 
@@ -64,6 +65,44 @@ public class PiGraphSRDAGChecker {
     if (!piGraph.getChildrenGraphs().isEmpty()) {
       return false;
     }
+    // check single-rate and delays
+    final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
+      final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
+      final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
+      return (rateOut == rateIn) && f.getDelay() == null;
+    });
+    if (!isSingleRate) {
+      return false;
+    }
+    // check cycles (stop on first one)
+    final FifoCycleDetector fcd = new FifoCycleDetector(true);
+    fcd.doSwitch(piGraph);
+    return !fcd.cyclesDetected();
+  }
+
+  /**
+   * Checks if a given PiGraph is a hierarchical SRDAG (single rate, no delay, no cycle, all subgraphs are SRDAGS and
+   * marked as clusters).
+   *
+   * @param piGraph
+   *          the PiGraph to check
+   * @return true if SRADG, false otherwise
+   */
+  public static boolean isPiGraphClusteredSRADG(final PiGraph piGraph) {
+
+    // check all subgraphs are clusters
+    final EList<PiGraph> subGraphs = piGraph.getChildrenGraphs();
+    if (subGraphs.stream().anyMatch(graph -> !graph.isClusterValue())) {
+      return false;
+    }
+
+    // check all subgraphs are SRDAGS
+    for (final PiGraph graph : subGraphs) {
+      if (!isPiGraphClusteredSRADG(graph)) {
+        return false;
+      }
+    }
+
     // check single-rate and delays
     final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
       final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();

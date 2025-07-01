@@ -91,11 +91,11 @@ public abstract class AbstractScheduler implements IScheduler {
     }
     final PiGraph originalPiGraph = PreesmCopyTracker.getOriginalSource(parentGraph);
 
-    if (originalPiGraph != scenario.getAlgorithm()) {
+    if (originalPiGraph != scenario.getAlgorithm() && !(originalPiGraph.isClusterValue())) {
       throw new PreesmSynthesisException("Input PiSDF graph is not derived from the scenario algorithm.");
     }
     // check that graph is an SRDAG
-    if (!PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
+    if (!PiGraphSRDAGChecker.isPiGraphClusteredSRADG(piGraph)) {
       throw new PreesmSynthesisException(
           "Synthesis can be applied only on SRADG graphs (no hierarchy, single-rate, no cycles, no delays). Please "
               + "consider using the output of the pisdf-srdag workflow task as an output of  "
