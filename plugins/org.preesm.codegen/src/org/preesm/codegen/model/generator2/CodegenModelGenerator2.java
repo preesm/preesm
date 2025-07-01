@@ -139,6 +139,17 @@ public class CodegenModelGenerator2 {
     this.papify = papify;
   }
 
+  public static void generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
+      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify,
+      Map<ComponentInstance, CoreBlock> coreBlocks, List<AbstractActor> totallyOrderedActors,
+      AllocationToCodegenBuffer linker) {
+
+    final CodegenModelGenerator2 codegen = new CodegenModelGenerator2(archi, algo, scenario, schedule, mapping,
+        memAlloc, papify);
+    codegen.memoryLinker = linker;
+    codegen.generateCode(coreBlocks, totallyOrderedActors);
+  }
+
   private List<Block> generate() {
     final String msg = "Starting codegen2 with papify set to " + papify;
     PreesmLogger.getLogger().log(Level.FINE, msg);
