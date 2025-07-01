@@ -62,6 +62,7 @@ import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.generator2.AllocationToCodegenBuffer;
+import org.preesm.codegen.model.generator2.CodegenModelGenerator2;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -85,6 +86,10 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+
+/***
+ * @author jamorin
+ */
 
 /**
  * The Class CodegenTask.
@@ -269,14 +274,17 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       coreBlocks.put(PEInstance, CodegenModelUserFactory.eINSTANCE.createCoreBlock(PEInstance));
 
       // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
-      final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(algo, schedule)
+
+      final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(cluster, schedule)
           .buildScheduleAndTopologicalOrderedList();
 
       // 1- generate variables (and keep track of them with a linker)
-      final var memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo, totallyOrderedActors);
+      final var memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, cluster, totallyOrderedActors);
 
       // 2- generate code
-      generateCode(coreBlocks, totallyOrderedActors);
+      CodegenModelGenerator2.generateClusterCode(archi, cluster, scenario, schedule, mapping, memAlloc, papify,
+          coreBlocks, totallyOrderedActors, memoryLinker);
+
     }
 
     // Codegen shouldn't have an output, but this allows to make the local codegen a dependency of the global codegen

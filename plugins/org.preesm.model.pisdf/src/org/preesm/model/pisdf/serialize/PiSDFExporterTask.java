@@ -74,6 +74,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-export", name = "PiSDF Exporter", category = "Graph Exporters",
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    outputs = { @Port(name = "void", type = void.class), },
 
     parameters = {
       @Parameter(name = PiSDFExporterTask.PARAM_PATH,

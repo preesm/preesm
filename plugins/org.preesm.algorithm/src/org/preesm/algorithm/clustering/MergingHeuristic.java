@@ -5,7 +5,7 @@ import org.preesm.model.pisdf.AbstractActor;
 
 /**
 *
-* @author jmorin
+* @author jamorin
 *
 */
 
