@@ -8,10 +8,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
+import org.eclipse.emf.common.util.EMap;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
@@ -21,7 +25,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  *
- * @author jmorin
+ * @author jamorin
  *
  */
 
@@ -47,7 +51,7 @@ public class ClusterBuilder {
      * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
-    final List<PiGraph> listClusterActors = new LinkedList<>();
+    final List<PiGraph> listClusters = new LinkedList<>();
 
     final EList<AbstractActor> listActors = graph.getActors();
     final Map<AbstractActor,
@@ -141,17 +145,48 @@ public class ClusterBuilder {
         // TODO change name to a better one...
         final String clusterName = "Merged" + actor.getName();
         final PiGraph mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+        pgcc.check(graph);
+        mergeActor.setClusterValue(true);
         // TODO set better URL
         mergeActor.setUrl("");
-        listClusterActors.add(mergeActor);
+        listClusters.add(mergeActor);
         scenario.getConstraints().addConstraint(clusteringArchClone, mergeActor);
+
+        // set all clustered actors to only one mapping, the same one as the cluster
+        // for that we create a new constraint variable and copy the mappings to it, while filtering those we want to
+        // remove
+
+        final EMap<ComponentInstance, EList<AbstractActor>> saveConstraints = new BasicEMap<>();
+        final var scenarioConstraintsMap = scenario.getConstraints().getGroupConstraints();
+        saveConstraints.putAll(scenario.getConstraints().getGroupConstraints());
+        scenarioConstraintsMap.clear();
+
+        final Map<ComponentInstance, EList<AbstractActor>> newConstraint = new HashMap<>();
+        for (final var contrainte : saveConstraints) {
+          final ComponentInstance PE = contrainte.getKey();
+          scenarioConstraintsMap.put(PE, new BasicEList<>());
+
+          for (final AbstractActor a : contrainte.getValue()) {
+            // contrainte contient les acteurs d'origine, alors qu'on travaille sur leur version SRDAG ! comment faire
+            // le lien ?
+            if (!mergeActor.getActors().contains(a) || (PE == clusteringArchClone)) {
+              // if the actor is not in the clustered its mappings must not be altered
+              // otherwise it is added only if the component is the one we mapped the entire cluster to
+              scenarioConstraintsMap.get(PE).add(a);
+            }
+          }
+        }
+
+        // scenario.getConstraints().setGroupConstraints(newConstraint);
+        scenario.getConstraints().addConstraint(clusteringArch, mergeActor);
       }
 
     } while (!graph_is_fully_searched);
 
     // now we add the cluster's mapping to the scenario
 
-    return listClusterActors;
+    return listClusters;
 
   }
 
