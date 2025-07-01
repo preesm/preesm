@@ -11,7 +11,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  *
- * @author jmorin
+ * @author jamorin
  *
  */
 
