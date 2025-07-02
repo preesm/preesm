@@ -161,9 +161,20 @@ class Scenario {
 		}
 		if (mapping.isEmpty) {
 			val source = PreesmCopyTracker.getSource(actor)
-			if (source != actor) {
+			if (source != actor && source !== null) {
 				mapping = getPossibleMappings(source)
-			} else {
+			}
+			else if(actor !== null) {
+				val graph = actor.containingPiGraph
+				// if the actor is contained in a cluster, its mapping is the same as its cluster's mapping
+        		if(graph.clusterValue) {
+          			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, graph, 0) != -1].map[it.key]
+        		}
+        		else {
+         			mapping = ECollections.newBasicEList
+        		}
+			}
+			else {
 				mapping = ECollections.newBasicEList
 			}
 		}
