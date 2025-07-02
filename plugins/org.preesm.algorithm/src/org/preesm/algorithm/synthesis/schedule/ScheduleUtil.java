@@ -44,6 +44,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  *
@@ -90,9 +91,8 @@ public class ScheduleUtil {
       final int indexOfSched2Parent = parentsOfSched2.indexOf(parent);
       return Pair.of(parentsOfSched1.get(Math.max(indexOfSched1Parent - 1, 0)),
           parentsOfSched2.get(Math.max(indexOfSched2Parent - 1, 0)));
-    } else {
-      throw new PreesmRuntimeException("guru meditation");
     }
+    throw new PreesmRuntimeException("guru meditation");
   }
 
   /**
@@ -110,6 +110,10 @@ public class ScheduleUtil {
       @Override
       public Boolean caseActorSchedule(final ActorSchedule object) {
         object.getActorList().forEach(res::add);
+
+        // filter for cluster actors (pigraphs) and add their actors to the list as well
+        object.getActorList().stream().filter(PiGraph.class::isInstance).map(graph -> (PiGraph) graph)
+            .flatMap(graph -> graph.getActors().stream()).forEach(res::add);
         return true;
       }
     }.doSwitch(schedule);
