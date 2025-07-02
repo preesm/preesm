@@ -123,8 +123,11 @@ public abstract class AbstractScheduler implements IScheduler {
         piGraph.getAllActors().stream().filter(a -> a instanceof Actor).toList());
 
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
+
+    // TODO check the addition of the condition "a instanceof PiGraph" actually works and does not break anything
     final List<
         AbstractActor> scheduledActors = new ArrayList<>(actors.stream().filter(a -> a instanceof Actor).toList());
+
     if (!piGraphAllActors.containsAll(scheduledActors)) {
       throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
     }
@@ -132,7 +135,15 @@ public abstract class AbstractScheduler implements IScheduler {
       throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
     }
 
-    if (!mapping.getMappings().keySet().containsAll(scheduledActors)) {
+    // find all actors that are not in mapping's keyset
+    final List<AbstractActor> notInMapping = scheduledActors.stream()
+        .filter(actor -> !mapping.getMappings().keySet().contains(actor)).toList();
+
+    // check if they're part of a cluster ; if they are, it's normal they're not in mapping
+    final boolean anyNotInCluster = notInMapping.stream()
+        .anyMatch(actor -> !((PiGraph) actor.eContainer()).isCluster());
+
+    if ((!mapping.getMappings().keySet().containsAll(scheduledActors) && anyNotInCluster)) {
       throw new PreesmSynthesisException("Mapping is missing actors of the input PiSDF.");
     }
 
@@ -148,9 +159,11 @@ public abstract class AbstractScheduler implements IScheduler {
   }
 
   private void verifyActor(final Scenario scenario, final Mapping mapping, final AbstractActor actor) {
-    final List<ComponentInstance> actorMapping = new ArrayList<>(mapping.getMapping(actor));
+    final var actorMappings = mapping.getMapping(actor);
+    final List<ComponentInstance> actorMapping = new ArrayList<>(actorMappings);
 
-    final List<ComponentInstance> possibleMappings = new ArrayList<>(scenario.getPossibleMappings(actor));
+    final var scenarioMapping = scenario.getPossibleMappings(actor);
+    final List<ComponentInstance> possibleMappings = new ArrayList<>(scenarioMapping);
     if (!possibleMappings.containsAll(actorMapping)) {
       throw new PreesmSynthesisException("Actor '" + actor + "' is mapped on '" + actorMapping
           + "' which is not in the authorized components list '" + possibleMappings + "'.");
