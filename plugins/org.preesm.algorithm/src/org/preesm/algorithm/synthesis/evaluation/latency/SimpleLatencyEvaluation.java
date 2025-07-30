@@ -38,6 +38,7 @@ package org.preesm.algorithm.synthesis.evaluation.latency;
 
 import java.util.Map;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.ISynthesisEvaluator;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.algorithm.synthesis.timer.ActorExecutionTiming;
@@ -60,6 +61,18 @@ public class SimpleLatencyEvaluation implements ISynthesisEvaluator<LatencyCost>
 
     final Map<AbstractActor,
         ActorExecutionTiming> computeTimings = new SimpleTimer(scenario, mapping).computeTimings(scheduleOM);
+
+    final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
+        .orElse(0L);
+
+    return new LatencyCost(latency, computeTimings);
+  }
+
+  public LatencyCost evaluateClusteredGraph(final PiGraph algo, final Design slamDesign, final Scenario scenario,
+      final Mapping mapping, final ScheduleOrderManager scheduleOM, Map<PiGraph, SynthesisResult> localSyntheses) {
+
+    final Map<AbstractActor, ActorExecutionTiming> computeTimings = new SimpleTimer(scenario, mapping)
+        .computeTimingsClusteredGraph(localSyntheses, algo, slamDesign, scenario, mapping, scheduleOM);
 
     final long latency = computeTimings.entrySet().stream().mapToLong(entry -> entry.getValue().getEndTime()).max()
         .orElse(0L);
