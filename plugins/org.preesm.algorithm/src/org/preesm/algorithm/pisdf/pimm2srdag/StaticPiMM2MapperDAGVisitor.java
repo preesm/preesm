@@ -75,6 +75,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -389,6 +390,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    *          the MapperDAG vertex
    */
   private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
+    if (actor instanceof Cluster) {
+      // clusters are hierarchical actors, and the way they are copied by preesm copying tools lets their config ports
+      // without dependencies. Thus looping on them makes no sense.
+      return;
+    }
     for (final ConfigInputPort p : actor.getConfigInputPorts()) {
       final ISetter setter = p.getIncomingDependency().getSetter();
       if (setter instanceof final Parameter param) {
@@ -550,12 +556,44 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputInterface(final DataInputInterface actor) {
-    throw new UnsupportedOperationException();
+    // throw new UnsupportedOperationException();
+
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(MapperDAGVertex.DAG_FORK_VERTEX,
+        actor);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Check Fork use
+    if (actor.getDataInputPorts().size() > 1) {
+      final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
+      throw new PreesmRuntimeException(message);
+    }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+
+    return true;
   }
 
   @Override
   public Boolean caseDataOutputInterface(final DataOutputInterface actor) {
-    throw new UnsupportedOperationException();
+    // throw new UnsupportedOperationException();
+
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(MapperDAGVertex.DAG_FORK_VERTEX,
+        actor);
+    // Set default properties from the PiMM actor
+    setDAGVertexPropertiesFromPiMM(actor, vertex);
+    // Check Fork use
+    if (actor.getDataInputPorts().size() > 1) {
+      final String message = "Fork actors should have only one input. Bad use on [" + actor.getVertexPath() + "]";
+      throw new PreesmRuntimeException(message);
+    }
+    // Handle input parameters as instance arguments
+    setArguments(actor, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+
+    return true;
   }
 
   @Override
@@ -627,6 +665,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       final ComponentInstance operatorId = cg.getKey();
       if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
+      } else if (actor.getContainingGraph() instanceof Cluster) {
+        // a cluster actor's mappings are the same as its cluster's
+        if (vertexPaths.contains(PreesmCopyTracker.getOriginalSource(actor.getContainingPiGraph()))) {
+          currentOperatorIDs.add(operatorId);
+        }
       }
     }
 
@@ -638,6 +681,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
 
     if (graph.isCluster()) {
+      if (graph instanceof final Cluster cluster) {
+        return caseCluster(cluster);
+      }
       return caseAbstractActor(graph);
     }
 
@@ -646,7 +692,12 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
       StaticPiMM2MapperDAGVisitor.updateScenarioData(actor, this.scenario);
-      doSwitch(actor);
+      if (actor instanceof final Cluster cluster) {
+        caseClusterAsActor(cluster);
+      } else {
+        doSwitch(actor);
+      }
+
     }
 
     // Convert FIFOs
@@ -655,6 +706,51 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     }
 
     // 6. Aggregate edges
+    aggregateEdges(this.result);
+
+    SdfToDagConverter.addInitialProperties(this.result, this.architecture, this.scenario);
+    return true;
+  }
+
+  /**
+   * processes a cluster as its actor representation. It assumes the cluster has already been processed as its cluster
+   * representation.
+   *
+   * @param cluster
+   *          the cluster
+   * @return true if things went fine
+   */
+  public Boolean caseClusterAsActor(Cluster cluster) {
+
+    final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, cluster);
+
+    setDAGVertexPropertiesFromPiMM(cluster, vertex);
+
+    setArguments(cluster, vertex);
+    // Add the vertex to the DAG
+    this.result.addVertex(vertex);
+
+    return true;
+  }
+
+  @Override
+  public Boolean caseCluster(Cluster cluster) {
+    // retirer les interfaces ? faire une copie sans interface ?
+
+    checkInput(cluster);
+
+    // Convert vertices
+    for (final AbstractActor actor : cluster.getActors()) {
+      StaticPiMM2MapperDAGVisitor.updateScenarioData(actor, this.scenario);
+      doSwitch(actor);
+    }
+
+    // Convert FIFOs
+    for (final Fifo fifo : cluster.getFifos()) {
+      doSwitch(fifo);
+    }
+
+    // Aggregate edges
     aggregateEdges(this.result);
 
     SdfToDagConverter.addInitialProperties(this.result, this.architecture, this.scenario);
