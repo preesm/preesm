@@ -48,6 +48,7 @@ import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
@@ -508,6 +509,13 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final ConfigOutputInterface res = createConfigOutputInterface();
     res.setName(name);
     return res;
+  }
+
+  @Override
+  public Cluster createCluster() {
+    final Cluster c = super.createCluster();
+    c.setClusterValue(true);
+    return c;
   }
 
 }
