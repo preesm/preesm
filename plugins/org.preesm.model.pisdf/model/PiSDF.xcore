@@ -273,6 +273,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
+	boolean isClusterized = "false"
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
@@ -715,6 +716,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		val PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor
 		piMMResolverVisitor.casePiGraph(this);
 	}
+}
+
+class Cluster extends PiGraph {
 }
 
 abstract class ExecutableActor extends AbstractActor {
