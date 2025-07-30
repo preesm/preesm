@@ -5,10 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
@@ -32,8 +29,9 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -47,7 +45,6 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.SlamFactory;
-import org.preesm.model.slam.TimingType;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -75,7 +72,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
+        @Port(name = "scenario", type = Scenario.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, type = List.class) },
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
         @Port(name = "Allocation", type = Allocation.class), @Port(name = "HPiSDF", type = PiGraph.class),
         @Port(name = "localSyntheses", type = Map.class) })
@@ -93,27 +91,23 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
-  SlamFactory           SLAMFactory = SlamFactory.eINSTANCE;
+  final SlamFactory     SLAMFactory = SlamFactory.eINSTANCE;
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    final PiGraph original_algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final PiGraph algorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(original_algorithm);
-
-    // stores a PiGraph (a cluster) with the associated place holder actor and its synthesis result
-    final Map<PiGraph, Pair<Actor, SynthesisResult>> localSynthesesMap = new HashMap<>();
+    // stores a Cluster (its original obtained with PreesmCopyTracker) with its synthesis result
+    final Map<Cluster, SynthesisResult> localSynthesesMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
+    final PiGraph copy_algorithm = PiMMFactory.copyPiGraphWithHistory(algorithm);
 
     if (CLUSTERIZE) {
-      // clusterize the graph
-      final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
-
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
@@ -126,11 +120,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
         mainCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
             .getFirst();
       }
-      // TODO find an adapted accelerator, not just any non-x86 core
+
       final ComponentInstance accelerator = architecture.getComponentInstances().stream()
           .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
 
-      for (final PiGraph cluster : clustersList) {
+      final List<Cluster> clustersList = algorithm.getChildrenGraphs().stream()
+          .filter(graph -> graph instanceof Cluster).map(graph -> (Cluster) graph).toList();
+      for (final Cluster cluster : clustersList) {
+
         // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
         final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
 
@@ -143,13 +140,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
         final Allocation allocation = alloc.allocateMemory(cluster, architecture, scenario, res.schedule, res.mapping);
 
         final SynthesisResult localSynthesisResult = new SynthesisResult(res.mapping, res.schedule, allocation);
-
-        // --------------------------------------------------------------------------------------
-        // -------------------- replace hierarchical actors with placeholders -------------------
-        // --------------------------------------------------------------------------------------
-
-        final Actor placeholder = PiMMFactory.createActor(cluster.getName() + "_placeholder");
-        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement());
 
         // set the placeholder's characteristics we need for global scheduling :
         // - latency/throughput
@@ -173,18 +163,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
           latency = localLatency.getValue();
         }
 
-        algorithm.addActor(placeholder);
-        replaceAndRemoveActor(cluster, placeholder, algorithm);
-
-        // for now, let's suppose II = Latency
-        scenario.getConstraints().addConstraint(accelerator, placeholder); // test, idéalement ça serait une "non-archi"
-        scenario.getTimings().setExecutionTime(placeholder, mainCPU.getComponent(), latency);
-        scenario.getTimings().setTiming(placeholder, mainCPU.getComponent(), TimingType.INITIATION_INTERVAL,
-            Long.toString(latency));
-
-        localSynthesesMap.put(cluster, new ImmutablePair<>(placeholder, localSynthesisResult));
+        localSynthesesMap.put(PreesmCopyTracker.getOriginalSource(cluster), localSynthesisResult);
       }
-
     }
 
     // ------------------ schedule the global graph ------------------
@@ -236,7 +216,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     return switch (allocationName) {
       case VALUE_ALLOCATORS_SIMPLE -> new SimpleMemoryAllocation();
       case VALUE_ALLOCATORS_LEGACY -> new LegacyMemoryAllocation();
-      default -> throw new PreesmRuntimeException("unknown allocation: " + allocationName);
+      default -> throw new PreesmRuntimeException("unknown allocation method: " + allocationName);
     };
   }
 
@@ -291,14 +271,39 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
           AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
         return new FpgaScheduler(localSchedulerMapperName);
-      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE, PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC,
-          PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
+      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE:
         return new SimpleScheduler();
+      case PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
+        return new LegacyListScheduler();
+      case PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC:
+        return new PeriodicScheduler();
       default:
         PreesmLogger.getLogger().log(Level.SEVERE,
             () -> "This scheduler is not implemented : " + localSchedulerMapperName);
         return null;
     }
+  }
+
+  /***
+   * Returns the graph in graphList that shares a common ancestry with inputGraph. Assumes there is at most one
+   * corresponding graph. Returns null if there is none.
+   *
+   * @param inputGraph
+   *          the graph to compare
+   * @param graphList
+   *          the list of candidates
+   * @return the corresponding graph from graphList, or null.
+   */
+  PiGraph findCorrespondingGraph(PiGraph inputGraph, List<PiGraph> graphList) {
+    final PiGraph source = PreesmCopyTracker.getOriginalSource(inputGraph);
+    // assume there is at most one corresponding graph in the list
+    for (final PiGraph candidate : graphList) {
+      final PiGraph candidateSource = PreesmCopyTracker.getOriginalSource(candidate);
+      if (candidateSource == source) {
+        return candidateSource;
+      }
+    }
+    return null;
   }
 
   /***
