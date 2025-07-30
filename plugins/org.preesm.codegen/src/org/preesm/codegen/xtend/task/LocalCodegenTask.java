@@ -69,9 +69,12 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -142,6 +145,8 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
+    PreesmLogger.getLogger().info(" -- Local codegen --");
+
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
     if (scenario.getCodegenDirectory() == null) {
@@ -151,15 +156,19 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     final Design archi = (Design) inputs.get("architecture");
     final PiGraph algo = (PiGraph) inputs.get("PiMM");
 
-    final Map<PiGraph, Pair<Actor,
-        SynthesisResult>> localSyntheses = (Map<PiGraph, Pair<Actor, SynthesisResult>>) inputs.get("localSyntheses");
+    final Map<PiGraph, SynthesisResult> localSyntheses = (Map<PiGraph, SynthesisResult>) inputs.get("localSyntheses");
+
+    final List<Cluster> listClusters = algo.getChildrenGraphs().stream().filter(g -> g instanceof Cluster)
+        .map(c -> (Cluster) c).toList();
 
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(LocalCodegenTask.PARAM_PAPIFY));
 
-    for (final PiGraph cluster : localSyntheses.keySet()) {
-      final Actor placeHolder = localSyntheses.get(cluster).getLeft();
-      final SynthesisResult localSynthesisResults = localSyntheses.get(cluster).getRight();
+    for (final PiGraph cluster : listClusters) {
+      final var original = PreesmCopyTracker.getOriginalSource(cluster);
+      final SynthesisResult localSynthesisResults = localSyntheses.get(original);
+      PreesmLogger.getLogger().info("Local codegen of cluster " + original.getName());
+
       final Schedule schedule = localSynthesisResults.schedule;
       final Mapping mapping = localSynthesisResults.mapping;
       final Allocation memAlloc = localSynthesisResults.alloc;
@@ -197,7 +206,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       }
 
       final FunctionPrototype prototype = PiMMFactory.createFunctionPrototype();
-      prototype.setName("placeHolder");
+      prototype.setName(cluster.getName());
 
       final List<org.preesm.model.pisdf.Port> clusterInputsOutputs = new ArrayList<>();
       clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
@@ -224,7 +233,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
         } else if (port instanceof DataInputPort) {
           // since we have replaced the cluster with a placeholder in the graph, its in/out fifos have been removed
           // therefore we need to retrieve the placeholder's corresponding port's fifo to find the data type
-          final List<DataInputPort> correspondingNames = placeHolder.getDataInputPorts().stream()
+          final List<DataInputPort> correspondingNames = cluster.getDataInputPorts().stream()
               .filter(dp -> dp.getName().equals(port.getName())).toList();
 
           if (correspondingNames.isEmpty()) {
@@ -238,7 +247,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
         } else if (port instanceof DataOutputPort) {
           // since we have replaced the cluster with a placeholder in the graph, its in/out fifos have been removed
           // therefore we need to retrieve the placeholder's corresponding port's fifo to find the data type
-          final List<DataOutputPort> correspondingNames = placeHolder.getDataOutputPorts().stream()
+          final List<DataOutputPort> correspondingNames = cluster.getDataOutputPorts().stream()
               .filter(dp -> dp.getName().equals(port.getName())).toList();
 
           if (correspondingNames.isEmpty()) {
@@ -252,7 +261,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
 
       }
 
-      for (int i = 0; i < 6; i++) {
+      for (int i = 0; i < clusterInputsOutputs.size(); i++) {
         args[i] = PiMMFactory.createFunctionArgument();
         args[i].setDirection(directions[i]);
         args[i].setIsConfigurationParameter(isConfig[i]);
@@ -266,11 +275,12 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       prototype.getArguments().addAll(Arrays.asList(args));
       placeholderCode.setLoopPrototype(prototype);
 
-      placeHolder.setRefinement(placeholderCode);
+      // TODO trouver un moyen de mettre un refinement au cluster
+      // cluster.setRefinement(placeholderCode);
 
       final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
       // we assume a cluster is mapped to a single accelerator (PE)
-      final var PEInstance = scenario.getPossibleMappings(placeHolder).getFirst();
+      final var PEInstance = scenario.getPossibleMappings(cluster).getFirst();
       coreBlocks.put(PEInstance, CodegenModelUserFactory.eINSTANCE.createCoreBlock(PEInstance));
 
       // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
