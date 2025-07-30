@@ -41,24 +41,34 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
+import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
+import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
+import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
+import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PeriodicElement;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Design;
 
 /**
  * Abstract class that defines the structure for computing actor timings
@@ -73,6 +83,58 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
   protected AbstractTimer() {
   }
 
+  public Map<AbstractActor, ActorExecutionTiming> computeTimingsClusteredGraph(
+      Map<PiGraph, SynthesisResult> localSyntheses, final PiGraph algo, final Design slamDesign,
+      final Scenario scenario, final Mapping mapping, final ScheduleOrderManager scheduleOM) {
+    final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
+    List<AbstractActor> orderedActors = scheduleOM.buildScheduleAndTopologicalOrderedList();
+
+    // We want to keep only executable actors (e.g not interfaces), for the cases where the scheduling is called on a
+    // subgraph with input/output interfaces
+    // also buildScheduleAndTopologicalOrderedList() returns an unmodifiableList, so I have to copy.
+    orderedActors = orderedActors.stream().filter(actor -> actor instanceof ExecutableActor || actor instanceof PiGraph)
+        .toList();
+
+    for (final AbstractActor actor : orderedActors) {
+      long duration = 0;
+      if (actor instanceof final PiGraph cluster) {
+        // Naze mais fonctionnel
+        final var source = PreesmCopyTracker.getOriginalSource(cluster);
+        final var sr = localSyntheses.get(source);
+
+        final Schedule localSchedule = sr.schedule;
+        final var localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
+
+        // For now I assume their are no cluster in clusters, so we can call the OG evaluation function
+        final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(cluster, slamDesign, scenario, mapping,
+            localScheduleOM);
+        duration = evaluate.getValue();
+      } else {
+        duration = this.doSwitch(actor);
+      }
+
+      // need the first filter to check only executable actors, and not for instance interfaces that have no timings
+      // associated
+      long startTime = scheduleOM.getDirectPredecessors(actor).stream()
+          .filter(a -> a instanceof ExecutableActor || a instanceof Cluster).mapToLong(a -> res.get(a).getEndTime())
+          .max().orElse(0L);
+
+      // refine the startTime of periodic actors from firing instance number
+      if (actor instanceof final PeriodicElement pe) {
+        final long period = pe.getPeriod().evaluateAsLong();
+        if (period > 0 && pe instanceof final Actor a) {
+          final long firingInstance = a.getFiringInstance();
+          final long ns = firingInstance * period;
+          startTime = Math.max(startTime, ns);
+        }
+      }
+
+      final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);
+      res.put(actor, executionTiming);
+    }
+    return res;
+  }
+
   /**
    * Build a map that associate a timing (i.e. start/end/duration) for every actor in the schedule.
    */
@@ -83,7 +145,8 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     // We want to keep only executable actors (e.g not interfaces), for the cases where the scheduling is called on a
     // subgraph with input/output interfaces
     // also buildScheduleAndTopologicalOrderedList() returns an unmodifiableList, so I have to copy.
-    orderedActors = orderedActors.stream().filter(actor -> actor instanceof ExecutableActor).toList();
+    orderedActors = orderedActors.stream().filter(actor -> actor instanceof ExecutableActor || actor instanceof PiGraph)
+        .toList();
 
     for (final AbstractActor actor : orderedActors) {
       final long duration = this.doSwitch(actor);
