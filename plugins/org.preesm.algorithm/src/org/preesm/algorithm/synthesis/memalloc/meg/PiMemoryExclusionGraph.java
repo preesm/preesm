@@ -921,14 +921,21 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
         // with all predecessor (new and not new) of previous
         // DAGVertex executed on this component.
         newPredecessors.addAll(newVerticesPredecessors.get(lastScheduled.getName()));
-        newPredecessors.addAll(this.verticesPredecessors.get(lastScheduled.getName()));
+        final var verticePredecessors = this.verticesPredecessors.get(lastScheduled.getName());
+        if (verticePredecessors != null) {
+          newPredecessors.addAll(verticePredecessors);
+        }
         // "old" predecessors will be excluded later
       }
       // Save currentVertex as lastScheduled on this component
       lastVerticesScheduled.put(comp, currentVertex);
 
       // Exclude all "old" predecessors from "new" list
-      newPredecessors.removeAll(this.verticesPredecessors.get(vertexName));
+      final var oldPredecessors = this.verticesPredecessors.get(vertexName);
+      // if the vertex is in a cluster, it is normal for it to have no predecessor
+      if (!(oldPredecessors == null && currentVertex.getContainingPiGraph().isClusterValue())) {
+        newPredecessors.removeAll(oldPredecessors);
+      }
 
       if (!newPredecessors.isEmpty()) {
         // Remove exclusion between the Exclusion Vertex corresponding

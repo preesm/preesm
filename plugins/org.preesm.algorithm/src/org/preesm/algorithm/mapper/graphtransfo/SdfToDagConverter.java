@@ -128,12 +128,11 @@ public class SdfToDagConverter {
     if (dag.vertexSet().isEmpty()) {
       final String msg = "Can not map a DAG with no vertex.";
       throw new PreesmRuntimeException(msg);
-    } else {
-      PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
-      final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()
-          + " edges.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
     }
+    PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
+    final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()
+        + " edges.";
+    PreesmLogger.getLogger().log(Level.INFO, msg);
 
     return dag;
   }
@@ -248,7 +247,7 @@ public class SdfToDagConverter {
     /**
      * Importing default timings
      */
-    Timings tm = scenario.getTimings();
+    final Timings tm = scenario.getTimings();
 
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -268,8 +267,7 @@ public class SdfToDagConverter {
         for (final ComponentInstance op : architecture.getOperatorComponentInstances()) {
           final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
-          if (referencePiVertex instanceof AbstractActor) {
-            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+          if (referencePiVertex instanceof final AbstractActor actor) {
             // info is set to the vertexPath of AbstractVertex
             final long originalTiming = tm.evaluateExecutionTimeOrDefault(actor, op.getComponent());
             final Timing copyTiming;
@@ -309,8 +307,7 @@ public class SdfToDagConverter {
         final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
         for (final Component opDef : scenario.getTimings().getMemTimings().keySet()) {
-          if (referencePiVertex instanceof AbstractActor) {
-            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+          if (referencePiVertex instanceof final AbstractActor actor) {
             final long sut = scenario.getTimings().getMemTimings().get(opDef).getSetupTime();
             final double tpu = scenario.getTimings().getMemTimings().get(opDef).getTimePerUnit();
             final Timing timing = new Timing(opDef, actor);
@@ -370,6 +367,10 @@ public class SdfToDagConverter {
       // constraint group
       final Set<
           String> sdfVertexIds = cg.getValue().stream().map(AbstractVertex::getVertexPath).collect(Collectors.toSet());
+      // We want to also add all actors that are in clusters
+      // cg.getValue().stream().filter(actor -> actor instanceof PiGraph)
+      // .flatMap(cluster -> ((Cluster) cluster).getActors().stream()).map(AbstractVertex::getVertexPath)
+      // .map(path -> sdfVertexIds.add(path));
 
       for (final DAGVertex v : dag.vertexSet()) {
         final MapperDAGVertex mv = (MapperDAGVertex) v;
@@ -388,8 +389,7 @@ public class SdfToDagConverter {
 
               // Initializes a default timing that may be erased
               // when timings are imported
-              if (referencePiVertex instanceof AbstractActor) {
-                final AbstractActor actor = ((AbstractActor) referencePiVertex);
+              if (referencePiVertex instanceof final AbstractActor actor) {
                 final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
                 mv.getInit().addTiming(newTiming);
               } else {

@@ -177,7 +177,8 @@ public class ScheduleOrderManager {
     for (final Fifo fifo : pigraph.getFifos()) {
       final AbstractActor src = fifo.getSourcePort().getContainingActor();
       final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
-      if (dag.getAllEdges(src, tgt).isEmpty()) {
+      final var edges = dag.getAllEdges(src, tgt);
+      if (edges.isEmpty()) {
         dag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
         tdag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
       }
@@ -445,8 +446,30 @@ public class ScheduleOrderManager {
   }
 
   private void updateGraphCache(AbstractActor referenceActor, List<AbstractActor> input, boolean after) {
-    if (graphCache == null) {
-      return;
+    if (graphCache != null) {
+
+      for (final AbstractActor aa : input) {
+        graphCache.addVertex(aa);
+      }
+      if (!input.isEmpty()) {
+        for (int i = 1; i < input.size(); i++) {
+          graphCache.addEdge(input.get(i - 1), input.get(i), new DAGedge(DAGedgeType.RECO));
+        }
+        final AbstractActor last = input.get(input.size() - 1);
+        final AbstractActor first = input.get(0);
+
+        if (after) {
+          for (final AbstractActor suc : Graphs.successorListOf(graphCache, referenceActor)) {
+            graphCache.addEdge(last, suc, new DAGedge(DAGedgeType.RECO));
+          }
+          graphCache.addEdge(referenceActor, first, new DAGedge(DAGedgeType.RECO));
+        } else {
+          for (final AbstractActor pred : Graphs.predecessorListOf(graphCache, referenceActor)) {
+            graphCache.addEdge(pred, first, new DAGedge(DAGedgeType.RECO));
+          }
+          graphCache.addEdge(last, referenceActor, new DAGedge(DAGedgeType.RECO));
+        }
+      }
     }
 
     for (final AbstractActor aa : input) {
@@ -474,35 +497,33 @@ public class ScheduleOrderManager {
   }
 
   private void updateTransitiveClosureCache(AbstractActor referenceActor, List<AbstractActor> input, boolean after) {
-    if (transitiveClosureCache == null) {
-      return;
-    }
-
-    for (final AbstractActor aa : input) {
-      transitiveClosureCache.addVertex(aa);
-    }
-    if (!input.isEmpty()) {
-      final int sizeI = input.size();
+    if (transitiveClosureCache != null) {
       for (final AbstractActor aa : input) {
-        for (final AbstractActor succ : Graphs.successorListOf(transitiveClosureCache, referenceActor)) {
-          transitiveClosureCache.addEdge(aa, succ, new DAGedge(DAGedgeType.RECO));
-        }
-        for (final AbstractActor pred : Graphs.predecessorListOf(transitiveClosureCache, referenceActor)) {
-          transitiveClosureCache.addEdge(pred, aa, new DAGedge(DAGedgeType.RECO));
-        }
+        transitiveClosureCache.addVertex(aa);
       }
-      for (int i = 1; i < sizeI; i++) {
-        final AbstractActor aa = input.get(i);
-        for (int j = 0; j < i; j++) {
-          transitiveClosureCache.addEdge(input.get(j), aa, new DAGedge(DAGedgeType.RECO));
+      if (!input.isEmpty()) {
+        final int sizeI = input.size();
+        for (final AbstractActor aa : input) {
+          for (final AbstractActor succ : Graphs.successorListOf(transitiveClosureCache, referenceActor)) {
+            transitiveClosureCache.addEdge(aa, succ, new DAGedge(DAGedgeType.RECO));
+          }
+          for (final AbstractActor pred : Graphs.predecessorListOf(transitiveClosureCache, referenceActor)) {
+            transitiveClosureCache.addEdge(pred, aa, new DAGedge(DAGedgeType.RECO));
+          }
         }
-        for (int j = i + 1; j < sizeI; j++) {
-          transitiveClosureCache.addEdge(aa, input.get(j), new DAGedge(DAGedgeType.RECO));
-        }
-        if (after) {
-          transitiveClosureCache.addEdge(referenceActor, aa, new DAGedge(DAGedgeType.RECO));
-        } else {
-          transitiveClosureCache.addEdge(aa, referenceActor, new DAGedge(DAGedgeType.RECO));
+        for (int i = 1; i < sizeI; i++) {
+          final AbstractActor aa = input.get(i);
+          for (int j = 0; j < i; j++) {
+            transitiveClosureCache.addEdge(input.get(j), aa, new DAGedge(DAGedgeType.RECO));
+          }
+          for (int j = i + 1; j < sizeI; j++) {
+            transitiveClosureCache.addEdge(aa, input.get(j), new DAGedge(DAGedgeType.RECO));
+          }
+          if (after) {
+            transitiveClosureCache.addEdge(referenceActor, aa, new DAGedge(DAGedgeType.RECO));
+          } else {
+            transitiveClosureCache.addEdge(aa, referenceActor, new DAGedge(DAGedgeType.RECO));
+          }
         }
       }
     }
