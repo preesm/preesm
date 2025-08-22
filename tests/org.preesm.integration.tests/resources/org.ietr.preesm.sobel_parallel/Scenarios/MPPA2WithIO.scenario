@@ -190,7 +190,7 @@
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="char" size="8"/>
-            <dataType name="uchar" size="8"/>
+            <dataType name="unsigned char" size="8"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Cluster00"/>

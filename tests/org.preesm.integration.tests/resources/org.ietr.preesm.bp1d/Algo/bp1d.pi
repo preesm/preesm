@@ -59,11 +59,11 @@
             target="BP_ComputeFiEnergy" targetport="Phi_B" type="PHI_B_TYPE"/>
         <edge kind="fifo" source="BP_ComputeFiEnergy"
             sourceport="disparity" target="disparity"
-            targetport="disparity" type="uchar"/>
+            targetport="disparity" type="unsigned char"/>
         <edge kind="fifo" source="rgbLeft" sourceport="rgbLeft"
-            target="BP_ComputePhi_B" targetport="rgbLeft" type="uchar"/>
+            target="BP_ComputePhi_B" targetport="rgbLeft" type="unsigned char"/>
         <edge kind="fifo" source="rgbRight" sourceport="rgbRight"
-            target="BP_ComputePhi_B" targetport="rgbRight" type="uchar"/>
+            target="BP_ComputePhi_B" targetport="rgbRight" type="unsigned char"/>
         <edge kind="dependency" source="pWidth" target="BP_ComputePhi_B" targetport="width"/>
         <edge kind="dependency" source="pHeight" target="SliceHeight"/>
         <edge kind="dependency" source="pSlices" target="SliceHeight"/>

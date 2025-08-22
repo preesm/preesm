@@ -190,7 +190,7 @@
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
             <dataType name="int" size="32"/>
-            <dataType name="uchar" size="8"/>
+            <dataType name="unsigned char" size="8"/>
             <dataType name="float" size="32"/>
         </dataTypes>
         <specialVertexOperators>

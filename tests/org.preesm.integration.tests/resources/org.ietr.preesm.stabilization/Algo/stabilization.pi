@@ -257,7 +257,7 @@
         <edge expr="height*width" kind="fifo"
             source="DuplicateFrame" sourceport="out_1"
             target="ComputeBlockMotionVectorss"
-            targetport="previousFrame" type="uchar">
+            targetport="previousFrame" type="unsigned char">
             <data key="delay">delay_DuplicateFrame_out_1__ComputeBlockMotionVectorss_previousFrame</data>
         </edge>
         <edge expr="1" kind="fifo"
@@ -268,17 +268,17 @@
         </edge>
         <edge expr="displayHeight*displayWidth" kind="fifo"
             source="BrY" sourceport="out_1" target="renderFrame"
-            targetport="yPrev" type="uchar">
+            targetport="yPrev" type="unsigned char">
             <data key="delay">delay_BrY_out_1__renderFrame_yPrev</data>
         </edge>
         <edge expr="displayHeight/2*displayWidth/2" kind="fifo"
             source="BrU" sourceport="out_1" target="renderFrame"
-            targetport="uPrev" type="uchar">
+            targetport="uPrev" type="unsigned char">
             <data key="delay">delay_BrU_out_1__renderFrame_uPrev</data>
         </edge>
         <edge expr="displayHeight/2*displayWidth/2" kind="fifo"
             source="BrV" sourceport="out_1" target="renderFrame"
-            targetport="vPrev" type="uchar">
+            targetport="vPrev" type="unsigned char">
             <data key="delay">delay_BrV_out_1__renderFrame_vPrev</data>
         </edge>
         <edge expr="1" kind="fifo" source="brFilteredMotion"
@@ -289,28 +289,28 @@
         <edge kind="fifo" source="DuplicateFrame"
             sourceport="out_0"
             target="ComputeBlockMotionVectorss"
-            targetport="frame" type="uchar"/>
+            targetport="frame" type="unsigned char"/>
         <edge kind="fifo" source="u" sourceport="u"
-            target="renderFrame" targetport="uIn" type="uchar"/>
+            target="renderFrame" targetport="uIn" type="unsigned char"/>
         <edge kind="fifo" source="v" sourceport="v"
-            target="renderFrame" targetport="vIn" type="uchar"/>
+            target="renderFrame" targetport="vIn" type="unsigned char"/>
         <edge kind="fifo" source="ComputeBlockMotionVectorss"
             sourceport="vectors" target="FindDominatingMotion"
             targetport="vectors" type="coord"/>
         <edge kind="fifo" source="y" sourceport="y"
-            target="DuplicateFrame" targetport="in" type="uchar"/>
+            target="DuplicateFrame" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="BrY" sourceport="out_0"
-            target="rY" targetport="rY" type="uchar"/>
+            target="rY" targetport="rY" type="unsigned char"/>
         <edge kind="fifo" source="DuplicateFrame"
             sourceport="out_2" target="renderFrame"
-            targetport="yIn" type="uchar"/>
+            targetport="yIn" type="unsigned char"/>
         <edge kind="fifo" source="FindDominatingMotion"
             sourceport="dominatingVector"
             target="AccumulateMotion" targetport="motionVector" type="coordf"/>
         <edge kind="fifo" source="BrU" sourceport="out_0"
-            target="rU" targetport="rU" type="uchar"/>
+            target="rU" targetport="rU" type="unsigned char"/>
         <edge kind="fifo" source="BrV" sourceport="out_0"
-            target="rV" targetport="rV" type="uchar"/>
+            target="rV" targetport="rV" type="unsigned char"/>
         <edge kind="fifo" source="DuplicateAccumulatedMotion"
             sourceport="out_0" target="renderFrame"
             targetport="delta" type="coordf"/>
@@ -318,11 +318,11 @@
             sourceport="accumulatedMotionOut"
             target="DuplicateAccumulatedMotion" targetport="in" type="coordf"/>
         <edge kind="fifo" source="renderFrame" sourceport="yOut"
-            target="BrY" targetport="in" type="uchar"/>
+            target="BrY" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="renderFrame" sourceport="uOut"
-            target="BrU" targetport="in" type="uchar"/>
+            target="BrU" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="renderFrame" sourceport="vOut"
-            target="BrV" targetport="in" type="uchar"/>
+            target="BrV" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="AccumulateMotion"
             sourceport="filteredMotionOut"
             target="brFilteredMotion" targetport="in" type="coordf"/>

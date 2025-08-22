@@ -44,11 +44,11 @@
             <port annotation="NONE" expr="(height*width)" kind="output" name="disparity"/>
         </node>
         <edge kind="fifo" source="topHierarchicalBP1D"
-            sourceport="disparity" target="writePPM" targetport="gray" type="uchar"/>
+            sourceport="disparity" target="writePPM" targetport="gray" type="unsigned char"/>
         <edge kind="fifo" source="ReadPPM" sourceport="rgbLeft"
-            target="topHierarchicalBP1D" targetport="rgbLeft" type="uchar"/>
+            target="topHierarchicalBP1D" targetport="rgbLeft" type="unsigned char"/>
         <edge kind="fifo" source="ReadPPM" sourceport="rgbRight"
-            target="topHierarchicalBP1D" targetport="rgbRight" type="uchar"/>
+            target="topHierarchicalBP1D" targetport="rgbRight" type="unsigned char"/>
         <edge kind="dependency" source="width" target="ReadPPM" targetport="width"/>
         <edge kind="dependency" source="height" target="ReadPPM" targetport="height"/>
         <edge kind="dependency" source="width" target="writePPM" targetport="width"/>

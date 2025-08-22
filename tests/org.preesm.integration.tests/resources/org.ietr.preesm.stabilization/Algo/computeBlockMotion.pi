@@ -103,7 +103,7 @@
                 kind="output" name="out"/>
         </node>
         <edge kind="fifo" source="frame" sourceport="frame"
-            target="DivideBlocks" targetport="frame" type="uchar"/>
+            target="DivideBlocks" targetport="frame" type="unsigned char"/>
         <edge kind="fifo" source="DivideBlocks"
             sourceport="blocksCoord"
             target="ComputeBlockMotionVector"
@@ -111,16 +111,16 @@
         <edge kind="fifo" source="DivideBlocks"
             sourceport="blocksData"
             target="ComputeBlockMotionVector"
-            targetport="blockData" type="uchar"/>
+            targetport="blockData" type="unsigned char"/>
         <edge kind="fifo" source="previousFrame"
             sourceport="previousFrame"
-            target="DuplicatePreviousFrame" targetport="in" type="uchar"/>
+            target="DuplicatePreviousFrame" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="ComputeBlockMotionVector"
             sourceport="vector" target="vectors"
             targetport="vectors" type="coord"/>
         <edge kind="fifo" source="DuplicatePreviousFrame"
             sourceport="out" target="ComputeBlockMotionVector"
-            targetport="previousFrame" type="uchar"/>
+            targetport="previousFrame" type="unsigned char"/>
         <edge kind="dependency" source="width" target="frame"/>
         <edge kind="dependency" source="width" target="previousFrame"/>
         <edge kind="dependency" source="height" target="frame"/>

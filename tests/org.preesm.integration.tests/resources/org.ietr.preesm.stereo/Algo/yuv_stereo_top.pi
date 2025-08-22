@@ -286,15 +286,15 @@
             <port annotation="NONE" expr="xSize*ySize/4" kind="output" name="v"/>
         </node>
         <edge kind="fifo" source="YUV2RGB_L" sourceport="rgb"
-            target="Broadcast0" targetport="in" type="uchar"/>
+            target="Broadcast0" targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out0"
-            target="Display_rgb0" targetport="rgb" type="uchar"/>
+            target="Display_rgb0" targetport="rgb" type="unsigned char"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out1"
-            target="RGB2Gray_L" targetport="rgb" type="uchar"/>
+            target="RGB2Gray_L" targetport="rgb" type="unsigned char"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out2"
-            target="Cost_Parallel_Work" targetport="rgbL" type="uchar"/>
+            target="Cost_Parallel_Work" targetport="rgbL" type="unsigned char"/>
         <edge kind="fifo" source="YUV2RGB_R" sourceport="rgb"
-            target="RGB2Gray_R" targetport="rgb" type="uchar"/>
+            target="RGB2Gray_R" targetport="rgb" type="unsigned char"/>
         <edge kind="fifo" source="RGB2Gray_L" sourceport="gray"
             target="broadcast1" targetport="in" type="float"/>
         <edge kind="fifo" source="broadcast1" sourceport="out0"
@@ -302,38 +302,38 @@
         <edge kind="fifo" source="broadcast1" sourceport="out1"
             target="Cost_Parallel_Work" targetport="grayL" type="float"/>
         <edge kind="fifo" source="Census_L" sourceport="cen"
-            target="Cost_Parallel_Work" targetport="cenL" type="uchar"/>
+            target="Cost_Parallel_Work" targetport="cenL" type="unsigned char"/>
         <edge kind="fifo" source="RGB2Gray_R" sourceport="gray"
             target="broadcast2" targetport="in" type="float"/>
         <edge kind="fifo" source="broadcast2" sourceport="out0"
             target="Census_R" targetport="gray" type="float"/>
         <edge kind="fifo" source="Census_R" sourceport="cen"
-            target="Cost_Parallel_Work" targetport="cenR" type="uchar"/>
+            target="Cost_Parallel_Work" targetport="cenR" type="unsigned char"/>
         <edge kind="fifo" source="broadcast2" sourceport="out1"
             target="Cost_Parallel_Work" targetport="grayR" type="float"/>
         <edge kind="fifo" source="Cost_Parallel_Work"
-            sourceport="rawDisparity" target="Split" targetport="input" type="uchar"/>
+            sourceport="rawDisparity" target="Split" targetport="input" type="unsigned char"/>
         <edge kind="fifo" source="Split" sourceport="output"
-            target="Median_Filter" targetport="rawDisparity" type="uchar"/>
+            target="Median_Filter" targetport="rawDisparity" type="unsigned char"/>
         <edge kind="fifo" source="Median_Filter"
             sourceport="filteredDisparity" target="lum2RGB"
-            targetport="in" type="uchar"/>
+            targetport="in" type="unsigned char"/>
         <edge kind="fifo" source="lum2RGB" sourceport="out0"
-            target="Display_RGB1" targetport="lum" type="uchar"/>
+            target="Display_RGB1" targetport="lum" type="unsigned char"/>
         <edge kind="fifo" source="lum2RGB" sourceport="out1"
-            target="Write_PPM" targetport="gray" type="uchar"/>
+            target="Write_PPM" targetport="gray" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_L" sourceport="y"
-            target="YUV2RGB_L" targetport="y" type="uchar"/>
+            target="YUV2RGB_L" targetport="y" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_L" sourceport="u"
-            target="YUV2RGB_L" targetport="u" type="uchar"/>
+            target="YUV2RGB_L" targetport="u" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_L" sourceport="v"
-            target="YUV2RGB_L" targetport="v" type="uchar"/>
+            target="YUV2RGB_L" targetport="v" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_R" sourceport="y"
-            target="YUV2RGB_R" targetport="y" type="uchar"/>
+            target="YUV2RGB_R" targetport="y" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_R" sourceport="u"
-            target="YUV2RGB_R" targetport="u" type="uchar"/>
+            target="YUV2RGB_R" targetport="u" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV_R" sourceport="v"
-            target="YUV2RGB_R" targetport="v" type="uchar"/>
+            target="YUV2RGB_R" targetport="v" type="unsigned char"/>
         <edge kind="dependency" source="height" target="size"/>
         <edge kind="dependency" source="width" target="size"/>
         <edge kind="dependency" source="height" target="Read_YUV_L" targetport="ySize"/>

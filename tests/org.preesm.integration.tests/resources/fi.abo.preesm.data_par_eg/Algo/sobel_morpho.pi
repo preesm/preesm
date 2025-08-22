@@ -144,21 +144,21 @@
                 kind="output" name="output"/>
         </node>
         <edge kind="fifo" source="Read_YUV" sourceport="u"
-            target="display" targetport="u" type="uchar"/>
+            target="display" targetport="u" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV" sourceport="v"
-            target="display" targetport="v" type="uchar"/>
+            target="display" targetport="v" type="unsigned char"/>
         <edge kind="fifo" source="Dilation" sourceport="output"
-            target="Erosion" targetport="input" type="uchar"/>
+            target="Erosion" targetport="input" type="unsigned char"/>
         <edge kind="fifo" source="Split" sourceport="output"
-            target="Sobel" targetport="input" type="uchar"/>
+            target="Sobel" targetport="input" type="unsigned char"/>
         <edge kind="fifo" source="Sobel" sourceport="output"
-            target="Dilation" targetport="input" type="uchar"/>
+            target="Dilation" targetport="input" type="unsigned char"/>
         <edge kind="fifo" source="Read_YUV" sourceport="y"
-            target="SplitFrame" targetport="y" type="uchar"/>
+            target="SplitFrame" targetport="y" type="unsigned char"/>
         <edge kind="fifo" source="SplitFrame" sourceport="output"
-            target="Split" targetport="input" type="uchar"/>
+            target="Split" targetport="input" type="unsigned char"/>
         <edge kind="fifo" source="Erosion" sourceport="output"
-            target="display" targetport="y" type="uchar"/>
+            target="display" targetport="y" type="unsigned char"/>
         <edge kind="dependency" source="width" target="Read_YUV" targetport="width"/>
         <edge kind="dependency" source="height" target="Read_YUV" targetport="height"/>
         <edge kind="dependency" source="width" target="display" targetport="width"/>
