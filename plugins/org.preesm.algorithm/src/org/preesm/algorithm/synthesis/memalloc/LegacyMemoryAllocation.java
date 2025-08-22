@@ -74,6 +74,8 @@ import org.preesm.algorithm.synthesis.memalloc.script.PiMemoryScriptEngine;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -473,8 +475,15 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
       // generate the subbuffer for each dagedge
       for (final Entry<Fifo, Long> dagAlloc : fifoAllocationOffset.entrySet()) {
+
         final Fifo edge = dagAlloc.getKey();
+
         final Long allocOffset = dagAlloc.getValue();
+
+        if (edge.getSource() instanceof DataInputInterface || edge.getTarget() instanceof DataOutputInterface) {
+          // in this case, the buffer is nothing but an alias for the cluster's I/O parameter
+          continue;
+        }
 
         final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
         memAlloc.getFifoAllocations().put(edge, fifoAllocation);
@@ -503,6 +512,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
 
           final long edgeRate = edge.getSourcePort().getPortRateExpression().evaluateAsLong();
           dagEdgeBuffer.setSizeInBit(scenario.getSimulationInfo().getBufferSizeInBit(edge.getType(), edgeRate));
+
         }
       }
 
