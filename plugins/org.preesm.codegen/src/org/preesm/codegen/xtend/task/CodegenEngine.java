@@ -94,6 +94,9 @@ public class CodegenEngine {
   /** The code blocks. */
   private final Collection<Block> codeBlocks;
 
+  /** registers whether this engine will generate cluster or regular code. **/
+  private boolean clusterGenerator = false;
+
   public Collection<Block> getCodeBlocks() {
     return this.codeBlocks;
   }
@@ -120,7 +123,16 @@ public class CodegenEngine {
     this.algo = algo;
     this.archi = archi;
     this.scenario = scenario;
+  }
 
+  public CodegenEngine(final String codegenPath, final Collection<Block> codeBlocks, final PiGraph algo,
+      final Design archi, final Scenario scenario, boolean clusterCodeGenerator) {
+    this.codegenPath = codegenPath;
+    this.codeBlocks = codeBlocks;
+    this.algo = algo;
+    this.archi = archi;
+    this.scenario = scenario;
+    this.clusterGenerator = clusterCodeGenerator;
   }
 
   public final Design getArchi() {
@@ -289,6 +301,11 @@ public class CodegenEngine {
         final String fileName = b.getName() + extension;
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, fileContentString);
         CodeFormatterAndPrinter.format(iFile);
+      }
+
+      // if this is a cluster code generator, nothing more to do.
+      if (this.clusterGenerator) {
+        return;
       }
 
       // Print secondary files
