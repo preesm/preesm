@@ -987,7 +987,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
 
-    if (graph.isCluster()) {
+    if (graph instanceof Cluster) {
       this.currentGraphIsCluster = true;
       return caseClusterAVenir((Cluster) graph);
     }
@@ -1040,7 +1040,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         // This ligne removes the link between the cluster and its srdag equivalent, which we need.
         // Instead we will only remove the non-cluster actors, which will be kept forever
         clearActor2SRActors();
-        // this.actor2SRActors.clear();
       }
       for (final Fifo f : graph.getFifosWithDelay()) {
         this.firingInstance = lInstance;
@@ -1144,7 +1143,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         doSwitch(g);
         this.graphPrefix = backupPrefix;
         this.graphName = backupName;
-        // this.actor2SRActors.clear();
         clearActor2SRActors();
       }
       for (final Fifo f : cluster.getFifosWithDelay()) {
