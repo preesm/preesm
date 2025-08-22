@@ -144,7 +144,7 @@ public class ClusterBuilder {
 
         // Now we can merge
         // TODO change name to a better one...
-        final String clusterName = "Merged" + actor.getName();
+        final String clusterName = "Cluster_" + actor.getName();
         final Cluster mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
@@ -179,7 +179,7 @@ public class ClusterBuilder {
           }
         }
         scenario.getConstraints().addConstraint(clusteringArch, mergeActor);
-        graph.setIsClusterized(true);
+        mergeActor.setClusterValue(true);
 
       }
 
