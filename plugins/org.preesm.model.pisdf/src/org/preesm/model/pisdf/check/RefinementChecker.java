@@ -108,13 +108,13 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
   private static final Map<String,
       String> typeSynonymsMap = Map.ofEntries(new AbstractMap.SimpleEntry<>(INT8_T, INT8_T),
           new AbstractMap.SimpleEntry<>("char", INT8_T), new AbstractMap.SimpleEntry<>(UINT8_T, UINT8_T),
-          new AbstractMap.SimpleEntry<>("unsigned char", UINT8_T), new AbstractMap.SimpleEntry<>(INT16_T, INT16_T),
-          new AbstractMap.SimpleEntry<>("short", INT16_T), new AbstractMap.SimpleEntry<>(UINT16_T, UINT16_T),
-          new AbstractMap.SimpleEntry<>("unsigned short", UINT16_T), new AbstractMap.SimpleEntry<>(INT32_T, INT32_T),
-          new AbstractMap.SimpleEntry<>("int", INT32_T), new AbstractMap.SimpleEntry<>(UINT32_T, UINT32_T),
-          new AbstractMap.SimpleEntry<>("unsigned int", UINT32_T), new AbstractMap.SimpleEntry<>(INT64_T, INT64_T),
-          new AbstractMap.SimpleEntry<>("long", INT64_T), new AbstractMap.SimpleEntry<>("long long", INT64_T),
-          new AbstractMap.SimpleEntry<>(UINT64_T, UINT64_T), new AbstractMap.SimpleEntry<>("unsigned long", UINT64_T),
+          new AbstractMap.SimpleEntry<>(INT16_T, INT16_T), new AbstractMap.SimpleEntry<>("short", INT16_T),
+          new AbstractMap.SimpleEntry<>(UINT16_T, UINT16_T), new AbstractMap.SimpleEntry<>("unsigned short", UINT16_T),
+          new AbstractMap.SimpleEntry<>(INT32_T, INT32_T), new AbstractMap.SimpleEntry<>("int", INT32_T),
+          new AbstractMap.SimpleEntry<>(UINT32_T, UINT32_T), new AbstractMap.SimpleEntry<>("unsigned int", UINT32_T),
+          new AbstractMap.SimpleEntry<>(INT64_T, INT64_T), new AbstractMap.SimpleEntry<>("long", INT64_T),
+          new AbstractMap.SimpleEntry<>("long long", INT64_T), new AbstractMap.SimpleEntry<>(UINT64_T, UINT64_T),
+          new AbstractMap.SimpleEntry<>("unsigned long", UINT64_T),
           new AbstractMap.SimpleEntry<>("unsigned long long", UINT64_T));
 
   /**
