@@ -111,7 +111,7 @@
         <dataTypes>
             <dataType name="coordf" size="64"/>
             <dataType name="coord" size="64"/>
-            <dataType name="uchar" size="8"/>
+            <dataType name="unsigned char" size="8"/>
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

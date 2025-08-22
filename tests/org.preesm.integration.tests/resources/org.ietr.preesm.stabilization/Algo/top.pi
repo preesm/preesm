@@ -88,17 +88,17 @@
                 kind="output" name="rV"/>
         </node>
         <edge kind="fifo" source="ReadYUV" sourceport="y"
-            target="Stabilization" targetport="y" type="uchar"/>
+            target="Stabilization" targetport="y" type="unsigned char"/>
         <edge kind="fifo" source="ReadYUV" sourceport="u"
-            target="Stabilization" targetport="u" type="uchar"/>
+            target="Stabilization" targetport="u" type="unsigned char"/>
         <edge kind="fifo" source="ReadYUV" sourceport="v"
-            target="Stabilization" targetport="v" type="uchar"/>
+            target="Stabilization" targetport="v" type="unsigned char"/>
         <edge kind="fifo" source="Stabilization" sourceport="rY"
-            target="DisplayYUV" targetport="y" type="uchar"/>
+            target="DisplayYUV" targetport="y" type="unsigned char"/>
         <edge kind="fifo" source="Stabilization" sourceport="rU"
-            target="DisplayYUV" targetport="u" type="uchar"/>
+            target="DisplayYUV" targetport="u" type="unsigned char"/>
         <edge kind="fifo" source="Stabilization" sourceport="rV"
-            target="DisplayYUV" targetport="v" type="uchar"/>
+            target="DisplayYUV" targetport="v" type="unsigned char"/>
         <edge kind="dependency" source="width" target="ReadYUV" targetport="width"/>
         <edge kind="dependency" source="height" target="ReadYUV" targetport="height"/>
         <edge kind="dependency" source="displayHeight"

@@ -219,37 +219,37 @@
             <port annotation="NONE" expr="8.0" kind="input" name="set"/>
             <port annotation="NONE" expr="8.0" kind="output" name="get"/>
         </node>
-        <edge expr="size" kind="fifo" source="Broadcast5" sourceport="out1" target="disparitySelect" targetport="currentResult" type="uchar">
+        <edge expr="size" kind="fifo" source="Broadcast5" sourceport="out1" target="disparitySelect" targetport="currentResult" type="unsigned char">
             <data key="delay">delay_Broadcast5_out1__disparitySelect_currentResult</data>
         </edge>
         <edge expr="size+1" kind="fifo" source="disparitySelect" sourceport="backBestCost" target="disparitySelect" targetport="bestCostFeed" type="float">
             <data key="delay">delay_disparitySelect_backBestCost__disparitySelect_bestCostFeed</data>
         </edge>
-        <edge expr="8.0" kind="fifo" source="Broadcast5" sourceport="back" target="CostConstruction" targetport="back" type="uchar">
+        <edge expr="8.0" kind="fifo" source="Broadcast5" sourceport="back" target="CostConstruction" targetport="back" type="unsigned char">
             <data key="delay">delay_Broadcast5_back__CostConstruction_back</data>
         </edge>
         <edge kind="fifo" source="OffsetGen" sourceport="offsets" target="Broadcast0" targetport="in" type="int"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out1" target="ComputeVertWeights" targetport="offset" type="int"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out0" target="AggregateCost" targetport="offsets" type="int"/>
         <edge kind="fifo" source="Broadcast0" sourceport="out2" target="ComputeHorWeights" targetport="offset" type="int"/>
-        <edge kind="fifo" source="rgbL" sourceport="rgbL" target="Broadcast1" targetport="in" type="uchar"/>
-        <edge kind="fifo" source="Broadcast1" sourceport="out0" target="ComputeVertWeights" targetport="rgbL" type="uchar"/>
-        <edge kind="fifo" source="Broadcast1" sourceport="out1" target="ComputeHorWeights" targetport="rgbL" type="uchar"/>
+        <edge kind="fifo" source="rgbL" sourceport="rgbL" target="Broadcast1" targetport="in" type="unsigned char"/>
+        <edge kind="fifo" source="Broadcast1" sourceport="out0" target="ComputeVertWeights" targetport="rgbL" type="unsigned char"/>
+        <edge kind="fifo" source="Broadcast1" sourceport="out1" target="ComputeHorWeights" targetport="rgbL" type="unsigned char"/>
         <edge kind="fifo" source="ComputeVertWeights" sourceport="weights" target="Broadcast2" targetport="in" type="float"/>
         <edge kind="fifo" source="ComputeHorWeights" sourceport="weights" target="Broadcast3" targetport="in" type="float"/>
         <edge kind="fifo" source="Broadcast2" sourceport="out" target="AggregateCost" targetport="vWeights" type="float"/>
         <edge kind="fifo" source="Broadcast3" sourceport="out" target="AggregateCost" targetport="hWeights" type="float"/>
         <edge kind="fifo" source="grayL" sourceport="grayL" target="CostConstruction" targetport="grayL" type="float"/>
         <edge kind="fifo" source="grayR" sourceport="grayR" target="CostConstruction" targetport="grayR" type="float"/>
-        <edge kind="fifo" source="cenL" sourceport="cenL" target="CostConstruction" targetport="cenL" type="uchar"/>
-        <edge kind="fifo" source="cenR" sourceport="cenR" target="CostConstruction" targetport="cenR" type="uchar"/>
-        <edge kind="fifo" source="DisparityGen" sourceport="disparities" target="Broadcast4" targetport="in" type="uchar"/>
-        <edge kind="fifo" source="Broadcast4" sourceport="out0" target="CostConstruction" targetport="disparity" type="uchar"/>
-        <edge kind="fifo" source="Broadcast4" sourceport="out1" target="disparitySelect" targetport="disparity" type="uchar"/>
+        <edge kind="fifo" source="cenL" sourceport="cenL" target="CostConstruction" targetport="cenL" type="unsigned char"/>
+        <edge kind="fifo" source="cenR" sourceport="cenR" target="CostConstruction" targetport="cenR" type="unsigned char"/>
+        <edge kind="fifo" source="DisparityGen" sourceport="disparities" target="Broadcast4" targetport="in" type="unsigned char"/>
+        <edge kind="fifo" source="Broadcast4" sourceport="out0" target="CostConstruction" targetport="disparity" type="unsigned char"/>
+        <edge kind="fifo" source="Broadcast4" sourceport="out1" target="disparitySelect" targetport="disparity" type="unsigned char"/>
         <edge kind="fifo" source="CostConstruction" sourceport="disparityError" target="AggregateCost" targetport="disparityError" type="float"/>
         <edge kind="fifo" source="AggregateCost" sourceport="aggregatedDisparity" target="disparitySelect" targetport="aggregatedDisparity" type="float"/>
-        <edge kind="fifo" source="disparitySelect" sourceport="result" target="Broadcast5" targetport="in" type="uchar"/>
-        <edge kind="fifo" source="Broadcast5" sourceport="out0" target="rawDisparity" targetport="rawDisparity" type="uchar"/>
+        <edge kind="fifo" source="disparitySelect" sourceport="result" target="Broadcast5" targetport="in" type="unsigned char"/>
+        <edge kind="fifo" source="Broadcast5" sourceport="out0" target="rawDisparity" targetport="rawDisparity" type="unsigned char"/>
         <edge kind="dependency" source="nbIterations" target="OffsetGen" targetport="nbIterations"/>
         <edge kind="dependency" source="nbIterations" target="Broadcast0" targetport="nbIterations"/>
         <edge kind="dependency" source="minDisparity" target="nbDisparity"/>

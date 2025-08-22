@@ -210,7 +210,7 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-            <dataType name="uchar" size="1"/>
+            <dataType name="unsigned char" size="1"/>
             <dataType name="short" size="2"/>
             <dataType name="PHI_B_TYPE" size="2"/>
         </dataTypes>
