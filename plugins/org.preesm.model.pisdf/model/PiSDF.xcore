@@ -273,7 +273,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
-	boolean isClusterized = "false"
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
@@ -719,6 +718,8 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 }
 
 class Cluster extends PiGraph {
+	// is used to link the cluster to its to-be-made C refinement code
+	contains Refinement refinement 
 }
 
 abstract class ExecutableActor extends AbstractActor {
@@ -1131,6 +1132,41 @@ class CHeaderRefinement extends Refinement {
 	
 	op unique ConfigInputPort[] getInitConfigInputPorts() {
 		return this.initPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+	}
+	
+	// prints loop function signature without a terminating ";"
+	op String printLoopSignature() {
+		var result = "void* " + loopPrototype.name + "(";
+		for(var i=0 ; i<loopPrototype.arguments.size ; i++) {
+			var FunctionArgument arg = loopPrototype.arguments.get(i);
+			result += arg.^type;
+			if(arg.isPassedByReference) {
+				result += "*";
+			}
+			result += " " + arg.name;
+			
+			if(i < loopPrototype.arguments.size-1) {
+				result += ", ";
+			}
+		}
+		return result + ")";
+	}
+	
+	op String printInitSignature() {
+		var result = "void* " + initPrototype.name + "(";
+		for(var i=0 ; i<initPrototype.arguments.size ; i++) {
+			var FunctionArgument arg = initPrototype.arguments.get(i);
+			result += arg.^type;
+			if(arg.isPassedByReference) {
+				result += "*";
+			}
+			result += " " + arg.name;
+			
+			if(i < initPrototype.arguments.size-1) {
+				result += ", ";
+			}
+		}
+		return result + ")";
 	}
 	
 }
