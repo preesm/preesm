@@ -70,12 +70,19 @@ package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
 import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.Refinement
+import org.preesm.model.pisdf.CHeaderRefinement
 
 class Block extends CodeElt {
 	contains readonly CodeElt[] codeElts
 	refers readonly Variable[] declarations opposite users
 	String name
 	contains Variable[] definitions opposite creator
+	
+	// indicates whether this code block implements a cluster
+	boolean isClusterBlock
+	// if so, this contains the cluster's refinement
+	refers CHeaderRefinement refinement
 }
 
 interface CodeElt extends Commentable {
