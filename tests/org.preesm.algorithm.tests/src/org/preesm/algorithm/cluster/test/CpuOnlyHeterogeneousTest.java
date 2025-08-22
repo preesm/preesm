@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
+import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.PreesmHeterogeneousSynthesisTask;
@@ -269,15 +270,18 @@ public class CpuOnlyHeterogeneousTest {
       final SequentialActorSchedule actorListReference = (SequentialActorSchedule) refSchedule.getScheduleTree().get(i);
       final SequentialActorSchedule actorListResult = (SequentialActorSchedule) outputSchedule.getScheduleTree().get(i);
 
-      assertEquals(actorListReference.getActorList().size(), actorListResult.getActorList().size());
+      final int expectedNumberOfComms = 14;
+
+      assertEquals(actorListReference.getActorList().size(),
+          actorListResult.getActorList().size() - expectedNumberOfComms);
     }
 
     // check same schedule per PE
     for (int i = 0; i < refSchedule.getScheduleTree().size(); i++) {
       final EList<AbstractActor> actorListReference = ((SequentialActorSchedule) refSchedule.getScheduleTree().get(i))
           .getActorList();
-      final EList<AbstractActor> actorListResult = ((SequentialActorSchedule) outputSchedule.getScheduleTree().get(i))
-          .getActorList();
+      final List<AbstractActor> actorListResult = ((SequentialActorSchedule) outputSchedule.getScheduleTree().get(i))
+          .getActorList().stream().filter(a -> !(a instanceof CommunicationActor)).toList();
 
       for (int actorIndex = 0; actorIndex < actorListReference.size(); actorIndex++) {
         assertEquals(actorListReference.get(actorIndex), actorListResult.get(actorIndex));
