@@ -61,7 +61,10 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
@@ -117,12 +120,22 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);
 
+        org.preesm.algorithm.memalloc.model.Buffer srcBuffer;
+        final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer;
+
+        // check if the fifo is an input/output data liaison
+        if ((fifo.getSource() instanceof final DataInputInterface dii)
+            || (fifo.getTarget() instanceof final DataOutputInterface doi)) {
+          continue;
+        }
+
         if (fifoAllocation == null) {
           throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "] has no allocation.");
         }
 
-        final org.preesm.algorithm.memalloc.model.Buffer srcBuffer = fifoAllocation.getSourceBuffer();
-        final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer = fifoAllocation.getTargetBuffer();
+        srcBuffer = fifoAllocation.getSourceBuffer();
+        tgtBuffer = fifoAllocation.getTargetBuffer();
+
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
         final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
 
@@ -318,7 +331,14 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     mainBuffer.setNbToken(
         (phys.getSizeInBit() + mainBuffer.getTokenTypeSizeInBit() - 1) / mainBuffer.getTokenTypeSizeInBit());
 
-    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
+    final List<Fifo> clusterFifos = ((Allocation) phys.eContainer()).getFifoAllocations().keySet().stream()
+        .filter(fifo -> fifo.eContainer() instanceof Cluster).toList();
+    if (!clusterFifos.isEmpty()) {
+      mainBuffer.setName("Memory_" + ((Cluster) clusterFifos.getFirst().eContainer()).getName());
+    } else {
+      // set classic CoreX name
+      mainBuffer.setName(phys.getMemoryBank().getInstanceName());
+    }
 
     this.btb.put(phys, mainBuffer);
     this.codegenBufferStack.push(mainBuffer);
