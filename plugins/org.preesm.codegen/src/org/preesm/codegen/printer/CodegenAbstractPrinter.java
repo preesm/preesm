@@ -484,6 +484,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     boolean hasNewLine;
     setState(PrinterState.PRINTING_LOOP_BLOCK);
     final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
+
     result.append(coreLoopHeader, indentationCoreBlock);
     if (coreLoopHeader.length() > 0) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
@@ -508,7 +509,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     String indentation;
     boolean hasNewLine;
     setState(PrinterState.PRINTING_INIT_BLOCK);
-    final CharSequence coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
+    coreBlock.getInitBlock().setName(coreBlock.getName());
+    final CharSequence coreInitHeader;
+    coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
+
     result.append(coreInitHeader, indentationCoreBlock);
     if (coreInitHeader.length() > 0) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
