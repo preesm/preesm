@@ -40,28 +40,28 @@
  */
 package org.preesm.codegen.xtend.task;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.tuple.ImmutablePair;
+import java.util.logging.Level;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
-import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.codegen.format.CodeFormatterAndPrinter;
+import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
-import org.preesm.codegen.model.generator2.AllocationToCodegenBuffer;
 import org.preesm.codegen.model.generator2.CodegenModelGenerator2;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -69,30 +69,32 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
-
-/***
- * @author jamorin
- */
 
 /**
  * The Class CodegenTask.
@@ -133,6 +135,10 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
   /** The Constant PARAM_PAPIFY. */
   public static final String PARAM_PAPIFY = "Papify";
 
+  Map<FunctionArgument, org.preesm.model.pisdf.Port> param2Interface = new HashMap<>();
+
+  Map<Fifo, String> fifo2buffName = new HashMap<>();
+
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
 
   /*
@@ -152,148 +158,34 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
-
     final Design archi = (Design) inputs.get("architecture");
     final PiGraph algo = (PiGraph) inputs.get("PiMM");
 
     final Map<PiGraph, SynthesisResult> localSyntheses = (Map<PiGraph, SynthesisResult>) inputs.get("localSyntheses");
 
-    final List<Cluster> listClusters = algo.getChildrenGraphs().stream().filter(g -> g instanceof Cluster)
+    final List<Cluster> listClusters = algo.getChildrenGraphs().stream().filter(Cluster.class::isInstance)
         .map(c -> (Cluster) c).toList();
 
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(LocalCodegenTask.PARAM_PAPIFY));
 
-    for (final PiGraph cluster : listClusters) {
+    for (final Cluster cluster : listClusters) {
       final var original = PreesmCopyTracker.getOriginalSource(cluster);
       final SynthesisResult localSynthesisResults = localSyntheses.get(original);
       PreesmLogger.getLogger().info("Local codegen of cluster " + original.getName());
-
-      final Schedule schedule = localSynthesisResults.schedule;
-      final Mapping mapping = localSynthesisResults.mapping;
-      final Allocation memAlloc = localSynthesisResults.alloc;
-
-      final CHeaderRefinement placeholderCode = PiMMFactory.createCHeaderRefinement();
-      placeholderCode.setFilePath("org.ietr.preesm.sobel/Code/include/placeHolder.h");
-
-      final Set<FunctionArgument> configArguments = new HashSet<>();
-      final Set<String> configPortNames = new HashSet<>();
-      final Set<FunctionArgument> innerFifos = new HashSet<>();
-      final Set<FunctionArgument> interfaceFifos = new HashSet<>();
 
       // maps a sub-actor to :
       // an argument's local name (for example "nbSlice")
       // the configPort it is linked to (for example divideFactor)
       final Map<Actor, Pair<String, ConfigInputPort>> ActorToCipMap = new HashMap<>();
 
-      for (final Actor a : cluster.getActorsWithRefinement()) {
-        final CHeaderRefinement refinement = (CHeaderRefinement) a.getRefinement();
-        final FunctionPrototype fp = refinement.getLoopPrototype();
-        final List<FunctionArgument> arguments = fp.getArguments();
-
-        // liste de paramètres de config
-        a.getConfigInputPorts().stream().forEach(cip -> {
-          final Pair<String,
-              ConfigInputPort> NameAndCip = new ImmutablePair<String, ConfigInputPort>(cip.getName(), cip);
-          ActorToCipMap.put(a, NameAndCip);
-        });
-
-        // liste de param de fifo internes
-        arguments.stream().filter(arg -> !arg.isIsConfigurationParameter()).toList();
-
-        // liste de param de fifo interfaces
-        // localSynthesisResults.alloc.getFifoAllocations()
-      }
-
-      final FunctionPrototype prototype = PiMMFactory.createFunctionPrototype();
-      prototype.setName(cluster.getName());
-
-      final List<org.preesm.model.pisdf.Port> clusterInputsOutputs = new ArrayList<>();
-      clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
-      clusterInputsOutputs.addAll(cluster.getAllDataPorts());
-
-      final FunctionArgument[] args = new FunctionArgument[clusterInputsOutputs.size()];
-      final boolean[] isConfig = new boolean[clusterInputsOutputs.size()];
-      final boolean[] reference = new boolean[clusterInputsOutputs.size()];
-      final String[] names = new String[clusterInputsOutputs.size()];
-      final String[] types = new String[clusterInputsOutputs.size()];
-      final Direction[] directions = new Direction[clusterInputsOutputs.size()];
-
-      for (int i = 0; i < clusterInputsOutputs.size(); i++) {
-        final org.preesm.model.pisdf.Port port = clusterInputsOutputs.get(i);
-
-        directions[i] = port instanceof DataOutputPort ? Direction.OUT : Direction.IN;
-        isConfig[i] = port instanceof ConfigInputPort;
-        reference[i] = port instanceof DataPort;
-        names[i] = clusterInputsOutputs.get(i).getName();
-
-        // pas sûr à 100% que ça couvre tous les cas mais ça devrait le faire
-        if (port instanceof ConfigInputPort) {
-          types[i] = "int";
-        } else if (port instanceof DataInputPort) {
-          // since we have replaced the cluster with a placeholder in the graph, its in/out fifos have been removed
-          // therefore we need to retrieve the placeholder's corresponding port's fifo to find the data type
-          final List<DataInputPort> correspondingNames = cluster.getDataInputPorts().stream()
-              .filter(dp -> dp.getName().equals(port.getName())).toList();
-
-          if (correspondingNames.isEmpty()) {
-            throw new PreesmRuntimeException("No placeHolder port corresponds to port name " + port.getName());
-          }
-          if (correspondingNames.size() > 1) {
-            throw new PreesmRuntimeException("Several cluster ports have the name " + port.getName() + " !");
-          }
-          types[i] = correspondingNames.getFirst().getFifo().getType();
-
-        } else if (port instanceof DataOutputPort) {
-          // since we have replaced the cluster with a placeholder in the graph, its in/out fifos have been removed
-          // therefore we need to retrieve the placeholder's corresponding port's fifo to find the data type
-          final List<DataOutputPort> correspondingNames = cluster.getDataOutputPorts().stream()
-              .filter(dp -> dp.getName().equals(port.getName())).toList();
-
-          if (correspondingNames.isEmpty()) {
-            throw new PreesmRuntimeException("No placeHolder port corresponds to port name " + port.getName());
-          }
-          if (correspondingNames.size() > 1) {
-            throw new PreesmRuntimeException("Several cluster ports have the name " + port.getName() + " !");
-          }
-          types[i] = correspondingNames.getFirst().getFifo().getType();
-        }
-
-      }
-
-      for (int i = 0; i < clusterInputsOutputs.size(); i++) {
-        args[i] = PiMMFactory.createFunctionArgument();
-        args[i].setDirection(directions[i]);
-        args[i].setIsConfigurationParameter(isConfig[i]);
-        // arg.setIsCPPdefinition(CLUSTERIZE); // je laisse à la valeur par défaut, qui est false
-        args[i].setIsPassedByReference(reference[i]);
-        args[i].setName(names[i]);
-        args[i].setPosition(i);
-        args[i].setType(types[i]);
-      }
-
-      prototype.getArguments().addAll(Arrays.asList(args));
-      placeholderCode.setLoopPrototype(prototype);
-
-      // TODO trouver un moyen de mettre un refinement au cluster
-      // cluster.setRefinement(placeholderCode);
+      buildClusterCode(cluster, scenario, localSynthesisResults, archi);
 
       final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
       // we assume a cluster is mapped to a single accelerator (PE)
       final var PEInstance = scenario.getPossibleMappings(cluster).getFirst();
-      coreBlocks.put(PEInstance, CodegenModelUserFactory.eINSTANCE.createCoreBlock(PEInstance));
-
-      // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
-
-      final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(cluster, schedule)
-          .buildScheduleAndTopologicalOrderedList();
-
-      // 1- generate variables (and keep track of them with a linker)
-      final var memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, cluster, totallyOrderedActors);
-
-      // 2- generate code
-      CodegenModelGenerator2.generateClusterCode(archi, cluster, scenario, schedule, mapping, memAlloc, papify,
-          coreBlocks, totallyOrderedActors, memoryLinker);
+      coreBlocks.put(PEInstance,
+          CodegenModelUserFactory.eINSTANCE.createCoreBlock(PEInstance, (CHeaderRefinement) cluster.getRefinement()));
 
     }
 
@@ -301,6 +193,260 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     final Map<String, Object> res = new LinkedHashMap<>();
     res.put("PiMM", algo);
     return res;
+  }
+
+  private void buildClusterCode(Cluster cluster, Scenario scenario, SynthesisResult localSynthesis, Design archi) {
+    // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
+    final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(cluster, localSynthesis.schedule)
+        .buildScheduleAndTopologicalOrderedList();
+
+    buildClusterRefinement(cluster, scenario);
+
+    final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
+
+    // 0- init blocks and order
+    final var clusterMapping = scenario.getPossibleMappings(cluster).getFirst();
+    final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(clusterMapping,
+        (CHeaderRefinement) cluster.getRefinement());
+    coreBlocks.put(clusterMapping, cb);
+
+    final List<Block> res = CodegenModelGenerator2.generateClusterCode(archi, cluster, scenario, localSynthesis, false,
+        coreBlocks, totallyOrderedActors);
+
+    PreesmLogger.getLogger().log(Level.INFO, "Printing blocks.");
+
+    // Retrieve the desired printer and target folder path
+    final String selectedPrinter = "C";
+    final String codegenPath = scenario.getCodegenDirectory() + File.separator;
+
+    // Create the codegen engine
+    final CodegenEngine engine = new CodegenEngine(codegenPath, res, cluster, archi, scenario, true);
+
+    if (CodegenTask2.VALUE_PRINTER_IR.equals(selectedPrinter)) {
+      engine.initializePrinterIR(codegenPath);
+    }
+
+    // print .c cluster file
+    engine.registerPrintersAndBlocks(selectedPrinter);
+    engine.preprocessPrinters();
+    engine.print();
+
+    // print .h cluster file
+    final StringBuilder hcontent = buildClusterHContent(cluster);
+    final IFile iFile = PreesmIOHelper.getInstance().print(codegenPath, cluster.getName() + ".h", hcontent);
+    CodeFormatterAndPrinter.format(iFile);
+
+  }
+
+  private CHeaderRefinement buildClusterRefinement(Cluster cluster, Scenario scenario) {
+
+    // 1 : extract function's arguments
+    final CHeaderRefinement clusterHeader = PiMMFactory.createCHeaderRefinement();
+    clusterHeader.setFilePath(scenario.getCodegenDirectory() + "/" + cluster.getName() + ".h");
+
+    final FunctionPrototype prototype = PiMMFactory.createFunctionPrototype();
+    prototype.setName(cluster.getName() + "_loop");
+    clusterHeader.setLoopPrototype(prototype);
+
+    final List<org.preesm.model.pisdf.Port> clusterInputsOutputs = new ArrayList<>();
+    clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
+    clusterInputsOutputs.addAll(cluster.getAllDataPorts());
+
+    final FunctionArgument[] args = new FunctionArgument[clusterInputsOutputs.size()];
+
+    for (int i = 0; i < clusterInputsOutputs.size(); i++) {
+      final org.preesm.model.pisdf.Port port = clusterInputsOutputs.get(i);
+
+      args[i] = PiMMFactory.createFunctionArgument();
+
+      args[i].setDirection(port instanceof DataOutputPort ? Direction.OUT : Direction.IN);
+      args[i].setIsConfigurationParameter(port instanceof ConfigInputPort);
+      args[i].setIsPassedByReference(port instanceof DataPort);
+      args[i].setName(clusterInputsOutputs.get(i).getName());
+
+      // pas sûr à 100% que ça couvre tous les cas mais ça devrait le faire
+      if (port instanceof ConfigInputPort) {
+        args[i].setType("int");
+      } else if (port instanceof final DataInputPort dip) {
+        args[i].setType(dip.getFifo().getType());
+      } else if (port instanceof final DataOutputPort dop) {
+        args[i].setType(dop.getFifo().getType());
+      } else {
+        throw new PreesmRuntimeException(
+            "Port" + port.getName() + " is neither config nor data input/output, I don't know how to process it !");
+      }
+
+      param2Interface.put(args[i], port);
+
+      // arg.setIsCPPdefinition(CLUSTERIZE); // je laisse à la valeur par défaut, qui est false
+      args[i].setPosition(i);
+
+    }
+
+    prototype.getArguments().addAll(Arrays.asList(args));
+
+    cluster.setRefinement(clusterHeader);
+
+    return clusterHeader;
+  }
+
+  private StringBuilder buildClusterHContent(Cluster cluster) {
+    final CHeaderRefinement refinement = (CHeaderRefinement) cluster.getRefinement();
+    final StringBuilder Hcontent = fileHeader(cluster);
+
+    final String upper = cluster.getName().toUpperCase() + "_H";
+    Hcontent.append("#ifndef " + upper + "\n");
+    Hcontent.append("#define " + upper + "\n");
+
+    for (final AbstractActor actor : cluster.getOnlyActors()) {
+      if (actor instanceof final Actor a && a.getRefinement() != null) {
+        final CHeaderRefinement cHeaderRefinement = (CHeaderRefinement) (((Actor) actor).getRefinement());
+        if (Hcontent.indexOf("#include \"" + cHeaderRefinement.getFileName()) == -1) {
+          Hcontent.append("#include \"" + cHeaderRefinement.getFileName() + "\" \n\n");
+        }
+      }
+    }
+    // Hcontent.append(refinement.getInitPrototype() + ";\n"); // pour plus tard
+    Hcontent.append(refinement.printLoopSignature() + ";\n"); // loopFunctionSignature(cluster, refinement)
+
+    Hcontent.append("#endif \n");
+
+    return Hcontent;
+  }
+
+  /**
+   * Translate the subgraph into string C function declaration.
+   *
+   * @param cluster
+   *          Cluster to consider.
+   * @return The string content of the loopFunction.
+   */
+  private String loopFunctionSignature(Cluster cluster, CHeaderRefinement refinement) {
+    final StringBuilder funcLoop = new StringBuilder();
+
+    funcLoop.append("void " + cluster.getName() + "(");
+
+    final int nbArg = refinement.getLoopPrototype().getArguments().size();
+
+    if (nbArg == 0) {
+      funcLoop.append(")");
+      return funcLoop.toString();
+    }
+
+    for (final var arg : refinement.getLoopPrototype().getArguments()) {
+      final String type = arg.isIsPassedByReference() ? arg.getType() + "* " : arg.getType();
+      funcLoop.append(type + " " + arg.getName() + ",");
+    }
+
+    // Removing trailing comma
+    funcLoop.deleteCharAt(funcLoop.length() - 1);
+
+    funcLoop.append(")");
+    return funcLoop.toString();
+  }
+
+  private StringBuilder generateCalls(Cluster cluster) {
+    final StringBuilder result = new StringBuilder();
+
+    for (final Actor actor : cluster.getActorsWithRefinement()) {
+      // we need to find the actor's header, find its arguments, find the correspondance between the data arguments and
+      // the buffers and the correspondance between the config arguments and the cluster's config arguments
+
+      final CHeaderRefinement actorRefinement = (CHeaderRefinement) actor.getRefinement();
+      final List<FunctionArgument> actorInputs = actorRefinement.getLoopPrototype().getArguments();
+
+      // 1 : write the function call
+      result.append(PreesmCopyTracker.getOriginalSource(actor).getName() + "(");
+
+      // 2 : loop through arguments. For each of them, find what it is linked to in the graph : a config port, an
+      // actor's data port, or a cluster's data port
+
+      for (final FunctionArgument arg : actorInputs) {
+        final var originalPort = param2Interface.get(arg);
+
+        switch (originalPort) {
+          case final DataInputPort dip:
+            // first : figure out if this port is linked to another actor, or the cluster's interfaces
+            if (dip.getContainingActor() == cluster) {
+              // we need to find what name this argument has in the cluster's signature
+              final String clusterArgumentName = dip.getOppositePort().getName();
+
+              result.append(clusterArgumentName + ", ");
+            } else {
+              // we need to find the appropriate buffer
+              final String buffName = fifo2buffName.get(dip.getFifo());
+              result.append(buffName + ", ");
+            }
+
+            break;
+          case final DataOutputPort dop:
+            break;
+          case final ConfigInputPort cip:
+            break;
+          default:
+            throw new PreesmRuntimeException("no idea how to process this port :" + originalPort.getName());
+        }
+      }
+
+    }
+
+    return result;
+  }
+
+  private StringBuilder generateBuffers(Cluster cluster, Long stackSize) {
+    Long count = 0L;
+
+    final StringBuilder result = new StringBuilder();
+
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+    for (final Fifo f : cluster.getFifos()) {
+      String buffer;
+      final AbstractActor sourceActor = f.getSource();
+      final DataOutputPort sourcePort = f.getSourcePort();
+      if (f.getSource() instanceof DataInterface || f.getTarget() instanceof DataInterface) {
+        // we will have to connect the parameters of the cluster's function to this actor's function
+      } else {
+        final String buffName = sourceActor.getName() + "_" + sourcePort.getName() + "__" + f.getTarget().getName()
+            + "_" + f.getTargetPort().getName();
+
+        // we need to find : the buffer's type, its number of data tokens
+        final String type = f.getType();
+        final var nbTokens = f.getSourcePort().getExpression().evaluateAsLong()
+            * brv.get(f.getSourcePort().getContainingActor());
+
+        if (count < stackSize) {
+          buffer = type + " " + buffName + "[" + nbTokens + "];\n";
+        } else {
+          buffer = type + "* " + buffName + " =" + "(" + type + "*) malloc(" + nbTokens + " * sizeof(" + type + "));\n";
+        }
+
+        fifo2buffName.put(f, buffName);
+
+        count += nbTokens;
+        result.append(buffer);
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * The header file contains file information.
+   *
+   * @param cluster
+   *          Cluster to consider.
+   * @return The string content of the header file.
+   */
+  private StringBuilder fileHeader(Cluster cluster) {
+    final StringBuilder result = new StringBuilder();
+    result.append("/**\n");
+    final String nameGraph = cluster.getName();
+    result.append("* @file /Cluster_" + nameGraph + "_" + nameGraph + ".c/h\n");
+    result.append("* @generated by " + this.getClass().getSimpleName() + "\n");
+    result.append("* @date " + new Date() + "\n");
+    result.append("*/\n\n");
+    return result;
   }
 
   /*
