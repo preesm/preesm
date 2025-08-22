@@ -68,6 +68,11 @@ import org.preesm.commons.ecore.EObjectResolvingNonUniqueEList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Cluster;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -102,6 +107,59 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
 
     if (cmp != null) {
       coreBlock.setName(cmp.getInstanceName());
+      coreBlock.setCoreID(cmp.getHardwareId());
+      coreBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+    }
+    return coreBlock;
+  }
+
+  /**
+   *
+   * @param cmp
+   *          the component
+   * @param refinement
+   *          the refinement we want to associate to this core block
+   * @return a new coreBlock
+   */
+  public final CoreBlock createCoreBlock(final ComponentInstance cmp, CHeaderRefinement refinement) {
+    final CoreBlock coreBlock = super.createCoreBlock();
+    final CallBlock initBlock = super.createCallBlock();
+    final LoopBlock loopBlock = super.createLoopBlock();
+    coreBlock.setInitBlock(initBlock);
+    coreBlock.setLoopBlock(loopBlock);
+    coreBlock.getCodeElts().add(initBlock);
+    coreBlock.getCodeElts().add(loopBlock);
+
+    if (cmp != null) {
+      coreBlock.setName(refinement.getFileName().split("\\.")[0]); // remove the .h extension
+      coreBlock.setCoreID(cmp.getHardwareId());
+      coreBlock.setCoreType(cmp.getComponent().getVlnv().getName());
+    }
+
+    coreBlock.setRefinement(refinement);
+    initBlock.setRefinement(refinement);
+    loopBlock.setRefinement(refinement);
+    coreBlock.setIsClusterBlock(true);
+    initBlock.setIsClusterBlock(true);
+    loopBlock.setIsClusterBlock(true);
+
+    return coreBlock;
+  }
+
+  /**
+   * Creates a core block for the the purpose of cluster code generation
+   */
+  public final CoreBlock createCoreBlock(final ComponentInstance cmp, Cluster cluster) {
+    final CoreBlock coreBlock = super.createCoreBlock();
+    final CallBlock initBlock = super.createCallBlock();
+    final LoopBlock loopBlock = super.createLoopBlock();
+    coreBlock.setInitBlock(initBlock);
+    coreBlock.setLoopBlock(loopBlock);
+    coreBlock.getCodeElts().add(initBlock);
+    coreBlock.getCodeElts().add(loopBlock);
+
+    if (cmp != null) {
+      coreBlock.setName(cluster.getName());
       coreBlock.setCoreID(cmp.getHardwareId());
       coreBlock.setCoreType(cmp.getComponent().getVlnv().getName());
     }
@@ -189,6 +247,49 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
       if (lookupPort == null) {
         throw new PreesmRuntimeException(
             "Cannot find function argument " + name + " for actor " + actor.getVertexPath());
+      }
+      final PortKind portKind = lookupPort.getKind();
+      Variable variable;
+
+      // process the case where the variable is a cluster's I/O port, which must be linked to the outer buffer
+      if (lookupPort instanceof final DataPort dp && (dp.getFifo().getSource() instanceof DataInputInterface
+          || dp.getFifo().getTarget() instanceof DataOutputInterface)) {
+        variable = createSubBuffer();
+        variable.setName(dp.getName());
+        variable.setType(dp.getFifo().getType());
+        variable.setCreator(null); // signals this is a cluster I/O port, not an intermediate buffer
+      } else {
+        variable = portValues.get(lookupPort);
+      }
+      // variable = portValues.get(lookupPort);
+
+      afc.addParameter(variable, createPortDirection(portKind));
+    }
+    return afc;
+
+  }
+
+  /**
+   *
+   */
+  public final ActorFunctionCall createClusterFunctionCall(final Cluster cluster, final FunctionPrototype prototype,
+      final Map<Port, Variable> portValues) {
+    if (prototype.isCPP()) {
+      throw new PreesmRuntimeException(
+          "The codegen is not compatible with CPP function call as for: " + prototype.getName());
+    }
+
+    final ActorFunctionCall afc = createActorFunctionCall();
+    afc.setActorName(cluster.getName());
+    afc.setName(prototype.getName());
+    afc.setOriActor(PreesmCopyTracker.getOriginalSource(cluster));
+    final EList<FunctionArgument> arguments = prototype.getArguments();
+    for (final FunctionArgument a : arguments) {
+      final String name = a.getName();
+      final Port lookupPort = cluster.lookupPort(name);
+      if (lookupPort == null) {
+        throw new PreesmRuntimeException(
+            "Cannot find function argument " + name + " for actor " + cluster.getVertexPath());
       }
       final PortKind portKind = lookupPort.getKind();
       final Variable variable = portValues.get(lookupPort);
