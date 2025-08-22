@@ -100,6 +100,7 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
+import org.preesm.model.pisdf.CHeaderRefinement
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -288,7 +289,10 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''
+«««	avoid the case of a cluster input/output variable and not an inner, intermmediate buffer
+	«IF buffer.creator != null»  
 	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» defined in «buffer.creator.name»
+	«ENDIF»
 	'''
 
 	override printDeclarationsFooter(List<Variable> list) '''
@@ -298,10 +302,14 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printCoreInitBlockHeader(CallBlock callBlock) '''
-	void *computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg){
-		if (arg != NULL) {
-			printf("Warning: expecting NULL arguments\n"); fflush(stdout);
-		}
+	«IF callBlock.isIsClusterBlock»
+	«callBlock.refinement.printLoopSignature» {
+	«ELSE»
+	void * computationThread_Core«(callBlock.eContainer as CoreBlock).coreID»(void *arg) {
+	if (arg != NULL) {
+		printf("Warning: expecting NULL arguments\n"); fflush(stdout);
+	}
+	«ENDIF»
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
@@ -313,6 +321,8 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 		«IF !callBlock.codeElts.empty»// Initialisation(s)«"\n\n"»«ENDIF»
 	'''
+	
+
 
 	def List<Buffer> getAllBuffers(CoreBlock cb) {
 		val Set<Buffer> allBuffers = new LinkedHashSet()
@@ -373,7 +383,7 @@ class CPrinter extends BlankPrinter {
 	}
 
 	override printCoreLoopBlockHeader(LoopBlock block2) '''
-
+		«IF !block2.isIsClusterBlock»
 	// Begin the execution loop«"\n\t"»
 	pthread_barrier_wait(&iter_barrier);
 #ifdef PREESM_LOOP_SIZE // Case of a finite loop
@@ -383,13 +393,15 @@ class CPrinter extends BlankPrinter {
 	while(!preesmStopThreads){
 #endif
 		// loop body«"\n\n"»
+			«ENDIF»
 		'''
 
 	override printCoreLoopBlockFooter(LoopBlock block2) '''
+		«IF !block2.isIsClusterBlock»
 			// loop footer
 			pthread_barrier_wait(&iter_barrier);
-
 		}
+	«ENDIF»
 
 	«IF !monitorAllFifoMD5 && !printedCoreBlock.sinkFifoBuffers.isEmpty»
 #ifdef PREESM_MD5_UPDATE
