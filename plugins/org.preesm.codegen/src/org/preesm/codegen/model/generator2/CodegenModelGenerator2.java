@@ -56,6 +56,7 @@ import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
+import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
@@ -83,6 +84,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
@@ -139,15 +141,39 @@ public class CodegenModelGenerator2 {
     this.papify = papify;
   }
 
-  public static void generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
-      final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify,
-      Map<ComponentInstance, CoreBlock> coreBlocks, List<AbstractActor> totallyOrderedActors,
-      AllocationToCodegenBuffer linker) {
+  private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
+      final SynthesisResult synthesisResults, AllocationToCodegenBuffer memLinker, final boolean papify) {
+    this.archi = archi;
+    this.algo = algo;
+    this.scenario = scenario;
+    this.schedule = synthesisResults.schedule;
+    this.mapping = synthesisResults.mapping;
+    this.memAlloc = synthesisResults.alloc;
+    this.papify = papify;
+    this.memoryLinker = memLinker;
+  }
 
-    final CodegenModelGenerator2 codegen = new CodegenModelGenerator2(archi, algo, scenario, schedule, mapping,
-        memAlloc, papify);
-    codegen.memoryLinker = linker;
+  public static List<Block> generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
+      SynthesisResult localSynthesis, final boolean papify, Map<ComponentInstance, CoreBlock> coreBlocks,
+      List<AbstractActor> totallyOrderedActors) {
+
+    // 1- generate variables (and keep track of them with a linker)
+    final var memLinker = AllocationToCodegenBuffer.link(localSynthesis.alloc, scenario, algo, totallyOrderedActors);
+
+    final CodegenModelGenerator2 codegen = new CodegenModelGenerator2(archi, algo, scenario, localSynthesis, memLinker,
+        papify);
+
     codegen.generateCode(coreBlocks, totallyOrderedActors);
+
+    // sort blocks
+    final List<Block> resultList = coreBlocks.entrySet().stream()
+        .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
+        .collect(Collectors.toList());
+
+    // generate buffer definitions
+    codegen.generateBuffers(coreBlocks);
+
+    return Collections.unmodifiableList(resultList);
   }
 
   private List<Block> generate() {
@@ -266,7 +292,8 @@ public class CodegenModelGenerator2 {
     // iterate in order
 
     // need to keep only the executable actors because e.g interfaces have no code associated
-    for (final AbstractActor actor : totallyOrderedActors.stream().filter(a -> a instanceof ExecutableActor).toList()) {
+    for (final AbstractActor actor : totallyOrderedActors.stream()
+        .filter(a -> a instanceof ExecutableActor || a instanceof Cluster).toList()) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
@@ -278,6 +305,8 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
+        case final Cluster cluster ->
+          generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
         default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
@@ -556,4 +585,33 @@ public class CodegenModelGenerator2 {
       registerCallVariableToCoreBlock(coreBlock, loop);
     }
   }
+
+  private void generateClusterFiring(final Cluster cluster, final Map<Port, Variable> portToVariable,
+      final CoreBlock coreBlock) {
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (cluster.getDataOutputPorts().isEmpty()) {
+      final EList<DataInputPort> dataInputPorts = cluster.getDataInputPorts();
+      for (final DataInputPort dip : dataInputPorts) {
+        final Variable variable = memoryLinker.getPortToVariableMap().get(dip);
+        coreBlock.getSinkFifoBuffers().add((Buffer) variable);
+      }
+    }
+
+    final Refinement refinement = cluster.getRefinement();
+    if (refinement instanceof final CHeaderRefinement cHeaderRef) {
+      final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
+      if (initPrototype != null) {
+        final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createClusterFunctionCall(cluster,
+            initPrototype, portToVariable);
+        coreBlock.getInitBlock().getCodeElts().add(init);
+      }
+      final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
+      final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createClusterFunctionCall(cluster, loopPrototype,
+          portToVariable);
+      coreBlock.getLoopBlock().getCodeElts().add(loop);
+      registerCallVariableToCoreBlock(coreBlock, loop);
+    }
+  }
+
 }
