@@ -11,6 +11,8 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
+import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
@@ -178,6 +180,13 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling -- " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+
+    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
+
+    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
+    final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
+
+    comIns.insertCommunications(algorithm, architecture, scenario, scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     IMemoryAllocation alloc;
     final Map<String, String> memAllocParams = new HashMap<>();
