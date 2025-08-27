@@ -108,11 +108,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
       // }
 
       // Check for all fifos in this PiGraph and its subgraph
-      // for (final Fifo fifo : piGraph.getAllFifos()) {
-      // if (fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance)) {
-      // fifo.eAdapters().add(GraphObserver.getInstance());
-      // }
-      // }
       piGraph.getAllFifos().parallelStream()
           .filter(fifo -> fifo.eAdapters().stream().noneMatch(GraphObserver.class::isInstance))
           .forEach(fifo -> fifo.eAdapters().add(GraphObserver.getInstance()));
@@ -204,6 +199,16 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   /**
+  *
+  */
+  @Override
+  public Fifo createFifo() {
+    final Fifo res = super.createFifo();
+    res.eAdapters().add(GraphObserver.getInstance());
+    return res;
+  }
+
+  /**
    *
    */
   public Fifo createFifo(final DataOutputPort sourcePort, final DataInputPort targetPort, final String type) {
@@ -211,7 +216,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     res.setSourcePort(sourcePort);
     res.setTargetPort(targetPort);
     res.setType(type);
-    res.eAdapters().add(GraphObserver.getInstance());
     return res;
   }
 
