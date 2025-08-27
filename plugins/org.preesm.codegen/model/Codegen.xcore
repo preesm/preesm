@@ -70,7 +70,6 @@ package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
 import org.preesm.model.pisdf.AbstractActor
-import org.preesm.model.pisdf.Refinement
 import org.preesm.model.pisdf.CHeaderRefinement
 
 class Block extends CodeElt {
