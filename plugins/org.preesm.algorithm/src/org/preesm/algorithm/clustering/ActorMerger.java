@@ -66,10 +66,15 @@ public class ActorMerger {
           // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
           final long innerRate = dip.getExpression().evaluateAsLong();
           final long outerPortRate = innerRate * brv.get(actor);
-          // final String innerRate = dip.getExpression().getExpressionAsString(); // get the inner port's rate formula
-          // final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
-          innerInterface.getGraphPort().setExpression(outerPortRate);
-          innerInterface.getDataPort().setExpression(innerRate);
+
+          // an inner interface's RV is 1 (otherwise data will be discarded or duplicated), so we have to set thi inner
+          // and outer interfaces'
+          // rates to the same value
+          // TODO what if the cluster's RV is not 1 ? does it change something here ?
+          final long interfaceRate = dip.getExpression().evaluateAsLong() * brv.get(actor);
+
+          innerInterface.getGraphPort().setExpression(interfaceRate);
+          innerInterface.getDataPort().setExpression(interfaceRate);
 
           final Fifo internalFifo = PiMMFactory.createFifo(innerInterface.getDataPort(), dip, FifoDataType);
           innerSDF.addFifo(internalFifo);
@@ -94,12 +99,12 @@ public class ActorMerger {
 
           // set outer port's rate : inner port's rate times actor's repetition value
           // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
-          // final String innerRate = dop.getExpression().getExpressionAsString(); // get the inner port's rate formula
-          // final String outerPortRate = "(" + innerRate + ")" + "*" + brv.get(actor).toString();
           final long innerRate = dop.getExpression().evaluateAsLong();
           final long outerPortRate = innerRate * brv.get(actor);
-          innerInterface.getGraphPort().setExpression(outerPortRate);
-          innerInterface.getDataPort().setExpression(innerRate);
+
+          final long interfaceRate = dop.getExpression().evaluateAsLong() * brv.get(actor);
+          innerInterface.getGraphPort().setExpression(interfaceRate);
+          innerInterface.getDataPort().setExpression(interfaceRate);
 
           // first plug the old fifo in to the new interface to avoid conflict (can't have 2 fifos linked to 1
           // interface)
