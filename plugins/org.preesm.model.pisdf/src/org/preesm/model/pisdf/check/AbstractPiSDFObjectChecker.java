@@ -37,10 +37,11 @@
 package org.preesm.model.pisdf.check;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.eclipse.emf.ecore.EObject;
@@ -66,19 +67,19 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
   /**
    * Errors which avoid to save or load a PiSDF graph.
    */
-  protected Map<EObject, List<String>> fatalErrors;
+  protected ConcurrentMap<EObject, List<String>> fatalErrors;
   /**
    * Errors which avoid to analyze a PiSDF graph.
    */
-  protected Map<EObject, List<String>> fatalAnalysisErrors;
+  protected ConcurrentMap<EObject, List<String>> fatalAnalysisErrors;
   /**
    * Errors which avoid to execute the codegen only.
    */
-  protected Map<EObject, List<String>> fatalCodegenErrors;
+  protected ConcurrentMap<EObject, List<String>> fatalCodegenErrors;
   /**
    * Warnings only.
    */
-  protected Map<EObject, List<String>> warnings;
+  protected ConcurrentMap<EObject, List<String>> warnings;
 
   protected CheckerErrorLevel throwExceptionLevel;
   protected CheckerErrorLevel loggerLevel;
@@ -91,10 +92,10 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
       final CheckerErrorLevel loggerLevel) {
     this.throwExceptionLevel = throwExceptionLevel;
     this.loggerLevel = loggerLevel;
-    fatalErrors = new LinkedHashMap<>();
-    fatalAnalysisErrors = new LinkedHashMap<>();
-    fatalCodegenErrors = new LinkedHashMap<>();
-    warnings = new LinkedHashMap<>();
+    fatalErrors = new ConcurrentHashMap<>();
+    fatalAnalysisErrors = new ConcurrentHashMap<>();
+    fatalCodegenErrors = new ConcurrentHashMap<>();
+    warnings = new ConcurrentHashMap<>();
   }
 
   /**
