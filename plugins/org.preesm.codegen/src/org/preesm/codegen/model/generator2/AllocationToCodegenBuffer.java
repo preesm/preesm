@@ -164,6 +164,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
             srcCodegenBuffer.setName(generateUniqueBufferName("src_" + fifo.getSourcePort().getId()));
           } else {
             srcCodegenBuffer.setComment("NULL_" + scomment);
+
           }
 
           this.portToVariable.put(fifo.getSourcePort(), srcCodegenBuffer);
@@ -176,6 +177,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
             // XXX old style naming
             tgtCodegenBuffer.setName(
                 generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
+          } else {
+            tgtCodegenBuffer.setName(generateUniqueBufferName("renamed_buffer__" + fifo.getTargetPort().getName()));
           }
 
           this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
@@ -191,6 +194,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
         if ((tgtCodegenBuffer instanceof NullBuffer)) {
           tgtCodegenBuffer.setComment("NULL_" + tcomment);
+          tgtCodegenBuffer.setName(generateUniqueBufferName("renamed_buffer__" + fifo.getTargetPort().getName()));
         }
 
         this.portToVariable.put(fifo.getTargetPort(), tgtCodegenBuffer);
@@ -238,6 +242,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
         portToVariable.put(cip, CodegenModelUserFactory.eINSTANCE.createConstant(cip.getName(), evaluate));
       }
     }
+
+    // set names for buffers that are NullBuffers linked to fork/join actors ?
   }
 
   private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
@@ -248,7 +254,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
 
   // for generating unique names
-  private final Map<String, Long> bufferNames = new LinkedHashMap<>();
+  private static final Map<String, Long> bufferNames = new LinkedHashMap<>();
 
   private String generateUniqueBufferName(final String name) {
     final String candidate = name.replace(".", "_").replace("-", "_");
