@@ -166,6 +166,22 @@ class CPrinter extends BlankPrinter {
 
 	«ENDIF»
 	'''
+	
+	override printNullBufferDefinition(NullBuffer buffer) '''
+	    «IF !(buffer.name.equals("null") || buffer.sizeInBit == 0)»
+	««« Case where this nullBuffer represents the connection between a fork/join and other actors without the need of memcopy. 
+	««« We simply need to declare a renamed buffer to give as input/output to the fork/join, with as adress the beginning of the 
+	««« output buffers.
+	  «buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
+	  {offset = buffer.getOffsetInByte
+	   var b = buffer.container;
+	   while(b instanceof SubBuffer){
+	    offset = offset + b.getOffsetInByte
+	      b = b.container
+	    }
+	   b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
+	«ENDIF»
+	'''
 
 	override printBufferDefinition(Buffer buffer) '''
 	«buffer.type» «buffer.name»[«buffer.getNbToken»]; // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
@@ -797,10 +813,13 @@ class CPrinter extends BlankPrinter {
 			bInput = bInput.container
 		}
 
-		// If the Buffer and offsets are identical, or one buffer is null
-		// there is nothing to print
-		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
-			output instanceof NullBuffer || input instanceof NullBuffer){
+
+		// If the Buffer and offsets are identical there is nothing to print
+		// null buffers are now (sometimes) acceptable, they represent connections to data interfaces
+		// though they must embedd some information, which we test
+		var acceptableNullBuffer = !(input.name.equals("NULL") || output.name.equals("NULL"))
+		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) && acceptableNullBuffer){
+			// || ((output instanceof NullBuffer || input instanceof NullBuffer) && !acceptableNullBuffer)
 			return ''''''
 		} else {
 			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»); // «nbToken» * «type»'''
