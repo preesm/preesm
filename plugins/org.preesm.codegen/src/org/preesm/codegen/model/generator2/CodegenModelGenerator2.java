@@ -76,6 +76,7 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.impl.CodegenFactoryImpl;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -153,7 +154,7 @@ public class CodegenModelGenerator2 {
     this.memoryLinker = memLinker;
   }
 
-  public static List<Block> generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
+  public static List<Block> generateClusterCode(final Design archi, final Cluster algo, final Scenario scenario,
       SynthesisResult localSynthesis, final boolean papify, Map<ComponentInstance, CoreBlock> coreBlocks,
       List<AbstractActor> totallyOrderedActors) {
 
@@ -509,11 +510,19 @@ public class CodegenModelGenerator2 {
     specialCall.setName(actor.getName());
 
     final Fifo uniqueFifo;
-    final Buffer lastBuffer;
+    Buffer lastBuffer = null;
     if (actor instanceof JoinActor) {
       specialCall.setType(SpecialType.JOIN);
       uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
-      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
+      final FifoAllocation fifoAlloc = memAlloc.getFifoAllocations().get(uniqueFifo);
+
+      // if the fifo links a join actor to an interface, we have to find the outer fifo's
+      // allocation to link the inside of the cluster to the outside
+      // the link will be made later in the codegen. For now we simply ignore the problem if fifoAlloc == null
+      if (fifoAlloc != null) {
+        lastBuffer = this.memoryLinker
+            .getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getSourceBuffer());
+      }
     } else if (actor instanceof RoundBufferActor) {
       specialCall.setType(SpecialType.ROUND_BUFFER);
       uniqueFifo = actor.getDataOutputPorts().get(0).getFifo();
@@ -521,7 +530,13 @@ public class CodegenModelGenerator2 {
     } else if (actor instanceof ForkActor) {
       specialCall.setType(SpecialType.FORK);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      final FifoAllocation fifoAlloc = memAlloc.getFifoAllocations().get(uniqueFifo);
+
+      // same reasoning as for JoinActor
+      if (fifoAlloc != null) {
+        lastBuffer = this.memoryLinker
+            .getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      }
     } else if (actor instanceof BroadcastActor) {
       specialCall.setType(SpecialType.BROADCAST);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
@@ -532,10 +547,41 @@ public class CodegenModelGenerator2 {
 
     // Add it to the specialCall
     if (actor instanceof JoinActor || actor instanceof RoundBufferActor) {
-      specialCall.addOutputBuffer(lastBuffer);
-      actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
-          .forEach(specialCall::addInputBuffer);
-    } else {
+      if (lastBuffer != null) {
+        specialCall.addOutputBuffer(lastBuffer);
+        actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+            .forEach(specialCall::addInputBuffer);
+      } else {
+        // the case where this is a subgraph with a join actor linked to an output interface
+        // we save its input buffers
+        actor.getDataInputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+            .forEach(specialCall::addInputBuffer);
+
+        // we also have to diy a "fake" output buffer that will store the output's name and token size.
+        // These information are the cluster's corresponding output port's
+        final Buffer fakeBuffer = CodegenFactoryImpl.eINSTANCE.createNullBuffer();
+        fakeBuffer.setTokenTypeSizeInBit(scenario.getSimulationInfo().getDataTypeSizeInBit(uniqueFifo.getType()));
+        fakeBuffer.setName(uniqueFifo.getTargetPort().getName());
+        specialCall.addOutputBuffer(fakeBuffer);
+      }
+    } else if (actor instanceof ForkActor) {
+      if (lastBuffer != null) {
+        specialCall.addInputBuffer(lastBuffer);
+        actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+            .forEach(specialCall::addOutputBuffer);
+      } else {
+        // same idea as the above case
+        actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
+            .forEach(specialCall::addOutputBuffer);
+
+        // we also have to diy a "fake" output buffer that will store the output's name and token size.
+        // These information are the cluster's corresponding output port's
+        final Buffer fakeBuffer = CodegenFactoryImpl.eINSTANCE.createNullBuffer();
+        fakeBuffer.setTokenTypeSizeInBit(scenario.getSimulationInfo().getDataTypeSizeInBit(uniqueFifo.getType()));
+        fakeBuffer.setName(uniqueFifo.getTargetPort().getName());
+        specialCall.addInputBuffer(fakeBuffer);
+      }
+    } else if (lastBuffer != null) {
       specialCall.addInputBuffer(lastBuffer);
       actor.getDataOutputPorts().stream().map(port -> ((Buffer) portToVariable.get(port)))
           .forEach(specialCall::addOutputBuffer);
