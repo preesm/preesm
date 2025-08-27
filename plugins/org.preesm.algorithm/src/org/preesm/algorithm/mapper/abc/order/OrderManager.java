@@ -88,7 +88,7 @@ public class OrderManager extends Observable {
   }
 
   /**
-   * Find lastest pred index for op.
+   * Find latest pred index for op.
    *
    * @param cmp
    *          the cmp
@@ -102,19 +102,10 @@ public class OrderManager extends Observable {
     final Schedule currentSched = getSchedule(cmp);
     checkScheduleNull(currentSched);
     // Iterates the schedule to find the latest predecessor
-    int maxPrec = -1;
-    for (final MapperDAGVertex current : currentSched.getList()) {
+    // Looking for the preceding vertex with maximum total order in vertex schedule
 
-      // Looking for the preceding vertex with maximum total order in
-      // vertex schedule
-      final int currentTotalOrder = totalIndexOf(current);
-
-      if (currentTotalOrder < refIndex) {
-        maxPrec = currentTotalOrder;
-      }
-    }
-
-    return maxPrec;
+    return currentSched.getList().reversed().parallelStream().mapToInt(this::totalIndexOf).filter(v -> v < refIndex)
+        .findFirst().orElse(-1);
   }
 
   private void checkScheduleNull(final Schedule currentSched) {
@@ -139,12 +130,11 @@ public class OrderManager extends Observable {
       final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(), newSchedulingTotalOrder);
       // Testing a possible synchronized vertex
       MapperDAGVertex elt = get(newSchedulingTotalOrder);
-      if ((elt == null) || elt.equals(vertex)) {
-        elt = vertex;
-      } else {
+      if ((elt != null) && !elt.equals(vertex)) {
         final String msg = "Error in sched order!!";
         throw new PreesmRuntimeException(msg);
       }
+      elt = vertex;
 
       // Adds vertex or synchro vertices after its chosen predecessor
       final Schedule schedule = getSchedule(cmp);
@@ -159,10 +149,8 @@ public class OrderManager extends Observable {
     }
 
     // Notifies the time keeper that it should update the successors
-    Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
-    if ((vSet == null) || vSet.isEmpty()) {
-      vSet = new LinkedHashSet<>();
-    }
+    final Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
+
     vSet.add(vertex);
     setChanged();
     notifyObservers(vSet);
@@ -241,16 +229,9 @@ public class OrderManager extends Observable {
 
     if (previous == null) {
       addLast(vertex);
-    } else {
-
-      if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
-
-        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(previous) >= 0) {
-          this.totalOrder.insertAfter(previous, vertex);
-        }
-        insertGivenTotalOrder(vertex);
-
-      }
+    } else if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+      this.totalOrder.insertAfter(previous, vertex);
+      insertGivenTotalOrder(vertex);
     }
   }
 
@@ -266,18 +247,13 @@ public class OrderManager extends Observable {
 
     if (next == null) {
       addFirst(vertex);
-    } else {
-
-      if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
-
-        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(next) >= 0) {
-          this.totalOrder.insertBefore(next, vertex);
-        }
-        insertGivenTotalOrder(vertex);
-
-      }
+      return;
     }
 
+    if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+      this.totalOrder.insertBefore(next, vertex);
+      insertGivenTotalOrder(vertex);
+    }
   }
 
   /**
@@ -306,7 +282,6 @@ public class OrderManager extends Observable {
    * @return the int
    */
   public int totalIndexOf(final MapperDAGVertex vertex) {
-
     return this.totalOrder.indexOf(vertex);
   }
 
