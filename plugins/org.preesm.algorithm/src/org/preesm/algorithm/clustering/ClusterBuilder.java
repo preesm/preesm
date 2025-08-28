@@ -18,10 +18,8 @@ import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -64,20 +62,13 @@ public class ClusterBuilder {
     // list all processing elements (i.e component instances) used in the architecture
     final EList<ComponentInstance> componentList = scenario.getDesign().getComponentInstances();
 
-    // find all non-main cpu PEs (the ones whose actors we want to cluster)
-    // E.G if the main proc is x86, ARM proc will be listed and conversely, as well as all fpgas.
-    final List<ComponentInstance> nonX86List = componentList.stream()
-        .filter(c -> !(c.getComponent().equals(refCPUArch)) && c.getComponent() instanceof ProcessingElement).toList();
-    final List<ComponentInstance> nonCpuList = componentList.stream()
-        .filter(c -> !(c.getComponent() instanceof CPU) && c.getComponent() instanceof ProcessingElement).toList();
-
     int i = 0;
     boolean graph_is_fully_searched = false;
     // visit all actors to search those that can act as seeds
     do {
       boolean seed_found = false;
       AbstractActor actor;
-      ComponentInstance clusteringArch = null;
+      ComponentInstance clusteringComponent = null;
 
       // try to find a valid, non-visited seed
       do {
@@ -100,7 +91,8 @@ public class ClusterBuilder {
               .map(a -> (Actor) a).toList();
 
           // decide which arch will be used to clusterize
-          clusteringArch = seedArchHeuristic(graph, scenario, actor, refCPUArch);
+          // TODO faire retourner le composant plutôt que l'instance par seedArchHeuristic
+          clusteringComponent = seedArchHeuristic(graph, scenario, actor, refCPUArch);
 
           // check if, among all the predecessors, any of them has a mapping whose arch is the same as the main PE's
           final boolean anyMainArchPredecessor = predecessors.stream().anyMatch(
@@ -110,7 +102,7 @@ public class ClusterBuilder {
               .map(a -> (Actor) a).toList();
 
           // cannot use refArch in .contains() because FUCK JAVA
-          final var clusteringArchClone = clusteringArch;
+          final var clusteringArchClone = clusteringComponent;
 
           final boolean anyClusteringArchSuccessor = successors.stream()
               .anyMatch(a -> scenario.getPossibleMappings(a).contains(clusteringArchClone));
@@ -128,14 +120,15 @@ public class ClusterBuilder {
         actorIsVisited.put(actor, true);
 
         // once again, fuck java
-        final var clusteringArchClone = clusteringArch;
+        final var clusteringComponentClone = clusteringComponent;
+        final Component clusteringArch = clusteringComponentClone.getComponent();
 
         // now we have a seed, let's build a list of all the actors we want to merge
         // they will be all (un)direct successors of the seed with only fpga inputs
         final Set<AbstractActor> visitedActors = new HashSet<>();
         final MergingHeuristic heuristic = new MinimalMergingHeuristic();
-        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringArchClone, visitedActors,
-            heuristic);
+        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringComponentClone,
+            visitedActors, heuristic);
 
         // mark the merged actors as visited
         for (final AbstractActor a : actorsToMerge) {
@@ -152,33 +145,29 @@ public class ClusterBuilder {
         // TODO set better URL
         mergeActor.setUrl("");
         listClusters.add(mergeActor);
-        scenario.getConstraints().addConstraint(clusteringArchClone, mergeActor);
+        scenario.getConstraints().addConstraint(clusteringComponentClone, mergeActor);
 
-        // set all clustered actors to only one mapping, the same one as the cluster
+        // set all clustered actors' mapping(s) to the same as the cluster's
         // for that we create a new constraint variable and copy the mappings to it, while filtering those we want to
         // remove
-
         final EMap<ComponentInstance, EList<AbstractActor>> saveConstraints = new BasicEMap<>();
         final var scenarioConstraintsMap = scenario.getConstraints().getGroupConstraints();
         saveConstraints.putAll(scenario.getConstraints().getGroupConstraints());
         scenarioConstraintsMap.clear();
 
-        final Map<ComponentInstance, EList<AbstractActor>> newConstraint = new HashMap<>();
         for (final var contrainte : saveConstraints) {
           final ComponentInstance PE = contrainte.getKey();
           scenarioConstraintsMap.put(PE, new BasicEList<>());
 
           for (final AbstractActor a : contrainte.getValue()) {
-            // contrainte contient les acteurs d'origine, alors qu'on travaille sur leur version SRDAG ! comment faire
-            // le lien ?
-            if (!mergeActor.getActors().contains(a) || (PE == clusteringArchClone)) {
-              // if the actor is not in the clustered its mappings must not be altered
+            if (!mergeActor.getActors().contains(a) || (PE == clusteringComponentClone)) {
+              // if the actor is not in the cluster its mappings must not be altered
               // otherwise it is added only if the component is the one we mapped the entire cluster to
               scenarioConstraintsMap.get(PE).add(a);
             }
           }
         }
-        scenario.getConstraints().addConstraint(clusteringArch, mergeActor);
+        scenario.getConstraints().addConstraint(clusteringComponent, mergeActor);
         mergeActor.setClusterValue(true);
 
       }
