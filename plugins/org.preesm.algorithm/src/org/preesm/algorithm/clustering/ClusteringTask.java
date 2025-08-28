@@ -17,7 +17,6 @@ import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -48,8 +47,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    PreesmLogger.getLogger().info(" -- Clustering --");
-
     final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
@@ -64,26 +61,12 @@ public class ClusteringTask extends AbstractTaskImplementation {
     List<Cluster> clustersList = new LinkedList<>();
 
     if (CLUSTERIZE) {
+      PreesmLogger.getLogger().info(" -- Clustering task --");
       clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
       updateSubgraphsMappings(clustersList, scenario);
 
-      // --------------------------------------------------------------------------------------
-      // -------------------- replace hierarchical actors with placeholders -------------------
-      // --------------------------------------------------------------------------------------
-
-      // find the main PE
-      ComponentInstance mainCPU;
-      if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
-        mainCPU = scenario.getSimulationInfo().getMainOperator();
-      } else {
-        mainCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
-            .getFirst();
-      }
-
-      // TODO find an adapted accelerator, not just any non-x86 core
-      final ComponentInstance accelerator = architecture.getComponentInstances().stream()
-          .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
-
+    } else {
+      PreesmLogger.getLogger().info(" - Clustering was not activated");
     }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
