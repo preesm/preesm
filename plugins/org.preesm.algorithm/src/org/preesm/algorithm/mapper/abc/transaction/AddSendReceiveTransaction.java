@@ -229,7 +229,7 @@ public class AddSendReceiveTransaction implements Transaction {
   private void reorderReceiveVertex(final ComponentInstance senderOperator, final ComponentInstance receiverOperator) {
     // Get vertices scheduled on the same Operator
     final Stream<MapperDAGVertex> verticesOnReceivingOperator2 = this.orderManager.getVertexList(receiverOperator)
-        .parallelStream()
+        .stream()
         // Keep only receive vertices
         .filter(ReceiveVertex.class::isInstance)
         // Keep only receiveVertex scheduled after the inserted one.

@@ -19,7 +19,8 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         java-version: [21]
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
     steps:
       - name: Git Checkout
         uses: actions/checkout@v4
@@ -49,7 +50,7 @@ jobs:
 
       - name: Build & Test
         shell: bash
-        run: releng/build_and_test.sh --ci
+        run: releng/build_and_test.sh --ci #--parallel
 
       # - name: Save m2 cache # Only trigger on develop unscheduled
       #   if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
@@ -100,12 +101,96 @@ jobs:
           name: changelog
           path: dev-changelog.txt
 
+  complile_run:
+    name: Compile and run ${{ matrix.app_parameter.name_pretty }} on ${{ matrix.config.os_name }}
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {
+              os_name: ubuntu-latest,
+              archive_name: linux-products
+          }
+          - {
+              os_name: windows-latest,
+              archive_name: windows-products
+          }
+          - {
+              os_name: macos-13,
+              archive_name: mac-x86-products
+          }
+          - {
+              os_name: macos-latest,
+              archive_name: mac-aarch64-products
+          }
+
+        app_parameter:
+          - {
+            app_name: org.ietr.preesm.sobel-morpho,
+            scenario_name: 4core.scenario,
+            workflow_name: Codegen.workflow,
+            iteration: 300,
+            name_pretty: Sobel Morpho
+          }
+          - {
+            app_name: stereo/org.ietr.preesm.stereo,
+            scenario_name: 4core.scenario,
+            workflow_name: NEWSynthesisAPI_legacy.workflow,
+            iteration: 1,
+            name_pretty: Stereo Matching
+          }
+          - {
+            app_name: SIFT,
+            scenario_name: HextractSIFT4Corex86_64.scenario,
+            workflow_name: Codegen.workflow,
+            iteration: 1,
+            name_pretty: SIFT
+          }
+          - {
+            app_name: org.ietr.preesm.stabilization,
+            scenario_name: 4coreX86.scenario,
+            workflow_name: Codegen.workflow,
+            iteration: 375,
+            name_pretty: Video Stabilisation
+          }
+    runs-on: ${{ matrix.config.os_name }}
+    steps:
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+              if [ "$RUNNER_OS" == "Linux" ]; then
+                sudo apt update && sudo apt install -y libsdl2-dev libsdl2-ttf-dev
+              elif [ "$RUNNER_OS" == "macOS" ]; then
+                brew install sdl2 sdl2_ttf
+              fi
+
+      - name: Pull preesm-apps
+        uses: actions/checkout@v5
+        with:
+          repository: preesm/preesm-apps
+          ref: ci_compile_run
+
+      - name: Get Preesm from artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ matrix.config.archive_name }}
+
+      - name: Extract Preesm
+        shell: bash
+        run: unzip preesm-*.zip -d preesm
+
+      - name: Compile, run and test ${{ matrix.app_parameter.name_pretty }}
+        shell: bash
+        run: bash .run_ci.sh -p preesm/ -a ${{ matrix.app_parameter.app_name }} -w ${{ matrix.app_parameter.workflow_name }} -s ${{ matrix.app_parameter.scenario_name }} -i ${{ matrix.app_parameter.iteration }}
+
   deploy:
     # `if` required because a workflow run is triggered regardless of
     # the result of the previous workflow (see the documentation page)
     if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
     name: GihHub Release
-    needs: build
+    needs: [build, complile_run]
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifacts
