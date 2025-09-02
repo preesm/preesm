@@ -81,6 +81,7 @@ public class ClusterBuilder {
 
         // check actor has not been tested before, and if it is mapped to a non-CPU PE
         if (!actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
+          actorIsVisited.put(actor, true);
 
           /*
            * check if it is a valid seed : there is a non-main arch predecessor actor or no inputs at all, and a
