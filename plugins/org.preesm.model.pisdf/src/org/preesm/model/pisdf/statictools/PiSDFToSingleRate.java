@@ -538,7 +538,15 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final AbstractActor firstOfSet = (AbstractActor) sourceSet.get(0);
       final DataOutputPort foundPort = lookForSourcePort(piGraph, firstOfSet, sourcePort.getName());
       if (foundPort != null) {
+        // check if foundPort is the sourcePort of a fifo whose targetPort is a dataOutputInterface
+        // if so, we have to remove this interface and the connected fifo
+        if (foundPort.getOutgoingFifo().getTarget() instanceof final DataOutputInterface doi) {
+          this.result.removeFifo(doi.getDataInputPorts().getFirst().getFifo());
+          this.result.removeActorAndDependencies(doi);
+        }
         fifo.setSourcePort(foundPort);
+        // regarder si le sourcePort d'origine de la fifo est une dataOutputInterface !
+        // Si oui ça va la débrancher et il faut dégager la doi avec sa fifo qui l'a comme target.
       }
       return sourceSet;
     }
@@ -692,6 +700,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final AbstractActor firstOfSet = (AbstractActor) sinkSet.get(0);
       final DataInputPort foundPort = lookForTargetPort(piGraph, firstOfSet, targetPort.getName());
       if (foundPort != null) {
+        // check if foundPort is the sourcePort of a fifo whose targetPort is a dataOutputInterface
+        // if so, we have to remove this interface and the connected fifo
+        if (foundPort.getIncomingFifo().getTarget() instanceof final DataInputInterface dii) {
+          this.result.removeFifo(dii.getDataOutputPorts().getFirst().getFifo());
+          this.result.removeActorAndDependencies(dii);
+        }
         fifo.setTargetPort(foundPort);
       }
       return sinkSet;
@@ -773,7 +787,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
     final DataOutputInterface dopCopy = PiMMUserFactory.instance.copyWithHistory((DataOutputInterface) sinkActor);
     currentResultSrDAG.addActor(dopCopy); // Necessary even if I plug the fifos right after ?
-    // I don't know why, but adding dopCopy to the graph resets its expression to 0, so we hate to set it again
+    // I don't know why, but adding dopCopy to the graph resets its expression to 0, so we have to set it again
     dopCopy.getGraphPort()
         .setExpression(PiMMUserFactory.instance.copyWithHistory(sinkActor.getGraphPort().getExpression()));
 
