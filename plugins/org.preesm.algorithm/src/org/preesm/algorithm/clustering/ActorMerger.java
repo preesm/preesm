@@ -64,13 +64,8 @@ public class ActorMerger {
 
           // set outer port's rate : inner port's rate times actor's repetition value
           // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
-          final long innerRate = dip.getExpression().evaluateAsLong();
-          final long outerPortRate = innerRate * brv.get(actor);
-
-          // an inner interface's RV is 1 (otherwise data will be discarded or duplicated), so we have to set thi inner
-          // and outer interfaces'
-          // rates to the same value
-          // TODO what if the cluster's RV is not 1 ? does it change something here ?
+          // an inner interface's RV is 1 (otherwise data will be discarded or duplicated), so we have to set the inner
+          // and outer interfaces' rates to the same value
           final long interfaceRate = dip.getExpression().evaluateAsLong() * brv.get(actor);
 
           innerInterface.getGraphPort().setExpression(interfaceRate);
@@ -100,7 +95,6 @@ public class ActorMerger {
           // set outer port's rate : inner port's rate times actor's repetition value
           // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
           final long innerRate = dop.getExpression().evaluateAsLong();
-          final long outerPortRate = innerRate * brv.get(actor);
 
           final long interfaceRate = dop.getExpression().evaluateAsLong() * brv.get(actor);
           innerInterface.getGraphPort().setExpression(interfaceRate);
