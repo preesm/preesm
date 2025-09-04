@@ -291,13 +291,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor, should we use copyPiGraphWithHistory() instead ?
       final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory(piGraph);
+      // Set the properties
+      copyGraph.setName(this.currentActorName);
 
       // Add the actor to the graph
-      this.currentResultSrDAG.addActor(copyGraph);
+      this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
-
     } else {
       doSwitch(actor);
     }
@@ -427,6 +428,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       }
     }
 
+    // Add the actor to the graph
     this.currentResultSrDAG.addActor(copyActor);
 
     // Add the actor to the FIFO source/sink sets
@@ -449,9 +451,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  /**
-   *
-   */
   @Override
   public Boolean caseFifo(final Fifo fifo) {
     // 0. Set current FIFO
@@ -539,14 +538,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final DataOutputPort foundPort = lookForSourcePort(piGraph, firstOfSet, sourcePort.getName());
       if (foundPort != null) {
         // check if foundPort is the sourcePort of a fifo whose targetPort is a dataOutputInterface
+        // and also if we are in a cluster case (otherwise it's business as usual).
         // if so, we have to remove this interface and the connected fifo
-        if (foundPort.getOutgoingFifo().getTarget() instanceof final DataOutputInterface doi) {
+        final var outgoingFifo = foundPort.getOutgoingFifo();
+        if (outgoingFifo != null && outgoingFifo.getTarget() instanceof final DataOutputInterface doi) {
           this.result.removeFifo(doi.getDataInputPorts().getFirst().getFifo());
           this.result.removeActorAndDependencies(doi);
         }
         fifo.setSourcePort(foundPort);
-        // regarder si le sourcePort d'origine de la fifo est une dataOutputInterface !
-        // Si oui ça va la débrancher et il faut dégager la doi avec sa fifo qui l'a comme target.
       }
       return sourceSet;
     }
@@ -636,20 +635,21 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       }
       sinkSet = this.actor2SRActors.get(keyActor);
     }
-    final DataInputInterface dipCopy = PiMMUserFactory.instance.copyWithHistory((DataInputInterface) sourceActor);
-    currentResultSrDAG.addActor(dipCopy);
-    // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
-    dipCopy.getGraphPort()
-        .setExpression(PiMMUserFactory.instance.copyWithHistory(sourceActor.getGraphPort().getExpression()));
 
-    final String dipCopyName = dipCopy.getContainingPiGraph().getName() + "_" + dipCopy.getName();
-    this.actor2SRActors.put(dipCopyName, new LinkedList<>());
-    this.actor2SRActors.get(dipCopyName).add(dipCopy);
     final List<AbstractVertex> returnList = new LinkedList<>();
-    returnList.add(dipCopy);
+    if (sinkActor.getContainingPiGraph() instanceof Cluster) {
+      final DataInputInterface dipCopy = PiMMUserFactory.instance.copyWithHistory((DataInputInterface) sourceActor);
+      currentResultSrDAG.addActor(dipCopy);
+      // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
+      dipCopy.getGraphPort()
+          .setExpression(PiMMUserFactory.instance.copyWithHistory(sourceActor.getGraphPort().getExpression()));
 
+      final String dipCopyName = dipCopy.getContainingPiGraph().getName() + "_" + dipCopy.getName();
+      this.actor2SRActors.put(dipCopyName, new LinkedList<>());
+      this.actor2SRActors.get(dipCopyName).add(dipCopy);
+      returnList.add(dipCopy);
+    }
     inPort2SRActors.get(correspondingPortInParent).addAll(sinkSet);
-
     return returnList;
   }
 
@@ -700,12 +700,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final AbstractActor firstOfSet = (AbstractActor) sinkSet.get(0);
       final DataInputPort foundPort = lookForTargetPort(piGraph, firstOfSet, targetPort.getName());
       if (foundPort != null) {
-        // check if foundPort is the sourcePort of a fifo whose targetPort is a dataOutputInterface
-        // if so, we have to remove this interface and the connected fifo
-        if (foundPort.getIncomingFifo().getTarget() instanceof final DataInputInterface dii) {
-          this.result.removeFifo(dii.getDataOutputPorts().getFirst().getFifo());
-          this.result.removeActorAndDependencies(dii);
-        }
         fifo.setTargetPort(foundPort);
       }
       return sinkSet;
@@ -785,20 +779,21 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     if (!this.actor2SRActors.containsKey(keyActor)) {
       populateSingleRatePiMMActor(sourceActor);
     }
-    final DataOutputInterface dopCopy = PiMMUserFactory.instance.copyWithHistory((DataOutputInterface) sinkActor);
-    currentResultSrDAG.addActor(dopCopy); // Necessary even if I plug the fifos right after ?
-    // I don't know why, but adding dopCopy to the graph resets its expression to 0, so we have to set it again
-    dopCopy.getGraphPort()
-        .setExpression(PiMMUserFactory.instance.copyWithHistory(sinkActor.getGraphPort().getExpression()));
 
-    final String dipCopyName = dopCopy.getContainingPiGraph().getName() + "_" + dopCopy.getName();
-    this.actor2SRActors.put(dipCopyName, new LinkedList<>());
-    this.actor2SRActors.get(dipCopyName).add(dopCopy);
     final List<AbstractVertex> returnList = new LinkedList<>();
-    returnList.add(dopCopy);
+    if (sourceActor.getContainingPiGraph() instanceof Cluster) {
+      final DataOutputInterface dopCopy = PiMMUserFactory.instance.copyWithHistory((DataOutputInterface) sinkActor);
+      currentResultSrDAG.addActor(dopCopy);
+      // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
+      dopCopy.getGraphPort()
+          .setExpression(PiMMUserFactory.instance.copyWithHistory(sinkActor.getGraphPort().getExpression()));
 
+      final String dopCopyName = dopCopy.getContainingPiGraph().getName() + "_" + dopCopy.getName();
+      this.actor2SRActors.put(dopCopyName, new LinkedList<>());
+      this.actor2SRActors.get(dopCopyName).add(dopCopy);
+      returnList.add(dopCopy);
+    }
     this.outPort2SRActors.get(correspondingPort).addAll(this.actor2SRActors.get(keyActor));
-
     return returnList;
   }
 
@@ -919,26 +914,29 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseConfigInputInterface(final ConfigInputInterface cii) {
-    final ConfigInputPort graphConfigPort = cii.getGraphPort();
+    if (this.currentGraphIsCluster) {
+      final ConfigInputPort graphConfigPort = cii.getGraphPort();
 
-    final ConfigInputInterface newCii = PiMMUserFactory.instance.copyWithHistory(cii);
-    currentResultSrDAG.addConfigurable(newCii);
-    newCii.setExpression(PiMMUserFactory.instance.copyWithHistory(cii.getExpression()));
-    newCii.setName(this.graphPrefix + cii.getName());
+      final ConfigInputInterface newCii = PiMMUserFactory.instance.copyWithHistory(cii);
+      currentResultSrDAG.addConfigurable(newCii);
+      newCii.setExpression(PiMMUserFactory.instance.copyWithHistory(cii.getExpression()));
+      newCii.setName(this.graphPrefix + cii.getName());
 
-    // the original setter Parameter
-    final Parameter outerParam = (Parameter) cii.getGraphPort().getIncomingDependency().getSetter();
-    final Parameter newOuterParam = param2param.get(outerParam); // the duplicated setter Parameter
+      // the original setter Parameter
+      final Parameter outerParam = (Parameter) cii.getGraphPort().getIncomingDependency().getSetter();
+      final Parameter newOuterParam = param2param.get(outerParam); // the duplicated setter Parameter
 
-    // we can now create a dependency between the new outer parameter and the new inner configInterface
-    final Dependency newOuterDep = PiMMUserFactory.instance.copyWithHistory(graphConfigPort.getIncomingDependency());
-    newOuterDep.setSetter(newOuterParam);
-    newOuterDep.setGetter(newCii.getGraphPort());
-    newOuterParam.getContainingPiGraph().addDependency(newOuterDep);
+      // we can now create a dependency between the new outer parameter and the new inner configInterface
+      final Dependency newOuterDep = PiMMUserFactory.instance.copyWithHistory(graphConfigPort.getIncomingDependency());
+      newOuterDep.setSetter(newOuterParam);
+      newOuterDep.setGetter(newCii.getGraphPort());
+      newOuterParam.getContainingPiGraph().addDependency(newOuterDep);
 
-    this.param2param.put(cii, newCii);
+      this.param2param.put(cii, newCii);
 
-    return true;
+      return true;
+    }
+    return null;
   }
 
   /**
@@ -996,17 +994,17 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   }
 
   /**
-   * FAIRE prend en compte le cas où c'est un sous-graphe !
+   *
    */
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-
-    if (graph instanceof Cluster) {
+    // If it is a cluster, do nothing
+    if (graph instanceof final Cluster cluster) {
       this.currentGraphIsCluster = true;
-      return caseClusterAVenir((Cluster) graph);
+      return caseCluster(cluster);
     }
-    this.currentGraphIsCluster = false;
 
+    this.currentGraphIsCluster = false;
     this.currentResultSrDAG = this.result;
 
     // If there are no actors in the graph we leave
@@ -1052,6 +1050,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         this.currentGraphIsCluster = backupcurrentGraphIsCluster;
         this.currentResultSrDAG = backupCurrentResultsrDAG;
         // This ligne removes the link between the cluster and its srdag equivalent, which we need.
+        // this.actor2SRActors.clear();
         // Instead we will only remove the non-cluster actors, which will be kept forever
         clearActor2SRActors();
       }
@@ -1073,7 +1072,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
         .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
         .forEach(this::populateSingleRatePiMMActor);
-
     // handle the case of interfaces of top level
     if (graph.getContainingPiGraph() == null) {
       actors.stream().filter(InterfaceActor.class::isInstance).forEach(this::populateSingleRatePiMMActor);
@@ -1094,7 +1092,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          the cluster
    * @return true
    */
-  public Boolean caseClusterAVenir(Cluster cluster) {
+  public Boolean caseCluster(Cluster cluster) {
 
     // add a copy of cluster to actors
     // Here we handle the replacement of the interfaces by what should be
@@ -1347,5 +1345,4 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.actor2SRActors.putAll(clusterMap);
 
   }
-
 }
