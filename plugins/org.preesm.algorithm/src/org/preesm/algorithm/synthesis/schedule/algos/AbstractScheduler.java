@@ -47,6 +47,7 @@ import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -166,7 +167,9 @@ public abstract class AbstractScheduler implements IScheduler {
     final var scenarioMapping = scenario.getPossibleMappings(PreesmCopyTracker.getOriginalSource(actor));
     final List<ComponentInstance> possibleMappings = new ArrayList<>(scenarioMapping);
 
-    if (!possibleMappings.containsAll(actorMapping)) {
+    // if the actor is in a cluster, its mapping matters not. The only important mapping is its cluster's, as the entire
+    // cluster in mapped as a single entity (for now at least)
+    if (!possibleMappings.containsAll(actorMapping) && !(actor.getContainingPiGraph() instanceof Cluster)) {
       throw new PreesmSynthesisException("Actor '" + actor + "' is mapped on '" + actorMapping
           + "' which is not in the authorized components list '" + possibleMappings + "'.");
     }
