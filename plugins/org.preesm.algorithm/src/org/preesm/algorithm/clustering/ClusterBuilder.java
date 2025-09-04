@@ -7,11 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Cluster;
@@ -139,6 +141,9 @@ public class ClusterBuilder {
         // Now we can merge
         // TODO change name to a better one...
         final String clusterName = "Cluster_" + actor.getName();
+        final String info = "  Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
+            + " into cluster " + clusterName;
+        PreesmLogger.getLogger().log(Level.INFO, info);
         final Cluster mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
