@@ -9,10 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.eclipse.emf.common.util.BasicEList;
-import org.eclipse.emf.common.util.BasicEMap;
 import org.eclipse.emf.common.util.EList;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -122,16 +119,16 @@ public class ClusterBuilder {
       if (seed_found) {
         actorIsVisited.put(actor, true);
 
-        // once again, fuck java
-        final var clusteringComponentClone = clusteringComponent;
-        final Component clusteringArch = clusteringComponentClone.getComponent();
+        final Component clusteringArch = clusteringComponent.getComponent();
+        final var clusteringComponents = scenario.getDesign().getComponentInstances().stream()
+            .filter(ci -> ci.getComponent() == clusteringArch).toList();
 
         // now we have a seed, let's build a list of all the actors we want to merge
         // they will be all (un)direct successors of the seed with only fpga inputs
         final Set<AbstractActor> visitedActors = new HashSet<>();
         final MergingHeuristic heuristic = new MinimalMergingHeuristic();
-        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringComponentClone,
-            visitedActors, heuristic);
+        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringComponent, visitedActors,
+            heuristic);
 
         // mark the merged actors as visited
         for (final AbstractActor a : actorsToMerge) {
@@ -141,40 +138,39 @@ public class ClusterBuilder {
         // Now we can merge
         // TODO change name to a better one...
         final String clusterName = "Cluster_" + actor.getName();
-        final String info = "  Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-            + " into cluster " + clusterName;
+        final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
+            + " into cluster " + clusterName + "on component(s) " + clusteringComponents;
         PreesmLogger.getLogger().log(Level.INFO, info);
-        final Cluster mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        final Cluster clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
 
         // TODO set better URL
-        mergeActor.setUrl("");
-        listClusters.add(mergeActor);
-        scenario.getConstraints().addConstraint(clusteringComponentClone, mergeActor);
+        clusterActor.setUrl("");
+        listClusters.add(clusterActor);
 
         // set all clustered actors' mapping(s) to the same as the cluster's
         // for that we create a new constraint variable and copy the mappings to it, while filtering those we want to
         // remove
-        final EMap<ComponentInstance, EList<AbstractActor>> saveConstraints = new BasicEMap<>();
-        final var scenarioConstraintsMap = scenario.getConstraints().getGroupConstraints();
-        saveConstraints.putAll(scenario.getConstraints().getGroupConstraints());
-        scenarioConstraintsMap.clear();
-
-        for (final var contrainte : saveConstraints) {
-          final ComponentInstance PE = contrainte.getKey();
-          scenarioConstraintsMap.put(PE, new BasicEList<>());
-
-          for (final AbstractActor a : contrainte.getValue()) {
-            if (!mergeActor.getActors().contains(a) || (PE == clusteringComponentClone)) {
-              // if the actor is not in the cluster its mappings must not be altered
-              // otherwise it is added only if the component is the one we mapped the entire cluster to
-              scenarioConstraintsMap.get(PE).add(a);
-            }
-          }
-        }
-        scenario.getConstraints().addConstraint(clusteringComponent, mergeActor);
-        mergeActor.setClusterValue(true);
+        // final EMap<ComponentInstance, EList<AbstractActor>> saveConstraints = new BasicEMap<>();
+        // final var scenarioConstraintsMap = scenario.getConstraints().getGroupConstraints();
+        // saveConstraints.putAll(scenario.getConstraints().getGroupConstraints());
+        // scenarioConstraintsMap.clear();
+        //
+        // for (final var contrainte : saveConstraints) {
+        // final ComponentInstance PE = contrainte.getKey();
+        // scenarioConstraintsMap.put(PE, new BasicEList<>());
+        //
+        // for (final AbstractActor a : contrainte.getValue()) {
+        // if (!clusterActor.getActors().contains(a) || (clusteringComponents.contains(PE))) {
+        // // if the actor is not in the cluster its mappings must not be altered
+        // // otherwise it is added only if the component is the one we mapped the entire cluster to
+        // scenarioConstraintsMap.get(PE).add(a);
+        // }
+        // }
+        // }
+        scenario.getConstraints().addConstraint(clusteringComponent, clusterActor);
+        clusterActor.setClusterValue(true);
 
       }
 
