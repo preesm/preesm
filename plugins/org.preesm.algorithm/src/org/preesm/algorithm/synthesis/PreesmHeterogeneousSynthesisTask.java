@@ -43,6 +43,7 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
@@ -166,6 +167,18 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
         }
 
         localSynthesesMap.put(PreesmCopyTracker.getOriginalSource(cluster), localSynthesisResult);
+
+        // now that the local synthesis on one instance of the accelerator architecture has been made for the cluster
+        // we have to update the cluster's mapping so it can be mapped on several accelerators (if they have the same
+        // arch). This will allow to have several parallel instances of the same cluster
+        final Component c = scenario.getPossibleMappings(cluster).getFirst().getComponent(); // there should be 1
+                                                                                             // mapping only anyway
+        final var sameArchInstances = scenario.getDesign().getComponentInstances().stream()
+            .filter(ci -> ci.getComponent() == c).toList();
+
+        for (final var componentInstance : sameArchInstances) {
+          scenario.getConstraints().addConstraint(componentInstance, cluster);
+        }
       }
     }
 
