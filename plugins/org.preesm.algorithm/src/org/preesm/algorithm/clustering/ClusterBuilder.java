@@ -149,26 +149,6 @@ public class ClusterBuilder {
         clusterActor.setUrl("");
         listClusters.add(clusterActor);
 
-        // set all clustered actors' mapping(s) to the same as the cluster's
-        // for that we create a new constraint variable and copy the mappings to it, while filtering those we want to
-        // remove
-        // final EMap<ComponentInstance, EList<AbstractActor>> saveConstraints = new BasicEMap<>();
-        // final var scenarioConstraintsMap = scenario.getConstraints().getGroupConstraints();
-        // saveConstraints.putAll(scenario.getConstraints().getGroupConstraints());
-        // scenarioConstraintsMap.clear();
-        //
-        // for (final var contrainte : saveConstraints) {
-        // final ComponentInstance PE = contrainte.getKey();
-        // scenarioConstraintsMap.put(PE, new BasicEList<>());
-        //
-        // for (final AbstractActor a : contrainte.getValue()) {
-        // if (!clusterActor.getActors().contains(a) || (clusteringComponents.contains(PE))) {
-        // // if the actor is not in the cluster its mappings must not be altered
-        // // otherwise it is added only if the component is the one we mapped the entire cluster to
-        // scenarioConstraintsMap.get(PE).add(a);
-        // }
-        // }
-        // }
         scenario.getConstraints().addConstraint(clusteringComponent, clusterActor);
         clusterActor.setClusterValue(true);
 
