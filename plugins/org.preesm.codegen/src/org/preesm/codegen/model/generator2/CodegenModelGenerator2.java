@@ -540,7 +540,13 @@ public class CodegenModelGenerator2 {
     } else if (actor instanceof BroadcastActor) {
       specialCall.setType(SpecialType.BROADCAST);
       uniqueFifo = actor.getDataInputPorts().get(0).getFifo();
-      lastBuffer = this.memoryLinker.getCodegenBuffer(memAlloc.getFifoAllocations().get(uniqueFifo).getTargetBuffer());
+      final FifoAllocation fifoAlloc = memAlloc.getFifoAllocations().get(uniqueFifo);
+      // if the fifo links a join actor to an interface, we have to find the outer fifo's
+      // allocation to link the inside of the cluster to the outside
+      // the link will be made later in the codegen. For now we simply ignore the problem if fifoAlloc == null
+      if (fifoAlloc != null) {
+        lastBuffer = this.memoryLinker.getCodegenBuffer(fifoAlloc.getTargetBuffer());
+      }
     } else {
       throw new PreesmRuntimeException("special actor " + actor + " has an unknown special type");
     }
