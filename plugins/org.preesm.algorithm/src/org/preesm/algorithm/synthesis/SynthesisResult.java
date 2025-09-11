@@ -40,6 +40,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.model.pisdf.AbstractActor;
 
@@ -50,6 +51,7 @@ public class SynthesisResult {
   public final Mapping    mapping;
   public final Allocation alloc;
   public final Schedule   schedule;
+  public LatencyCost      latency;
 
   /**
    *
@@ -58,6 +60,22 @@ public class SynthesisResult {
     this.mapping = mapping;
     this.schedule = schedule;
     this.alloc = alloc;
+    this.latency = null;
+  }
+
+  /**
+  *
+  */
+  public SynthesisResult(final Mapping mapping, final Schedule schedule, final Allocation alloc,
+      final LatencyCost latency) {
+    this.mapping = mapping;
+    this.schedule = schedule;
+    this.alloc = alloc;
+    this.latency = latency;
+  }
+
+  public void setLatency(LatencyCost latency) {
+    this.latency = latency;
   }
 
   @Override

@@ -43,7 +43,6 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
@@ -114,7 +113,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
-      final IMemoryAllocation alloc = new LegacyMemoryAllocation();
       // find the main PE
       ComponentInstance mainCPU;
       if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
@@ -127,31 +125,18 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       final ComponentInstance accelerator = architecture.getComponentInstances().stream()
           .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
 
-      final List<Cluster> clustersList = algorithm.getChildrenGraphs().stream()
-          .filter(graph -> graph instanceof Cluster).map(graph -> (Cluster) graph).toList();
-      for (final Cluster cluster : clustersList) {
+      for (final Cluster cluster : algorithm.getClusters()) {
 
-        // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-        final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+        final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture);
 
-        final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
+        final var localSchedule = localSynthesisResult.schedule;
+        final var localMapping = localSynthesisResult.mapping;
 
-        final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
-        final var localSchedule = res.schedule;
-        final var localMapping = res.mapping;
+        LatencyCost localLatency = null;
 
-        final Allocation allocation = alloc.allocateMemory(cluster, architecture, scenario, res.schedule, res.mapping);
-
-        final SynthesisResult localSynthesisResult = new SynthesisResult(res.mapping, res.schedule, allocation);
-
-        // set the placeholder's characteristics we need for global scheduling :
-        // - latency/throughput
-        long latency = 100;
-
-        // check if it is executed on FPGA. If so we have to find (or fabricate) its latency
-
+        // TODO ça servira plus tard lors de l'analyse fpga
         if (scenario.getPossibleMappings(cluster).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
-          latency = computeFpgaGraphLatency(cluster);
+          localLatency = computeFpgaGraphLatency(cluster);
         } else {
           final ScheduleOrderManager localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
 
@@ -160,25 +145,27 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
           pgcc.check(cluster);
 
           // On est d'accord que c'est bien la durée d'un firing de l'acteur ?
-          final LatencyCost localLatency = new SimpleLatencyEvaluation().evaluate(cluster, architecture, scenario,
-              localMapping, localScheduleOM);
-          // Besoin de convertir le graphe local en SrDAG pour calculer sa latence ?
-          latency = localLatency.getValue();
+          localLatency = new SimpleLatencyEvaluation().evaluate(cluster, architecture, scenario, localMapping,
+              localScheduleOM);
         }
 
+        localSynthesisResult.latency = localLatency;
+
         localSynthesesMap.put(PreesmCopyTracker.getOriginalSource(cluster), localSynthesisResult);
+        cluster.setSynthesisResult(localSynthesisResult);
 
         // now that the local synthesis on one instance of the accelerator architecture has been made for the cluster
         // we have to update the cluster's mapping so it can be mapped on several accelerators (if they have the same
         // arch). This will allow to have several parallel instances of the same cluster
-        final Component c = scenario.getPossibleMappings(cluster).getFirst().getComponent(); // there should be 1
-                                                                                             // mapping only anyway
-        final var sameArchInstances = scenario.getDesign().getComponentInstances().stream()
-            .filter(ci -> ci.getComponent() == c).toList();
-
-        for (final var componentInstance : sameArchInstances) {
-          scenario.getConstraints().addConstraint(componentInstance, cluster);
-        }
+        // I GAVE THIS UP DON'T UNCOMMENT
+        // final Component c = scenario.getPossibleMappings(cluster).getFirst().getComponent();
+        //
+        // final var sameArchInstances = scenario.getDesign().getComponentInstances().stream()
+        // .filter(ci -> ci.getComponent() == c).toList();
+        //
+        // for (final var componentInstance : sameArchInstances) {
+        // scenario.getConstraints().addConstraint(componentInstance, cluster);
+        // }
       }
     }
 
@@ -240,6 +227,29 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       case VALUE_ALLOCATORS_LEGACY -> new LegacyMemoryAllocation();
       default -> throw new PreesmRuntimeException("unknown allocation method: " + allocationName);
     };
+  }
+
+  private SynthesisResult runSynthesis(Cluster cluster, Scenario scenario, Design architecture) {
+    // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
+    final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+
+    final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
+
+    final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
+    final var localSchedule = res.schedule;
+    final var localMapping = res.mapping;
+
+    Allocation allocation = null;
+    if (!localSchedulerMapperName.equals(PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR)) {
+      // case cpu
+      final IMemoryAllocation alloc = new LegacyMemoryAllocation();
+
+      allocation = alloc.allocateMemory(cluster, architecture, scenario, res.schedule, res.mapping);
+    }
+    final SynthesisResult localSynthesisResult = new SynthesisResult(res.mapping, res.schedule, allocation);
+
+    return localSynthesisResult;
+
   }
 
   @Override
@@ -383,9 +393,9 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    *          the graph
    * @return the latency
    */
-  private int computeFpgaGraphLatency(PiGraph graph) {
+  private LatencyCost computeFpgaGraphLatency(PiGraph graph) {
     // TODO actually code it
-    return 42;
+    return new LatencyCost(100, null);
   }
 
 }
