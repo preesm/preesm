@@ -46,15 +46,11 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveEndActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
-import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
-import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
-import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -98,18 +94,10 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
     for (final AbstractActor actor : orderedActors) {
       long duration = 0;
-      if (actor instanceof final PiGraph cluster) {
-        // Naze mais fonctionnel
-        final var source = PreesmCopyTracker.getOriginalSource(cluster);
-        final var sr = localSyntheses.get(source);
-
-        final Schedule localSchedule = sr.schedule;
-        final var localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
-
-        // For now I assume their are no cluster in clusters, so we can call the OG evaluation function
-        final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(cluster, slamDesign, scenario, mapping,
-            localScheduleOM);
-        duration = evaluate.getValue();
+      if (actor instanceof final Cluster cluster) {
+        // we already computed the fpga cluster's latency during the local synthesis step
+        final SynthesisResult sr = (SynthesisResult) cluster.getSynthesisResult();
+        duration = sr.latency.getValue();
       } else {
         duration = this.doSwitch(actor);
       }
