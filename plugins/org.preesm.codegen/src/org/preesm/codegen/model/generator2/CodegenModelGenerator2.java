@@ -105,6 +105,7 @@ import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamRouteStep;
 
@@ -184,7 +185,7 @@ public class CodegenModelGenerator2 {
     final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
 
     // 0- init blocks and order
-    final EList<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
+    final List<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
     for (final ComponentInstance cmp : cmps) {
       final CoreBlock createCoreBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
       coreBlocks.put(cmp, createCoreBlock);
@@ -299,6 +300,7 @@ public class CodegenModelGenerator2 {
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
 
+      // in the case of a heterogeneous cpu-fpga app, all comm actors should be mapped to the cpu.
       switch (actor) {
         case final Actor normalActor ->
           generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
@@ -306,8 +308,13 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
-        case final Cluster cluster ->
-          generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
+        case final Cluster cluster -> {
+          if (componentInstance.getComponent() instanceof FPGA) {
+            generateAcceleratorCall(cluster, this.memoryLinker.getPortToVariableMap(), coreBlocks);
+          } else {
+            generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
+          }
+        }
         default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
@@ -660,6 +667,38 @@ public class CodegenModelGenerator2 {
       }
       final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
       final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createClusterFunctionCall(cluster, loopPrototype,
+          portToVariable);
+      coreBlock.getLoopBlock().getCodeElts().add(loop);
+      registerCallVariableToCoreBlock(coreBlock, loop);
+    }
+  }
+
+  private void generateAcceleratorCall(final Cluster cluster, final Map<Port, Variable> portToVariable,
+      final Map<ComponentInstance, CoreBlock> coreBlocks) {
+
+    // the calls to the accelerator have to be made on the main cpu
+    final ComponentInstance mainCpu = scenario.getSimulationInfo().getMainOperator();
+    final CoreBlock coreBlock = coreBlocks.get(mainCpu);
+
+    // store buffers on which MD5 can be computed to check validity of transformations
+    if (cluster.getDataOutputPorts().isEmpty()) {
+      final EList<DataInputPort> dataInputPorts = cluster.getDataInputPorts();
+      for (final DataInputPort dip : dataInputPorts) {
+        final Variable variable = memoryLinker.getPortToVariableMap().get(dip);
+        coreBlock.getSinkFifoBuffers().add((Buffer) variable);
+      }
+    }
+
+    final Refinement refinement = cluster.getRefinement();
+    if (refinement instanceof final CHeaderRefinement cHeaderRef) {
+      final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
+      if (initPrototype != null) {
+        final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createAcceleratorCall(cluster, initPrototype,
+            portToVariable);
+        coreBlock.getInitBlock().getCodeElts().add(init);
+      }
+      final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
+      final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createAcceleratorCall(cluster, loopPrototype,
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
       registerCallVariableToCoreBlock(coreBlock, loop);
