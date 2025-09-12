@@ -52,6 +52,7 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -125,6 +126,22 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
   }
 
   /**
+   * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor. Creates result as a cluster if necessary.
+   *
+   */
+  private PiSDFFlattener(Map<AbstractVertex, Long> brv, boolean cluster) {
+    if (cluster) {
+      this.result = PiMMUserFactory.instance.createCluster();
+    } else {
+      this.result = PiMMUserFactory.instance.createPiGraph();
+    }
+    this.brv = brv;
+    this.graphName = "";
+    this.graphPrefix = "";
+
+  }
+
+  /**
    * Precondition: All.
    *
    * @return the SDFGraph obtained by visiting graph
@@ -153,7 +170,7 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     // 4 Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
     // 5. Now, flatten the graph
-    final PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv);
+    final PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv, graph instanceof Cluster);
     staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     final PiGraph result = staticPiMM2FlatPiMMVisitor.result;
 
