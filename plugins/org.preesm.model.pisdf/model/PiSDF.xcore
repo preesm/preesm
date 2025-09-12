@@ -66,7 +66,6 @@ import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor
 import org.preesm.model.pisdf.util.RefinementResolver
 
 
-
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
 // the corresponding EPackage attributes/... are resolved to type java.lang.Object
@@ -763,6 +762,8 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 }
 
+enum Arch{CPU, FPGA}
+
 class Cluster extends PiGraph {
 	// is used to link the cluster to its to-be-made C refinement code
 	contains Refinement refinement 
@@ -770,6 +771,8 @@ class Cluster extends PiGraph {
 	// wish I could set the type as SynthesisResult, but this causes double inclusion
 	// we'll have to cast manually every time...
 	Object synthesisResult
+	
+	Arch targetArch
 	
 }
 

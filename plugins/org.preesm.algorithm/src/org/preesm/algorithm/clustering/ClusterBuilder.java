@@ -13,12 +13,15 @@ import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.FPGA;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -151,6 +154,16 @@ public class ClusterBuilder {
 
         scenario.getConstraints().addConstraint(clusteringComponent, clusterActor);
         clusterActor.setClusterValue(true);
+
+        switch (clusteringComponent.getComponent()) {
+          case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
+          case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
+          default -> {
+            final var comp = clusteringComponent;
+            PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + comp.getInstanceName()
+                + " is not documented in PiSDF.xcore's architecture enum, please add it");
+          }
+        }
 
       }
 
