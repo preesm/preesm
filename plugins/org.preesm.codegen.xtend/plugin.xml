@@ -72,6 +72,12 @@
             </core_type>
          </printer>
          <printer
+          	class="org.preesm.codegen.xtend.printer.c.FPGAPrinter"
+          	extension=".c">
+            <core_type type="FPGA">
+            </core_type>
+         </printer>
+         <printer
             class="org.preesm.codegen.xtend.printer.c.C6678CPrinter"
             extension=".c">
             <core_type type="c6678">
