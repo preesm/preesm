@@ -51,15 +51,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Platform;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.codegen.format.CodeFormatterAndPrinter;
+import org.preesm.codegen.fpga.FpgaCodeGenerator;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.model.generator2.CodegenModelGenerator2;
@@ -93,6 +94,7 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -174,12 +176,14 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       final SynthesisResult localSynthesisResults = localSyntheses.get(original);
       PreesmLogger.getLogger().info("Local codegen of cluster " + original.getName());
 
-      // maps a sub-actor to :
-      // an argument's local name (for example "nbSlice")
-      // the configPort it is linked to (for example divideFactor)
-      final Map<Actor, Pair<String, ConfigInputPort>> ActorToCipMap = new HashMap<>();
-
-      buildClusterCode(cluster, scenario, localSynthesisResults, archi);
+      // a cluster should have only one mapping (at least for now)
+      final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
+      if (mapping.getComponent() instanceof final FPGA fpga) {
+        FpgaCodeGenerator.generateFiles(scenario, fpga, (AnalysisResultFPGA) cluster.getSynthesisResult());
+        cluster.setRefinement(buildClusterRefinement(cluster, scenario));
+      } else {
+        buildClusterCode(cluster, scenario, localSynthesisResults, archi);
+      }
 
       final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
       // we assume a cluster is mapped to a single accelerator (PE)
@@ -205,10 +209,14 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
 
     // 0- init blocks and order
-    final var clusterMapping = scenario.getPossibleMappings(cluster).getFirst();
-    final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(clusterMapping,
-        (CHeaderRefinement) cluster.getRefinement());
-    coreBlocks.put(clusterMapping, cb);
+    // I wanted to enable support for multi-mapping on cluster actors, but it does not work.
+    // I'm leaving this for the nekt poor soul to need it, but clusterMappings should only contain 1 component.
+    final var clusterMappings = scenario.getPossibleMappings(cluster);
+    for (final ComponentInstance mapping : clusterMappings) {
+      final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(mapping,
+          (CHeaderRefinement) cluster.getRefinement());
+      coreBlocks.put(mapping, cb);
+    }
 
     final List<Block> res = CodegenModelGenerator2.generateClusterCode(archi, cluster, scenario, localSynthesis, false,
         coreBlocks, totallyOrderedActors);
