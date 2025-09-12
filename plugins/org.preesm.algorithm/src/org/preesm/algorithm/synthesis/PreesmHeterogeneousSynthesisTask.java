@@ -246,9 +246,9 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
       allocation = alloc.allocateMemory(cluster, architecture, scenario, res.schedule, res.mapping);
     }
-    final SynthesisResult localSynthesisResult = new SynthesisResult(res.mapping, res.schedule, allocation);
+    res.alloc = allocation;
 
-    return localSynthesisResult;
+    return res;
 
   }
 
