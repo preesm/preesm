@@ -38,6 +38,7 @@ package org.preesm.codegen.model.util;
 
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.codegen.model.AcceleratorCall;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Call;
@@ -298,9 +299,45 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
     return afc;
   }
 
+  /**
+  *
+  */
+  public final AcceleratorCall createAcceleratorCall(final Cluster cluster, final FunctionPrototype prototype,
+      final Map<Port, Variable> portValues) {
+    if (prototype.isCPP()) {
+      throw new PreesmRuntimeException(
+          "The codegen is not compatible with CPP function call as for: " + prototype.getName());
+    }
+
+    final AcceleratorCall afc = createAcceleratorCall();
+    afc.setActorName(cluster.getName());
+    afc.setName(prototype.getName());
+    afc.setOriActor(PreesmCopyTracker.getOriginalSource(cluster));
+    final EList<FunctionArgument> arguments = prototype.getArguments();
+    for (final FunctionArgument a : arguments) {
+      final String name = a.getName();
+      final Port lookupPort = cluster.lookupPort(name);
+      if (lookupPort == null) {
+        throw new PreesmRuntimeException(
+            "Cannot find function argument " + name + " for actor " + cluster.getVertexPath());
+      }
+      final PortKind portKind = lookupPort.getKind();
+      final Variable variable = portValues.get(lookupPort);
+      afc.addParameter(variable, createPortDirection(portKind));
+    }
+    return afc;
+  }
+
   @Override
   public ActorFunctionCall createActorFunctionCall() {
     final ActorFunctionCall res = super.createActorFunctionCall();
+    initCall(res);
+    return res;
+  }
+
+  @Override
+  public AcceleratorCall createAcceleratorCall() {
+    final AcceleratorCall res = super.createAcceleratorCall();
     initCall(res);
     return res;
   }
