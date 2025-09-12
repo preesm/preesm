@@ -48,10 +48,10 @@ import org.preesm.model.pisdf.AbstractActor;
  *
  */
 public class SynthesisResult {
-  public final Mapping    mapping;
-  public final Allocation alloc;
-  public final Schedule   schedule;
-  public LatencyCost      latency;
+  public final Mapping  mapping;
+  public Allocation     alloc;
+  public final Schedule schedule;
+  public LatencyCost    latency;
 
   /**
    *
