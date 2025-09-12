@@ -166,6 +166,10 @@ class ActorFunctionCall extends FunctionCall {
 	refers AbstractActor oriActor
 }
 
+class AcceleratorCall extends ActorFunctionCall {
+	
+}
+
 class PapifyFunctionCall extends FunctionCall {
 	PapifyType papifyType
 	boolean opening = "false"
