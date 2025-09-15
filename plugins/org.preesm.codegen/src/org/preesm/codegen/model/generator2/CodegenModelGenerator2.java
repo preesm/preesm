@@ -83,6 +83,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Cluster;
@@ -186,8 +187,16 @@ public class CodegenModelGenerator2 {
 
     // 0- init blocks and order
     final List<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
+    final List<Arch> acceleratorList = algo.getClusters().stream().map(c -> c.getTargetArch())
+        .filter(ta -> !(ta.equals(Arch.CPU))).toList();
     for (final ComponentInstance cmp : cmps) {
       final CoreBlock createCoreBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
+
+      // add all the accelerator architectures that will have to be initialized to the main core
+      if (cmp.equals(scenario.getSimulationInfo().getMainOperator())) {
+        algo.getClusters().stream().map(Cluster::getTargetArch).filter(ta -> !(ta.equals(Arch.CPU)))
+            .forEach(createCoreBlock::addAcceleratorArch);
+      }
       coreBlocks.put(cmp, createCoreBlock);
     }
 
