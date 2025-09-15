@@ -98,8 +98,8 @@ public class LegacyListScheduler extends AbstractScheduler {
           throw new PreesmRuntimeException(
               "MapperDag vertex '" + vert + "' of type [" + vertexType + "] has no PiSDF reference");
         }
-      } else {
-
+      }
+      else {
         final ComponentInstance targetCmpIntance = vert.getPropertyBean()
             .getValue(ImplementationPropertyNames.VERTEX_OPERATOR);
 

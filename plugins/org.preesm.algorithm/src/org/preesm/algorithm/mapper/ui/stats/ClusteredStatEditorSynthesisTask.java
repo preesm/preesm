@@ -122,8 +122,7 @@ public class ClusteredStatEditorSynthesisTask extends AbstractTaskImplementation
 
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
       pgcc.check(algorithm);
-      // final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
-      // scheduleOM);
+
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluateClusteredGraph(algorithm, architecture,
           scenario, mapping, scheduleOM, localSyntheses);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());

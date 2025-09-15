@@ -104,8 +104,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
                 entry.getValue().remove(actor);
               }
             });
-
-        // scenario.setConstraints(null);
       }
     }
   }
