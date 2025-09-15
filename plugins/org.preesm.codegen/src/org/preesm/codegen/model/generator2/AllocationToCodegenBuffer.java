@@ -337,6 +337,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     mainBuffer.setNbToken(
         (phys.getSizeInBit() + mainBuffer.getTokenTypeSizeInBit() - 1) / mainBuffer.getTokenTypeSizeInBit());
 
+    // all the fifos contained in a cluster
     final List<Fifo> clusterFifos = ((Allocation) phys.eContainer()).getFifoAllocations().keySet().stream()
         .filter(fifo -> fifo.eContainer() instanceof Cluster).toList();
     if (!clusterFifos.isEmpty()) {
