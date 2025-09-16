@@ -52,7 +52,6 @@ import org.preesm.codegen.model.AcceleratorCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
-import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
@@ -456,9 +455,18 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   private void printOpenclFpgaDeclarations(StringConcatenation result, CoreBlock coreBlock) {
     // find all the fpga clusters and declare a variable for them
     final List<AcceleratorCall> accelerators = new LinkedList<>();
+    final List<String> acceleratorNames = new LinkedList<>();
+    final List<String> memKernels = new LinkedList<>();
+
+    // for acceleratorCall instances, getName() will refer to the variable's name in the C code, and getActorName() to
+    // the instance's name in the bitfile
+
     for (final AcceleratorCall elt : coreBlock.getLoopBlock().getCodeElts().stream()
         .filter(AcceleratorCall.class::isInstance).map(AcceleratorCall.class::cast).toList()) {
       accelerators.add(elt);
+      acceleratorNames.add(elt.getName());
+      memKernels.add(elt.getName() + "_read");
+      memKernels.add(elt.getName() + "_write");
     }
 
     String bitFile;
@@ -469,13 +477,16 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
     bitFile = "\"" + graph.getName() + ".bit\"";
 
+    // the accelerator kernels
     result.append("\n\n" + "\n" + "    char* binaryFile = " + bitFile + ";\n" + "\n"
         + "    // OPENCL HOST CODE AREA START\n" + "    // Allocate Memory in Host Memory\n" + "    cl_int err;\n"
         + "    cl::Context context;\n" + "    cl::CommandQueue q;\n" + "    cl::Kernel ");
-    result.append(String.join(",", accelerators.stream().map(Call::getName).toList()) + ";\n");
+    result.append(String.join(",", acceleratorNames) + ";\n");
 
-    result.append(String.format("// Create Program and Kernel\n"
-        + "    auto fileBuf = xcl::read_binary_file(binaryFile);\n"
+    // the mem read and write kernel associated to each accelerator kernel
+    result.append("   cl::Kernel " + String.join(",", memKernels) + ";\n");
+
+    result.append("// Create Program and Kernel\n" + "    auto fileBuf = xcl::read_binary_file(binaryFile);\n"
         + "    cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};\n" + "\n"
         + "    auto devices = xcl::get_xil_devices();\n" + "    bool valid_device = false;\n"
         + "    for (unsigned int i = 0; i < devices.size(); i++) {\n" + "        auto device = devices[i];\n"
@@ -487,12 +498,21 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         + "        cl::Program program(context, {device}, bins, nullptr, &err);\n"
         + "        if (err != CL_SUCCESS) {\n"
         + "            std::cout << \"Failed to program device[\" << i << \"] with xclbin file!\\n\";\n"
-        + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n"
-        + "            OCL_CHECK(err, %s = cl::Kernel(program, \"%s\", &err));\n" + "            valid_device = true;\n"
+        + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n");
+
+    for (final AcceleratorCall acc : accelerators) {
+      result.append("            OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + acc.getActorName()
+          + "\", &err));\n");
+      result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read"
+          + acc.getActorName() + "\", &err));\n");
+      result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \"" + "mem_write"
+          + acc.getActorName() + "\", &err));\n");
+    }
+
+    result.append("            valid_device = true;\n"
         + "            break; // we break because we found a valid device\n" + "        }\n" + "    }\n" + "\n"
         + "    if (!valid_device) {\n" + "        std::cout << \"Failed to program any device found, exit!\\n\";\n"
-        + "        exit(EXIT_FAILURE);\n" + "    }", accelerators.get(0).getName(),
-        "top_" + accelerators.get(0).getActorName()));
+        + "        exit(EXIT_FAILURE);\n" + "    }");
     result.append("\n\n");
 
     // declare and initialize all input and output buffers
@@ -514,10 +534,13 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     result.append("// set kernel arguments\n");
+    // memory comm interfaces have as first input the memory pointer and second the stream. Input or output doesn't
+    // matter.
+    // the only calls will be to memory kernels, as the accelerator kernels are free-running.
+    // Each of these has only one cpu-argument : the memory pointer.
     for (final var accelerator : accelerators) {
-      int index = 0;
       for (final var param : accelerator.getParameters()) {
-        result.append("OCL_CHECK(err, err = " + accelerator.getName() + ".setArg(" + index + ", ");
+        result.append("OCL_CHECK(err, err = " + accelerator.getName() + ".setArg(0, ");
         switch (param) {
           case final Buffer buff -> result.append(buff.getName() + "_buff");
           case final Constant constant -> result.append(constant.getValue());
@@ -525,8 +548,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
               "Unknown variable type : " + param.getName() + " of type " + param.getType());
         }
         result.append("));\n");
-
-        index++;
       }
     }
     result.append("\n\n");
@@ -776,11 +797,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     for (final var inputBuffer : inputBuffers) {
       result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + inputBuffer.getName()
           + "_buff}, 0)); // 0 is the flag for migrating data to device \n");
-      result.append("OCL_CHECK(err, err = q.finish());");
+      result.append("OCL_CHECK(err, err = q.finish());\n\n");
     }
 
-    // Call accelerator
-    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "));\n");
+    // accelerators are free-running, therefore we don't need to call them
 
     // Retrieve output data from device
     for (final var outputBuffer : outputBuffers) {
