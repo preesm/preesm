@@ -184,13 +184,6 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       } else {
         buildClusterCode(cluster, scenario, localSynthesisResults, archi);
       }
-
-      final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
-      // we assume a cluster is mapped to a single accelerator (PE)
-      final var PEInstance = scenario.getPossibleMappings(cluster).getFirst();
-      coreBlocks.put(PEInstance,
-          CodegenModelUserFactory.eINSTANCE.createCoreBlock(PEInstance, (CHeaderRefinement) cluster.getRefinement()));
-
     }
 
     // Codegen shouldn't have an output, but this allows to make the local codegen a dependency of the global codegen
