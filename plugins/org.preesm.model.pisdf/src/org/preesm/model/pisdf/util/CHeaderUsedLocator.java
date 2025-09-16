@@ -42,7 +42,9 @@ import java.util.List;
 import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
-import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Arch;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -60,14 +62,35 @@ public class CHeaderUsedLocator {
    */
   public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
     final List<IPath> result = new ArrayList<>();
-    graph.eAllContents().forEachRemaining(element -> {
-      if (element instanceof final CHeaderRefinement cHeaderRef) {
+    final var refinements = graph.getAllActors().stream().filter(a -> a instanceof Actor)
+        .map(a -> ((Actor) a).getRefinement());
+    refinements.forEach(cHeaderRef -> {
+      // we don't want to include headers for fpga generated code
+      if (!(cHeaderRef.getAbstractActor() instanceof final Cluster cluster
+          && cluster.getTargetArch().equals(Arch.FPGA))) {
+
         final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
         if ((filePath != null) && !(result.contains(filePath))) {
           result.add(filePath);
         }
+
       }
     });
+    // graph.eAllContents().forEachRemaining(element -> {
+    // if (element instanceof final CHeaderRefinement cHeaderRef) {
+    //
+    // // we don't want to include headers for fpga generated code
+    // if (!(cHeaderRef.getAbstractActor() instanceof final Cluster cluster
+    // && cluster.getTargetArch().equals(Arch.FPGA))) {
+    //
+    // final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
+    // if ((filePath != null) && !(result.contains(filePath))) {
+    // result.add(filePath);
+    // }
+    //
+    // }
+    // }
+    // });
     return result;
   }
 
