@@ -39,7 +39,9 @@
 package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -85,8 +87,44 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   public static final PiMMUserFactory instance = new PiMMUserFactory();
 
+  private final Map<Object, String> names = new HashMap<>();
+
   private PiMMUserFactory() {
     // forbid instantiation
+  }
+
+  /***
+   * Returns a unique name attributed to the object, for codegen purposes. If no name exists, it will be created and
+   * added to the map.
+   *
+   * @param s
+   *          the object's name attribute. The mecanism by which names are created is to be expended at will !
+   * @return the unique name associated.
+   */
+  public String getuniqueVariableName(Object s) {
+    if (names.get(s) != null) {
+      return names.get(s);
+    }
+    switch (s) {
+      case final Cluster c:
+        // find original name, to avoid annoying suffixes like _flat or _srdag
+        final Cluster oric = PreesmCopyTracker.getOriginalSource(c);
+
+        final String out = oric.getName();
+        if (!this.names.containsValue(out)) {
+          return out;
+        } else {
+          Integer nb = 1;
+          // if the name already exists, we simply add a number for now
+          while (this.names.containsValue(out + nb)) {
+            nb += 1;
+          }
+          return out + nb;
+        }
+
+      default:
+        return s.toString();
+    }
   }
 
   @Override
