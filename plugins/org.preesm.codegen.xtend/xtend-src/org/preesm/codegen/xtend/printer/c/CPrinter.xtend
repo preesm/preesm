@@ -101,6 +101,7 @@ import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
 import org.preesm.model.pisdf.CHeaderRefinement
+import org.preesm.model.slam.CPU
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -919,7 +920,12 @@ class CPrinter extends BlankPrinter {
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		if (generateMainFile()) {
-			result.put("main.c", printMain(printerBlocks))
+			var name = "main.c"
+			if(allBlocks.stream.filter[it instanceof CoreBlock].map[it as CoreBlock].anyMatch[it.coreType.toLowerCase.equals("fpga")]) {
+				// if we're doing hls, we need the main file to be .cpp (thanks vitis !)
+				name += "pp"
+			}
+			result.put(name, printMain(printerBlocks))
 		}
 		return result
 	}
@@ -933,15 +939,18 @@ class CPrinter extends BlankPrinter {
 		 */
 		// no monitoring by default
 
-		#define _PREESM_NBTHREADS_ «engine.codeBlocks.size»
+		#define _PREESM_NBTHREADS_ «engine.archi.componentInstances.stream.filter[it.component instanceof CPU].toList.size»
 		#define _PREESM_MAIN_THREAD_ «mainOperatorId»
-		const int CORE_ID[_PREESM_NBTHREADS_] = {«FOR coreBlock : engine.codeBlocks»«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»};
+		const int CORE_ID[_PREESM_NBTHREADS_] = {
+		«String.join(", ", engine.codeBlocks.stream.map[it as CoreBlock].filter[it.archIsCpu].map[it.coreID.toString].toList)»
+		};
 
 		// application dependent includes
 		#include "preesm_gen.h"
 
 		// Declare computation thread functions
-		«FOR coreBlock : engine.codeBlocks»
+		«FOR coreBlock : engine.cpuCodeBlock»
+«««		print only cpu threads, as the accelerators (i.e fpga for now) ones are called by the cpus only.
 		void *computationThread_Core«(coreBlock as CoreBlock).coreID»(void *arg);
 		«ENDFOR»
 
@@ -1044,7 +1053,7 @@ class CPrinter extends BlankPrinter {
 			// Declaring thread pointers
 			pthread_t coreThreads[_PREESM_NBTHREADS_];
 			void *(*coreThreadComputations[_PREESM_NBTHREADS_])(void *) = {
-				«FOR coreBlock : engine.codeBlocks»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»
+				«FOR coreBlock : engine.cpuCodeBlock»&computationThread_Core«(coreBlock as CoreBlock).coreID»«if(engine.codeBlocks.lastOrNull == coreBlock) {""} else {", "}»«ENDFOR»
 			};
 
 		#ifdef PREESM_VERBOSE
@@ -1241,5 +1250,6 @@ class CPrinter extends BlankPrinter {
 			}
 		}
 	}
+	
 
 }
