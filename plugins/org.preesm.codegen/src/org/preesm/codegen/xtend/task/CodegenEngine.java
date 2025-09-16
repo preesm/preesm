@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -99,6 +100,16 @@ public class CodegenEngine {
 
   public Collection<Block> getCodeBlocks() {
     return this.codeBlocks;
+  }
+
+  public Collection<Block> getCpuCodeBlock() {
+    return this.codeBlocks.stream().filter(CoreBlock.class::isInstance).map(cb -> (CoreBlock) cb)
+        .filter(CoreBlock::archIsCpu).collect(Collectors.toUnmodifiableList());
+  }
+
+  public Collection<Block> getFpgaCodeBlock() {
+    return this.codeBlocks.stream().filter(CoreBlock.class::isInstance).map(cb -> (CoreBlock) cb)
+        .filter(cb -> cb.getCoreType().toLowerCase().equals("fpga")).collect(Collectors.toUnmodifiableList());
   }
 
   /** The registered printers and blocks. */
