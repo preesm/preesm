@@ -241,6 +241,10 @@ class CoreBlock extends Block {
 		// add any arch necessary
 		return coreType.toLowerCase.equals("x86") || coreType.toLowerCase.equals("arm")
 	}
+	
+	op boolean archIsFpga() {
+		return coreType.toLowerCase.equals("fpga")
+	}
 }
 
 class ClusterBlock extends Block {
