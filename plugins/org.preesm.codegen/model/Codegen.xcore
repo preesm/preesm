@@ -236,6 +236,11 @@ class CoreBlock extends Block {
 	op void addAcceleratorArch(Arch a) {
 		acceleratorArchs += a
 	}
+	
+	op boolean archIsCpu() {
+		// add any arch necessary
+		return coreType.toLowerCase.equals("x86") || coreType.toLowerCase.equals("arm")
+	}
 }
 
 class ClusterBlock extends Block {
