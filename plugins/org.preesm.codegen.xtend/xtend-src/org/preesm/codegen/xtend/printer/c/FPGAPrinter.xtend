@@ -1,8 +1,7 @@
 package org.preesm.codegen.xtend.printer.c
 
-import org.preesm.codegen.xtend.printer.c.CPrinter
+import org.preesm.codegen.printer.BlankPrinter
 
-
-class FPGAPrinter extends CPrinter {
+class FPGAPrinter extends BlankPrinter {
 	
 }
