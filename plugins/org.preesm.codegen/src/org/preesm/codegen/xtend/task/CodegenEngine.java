@@ -75,6 +75,7 @@ import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -301,10 +302,14 @@ public class CodegenEngine {
    */
   public void print() {
 
+    // if any cluster runs on fpga, the project will be built by vitis which requires the extension to be cpp
+    // nice work xilinx
+    final boolean cpp = this.algo.getAllClusters().stream().anyMatch(c -> c.getTargetArch().equals(Arch.FPGA));
+
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
 
-      final String extension = printerAndBlocks.getKey().getAttribute("extension");
+      final String extension = printerAndBlocks.getKey().getAttribute("extension") + (cpp ? "pp" : "");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
 
       for (final Block b : printerAndBlocks.getValue()) {
