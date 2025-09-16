@@ -41,15 +41,18 @@ package org.preesm.codegen.printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
+import org.preesm.codegen.model.AcceleratorCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
+import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
@@ -83,6 +86,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -406,6 +410,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     StringConcatenation result = new StringConcatenation();
     final CharSequence coreBlockHeader = printCoreBlockHeader(coreBlock);
     result.append(coreBlockHeader);
+    if (coreBlock.getAcceleratorArchs().contains(Arch.FPGA)) {
+      result.append("#include \"xcl2.hpp\"\n\n");
+    }
     final String indentationCoreBlock = (coreBlockHeader.length() > 0)
         ? CodegenAbstractPrinter.getLastLineIndentation(result)
         : "";
@@ -426,6 +433,13 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // Visit init block
     result = printInitBlock(coreBlock, result, indentationCoreBlock);
 
+    for (final Arch arch : coreBlock.getAcceleratorArchs()) {
+      switch (arch) {
+        case FPGA -> printOpenclFpgaDeclarations(result, coreBlock);
+        default -> throw new PreesmRuntimeException("unimplemented accelerator architecture : " + arch);
+      }
+    }
+
     // Visit loop block
     result = printLoopBlock(coreBlock, result, indentationCoreBlock);
 
@@ -437,6 +451,86 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setPrintedCoreBlock(null);
 
     return result;
+  }
+
+  private void printOpenclFpgaDeclarations(StringConcatenation result, CoreBlock coreBlock) {
+    // find all the fpga clusters and declare a variable for them
+    final List<AcceleratorCall> accelerators = new LinkedList<>();
+    for (final AcceleratorCall elt : coreBlock.getLoopBlock().getCodeElts().stream()
+        .filter(AcceleratorCall.class::isInstance).map(AcceleratorCall.class::cast).toList()) {
+      accelerators.add(elt);
+    }
+
+    String bitFile;
+    // find top graph name
+    var graph = accelerators.getFirst().getOriActor().getContainingPiGraph();
+    while (graph.getContainingPiGraph() != null) {
+      graph = graph.getContainingPiGraph();
+    }
+    bitFile = "\"" + graph.getName() + ".bit\"";
+
+    result.append("\n\n" + "\n" + "    char* binaryFile = " + bitFile + ";\n" + "\n"
+        + "    // OPENCL HOST CODE AREA START\n" + "    // Allocate Memory in Host Memory\n" + "    cl_int err;\n"
+        + "    cl::Context context;\n" + "    cl::CommandQueue q;\n" + "    cl::Kernel ");
+    result.append(String.join(",", accelerators.stream().map(Call::getName).toList()) + ";\n");
+
+    result.append(String.format("// Create Program and Kernel\n"
+        + "    auto fileBuf = xcl::read_binary_file(binaryFile);\n"
+        + "    cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};\n" + "\n"
+        + "    auto devices = xcl::get_xil_devices();\n" + "    bool valid_device = false;\n"
+        + "    for (unsigned int i = 0; i < devices.size(); i++) {\n" + "        auto device = devices[i];\n"
+        + "        // Creating Context and Command Queue for selected Device\n"
+        + "        OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));\n"
+        + "        OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | CL_QUEUE_PROFILING_ENABLE, &err));\n"
+        + "\n"
+        + "        std::cout << \"Trying to program device[\" << i << \"]: \" << device.getInfo<CL_DEVICE_NAME>() << std::endl;\n"
+        + "        cl::Program program(context, {device}, bins, nullptr, &err);\n"
+        + "        if (err != CL_SUCCESS) {\n"
+        + "            std::cout << \"Failed to program device[\" << i << \"] with xclbin file!\\n\";\n"
+        + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n"
+        + "            OCL_CHECK(err, %s = cl::Kernel(program, \"%s\", &err));\n" + "            valid_device = true;\n"
+        + "            break; // we break because we found a valid device\n" + "        }\n" + "    }\n" + "\n"
+        + "    if (!valid_device) {\n" + "        std::cout << \"Failed to program any device found, exit!\\n\";\n"
+        + "        exit(EXIT_FAILURE);\n" + "    }", accelerators.get(0).getName(),
+        "top_" + accelerators.get(0).getActorName()));
+    result.append("\n\n");
+
+    // declare and initialize all input and output buffers
+    result.append("// vectors containing interface elements, and buffers referencing them\n");
+    for (final AcceleratorCall accelerator : accelerators) {
+      for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance)
+          .map(p -> (Buffer) p).toList()) {
+        final String name = param.getName();
+        final String type = param.getType();
+        final String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
+            .getName().toLowerCase();
+        final String accessType = direction.equals("input") ? "CL_MEM_READ_ONLY" : "CL_MEM_WRITE_ONLY";
+        result.append("std::vector<" + type + ", aligned_allocator<" + type + ">> " + name + "_vect("
+            + param.getSizeInByte() + ");\n");
+        result.append("OCL_CHECK(err, cl::Buffer " + name + "_buff(context, CL_MEM_USE_HOST_PTR | " + accessType
+            + ", sizeof(" + param.getType() + ")*" + param.getSizeInByte() + ", " + name + "_vect.data(), &err));\n");
+      }
+      result.append("\n\n");
+    }
+
+    result.append("// set kernel arguments\n");
+    for (final var accelerator : accelerators) {
+      int index = 0;
+      for (final var param : accelerator.getParameters()) {
+        result.append("OCL_CHECK(err, err = " + accelerator.getName() + ".setArg(" + index + ", ");
+        switch (param) {
+          case final Buffer buff -> result.append(buff.getName() + "_buff");
+          case final Constant constant -> result.append(constant.getValue());
+          default -> throw new PreesmRuntimeException(
+              "Unknown variable type : " + param.getName() + " of type " + param.getType());
+        }
+        result.append("));\n");
+
+        index++;
+      }
+    }
+    result.append("\n\n");
+
   }
 
   private StringConcatenation printDeclarations(final CoreBlock coreBlock, StringConcatenation result,
@@ -662,6 +756,38 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence printLoopBlockFooter2 = printLoopBlockFooter(loopBlock);
     result.append(printLoopBlockFooter2);
 
+    return result;
+  }
+
+  @Override
+  public CharSequence caseAcceleratorCall(AcceleratorCall call) {
+    final StringConcatenation result = new StringConcatenation();
+    // copy data to buffers
+    final List<
+        Buffer> inputBuffers = call.getParameters().stream().filter(Buffer.class::isInstance).map(p -> (Buffer) p)
+            .filter(p -> call.getParameterDirections().get(call.getParameters().indexOf(p)).getName().equals("INPUT"))
+            .toList();
+    final List<
+        Buffer> outputBuffers = call.getParameters().stream().filter(Buffer.class::isInstance).map(p -> (Buffer) p)
+            .filter(p -> call.getParameterDirections().get(call.getParameters().indexOf(p)).getName().equals("OUTPUT"))
+            .toList();
+
+    // Migrate input data to device
+    for (final var inputBuffer : inputBuffers) {
+      result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + inputBuffer.getName()
+          + "_buff}, 0)); // 0 is the flag for migrating data to device \n");
+      result.append("OCL_CHECK(err, err = q.finish());");
+    }
+
+    // Call accelerator
+    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "));\n");
+
+    // Retrieve output data from device
+    for (final var outputBuffer : outputBuffers) {
+      result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + outputBuffer.getName()
+          + "_buff}, CL_MIGRATE_MEM_OBJECT_HOST));\n");
+      result.append("OCL_CHECK(err, err = q.finish());\n");
+    }
     return result;
   }
 
