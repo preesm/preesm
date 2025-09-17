@@ -735,7 +735,6 @@ class Cluster extends PiGraph {
 	Object synthesisResult
 	
 	Arch targetArch
-	
 }
 
 abstract class ExecutableActor extends AbstractActor {

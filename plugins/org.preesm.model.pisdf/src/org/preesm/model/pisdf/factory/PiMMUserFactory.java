@@ -102,7 +102,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    *          the object's name attribute. The mecanism by which names are created is to be expended at will !
    * @return the unique name associated.
    */
-  public String getuniqueVariableName(Object s) {
+  public String getUniqueVariableName(Object s) {
     if (names.get(s) != null) {
       return names.get(s);
     }
