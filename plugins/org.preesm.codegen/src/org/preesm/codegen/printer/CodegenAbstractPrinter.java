@@ -100,6 +100,12 @@ import org.preesm.model.slam.ComponentInstance;
 public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence> {
 
   /**
+   * Vitis requires files to have c++ extensions to compile (sic). This variable will hold "pp" if this is a fpga het.
+   * project that requires vitis, "" otherwise.
+   */
+  public String fileExtension;
+
+  /**
    * This method should be called when printing a "printXXHeader" method when the desired behavior is to print nothing
    * but indent the "content" of the Block (i.e. what will be printed between the header and the corresponding footer")
    *
