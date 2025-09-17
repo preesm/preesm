@@ -309,8 +309,9 @@ public class CodegenEngine {
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
 
-      final String extension = printerAndBlocks.getKey().getAttribute("extension") + (cpp ? "pp" : "");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
+      printer.fileExtension = (cpp ? "pp" : "");
+      final String extension = printerAndBlocks.getKey().getAttribute("extension") + printer.fileExtension;
 
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
