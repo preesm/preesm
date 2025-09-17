@@ -49,7 +49,9 @@
 #[[#]]#define _PREESM_PREESM_GEN_H
 
 #[[#]]#ifdef __cplusplus
+#[[#]]#ifndef VITIS_COMPILATION
 extern "C" {
+#[[#]]#endif
 #[[#]]#endif
 
 /**
@@ -105,7 +107,9 @@ $CONSTANTS
 #[[#]]#endif
 
 #[[#]]#ifdef __cplusplus
+#[[#]]#ifndef VITIS_COMPILATION
 }
+#[[#]]#endif
 #[[#]]#endif
 
 #[[#]]#endif
