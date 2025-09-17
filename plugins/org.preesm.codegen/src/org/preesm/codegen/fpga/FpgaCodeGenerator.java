@@ -81,6 +81,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.check.RefinementChecker;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.FPGA;
@@ -187,7 +188,7 @@ public class FpgaCodeGenerator {
 
   private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
     this.fpga = fpga;
-    this.graphName = scenario.getAlgorithm().getName();
+    this.graphName = PiMMUserFactory.instance.getUniqueVariableName(analysisResult.flatGraph);
     this.analysisResult = analysisResult;
     this.allFifoDepths = new LinkedHashMap<>();
     final PiGraph graph = analysisResult.flatGraph;
@@ -522,11 +523,11 @@ public class FpgaCodeGenerator {
       sizeArgs.add(s.toString());
       sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH - 1)); // Lower bound is excluded from range of values
       final long srcRate = f.getSourcePort().getExpression().evaluateAsLong();
-      final long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
+      final long srcII = scenario.getTimings().evaluateTimingOrDefault(f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long srcLambda = AdfgUtils.computeLambda(srcRate, srcII).longValue();
       final long snkRate = f.getTargetPort().getExpression().evaluateAsLong();
-      final long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
+      final long snkII = scenario.getTimings().evaluateTimingOrDefault(f.getTarget(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long snkLambda = AdfgUtils.computeLambda(snkRate, snkII).longValue();
       lambdaArgs.add(Long.toString(srcLambda + snkLambda));
@@ -785,7 +786,7 @@ public class FpgaCodeGenerator {
 
     context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
-    context.put("PREESM_TOP_KERNEL", getTopKernelSignature() + ";\n");
+    context.put("PREESM_TOP_KERNEL", "extern \"C\" " + getTopKernelSignature() + ";\n");
 
     final StringBuilder runKernel = new StringBuilder(getTopKernelName() + "(");
     final List<String> args = new ArrayList<>();
@@ -1289,7 +1290,7 @@ public class FpgaCodeGenerator {
   }
 
   public final String getTopKernelName() {
-    return "top_graph_" + graphName;
+    return graphName;
   }
 
   protected String getTopKernelSignature() {
