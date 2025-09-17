@@ -910,11 +910,14 @@ class CPrinter extends BlankPrinter {
 						"mac_barrier.h"
 					]);
 		files.forEach[it | try {
-			result.put(it + fileExtension, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
+			// add "pp" only if it is a source file. We don'c have to add it to .h files, and it would require more modifs i'm not willing to make.
+			var localFileExtension = it.substring(it.length - 1).equals("c") ? fileExtension: ""
+			result.put(it + localFileExtension, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h" + fileExtension,generatePreesmHeader(files))
+		result.put("preesm_gen.h", generatePreesmHeader(files))
+		
 		return result
 	}
 
