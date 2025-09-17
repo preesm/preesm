@@ -84,6 +84,7 @@ import org.preesm.model.pisdf.check.RefinementChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.TimingType;
 
@@ -265,6 +266,8 @@ public class FpgaCodeGenerator {
    *          Result container storing the flat graph of the app, its interface rates and all fifo sizes.
    */
   public static void generateFiles(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
+    final boolean heterogeneous_project = scenario.getDesign().getComponents().stream().anyMatch(c -> c instanceof CPU);
+
     final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, fpga, analysisResult);
 
     // 0- without the following class loader initialization, I get the following exception when running as Eclipse
@@ -310,12 +313,17 @@ public class FpgaCodeGenerator {
 
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + "_testbench.cpp",
         topKernelTestbenchFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_c_" + fcg.graphName + ".c", cHostFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
 
-    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".py", pynqHostFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".ipynb", pynqNotebookFileContent);
+    if (!heterogeneous_project) {
+      // if the project is heterogeneous, the host will b the main.cpp and coreX.cpp files that call fpga accelerators
+      PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
+      PreesmIOHelper.getInstance().print(codegenPath, "host_c_" + fcg.graphName + ".c", cHostFileContent);
+
+      PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".py", pynqHostFileContent);
+      PreesmIOHelper.getInstance().print(codegenPath, "host_pynq_" + fcg.graphName + ".ipynb", pynqNotebookFileContent);
+    }
+
     PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "script_vivado.tcl",
         vivadoScriptContent);
     PreesmIOHelper.getInstance().print(codegenPath + "/" + STDFILE_SCRIPT_SUBDIR, "script_hls.tcl", hlsScriptContent);
