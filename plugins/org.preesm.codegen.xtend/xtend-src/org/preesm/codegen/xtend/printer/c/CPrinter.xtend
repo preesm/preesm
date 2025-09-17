@@ -128,6 +128,7 @@ class CPrinter extends BlankPrinter {
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
 	final boolean generateMainFile;
+	
 
 	def boolean generateMainFile() {
 		return this.generateMainFile;
@@ -909,22 +910,18 @@ class CPrinter extends BlankPrinter {
 						"mac_barrier.h"
 					]);
 		files.forEach[it | try {
-			result.put(it, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
+			result.put(it + fileExtension, PreesmResourcesHelper.instance.read(stdFilesFolder + it, this.class))
 		} catch (IOException exc) {
 			throw new PreesmRuntimeException("Could not generated content for " + it, exc)
 		}]
-		result.put("preesm_gen.h",generatePreesmHeader(files))
+		result.put("preesm_gen.h" + fileExtension,generatePreesmHeader(files))
 		return result
 	}
 
 	override createSecondaryFiles(List<Block> printerBlocks, Collection<Block> allBlocks) {
 		val result = super.createSecondaryFiles(printerBlocks, allBlocks);
 		if (generateMainFile()) {
-			var name = "main.c"
-			if(allBlocks.stream.filter[it instanceof CoreBlock].map[it as CoreBlock].anyMatch[it.coreType.toLowerCase.equals("fpga")]) {
-				// if we're doing hls, we need the main file to be .cpp (thanks vitis !)
-				name += "pp"
-			}
+			var name = "main.c" + fileExtension
 			result.put(name, printMain(printerBlocks))
 		}
 		return result
