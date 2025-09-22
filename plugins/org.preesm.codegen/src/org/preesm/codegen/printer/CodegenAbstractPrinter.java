@@ -481,10 +481,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     while (graph.getContainingPiGraph() != null) {
       graph = graph.getContainingPiGraph();
     }
-    bitFile = "\"" + graph.getName() + ".bit\"";
+    bitFile = "\"" + graph.getName() + ".xclbin\"";
 
     // the accelerator kernels
-    result.append("\n\n" + "\n" + "    char* binaryFile = " + bitFile + ";\n" + "\n"
+    result.append("\n\n" + "\n" + "    const char* binaryFile = " + bitFile + ";\n" + "\n"
         + "    // OPENCL HOST CODE AREA START\n" + "    // Allocate Memory in Host Memory\n" + "    cl_int err;\n"
         + "    cl::Context context;\n" + "    cl::CommandQueue q;\n" + "    cl::Kernel ");
     result.append(String.join(",", acceleratorNames) + ";\n");
@@ -507,12 +507,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n");
 
     for (final AcceleratorCall acc : accelerators) {
-      result.append("            OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + acc.getActorName()
-          + "\", &err));\n");
-      result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read"
+      // result.append(" OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + acc.getActorName()
+      // + "\", &err));\n");
+      result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read_"
           + acc.getActorName() + "\", &err));\n");
-      result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \"" + "mem_write"
-          + acc.getActorName() + "\", &err));\n");
+      result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \""
+          + "mem_write_" + acc.getActorName() + "\", &err));\n");
     }
 
     result.append("            valid_device = true;\n"
@@ -522,7 +522,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     result.append("\n\n");
 
     // declare and initialize all input and output buffers
-    result.append("// vectors containing interface elements, and buffers referencing them\n");
+    result.append("// Vectors containing interface elements, and buffers referencing them\n");
+    result.append("// We also link the buffers to the memory read/write kernels \n");
     for (final AcceleratorCall accelerator : accelerators) {
       for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance)
           .map(p -> (Buffer) p).toList()) {
@@ -531,32 +532,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         final String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
             .getName().toLowerCase();
         final String accessType = direction.equals("input") ? "CL_MEM_READ_ONLY" : "CL_MEM_WRITE_ONLY";
-        result.append("std::vector<" + type + ", aligned_allocator<" + type + ">> " + name + "_vect("
-            + param.getSizeInByte() + ");\n");
         result.append("OCL_CHECK(err, cl::Buffer " + name + "_buff(context, CL_MEM_USE_HOST_PTR | " + accessType
-            + ", sizeof(" + param.getType() + ")*" + param.getSizeInByte() + ", " + name + "_vect.data(), &err));\n");
+            + ", sizeof(" + param.getType() + ")*" + param.getNbToken() + ", " + name + ", &err));\n");
+
+        final String readWrite = direction.equals("input") ? "_read" : "_write";
+        result.append(
+            "OCL_CHECK(err, err = " + accelerator.getName() + readWrite + ".setArg(0, " + name + "_buff));\n\n");
       }
       result.append("\n\n");
     }
-
-    result.append("// set kernel arguments\n");
-    // memory comm interfaces have as first input the memory pointer and second the stream. Input or output doesn't
-    // matter.
-    // the only calls will be to memory kernels, as the accelerator kernels are free-running.
-    // Each of these has only one cpu-argument : the memory pointer.
-    for (final var accelerator : accelerators) {
-      for (final var param : accelerator.getParameters()) {
-        result.append("OCL_CHECK(err, err = " + accelerator.getName() + ".setArg(0, ");
-        switch (param) {
-          case final Buffer buff -> result.append(buff.getName() + "_buff");
-          case final Constant constant -> result.append(constant.getValue());
-          default -> throw new PreesmRuntimeException(
-              "Unknown variable type : " + param.getName() + " of type " + param.getType());
-        }
-        result.append("));\n");
-      }
-    }
-    result.append("\n\n");
 
   }
 
@@ -800,9 +784,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
             .toList();
 
     // Migrate input data to device
-    for (final var inputBuffer : inputBuffers) {
-      result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + inputBuffer.getName()
-          + "_buff}, 0)); // 0 is the flag for migrating data to device \n");
+    for (final Buffer inputBuffer : inputBuffers) {
+      // result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + inputBuffer.getName()
+      // + "_buff}, 0)); // 0 is the flag for migrating data to device \n");
+      // CL_TRUE for blocking read, at least for now
+      // 0 for 0 offset to the read, at least for now
+      result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
+          + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
+      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
       result.append("OCL_CHECK(err, err = q.finish());\n\n");
     }
 
@@ -810,8 +799,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     // Retrieve output data from device
     for (final var outputBuffer : outputBuffers) {
-      result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + outputBuffer.getName()
-          + "_buff}, CL_MIGRATE_MEM_OBJECT_HOST));\n");
+      // result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + outputBuffer.getName()
+      // + "_buff}, CL_MIGRATE_MEM_OBJECT_HOST));\n");
+      result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
+          + outputBuffer.getType() + ")*" + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
+      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
       result.append("OCL_CHECK(err, err = q.finish());\n");
     }
     return result;
