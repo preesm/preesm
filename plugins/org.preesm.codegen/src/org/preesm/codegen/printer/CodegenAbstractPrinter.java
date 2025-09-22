@@ -792,7 +792,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
           + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
       result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
-      result.append("OCL_CHECK(err, err = q.finish());\n\n");
+      // result.append("OCL_CHECK(err, err = q.finish());\n\n");
     }
 
     // accelerators are free-running, therefore we don't need to call them
@@ -801,9 +801,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     for (final var outputBuffer : outputBuffers) {
       // result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + outputBuffer.getName()
       // + "_buff}, CL_MIGRATE_MEM_OBJECT_HOST));\n");
+      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
       result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
           + outputBuffer.getType() + ")*" + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
-      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
       result.append("OCL_CHECK(err, err = q.finish());\n");
     }
     return result;
