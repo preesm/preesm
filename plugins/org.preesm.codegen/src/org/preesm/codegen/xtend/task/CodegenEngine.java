@@ -68,6 +68,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.preesm.codegen.format.CodeFormatterAndPrinter;
+import org.preesm.codegen.fpga.FpgaCodeGenerator;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
@@ -304,7 +305,10 @@ public class CodegenEngine {
 
     // if any cluster runs on fpga, the project will be built by vitis which requires the extension to be cpp
     // nice work xilinx
-    final boolean cpp = this.algo.getAllClusters().stream().anyMatch(c -> c.getTargetArch().equals(Arch.FPGA));
+    final boolean het_fpga_project = this.algo.getAllClusters().stream()
+        .anyMatch(c -> c.getTargetArch().equals(Arch.FPGA));
+    // for later conditions to be added
+    final boolean cpp = het_fpga_project;
 
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
@@ -323,6 +327,13 @@ public class CodegenEngine {
       // if this is a cluster code generator, nothing more to do.
       if (this.clusterGenerator) {
         return;
+      }
+
+      // for fpga heterogeneous projects, print the connectivity file
+      if (het_fpga_project) {
+        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
+        PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
+
       }
 
       // Print secondary files

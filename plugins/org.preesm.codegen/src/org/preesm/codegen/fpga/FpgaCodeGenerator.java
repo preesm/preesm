@@ -63,8 +63,10 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -266,7 +268,7 @@ public class FpgaCodeGenerator {
    *          Result container storing the flat graph of the app, its interface rates and all fifo sizes.
    */
   public static void generateFiles(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
-    final boolean heterogeneous_project = scenario.getDesign().getComponents().stream().anyMatch(c -> c instanceof CPU);
+    final boolean heterogeneous_project = scenario.getDesign().getComponents().stream().anyMatch(CPU.class::isInstance);
 
     final FpgaCodeGenerator fcg = new FpgaCodeGenerator(scenario, fpga, analysisResult);
 
@@ -313,10 +315,12 @@ public class FpgaCodeGenerator {
 
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + "_testbench.cpp",
         topKernelTestbenchFileContent);
-    PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg", connectivityFileContent);
 
     if (!heterogeneous_project) {
       // if the project is heterogeneous, the host will b the main.cpp and coreX.cpp files that call fpga accelerators
+      PreesmIOHelper.getInstance().print(codegenPath, "connectivity_" + fcg.graphName + ".cfg",
+          connectivityFileContent);
+
       PreesmIOHelper.getInstance().print(codegenPath, "host_xocl_" + fcg.graphName + ".cpp", xoclHostFileContent);
       PreesmIOHelper.getInstance().print(codegenPath, "host_c_" + fcg.graphName + ".c", cHostFileContent);
 
@@ -1230,6 +1234,45 @@ public class FpgaCodeGenerator {
         sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
       }
     }
+    return sb.toString();
+  }
+
+  /**
+   * Generates the stream_connect commands for this lgorithm's clusters. The generated file will be copied to the .cfg
+   * file created by the system project.
+   *
+   * @param algo
+   *          the top algorithm
+   * @return the stream_connect commands as a string
+   */
+  public static String generateConnectivityCommands(PiGraph algo) {
+    final StringBuilder sb = new StringBuilder("");
+
+    final List<
+        Cluster> clusterList = algo.getAllClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA)).toList();
+
+    // for now, I will assume no fpga cluster is linked to another fpga cluster
+    // that means we simply have to link a cluster to its associated memory read and write kernels.
+    for (final Cluster c : clusterList) {
+      final AnalysisResultFPGA synthesisResult = (AnalysisResultFPGA) c.getSynthesisResult();
+      for (final InterfaceActor ia : synthesisResult.interfaceRates.keySet()) {
+        sb.append("stream_connect=");
+        final String read_name = "mem_read_" + c.getName();
+        final String write_name = "mem_write_" + c.getName();
+        if (ia instanceof DataInputInterface) {
+          sb.append(read_name + "_1.");
+          sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
+          sb.append(c.getName() + "_1.");
+          sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
+        } else if (ia instanceof DataOutputInterface) {
+          sb.append(c.getName() + "_1.");
+          sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
+          sb.append(write_name + "_1.");
+          sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
+        }
+      }
+    }
+
     return sb.toString();
   }
 
