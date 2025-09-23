@@ -57,9 +57,9 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
  * To find helper methods for Preesm resources (templates, default scripts, etc.), see {@link PreesmResourcesHelper}.
  * <p>
  * TODO complete this class with other methods to load a resource file, as a locate method, returning an URI.
- * 
+ *
  * TODO use {@link java.nio.file.Files#copy} instead of printing unmodified content?
- * 
+ *
  * @author anmorvan
  *
  */
@@ -73,7 +73,7 @@ public class PreesmIOHelper {
 
   /**
    * Print the given content at a specific location. Create the file if not existent.
-   * 
+   *
    * @param filePath
    *          Path to the file to write.
    * @param fileName
@@ -93,6 +93,38 @@ public class PreesmIOHelper {
       }
       iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
           new NullProgressMonitor());
+    } catch (final CoreException ex) {
+      throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
+    }
+    return iFile;
+  }
+
+  /**
+   * Appends the given content to a file at a specific location. creates the file if it does not exist.
+   *
+   * @param filePath
+   *          Path to the file to write.
+   * @param fileName
+   *          Name (with extension) of the file to write.
+   * @param fileContent
+   *          Content to write in the file.
+   * @return The printed file.
+   */
+  public IFile appendPrint(final String filePath, final String fileName, final CharSequence fileContent) {
+    final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath + fileName));
+    try {
+      final IFolder iFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(new Path(filePath));
+      createFolderRecursively(iFolder, false, true, new NullProgressMonitor());
+
+      if (!iFile.exists()) {
+        iFile.create(new ByteArrayInputStream("".getBytes()), false, new NullProgressMonitor());
+        iFile.setContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
+            new NullProgressMonitor());
+      } else {
+        iFile.appendContents(new ByteArrayInputStream(fileContent.toString().getBytes()), true, false,
+            new NullProgressMonitor());
+      }
+
     } catch (final CoreException ex) {
       throw new PreesmRuntimeException("Could not generate source file for " + fileName, ex);
     }
