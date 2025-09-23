@@ -308,7 +308,7 @@ public class FpgaCodeGenerator {
     final String codegenPath = scenario.getCodegenDirectory() + "/";
 
     // copy generated files
-    PreesmIOHelper.getInstance().print(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
+    PreesmIOHelper.getInstance().appendPrint(codegenPath, TEMPLATE_DEFINE_HEADER_NAME, headerFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getReadKernelName() + ".cpp", readKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getWriteKernelName() + ".cpp", writeKernelFileContent);
