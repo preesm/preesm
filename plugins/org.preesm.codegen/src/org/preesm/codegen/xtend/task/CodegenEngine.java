@@ -329,11 +329,13 @@ public class CodegenEngine {
         return;
       }
 
-      // for fpga heterogeneous projects, print the connectivity file
+      // for fpga heterogeneous projects, print the connectivity file and the list of clusters
       if (het_fpga_project) {
         final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
         PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
+        PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
+            .filter(c -> c.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).collect(Collectors.joining("\n")));
       }
 
       // Print secondary files
