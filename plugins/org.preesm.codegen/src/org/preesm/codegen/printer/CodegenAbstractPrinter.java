@@ -106,6 +106,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public String fileExtension;
 
   /**
+   * This variable checks whether the declarations for fpga vitis projects have already been made.
+   */
+  boolean printedFpgaDeclarations = false;
+
+  /**
    * This method should be called when printing a "printXXHeader" method when the desired behavior is to print nothing
    * but indent the "content" of the Block (i.e. what will be printed between the header and the corresponding footer")
    *
@@ -459,6 +464,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   private void printOpenclFpgaDeclarations(StringConcatenation result, CoreBlock coreBlock) {
+    if (this.printedFpgaDeclarations) {
+      return;
+    }
+    printedFpgaDeclarations = true;
+
     // find all the fpga clusters and declare a variable for them
     final List<AcceleratorCall> accelerators = new LinkedList<>();
     final List<String> acceleratorNames = new LinkedList<>();
