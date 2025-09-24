@@ -229,7 +229,7 @@ public class AddSendReceiveTransaction implements Transaction {
   private void reorderReceiveVertex(final ComponentInstance senderOperator, final ComponentInstance receiverOperator) {
     // Get vertices scheduled on the same Operator
     final Stream<MapperDAGVertex> verticesOnReceivingOperator2 = this.orderManager.getVertexList(receiverOperator)
-        .stream()
+        .parallelStream()
         // Keep only receive vertices
         .filter(ReceiveVertex.class::isInstance)
         // Keep only receiveVertex scheduled after the inserted one.
@@ -238,11 +238,11 @@ public class AddSendReceiveTransaction implements Transaction {
         .filter(vertex -> (((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex).iterator().next().getSource())
             .getEffectiveOperator()).equals(senderOperator))
         // Keep only those whose sender is scheduled before the current one
-        .filter(vertex -> this.orderManager.totalIndexOf(((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex)
-            .iterator().next().getSource())) < this.orderManager.totalIndexOf(this.sendVertex));
+        .sequential().filter(vertex -> this.orderManager.totalIndexOf(((MapperDAGVertex) this.implementation
+            .incomingEdgesOf(vertex).iterator().next().getSource())) < this.orderManager.totalIndexOf(this.sendVertex));
 
     // Insert all receiveVertices satisfying previous filters before the current receiveVertex
-    verticesOnReceivingOperator2.forEachOrdered(vertex -> {
+    verticesOnReceivingOperator2.parallel().forEachOrdered(vertex -> {
       this.orderManager.remove(vertex, true);
       this.orderManager.insertBefore(this.receiveVertex, vertex);
     });
