@@ -58,9 +58,12 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -75,6 +78,7 @@ import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
@@ -329,13 +333,64 @@ public class CodegenEngine {
         return;
       }
 
-      // for fpga heterogeneous projects, print the connectivity file and the list of clusters
+      // for fpga heterogeneous projects, print the necessary files :
+      // - connectivity
+      // - cluster list
+      // - vitis build files (python, tcl and makefile)
       if (het_fpga_project) {
         final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
         PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
         PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
             .filter(c -> c.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).collect(Collectors.joining("\n")));
+
+        try {
+          final String makefile = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/heterogeneous_makefile", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(codegenPath, "Makefile", makefile);
+
+          final IFolder step1 = ResourcesPlugin.getWorkspace().getRoot()
+              .getFolder(new Path(codegenPath + "/vivado_soc"));
+          final IFolder step2 = ResourcesPlugin.getWorkspace().getRoot()
+              .getFolder(new Path(codegenPath + "/vitis_platform"));
+          final IFolder step3 = ResourcesPlugin.getWorkspace().getRoot()
+              .getFolder(new Path(codegenPath + "/system_project"));
+
+          PreesmIOHelper.createFolderRecursively(step1, false, true, null);
+          final var vivado_makefile = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/vivado_makefile",
+              FpgaCodeGenerator.class);
+          final var export_xsa_tcl = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/export_xsa.tcl",
+              FpgaCodeGenerator.class);
+          final var system_step1_tcl = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/system_step1.tcl", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(step1.getFullPath().toString() + "/", "Makefile", vivado_makefile);
+          PreesmIOHelper.getInstance().print(step1.getFullPath().toString() + "/", "export_xsa.tcl", export_xsa_tcl);
+          PreesmIOHelper.getInstance().print(step1.getFullPath().toString() + "/", "system_step1.tcl",
+              system_step1_tcl);
+
+          PreesmIOHelper.createFolderRecursively(step2, false, true, null);
+          final var platform_makefile = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/vitis_makefile", FpgaCodeGenerator.class);
+          final var platform_creator = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/platform_creation.py", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(step2.getFullPath().toString() + "/", "Makefile", platform_makefile);
+          PreesmIOHelper.getInstance().print(step2.getFullPath().toString() + "/", "platform_creation.py",
+              platform_creator);
+
+          PreesmIOHelper.createFolderRecursively(step3, false, true, null);
+          final var system_makefile = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/system_makefile",
+              FpgaCodeGenerator.class);
+          final var system_builder = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/system_builder.py", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(step3.getFullPath().toString() + "/", "Makefile", system_makefile);
+          PreesmIOHelper.getInstance().print(step3.getFullPath().toString() + "/", "builder.py", system_builder);
+
+        } catch (final IOException e) {
+          throw new PreesmRuntimeException("Could not copy all the stdfiles.", e);
+        } catch (final CoreException ex) {
+          throw new PreesmRuntimeException("Could not generate source file.", ex);
+        }
+
       }
 
       // Print secondary files
