@@ -1,0 +1,41 @@
+#/*
+#Copyright (C) 2023, Advanced Micro Devices, Inc. All rights reserved.
+#SPDX-License-Identifier: MIT
+#*/
+
+ROOT_DIR=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
+PLATFORM_NAME=kr260_custom
+PLATFORM= $(ROOT_DIR)/../step2_pfm/$(PLATFORM_NAME)/export/$(PLATFORM_NAME)/$(PLATFORM_NAME).xpfm
+SW_COMP = $(ROOT_DIR)/../step2_pfm/sw_comp/
+VERSION=2024.1
+COMMON_IMAGE_ZYNQMP ?=${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)
+SYSROOT := $(COMMON_IMAGE_ZYNQMP)/sysroots/cortexa72-cortexa53-xilinx-linux
+VADD_WORK=$(ROOT_DIR)/vadd_work
+
+.PHONY: help  
+
+help:
+	@echo "Makefile usage"
+	@echo "make all 	## Generate and package application related files"
+
+all: app_hw_package
+
+
+shell.json:
+	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
+
+app_hw_package: remove_previous_builds shell.json
+	vitis -s builder.py
+	@echo "INFO: Packaging Completed"
+
+# keep only the makefile, builder.py and shell.json
+remove_previous_builds:
+	rm -rf $(shell find . -mindepth 1 -maxdepth 2 ! -name 'builder.py' ! -name 'Makefile' ! -name 'shell.json')
+
+clean:
+	-$(MAKE) -C $(VADD_WORK) clean
+	-$(MAKE) -C platforminfo/ clean
+	rm -rf vadd/
+
+ultraclean:clean
+	rm -rf $(VADD_WORK)
