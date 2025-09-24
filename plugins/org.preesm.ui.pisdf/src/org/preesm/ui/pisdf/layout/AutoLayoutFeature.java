@@ -49,6 +49,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -336,7 +337,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           break;
         }
       }
-      final EList<Port> allPorts = a.getAllPorts();
+
+      final List<Port> allPorts = a.getAllPorts();
       for (final Port p : allPorts) {
         final List<PictogramElement> pictogramElements = Graphiti.getLinkService().getPictogramElements(diagram, p);
         for (final PictogramElement pe : pictogramElements) {
@@ -635,13 +637,9 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final List<Range> gaps) {
 
     // Find the FreeFormConnection of each FIFO
-    // LinkedHashMap to preserve order
-    final Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<>();
-    for (final Fifo fifo : interStageFifos) {
-      // Get freeform connection
-      final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo);
-      fifoFfcMap.put(fifo, ffc);
-    }
+    // LinkedHashMap to preserve order (no longer the case, might cause issues)
+    final Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
+        Collectors.toMap(fifo -> fifo, fifo -> DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo)));
 
     // Check if any FIFO has a Gap right in front of it
     final List<Fifo> fifoToLayout = new ArrayList<>(fifoFfcMap.keySet());
@@ -968,9 +966,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   private static void layoutDependencyToActor(final int currentY, final int currentX, final FreeFormConnection ffc) {
-    // Retrieve the last bendpoint of the ffc (added when
-    // the
-    // actor was moved.)
+    // Retrieve the last bendpoint of the ffc (added when the actor was moved.)
     final int fccBpSize = ffc.getBendpoints().size();
     if (fccBpSize > 0) {
       final Point lastBp = ffc.getBendpoints().get(fccBpSize - 1);
