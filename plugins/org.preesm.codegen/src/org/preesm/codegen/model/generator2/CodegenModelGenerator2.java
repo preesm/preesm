@@ -330,6 +330,14 @@ public class CodegenModelGenerator2 {
   }
 
   private void generateCommunication(final CommunicationActor actor, final CoreBlock coreBlock) {
+    // if this is a comm between cpu and fpga, it will be handled via opencl, not preesm's semaphores
+    if (actor.getFifo().getTarget() instanceof final Cluster c && c.getTargetArch().equals(Arch.FPGA)) {
+      return;
+    }
+    if (actor.getFifo().getSource() instanceof final Cluster c && c.getTargetArch().equals(Arch.FPGA)) {
+      return;
+    }
+
     // Create the communication
     final SharedMemoryCommunication newComm = CodegenModelUserFactory.eINSTANCE.createSharedMemoryCommunication();
 
