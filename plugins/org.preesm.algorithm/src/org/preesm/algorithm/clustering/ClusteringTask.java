@@ -88,8 +88,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
   private void updateSubgraphsMappings(List<Cluster> clustersList, Scenario scenario) {
     for (final Cluster cluster : clustersList) {
       // a cluster is mapped to only 1 component
-      // vu que ce sont les acteurs du srdag mais qu'on a les mappings du pisdf, il ne va trouver aucun acteur ! Que
-      // faire ?
       final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
 
       // Acteurs abstraits ou seulement acteurs avec refinement ?

@@ -1299,11 +1299,13 @@ public class FpgaCodeGenerator {
   }
 
   public static final String getInterfaceRateNameMacro(final InterfaceActor ia) {
-    return "RATE_OF_" + ia.getName().toUpperCase();
+    return "RATE_OF_" + ia.getName().toUpperCase() + "_"
+        + PreesmCopyTracker.getOriginalSource(ia.getContainingPiGraph()).getName();
   }
 
   public static final String getInterfaceFactorNameMacro(final InterfaceActor ia) {
-    return "FACTOR_OF_" + ia.getName().toUpperCase();
+    return "FACTOR_OF_" + ia.getName().toUpperCase() + "_"
+        + PreesmCopyTracker.getOriginalSource(ia.getContainingPiGraph()).getName();
   }
 
   public static final String getFifoStreamName(final Fifo fifo) {

@@ -143,8 +143,6 @@ public class ActorMerger {
         innerDep.setGetter(cip);
         innerDep.setSetter(innerCii);
         innerSDF.addDependency(innerDep);
-
-        final var truc = PiMMFactory.createActor();
       }
     }
 

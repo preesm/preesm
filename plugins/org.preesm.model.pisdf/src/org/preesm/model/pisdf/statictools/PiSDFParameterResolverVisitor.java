@@ -46,7 +46,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.ExpressionEvaluationException;
 import org.preesm.commons.math.JEPWrapper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -154,8 +153,9 @@ public class PiSDFParameterResolverVisitor extends PiMMSwitch<Boolean> {
     final Dependency incomingDependency = graphPort.getIncomingDependency();
     Parameter paramToEvaluate = cii;
     if (incomingDependency == null) {
-      PreesmLogger.getLogger().warning(() -> cii.eContainer() + " has a config input port without incoming dependency: "
-          + graphPort.getName() + "\nDefault value is used instead.");
+      // PreesmLogger.getLogger().warning(() -> cii.eContainer() + " has a config input port without incoming
+      // dependency: "
+      // + graphPort.getName() + "\nDefault value is used instead.");
     } else {
       // regular case
       final ISetter setter = incomingDependency.getSetter();
