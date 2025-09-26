@@ -42,12 +42,14 @@ package org.preesm.ui.pisdf.layout;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IStatus;
@@ -638,8 +640,16 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Find the FreeFormConnection of each FIFO
     // LinkedHashMap to preserve order (no longer the case, might cause issues)
-    final Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
+    Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
         Collectors.toMap(fifo -> fifo, fifo -> DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo)));
+    fifoFfcMap = fifoFfcMap.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().hashCode()))
+        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+
+    // final ConcurrentSkipListMap<Fifo,
+    // FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(Comparator.comparingInt(System::identityHashCode));
+    // interStageFifos.parallelStream().forEach(f -> {
+    // fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f));
+    // });
 
     // Check if any FIFO has a Gap right in front of it
     final List<Fifo> fifoToLayout = new ArrayList<>(fifoFfcMap.keySet());
@@ -666,14 +676,19 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Point penultimate = bendpoints.get(index);
 
       // Check Gaps one by one
-      Range matchedRange = null;
-      for (final Range range : gaps) {
-        if (((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-            && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1))) {
-          matchedRange = range;
-          break;
-        }
-      }
+      // Range matchedRange = null;
+      // for (final Range range : gaps) {
+      // if (((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
+      // && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1))) {
+      // matchedRange = range;
+      // break;
+      // }
+      // }
+
+      final Range matchedRange = gaps.parallelStream()
+          .filter(range -> ((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
+              && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1)))
+          .findFirst().orElse(null);
 
       if (matchedRange != null) {
         // Create bendpoint
