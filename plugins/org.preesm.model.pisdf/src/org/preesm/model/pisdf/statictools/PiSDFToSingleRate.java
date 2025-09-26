@@ -145,6 +145,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   private PiGraph currentResultSrDAG;
 
+  private static List<String> flattenExclusionList;
+
+  private static List<String> srdagExclusionList;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
@@ -162,6 +166,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // copy input graph period
     this.result.setExpression(inputGraph.getPeriod().evaluateAsLong());
+  }
+
+  public static final PiGraph computeWithExclusionLists(final PiGraph graph, final BRVMethod method,
+      List<String> flattenExclusion, List<String> srdagExclusion) {
+    flattenExclusionList = flattenExclusion;
+    srdagExclusionList = srdagExclusion;
+    return compute(graph, method);
   }
 
   /**
@@ -290,12 +301,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     if (actor instanceof final PiGraph piGraph) {
       // Here we handle the replacement of the interfaces by what should be
       // Copy the actor, should we use copyPiGraphWithHistory() instead ?
-      final PiGraph copyGraph = PiMMUserFactory.instance.copyWithHistory(piGraph);
+      final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(piGraph);
       // Set the properties
       copyGraph.setName(this.currentActorName);
 
       // Add the actor to the graph
-      this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
+      this.currentResultSrDAG.addActor(copyGraph);
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
@@ -501,6 +512,36 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     fifo.setSourcePort(sourcePort);
     fifo.setTargetPort(targetPort);
     return true;
+  }
+
+  private boolean PopulateAndConnectSr(Fifo fifo, DataOutputPort sourcePort, DataInputPort targetPort,
+      AbstractActor sourceActor, AbstractActor sinkActor) {
+    // 2. Populate the source set linked to this FIFO
+    final List<
+        AbstractVertex> sourceSet = getSourceSetForSRLinker(fifo, sourcePort, targetPort, sourceActor, sinkActor);
+    if (sourceSet.isEmpty()) {
+      fifo.setSourcePort(sourcePort);
+      return true;
+    }
+
+    // 3. Populate the sink set linked to this FIFO
+    final List<AbstractVertex> sinkSet = getSinkSetForSRLinker(fifo, sourcePort, targetPort, sourceActor, sinkActor,
+        sourceSet);
+    // If sinkSet / sourceSet is null, then we did not need a RoundBuffer / Broadcast and thus processing of connecting
+    // this FIFO will be done later
+    if (sinkSet.isEmpty()) {
+      // In the case of Interfaces we might have disconnected the FIFO so let's reconnect it
+      fifo.setSourcePort(sourcePort);
+      fifo.setTargetPort(targetPort);
+      return true;
+    }
+
+    // 4. Do the Single-Rate connections
+    final PiMMSRVerticesLinker srVerticesLinker = new PiMMSRVerticesLinker(fifo, this.currentResultSrDAG,
+        this.graphPrefix);
+    srVerticesLinker.execute(this.brv, sourceSet, sinkSet);
+
+    return false;
   }
 
   /**
@@ -1098,10 +1139,17 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Here we handle the replacement of the interfaces by what should be
     // Copy the actor, should we use copyWithHistory() instead ?
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
+    if (srdagExclusionList.contains(cluster.getName())) {
+      // currentResultSrDAG.addActor(copyGraph);
+      if (!flattenExclusionList.contains(cluster.getName())) {
+        PiSDFFlattener.flatten(copyGraph, true);
+      }
+      return true;
+    }
     // remove actors from the copy, as they will be copied by the conversion process
-    copyGraph.getActors().stream().forEach(a -> copyGraph.removeActorAndDependencies(a));
-    copyGraph.getParameters().stream().forEach(p -> copyGraph.removeParameter(p));
-    copyGraph.getFifos().stream().forEach(e -> copyGraph.removeFifo(e));
+    copyGraph.getActors().stream().forEach(copyGraph::removeActorAndDependencies);
+    copyGraph.getParameters().stream().forEach(copyGraph::removeParameter);
+    copyGraph.getFifos().stream().forEach(copyGraph::removeFifo);
 
     // Add the actor to the graph
     this.currentResultSrDAG.addActor(copyGraph);
