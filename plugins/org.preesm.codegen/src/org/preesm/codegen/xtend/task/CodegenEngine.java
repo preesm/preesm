@@ -80,6 +80,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -341,8 +342,9 @@ public class CodegenEngine {
         final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
         PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
-        PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
-            .filter(c -> c.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).collect(Collectors.joining("\n")));
+        PreesmIOHelper.getInstance().print(codegenPath, "clusters_list",
+            algo.getClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA))
+                .map(c -> PreesmCopyTracker.getOriginalSource(c).getName()).collect(Collectors.joining("\n")));
 
         try {
           final String makefile = PreesmResourcesHelper.getInstance()
