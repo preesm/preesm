@@ -9,7 +9,7 @@ PLATFORM_NAME_FSBL=kr260_custom_fsbl
 
 XSA_NAME=kr260_hardware_platform
 VERSION=2024.1
-COMMON_IMAGE_ZYNQMP ?=../../xilinx-zynqmp-common-v$(VERSION)/
+COMMON_IMAGE ?=../../xilinx-zynqmp-common-v$(VERSION)/
 DT_PLAT_NAME=mydevice
 DT_PATH=$(ROOT_DIR)/$(DT_PLAT_NAME)/psu_cortexa53_0/device_tree_domain/bsp
 DTB =$(ROOT_DIR)/$(DT_PLAT_NAME)/psu_cortexa53_0/device_tree_domain/bsp/system.dtb
@@ -27,16 +27,16 @@ DEVICE_TREE_REPO=https://github.com/Xilinx/device-tree-xlnx.git
 
 help:
 	@echo "Makefile usage"
-	@echo "make all COMMON_IMAGE_ZYNQMP=<path/to/common_image/>  	## Generate platform with pre-built software components"
+	@echo "make all COMMON_IMAGE=<path/to/common_image/>  	## Generate platform with pre-built software components"
 	
 
 all: check-common-image dtb dtbo pfm #sysroot
 
 #target : check  whether the common image is ready 
 check-common-image: remove_previous_builds
-ifeq ($(wildcard $(COMMON_IMAGE_ZYNQMP)),)
-	@echo "'COMMON_IMAGE_ZYNQMP' is not accessible, please download common image from Xilinx Downloads website and set this flag to specify the common image path."
-	@echo "Path tried :" $(COMMON_IMAGE_ZYNQMP)
+ifeq ($(wildcard $(COMMON_IMAGE)),)
+	@echo "'COMMON_IMAGE' is not accessible, please download common image from Xilinx Downloads website and set this flag to specify the common image path."
+	@echo "Path tried :" $(COMMON_IMAGE)
 	@make help
 	@echo "exit ....." && exit 1
 endif
@@ -55,7 +55,7 @@ dtbo:$(DT_PATH)/pl.dtsi
 #create platfrom 
 pfm:
 	@echo "INFO: Creating  Platform $(PLATFORM_NAME)"
-	mkdir -p tmp && export XILINX_VITIS_DATA_DIR="./tmp" && vitis -s platform_creation.py --platform_name $(PLATFORM_NAME) --xsa_path ../vivado_soc/build/vivado/$(XSA_NAME).xsa --boot $(COMMON_IMAGE_ZYNQMP) --dtb $(DTB)
+	mkdir -p tmp && export XILINX_VITIS_DATA_DIR="./tmp" && vitis -s platform_creation.py --platform_name $(PLATFORM_NAME) --xsa_path ../vivado_soc/build/vivado/$(XSA_NAME).xsa --boot $(COMMON_IMAGE) --dtb $(DTB)
 	@echo "INFO: Checking created platforms:" && find . -name "*.xpfm"
 
 
@@ -63,8 +63,8 @@ pfm:
 #install SDK tool
 sysroot: $(SYSROOT)
 
-$(SYSROOT): $(COMMON_IMAGE_ZYNQMP)/sdk.sh
-	mkdir -p $(COMMON_IMAGE_ZYNQMP)/$(SYSROOT) && sh $(COMMON_IMAGE_ZYNQMP)/sdk.sh -d $(COMMON_IMAGE_ZYNQMP)/ -y
+$(SYSROOT): $(COMMON_IMAGE)/sdk.sh
+	mkdir -p $(COMMON_IMAGE)/$(SYSROOT) && sh $(COMMON_IMAGE)/sdk.sh -d $(COMMON_IMAGE)/ -y
 
 # keep only the makefile and .tcl files
 remove_previous_builds:
