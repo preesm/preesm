@@ -49,6 +49,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -307,6 +308,33 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the graph
       this.currentResultSrDAG.addActor(copyGraph);
+
+      if (copyGraph instanceof final Cluster cluster) {
+        // now we must connect the new cluster's inner config interfaces to their outer parameters in the new graph
+        for (final ConfigInputPort cip : cluster.getConfigInputPorts()) {
+          // cip.setIncomingDependency(param2param.get(cip.getIncomingDependency()));
+          // param2param : fait un lien entre anciennes et nouvelles cii (entre autre)
+
+          // d'abord on trouve le parameter correspondant dans le nouveau graphe
+          // pour ça, on fait le lien entre les ports de config du nouveau et de l'ancien cluster par leur nom
+          final Optional<ConfigInputInterface> oldcip = piGraph.getConfigInputInterfaces().stream()
+              .filter(cii -> cii.getName().equals(cip.getName())).findFirst();
+          if (oldcip.isEmpty()) {
+            throw new PreesmRuntimeException("Couldn't find config input interface equivalent of parameter "
+                + cip.getName() + " in cluster " + cluster.getName());
+          }
+
+          // ensuite on peut retrouver le paramètre setter de ce cii dans l'ancien graphe
+          final var oldParam = oldcip.get().getGraphPort().getIncomingDependency().getSetter();
+
+          // et enfin faire le lien avec le nouveau paramètre
+          final var newParam = param2param.get(oldParam);
+
+          final var dep = PiMMUserFactory.instance.createDependency(newParam, cip);
+
+          this.currentResultSrDAG.addDependency(dep);
+        }
+      }
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
@@ -1134,101 +1162,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * @return true
    */
   public Boolean caseCluster(Cluster cluster) {
-
-    // add a copy of cluster to actors
-    // Here we handle the replacement of the interfaces by what should be
-    // Copy the actor, should we use copyWithHistory() instead ?
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
+
+    // we have to manage all combinations of cases for graphs that should or not be flattened and/or converted to srdag
     if (srdagExclusionList.contains(cluster.getName())) {
-      // currentResultSrDAG.addActor(copyGraph);
       if (!flattenExclusionList.contains(cluster.getName())) {
         PiSDFFlattener.flatten(copyGraph, true);
       }
-      return true;
-    }
-    // remove actors from the copy, as they will be copied by the conversion process
-    copyGraph.getActors().stream().forEach(copyGraph::removeActorAndDependencies);
-    copyGraph.getParameters().stream().forEach(copyGraph::removeParameter);
-    copyGraph.getFifos().stream().forEach(copyGraph::removeFifo);
-
-    // Add the actor to the graph
-    this.currentResultSrDAG.addActor(copyGraph);
-
-    // Add the actor to the FIFO source/sink sets
-    if (this.actor2SRActors.get(this.graphPrefix + cluster.getName()) == null) {
-      this.actor2SRActors.put(this.graphPrefix + cluster.getName(), new ArrayList<>());
-    }
-    this.actor2SRActors.get(this.graphPrefix + cluster.getName()).add(copyGraph);
-
-    this.currentResultSrDAG = copyGraph;
-
-    // perform basically the same operations as for casePigraph, except actors are added to the cluster's actors and not
-    // the top graph
-
-    // If there are no actors in the graph we leave
-    final List<AbstractActor> actors = cluster.getActors();
-    if (actors.isEmpty()) {
-      throw new UnsupportedOperationException(
-          "Can not convert an empty graph. Check the refinement for [" + cluster.getVertexPath() + "].");
-    }
-
-    // Set the current graph name
-    this.graphName = cluster.getContainingPiGraph() == null ? "" : cluster.getName();
-    this.graphName = this.graphPrefix + this.graphName;
-
-    // Set the prefix graph name
-    this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
-
-    for (final Parameter p : cluster.getParameters()) {
-      doSwitch(p);
-    }
-
-    // We need to split all delay actors before going in every iteration
-    for (final Fifo f : cluster.getFifosWithDelay()) {
-      splitDelayActors(f);
-    }
-    final String currentPrefix = this.graphPrefix;
-    final long graphRV = this.brv.getOrDefault(cluster, 1L);
-    final IntegerName iN = new IntegerName(graphRV - 1);
-    final long backupInstance = this.firingInstance;
-    for (long i = 0; i < graphRV; ++i) {
-      if (!currentPrefix.isEmpty()) {
-        this.graphPrefix = currentPrefix + iN.toString(i) + "_";
-      }
-      final long lInstance = backupInstance * graphRV + i;
-      final String backupPrefix = this.graphPrefix;
-      final String backupName = this.graphName;
-      for (final PiGraph g : cluster.getChildrenGraphs()) {
-        this.firingInstance = lInstance;
-        doSwitch(g);
-        this.graphPrefix = backupPrefix;
-        this.graphName = backupName;
-        clearActor2SRActors();
-      }
-      for (final Fifo f : cluster.getFifosWithDelay()) {
-        this.firingInstance = lInstance;
-        doSwitch(f);
-      }
-      for (final Fifo f : cluster.getFifosWithoutDelay()) {
-        this.firingInstance = lInstance;
-        doSwitch(f);
-      }
-    }
-    this.firingInstance = backupInstance;
-
-    // handle non connected actors (BRV = 1)
-    // PiGraph are already handled by the code above, except if clustered
-    // Special Actors and Delay Actors cannot have empty data ports
-    // So only (regular) Actor are considered
-    actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
-        .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
-        .forEach(this::populateSingleRatePiMMActor);
-    // handle the case of interfaces of top level
-    if (cluster.getContainingPiGraph() == null) {
-      actors.stream().filter(InterfaceActor.class::isInstance).forEach(this::populateSingleRatePiMMActor);
-      // now we need to reconnect the top level interfaces
-      actors.stream().filter(InterfaceActor.class::isInstance)
-          .forEach(a -> reconnectTopLevelInterface((InterfaceActor) a));
     }
 
     return true;
