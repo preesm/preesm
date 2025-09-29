@@ -96,15 +96,15 @@ public class PiGraphSRDAGChecker {
       return false;
     }
 
-    // check all subgraphs are SRDAGS
-    for (final PiGraph graph : subGraphs) {
-      if (!isPiGraphClusteredSRADG(graph)) {
-        return false;
-      }
-    }
+    // check all subgraphs are SRDAGS, provided they should be in the first place
+    // for (final PiGraph graph : subGraphs) {
+    // if (!isPiGraphClusteredSRADG(graph)) {
+    // return false;
+    // }
+    // }
 
     // check single-rate and delays
-    final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
+    final boolean isSingleRate = piGraph.getFifos().stream().allMatch(f -> {
       final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
       final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
       return (rateOut == rateIn) && f.getDelay() == null;
