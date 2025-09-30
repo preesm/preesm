@@ -4,10 +4,13 @@
 #*/
 
 ROOT_DIR=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-PLATFORM_NAME=kr260_custom
-PLATFORM_NAME_FSBL=kr260_custom_fsbl
 
-XSA_NAME=kr260_hardware_platform
+TARGET?=ultrascale
+
+PLATFORM_NAME=$(TARGET)_custom
+PLATFORM_NAME_FSBL=$(TARGET)_custom_fsbl
+
+XSA_NAME=$(TARGET)_hardware_platform
 VERSION=2024.1
 COMMON_IMAGE ?=../../xilinx-zynqmp-common-v$(VERSION)/
 DT_PLAT_NAME=mydevice
