@@ -2,6 +2,7 @@
 import vitis
 import os
 import pdb
+import argparse
 
 #xck26-sfvc784-2LV-c
 #xcvu9p-flga2104-2-i
@@ -11,31 +12,53 @@ hls_folder = os.path.abspath("../")
 code_folder = os.path.abspath("../../")
 comp_name = "hls_component" 
 sys_proj_name = "system_project"
-sysroot = "/opt/petalinux/2024.1/sysroots/cortexa72-cortexa53-xilinx-linux"
+boot_dir = "/home/jmorin/preesm-apps/xilinx-zynqmp-common-v2024.1/"
+sysroot = boot_dir + "sysroot/"
 
 targets = {"kria": "xck26-sfvc784-2LV-c", "ultrascale": "xck26-sfvc784-2LV-c"}
-target = "kria"
+target = "ultrascale"
+
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--target", type=str, dest="target")
+args = parser.parse_args()
+target = args.target
 
 
 client = vitis.create_client()
 client.set_workspace(path=workspace)
 
+
+""" ---- Build Platform ---- """
+
+# default config for ultrascale zcu104 platform
+hw_path = "/data/Xilinx/Vitis/2024.1/base_platforms/xilinx_zcu104_base_202410_1/xilinx_zcu104_base_202410_1.xpfm"
+p_os = "linux"
+p_cpu = "psu_cortexa53_0"
+p_domain_name = "linux_psu_cortexa53"
+
 if target == "kria":
-	platform = client.create_platform_component(name = "platform", hw_design = hls_folder + "/vitis_platform/mydevice/hw/kr260_hardware_platform.xsa",os = "linux",cpu = "psu_cortexa53",domain_name = "linux_psu_cortexa53")
+	platform = client.create_platform_component(name="platform", hw_design=hls_folder+"/vitis_platform/mydevice/hw/kr260_hardware_platform.xsa", os=p_os, cpu=p_cpu, domain_name=p_domain_name)
 elif target == "ultrascale":
-	platform = client.create_platform_component(name = "platform", platform_xpfm_path = "/data/Xilinx/Vitis/2024.1/base_platforms/xilinx_zcu104_base_202410_1/xilinx_zcu104_base_202410_1.xpfm")
-	domain = platform.add_domain(cpu = "psu_cortexa53",os = "linux",name = "linux_psu_cortexa53",display_name = "linux_psu_cortexa53")
+	platform = client.create_platform_component(name="platform", platform_xpfm_path=hw_path)
+	domain = platform.add_domain(cpu=p_cpu, os=p_os, name=p_domain_name)
+	status = platform.generate_boot_bsp(target_processor=p_cpu)
+
+platform = client.get_component(name="platform")
 
 domain = platform.get_domain(name="linux_psu_cortexa53")
 
 status = domain.generate_bif()
 
-#status = domain.set_boot_dir(path=hls_folder+"../xilinx-zynqmp-common-v2024.1/")
+status = domain.set_boot_dir(path=boot_dir)
 
 status = domain.set_dtb(path=hls_folder + "/vitis_platform/mydevice/psu_cortexa53_0/device_tree_domain/bsp/system.dtb")
 
+status = platform.build()
+
 
 """ ---- HLS Components creation ---- """
+
 # for now I create only one hls component. Later it will have to be just as many as necessary.
 accelerators = [line.rstrip() for line in open(code_folder + "/generated/clusters_list", "r")]
 hls_kernels = []
@@ -84,14 +107,8 @@ status = comp.set_app_config(key="USER_INCLUDE_DIRECTORIES", values=f"{code_fold
 status = comp.set_app_config(key="USER_COMPILE_DEFINITIONS", values="VITIS_COMPILATION")
 
 
-""" ---- Build Platform ---- """
-# Why now ? not sure, but I'm afraid to touch it
-platform = client.get_component(name="platform")
-
-# status = platform.build()
-
-
 """ ---- Create System project ---- """
+
 proj = client.create_sys_project(name="system_project", platform=f"{hls_folder}/system_project/platform/export/platform/platform.xpfm", template="empty_accelerated_application")
 
 proj = client.get_sys_project(name="system_project")
@@ -108,8 +125,8 @@ packagecfg_path = os.path.join(workspace, sys_proj_name, 'package/package.cfg')
 cfg_obj = client.get_config_file(packagecfg_path)
 liste_cfg_package = [
 f"dtb={hls_folder}/vitis_platform/dtbo_output/pl.dtbo",
-f"kernel_image={code_folder}/xilinx-zynqmp-common-v2024.1/Image",
-f"rootfs={code_folder}/xilinx-zynqmp-common-v2024.1/rootfs.ext4"
+f"kernel_image={boot_dir}/Image",
+f"rootfs={boot_dir}/rootfs.ext4"
 ]
 cfg_obj.add_lines('package', liste_cfg_package)
 

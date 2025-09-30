@@ -11,6 +11,7 @@ VERSION=2024.1
 COMMON_IMAGE ?=${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)
 SYSROOT := $(COMMON_IMAGE)/sysroots/cortexa72-cortexa53-xilinx-linux
 VADD_WORK=$(ROOT_DIR)/vadd_work
+TARGET?=ultrascale
 
 .PHONY: help  
 
@@ -25,7 +26,7 @@ shell.json:
 	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
 
 app_hw_package: remove_previous_builds shell.json
-	vitis -s builder.py
+	vitis -s builder.py --target $(TARGET)
 	@echo "INFO: Packaging Completed"
 
 # keep only the makefile, builder.py and shell.json

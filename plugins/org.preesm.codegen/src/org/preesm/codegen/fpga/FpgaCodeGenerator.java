@@ -1255,17 +1255,18 @@ public class FpgaCodeGenerator {
     // that means we simply have to link a cluster to its associated memory read and write kernels.
     for (final Cluster c : clusterList) {
       final AnalysisResultFPGA synthesisResult = (AnalysisResultFPGA) c.getSynthesisResult();
+      final Cluster oc = PreesmCopyTracker.getOriginalSource(c);
       for (final InterfaceActor ia : synthesisResult.interfaceRates.keySet()) {
         sb.append("stream_connect=");
-        final String read_name = "mem_read_" + c.getName();
-        final String write_name = "mem_write_" + c.getName();
+        final String read_name = "mem_read_" + oc.getName();
+        final String write_name = "mem_write_" + oc.getName();
         if (ia instanceof DataInputInterface) {
           sb.append(read_name + "_1.");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
-          sb.append(c.getName() + "_1.");
+          sb.append(oc.getName() + "_1.");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
         } else if (ia instanceof DataOutputInterface) {
-          sb.append(c.getName() + "_1.");
+          sb.append(oc.getName() + "_1.");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
           sb.append(write_name + "_1.");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
