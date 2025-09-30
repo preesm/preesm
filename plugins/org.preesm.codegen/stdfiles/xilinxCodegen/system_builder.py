@@ -3,6 +3,7 @@ import vitis
 import os
 import sys
 import pdb
+import argparse
 
 # Component part numbers : 
 #xck26-sfvc784-2LV-c : kria 260, part number xilinx.com:kr260_som:part0:1.1
