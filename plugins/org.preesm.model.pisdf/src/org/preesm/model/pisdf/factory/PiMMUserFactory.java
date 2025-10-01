@@ -106,12 +106,29 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     if (names.get(s) != null) {
       return names.get(s);
     }
+    String out;
+
     switch (s) {
       case final Cluster c:
         // find original name, to avoid annoying suffixes like _flat or _srdag
         final Cluster oric = PreesmCopyTracker.getOriginalSource(c);
 
-        final String out = oric.getName();
+        out = oric.getName();
+        if (!this.names.containsValue(out)) {
+          return out;
+        } else {
+          Integer nb = 1;
+          // if the name already exists, we simply add a number for now
+          while (this.names.containsValue(out + nb)) {
+            nb += 1;
+          }
+          return out + nb;
+        }
+      case final PiGraph p:
+        // find original name, to avoid annoying suffixes like _flat or _srdag
+        final PiGraph orip = PreesmCopyTracker.getOriginalSource(p);
+
+        out = orip.getName();
         if (!this.names.containsValue(out)) {
           return out;
         } else {
