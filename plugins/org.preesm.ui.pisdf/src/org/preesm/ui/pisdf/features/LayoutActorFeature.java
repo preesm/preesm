@@ -148,69 +148,65 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
   protected int getNewHeight(final EList<Shape> childrenShapes, final EList<Anchor> anchorShapes) {
     // RETRIEVE THE NAME HEIGHT
     int nameHeight = 0;
-    {
-      // Scan the children shape looking for the actor name
-      for (final Shape shape : childrenShapes) {
-        final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
-        // The name should be the only children with type text
-        if (child instanceof final Text cText) {
-          final String text = cText.getValue();
-          final Font font = cText.getFont();
 
-          // Retrieve the size of the text
-          final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-          // Retrieve the space of the name
-          // (+ port gap to add space and lighten the actor representation)
-          nameHeight = size.getHeight() + LayoutActorFeature.PORT_GAP;
-        }
+    // Scan the children shape looking for the actor name
+    for (final Shape shape : childrenShapes) {
+      final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+      // The name should be the only children with type text
+      if (child instanceof final Text cText) {
+        final String text = cText.getValue();
+        final Font font = cText.getFont();
+
+        // Retrieve the size of the text
+        final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
+        // Retrieve the space of the name
+        // (+ port gap to add space and lighten the actor representation)
+        nameHeight = size.getHeight() + LayoutActorFeature.PORT_GAP;
       }
     }
 
     // RETRIEVE THE ANCHOR HEIGHT
-    int anchorMaxHeight = 0;
-    {
-      int inputsHeight = 0;
-      int outputsHeight = 0;
-      int cfgInputsHeight = 0;
-      int cfgOutputsHeight = 0;
-      for (final Anchor anchor : anchorShapes) {
-        // Invisible anchors added to actors in order to start
-        // connections without ports do not have any GraphicAlgorithm
-        // Only process anchors with a GraphicAlgorithm
-        if (anchor.getGraphicsAlgorithm() != null) {
-          // Retrieve the children of the invisible rectangle of the anchor
-          final EList<GraphicsAlgorithm> anchorChildren = anchor.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
+    int anchorMaxHeight;
 
-          // Scan the children of the invisible rectangle looking for the label
-          for (final GraphicsAlgorithm child : anchorChildren) {
-            // The Label of the anchor should be the only child with type Text
-            if (child instanceof final Text cText) {
-              // Retrieve the size of the text
-              final String text = cText.getValue();
-              final Font font = cText.getFont();
-              final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
-              // Write the port font height in AbstractAddActorPortFeature.
-              // This is needed when opening a saved graph because in such case
-              // PORT_FONT_HEIGHT will remain equal to 0 until a port is added to the graph
-              AbstractAddActorPortFeature.portFontHeight = size.getHeight();
-              final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
+    int inputsHeight = 0;
+    int outputsHeight = 0;
+    int cfgInputsHeight = 0;
+    int cfgOutputsHeight = 0;
+    for (final Anchor anchor : anchorShapes) {
+      // Invisible anchors added to actors in order to start
+      // connections without ports do not have any GraphicAlgorithm
+      // Only process anchors with a GraphicAlgorithm
+      if (anchor.getGraphicsAlgorithm() != null) {
+        // Retrieve the children of the invisible rectangle of the anchor
+        final EList<GraphicsAlgorithm> anchorChildren = anchor.getGraphicsAlgorithm().getGraphicsAlgorithmChildren();
 
-              switch (obj.eClass().getClassifierID()) {
-                case PiMMPackage.CONFIG_INPUT_PORT -> cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                case PiMMPackage.CONFIG_OUTPUT_PORT ->
-                  cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                case PiMMPackage.DATA_INPUT_PORT -> inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                case PiMMPackage.DATA_OUTPUT_PORT -> outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-                default -> {
-                  // nothing
-                }
+        // Scan the children of the invisible rectangle looking for the label
+        for (final GraphicsAlgorithm child : anchorChildren) {
+          // The Label of the anchor should be the only child with type Text
+          if (child instanceof final Text cText) {
+            // Retrieve the size of the text
+            final String text = cText.getValue();
+            final Font font = cText.getFont();
+            final IDimension size = GraphitiUi.getUiLayoutService().calculateTextSize(text, font);
+            // Write the port font height in AbstractAddActorPortFeature.
+            // This is needed when opening a saved graph because in such case
+            // PORT_FONT_HEIGHT will remain equal to 0 until a port is added to the graph
+            AbstractAddActorPortFeature.portFontHeight = size.getHeight();
+            final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
+
+            switch (obj.eClass().getClassifierID()) {
+              case PiMMPackage.CONFIG_INPUT_PORT -> cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+              case PiMMPackage.CONFIG_OUTPUT_PORT -> cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+              case PiMMPackage.DATA_INPUT_PORT -> inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+              case PiMMPackage.DATA_OUTPUT_PORT -> outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+              default -> { // nothing
               }
             }
           }
         }
       }
-      anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
     }
+    anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
 
     return anchorMaxHeight + nameHeight + LayoutActorFeature.INITIAL_GAP + LayoutActorFeature.BOTTOM_GAP;
   }

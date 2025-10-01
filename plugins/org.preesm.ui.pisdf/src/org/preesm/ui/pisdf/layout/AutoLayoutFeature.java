@@ -676,15 +676,6 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Point penultimate = bendpoints.get(index);
 
       // Check Gaps one by one
-      // Range matchedRange = null;
-      // for (final Range range : gaps) {
-      // if (((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-      // && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1))) {
-      // matchedRange = range;
-      // break;
-      // }
-      // }
-
       final Range matchedRange = gaps.parallelStream()
           .filter(range -> ((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
               && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1)))
@@ -905,31 +896,36 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Get the type of the getter
     final EObject getter = dependency.getGetter().eContainer();
-    final boolean newYUsed;
-    if (getter instanceof Parameter) {
-      newYUsed = currentYUsed;
-      layoutDependencyToParamter(stagedParameters, param, ffc, getter);
-    } else {
-      // Add a first point below the parameter
-      newYUsed = true;
-      final int xPosition = this.paramXPositions.get(param);
-      final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
-      ffc.getBendpoints().add(0, bPoint);
 
-      if (getter instanceof InterfaceActor) {
-        // fix strange behavior with FFC for interfaces ...
+    return switch (getter) {
+      case final Parameter p -> {
+        layoutDependencyToParamter(stagedParameters, param, ffc, getter);
+        yield currentYUsed;
+      }
+      case final InterfaceActor ia -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().clear();
         ffc.getBendpoints().add(0, bPoint);
         layoutDependencyToInterface(diagram, currentY, currentX, ffc, getter);
-      } else if (getter instanceof AbstractActor) {
-        layoutDependencyToActor(currentY, currentX, ffc);
-      } else if (getter instanceof Delay) {
-        layoutDependencyToDelay(diagram, currentY, currentX, ffc, getter);
-      } else {
-        throw new UnsupportedOperationException();
+        yield true;
       }
-    }
-    return newYUsed;
+      case final AbstractActor aa -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
+        ffc.getBendpoints().add(0, bPoint);
+        layoutDependencyToActor(currentY, currentX, ffc);
+        yield true;
+      }
+      case final Delay d -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
+        ffc.getBendpoints().add(0, bPoint);
+        layoutDependencyToDelay(diagram, currentY, currentX, ffc, getter);
+        yield true;
+      }
+      default -> throw new UnsupportedOperationException();
+    };
   }
 
   private void layoutDependencyToParamter(final List<List<Parameter>> stagedParameters, final Parameter param,
