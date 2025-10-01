@@ -31,28 +31,28 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "scape.task.identifier", name = "Clustering Task",
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
-        @Port(name = "cMem", type = Map.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = "cMem", type = Map.class) },
 
     parameters = {
 
-        @Parameter(name = ClusteringScapeTask.STACK_PARAM, description = "stack size (in Byte)",
-            values = { @Value(name = "Fixed:=n",
-                effect = "the size of the stack allows to quantify the number of allocable buffer "
-                    + "in the stack the rest in the heap") }),
+      @Parameter(name = ClusteringScapeTask.STACK_PARAM, description = "stack size (in Byte)",
+          values = { @Value(name = "Fixed:=n",
+              effect = "the size of the stack allows to quantify the number of allocable buffer "
+                  + "in the stack the rest in the heap") }),
 
-        @Parameter(name = ClusteringScapeTask.LEVEL_PARAM, description = "number of level to cluster",
-            values = { @Value(name = "Fixed:=n",
-                effect = "the number of level to cluster in order to reach flattener performance "
-                    + "and compromising analysis time") }),
+      @Parameter(name = ClusteringScapeTask.LEVEL_PARAM, description = "number of level to cluster",
+          values = { @Value(name = "Fixed:=n",
+              effect = "the number of level to cluster in order to reach flattener performance "
+                  + "and compromising analysis time") }),
 
-        @Parameter(name = ClusteringScapeTask.CLUSTERING_PARAM,
-            description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
-                + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
-            values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
+      @Parameter(name = ClusteringScapeTask.CLUSTERING_PARAM,
+          description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
+              + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
+          values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }),
 
-        @Parameter(name = ClusteringScapeTask.MEMORY_PARAM, description = "simplify memory script for clustering",
-            values = { @Value(name = "Boolean", effect = "switch of memory aware clsutering algorithm") }),
+      @Parameter(name = ClusteringScapeTask.MEMORY_PARAM, description = "simplify memory script for clustering",
+          values = { @Value(name = "Boolean", effect = "switch of memory aware clsutering algorithm") }),
 
     })
 

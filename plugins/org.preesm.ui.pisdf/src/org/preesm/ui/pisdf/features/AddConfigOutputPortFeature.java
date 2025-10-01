@@ -124,8 +124,8 @@ public class AddConfigOutputPortFeature extends AbstractAddActorPortFeature {
     final IGaService gaService = Graphiti.getGaService();
     // Create the port GraphicAlgorithm
     final int[] xy = { 0, (AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE + 2) / 2,
-        AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, 0, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
-        AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE + 2 };
+      AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE, 0, AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE,
+      AbstractAddActorPortFeature.PORT_ANCHOR_GA_SIZE + 2 };
     final Polygon triangle = gaService.createPolygon(containerShape, xy);
 
     triangle.setForeground(manageColor(AddConfigOutputPortFeature.CFG_OUTPUT_PORT_FOREGROUND));

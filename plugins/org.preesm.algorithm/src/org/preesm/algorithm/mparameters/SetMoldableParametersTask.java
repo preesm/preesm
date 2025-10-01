@@ -81,52 +81,52 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Different strategies are possible, exhaustive search or heuristics.",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+      @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class) },
 
     parameters = {
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_NAME,
-            description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
-                + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
-                + "the maximum number of pipeline stages allowed.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_VALUE,
-                effect = "Metrics are compare from left to right.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_NAME,
-            description = "Objectives of the metrics. "
-                + "Threshold if it is any integer higher than 0, minimize it otherwise.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_VALUE,
-                effect = "In the same order as the metrics.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
-            description = "Tells to minimize (-) or maximize (+) a parameter (after main objectives). May be empty.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
-                effect = "Syntax: >+parentGraphName/parameterName>-...") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_NAME,
-            description = "Use a DSE heuristic on all moldable parameter expressions which are integer numbers. "
-                + "Only a subset of their expressions are explored.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_VALUE,
-                effect = "False disables the heuristic.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_NAME,
-            description = "Use a DSE heuristic to try to add delays if it improves the throughput. "
-                + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
-                effect = "False disables the heuristic.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_SCHEDULER_NAME,
-            description = "Set the scheduler used to estimate each configuration point.",
-            values = {
-                @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_FPGA,
-                    effect = "Single FPGA average scheduler."),
-                @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_LIST,
-                    effect = "Homogeneous periodic list scheduler.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_NAME,
-            description = "Set the clustering (positive) distance to be used"
-                + "for DSE points on the metrics Pareto front.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_VALUE,
-                effect = "Disables clustering if zero.") }),
-        @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_LOG_NAME,
-            description = "Export all explored points with associated metrics in a csv file.",
-            values = { @Value(name = SetMoldableParametersTask.DEFAULT_LOG_VALUE,
-                effect = "Path relative to the project root.") }) })
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_NAME,
+          description = "Order of comparisons of the metrics (T for throughput or P for power or E for energy "
+              + "or L for latency or M for makespan, separated by >). Latency is indexed from 1 to "
+              + "the maximum number of pipeline stages allowed.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_COMPARISONS_VALUE,
+              effect = "Metrics are compare from left to right.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_NAME,
+          description = "Objectives of the metrics. "
+              + "Threshold if it is any integer higher than 0, minimize it otherwise.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_THRESHOLDS_VALUE,
+              effect = "In the same order as the metrics.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_NAME,
+          description = "Tells to minimize (-) or maximize (+) a parameter (after main objectives). May be empty.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_PARAMS_OBJVS_VALUE,
+              effect = "Syntax: >+parentGraphName/parameterName>-...") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_NAME,
+          description = "Use a DSE heuristic on all moldable parameter expressions which are integer numbers. "
+              + "Only a subset of their expressions are explored.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_HEURISTIC_VALUE,
+              effect = "False disables the heuristic.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_NAME,
+          description = "Use a DSE heuristic to try to add delays if it improves the throughput. "
+              + "See workflow task pisdf-delays.setter. Number of pipelines is inferred automatically.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_DELAY_RETRY_VALUE,
+              effect = "False disables the heuristic.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_SCHEDULER_NAME,
+          description = "Set the scheduler used to estimate each configuration point.",
+          values = {
+            @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_FPGA,
+                effect = "Single FPGA average scheduler."),
+            @Value(name = SetMoldableParametersTask.SCHEDULER_PARAM_VALUE_LIST,
+                effect = "Homogeneous periodic list scheduler.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_NAME,
+          description = "Set the clustering (positive) distance to be used"
+              + "for DSE points on the metrics Pareto front.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_CLUSTER_DISTANCE_VALUE,
+              effect = "Disables clustering if zero.") }),
+      @org.preesm.commons.doc.annotations.Parameter(name = SetMoldableParametersTask.DEFAULT_LOG_NAME,
+          description = "Export all explored points with associated metrics in a csv file.",
+          values = { @Value(name = SetMoldableParametersTask.DEFAULT_LOG_VALUE,
+              effect = "Path relative to the project root.") }) })
 public class SetMoldableParametersTask extends AbstractTaskImplementation {
 
   public static final String SCHEDULER_PARAM_VALUE_LIST = "homogeneousListPeriodic";

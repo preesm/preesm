@@ -64,22 +64,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-mapper.pfast", name = "PFast Scheduling from PiSDF", category = "Schedulers",
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
-        @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
-        @Parameter(name = "Check", values = { @Value(name = "True") }),
-        @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
-        @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
-        @Parameter(name = "fastTime", values = { @Value(name = "100") }),
-        @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
-        @Parameter(name = "nodesMin", values = { @Value(name = "5") }),
-        @Parameter(name = "procNumber", values = { @Value(name = "1") }),
-        @Parameter(name = "fastNumber", values = { @Value(name = "100") })
+      @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
+      @Parameter(name = "Check", values = { @Value(name = "True") }),
+      @Parameter(name = "Optimize synchronization", values = { @Value(name = "False") }),
+      @Parameter(name = "balanceLoads", values = { @Value(name = "false") }),
+      @Parameter(name = "fastTime", values = { @Value(name = "100") }),
+      @Parameter(name = "fastLocalSearchTime", values = { @Value(name = "10") }),
+      @Parameter(name = "nodesMin", values = { @Value(name = "5") }),
+      @Parameter(name = "procNumber", values = { @Value(name = "1") }),
+      @Parameter(name = "fastNumber", values = { @Value(name = "100") })
 
     })
 public class PFASTMappingFromPiMM extends PFASTMappingFromDAG {

@@ -69,18 +69,18 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "latency", type = Double.class) },
+      @Port(name = "latency", type = Double.class) },
 
     parameters = {
 
-        @Parameter(name = "multicore", values = { @Value(name = "true/false", effect = "") }),
+      @Parameter(name = "multicore", values = { @Value(name = "true/false", effect = "") }),
 
-        @Parameter(name = "method",
-            values = { @Value(name = "FAST", effect = "(default) Hierarchical method"),
-                @Value(name = "FLAT_LP", effect = "Based on Flattening the hierarchy"),
-                @Value(name = "FLAT_SE", effect = "Based on Flattening the hierarchy")
+      @Parameter(name = "method",
+          values = { @Value(name = "FAST", effect = "(default) Hierarchical method"),
+            @Value(name = "FLAT_LP", effect = "Based on Flattening the hierarchy"),
+            @Value(name = "FLAT_SE", effect = "Based on Flattening the hierarchy")
 
-            })
+          })
 
     })
 public class LatencyEvaluationTask extends AbstractTaskImplementation {
@@ -209,34 +209,25 @@ public class LatencyEvaluationTask extends AbstractTaskImplementation {
    */
   private boolean init(final SDFGraph inputGraph, final Scenario scenario) {
     // check the consistency by computing the RV of the graph
-    boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
+    final boolean deadlockFree = IBSDFConsistency.computeRV(inputGraph);
 
     // check the liveness of the graph if consistent
     if (deadlockFree) {
 
       // Copy actors duration from the scenario to actors properties
       for (final SDFAbstractVertex actor : inputGraph.getAllVertices()) {
-        if ("vertex".equals(actor.getKind())) {
-          if (actor.getGraphDescription() == null) {
-            // if atomic actor then copy the duration indicated in the scenario
-            final double duration = scenario.getTimings().evaluateExecutionTimeOrDefault(
-                (AbstractActor) actor.getReferencePiVertex(),
-                scenario.getSimulationInfo().getMainOperator().getComponent());
-            actor.setPropertyValue(DURATION_LITTERAL, duration);
-          } else {
-            // if hierarchical actor then as default the duration is 1
-            // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
-            actor.setPropertyValue(DURATION_LITTERAL, 1.);
-            scenario.getTimings().setExecutionTime((AbstractActor) actor.getReferencePiVertex(),
-                scenario.getSimulationInfo().getMainOperator().getComponent(), 1); // to remove
-          }
-        } else {
-          // keep the duration of input interfaces
+        if (!"vertex".equals(actor.getKind()) || (actor.getGraphDescription() == null)) {
+          // if atomic actor then copy the duration indicated in the scenario
           final double duration = scenario.getTimings().evaluateExecutionTimeOrDefault(
               (AbstractActor) actor.getReferencePiVertex(),
               scenario.getSimulationInfo().getMainOperator().getComponent());
           actor.setPropertyValue(DURATION_LITTERAL, duration);
-
+        } else {
+          // if hierarchical actor then as default the duration is 1
+          // the real duration of the hierarchical actor will be defined later by scheduling its subgraph
+          actor.setPropertyValue(DURATION_LITTERAL, 1.);
+          scenario.getTimings().setExecutionTime((AbstractActor) actor.getReferencePiVertex(),
+              scenario.getSimulationInfo().getMainOperator().getComponent(), 1); // to remove
         }
       }
 

@@ -78,8 +78,7 @@ public class ConstantValue implements Value {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.algorithm.model.parameters.Value#setExpressionSolver(org.preesm.algorithm.model.parameters.
+   * @see org.preesm.algorithm.model.parameters.Value#setExpressionSolver(org.preesm.algorithm.model.parameters.
    * IExpressionSolver)
    */
   @Override

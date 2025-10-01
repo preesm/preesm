@@ -52,7 +52,7 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "scheduleEntries", "preScheduleEntries", "bufferEntities", "taskEntities", "processingUnits",
-    "period", "intervals", "step", "applicationName", "runID", "architecture", "delay" })
+  "period", "intervals", "step", "applicationName", "runID", "architecture", "delay" })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Schedule {
 

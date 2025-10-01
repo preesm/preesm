@@ -66,18 +66,18 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class) },
 
     outputs = { @Port(name = "throughput", type = Double.class), @Port(name = "SDF", type = SDFGraph.class),
-        @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = "scenario", type = Scenario.class) },
 
     parameters = {
 
-        @Parameter(name = "method", values = {
+      @Parameter(name = "method", values = {
 
-            @Value(name = "SR", effect = "Schedule-Replace technique"),
-            @Value(name = "ESR", effect = "Evaluate-Schedule-Replace method"),
-            @Value(name = "HPeriodic", effect = "Hierarchical Periodic Schedule method"),
-            @Value(name = "Classical", effect = "Based on Flattening the hierarchy")
+        @Value(name = "SR", effect = "Schedule-Replace technique"),
+        @Value(name = "ESR", effect = "Evaluate-Schedule-Replace method"),
+        @Value(name = "HPeriodic", effect = "Hierarchical Periodic Schedule method"),
+        @Value(name = "Classical", effect = "Based on Flattening the hierarchy")
 
-        })
+      })
 
     }
 
@@ -85,7 +85,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class ThroughputEvaluationTask extends AbstractTaskImplementation {
 
   private static final String DURATION_LITERAL = "duration";
-  private static final String METHOD_LITERAL = "method";
+  private static final String METHOD_LITERAL   = "method";
 
   /**
    * @author hderoui

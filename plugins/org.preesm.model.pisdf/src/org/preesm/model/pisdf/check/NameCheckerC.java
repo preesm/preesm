@@ -77,9 +77,9 @@ public class NameCheckerC {
    * Only C for now, but it could be extended to C++ keywords also.
    */
   private static final String[] restrictedKeywordsArr = { "auto", "break", "case", "char", "const", "continue",
-      "default", "do", "int", "long", "register", "return", "short", "signed", "sizeof", "static", "struct", "switch",
-      "typedef", "union", "unsigned", "void", "volatile", "while", "double", "else", "enum", "extern", "float", "for",
-      "goto", "if", "inline", "restrict" };
+    "default", "do", "int", "long", "register", "return", "short", "signed", "sizeof", "static", "struct", "switch",
+    "typedef", "union", "unsigned", "void", "volatile", "while", "double", "else", "enum", "extern", "float", "for",
+    "goto", "if", "inline", "restrict" };
 
   /**
    * Set of reserved keyworkds for C, that are not allowed.

@@ -72,15 +72,15 @@ public class DefaultTypeSizesTest {
     @Parameters(name = "Test {1} size = {0}")
     public static Collection<Object[]> data() {
       final Object[][] data = new Object[][] { { "DEFAULT", ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE },
-          { "char", 8 }, { "unsigned char", 8 }, { "short", 16 }, { "unsigned short", 16 }, { "int", 32 },
-          { "unsigned int", 32 }, { "long", 64 }, { "unsigned long", 64 }, { "long long", 64 },
-          { "unsigned long long", 64 }, { "float", 32 }, { "double", 64 }, { "long double", 128 }, { "int8_t", 8 },
-          { "int16_t", 16 }, { "int32_t", 32 }, { "int64_t", 64 }, { "int_fast8_t", 8 }, { "int_fast16_t", 64 },
-          { "int_fast32_t", 64 }, { "int_fast64_t", 64 }, { "int_least8_t", 8 }, { "int_least16_t", 16 },
-          { "int_least32_t", 32 }, { "int_least64_t", 64 }, { "intmax_t", 64 }, { "intptr_t", 64 }, { "uint8_t", 8 },
-          { "uint16_t", 16 }, { "uint32_t", 32 }, { "uint64_t", 64 }, { "uint_fast8_t", 8 }, { "uint_fast16_t", 64 },
-          { "uint_fast32_t", 64 }, { "uint_fast64_t", 64 }, { "uint_least8_t", 8 }, { "uint_least16_t", 16 },
-          { "uint_least32_t", 32 }, { "uint_least64_t", 64 }, { "uintmax_t", 64 }, { "uintptr_t", 64 } };
+        { "char", 8 }, { "unsigned char", 8 }, { "short", 16 }, { "unsigned short", 16 }, { "int", 32 },
+        { "unsigned int", 32 }, { "long", 64 }, { "unsigned long", 64 }, { "long long", 64 },
+        { "unsigned long long", 64 }, { "float", 32 }, { "double", 64 }, { "long double", 128 }, { "int8_t", 8 },
+        { "int16_t", 16 }, { "int32_t", 32 }, { "int64_t", 64 }, { "int_fast8_t", 8 }, { "int_fast16_t", 64 },
+        { "int_fast32_t", 64 }, { "int_fast64_t", 64 }, { "int_least8_t", 8 }, { "int_least16_t", 16 },
+        { "int_least32_t", 32 }, { "int_least64_t", 64 }, { "intmax_t", 64 }, { "intptr_t", 64 }, { "uint8_t", 8 },
+        { "uint16_t", 16 }, { "uint32_t", 32 }, { "uint64_t", 64 }, { "uint_fast8_t", 8 }, { "uint_fast16_t", 64 },
+        { "uint_fast32_t", 64 }, { "uint_fast64_t", 64 }, { "uint_least8_t", 8 }, { "uint_least16_t", 16 },
+        { "uint_least32_t", 32 }, { "uint_least64_t", 64 }, { "uintmax_t", 64 }, { "uintptr_t", 64 } };
 
       return Arrays.asList(data);
     }

@@ -229,8 +229,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
+   * @see org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
    */
   @Override
   public void connectionRemoved(final AbstractEdge<?, ?> e) {

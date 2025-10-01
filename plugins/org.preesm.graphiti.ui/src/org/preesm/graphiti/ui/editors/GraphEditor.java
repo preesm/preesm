@@ -206,7 +206,7 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
 
     final ActionRegistry registry = getActionRegistry();
     final Class<?>[] actions = { CopyAction.class, CutAction.class, PasteAction.class, PrintAction.class,
-        SelectAllAction.class, SetRefinementAction.class };
+      SelectAllAction.class, SetRefinementAction.class };
 
     // Constructs all actions
     for (final Class<?> clz : actions) {

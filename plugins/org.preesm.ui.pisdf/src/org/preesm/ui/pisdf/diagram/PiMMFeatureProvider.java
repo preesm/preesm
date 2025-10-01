@@ -359,10 +359,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       return new ICreateFeature[0];
     }
     return new ICreateFeature[] { new CreateActorFeature(this), new CreateParameterFeature(this),
-        new CreateMoldableParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
-        new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this),
-        new CreateDataOutputInterfaceFeature(this), new CreateBroadcastActorFeature(this),
-        new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
+      new CreateMoldableParameterFeature(this), new CreateConfigInputInterfaceFeature(this),
+      new CreateConfigOutputInterfaceFeature(this), new CreateDataInputInterfaceFeature(this),
+      new CreateDataOutputInterfaceFeature(this), new CreateBroadcastActorFeature(this),
+      new CreateJoinActorFeature(this), new CreateForkActorFeature(this), new CreateRoundBufferActorFeature(this) };
   }
 
   @Override
@@ -421,8 +421,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
       if (obj instanceof ExecutableActor) { // AbstractActor, AbstractVertex
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
-            new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
-            new AddDataOutputPortFeature(this), };
+          new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
+          new AddDataOutputPortFeature(this), };
         features.addAll(Arrays.asList(actorFeatures));
       }
       if (obj instanceof InitActor) { // AbstractActor, AbstractVertex
@@ -432,9 +432,8 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       }
       if (obj instanceof Actor) { // ExecutableActor, AbstractActor, AbstractVertex
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
-            new ClearActorRefinementFeature(this), new OpenRefinementFeature(this),
-            new SetActorMemoryScriptFeature(this), new ClearActorMemoryScriptFeature(this),
-            new OpenMemoryScriptFeature(this) };
+          new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
+          new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
         features.addAll(Arrays.asList(actorFeatures));
       }
 

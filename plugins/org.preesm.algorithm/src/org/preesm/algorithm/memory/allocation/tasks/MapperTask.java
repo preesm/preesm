@@ -67,24 +67,21 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     parameters = {
 
-        @Parameter(name = MapperTask.PARAM_VERBOSE,
-            values = { @Value(name = MapperTask.VALUE_VERBOSE_DEFAULT, effect = "") }),
-        @Parameter(name = "Distribution",
-            description = "Specify which memory architecture should be used to allocate the memory.",
-            values = { @Value(name = "SharedOnly",
+      @Parameter(name = MapperTask.PARAM_VERBOSE,
+          values = { @Value(name = MapperTask.VALUE_VERBOSE_DEFAULT, effect = "") }),
+      @Parameter(name = "Distribution",
+          description = "Specify which memory architecture should be used to allocate the memory.",
+          values = {
+            @Value(name = "SharedOnly",
                 effect = "(Default) All memory objects are allocated in a single memory bank accessible to all PE."),
-                @Value(name = "DistributedOnly",
-                    effect = "Each PE is associated to a private memory bank that no other PE can access. "
-                        + "(Currently not supported by code generation.)"),
-                @Value(name = "Mixed",
-                    effect = "Both private memory banks and a shared memory can be used for allocating memory."),
-                @Value(name = "MixedMerged",
-                    effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
-                        + " memory distribution.") })
-
-    }
-
-)
+            @Value(name = "DistributedOnly",
+                effect = "Each PE is associated to a private memory bank that no other PE can access. "
+                    + "(Currently not supported by code generation.)"),
+            @Value(name = "Mixed",
+                effect = "Both private memory banks and a shared memory can be used for allocating memory."),
+            @Value(name = "MixedMerged",
+                effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
+                    + " memory distribution.") }) })
 public class MapperTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE         = "Verbose";

@@ -63,7 +63,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     category = "Memory Optimization",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "MemEx", type = MemoryExclusionGraph.class), @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = "MemEx", type = MemoryExclusionGraph.class), @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
     shortDescription = "Executes the memory scripts associated to actors and merge buffers.",
@@ -73,49 +73,49 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + "overlapping memory range.",
 
     parameters = {
-        @Parameter(name = "Check",
-            description = "Verification policy used when checking the applicability of the memory scripts written"
-                + " by the developer and associated to the actor.",
-            values = {
-                @Value(name = "Thorough",
-                    effect = "Will generate error messages with a detailed description of the source of the error."
-                        + " This policy should be used when writting memory scripts for the first time."),
-                @Value(name = "Fast",
-                    effect = "All errors in memory script are still detected, but error messages are less verbose. "
-                        + "This verification policy is faster than the Thorough policy."),
-                @Value(name = "None",
-                    effect = "No verification is performed. Use this policy to speed up workflow execution once all"
-                        + " memory scripts have been validated..") }),
-        @Parameter(name = "False Sharing Prevention",
-            description = "Force additional allocation before/after buffer to prevent false sharing issues.",
-            values = { @Value(name = "False", effect = "The false sharing prevention mecanism will not be used."),
-                @Value(name = "True",
-                    effect = "The false sharing prevention mecanism will be used."
-                        + "Using the Data alignement parameter.") }),
-        @Parameter(name = "Data alignment",
-            description = "Option used to force the allocation of buffers with aligned addresses. The data"
-                + " alignment property should always have the same value as the one set in the properties of "
-                + "the Memory Allocation task.",
-            values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
-                @Value(name = "Data",
-                    effect = "All buffers are aligned on addresses that are multiples of their size. For example,"
-                        + "a 32 bits integer is aligned on 32 bits address."),
-                @Value(name = "Fixed:=$$n$$",
-                    effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
-                        + " on addresses that are multiples of n bits.") }),
-        @Parameter(name = "Log Path",
-            description = "Specify whether, and where, a log of the buffer matching optimization should be "
-                + "generated. Generated log are in the markdown format, and provide information "
-                + "on all matches created by scripts as well as which match could be applied by the "
-                + "optimization process.",
-            values = {
-                @Value(name = "path/file.txt",
-                    effect = "The path given in this property is relative to the ”Code generation "
-                        + "directory” defined in the executed scenario."),
-                @Value(name = "empty", effect = "No log will be generated.") }),
-        @Parameter(name = "Verbose", description = "Verbosity of the workflow task.",
-            values = { @Value(name = "True", effect = "The workflow task will be verbose in the console."),
-                @Value(name = "False", effect = "The workflow task will be more quiet in the console.") }), },
+      @Parameter(name = "Check",
+          description = "Verification policy used when checking the applicability of the memory scripts written"
+              + " by the developer and associated to the actor.",
+          values = {
+            @Value(name = "Thorough",
+                effect = "Will generate error messages with a detailed description of the source of the error."
+                    + " This policy should be used when writting memory scripts for the first time."),
+            @Value(name = "Fast",
+                effect = "All errors in memory script are still detected, but error messages are less verbose. "
+                    + "This verification policy is faster than the Thorough policy."),
+            @Value(name = "None",
+                effect = "No verification is performed. Use this policy to speed up workflow execution once all"
+                    + " memory scripts have been validated..") }),
+      @Parameter(name = "False Sharing Prevention",
+          description = "Force additional allocation before/after buffer to prevent false sharing issues.",
+          values = { @Value(name = "False", effect = "The false sharing prevention mecanism will not be used."),
+            @Value(name = "True",
+                effect = "The false sharing prevention mecanism will be used."
+                    + "Using the Data alignement parameter.") }),
+      @Parameter(name = "Data alignment",
+          description = "Option used to force the allocation of buffers with aligned addresses. The data"
+              + " alignment property should always have the same value as the one set in the properties of "
+              + "the Memory Allocation task.",
+          values = { @Value(name = "None", effect = "No special care is taken to align the buffers in memory."),
+            @Value(name = "Data",
+                effect = "All buffers are aligned on addresses that are multiples of their size. For example,"
+                    + "a 32 bits integer is aligned on 32 bits address."),
+            @Value(name = "Fixed:=$$n$$",
+                effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
+                    + " on addresses that are multiples of n bits.") }),
+      @Parameter(name = "Log Path",
+          description = "Specify whether, and where, a log of the buffer matching optimization should be "
+              + "generated. Generated log are in the markdown format, and provide information "
+              + "on all matches created by scripts as well as which match could be applied by the "
+              + "optimization process.",
+          values = {
+            @Value(name = "path/file.txt",
+                effect = "The path given in this property is relative to the ”Code generation "
+                    + "directory” defined in the executed scenario."),
+            @Value(name = "empty", effect = "No log will be generated.") }),
+      @Parameter(name = "Verbose", description = "Verbosity of the workflow task.",
+          values = { @Value(name = "True", effect = "The workflow task will be verbose in the console."),
+            @Value(name = "False", effect = "The workflow task will be more quiet in the console.") }), },
 
     seeAlso = { "**Buffer merging**: Karol Desnos, Maxime Pelcat, Jean-François Nezan, and Slaheddine Aridhi. "
         + "On memory reuse between inputs and outputs of dataflow actors. ACM Transactions on Embedded Computing "

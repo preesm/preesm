@@ -196,8 +196,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
+   * @see org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
    */
   @SuppressWarnings("rawtypes")
   @Override
@@ -208,8 +207,7 @@ public class SDFForkVertex extends SDFAbstractSpecialVertex {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.algorithm.model.AbstractVertex#copyProperties(org.preesm.algorithm.model.PropertySource)
+   * @see org.preesm.algorithm.model.AbstractVertex#copyProperties(org.preesm.algorithm.model.PropertySource)
    */
   @Override
   public void copyProperties(final PropertySource props) {

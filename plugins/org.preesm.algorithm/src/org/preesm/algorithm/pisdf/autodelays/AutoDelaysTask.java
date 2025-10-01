@@ -116,30 +116,30 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + " so the task may take a long time to run if many cycles are present.",
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = {
-        @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
-            description = "Number of graph cuts to consider, " + "higher or equal to the maximum number of cuts.",
-            values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE,
-                effect = "Split the graph in zones of equivalent work load.") }),
-        @Parameter(name = AutoDelaysTask.MAXII_PARAM_NAME,
-            description = "Maximum number of graph cuts induced by the added delays. "
-                + "Each graph cut adds one pipeline stage. If delays are already present, the values are summed.",
-            values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE, effect = "") }),
-        @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
-            description = "Computes all topological graph cuts with a CP solver. "
-                + "All topological cuts are evaluated with a list scheduler to select the best.",
-            values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE, effect = "False disables this comparison.") }),
-        @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
-            description = "Whether or not a schedule must be generated at the end.",
-            values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
-        @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME,
-            description = "Whether or not the cycles must be broken with extra delays.",
-            values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE, effect = "False disables this feature.") }) })
+      @Parameter(name = AutoDelaysTask.SELEC_PARAM_NAME,
+          description = "Number of graph cuts to consider, " + "higher or equal to the maximum number of cuts.",
+          values = { @Value(name = AutoDelaysTask.SELEC_PARAM_VALUE,
+              effect = "Split the graph in zones of equivalent work load.") }),
+      @Parameter(name = AutoDelaysTask.MAXII_PARAM_NAME,
+          description = "Maximum number of graph cuts induced by the added delays. "
+              + "Each graph cut adds one pipeline stage. If delays are already present, the values are summed.",
+          values = { @Value(name = AutoDelaysTask.MAXII_PARAM_VALUE, effect = "") }),
+      @Parameter(name = AutoDelaysTask.CHOCO_PARAM_NAME,
+          description = "Computes all topological graph cuts with a CP solver. "
+              + "All topological cuts are evaluated with a list scheduler to select the best.",
+          values = { @Value(name = AutoDelaysTask.CHOCO_PARAM_VALUE, effect = "False disables this comparison.") }),
+      @Parameter(name = AutoDelaysTask.SCHED_PARAM_NAME,
+          description = "Whether or not a schedule must be generated at the end.",
+          values = { @Value(name = AutoDelaysTask.SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+      @Parameter(name = AutoDelaysTask.CYCLES_PARAM_NAME,
+          description = "Whether or not the cycles must be broken with extra delays.",
+          values = { @Value(name = AutoDelaysTask.CYCLES_PARAM_VALUE, effect = "False disables this feature.") }) })
 
 public class AutoDelaysTask extends AbstractTaskImplementation {
 

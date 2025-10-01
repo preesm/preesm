@@ -79,9 +79,9 @@ public class SCAPEPartitioningTest {
 
     final String testProjectName = "org.ietr.preesm.scape";
     final String[] testScenarios = new String[] { "ABC_5CoresX86.scenario", ABC2_3C, ABC_3C, ABC2_3C, ABC_3C, ABC_3C,
-        "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario", ABC3_3C };
+      "top_3CoresX86.scenario", "ABC2_3CoresX86.scenario", ABC3_3C };
     final String[] testWorkflows = new String[] { "euclide.workflow", "data.workflow", "pip.workflow",
-        "scape1.workflow", SCAPE2, SCAPE2, SCAPE3, "schedule.workflow", SCAPE2 };
+      "scape1.workflow", SCAPE2, SCAPE2, SCAPE3, "schedule.workflow", SCAPE2 };
     for (int i = 0; i < testScenarios.length; i++) {
       params.add(new Object[] { testWorkflows[i], testScenarios[i], testProjectName });
     }

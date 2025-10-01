@@ -60,29 +60,30 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author dgageot
  *
  */
-@PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler", inputs = {
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-        description = "Input PiSDF graph"),
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+@PreesmTask(id = "cluster-scheduler", name = "Cluster Scheduler",
+    inputs = {
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+          description = "Input PiSDF graph"),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
     outputs = {
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-            description = "Output PiSDF graph"),
-        @Port(name = "CS", type = Map.class, description = "Map of Cluster Schedule") },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+          description = "Output PiSDF graph"),
+      @Port(name = "CS", type = Map.class, description = "Map of Cluster Schedule") },
     parameters = {
-        @Parameter(name = "Target",
-            description = "Choose if the whole input graph will be scheduled rather than just clusters.",
-            values = { @Value(name = "Cluster", effect = "Clusters are scheduled."),
-                @Value(name = "Input graph", effect = "Input graph is scheduled.") }),
-        @Parameter(name = "Optimization criteria",
-            description = "Specify the criteria to optimize. If memory is choosen, some parallelizable "
-                + "actors will be sequentialized to minimize memory space. On the other hand, if performance "
-                + "is choosen, the algorithm will exploit every parallelism possibility.",
-            values = { @Value(name = "Memory", effect = "Minimize memory space of resulting clusters"),
-                @Value(name = "Performance", effect = "Maximize performance of resulting clusters") }),
-        @Parameter(name = "Parallelism",
-            description = "Specify if resulting Cluster Schedules have to contain parallelism information.",
-            values = { @Value(name = "True", effect = "Cluster Schedules contain data parallelism information."),
-                @Value(name = "False", effect = "Cluster Schedules are purely sequential.") }) })
+      @Parameter(name = "Target",
+          description = "Choose if the whole input graph will be scheduled rather than just clusters.",
+          values = { @Value(name = "Cluster", effect = "Clusters are scheduled."),
+            @Value(name = "Input graph", effect = "Input graph is scheduled.") }),
+      @Parameter(name = "Optimization criteria",
+          description = "Specify the criteria to optimize. If memory is choosen, some parallelizable "
+              + "actors will be sequentialized to minimize memory space. On the other hand, if performance "
+              + "is choosen, the algorithm will exploit every parallelism possibility.",
+          values = { @Value(name = "Memory", effect = "Minimize memory space of resulting clusters"),
+            @Value(name = "Performance", effect = "Maximize performance of resulting clusters") }),
+      @Parameter(name = "Parallelism",
+          description = "Specify if resulting Cluster Schedules have to contain parallelism information.",
+          values = { @Value(name = "True", effect = "Cluster Schedules contain data parallelism information."),
+            @Value(name = "False", effect = "Cluster Schedules are purely sequential.") }) })
 public class ClusterSchedulerTask extends AbstractTaskImplementation {
 
   public static final String TARGET_CHOICE        = "Target";

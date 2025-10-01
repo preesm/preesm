@@ -77,7 +77,7 @@ public class PiMM2SRDAGTest {
 
     String projectName = "org.ietr.preesm.reinforcement_learning";
     String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
-        "1coreTraining.scenario", "4coreTraining.scenario" };
+      "1coreTraining.scenario", "4coreTraining.scenario" };
     String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -87,9 +87,9 @@ public class PiMM2SRDAGTest {
 
     projectName = "org.ietr.preesm.stereo";
     scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario",
-        "YUV4core.scenario" };
+      "YUV4core.scenario" };
     workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow", "StaticPiMM2SRDAGCodegen.workflow",
-        "XMLCodegen.workflow" };
+      "XMLCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario, projectName });

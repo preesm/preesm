@@ -72,8 +72,8 @@ public class XSDValidationTest {
   @Parameters
   public static Collection<Object[]> data() {
     final Object[][] data = new Object[][] { { "actor_mlp.pi" }, { "top_display.pi" }, { "adam.pi" },
-        { "layer_gradients.pi" }, { "mlp_raw.pi" }, { "mlp.pi" }, { "network_train.pi" }, { "output_gradients.pi" },
-        { "prediction.pi" }, { "training.pi" }, { "weight_generator.pi" } };
+      { "layer_gradients.pi" }, { "mlp_raw.pi" }, { "mlp.pi" }, { "network_train.pi" }, { "output_gradients.pi" },
+      { "prediction.pi" }, { "training.pi" }, { "weight_generator.pi" } };
 
     return Arrays.asList(data);
   }

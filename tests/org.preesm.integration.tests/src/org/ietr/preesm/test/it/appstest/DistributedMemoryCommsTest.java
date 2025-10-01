@@ -59,7 +59,7 @@ import org.junit.runners.Parameterized.Parameters;
 public class DistributedMemoryCommsTest {
 
   static final String[] scenarios = new String[] { "1core.scenario", "2core.scenario", "4core.scenario",
-      "MPPA2.scenario", "MPPA2WithIO.scenario" };
+    "MPPA2.scenario", "MPPA2WithIO.scenario" };
   static final String[] workflows = new String[] { "CodegenDistributedOnly.workflow" };
 
   static final String projectName = "org.ietr.preesm.sobel_parallel";

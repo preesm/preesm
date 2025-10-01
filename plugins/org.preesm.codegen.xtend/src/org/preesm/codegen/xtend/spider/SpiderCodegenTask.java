@@ -78,37 +78,36 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Code Generation",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+      @Port(name = "architecture", type = Design.class) },
 
     shortDescription = "Generate Spider code for dynamic PiSDF.",
 
     parameters = {
-        @Parameter(name = "scheduler", description = "Runtime scheduler to use.",
-            values = { @Value(name = "list_on_the_go"), @Value(name = "round_robin"),
-                @Value(name = "round_robin_scattered"), @Value(name = "list", effect = "(Default)") }),
-        @Parameter(name = "memory-alloc", description = "Runtime memory allocation to use.",
-            values = { @Value(name = "special-actors"), @Value(name = "dummy", effect = "(Default)") }),
-        @Parameter(name = "shared-memory-size", description = "Size of the shared memory allocated by Spider.",
-            values = { @Value(name = "$$n$$", effect = "$$n > 0$$ bytes. (Default = 67108864)") }),
-        @Parameter(name = "papify", description = "Use of PAPIFY. Select type of feedback given too",
-            values = { @Value(name = "off", effect = "PAPIFY is off"),
-                @Value(name = "dump", effect = "PAPIFY is on. Print csv files"),
-                @Value(name = "feedback", effect = "PAPIFY is on. Give feedback to the GRT"),
-                @Value(name = "both", effect = "PAPIFY is on. Print csv files and give feedback to the GRT") }),
-        @Parameter(name = "apollo", description = "Whether to use Apollo.",
-            values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "verbose", description = "Whether to log.",
-            values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "trace", description = "Whether to trace what is happening at runtime.",
-            values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "stack-type", description = "Type of stack to use",
-            values = { @Value(name = "static", effect = "Use static stack"),
-                @Value(name = "dynamic", effect = "Use dynamic stack") }),
-        @Parameter(name = "graph-optims", description = "Whether to optimize the graph at runtime or not",
-            values = { @Value(name = "true / false", effect = "") }),
-        @Parameter(name = "energy-awareness",
-            description = "Whether to activate or not energy-aware mapping/scheduling.",
-            values = { @Value(name = "true/false", effect = "Enable/disable energy-aware mapping/scheduling") }) },
+      @Parameter(name = "scheduler", description = "Runtime scheduler to use.",
+          values = { @Value(name = "list_on_the_go"), @Value(name = "round_robin"),
+            @Value(name = "round_robin_scattered"), @Value(name = "list", effect = "(Default)") }),
+      @Parameter(name = "memory-alloc", description = "Runtime memory allocation to use.",
+          values = { @Value(name = "special-actors"), @Value(name = "dummy", effect = "(Default)") }),
+      @Parameter(name = "shared-memory-size", description = "Size of the shared memory allocated by Spider.",
+          values = { @Value(name = "$$n$$", effect = "$$n > 0$$ bytes. (Default = 67108864)") }),
+      @Parameter(name = "papify", description = "Use of PAPIFY. Select type of feedback given too",
+          values = { @Value(name = "off", effect = "PAPIFY is off"),
+            @Value(name = "dump", effect = "PAPIFY is on. Print csv files"),
+            @Value(name = "feedback", effect = "PAPIFY is on. Give feedback to the GRT"),
+            @Value(name = "both", effect = "PAPIFY is on. Print csv files and give feedback to the GRT") }),
+      @Parameter(name = "apollo", description = "Whether to use Apollo.",
+          values = { @Value(name = "true / false", effect = "") }),
+      @Parameter(name = "verbose", description = "Whether to log.",
+          values = { @Value(name = "true / false", effect = "") }),
+      @Parameter(name = "trace", description = "Whether to trace what is happening at runtime.",
+          values = { @Value(name = "true / false", effect = "") }),
+      @Parameter(name = "stack-type", description = "Type of stack to use",
+          values = { @Value(name = "static", effect = "Use static stack"),
+            @Value(name = "dynamic", effect = "Use dynamic stack") }),
+      @Parameter(name = "graph-optims", description = "Whether to optimize the graph at runtime or not",
+          values = { @Value(name = "true / false", effect = "") }),
+      @Parameter(name = "energy-awareness", description = "Whether to activate or not energy-aware mapping/scheduling.",
+          values = { @Value(name = "true/false", effect = "Enable/disable energy-aware mapping/scheduling") }) },
 
     seeAlso = { "**Spider**: Heulot, Julien; Pelcat, Maxime; Desnos, Karol; Nezan, Jean-François; Aridhi, Slaheddine "
         + "(2014) “SPIDER: A Synchronous Parameterized and Interfaced Dataflow-Based RTOS for Multicore DSPs”. "
@@ -201,10 +200,10 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
     folder.mkdirs();
     if (folder.isDirectory()) {
       // clean the folder
-      for (File file : folder.listFiles()) {
+      for (final File file : folder.listFiles()) {
         try {
           Files.delete(file.toPath());
-        } catch (IOException e) {
+        } catch (final IOException e) {
           PreesmLogger.getLogger().log(Level.FINE, "Could not delete file");
         }
       }

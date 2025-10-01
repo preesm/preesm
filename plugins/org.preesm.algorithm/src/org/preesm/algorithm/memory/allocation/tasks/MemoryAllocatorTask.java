@@ -86,105 +86,106 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             + "allocation information (i.e. buffer addresses, etc.).") },
 
     parameters = {
-        @Parameter(name = MemoryAllocatorTask.PARAM_VERBOSE, description = "Verbosity of the task.",
-            values = { @Value(name = "True", effect = "Detailed statistics of the allocation process are logged"),
-                @Value(name = "False", effect = "Logged information is kept to a minimum") }),
-        @Parameter(name = MemoryAllocatorTask.PARAM_ALLOCATORS,
-            description = "Specify which memory allocation algorithm(s) should be used. If the string value of the "
-                + "parameters contains several algorithm names, all will be executed one by one.",
-            values = { @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC,
+      @Parameter(name = MemoryAllocatorTask.PARAM_VERBOSE, description = "Verbosity of the task.",
+          values = { @Value(name = "True", effect = "Detailed statistics of the allocation process are logged"),
+            @Value(name = "False", effect = "Logged information is kept to a minimum") }),
+      @Parameter(name = MemoryAllocatorTask.PARAM_ALLOCATORS,
+          description = "Specify which memory allocation algorithm(s) should be used. If the string value of the "
+              + "parameters contains several algorithm names, all will be executed one by one.",
+          values = {
+            @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC,
                 effect = "Each memory object is allocated in a dedicated memory space. Memory allocated for a given "
                     + "object is not reused for other."),
-                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT,
-                    effect = "Memory objects are allocated one by one; allocating each object to the available space "
-                        + "in memory whose size is the closest to the size of the allocated object. If MEG exclusions"
-                        + " permit it, memory allocated for a memory object may be reused for others."),
-                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT,
-                    effect = "Memory objects are allocated one by one; allocating each object to the first available "
-                        + "space in memory whose size is the large enough to allocate the object. If MEG exclusions"
-                        + " permit it, memory allocated for a memory object may be reused for others."),
-                @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF,
-                    effect = "Algorithm adapted from DeGreef (1997)}. If MEG exclusions permit it, memory allocated"
-                        + " for a memory object may be reused for others.") }),
-        @Parameter(name = MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
-            description = "Specify which memory architecture should be used to allocate the memory.",
-            values = { @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY,
+            @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT,
+                effect = "Memory objects are allocated one by one; allocating each object to the available space "
+                    + "in memory whose size is the closest to the size of the allocated object. If MEG exclusions"
+                    + " permit it, memory allocated for a memory object may be reused for others."),
+            @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT,
+                effect = "Memory objects are allocated one by one; allocating each object to the first available "
+                    + "space in memory whose size is the large enough to allocate the object. If MEG exclusions"
+                    + " permit it, memory allocated for a memory object may be reused for others."),
+            @Value(name = MemoryAllocatorTask.VALUE_ALLOCATORS_DE_GREEF,
+                effect = "Algorithm adapted from DeGreef (1997)}. If MEG exclusions permit it, memory allocated"
+                    + " for a memory object may be reused for others.") }),
+      @Parameter(name = MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
+          description = "Specify which memory architecture should be used to allocate the memory.",
+          values = {
+            @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY,
                 effect = "(Default) All memory objects are allocated in a single memory bank accessible to all PE."),
-                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY,
-                    effect = "Each PE is associated to a private memory bank that no other PE can access. "
-                        + "(Currently supported only in the MPPA code generation.)"),
-                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED,
-                    effect = "Both private memory banks and a shared memory can be used for allocating memory."),
-                @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED,
-                    effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
-                        + " memory distribution.") }),
-        @Parameter(name = MemoryAllocatorTask.PARAM_XFIT_ORDER,
-            description = "When using FirstFit or BestFit memory allocators, this parameter specifies in which order"
-                + " the memory objects will be fed to the allocation algorithm. If the string value associated to the "
-                + "parameters contains several order names, all will be executed one by one.",
-            values = {
-                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET,
-                    effect = "Memory objects are sorted into disjoint stable sets. Stable sets are formed one after the"
-                        + " other, each with the largest possible number of object. Memory objects are fed to the "
-                        + "allocator set by set and in the largest first order within each stable set."),
-                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET,
-                    effect = "Similar to '" + MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET
-                        + "'. Stable set are built using an exact algorithm instead of a heuristic."),
-                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST,
-                    effect = "Memory objects are allocated in decreasing order of their size."),
-                @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE,
-                    effect = "Memory objects are allocated in a random order. Using the 'Nb of Shuffling Tested' "
-                        + "parameter, it is possible to test several random orders and only keep the best memory"
-                        + " allocation."),
-            // @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING,
-            // effect = "Memory objects are allocated in scheduling order of their 'birth'. The 'birth' of a "
-            // + "memory object is the instant when its memory would be allocated by a dynamic allocator. "
-            // + "This option can be used to mimic the behavior of a dynamic allocator. (Only available for "
-            // + "MEG updated with scheduling information).")
-            }),
-        @Parameter(name = MemoryAllocatorTask.PARAM_ALIGNMENT,
-            description = "Option used to force the allocation of buffers (i.e. Memory objects) with aligned addresses."
-                + " The data alignment property should always have the same value as the one set in the properties of "
-                + "the Memory Scripts task.",
-            values = {
-                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE,
-                    effect = "No special care is taken to align the buffers in memory."),
-                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
-                    effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
-                        + "bites integer is aligned on 32 bits address."),
-                @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
-                    effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
-                        + " on addresses that are multiples of n bits.") }),
-        @Parameter(name = MemoryAllocatorTask.PARAM_NB_SHUFFLE,
-            description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
-                + " parameter.",
-            values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }) },
+            @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_DISTRIBUTED_ONLY,
+                effect = "Each PE is associated to a private memory bank that no other PE can access. "
+                    + "(Currently supported only in the MPPA code generation.)"),
+            @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED,
+                effect = "Both private memory banks and a shared memory can be used for allocating memory."),
+            @Value(name = MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED,
+                effect = "Same as mixed, but the memory allocation algorithm favors buffer merging over"
+                    + " memory distribution.") }),
+      @Parameter(name = MemoryAllocatorTask.PARAM_XFIT_ORDER,
+          description = "When using FirstFit or BestFit memory allocators, this parameter specifies in which order"
+              + " the memory objects will be fed to the allocation algorithm. If the string value associated to the "
+              + "parameters contains several order names, all will be executed one by one.",
+          values = {
+            @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET,
+                effect = "Memory objects are sorted into disjoint stable sets. Stable sets are formed one after the"
+                    + " other, each with the largest possible number of object. Memory objects are fed to the "
+                    + "allocator set by set and in the largest first order within each stable set."),
+            @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET,
+                effect = "Similar to '" + MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET
+                    + "'. Stable set are built using an exact algorithm instead of a heuristic."),
+            @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST,
+                effect = "Memory objects are allocated in decreasing order of their size."),
+            @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE,
+                effect = "Memory objects are allocated in a random order. Using the 'Nb of Shuffling Tested' "
+                    + "parameter, it is possible to test several random orders and only keep the best memory"
+                    + " allocation."),
+          // @Value(name = MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING,
+          // effect = "Memory objects are allocated in scheduling order of their 'birth'. The 'birth' of a "
+          // + "memory object is the instant when its memory would be allocated by a dynamic allocator. "
+          // + "This option can be used to mimic the behavior of a dynamic allocator. (Only available for "
+          // + "MEG updated with scheduling information).")
+          }),
+      @Parameter(name = MemoryAllocatorTask.PARAM_ALIGNMENT,
+          description = "Option used to force the allocation of buffers (i.e. Memory objects) with aligned addresses."
+              + " The data alignment property should always have the same value as the one set in the properties of "
+              + "the Memory Scripts task.",
+          values = {
+            @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_NONE,
+                effect = "No special care is taken to align the buffers in memory."),
+            @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
+                effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
+                    + "bites integer is aligned on 32 bits address."),
+            @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
+                effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
+                    + " on addresses that are multiples of n bits.") }),
+      @Parameter(name = MemoryAllocatorTask.PARAM_NB_SHUFFLE,
+          description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
+              + " parameter.",
+          values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }) },
 
     documentedErrors = {
-        @DocumentedError(
-            message = "The obtained allocation was not valid because mutually exclusive memory objects have "
-                + "overlapping address ranges. The allocator is not working.",
-            explanation = "When checking the result of a memory allocation, two memory objects linked with "
-                + "an exclusion in the MEG were allocated in overlapping memory spaces. The error is caused "
-                + "by an invalid memory allocation algorithm and should be corrected in the source code."),
-        @DocumentedError(
-            message = "The obtained allocation was not valid because there were unaligned memory objects. "
-                + "The allocator is not working.",
-            explanation = "When checking the result of a memory allocation, some memory objects were found "
-                + "not to respect the Dala alignment parameter. The error is caused by an invalid memory "
-                + "allocation algorithm and should be corrected in the source code.") },
+      @DocumentedError(
+          message = "The obtained allocation was not valid because mutually exclusive memory objects have "
+              + "overlapping address ranges. The allocator is not working.",
+          explanation = "When checking the result of a memory allocation, two memory objects linked with "
+              + "an exclusion in the MEG were allocated in overlapping memory spaces. The error is caused "
+              + "by an invalid memory allocation algorithm and should be corrected in the source code."),
+      @DocumentedError(
+          message = "The obtained allocation was not valid because there were unaligned memory objects. "
+              + "The allocator is not working.",
+          explanation = "When checking the result of a memory allocation, some memory objects were found "
+              + "not to respect the Dala alignment parameter. The error is caused by an invalid memory "
+              + "allocation algorithm and should be corrected in the source code.") },
 
     seeAlso = {
-        "**Memory Allocation Algorithms**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and "
-            + "post-scheduling memory allocation strategies on MPSoCs. In Electronic System Level Synthesis "
-            + "Conference (ESLsyn), 2013.",
-        "**Distributed Memory Allocation**: Karol Desnos, Maxime Pelcat, "
-            + "Jean-François Nezan, and Slaheddine Aridhi. Distributed memory allocation technique for "
-            + "synchronous dataflow graphs. In Signal Processing System (SiPS), Workshop on, pages 1–6. "
-            + "IEEE, 2016.",
-        "**Broadcast Merging**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. "
-            + "Memory analysis and optimized allocation of dataflow applications on shared-memory "
-            + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
+      "**Memory Allocation Algorithms**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and "
+          + "post-scheduling memory allocation strategies on MPSoCs. In Electronic System Level Synthesis "
+          + "Conference (ESLsyn), 2013.",
+      "**Distributed Memory Allocation**: Karol Desnos, Maxime Pelcat, "
+          + "Jean-François Nezan, and Slaheddine Aridhi. Distributed memory allocation technique for "
+          + "synchronous dataflow graphs. In Signal Processing System (SiPS), Workshop on, pages 1–6. " + "IEEE, 2016.",
+      "**Broadcast Merging**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. "
+          + "Memory analysis and optimized allocation of dataflow applications on shared-memory "
+          + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
 public class MemoryAllocatorTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE                      = "Verbose";

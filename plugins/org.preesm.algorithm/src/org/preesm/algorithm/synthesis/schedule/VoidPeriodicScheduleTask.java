@@ -65,12 +65,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     description = "Schedule and map actors according to their periods thanks to a list scheduler. "
         + "Only works for homogeneous architectures, does not take into account communication times. "
         + "Works also if there are no periods in the graph.",
-    parameters = { @Parameter(name = VoidPeriodicScheduleTask.SOLVER_PARAM_NAME,
-        description = "Algorithm used to schedule and map.",
-        values = { @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_LIST, effect = "List scheduler."),
+    parameters = {
+      @Parameter(name = VoidPeriodicScheduleTask.SOLVER_PARAM_NAME, description = "Algorithm used to schedule and map.",
+          values = { @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_LIST, effect = "List scheduler."),
             @Value(name = VoidPeriodicScheduleTask.SOLVER_PARAM_VALUE_CHOC, effect = "Optimal CP scheduler.") }) },
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) })
+      @Port(name = "scenario", type = Scenario.class) })
 public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
 
   public static final String SOLVER_PARAM_NAME       = "solver";
@@ -107,7 +107,7 @@ public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    Map<String, String> map = new HashMap<>();
+    final Map<String, String> map = new HashMap<>();
     map.put(SOLVER_PARAM_NAME, SOLVER_PARAM_VALUE_LIST);
     return map;
   }

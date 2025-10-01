@@ -80,7 +80,7 @@ public class TutorialsTest {
     final String sobelProjectName = "org.ietr.preesm.sobel";
     final String[] sobelScenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
     final String[] sobelWorkflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow",
-        "CodegenMemoryDeGreef.workflow" };
+      "CodegenMemoryDeGreef.workflow" };
     for (final String workflow : sobelWorkflows) {
       for (final String scenario : sobelScenarios) {
         params.add(new Object[] { workflow, scenario, sobelProjectName });
@@ -89,9 +89,9 @@ public class TutorialsTest {
 
     final String stereoProjectName = "org.ietr.preesm.stereo";
     final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
-        "lowMaxDisparity.scenario", "YUV4core.scenario" };
+      "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
-        "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow", "CodegenMemoryDeGreef.workflow" };
+      "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow", "CodegenMemoryDeGreef.workflow" };
     for (final String workflow : stereoWorkflows) {
       for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, stereoProjectName });

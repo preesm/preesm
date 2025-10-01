@@ -73,7 +73,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Graph Transformation",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+      @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class), @Port(name = "PiMM", type = PiGraph.class) },
 
@@ -98,9 +98,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "where a single data input/output port of an actor may be connected to several First-In, First-Out "
             + "queues (Fifos).",
         values = {
-            @Value(name = "false",
-                effect = "(default) The suppression of explode/implode special actors is not activated."),
-            @Value(name = "true", effect = "The suppression of explode/implode special actors is activated.") }) },
+          @Value(name = "false",
+              effect = "(default) The suppression of explode/implode special actors is not activated."),
+          @Value(name = "true", effect = "The suppression of explode/implode special actors is activated.") }) },
 
     documentedErrors = { @DocumentedError(message = "Graph not valid, not schedulable",
         explanation = "Single-rate transformation of the SDF graph was aborted because the top level was not "
@@ -108,14 +108,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "tokens — to make it schedulable.") },
 
     seeAlso = {
-        "**Single-rate transformation**: J.L. Pino, S.S. Bhattacharyya, and E.A. Lee. A hierarchical multiprocessor "
-            + "scheduling framework for synchronous dataflow graphs. Electronics Research Laboratory, College of "
-            + "Engineering, University of California, 1995.",
-        "**Special actors**: Karol Desnos, Maxime Pelcat, Jean-François Nezan, and Slaheddine Aridhi. On memory "
-            + "reuse between inputs and outputs of dataflow actors. ACM Transactions on Embedded Computing Systems, "
-            + "15(30):25, January 2016.",
-        "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
-            + "1235 – 1245, sept. 1987." })
+      "**Single-rate transformation**: J.L. Pino, S.S. Bhattacharyya, and E.A. Lee. A hierarchical multiprocessor "
+          + "scheduling framework for synchronous dataflow graphs. Electronics Research Laboratory, College of "
+          + "Engineering, University of California, 1995.",
+      "**Special actors**: Karol Desnos, Maxime Pelcat, Jean-François Nezan, and Slaheddine Aridhi. On memory "
+          + "reuse between inputs and outputs of dataflow actors. ACM Transactions on Embedded Computing Systems, "
+          + "15(30):25, January 2016.",
+      "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
+          + "1235 – 1245, sept. 1987." })
 @Deprecated
 public class StaticPiMM2SrDAGTask extends AbstractTaskImplementation {
 

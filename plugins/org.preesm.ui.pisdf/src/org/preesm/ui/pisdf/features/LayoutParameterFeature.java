@@ -187,7 +187,7 @@ public class LayoutParameterFeature extends AbstractLayoutFeature {
     containerGa.setWidth(newWidth);
     final int height = containerGa.getHeight(); // The height is constant
     final int[] coord = new int[] { newWidth / 2, 0, newWidth, height - 14, newWidth, height, 0, height, 0,
-        height - 14 };
+      height - 14 };
 
     final List<Point> points = ((Polygon) containerGa).getPoints();
     int i = 0;
