@@ -61,7 +61,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Memory Optimization",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
+      @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
     outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
     shortDescription = "Relax memory allocation constraints of the MEG using scheduling information.",
@@ -74,7 +74,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + "the start and completion time of the update, as well as characteristics (number of memory objects,"
             + " density of exclusions) of the MEGs both before and after the update.",
         values = { @Value(name = "false", effect = "(Default) The task will not log information."),
-            @Value(name = "true", effect = "The task will log build and MEG information.") }) },
+          @Value(name = "true", effect = "The task will log build and MEG information.") }) },
 
     seeAlso = { "**MEG update**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
         + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })

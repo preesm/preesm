@@ -76,8 +76,8 @@ public class MemoryAllocationTest {
     final String projectName = "org.preesm.algorithm.memory.allocation.test";
     final String scenario = "bufferAggregate.scenario";
     final String[] workflows = new String[] { "CodegenApproxStableSet.workflow", "CodegenExactStableSet.workflow",
-        "CodegenBasic.workflow", "CodegenFirstFit.workflow", "CodegenBestFit.workflow", "CodegenDeGreef.workflow",
-        "CodegenShuffle.workflow" };
+      "CodegenBasic.workflow", "CodegenFirstFit.workflow", "CodegenBestFit.workflow", "CodegenDeGreef.workflow",
+      "CodegenShuffle.workflow" };
     // "CodegenScheduling.workflow" isn't supported anymore
     for (final String workflow : workflows) {
       params.add(new Object[] { workflow, scenario, projectName });

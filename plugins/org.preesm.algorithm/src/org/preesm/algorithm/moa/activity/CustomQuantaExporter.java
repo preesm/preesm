@@ -102,10 +102,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     parameters = {
 
-        @Parameter(name = "xls_file",
-            values = { @Value(name = "stats/mat/custom_quanta_in/quanta_in_$SCENARIO$.xls", effect = "") }),
-        @Parameter(name = "path", values = { @Value(name = "stats/mat/activity", effect = "") }),
-        @Parameter(name = "human_readable", values = { @Value(name = "Yes", effect = "") })
+      @Parameter(name = "xls_file",
+          values = { @Value(name = "stats/mat/custom_quanta_in/quanta_in_$SCENARIO$.xls", effect = "") }),
+      @Parameter(name = "path", values = { @Value(name = "stats/mat/activity", effect = "") }),
+      @Parameter(name = "human_readable", values = { @Value(name = "Yes", effect = "") })
 
     }
 

@@ -76,7 +76,7 @@ public class MemoryBoundsTest {
     final String projectName = "org.preesm.algorithm.memory.bounds.test";
     final String scenario = "bufferAggregate.scenario";
     final String[] workflows = new String[] { "CodegenHeuristic.workflow", "CodegenOstergard.workflow",
-        "CodegenYamaguchi.workflow" };
+      "CodegenYamaguchi.workflow" };
     for (final String workflow : workflows) {
       params.add(new Object[] { workflow, scenario, projectName });
     }

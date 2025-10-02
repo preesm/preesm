@@ -63,8 +63,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = {
 
-        @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class)
+      @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
+      @Port(name = "architecture", type = Design.class)
 
     },
 

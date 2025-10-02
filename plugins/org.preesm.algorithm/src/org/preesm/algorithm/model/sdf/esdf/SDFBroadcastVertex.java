@@ -171,8 +171,7 @@ public class SDFBroadcastVertex extends SDFAbstractSpecialVertex {
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
+   * @see org.preesm.algorithm.model.AbstractVertex#connectionRemoved(org.preesm.algorithm.model.AbstractEdge)
    */
   @SuppressWarnings("rawtypes")
   @Override

@@ -129,7 +129,7 @@ public class EnergyPage extends ScenarioPage {
 
   /** The pisdf column names. */
   private static final String[] PISDF_COLUMN_NAMES = { "Actors", "Input Parameters", "Expression", "Evaluation",
-      "Value" };
+    "Value" };
 
   private static final int[] PISDF_COLUMN_SIZES = { 200, 200, 200, 50, 50 };
 

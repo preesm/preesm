@@ -50,7 +50,7 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({ "actorName", "singleRateInstanceNumber", "start", "startN", "end", "endN", "core",
-    "processingUnitName", "graphIteration" })
+  "processingUnitName", "graphIteration" })
 public class ScheduleEntry {
 
   @JsonProperty("actorName")

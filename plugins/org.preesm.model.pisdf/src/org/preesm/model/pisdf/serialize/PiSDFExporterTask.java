@@ -76,14 +76,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = {
-        @Parameter(name = PiSDFExporterTask.PARAM_PATH,
-            values = { @Value(name = PiSDFExporterTask.PARAM_PATH_DEFAULT, effect = "default path") }),
-        @Parameter(name = PiSDFExporterTask.PARAM_HIER,
-            values = { @Value(name = "true/false",
-                effect = "Export the whole hierarchy (default: true). When set to true, will export all the "
-                    + "hierarchy in the folder given by 'path', replacing refinement paths. Note: exporting "
-                    + "hierarchical graph with this option set to false can cause the  the consistency check "
-                    + "fail if the children graphs do not exist.") }) })
+      @Parameter(name = PiSDFExporterTask.PARAM_PATH,
+          values = { @Value(name = PiSDFExporterTask.PARAM_PATH_DEFAULT, effect = "default path") }),
+      @Parameter(name = PiSDFExporterTask.PARAM_HIER,
+          values = { @Value(name = "true/false",
+              effect = "Export the whole hierarchy (default: true). When set to true, will export all the "
+                  + "hierarchy in the folder given by 'path', replacing refinement paths. Note: exporting "
+                  + "hierarchical graph with this option set to false can cause the  the consistency check "
+                  + "fail if the children graphs do not exist.") }) })
 
 public class PiSDFExporterTask extends AbstractTaskImplementation {
 

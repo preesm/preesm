@@ -78,7 +78,7 @@ public class PiParametersPage extends ScenarioPage {
 
   /** Table of Column name of the multi-column tree viewer. */
   private static final String[] COLUMN_NAMES = { "Parameters", "Type", "Input Parameters", "Graph Expression",
-      "Override Expression", "Value" };
+    "Override Expression", "Value" };
 
   /** The column size. */
   private static final int[] COLUMN_SIZE = { 200, 75, 200, 200, 200, 50 };

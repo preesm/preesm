@@ -79,7 +79,7 @@ public class ModelTransfoTest {
 
     String projectName = "org.ietr.preesm.model_tests";
     String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
-        "Tests_Flat/delay_setter_getter.scenario" };
+      "Tests_Flat/delay_setter_getter.scenario" };
     String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -89,8 +89,8 @@ public class ModelTransfoTest {
 
     projectName = "org.ietr.preesm.model_tests";
     scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
-        "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
-        "Tests_H/simple_H_delay_p_p.scenario" };
+      "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
+      "Tests_H/simple_H_delay_p_p.scenario" };
     workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
@@ -102,8 +102,8 @@ public class ModelTransfoTest {
 
     projectName = "org.ietr.preesm.model_tests";
     scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
-        "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
-        "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
+      "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
+      "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
     workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {

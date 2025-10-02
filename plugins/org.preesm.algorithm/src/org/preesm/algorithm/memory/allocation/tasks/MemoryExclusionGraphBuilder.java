@@ -66,7 +66,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Memory Optimization",
 
     inputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class),
-        @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "MemEx", type = MemoryExclusionGraph.class) },
 
     shortDescription = "Builds the Memory Exclusion Graph (MEG) modeling the memory allocation constraints.",
@@ -84,7 +84,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + " log the start and completion time of the build, as well as characteristics (number of memory"
             + " objects, density of exclusions) of the produced MEG.",
         values = { @Value(name = "false", effect = "(Default) The task will not log information."),
-            @Value(name = "true", effect = "The task will log build and MEG information.") }) },
+          @Value(name = "true", effect = "The task will log build and MEG information.") }) },
 
     seeAlso = { "**MEG**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Memory bounds for the distributed "
         + "execution of a hierarchical synchronous data-flow graph. In Embedded Computer Systems: "

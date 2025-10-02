@@ -57,10 +57,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  * @author dgageot
  *
  */
-@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner", inputs = {
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-        description = "Input PiSDF graph"),
-    @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
+@PreesmTask(id = "cluster-partitioner", name = "Cluster Partitioner",
+    inputs = {
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+          description = "Input PiSDF graph"),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
         description = "Output PiSDF graph") },
     parameters = { @Parameter(name = ClusterPartitionerTask.NB_PE,

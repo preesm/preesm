@@ -59,19 +59,19 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  */
 @PreesmTask(id = "cluster-partitioner-DATA", name = "Cluster Partitioner DATA",
-    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
-        description = "Scenario") },
+    inputs = {
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class, description = "Scenario") },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
         description = "Output PiSDF graph") },
     parameters = {
-        @Parameter(name = ClusterPartitionerTask.NB_PE,
-            description = "The number of PEs in compute clusters. This information is used to balance actor firings"
-                + " between coarse and fine-grained levels.",
-            values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
-        @Parameter(name = ClusterPartitionerDATATask.CLUSTERING_PARAM,
-            description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
-                + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
-            values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }) })
+      @Parameter(name = ClusterPartitionerTask.NB_PE,
+          description = "The number of PEs in compute clusters. This information is used to balance actor firings"
+              + " between coarse and fine-grained levels.",
+          values = { @Value(name = "Fixed:=n", effect = "Where $$n\\in \\mathbb{N}^*$$.") }),
+      @Parameter(name = ClusterPartitionerDATATask.CLUSTERING_PARAM,
+          description = "choose the clustering mode : 1 = set of clustering config + only fit data parallelism,"
+              + " 2 = set of clustering config + fit data & pip parallelism, 3 = best clustering config ",
+          values = { @Value(name = "Fixed:=n", effect = "switch of clustering algorithm") }) })
 public class ClusterPartitionerDATATask extends ClusterPartitionerTask {
 
   public static final String CLUSTERING_PARAM        = "SCAPE mode";

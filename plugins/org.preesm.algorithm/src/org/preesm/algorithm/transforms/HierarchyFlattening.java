@@ -84,10 +84,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             + " at the top level or deeper in the hierarchy, was not consistent.") },
 
     seeAlso = {
-        "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
-            + "data-flow graphs. In SiPS Proceedings, 2009.",
-        "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
-            + "1235 – 1245, sept. 1987." })
+      "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
+          + "data-flow graphs. In SiPS Proceedings, 2009.",
+      "**Graph consistency**: E.A. Lee and D.G. Messerschmitt. Synchronous data flow. Proceedings of the IEEE, 75(9):"
+          + "1235 – 1245, sept. 1987." })
 @Deprecated
 public class HierarchyFlattening extends AbstractTaskImplementation {
 

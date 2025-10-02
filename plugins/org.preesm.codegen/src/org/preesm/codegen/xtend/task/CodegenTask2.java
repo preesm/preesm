@@ -74,15 +74,16 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "codegen2", name = "Code Generation 2", category = "Code Generation 2",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-        @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
+      @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
+      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
 
-    parameters = { @Parameter(name = "Printer",
-        description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
-            + " code using an extension mechanism that make it possible to define a single printer name for several "
-            + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
-            + "will automatically select the associated printer class, if it exists.",
-        values = {
+    parameters = {
+      @Parameter(name = "Printer",
+          description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
+              + " code using an extension mechanism that make it possible to define a single printer name for several "
+              + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
+              + "will automatically select the associated printer class, if it exists.",
+          values = {
             @Value(name = "C",
                 effect = "Print C code and shared-memory based communications. Currently compatible with x86, c6678, "
                     + "and arm architectures."),
@@ -92,10 +93,10 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),
-        @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
-            values = { @Value(name = "true/false",
-                effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
+      @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+          values = { @Value(name = "true/false",
+              effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
+                  + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
 public class CodegenTask2 extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */

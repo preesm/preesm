@@ -71,7 +71,7 @@ public class PiMMDiagramTypeProvider extends AbstractDiagramTypeProvider {
 
     if (this.toolBehaviorProviders == null) {
       this.toolBehaviorProviders = new IToolBehaviorProvider[] { //
-          new PiMMToolBehaviorProvider(this) };
+        new PiMMToolBehaviorProvider(this) };
     }
     return this.toolBehaviorProviders;
   }

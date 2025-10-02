@@ -60,11 +60,11 @@ public class ClusterSchedulerTest {
 
   static final String   PROJECT           = "org.ietr.preesm.cluster.scheduler";
   static final String[] SCENARIOS         = new String[] { "1coreFlat.scenario", "1coreSobel.scenario",
-      "4coreSobel.scenario" };
+    "4coreSobel.scenario" };
   static final String[] WORKFLOWS_GRAPH   = new String[] { "CodegenGraphPerformance.workflow",
-      "CodegenGraphMemory.workflow" };
+    "CodegenGraphMemory.workflow" };
   static final String[] WORKFLOWS_CLUSTER = new String[] { "CodegenClusterPerformance.workflow",
-      "CodegenClusterMemory.workflow" };
+    "CodegenClusterMemory.workflow" };
 
   final String workflow;
   final String scenario;

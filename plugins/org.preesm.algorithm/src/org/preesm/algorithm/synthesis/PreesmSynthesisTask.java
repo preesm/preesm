@@ -81,21 +81,21 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Multiple available schedulers. Output is working only for the new code generation workflow tasks codegen2.",
 
     parameters = {
-        @Parameter(name = "scheduler", description = "Scheduler used to schedule and map the tasks.",
-            values = { @Value(name = "simple", effect = "Naive greedy list scheduler."),
-                @Value(name = "legacy", effect = "See workflow task pisdf-mapper.list."),
-                @Value(name = "periodic",
-                    effect = "List scheduler (without communication times) respecting actor or graph periods, if any."),
-                @Value(name = "choco",
-                    effect = "Optimal scheduler (without communication times) "
-                        + "respecting actor or graph periods, if any.") }),
-        @Parameter(name = "allocation", description = "Allocate the memory for buffers.",
-            values = { @Value(name = "simple"), @Value(name = "legacy") }) },
+      @Parameter(name = "scheduler", description = "Scheduler used to schedule and map the tasks.",
+          values = { @Value(name = "simple", effect = "Naive greedy list scheduler."),
+            @Value(name = "legacy", effect = "See workflow task pisdf-mapper.list."),
+            @Value(name = "periodic",
+                effect = "List scheduler (without communication times) respecting actor or graph periods, if any."),
+            @Value(name = "choco",
+                effect = "Optimal scheduler (without communication times) "
+                    + "respecting actor or graph periods, if any.") }),
+      @Parameter(name = "allocation", description = "Allocate the memory for buffers.",
+          values = { @Value(name = "simple"), @Value(name = "legacy") }) },
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "architecture", type = Design.class),
-        @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = "scenario", type = Scenario.class) },
     outputs = { @Port(name = "Schedule", type = Schedule.class), @Port(name = "Mapping", type = Mapping.class),
-        @Port(name = "Allocation", type = Allocation.class) })
+      @Port(name = "Allocation", type = Allocation.class) })
 public class PreesmSynthesisTask extends AbstractTaskImplementation {
 
   public static final String VALUE_ALLOCATORS_SIMPLE = "simple";

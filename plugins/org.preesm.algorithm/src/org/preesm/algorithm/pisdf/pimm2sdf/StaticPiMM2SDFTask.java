@@ -77,12 +77,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "features of the PiSDF model of computation are not used.",
 
     seeAlso = {
-        "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
-            + "data-flow graphs. In SiPS Proceedings, 2009.",
-        "**PiSDF**: K. Desnos, M. Pelcat, J.-F. Nezan, S.S. Bhattacharyya, and S. Aridhi. PiMM: Parameterized "
-            + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
-            + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
-            + "on, pages 41–48. IEEE, 2013." })
+      "**IBSDF**: J. Piat, S.S. Bhattacharyya, and M. Raulet. Interface-based hierarchy for synchronous "
+          + "data-flow graphs. In SiPS Proceedings, 2009.",
+      "**PiSDF**: K. Desnos, M. Pelcat, J.-F. Nezan, S.S. Bhattacharyya, and S. Aridhi. PiMM: Parameterized "
+          + "and interfaced dataflow meta-model for MPSoCs runtime reconfiguration. In Embedded Computer "
+          + "Systems: Architectures, Modeling, and Simulation (SAMOS XIII), 2013 International Conference "
+          + "on, pages 41–48. IEEE, 2013." })
 @Deprecated
 public class StaticPiMM2SDFTask extends AbstractTaskImplementation {
 

@@ -56,7 +56,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "org.ietr.preesm.Clustering", name = "Clustering",
 
     inputs = { @Port(name = "SDF", type = SDFGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class) },
+      @Port(name = "architecture", type = Design.class) },
 
     outputs = { @Port(name = "SDF", type = SDFGraph.class) },
 

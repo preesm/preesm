@@ -75,12 +75,11 @@
 
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <jacoco-version>0.8.12</jacoco-version>
+      <jacoco-version>0.8.13</jacoco-version>
       <tycho-version>4.0.13</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
-      <sonar-version>5.0.0.4389</sonar-version>
-      <checkstyle-version>10.21.1</checkstyle-version>
-      <!-- <rcptt-version>2.4.3</rcptt-version> -->
+      <sonar-version>5.2.0.4988</sonar-version>
+      <checkstyle-version>11.1.0</checkstyle-version>
       <rcptt-runner-version>2.5.5</rcptt-runner-version>
       <preesm.coding.policy.version>1.3.1</preesm.coding.policy.version>
       <maven.compiler.release>21</maven.compiler.release>

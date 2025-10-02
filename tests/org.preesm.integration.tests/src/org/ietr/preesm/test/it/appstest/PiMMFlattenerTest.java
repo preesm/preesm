@@ -76,9 +76,9 @@ public class PiMMFlattenerTest {
     final List<Object[]> params = new ArrayList<>();
 
     params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1corePrediction.scenario",
-        "org.ietr.preesm.reinforcement_learning" });
+      "org.ietr.preesm.reinforcement_learning" });
     params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1coreTraining.scenario",
-        "org.ietr.preesm.reinforcement_learning" });
+      "org.ietr.preesm.reinforcement_learning" });
 
     params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.stereo" });
 

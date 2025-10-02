@@ -82,6 +82,7 @@
       <property name="basicOffset" value="2"/>
       <property name="caseIndent" value="2"/>
       <property name="arrayInitIndent" value="2"/>
+      <property name="lineWrappingIndentation" value="2"/>
     </module>
     <module name="CustomImportOrder">
       <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>

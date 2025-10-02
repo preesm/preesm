@@ -67,7 +67,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Exports only static parameters. Name of file is: <graphName>_preesm_params.h",
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     parameters = { @Parameter(name = ParametersExporterTask.PARAM_PATH, values = {
-        @Value(name = ParametersExporterTask.DEFAULT_PATH, effect = "default path, relative to the project") }) })
+      @Value(name = ParametersExporterTask.DEFAULT_PATH, effect = "default path, relative to the project") }) })
 
 public class ParametersExporterTask extends AbstractTaskImplementation {
 

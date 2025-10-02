@@ -63,14 +63,14 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "pisdf-mapper.external", name = "External Scheduling from PiSDF", category = "Schedulers",
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_ABC, type = LatencyAbc.class) },
 
     parameters = {
-        @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })
+      @Parameter(name = "SCHEDULE_FILE", values = { @Value(name = "/schedule.json", effect = "default value") })
 
     })
 public class ExternalMappingFromPiMM extends ExternalMappingFromDAG {

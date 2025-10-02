@@ -60,7 +60,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "org.ietr.preesm.codegen.xtend.task.CodegenPapifyEngineTask", name = "Papify Engine",
 
     inputs = { @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
+      @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
     outputs = { @Port(name = "DAG", type = DirectedAcyclicGraph.class) },
 
     shortDescription = "Deprecated - does nothing (as of v3.9.1). See parameter 'Papify' in CodegenTask'.\n\nOld doc: "

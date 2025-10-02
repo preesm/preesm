@@ -64,14 +64,9 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  */
 @PreesmTask(id = "org.ietr.preesm.algorithm.transforms.IterateAlgorithm", name = "Algorithm Iterator",
 
-    inputs = { @Port(name = "SDF", type = SDFGraph.class) },
-
-    outputs = { @Port(name = "SDF", type = SDFGraph.class) },
-
-    parameters = {
-
-        @Parameter(name = "nbIt", values = { @Value(name = "1", effect = "") }),
-        @Parameter(name = "setStates", values = { @Value(name = "true", effect = "") })
+    inputs = { @Port(name = "SDF", type = SDFGraph.class) }, outputs = { @Port(name = "SDF", type = SDFGraph.class) },
+    parameters = { @Parameter(name = "nbIt", values = { @Value(name = "1", effect = "") }),
+      @Parameter(name = "setStates", values = { @Value(name = "true", effect = "") })
 
     })
 public class IterateAlgorithm extends AbstractTaskImplementation {

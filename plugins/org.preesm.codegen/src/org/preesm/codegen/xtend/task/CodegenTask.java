@@ -76,9 +76,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     category = "Code Generation",
 
     inputs = { @Port(name = "MEGs", type = Map.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SDF_DAG, type = DirectedAcyclicGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
     shortDescription = "Generate code for the application deployment resulting from the workflow execution.",
 
@@ -94,12 +94,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "**preesmStopThreads** to 1. This variable is defined in the **main.c** generated file, and should be "
         + "accessed using extern keyword.",
 
-    parameters = { @Parameter(name = "Printer",
-        description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
-            + " code using an extension mechanism that make it possible to define a single printer name for several "
-            + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
-            + "will automatically select the associated printer class, if it exists.",
-        values = {
+    parameters = {
+      @Parameter(name = "Printer",
+          description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
+              + " code using an extension mechanism that make it possible to define a single printer name for several "
+              + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
+              + "will automatically select the associated printer class, if it exists.",
+          values = {
             @Value(name = "C",
                 effect = "Print C code and shared-memory based communications. Currently compatible with x86, c6678, "
                     + "and arm architectures."),
@@ -109,13 +110,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),
-        @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
-            values = { @Value(name = "true/false",
-                effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
-                    + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
-        @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
-            values = { @Value(name = "true/false",
-                effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
+      @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+          values = { @Value(name = "true/false",
+              effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
+                  + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }),
+      @Parameter(name = "Apollo", description = "Enable the use of Apollo for intra-actor optimization",
+          values = { @Value(name = "true/false",
+              effect = "Print C code with Apollo function calls. " + "Currently compatibe with x86") }) })
 public class CodegenTask extends AbstractTaskImplementation {
 
   /** The Constant PARAM_PRINTER. */

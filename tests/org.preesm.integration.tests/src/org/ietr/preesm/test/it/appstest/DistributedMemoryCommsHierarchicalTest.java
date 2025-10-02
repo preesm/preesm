@@ -60,7 +60,7 @@ public class DistributedMemoryCommsHierarchicalTest {
 
   static final String[] scenarios = new String[] { "4core.scenario" };
   static final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
-      "CodegenMemoryScriptsDistributedOnly.workflow" };
+    "CodegenMemoryScriptsDistributedOnly.workflow" };
 
   static final String projectName = "org.ietr.preesm.stereo";
 

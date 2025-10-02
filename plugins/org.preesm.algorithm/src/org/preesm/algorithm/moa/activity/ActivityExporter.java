@@ -82,8 +82,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     parameters = {
 
-        @Parameter(name = "path", values = { @Value(name = "stats/mat/activity") }),
-        @Parameter(name = "human_readable", values = { @Value(name = "Yes") })
+      @Parameter(name = "path", values = { @Value(name = "stats/mat/activity") }),
+      @Parameter(name = "human_readable", values = { @Value(name = "Yes") })
 
     }
 

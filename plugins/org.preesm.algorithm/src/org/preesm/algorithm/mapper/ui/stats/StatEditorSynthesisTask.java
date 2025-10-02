@@ -73,17 +73,17 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 @PreesmTask(id = "gantt-output", name = "Synthesis Gantt displayer and exporter", category = "Gantt exporters",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-        @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
+      @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
+      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
 
     parameters = {
-        @Parameter(name = StatEditorSynthesisTask.DISPLAY_PARAM,
-            description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
-            values = { @Value(name = "true/false") }),
-        @Parameter(name = StatEditorSynthesisTask.EXPORT_PARAM,
-            description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
-                + "put \"/\" if at root, may be empty.",
-            values = { @Value(name = "/path/to") }) })
+      @Parameter(name = StatEditorSynthesisTask.DISPLAY_PARAM,
+          description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
+          values = { @Value(name = "true/false") }),
+      @Parameter(name = StatEditorSynthesisTask.EXPORT_PARAM,
+          description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
+              + "put \"/\" if at root, may be empty.",
+          values = { @Value(name = "/path/to") }) })
 public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
   public static final String DISPLAY_PARAM   = "display";

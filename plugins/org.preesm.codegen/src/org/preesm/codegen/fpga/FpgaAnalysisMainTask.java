@@ -80,25 +80,24 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Only works for single FPGA architectures with single frequency domain."
         + "Periods in the graph are not taken into account.",
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     parameters = {
-        @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
-            description = "Whether or not the schedule must be shown at the end.",
-            values = {
-                @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
-        @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
-            description = "The name of fifo evaluator to be used.",
-            values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
-                @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
-                @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT,
-                    effect = "Evaluate with ADFG exact mode using ojAlgo."),
-                @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
-                    effect = "Evaluate with ADFG linear approximation mode using ojAlgo.") }),
-        @Parameter(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_NAME,
-            description = "Whether or not the tokens should be packed to otpimize bram usage.",
-            values = { @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE,
-                effect = "False disables this feature.") }) })
+      @Parameter(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_NAME,
+          description = "Whether or not the schedule must be shown at the end.",
+          values = {
+            @Value(name = FpgaAnalysisMainTask.SHOW_SCHED_PARAM_VALUE, effect = "False disables this feature.") }),
+      @Parameter(name = FpgaAnalysisMainTask.FIFO_EVAL_PARAM_NAME,
+          description = "The name of fifo evaluator to be used.",
+          values = { @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG, effect = "Evaluate with average mode."),
+            @Value(name = AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, effect = "Evaluate with SDF mode."),
+            @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT,
+                effect = "Evaluate with ADFG exact mode using ojAlgo."),
+            @Value(name = AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
+                effect = "Evaluate with ADFG linear approximation mode using ojAlgo.") }),
+      @Parameter(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_NAME,
+          description = "Whether or not the tokens should be packed to otpimize bram usage.", values = {
+            @Value(name = FpgaAnalysisMainTask.PACK_TOKENS_PARAM_VALUE, effect = "False disables this feature.") }) })
 
 public class FpgaAnalysisMainTask extends AbstractTaskImplementation {
 

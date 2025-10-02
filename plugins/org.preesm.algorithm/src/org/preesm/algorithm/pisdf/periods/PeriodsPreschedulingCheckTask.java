@@ -95,15 +95,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Works only on flat graphs.",
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = "Selection rate (%)", description = "Percentage of periodic actors to consider.",
-        values = { @Value(name = "100", effect = "All periodic actors are checked.") }) }
-
-)
+        values = { @Value(name = "100", effect = "All periodic actors are checked.") }) })
 public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
   /**
