@@ -278,7 +278,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // some unexplained behavior makes the auto layout feature crash when the selection is not empty.
     // exact cause is not uncovered yet ...
-    emptyEditorSelcetion(diagram);
+    emptyEditorSelection(diagram);
 
     // Check if there are parameterization cycles in the graph.
     // In such a case, do not layout !
@@ -319,7 +319,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     layoutParameters(diagram);
   }
 
-  protected static void emptyEditorSelcetion(final Diagram diagram) {
+  protected static void emptyEditorSelection(final Diagram diagram) {
     final PiMMDiagramEditor activeEditor = (PiMMDiagramEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
         .getActivePage().getActiveEditor();
     activeEditor.selectPictogramElements(new PictogramElement[] { diagram });
