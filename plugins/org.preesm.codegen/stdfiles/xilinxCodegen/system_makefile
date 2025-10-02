@@ -26,7 +26,7 @@ shell.json:
 	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
 
 app_hw_package: remove_previous_builds shell.json
-	vitis -s builder.py --target $(TARGET)
+	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET)
 	@echo "INFO: Packaging Completed"
 
 # keep only the makefile, builder.py and shell.json
