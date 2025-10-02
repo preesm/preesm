@@ -51,7 +51,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.concurrent.ConcurrentSkipListMap;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -638,18 +638,24 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private void layoutInterStageFifos(final Diagram diagram, final List<Fifo> interStageFifos, final Range width,
       final List<Range> gaps) {
 
+    final Comparator<Fifo> fifoComparator = Comparator.comparing(Fifo::getId, Comparable::compareTo);
+    final Comparator<Entry<Fifo, FreeFormConnection>> entryFifoComparator = Comparator
+        .comparing(e -> e.getKey().getId(), Comparable::compareTo);
+
     // Find the FreeFormConnection of each FIFO
     // LinkedHashMap to preserve order (no longer the case, might cause issues)
-    Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
-        Collectors.toMap(fifo -> fifo, fifo -> DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo)));
-    fifoFfcMap = fifoFfcMap.entrySet().stream().sorted(Comparator.comparingInt(e -> e.getKey().hashCode()))
-        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+    // Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
+    // Collectors.toMap(fifo -> fifo, fifo -> DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo)));
+    // fifoFfcMap = fifoFfcMap.entrySet().stream()
+    // // .sorted(Comparator.comparingInt(e -> System.identityHashCode(e.getKey())))
+    // .sorted(entryFifoComparator).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 
-    // final ConcurrentSkipListMap<Fifo,
-    // FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(Comparator.comparingInt(System::identityHashCode));
-    // interStageFifos.parallelStream().forEach(f -> {
-    // fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f));
-    // });
+    final ConcurrentSkipListMap<Fifo, FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(
+        // Comparator.comparingInt(System::identityHashCode));
+        fifoComparator);
+    interStageFifos.parallelStream().forEach(f -> {
+      fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f));
+    });
 
     // Check if any FIFO has a Gap right in front of it
     final List<Fifo> fifoToLayout = new ArrayList<>(fifoFfcMap.keySet());
