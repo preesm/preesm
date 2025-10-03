@@ -5,8 +5,9 @@ import sys
 import pdb
 
 # Component part numbers : 
-#xck26-sfvc784-2LV-c : kria 260
-#xcvu9p-flga2104-2-i : virtex ultrascale+
+#xck26-sfvc784-2LV-c : kria 260, part number xilinx.com:kr260_som:part0:1.1
+#xcvu9p-flga2104-2-i : virtex ultrascale+, 
+# xc7z020-clg400-1 : pynq, part number tul.com.tw:pynq-z2:part0:1.0
 
 def main(comp_name, sys_proj_name, boot_dir, target):
 	workspace = os.path.abspath("./")
