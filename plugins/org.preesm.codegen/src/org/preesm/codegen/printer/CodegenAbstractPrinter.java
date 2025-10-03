@@ -85,6 +85,7 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -518,12 +519,13 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n");
 
     for (final AcceleratorCall acc : accelerators) {
+      final String kernelName = PreesmCopyTracker.getOriginalSource(acc.getOriActor()).getName();
       // result.append(" OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + acc.getActorName()
       // + "\", &err));\n");
       result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read_"
-          + acc.getActorName() + "\", &err));\n");
+          + kernelName + "\", &err));\n");
       result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \""
-          + "mem_write_" + acc.getActorName() + "\", &err));\n");
+          + "mem_write_" + kernelName + "\", &err));\n");
     }
 
     result.append("            valid_device = true;\n"
@@ -795,28 +797,32 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
             .toList();
 
     // Migrate input data to device
+    // I'm not sure the synchronization needs to be that heavy, but I don't want to take risks for now
     for (final Buffer inputBuffer : inputBuffers) {
-      // result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + inputBuffer.getName()
-      // + "_buff}, 0)); // 0 is the flag for migrating data to device \n");
       // CL_TRUE for blocking read, at least for now
       // 0 for 0 offset to the read, at least for now
       result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
           + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
+    }
+    for (final Buffer inputBuffer : inputBuffers) {
+      // CL_TRUE for blocking read, at least for now
+      // 0 for 0 offset to the read, at least for now
       result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
-      // result.append("OCL_CHECK(err, err = q.finish());\n\n");
     }
 
     // accelerators are free-running, therefore we don't need to call them
 
     // Retrieve output data from device
     for (final var outputBuffer : outputBuffers) {
-      // result.append("OCL_CHECK(err, err = q.enqueueMigrateMemObjects({" + outputBuffer.getName()
-      // + "_buff}, CL_MIGRATE_MEM_OBJECT_HOST));\n");
       result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
+    }
+    result.append("OCL_CHECK(err, err = q.finish());\n");
+    for (final var outputBuffer : outputBuffers) {
       result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
           + outputBuffer.getType() + ")*" + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
-      result.append("OCL_CHECK(err, err = q.finish());\n");
     }
+    result.append("OCL_CHECK(err, err = q.finish());\n");
+
     return result;
   }
 
