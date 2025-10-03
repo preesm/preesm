@@ -49,7 +49,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentSkipListMap;
 import org.eclipse.core.runtime.IStatus;
@@ -484,14 +483,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // 0. Disconnect all delays from FIFOs
     final List<Fifo> fifos = graph.getFifos();
+
     for (final Fifo fifo : fifos) {
-      final Delay delay = fifo.getDelay();
-      if (delay != null) {
+      if (fifo.getDelay() != null) {
         final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
 
         // Do the disconnection
         final DeleteDelayFeature df = new DeleteDelayFeature(getFeatureProvider());
-        df.disconnectDelayFromFifo(cs, delay);
+        df.disconnectDelayFromFifo(cs, fifo.getDelay());
       }
     }
 
@@ -590,10 +589,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
   private void layoutFifoToDelay(final Diagram diagram, final int currentY, final int currentX,
       final FreeFormConnection ffc, final Delay delay) {
-    // Get the gap end of the delay
-    // (or the gap just before if the delay is a feedback
-    // delay
-    // of an actor)
+    // Get the gap end of the delay (or the gap just before if the delay is a feedback
+    // delay of an actor)
     final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, delay.getContainingFifo());
     final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
 
@@ -639,23 +636,12 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final List<Range> gaps) {
 
     final Comparator<Fifo> fifoComparator = Comparator.comparing(Fifo::getId, Comparable::compareTo);
-    final Comparator<Entry<Fifo, FreeFormConnection>> entryFifoComparator = Comparator
-        .comparing(e -> e.getKey().getId(), Comparable::compareTo);
 
     // Find the FreeFormConnection of each FIFO
     // LinkedHashMap to preserve order (no longer the case, might cause issues)
-    // Map<Fifo, FreeFormConnection> fifoFfcMap = interStageFifos.parallelStream().collect(
-    // Collectors.toMap(fifo -> fifo, fifo -> DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo)));
-    // fifoFfcMap = fifoFfcMap.entrySet().stream()
-    // // .sorted(Comparator.comparingInt(e -> System.identityHashCode(e.getKey())))
-    // .sorted(entryFifoComparator).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-
-    final ConcurrentSkipListMap<Fifo, FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(
-        // Comparator.comparingInt(System::identityHashCode));
-        fifoComparator);
-    interStageFifos.parallelStream().forEach(f -> {
-      fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f));
-    });
+    final ConcurrentSkipListMap<Fifo, FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(fifoComparator);
+    interStageFifos.parallelStream()
+        .forEach(f -> fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f)));
 
     // Check if any FIFO has a Gap right in front of it
     final List<Fifo> fifoToLayout = new ArrayList<>(fifoFfcMap.keySet());
@@ -938,8 +924,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final FreeFormConnection ffc, final EObject getter) {
     // Get stage
     final int getterStage = getParameterStage(stagedParameters, (Parameter) getter);
-    // layout only if getter is more than one stage away from
-    // setter
+    // layout only if getter is more than one stage away from setter
     final int xPosition = this.paramXPositions.get(param);
     final int yPosition = this.yParamInitPos
         - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
@@ -949,10 +934,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
   private void layoutDependencyToDelay(final Diagram diagram, final int currentY, final int currentX,
       final FreeFormConnection ffc, final EObject getter) {
-    // Get the gap end of the delay
-    // (or the gap just before if the delay is a feedback
-    // delay
-    // of an actor)
+    // Get the gap end of the delay (or the gap just before if the delay is a feedback
+    // delay of an actor)
     final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, ((Delay) getter).getContainingFifo());
     final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
 
@@ -964,8 +947,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         gapEnd = range.start;
       }
 
-      // If the delay is between this stage and the
-      // previous
+      // If the delay is between this stage and the previous
       if ((i > 0) && (range.start > delayGA.getX()) && (gapEnd == -1)) {
         gapEnd = range.start;
       }
