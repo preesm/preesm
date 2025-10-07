@@ -13,7 +13,7 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	workspace = os.path.abspath("./")
 	hls_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
-	sysroot = boot_dir + "sysroot/"
+	sysroot = boot_dir + "sysroots/cortexa72-cortexa53-xilinx-linux/"
 
 	targets = {"kr260": "xck26-sfvc784-2LV-c", "ultrascale": "xck26-sfvc784-2LV-c"}
 
