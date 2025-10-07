@@ -60,7 +60,6 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -309,9 +308,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       // Add the actor to the graph
       this.currentResultSrDAG.addActor(copyGraph);
 
-      if (copyGraph instanceof final Cluster cluster) {
+      if (copyGraph instanceof final PiGraph g && g.isCluster()) {
         // now we must connect the new cluster's inner config interfaces to their outer parameters in the new graph
-        for (final ConfigInputPort cip : cluster.getConfigInputPorts()) {
+        for (final ConfigInputPort cip : g.getConfigInputPorts()) {
           // cip.setIncomingDependency(param2param.get(cip.getIncomingDependency()));
           // param2param : fait un lien entre anciennes et nouvelles cii (entre autre)
 
@@ -321,7 +320,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
               .filter(cii -> cii.getName().equals(cip.getName())).findFirst();
           if (oldcip.isEmpty()) {
             throw new PreesmRuntimeException("Couldn't find config input interface equivalent of parameter "
-                + cip.getName() + " in cluster " + cluster.getName());
+                + cip.getName() + " in cluster " + g.getName());
           }
 
           // ensuite on peut retrouver le paramètre setter de ce cii dans l'ancien graphe
@@ -706,7 +705,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
 
     final List<AbstractVertex> returnList = new LinkedList<>();
-    if (sinkActor.getContainingPiGraph() instanceof Cluster) {
+    if (sinkActor.getContainingPiGraph().isCluster()) {
       final DataInputInterface dipCopy = PiMMUserFactory.instance.copyWithHistory((DataInputInterface) sourceActor);
       currentResultSrDAG.addActor(dipCopy);
       // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
@@ -850,7 +849,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     }
 
     final List<AbstractVertex> returnList = new LinkedList<>();
-    if (sourceActor.getContainingPiGraph() instanceof Cluster) {
+    if (sourceActor.getContainingPiGraph().isCluster()) {
       final DataOutputInterface dopCopy = PiMMUserFactory.instance.copyWithHistory((DataOutputInterface) sinkActor);
       currentResultSrDAG.addActor(dopCopy);
       // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
@@ -1068,9 +1067,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     // If it is a cluster, do nothing
-    if (graph instanceof final Cluster cluster) {
+    if (graph instanceof final PiGraph g && g.isCluster()) {
       this.currentGraphIsCluster = true;
-      return caseCluster(cluster);
+      return caseCluster(g);
     }
 
     this.currentGraphIsCluster = false;
@@ -1161,7 +1160,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *          the cluster
    * @return true
    */
-  public Boolean caseCluster(Cluster cluster) {
+  public Boolean caseCluster(PiGraph cluster) {
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
 
     // we have to manage all combinations of cases for graphs that should or not be flattened and/or converted to srdag
@@ -1324,7 +1323,8 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final Map<String, List<AbstractVertex>> clusterMap = new HashMap<>();
     // save the mappings of cluster actors
     for (final Map.Entry<String, List<AbstractVertex>> t : this.actor2SRActors.entrySet()) {
-      final List<AbstractVertex> l = t.getValue().stream().filter(a -> a instanceof Cluster).toList();
+      final List<
+          AbstractVertex> l = t.getValue().stream().filter(a -> a instanceof final PiGraph g && g.isCluster()).toList();
       if (!l.isEmpty()) {
         clusterMap.put(t.getKey(), t.getValue());
       }

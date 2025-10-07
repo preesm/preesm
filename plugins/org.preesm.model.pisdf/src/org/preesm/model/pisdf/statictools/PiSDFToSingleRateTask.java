@@ -52,7 +52,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.Arch;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.workflow.elements.Workflow;
@@ -93,8 +92,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
     // List of pigraphs that must not be converted to srdag
     final List<String> srdagExclusionList = graph.getAllChildrenGraphs().stream()
-        .filter(g -> g instanceof final Cluster c && c.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName())
-        .toList();
+        .filter(g -> g.isCluster() && g.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).toList();
 
     // Flatten the graph
     final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(graph, method, flattenExclusionList,

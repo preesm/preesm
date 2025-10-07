@@ -53,7 +53,6 @@ import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
@@ -93,9 +92,9 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
 
     for (final AbstractActor actor : orderedActors) {
       long duration = 0;
-      if (actor instanceof final Cluster cluster) {
+      if (actor instanceof final PiGraph g && g.isCluster()) {
         // we already computed the fpga cluster's latency during the local synthesis step
-        final SynthesisResult sr = (SynthesisResult) cluster.getSynthesisResult();
+        final SynthesisResult sr = (SynthesisResult) g.getSynthesisResult();
         duration = sr.latency.getValue();
       } else {
         duration = this.doSwitch(actor);
@@ -104,8 +103,8 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
       // need the first filter to check only executable actors, and not for instance interfaces that have no timings
       // associated
       long startTime = scheduleOM.getDirectPredecessors(actor).stream()
-          .filter(a -> a instanceof ExecutableActor || a instanceof Cluster).mapToLong(a -> res.get(a).getEndTime())
-          .max().orElse(0L);
+          .filter(a -> a instanceof ExecutableActor || a.isCluster()).mapToLong(a -> res.get(a).getEndTime()).max()
+          .orElse(0L);
 
       // refine the startTime of periodic actors from firing instance number
       if (actor instanceof final PeriodicElement pe) {

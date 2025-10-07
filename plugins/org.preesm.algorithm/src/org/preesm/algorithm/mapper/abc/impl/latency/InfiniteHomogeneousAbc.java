@@ -48,7 +48,7 @@ import org.preesm.algorithm.mapper.params.AbcParameters;
 import org.preesm.algorithm.mapper.tools.TLevelIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.Cluster;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComNode;
 import org.preesm.model.slam.ComponentInstance;
@@ -105,8 +105,8 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     final ComponentInstance mainComNode = scenario.getSimulationInfo().getMainComNode();
 
     ComponentInstance mainOperator;
-    if (this.getDAG().getReferencePiMMGraph() instanceof final Cluster cluster) {
-      mainOperator = scenario.getPossibleMappings(cluster).getFirst();
+    if (this.getDAG().getReferencePiMMGraph() instanceof final PiGraph g && g.isCluster()) {
+      mainOperator = scenario.getPossibleMappings(g).getFirst();
     } else {
       mainOperator = scenario.getSimulationInfo().getMainOperator();
     }

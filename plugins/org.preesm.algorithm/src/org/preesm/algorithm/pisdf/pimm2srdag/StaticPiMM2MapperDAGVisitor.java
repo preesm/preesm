@@ -75,7 +75,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -390,7 +389,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    *          the MapperDAG vertex
    */
   private void setArguments(final AbstractActor actor, final MapperDAGVertex vertex) {
-    if (actor instanceof Cluster) {
+    if (actor.isCluster()) {
       // clusters are hierarchical actors, and the way they are copied by preesm copying tools lets their config ports
       // without dependencies. Thus looping on them makes no sense.
       return;
@@ -665,7 +664,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
       final ComponentInstance operatorId = cg.getKey();
       if (vertexPaths.contains(actor)) {
         currentOperatorIDs.add(operatorId);
-      } else if (actor.getContainingGraph() instanceof Cluster) {
+      } else if (actor.getContainingGraph() instanceof final PiGraph p && p.isCluster()) {
         // a cluster actor's mappings are the same as its cluster's
         if (vertexPaths.contains(PreesmCopyTracker.getOriginalSource(actor.getContainingPiGraph()))) {
           currentOperatorIDs.add(operatorId);
@@ -681,10 +680,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
 
     if (graph.isCluster()) {
-      if (graph instanceof final Cluster cluster) {
-        return caseCluster(cluster);
-      }
-      return caseAbstractActor(graph);
+      // if (graph instanceof final Cluster cluster) {
+      // return caseCluster(cluster);
+      // }
+      // return caseAbstractActor(graph);
+      return caseCluster(graph);
     }
 
     checkInput(graph);
@@ -692,8 +692,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     // Convert vertices
     for (final AbstractActor actor : graph.getActors()) {
       StaticPiMM2MapperDAGVisitor.updateScenarioData(actor, this.scenario);
-      if (actor instanceof final Cluster cluster) {
-        caseClusterAsActor(cluster);
+      if (actor instanceof final PiGraph g && g.isCluster()) {
+        caseClusterAsActor(g);
       } else {
         doSwitch(actor);
       }
@@ -720,7 +720,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    *          the cluster
    * @return true if things went fine
    */
-  public Boolean caseClusterAsActor(Cluster cluster) {
+  public Boolean caseClusterAsActor(PiGraph cluster) {
 
     final MapperDAGVertex vertex = (MapperDAGVertex) this.vertexFactory.createVertex(DAGVertex.DAG_VERTEX, cluster);
 
@@ -733,8 +733,8 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     return true;
   }
 
-  @Override
-  public Boolean caseCluster(Cluster cluster) {
+  // @Override
+  public Boolean caseCluster(PiGraph cluster) {
     // retirer les interfaces ? faire une copie sans interface ?
 
     checkInput(cluster);

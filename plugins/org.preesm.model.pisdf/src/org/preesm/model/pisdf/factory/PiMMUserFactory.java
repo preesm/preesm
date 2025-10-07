@@ -50,7 +50,6 @@ import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputInterface;
@@ -109,21 +108,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     String out;
 
     switch (s) {
-      case final Cluster c:
-        // find original name, to avoid annoying suffixes like _flat or _srdag
-        final Cluster oric = PreesmCopyTracker.getOriginalSource(c);
-
-        out = oric.getName();
-        if (!this.names.containsValue(out)) {
-          return out;
-        } else {
-          Integer nb = 1;
-          // if the name already exists, we simply add a number for now
-          while (this.names.containsValue(out + nb)) {
-            nb += 1;
-          }
-          return out + nb;
-        }
       case final PiGraph p:
         // find original name, to avoid annoying suffixes like _flat or _srdag
         final PiGraph orip = PreesmCopyTracker.getOriginalSource(p);
@@ -131,14 +115,13 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
         out = orip.getName();
         if (!this.names.containsValue(out)) {
           return out;
-        } else {
-          Integer nb = 1;
-          // if the name already exists, we simply add a number for now
-          while (this.names.containsValue(out + nb)) {
-            nb += 1;
-          }
-          return out + nb;
         }
+        Integer nb = 1;
+        // if the name already exists, we simply add a number for now
+        while (this.names.containsValue(out + nb)) {
+          nb += 1;
+        }
+        return out + nb;
 
       default:
         return s.toString();
@@ -554,11 +537,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
-  @Override
-  public Cluster createCluster() {
-    final Cluster c = super.createCluster();
-    c.setClusterValue(true);
-    return c;
+  public PiGraph createCluster() {
+    final PiGraph cluster = super.createPiGraph();
+    cluster.setClusterValue(true);
+    return cluster;
   }
 
 }

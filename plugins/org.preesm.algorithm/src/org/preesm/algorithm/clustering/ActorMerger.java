@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.Set;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -34,10 +33,10 @@ public class ActorMerger {
    * @param actorsToMerge
    *          the set of actors that have to be merged
    */
-  public static Cluster mergeActors(PiGraph graph, Set<AbstractActor> actorsToMerge, String name) {
+  public static PiGraph mergeActors(PiGraph graph, Set<AbstractActor> actorsToMerge, String name) {
     final var PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
 
-    final Cluster innerSDF = PiMMFactory.createCluster();
+    final PiGraph innerSDF = PiMMFactory.createCluster();
     innerSDF.setClusterValue(true);
     innerSDF.setName(name);
     innerSDF.setExpression(PiMMFactory.createExpression());

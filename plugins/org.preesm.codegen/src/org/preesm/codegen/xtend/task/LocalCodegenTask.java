@@ -77,7 +77,6 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
@@ -165,16 +164,15 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
 
     final Map<PiGraph, SynthesisResult> localSyntheses = (Map<PiGraph, SynthesisResult>) inputs.get("localSyntheses");
 
-    final List<Cluster> listClusters = algo.getChildrenGraphs().stream().filter(Cluster.class::isInstance)
-        .map(c -> (Cluster) c).toList();
+    final List<PiGraph> listClusters = algo.getClusters();
 
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(LocalCodegenTask.PARAM_PAPIFY));
 
-    for (final Cluster cluster : listClusters) {
+    for (final PiGraph cluster : listClusters) {
       final var original = PreesmCopyTracker.getOriginalSource(cluster);
       final SynthesisResult localSynthesisResults = localSyntheses.get(original);
-      PreesmLogger.getLogger().info("Local codegen of cluster " + original.getName());
+      PreesmLogger.getLogger().info("\tLocal codegen of cluster " + original.getName());
 
       // a cluster should have only one mapping (at least for now)
       final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
@@ -192,7 +190,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     return res;
   }
 
-  private void buildClusterCode(Cluster cluster, Scenario scenario, SynthesisResult localSynthesis, Design archi) {
+  private void buildClusterCode(PiGraph cluster, Scenario scenario, SynthesisResult localSynthesis, Design archi) {
     // instead of passing the list of ordered actors for link and generateCode, we would pass the SOM
     final List<AbstractActor> totallyOrderedActors = new ScheduleOrderManager(cluster, localSynthesis.schedule)
         .buildScheduleAndTopologicalOrderedList();
@@ -239,7 +237,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
 
   }
 
-  private CHeaderRefinement buildClusterRefinement(Cluster cluster, Scenario scenario) {
+  private CHeaderRefinement buildClusterRefinement(PiGraph cluster, Scenario scenario) {
 
     // 1 : extract function's arguments
     final CHeaderRefinement clusterHeader = PiMMFactory.createCHeaderRefinement();
@@ -291,7 +289,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     return clusterHeader;
   }
 
-  private StringBuilder buildClusterHContent(Cluster cluster) {
+  private StringBuilder buildClusterHContent(PiGraph cluster) {
     final CHeaderRefinement refinement = (CHeaderRefinement) cluster.getRefinement();
     final StringBuilder Hcontent = fileHeader(cluster);
 
@@ -322,7 +320,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
    *          Cluster to consider.
    * @return The string content of the loopFunction.
    */
-  private String loopFunctionSignature(Cluster cluster, CHeaderRefinement refinement) {
+  private String loopFunctionSignature(PiGraph cluster, CHeaderRefinement refinement) {
     final StringBuilder funcLoop = new StringBuilder();
 
     funcLoop.append("void " + cluster.getName() + "(");
@@ -346,7 +344,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     return funcLoop.toString();
   }
 
-  private StringBuilder generateCalls(Cluster cluster) {
+  private StringBuilder generateCalls(PiGraph cluster) {
     final StringBuilder result = new StringBuilder();
 
     for (final Actor actor : cluster.getActorsWithRefinement()) {
@@ -394,7 +392,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     return result;
   }
 
-  private StringBuilder generateBuffers(Cluster cluster, Long stackSize) {
+  private StringBuilder generateBuffers(PiGraph cluster, Long stackSize) {
     Long count = 0L;
 
     final StringBuilder result = new StringBuilder();
@@ -439,7 +437,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
    *          Cluster to consider.
    * @return The string content of the header file.
    */
-  private StringBuilder fileHeader(Cluster cluster) {
+  private StringBuilder fileHeader(PiGraph cluster) {
     final StringBuilder result = new StringBuilder();
     result.append("/**\n");
     final String nameGraph = cluster.getName();

@@ -9,7 +9,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -58,7 +57,7 @@ public class ClusteringTask extends AbstractTaskImplementation {
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
 
-    List<Cluster> clustersList = new LinkedList<>();
+    List<PiGraph> clustersList = new LinkedList<>();
 
     if (CLUSTERIZE) {
       PreesmLogger.getLogger().info(" -- Clustering task --");
@@ -85,8 +84,8 @@ public class ClusteringTask extends AbstractTaskImplementation {
    * @param scenario
    *          the scenario
    */
-  private void updateSubgraphsMappings(List<Cluster> clustersList, Scenario scenario) {
-    for (final Cluster cluster : clustersList) {
+  private void updateSubgraphsMappings(List<PiGraph> clustersList, Scenario scenario) {
+    for (final PiGraph cluster : clustersList) {
       // a cluster is mapped to only 1 component
       final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
 

@@ -9,12 +9,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Arch;
-import org.preesm.model.pisdf.Cluster;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
@@ -22,6 +21,7 @@ import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -45,25 +45,49 @@ public class ClusterBuilder {
    *
    * @return the list of cluster actors created
    */
-  public static List<Cluster> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
+  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
     /*
      * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
      * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
      * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
-    final List<Cluster> listClusters = new LinkedList<>();
+    final List<PiGraph> listClusters = new LinkedList<>();
 
-    final EList<AbstractActor> listActors = graph.getActors();
+    // need to convert to mutable list in order to remove elements later
+    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors());
     final Map<AbstractActor,
         Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
     final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
     final Component refCPUArch = refCPU.getComponent();
 
-    // list all processing elements (i.e component instances) used in the architecture
-    final EList<ComponentInstance> componentList = scenario.getDesign().getComponentInstances();
+    // list all processing elements (i.e component instances) used in the Design
+    final List<ComponentInstance> componentList = scenario.getDesign().getComponentInstances().stream()
+        .filter(ci -> ci.getComponent() instanceof ProcessingElement).toList();
 
+    // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
+    for (final PiGraph subGraph : graph.getChildrenGraphs()) {
+      final List<ExecutableActor> actors = subGraph.getExecutableActors();
+      List<Component> sharedComponents = scenario.getDesign().getComponents();
+
+      // compute intersection for all actors
+      for (final ExecutableActor a : actors) {
+        final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
+        sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
+      }
+
+      if (!sharedComponents.isEmpty()) {
+        subGraph.setClusterValue(true);
+        switch (sharedComponents.getFirst()) {
+          case final FPGA f -> subGraph.setTargetArch(Arch.FPGA);
+          default -> subGraph.setTargetArch(Arch.CPU);
+        }
+        listActors.remove(subGraph);
+      }
+    }
+
+    // 3) clusterize actors ath this level of hierarchy
     int i = 0;
     boolean graph_is_fully_searched = false;
     // visit all actors to search those that can act as seeds
@@ -144,7 +168,7 @@ public class ClusterBuilder {
         final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
             + " into cluster " + clusterName + "on component(s) " + clusteringComponents;
         PreesmLogger.getLogger().log(Level.INFO, info);
-        final Cluster clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
 
