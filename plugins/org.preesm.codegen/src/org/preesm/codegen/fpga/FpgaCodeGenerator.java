@@ -66,7 +66,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -1249,13 +1248,13 @@ public class FpgaCodeGenerator {
     final StringBuilder sb = new StringBuilder("");
 
     final List<
-        Cluster> clusterList = algo.getAllClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA)).toList();
+        PiGraph> clusterList = algo.getAllClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA)).toList();
 
     // for now, I will assume no fpga cluster is linked to another fpga cluster
     // that means we simply have to link a cluster to its associated memory read and write kernels.
-    for (final Cluster c : clusterList) {
+    for (final PiGraph c : clusterList) {
       final AnalysisResultFPGA synthesisResult = (AnalysisResultFPGA) c.getSynthesisResult();
-      final Cluster oc = PreesmCopyTracker.getOriginalSource(c);
+      final PiGraph oc = PreesmCopyTracker.getOriginalSource(c);
       for (final InterfaceActor ia : synthesisResult.interfaceRates.keySet()) {
         sb.append("stream_connect=");
         final String read_name = "mem_read_" + oc.getName();

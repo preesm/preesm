@@ -70,13 +70,13 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.slam.ComponentInstance;
@@ -150,7 +150,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
   /**
    * Creates a core block for the the purpose of cluster code generation
    */
-  public final CoreBlock createCoreBlock(final ComponentInstance cmp, Cluster cluster) {
+  public final CoreBlock createCoreBlock(final ComponentInstance cmp, PiGraph cluster) {
     final CoreBlock coreBlock = super.createCoreBlock();
     final CallBlock initBlock = super.createCallBlock();
     final LoopBlock loopBlock = super.createLoopBlock();
@@ -273,7 +273,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
   /**
    *
    */
-  public final ActorFunctionCall createClusterFunctionCall(final Cluster cluster, final FunctionPrototype prototype,
+  public final ActorFunctionCall createClusterFunctionCall(final PiGraph cluster, final FunctionPrototype prototype,
       final Map<Port, Variable> portValues) {
     if (prototype.isCPP()) {
       throw new PreesmRuntimeException(
@@ -302,7 +302,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
   /**
   *
   */
-  public final AcceleratorCall createAcceleratorCall(final Cluster cluster, final FunctionPrototype prototype,
+  public final AcceleratorCall createAcceleratorCall(final PiGraph cluster, final FunctionPrototype prototype,
       final Map<Port, Variable> portValues) {
     if (prototype.isCPP()) {
       throw new PreesmRuntimeException(

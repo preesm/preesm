@@ -86,7 +86,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
@@ -156,7 +155,7 @@ public class CodegenModelGenerator2 {
     this.memoryLinker = memLinker;
   }
 
-  public static List<Block> generateClusterCode(final Design archi, final Cluster algo, final Scenario scenario,
+  public static List<Block> generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
       SynthesisResult localSynthesis, final boolean papify, Map<ComponentInstance, CoreBlock> coreBlocks,
       List<AbstractActor> totallyOrderedActors) {
 
@@ -194,7 +193,7 @@ public class CodegenModelGenerator2 {
 
       // add all the accelerator architectures that will have to be initialized to the main core
       if (cmp.equals(scenario.getSimulationInfo().getMainOperator())) {
-        algo.getClusters().stream().map(Cluster::getTargetArch).filter(ta -> !(ta.equals(Arch.CPU)))
+        algo.getClusters().stream().map(PiGraph::getTargetArch).filter(ta -> !(ta.equals(Arch.CPU)))
             .forEach(createCoreBlock::addAcceleratorArch);
       }
       coreBlocks.put(cmp, createCoreBlock);
@@ -304,7 +303,7 @@ public class CodegenModelGenerator2 {
 
     // need to keep only the executable actors because e.g interfaces have no code associated
     for (final AbstractActor actor : totallyOrderedActors.stream()
-        .filter(a -> a instanceof ExecutableActor || a instanceof Cluster).toList()) {
+        .filter(a -> a instanceof ExecutableActor || a.isCluster()).toList()) {
       final EList<ComponentInstance> actorMapping = this.mapping.getMapping(actor);
       final ComponentInstance componentInstance = actorMapping.get(0);
       final CoreBlock coreBlock = coreBlocks.get(componentInstance);
@@ -317,7 +316,11 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
-        case final Cluster cluster -> {
+        case final PiGraph cluster -> {
+          if (!cluster.isCluster()) {
+            throw new PreesmRuntimeException(
+                "No non-cluster PiGraph should reach the codegen phase ! Error at PiGraph " + cluster.getName());
+          }
           if (componentInstance.getComponent() instanceof FPGA) {
             generateAcceleratorCall(cluster, this.memoryLinker.getPortToVariableMap(), coreBlocks);
           } else {
@@ -342,10 +345,10 @@ public class CodegenModelGenerator2 {
       // For now I suppose all input actors of fork/join actors are mapped to the same arch
       source = usa.getDataOutputPorts().getFirst().getFifo().getTarget();
     }
-    if (target instanceof final Cluster c && c.getTargetArch().equals(Arch.FPGA)) {
+    if (target instanceof final PiGraph g && g.isCluster() && g.getTargetArch().equals(Arch.FPGA)) {
       return;
     }
-    if (source instanceof final Cluster c && c.getTargetArch().equals(Arch.FPGA)) {
+    if (source instanceof final PiGraph g && g.isCluster() && g.getTargetArch().equals(Arch.FPGA)) {
       return;
     }
 
@@ -673,7 +676,7 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void generateClusterFiring(final Cluster cluster, final Map<Port, Variable> portToVariable,
+  private void generateClusterFiring(final PiGraph cluster, final Map<Port, Variable> portToVariable,
       final CoreBlock coreBlock) {
 
     // store buffers on which MD5 can be computed to check validity of transformations
@@ -701,7 +704,7 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void generateAcceleratorCall(final Cluster cluster, final Map<Port, Variable> portToVariable,
+  private void generateAcceleratorCall(final PiGraph cluster, final Map<Port, Variable> portToVariable,
       final Map<ComponentInstance, CoreBlock> coreBlocks) {
 
     // the calls to the accelerator have to be made on the main cpu

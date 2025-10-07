@@ -118,6 +118,8 @@ public class CodegenTask2 extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
+    PreesmLogger.getLogger().info(" -- Global codegen --");
+
     // Retrieve inputs
     final Scenario scenario = (Scenario) inputs.get("scenario");
     if (scenario.getCodegenDirectory() == null) {

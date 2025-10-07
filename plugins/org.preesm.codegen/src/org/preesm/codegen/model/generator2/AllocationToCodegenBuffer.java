@@ -61,7 +61,6 @@ import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -339,9 +338,9 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
     // all the fifos contained in a cluster
     final List<Fifo> clusterFifos = ((Allocation) phys.eContainer()).getFifoAllocations().keySet().stream()
-        .filter(fifo -> fifo.eContainer() instanceof Cluster).toList();
+        .filter(fifo -> fifo.getContainingPiGraph().isCluster()).toList();
     if (!clusterFifos.isEmpty()) {
-      mainBuffer.setName("Memory_" + ((Cluster) clusterFifos.getFirst().eContainer()).getName());
+      mainBuffer.setName("Memory_" + ((PiGraph) clusterFifos.getFirst().eContainer()).getName());
     } else {
       // set classic CoreX name
       mainBuffer.setName(phys.getMemoryBank().getInstanceName());

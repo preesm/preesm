@@ -33,7 +33,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -104,7 +103,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     // stores a Cluster (its original obtained with PreesmCopyTracker) with its synthesis result
-    final Map<Cluster, SynthesisResult> localSynthesesMap = new HashMap<>();
+    final Map<PiGraph, SynthesisResult> localSynthesesMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
     final PiGraph copy_algorithm = PiMMFactory.copyPiGraphWithHistory(algorithm);
@@ -125,7 +124,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       final ComponentInstance accelerator = architecture.getComponentInstances().stream()
           .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
 
-      for (final Cluster cluster : algorithm.getClusters()) {
+      for (final PiGraph cluster : algorithm.getClusters()) {
 
         final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture);
 
@@ -229,7 +228,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     };
   }
 
-  private SynthesisResult runSynthesis(Cluster cluster, Scenario scenario, Design architecture) {
+  private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture) {
     // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
     final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
 

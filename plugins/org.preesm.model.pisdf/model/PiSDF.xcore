@@ -271,6 +271,15 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
+	
+	// is used to link the cluster to its to-be-made C refinement code
+	contains Refinement refinement 
+	
+	// wish I could set the type as SynthesisResult, but this causes double inclusion
+	// we'll have to cast manually every time...
+	Object synthesisResult
+	
+	Arch targetArch
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
@@ -694,11 +703,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		return (allActors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
 	}
-	op unique Cluster[] getClusters() {
-		return (actors.filter(Cluster) + actorsWithRefinement.filter[isHierarchical].map[subGraph].filter(Cluster)).toEList.unmodifiableView
+	op unique PiGraph[] getClusters() {
+		return (getChildrenGraphs.filter[it.cluster] + actorsWithRefinement.filter[isHierarchical].map[subGraph].filter(PiGraph).filter[it.cluster]).toEList.unmodifiableView
 	}
-	op unique Cluster[] getAllClusters() {
-		return (allActors.filter(Cluster) + actorsWithRefinement.filter[isHierarchical].map[subGraph].filter(Cluster)).toEList.unmodifiableView
+	op unique PiGraph[] getAllClusters() {
+		return (getAllChildrenGraphs.filter(PiGraph).filter[it.cluster]  + actorsWithRefinement.filter[isHierarchical].map[subGraph].filter(PiGraph).filter[it.cluster]).toEList.unmodifiableView
 	}
 	op unique AbstractActor[] getAllActors() {
 		return (actors + childrenGraphs.map[allActors].flatten).toEList.unmodifiableView
@@ -763,17 +772,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 }
 
 enum Arch{CPU, FPGA}
-
-class Cluster extends PiGraph {
-	// is used to link the cluster to its to-be-made C refinement code
-	contains Refinement refinement 
-	
-	// wish I could set the type as SynthesisResult, but this causes double inclusion
-	// we'll have to cast manually every time...
-	Object synthesisResult
-	
-	Arch targetArch
-}
 
 abstract class ExecutableActor extends AbstractActor {
 }
