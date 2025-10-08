@@ -15,6 +15,7 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
@@ -68,7 +69,9 @@ public class ClusterBuilder {
 
     // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      final List<ExecutableActor> actors = subGraph.getExecutableActors();
+      // We don't take into account special actors (fork, join...) as they can be executed anywhere.
+      final List<ExecutableActor> actors = subGraph.getExecutableActors().stream()
+          .filter(a -> !(a instanceof SpecialActor)).toList();
       List<Component> sharedComponents = scenario.getDesign().getComponents();
 
       // compute intersection for all actors
@@ -84,6 +87,10 @@ public class ClusterBuilder {
           default -> subGraph.setTargetArch(Arch.CPU);
         }
         listActors.remove(subGraph);
+        final String info = "\t - Detected cluster " + subGraph.getName();
+        PreesmLogger.getLogger().log(Level.INFO, info);
+        subGraph.setUrl("");
+        listClusters.add(subGraph);
       }
     }
 
