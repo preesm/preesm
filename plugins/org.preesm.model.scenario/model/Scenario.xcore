@@ -155,7 +155,14 @@ class Scenario {
 	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
 		var ComponentInstance[] mapping
 		if (actor instanceof SpecialActor) {
-			mapping = simulationInfo.specialVertexOperators
+			//TODO this might introduce bugs because we keep the previous behaviour for non-clusters and introduce a new one for clusters
+			if(actor.containingPiGraph.cluster) {
+				mapping = getPossibleMappings(actor.containingPiGraph)
+			}
+			else {
+				mapping = simulationInfo.specialVertexOperators
+			}
+
 		} else {
 			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, actor, 0) != -1].map[it.key]
 		}
