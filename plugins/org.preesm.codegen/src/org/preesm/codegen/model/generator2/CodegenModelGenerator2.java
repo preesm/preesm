@@ -336,14 +336,14 @@ public class CodegenModelGenerator2 {
     // if this is a comm between cpu and fpga (including fork/join intermediates), it will be handled via opencl, not
     // preesm's semaphores
     AbstractActor source = actor.getFifo().getSource();
-    final AbstractActor target = actor.getFifo().getTarget();
+    AbstractActor target = actor.getFifo().getTarget();
     if (source instanceof final UserSpecialActor usa) { // fuck yeah
       // For now I suppose all input actors of fork/join actors are mapped to the same arch
       source = usa.getDataInputPorts().getFirst().getFifo().getSource();
     }
     if (target instanceof final UserSpecialActor usa) {
       // For now I suppose all input actors of fork/join actors are mapped to the same arch
-      source = usa.getDataOutputPorts().getFirst().getFifo().getTarget();
+      target = usa.getDataOutputPorts().getFirst().getFifo().getTarget();
     }
     if (target instanceof final PiGraph g && g.isCluster() && g.getTargetArch().equals(Arch.FPGA)) {
       return;
