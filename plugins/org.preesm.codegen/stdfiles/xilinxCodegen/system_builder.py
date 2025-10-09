@@ -15,6 +15,8 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	hls_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
 	sysroot = boot_dir + "sysroots/cortexa72-cortexa53-xilinx-linux/"
+	if not(os.path.isfile(sysroot)):
+		sysroot = boot_dir + "/sysroots/cortexa72-cortexa53-amd-linux/"
 
 	targets = {"kr260": "xck26-sfvc784-2LV-c", "ultrascale": "xck26-sfvc784-2LV-c"}
 
@@ -82,7 +84,7 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	""" ---- Application Component creation ---- """
 	# TODO make it generic for several accelerators
 	comp = client.get_component(name=accelerators[0]) 
-	comp = client.create_app_component(name="app_component", platform = hls_folder + "/system_project/platform/export/platform/platform.xpfm", domain = "linux_psu_cortexa53")
+	comp = client.create_app_component(name="app_component", platform = hw_path, domain = "linux_psu_cortexa53")
 	comp = client.get_component("app_component")
 	status = comp.set_sysroot(sysroot=sysroot)
 

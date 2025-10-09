@@ -27,9 +27,8 @@ print('args',args)
 client = vitis.create_client()
 client.set_workspace(path=os.getcwd())
 
-platform = client.create_platform_component(name = platform_name, hw_design =xsa_path, os = "linux", cpu = "psu_cortexa53" )
+platform = client.create_platform_component(name = platform_name, hw_design =xsa_path, os = "linux", cpu = "psu_cortexa53", domain_name = "linux_psu_cortexa53")
 
-platform = client.get_component(name=platform_name)
 domain = platform.get_domain(name="linux_psu_cortexa53")
 
 status = domain.update_name(new_name="xrt")
