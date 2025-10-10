@@ -124,9 +124,9 @@ public class DiagramPiGraphLinkHelper {
     final List<PictogramElement> pes = linkService.getPictogramElements(diagram, delay);
     PictogramElement pe = null;
     for (final PictogramElement p : pes) {
-      final EObject businessObjectForLinkedPictogramElement = linkService.getBusinessObjectForLinkedPictogramElement(p);
-      if ((p instanceof ContainerShape) && (businessObjectForLinkedPictogramElement == delay)) {
+      if ((p instanceof ContainerShape) && (linkService.getBusinessObjectForLinkedPictogramElement(p) == delay)) {
         pe = p;
+        break;
       }
     }
     // if PE is still null.. something is deeply wrong with this graph !
@@ -151,12 +151,14 @@ public class DiagramPiGraphLinkHelper {
    */
   public static FreeFormConnection getFreeFormConnectionOfEdge(final Diagram diagram, final EObject edge)
       throws PreesmRuntimeException {
-    final List<PictogramElement> pes = Graphiti.getLinkService().getPictogramElements(diagram, edge);
+    final ILinkService linkService = Graphiti.getLinkService();
+    final List<PictogramElement> pes = linkService.getPictogramElements(diagram, edge);
     FreeFormConnection ffc = null;
     for (final PictogramElement pe : pes) {
-      if ((Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe) == edge)
-          && (pe instanceof final FreeFormConnection freeFromConn)) {
+      if ((pe instanceof final FreeFormConnection freeFromConn)
+          && (linkService.getBusinessObjectForLinkedPictogramElement(pe) == edge)) {
         ffc = freeFromConn;
+        break;
       }
     }
 
@@ -164,6 +166,7 @@ public class DiagramPiGraphLinkHelper {
     if (ffc == null) {
       throw new PreesmRuntimeException("Pictogram element associated to edge " + edge + " could not be found.");
     }
+
     return ffc;
   }
 
