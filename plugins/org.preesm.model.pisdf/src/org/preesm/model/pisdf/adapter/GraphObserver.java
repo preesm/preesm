@@ -39,12 +39,18 @@
  */
 package org.preesm.model.pisdf.adapter;
 
+import java.util.List;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.preesm.commons.graph.Edge;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiMMPackage;
 
@@ -88,18 +94,161 @@ public class GraphObserver extends AdapterImpl {
     // Nothing to do here
   }
 
+  /**
+   * Method called when an {@link AbstractVertex} is possibly added to the Observed {@link PiGraph}. <br>
+   * <br>
+   * This Method create the {@link Port} port corresponding to the added {@link InterfaceActor} or {@link Parameter} and
+   * add it to the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. It also handles the vertex storage indexes
+   *
+   * @param vertex
+   *          The {@link AbstractVertex} added to the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void addVertex(final AbstractVertex vertex, final PiGraph graph) {
+
+    switch (vertex) {
+      case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.incrementActorIndex();
+      case final Parameter p -> graph.incrementParameterIndex();
+      case final Delay d -> graph.incrementDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link Edge} is possibly added to the Observed {@link PiGraph}. <br>
+   * <br>
+   * It handles the {@link Edge} storage indexes
+   *
+   * @param vertex
+   *          The {@link Edge} added to the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void addEdge(final Edge edge, final PiGraph graph) {
+
+    switch (edge) {
+      case final Fifo fifo when !fifo.isDelayPresent() -> graph.incrementFifoWithoutDelayIndex();
+      case final Fifo fifo when fifo.isDelayPresent() -> graph.incrementFifoWithDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link AbstractVertex} is possibly removed to the Observed {@link PiGraph}. <br>
+   * <br>
+   * This Method remove the {@link Port} port corresponding to the removed {@link InterfaceActor} or {@link Parameter}
+   * and from the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. Also handles storage indexes.
+   *
+   * @param vertex
+   *          The {@link AbstractVertex} removed from the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+
+  private void removeVertex(final AbstractVertex vertex, final PiGraph graph) {
+
+    switch (vertex) {
+      case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.decrementActorIndex();
+      case final Parameter p -> graph.decrementParameterIndex();
+      case final Delay d -> graph.decrementDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link Edge} is possibly removed to the Observed {@link PiGraph}. <br>
+   * <br>
+   * Handles storage indexes.
+   *
+   * @param edge
+   *          The {@link Edge} removed from the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void removeEdge(final Edge edge, final PiGraph graph) {
+
+    switch (edge) {
+      case final Fifo fifo when !fifo.isDelayPresent() -> graph.decrementFifoWithoutDelayIndex();
+      case final Fifo fifo when fifo.isDelayPresent() -> graph.decrementFifoWithDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
   @Override
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);
 
-    if ((notification.getNotifier() instanceof final Fifo fifo)
+    // Check if the vertices or Parameters are concerned by this
+    // notification
+    if ((notification.getNotifier() instanceof final PiGraph graph)
+        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES)) {
+
+      switch (notification.getEventType()) {
+        case Notification.ADD:
+          // It is safe to cast because we already checked that the
+          // notification was caused by an addition to the graph vertices.
+          final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
+          addVertex(vertextoAdd, graph);
+          break;
+
+        case Notification.ADD_MANY:
+          final List<?> listToAdd = (List<?>) notification.getNewValue();
+          listToAdd.forEach(o -> addVertex((AbstractVertex) o, graph));
+          break;
+
+        case Notification.REMOVE:
+          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getOldValue();
+          removeVertex(vertexToRemove, graph);
+          break;
+
+        case Notification.REMOVE_MANY:
+          final List<?> listToRemove = (List<?>) notification.getOldValue();
+          listToRemove.forEach(o -> removeVertex((AbstractVertex) o, graph));
+          break;
+
+        default:
+          // nothing
+      }
+    } else if ((notification.getNotifier() instanceof final PiGraph graph)
+        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__EDGES)) {
+
+      switch (notification.getEventType()) {
+        case Notification.ADD:
+          // It is safe to cast because we already checked that the
+          // notification was caused by an addition to the graph edge.
+          final Edge edgetoAdd = (Edge) notification.getNewValue();
+          addEdge(edgetoAdd, graph);
+          break;
+
+        case Notification.ADD_MANY:
+          final List<?> listToAdd = (List<?>) notification.getNewValue();
+          listToAdd.forEach(o -> addEdge((Edge) o, graph));
+          break;
+
+        case Notification.REMOVE:
+          final Edge edgeToRemove = (Edge) notification.getOldValue();
+          removeEdge(edgeToRemove, graph);
+          break;
+
+        case Notification.REMOVE_MANY:
+          final List<?> listToRemove = (List<?>) notification.getOldValue();
+          listToRemove.forEach(o -> removeEdge((Edge) o, graph));
+          break;
+
+        default:
+          // nothing
+      }
+    } else if ((notification.getNotifier() instanceof final Fifo fifo)
         && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
 
       final PiGraph graph = fifo.getContainingPiGraph();
-
-      if (notification.getEventType() != Notification.SET) {
-        System.out.print("");
-      }
 
       // if the fifo isn't in a graph, nothing to do
       if (graph == null) {
@@ -111,13 +260,35 @@ public class GraphObserver extends AdapterImpl {
 
       // Only the SET event is checked
       if (notification.getEventType() == Notification.SET) {
-        // If the fifo changed fliped FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
+        // If the fifo change flipped between FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
         if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
-          fifo.refreshFifo();
+          handleFifoDelayChange(graph, fifo);
         }
       }
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
   }
+
+  private synchronized void handleFifoDelayChange(PiGraph graph, Fifo fifo) {
+    // remove observer
+    graph.eAdapters().remove(this);
+
+    // remove fifo from graph
+    graph.removeFifo(fifo);
+
+    // manually decrement index
+    if (fifo.isDelayPresent()) {
+      graph.decrementFifoWithoutDelayIndex();
+    } else {
+      graph.decrementFifoWithDelayIndex();
+    }
+
+    // re-attach observer
+    graph.eAdapters().add(this);
+
+    // add fifo to graph
+    graph.addFifo(fifo);
+  }
+
 }

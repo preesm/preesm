@@ -273,31 +273,76 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
-
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
-	derived int parameterIndex get{
-		vertices.filter(Parameter).length
+	int parameterIndex = "0"
+	op void updateParameterIndex() {
+		parameterIndex = vertices.filter(Parameter).length
 	}
-
+	op void incrementParameterIndex() {
+		parameterIndex = parameterIndex + 1
+	}
+	op void decrementParameterIndex() {
+		parameterIndex = parameterIndex - 1
+		if (parameterIndex < 0) {
+			throw new PreesmRuntimeException("Error with parameterIndex")
+		}
+	}
 	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph} vertex list */
-	derived int actorIndex get{
-		vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
+	int actorIndex = "0"
+	op void updateActorIndex() {
+		actorIndex = vertices.filter(AbstractActor).filter(aa|!(aa instanceof DelayActor)).length
 	}
-
+	op void incrementActorIndex() {
+		actorIndex = actorIndex + 1
+	}
+	op void decrementActorIndex() {
+		actorIndex = actorIndex - 1
+		if (actorIndex < 0) {
+			throw new PreesmRuntimeException("Error with actorIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Delay} into the {@link PiGraph} vertex list */
-	derived int delayIndex get{
-		vertices.filter(Delay).length
+	int delayIndex = "0"
+	op void updateDelayIndex() {
+		delayIndex = vertices.filter(Delay).length
 	}
-
+	op void incrementDelayIndex() {
+		delayIndex = delayIndex + 1
+	}
+	op void decrementDelayIndex() {
+		delayIndex = delayIndex - 1
+		if (delayIndex < 0) {
+			throw new PreesmRuntimeException("Error with delayIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph} edge list */
-	derived int fifoWithDelayIndex get {
-		edges.filter(Fifo).filter(f | f.getDelay() !== null).length
+	int fifoWithDelayIndex = "0"
+	op void updateFifoWithDelayIndex() {
+		fifoWithDelayIndex = edges.filter(Fifo).filter[f|f.getDelay() !== null].length
 	}
-
+	op void incrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex + 1
+	}
+	op void decrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex - 1
+		if (fifoWithDelayIndex < 0) {
+			throw new PreesmRuntimeException("Error with fifoWithDelayIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph} edge list */
-	derived int fifoWithoutDelayIndex get {
-		edges.filter(Fifo).filter(f | f.getDelay() === null).length
+	int fifoWithoutDelayIndex = "0"
+	op void updateFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = edges.filter(Fifo).filter[f|f.getDelay() === null].length
+	}
+	op void incrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
+	}
+	op void decrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
+		if (fifoWithoutDelayIndex < 0) {
+			throw new PreesmRuntimeException("Error with fifoWithoutDelayIndex")
+		}
 	}
 
 	op boolean isCluster() {
