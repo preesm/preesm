@@ -97,7 +97,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	gen_CPPfiles = [file for file in os.listdir(code_folder+"/generated") if file.endswith(".cpp") and not(file in hls_kernel_files + testbench_files)]
 	status = comp.import_files(from_loc=code_folder+"/generated", files=gen_CPPfiles)
 
-	source_files = [file for file in os.listdir(code_folder+"/src") if file.endswith(".cpp") and not(file in hls_kernel_files)]
+	source_files = [file for file in os.listdir(code_folder+"/src") if not(file.endswith(".h")) and not(file in hls_kernel_files)]
 	status = comp.import_files(from_loc=code_folder+"/src", files=source_files)
 
 	status = comp.import_files(from_loc=code_folder+"/generated/libs/common/includes", files=["xcl2"])
@@ -167,6 +167,5 @@ if __name__ == "__main__":
 	version = sys.argv[5]
 	vitis_loc = sys.argv[6]
 	main(comp_name, sys_proj_name, common_image, target, version, vitis_loc)
-
 
 
