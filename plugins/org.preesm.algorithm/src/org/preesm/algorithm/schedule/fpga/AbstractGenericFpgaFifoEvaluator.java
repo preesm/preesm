@@ -221,8 +221,8 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     // check and set standard infos
     for (final AbstractActor aa : cc) {
       final AbstractActor ori = PreesmCopyTracker.getOriginalSource(aa);
-      // check mapping
-      if (!scenario.getPossibleMappings(ori).contains(fpga)) {
+      // check mapping (no mapping required for broadcast/roudBuffer/... actors)
+      if (!(ori instanceof UserSpecialActor) && !scenario.getPossibleMappings(ori).contains(fpga)) {
         throw new PreesmRuntimeException("Actor " + ori.getVertexPath() + " is not mapped to the only fpga.");
       }
 

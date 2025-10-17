@@ -62,7 +62,7 @@ public class ClusteringTask extends AbstractTaskImplementation {
     if (CLUSTERIZE) {
       PreesmLogger.getLogger().info(" -- Clustering task --");
       clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
-      updateSubgraphsMappings(clustersList, scenario);
+      updateSubgraphsMappings(algorithm.getAllClusters(), scenario);
 
     } else {
       PreesmLogger.getLogger().info(" - Clustering was not activated");

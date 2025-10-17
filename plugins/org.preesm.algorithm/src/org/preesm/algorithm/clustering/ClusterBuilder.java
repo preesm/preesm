@@ -13,9 +13,9 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Arch;
-import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.SpecialActor;
+import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
@@ -69,32 +69,41 @@ public class ClusterBuilder {
 
     // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      // We don't take into account special actors (fork, join...) as they can be executed anywhere.
-      final List<ExecutableActor> actors = subGraph.getExecutableActors().stream()
-          .filter(a -> !(a instanceof SpecialActor)).toList();
-      List<Component> sharedComponents = scenario.getDesign().getComponents();
-
-      // compute intersection for all actors
-      for (final ExecutableActor a : actors) {
-        final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
-        sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
-      }
-
-      if (!sharedComponents.isEmpty()) {
-        subGraph.setClusterValue(true);
-        switch (sharedComponents.getFirst()) {
-          case final FPGA f -> subGraph.setTargetArch(Arch.FPGA);
-          default -> subGraph.setTargetArch(Arch.CPU);
-        }
-        listActors.remove(subGraph);
-        final String info = "\t - Detected cluster " + subGraph.getName();
-        PreesmLogger.getLogger().log(Level.INFO, info);
-        subGraph.setUrl("");
-        listClusters.add(subGraph);
-      }
+      final var subClusterList = buildArchHierarchyGraph(subGraph, scenario);
+      listClusters.addAll(subClusterList);
     }
 
-    // 3) clusterize actors ath this level of hierarchy
+    // We don't take into account special actors (fork, join...) as they can be executed anywhere.
+    final List<AbstractActor> actors = graph.getActors().stream()
+        .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
+    List<Component> sharedComponents = scenario.getDesign().getComponents();
+
+    // compute intersection for all actors
+    for (final AbstractActor a : actors) {
+      final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
+      sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
+    }
+
+    if (!sharedComponents.isEmpty()) {
+      // All components share a common PE ! It's a cluster already
+      graph.setClusterValue(true);
+      final Component cp = sharedComponents.getFirst();
+      final ComponentInstance PE = scenario.getDesign().getComponentInstances().stream()
+          .filter(ci -> ci.getComponent().equals(cp)).findFirst().get();
+      switch (sharedComponents.getFirst()) {
+        case final FPGA f -> graph.setTargetArch(Arch.FPGA);
+        default -> graph.setTargetArch(Arch.CPU);
+      }
+      listActors.remove(graph);
+      final String info = "\t - Detected cluster " + graph.getName();
+      PreesmLogger.getLogger().log(Level.INFO, info);
+      graph.setUrl("");
+      listClusters.add(graph);
+      scenario.getConstraints().addConstraint(PE, graph);
+      return listClusters;
+    }
+
+    // 3) clusterize actors at this level of hierarchy
     int i = 0;
     boolean graph_is_fully_searched = false;
     // visit all actors to search those that can act as seeds

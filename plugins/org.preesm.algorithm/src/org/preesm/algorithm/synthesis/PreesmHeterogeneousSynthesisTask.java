@@ -33,10 +33,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -106,7 +102,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final Map<PiGraph, SynthesisResult> localSynthesesMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
-    final PiGraph copy_algorithm = PiMMFactory.copyPiGraphWithHistory(algorithm);
 
     if (CLUSTERIZE) {
       // -------------------------------------------------------------------------------------
@@ -121,50 +116,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
             .getFirst();
       }
 
-      final ComponentInstance accelerator = architecture.getComponentInstances().stream()
-          .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
-
       for (final PiGraph cluster : algorithm.getClusters()) {
-
-        final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture);
-
-        final var localSchedule = localSynthesisResult.schedule;
-        final var localMapping = localSynthesisResult.mapping;
-
-        LatencyCost localLatency = null;
-
-        // TODO ça servira plus tard lors de l'analyse fpga
-        if (scenario.getPossibleMappings(cluster).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
-          localLatency = computeFpgaGraphLatency(cluster);
-        } else {
-          final ScheduleOrderManager localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
-
-          final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
-          // TODO vérifier si ça sert à quelque chose ? Possiblement redondant
-          pgcc.check(cluster);
-
-          // On est d'accord que c'est bien la durée d'un firing de l'acteur ?
-          localLatency = new SimpleLatencyEvaluation().evaluate(cluster, architecture, scenario, localMapping,
-              localScheduleOM);
-        }
-
-        localSynthesisResult.latency = localLatency;
-
-        localSynthesesMap.put(PreesmCopyTracker.getOriginalSource(cluster), localSynthesisResult);
-        cluster.setSynthesisResult(localSynthesisResult);
-
-        // now that the local synthesis on one instance of the accelerator architecture has been made for the cluster
-        // we have to update the cluster's mapping so it can be mapped on several accelerators (if they have the same
-        // arch). This will allow to have several parallel instances of the same cluster
-        // I GAVE THIS UP DON'T UNCOMMENT
-        // final Component c = scenario.getPossibleMappings(cluster).getFirst().getComponent();
-        //
-        // final var sameArchInstances = scenario.getDesign().getComponentInstances().stream()
-        // .filter(ci -> ci.getComponent() == c).toList();
-        //
-        // for (final var componentInstance : sameArchInstances) {
-        // scenario.getConstraints().addConstraint(componentInstance, cluster);
-        // }
+        recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap);
       }
     }
 
@@ -229,14 +182,13 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   }
 
   private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture) {
+
     // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
     final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
 
     final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
 
     final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
-    final var localSchedule = res.schedule;
-    final var localMapping = res.mapping;
 
     Allocation allocation = null;
     if (!localSchedulerMapperName.equals(PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR)) {
@@ -249,6 +201,55 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     return res;
 
+  }
+
+  private void recursiveSynthesis(PiGraph cluster, Scenario scenario, Design architecture,
+      Map<PiGraph, SynthesisResult> localSynthesesMap) {
+    // We need to schedule the clusters depth-first, so we first get to the botton of the hierarchy
+    final List<PiGraph> subClusters = cluster.getClusters();
+    for (final PiGraph subCluster : subClusters) {
+      recursiveSynthesis(subCluster, scenario, architecture, localSynthesesMap);
+    }
+
+    final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture);
+
+    final var localSchedule = localSynthesisResult.schedule;
+    final var localMapping = localSynthesisResult.mapping;
+
+    LatencyCost localLatency = null;
+
+    // TODO ça servira plus tard lors de l'analyse fpga
+    if (scenario.getPossibleMappings(cluster).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
+      localLatency = computeFpgaGraphLatency(cluster, localSynthesisResult);
+    } else {
+      final ScheduleOrderManager localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
+
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+      // TODO vérifier si ça sert à quelque chose ? Possiblement redondant
+      pgcc.check(cluster);
+
+      // On est d'accord que c'est bien la durée d'un firing de l'acteur ?
+      localLatency = new SimpleLatencyEvaluation().evaluate(cluster, architecture, scenario, localMapping,
+          localScheduleOM);
+    }
+
+    localSynthesisResult.latency = localLatency;
+
+    localSynthesesMap.put(PreesmCopyTracker.getOriginalSource(cluster), localSynthesisResult);
+    cluster.setSynthesisResult(localSynthesisResult);
+
+    // now that the local synthesis on one instance of the accelerator architecture has been made for the cluster
+    // we have to update the cluster's mapping so it can be mapped on several accelerators (if they have the same
+    // arch). This will allow to have several parallel instances of the same cluster
+    // I GAVE THIS UP DON'T UNCOMMENT
+    // final Component c = scenario.getPossibleMappings(cluster).getFirst().getComponent();
+    //
+    // final var sameArchInstances = scenario.getDesign().getComponentInstances().stream()
+    // .filter(ci -> ci.getComponent() == c).toList();
+    //
+    // for (final var componentInstance : sameArchInstances) {
+    // scenario.getConstraints().addConstraint(componentInstance, cluster);
+    // }
   }
 
   @Override
@@ -338,61 +339,15 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   }
 
   /***
-   * Creates a placeholder actor to replace a cluster actor, with the same timing characteristics. public or private, I
-   * don't care
-   *
-   * @param oldA
-   *          clusterActor
-   * @param newA
-   *          the new placeholder actor
-   * @param graph
-   *          the application graph
-   */
-  private void replaceAndRemoveActor(AbstractActor oldA, AbstractActor newA, PiGraph graph) {
-
-    // TODO brancher les dépendances dans le placeholder
-    // clone input and output outer interfaces
-    // plug fifos and copy rates
-
-    for (final DataInputPort olddip : oldA.getDataInputPorts()) {
-      final DataInputPort newdip = PiMMFactory.createDataInputPort(olddip.getName());
-
-      newdip.setExpression(olddip.getExpression());
-      newA.getDataInputPorts().add(newdip);
-      newdip.setIncomingFifo(olddip.getFifo());
-    }
-    for (final DataOutputPort olddop : oldA.getDataOutputPorts()) {
-      final DataOutputPort newdop = PiMMFactory.createDataOutputPort(olddop.getName());
-
-      newdop.setExpression(olddop.getExpression());
-      newA.getDataOutputPorts().add(newdop);
-      newdop.setOutgoingFifo(olddop.getFifo());
-    }
-
-    for (final ConfigInputPort oldcip : oldA.getConfigInputPorts()) {
-      // create a new dependency that will be plugged to a new config port
-      final ConfigInputPort newcip = PiMMFactory.createConfigInputPort();
-      newcip.setName(oldcip.getName());
-
-      final Dependency newDep = PiMMFactory.createDependency(oldcip.getIncomingDependency().getSetter(), newcip);
-
-      newA.getConfigInputPorts().add(newcip);
-      graph.addDependency(newDep);
-    }
-
-    // remove the old cluster actor from the graph
-    graph.removeActorAndDependencies(oldA);
-
-  }
-
-  /***
    * computes, or at least approximates/overestimates, an FPGA graph's latency. For now it just returns 42.
    *
    * @param graph
    *          the graph
    * @return the latency
    */
-  private LatencyCost computeFpgaGraphLatency(PiGraph graph) {
+  private LatencyCost computeFpgaGraphLatency(PiGraph graph, SynthesisResult localSynthesisResults) {
+    //
+
     // TODO actually code it
     return new LatencyCost(100, null);
   }
