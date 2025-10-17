@@ -119,23 +119,26 @@ public abstract class AbstractScheduler implements IScheduler {
       final Schedule schedule, final Mapping mapping) {
 
     // make sure all actors have been scheduled and schedule contains only actors from the input graph
-    final List<AbstractActor> piGraphAllActors = new ArrayList<>(
-        piGraph.getAllActors().stream().filter(a -> a instanceof Actor).toList());
+    // We only inspect this hierarchy level's actors. The other levels are inspected when their graph is scheduled.
+    final List<AbstractActor> piGraphActors = new ArrayList<>(
+        piGraph.getActors().stream().filter(a -> a instanceof Actor).toList());
 
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
 
     final List<
         AbstractActor> scheduledActors = new ArrayList<>(actors.stream().filter(a -> a instanceof Actor).toList());
 
-    if (!piGraphAllActors.containsAll(scheduledActors)) {
+    if (!piGraphActors.containsAll(scheduledActors)) {
       throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
     }
 
     // find all actors that are not in scheduledActors
-    final var actorsNotInScheduledActors = piGraphAllActors.stream().filter(actor -> !scheduledActors.contains(actor));
+    final var actorsNotInScheduledActors = piGraphActors.stream().filter(actor -> !scheduledActors.contains(actor));
     // if any of them is not in a cluster, it's an error
     boolean anyNotInCluster = actorsNotInScheduledActors
         .anyMatch(actor -> !actor.getContainingPiGraph().isClusterValue());
+    final var test = piGraphActors.stream().filter(actor -> !scheduledActors.contains(actor))
+        .filter(actor -> !actor.getContainingPiGraph().isClusterValue()).toList();
     if (anyNotInCluster) {
       throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
     }
@@ -154,7 +157,7 @@ public abstract class AbstractScheduler implements IScheduler {
       throw new PreesmSynthesisException("Mapping is using unknown component instances.");
     }
 
-    for (final AbstractActor actor : piGraphAllActors) {
+    for (final AbstractActor actor : piGraphActors) {
       verifyActor(scenario, mapping, actor);
     }
   }

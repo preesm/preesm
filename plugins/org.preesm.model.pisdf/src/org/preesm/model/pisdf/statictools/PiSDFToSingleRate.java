@@ -1163,14 +1163,92 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseCluster(PiGraph cluster) {
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
 
-    // we have to manage all combinations of cases for graphs that should or not be flattened and/or converted to srdag
-    if (srdagExclusionList.contains(cluster.getName())) {
-      if (!flattenExclusionList.contains(cluster.getName())) {
-        PiSDFFlattener.flatten(copyGraph, true);
-      }
+    if (!flattenExclusionList.contains(cluster.getName())) {
+      // flatten
+      PiSDFFlattener.flatten(copyGraph, true);
     }
 
+    if (!srdagExclusionList.contains(cluster.getName())) {
+      // convert to srdag
+      // absolutely the same lines as casePiGraph, I was just too lazy to mutualize into a single function.
+
+      this.currentResultSrDAG = this.result;
+
+      // If there are no actors in the graph we leave
+      final List<AbstractActor> actors = cluster.getActors();
+      if (actors.isEmpty()) {
+        throw new UnsupportedOperationException(
+            "Can not convert an empty graph. Check the refinement for [" + cluster.getVertexPath() + "].");
+      }
+
+      // Set the current graph name
+      this.graphName = cluster.getContainingPiGraph() == null ? "" : cluster.getName();
+      this.graphName = this.graphPrefix + this.graphName;
+
+      // Set the prefix graph name
+      this.graphPrefix = this.graphName.isEmpty() ? "" : this.graphName + "_";
+
+      for (final Parameter p : cluster.getParameters()) {
+        doSwitch(p);
+      }
+
+      // We need to split all delay actors before going in every iteration
+      for (final Fifo f : cluster.getFifosWithDelay()) {
+        splitDelayActors(f);
+      }
+      final String currentPrefix = this.graphPrefix;
+      final long graphRV = this.brv.getOrDefault(cluster, 1L);
+      final IntegerName iN = new IntegerName(graphRV - 1);
+      final long backupInstance = this.firingInstance;
+      for (long i = 0; i < graphRV; ++i) {
+        if (!currentPrefix.isEmpty()) {
+          this.graphPrefix = currentPrefix + iN.toString(i) + "_";
+        }
+        final long lInstance = backupInstance * graphRV + i;
+        final String backupPrefix = this.graphPrefix;
+        final String backupName = this.graphName;
+        final boolean backupcurrentGraphIsCluster = this.currentGraphIsCluster;
+        final PiGraph backupCurrentResultsrDAG = this.currentResultSrDAG;
+        for (final PiGraph g : cluster.getChildrenGraphs()) {
+          this.firingInstance = lInstance;
+          doSwitch(g);
+          this.graphPrefix = backupPrefix;
+          this.graphName = backupName;
+          this.currentGraphIsCluster = backupcurrentGraphIsCluster;
+          this.currentResultSrDAG = backupCurrentResultsrDAG;
+          // This ligne removes the link between the cluster and its srdag equivalent, which we need.
+          // this.actor2SRActors.clear();
+          // Instead we will only remove the non-cluster actors, which will be kept forever
+          clearActor2SRActors();
+        }
+        for (final Fifo f : cluster.getFifosWithDelay()) {
+          this.firingInstance = lInstance;
+          doSwitch(f);
+        }
+        for (final Fifo f : cluster.getFifosWithoutDelay()) {
+          this.firingInstance = lInstance;
+          doSwitch(f);
+        }
+      }
+      this.firingInstance = backupInstance;
+
+      // handle non connected actors (BRV = 1)
+      // PiGraph are already handled by the code above, except if clustered
+      // Special Actors and Delay Actors cannot have empty data ports
+      // So only (regular) Actor are considered
+      actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
+          .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
+          .forEach(this::populateSingleRatePiMMActor);
+      // handle the case of interfaces of top level
+      if (cluster.getContainingPiGraph() == null) {
+        actors.stream().filter(InterfaceActor.class::isInstance).forEach(this::populateSingleRatePiMMActor);
+        // now we need to reconnect the top level interfaces
+        actors.stream().filter(InterfaceActor.class::isInstance)
+            .forEach(a -> reconnectTopLevelInterface((InterfaceActor) a));
+      }
+    }
     return true;
+
   }
 
   /**
