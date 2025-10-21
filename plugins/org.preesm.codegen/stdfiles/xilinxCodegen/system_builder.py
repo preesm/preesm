@@ -1,8 +1,8 @@
 # 2024-11-08T14:18:30.014486
-import vitis
 import os
 import sys
 import pdb
+import vitis
 
 # Component part numbers : 
 #xck26-sfvc784-2LV-c : kria 260, part number xilinx.com:kr260_som:part0:1.1
@@ -14,6 +14,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	workspace = os.path.abspath("./")
 	hls_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
+
 	sysroot = common_image + "/sysroots/cortexa72-cortexa53-xilinx-linux/"
 	if not(os.path.isdir(sysroot)):
 		print(sysroot)
@@ -21,10 +22,13 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 
 	targets = {"kr260": "xck26-sfvc784-2LV-c", "ultrascale": "xck26-sfvc784-2LV-c"}
 
-	print("target platform :", target)
-
 	client = vitis.create_client()
 	client.set_workspace(path=workspace)
+
+
+	sys.path.append(os.path.abspath(os.path.join(os.path.dirname("project_config.py"), code_folder)))
+
+	import project_config
 
 
 	""" ---- Build Platform ---- """
@@ -103,10 +107,18 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	status = comp.import_files(from_loc=code_folder+"/generated/libs/common/includes", files=["xcl2"])
 
 	# include folders
-	status = comp.set_app_config(key="USER_INCLUDE_DIRECTORIES", values=f"{code_folder}/generated/libs/common/includes/xcl2 \n {code_folder}/generated \n {code_folder}/include")
+	include_paths = [f"{code_folder}/generated/libs/common/includes/xcl2", f"{code_folder}/generated", f"{code_folder}/include"] + project_config.includes
+	status = comp.set_app_config(key="USER_INCLUDE_DIRECTORIES", values=include_paths)
+
+	# libs 
+	status = comp.set_app_config(key="USER_LINK_LIBRARIES", values=project_config.libs)
+	status = comp.set_app_config(key="USER_LINK_DIRECTORIES", values=project_config.libs_paths)
+	
 
 	# set the vitis compilation flag
 	status = comp.set_app_config(key="USER_COMPILE_DEFINITIONS", values="VITIS_COMPILATION")
+	status = comp.set_app_config(key="USER_CMAKE_CXX_STANDARD", values=project_config.cpp_version)
+	status = comp.set_app_config(key="USER_COMPILE_OTHER_FLAGS", values=project_config.flags)
 
 	# build application for hardware emulation
 	comp.build(target="hw")
