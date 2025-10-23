@@ -34,12 +34,12 @@ write_version:
 	@echo "com.ide.version=${VERSION}" >> _ide/version.ini
 
 display_variables:
-	@echo "\nVariable values : "
-	@echo "\tTARGET = $(TARGET)"
-	@echo "\tVERSION = $(VERSION)"
-	@echo "\tVITIS_DIR = $(VITIS_DIR)"
-	@echo "\tCOMMON_IMAGE = $(COMMON_IMAGE)"
-	@echo "\n"
+	@echo $('\n') "Variable values : "
+	@echo $('\t')"TARGET = $(TARGET)"
+	@echo $('\t')"VERSION = $(VERSION)"
+	@echo $('\t')"VITIS_DIR = $(VITIS_DIR)"
+	@echo $('\t')"COMMON_IMAGE = $(COMMON_IMAGE)"
+	@echo $('\n')
 
 # keep only the makefile, builder.py and shell.json
 remove_previous_builds:
