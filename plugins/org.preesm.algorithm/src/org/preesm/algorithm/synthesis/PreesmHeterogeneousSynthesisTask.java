@@ -220,7 +220,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     // TODO ça servira plus tard lors de l'analyse fpga
     if (scenario.getPossibleMappings(cluster).stream().anyMatch(ci -> ci.getComponent() instanceof FPGA)) {
-      localLatency = computeFpgaGraphLatency(cluster, localSynthesisResult);
+      localLatency = computeFpgaGraphLatency(cluster, localSynthesisResult, scenario);
     } else {
       final ScheduleOrderManager localScheduleOM = new ScheduleOrderManager(cluster, localSchedule);
 
@@ -274,7 +274,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    * @return the selected mapper's string name/identifier
    **/
   private String switchSchedulerMapper(AbstractActor cluster, Scenario scenario) {
-    final List<ComponentInstance> mappings = scenario.getPossibleMappings(cluster);
+    final List<ComponentInstance> mappings = scenario.getPossibleMappings(PreesmCopyTracker.getOriginalSource(cluster));
     // Pour le moment, je vais supposer qu'un cluster est mappé à une seule archi. Cela correspond à l'idée que le
     // mapping "niveau archi" est fait entièrement lors de la phase de clustering, qui décide quel cluster est fait sur
     // quel type de PE (ex : tel acteur va sur fpga, mais ne choisit pas quelle fpga).
@@ -299,7 +299,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    */
   private IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
     // TODO expand switch
-    switch (localSchedulerMapperName) {
+    switch (localSchedulerMapperName.toLowerCase()) {
       case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
           AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
         return new FpgaScheduler(localSchedulerMapperName);
@@ -345,11 +345,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    *          the graph
    * @return the latency
    */
-  private LatencyCost computeFpgaGraphLatency(PiGraph graph, SynthesisResult localSynthesisResults) {
-    //
-
+  private LatencyCost computeFpgaGraphLatency(PiGraph graph, SynthesisResult localSynthesisResults, Scenario scenario) {
     // TODO actually code it
-    return new LatencyCost(100, null);
+    // for now, I'm gonna do something ugly : sum all the actors' latencies multiplied by their repetition value.
+    final List<AbstractActor> actors = graph.getActors();
+    final ComponentInstance fpga = scenario.getPossibleMappings(graph).getFirst();
+    final long latency = actors.stream()
+        .map(a -> scenario.getTimings().evaluateExecutionTimeOrDefault(a, fpga.getComponent())).reduce(0L, Long::sum);
+    return new LatencyCost(latency, null);
   }
 
 }
