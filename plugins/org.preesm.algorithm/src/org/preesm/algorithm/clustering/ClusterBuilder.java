@@ -125,32 +125,32 @@ public class ClusterBuilder {
         if (!actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
           actorIsVisited.put(actor, true);
 
-          /*
-           * check if it is a valid seed : there is a non-main arch predecessor actor or no inputs at all, and a
-           * non-main arch successor actor
-           */
-
-          final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
-              .map(a -> (Actor) a).toList();
-
-          // decide which arch will be used to clusterize
+          // The actor has at least one non-main PE mapping ! First, let's decide which arch will be used for clustering
           // TODO faire retourner le composant plutôt que l'instance par seedArchHeuristic
           clusteringComponent = seedArchHeuristic(graph, scenario, actor, refCPUArch);
 
-          // check if, among all the predecessors, any of them has a mapping whose arch is the same as the main PE's
-          final boolean anyMainArchPredecessor = predecessors.stream().anyMatch(
-              a -> scenario.getPossibleMappings(a).stream().anyMatch(CI -> CI.getComponent().equals(refCPUArch)));
+          // now we can wark the actor for clustering
+          seed_found = true;
 
-          final List<Actor> successors = actor.getDirectSuccessors().stream().filter(Actor.class::isInstance)
-              .map(a -> (Actor) a).toList();
-
-          // cannot use refArch in .contains() because FUCK JAVA
-          final var clusteringArchClone = clusteringComponent;
-
-          final boolean anyClusteringArchSuccessor = successors.stream()
-              .anyMatch(a -> scenario.getPossibleMappings(a).contains(clusteringArchClone));
-
-          seed_found = (anyMainArchPredecessor || predecessors.isEmpty()) && anyClusteringArchSuccessor;
+          // final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
+          // .map(a -> (Actor) a).toList();
+          //
+          // // decide which arch will be used to clusterize
+          //
+          // // check if, among all the predecessors, any of them has a mapping whose arch is the same as the main PE's
+          // final boolean anyMainArchPredecessor = predecessors.stream().anyMatch(
+          // a -> scenario.getPossibleMappings(a).stream().anyMatch(CI -> CI.getComponent().equals(refCPUArch)));
+          //
+          // final List<Actor> successors = actor.getDirectSuccessors().stream().filter(Actor.class::isInstance)
+          // .map(a -> (Actor) a).toList();
+          //
+          // // cannot use refArch in .contains() because FUCK JAVA
+          // final var clusteringArchClone = clusteringComponent;
+          //
+          // final boolean anyClusteringArchSuccessor = successors.stream()
+          // .anyMatch(a -> scenario.getPossibleMappings(a).contains(clusteringArchClone));
+          //
+          // seed_found = (anyMainArchPredecessor || predecessors.isEmpty()) && anyClusteringArchSuccessor;
         }
 
         if (i == listActors.size()) {
