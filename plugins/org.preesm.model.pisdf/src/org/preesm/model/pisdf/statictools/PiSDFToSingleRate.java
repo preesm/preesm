@@ -708,7 +708,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     if (sinkActor.getContainingPiGraph().isCluster()) {
       final DataInputInterface dipCopy = PiMMUserFactory.instance.copyWithHistory((DataInputInterface) sourceActor);
       currentResultSrDAG.addActor(dipCopy);
-      // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we hate to set it again
+      // I don't know why, but adding dipCopy to the graph resets its expression to 0, so we have to set it again
       dipCopy.getGraphPort()
           .setExpression(PiMMUserFactory.instance.copyWithHistory(sourceActor.getGraphPort().getExpression()));
 
@@ -717,6 +717,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       this.actor2SRActors.get(dipCopyName).add(dipCopy);
       returnList.add(dipCopy);
     }
+
     inPort2SRActors.get(correspondingPortInParent).addAll(sinkSet);
     return returnList;
   }
