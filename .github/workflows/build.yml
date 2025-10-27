@@ -101,7 +101,7 @@ jobs:
           name: changelog
           path: dev-changelog.txt
 
-  complile_run:
+  compile_run:
     name: Compile and run ${{ matrix.app_parameter.name_pretty }} on ${{ matrix.config.os_name }}
     needs: build
     strategy:
