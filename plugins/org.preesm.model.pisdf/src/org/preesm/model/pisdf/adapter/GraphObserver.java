@@ -53,6 +53,8 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiMMPackage;
+import org.preesm.model.pisdf.StringExpression;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 
 /**
  * The purpose of this {@link Adapter} is to observe the {@link Edge} list of a {@link PiGraph} to detect the addition,
@@ -185,91 +187,93 @@ public class GraphObserver extends AdapterImpl {
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);
 
-    // Check if the vertices or Parameters are concerned by this
-    // notification
-    if ((notification.getNotifier() instanceof final PiGraph graph)
-        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__VERTICES)) {
+    final int featureId = notification.getFeatureID(null);
 
-      switch (notification.getEventType()) {
-        case Notification.ADD:
-          // It is safe to cast because we already checked that the
-          // notification was caused by an addition to the graph vertices.
-          final AbstractVertex vertextoAdd = (AbstractVertex) notification.getNewValue();
-          addVertex(vertextoAdd, graph);
-          break;
+    switch (notification.getNotifier()) {
+      case final PiGraph graph when featureId == PiMMPackage.PI_GRAPH__VERTICES ->
+        notifyPiGraphForVertex(notification, graph);
 
-        case Notification.ADD_MANY:
-          final List<?> listToAdd = (List<?>) notification.getNewValue();
-          listToAdd.forEach(o -> addVertex((AbstractVertex) o, graph));
-          break;
+      case final PiGraph graph when featureId == PiMMPackage.PI_GRAPH__EDGES ->
+        notifyPiGraphForEdge(notification, graph);
 
-        case Notification.REMOVE:
-          final AbstractVertex vertexToRemove = (AbstractVertex) notification.getOldValue();
-          removeVertex(vertexToRemove, graph);
-          break;
+      case final Fifo fifo when featureId == PiMMPackage.FIFO__DELAY -> notifyFifoForDelay(notification, fifo);
 
-        case Notification.REMOVE_MANY:
-          final List<?> listToRemove = (List<?>) notification.getOldValue();
-          listToRemove.forEach(o -> removeVertex((AbstractVertex) o, graph));
-          break;
+      // If the notifying expression is affected to a Parameter, the expression cache is flushed.
+      // TODO: Check if tracking/flushing every expression depending on this parameter would be faster than flushing the
+      // whole cache.
+      case final StringExpression expr when notification.getNewValue() instanceof Parameter ->
+        ExpressionEvaluator.clearExpressionCache();
 
-        default:
-          // nothing
-      }
-    } else if ((notification.getNotifier() instanceof final PiGraph graph)
-        && (notification.getFeatureID(null) == PiMMPackage.PI_GRAPH__EDGES)) {
+      // The expression was replaced, can be remove from cache
+      case final StringExpression expr when notification.getNewValue() == null ->
+        ExpressionEvaluator.removeExpressionFromCache(expr);
 
-      switch (notification.getEventType()) {
-        case Notification.ADD:
-          // It is safe to cast because we already checked that the
-          // notification was caused by an addition to the graph edge.
-          final Edge edgetoAdd = (Edge) notification.getNewValue();
-          addEdge(edgetoAdd, graph);
-          break;
+      // Expression was modified, does not seem to happen in reality.
+      case final StringExpression expr when notification.getOldValue() == notification.getNewValue() ->
+        ExpressionEvaluator.removeExpressionFromCache(expr);
 
-        case Notification.ADD_MANY:
-          final List<?> listToAdd = (List<?>) notification.getNewValue();
-          listToAdd.forEach(o -> addEdge((Edge) o, graph));
-          break;
-
-        case Notification.REMOVE:
-          final Edge edgeToRemove = (Edge) notification.getOldValue();
-          removeEdge(edgeToRemove, graph);
-          break;
-
-        case Notification.REMOVE_MANY:
-          final List<?> listToRemove = (List<?>) notification.getOldValue();
-          listToRemove.forEach(o -> removeEdge((Edge) o, graph));
-          break;
-
-        default:
-          // nothing
-      }
-    } else if ((notification.getNotifier() instanceof final Fifo fifo)
-        && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
-
-      final PiGraph graph = fifo.getContainingPiGraph();
-
-      // if the fifo isn't in a graph, nothing to do
-      if (graph == null) {
-        return;
-      }
-
-      final Delay oldDelay = (Delay) notification.getOldValue();
-      final Delay newDelay = (Delay) notification.getNewValue();
-
-      // Only the SET event is checked
-      if (notification.getEventType() == Notification.SET) {
-        // If the fifo change flipped between FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
-        if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
-          handleFifoDelayChange(graph, fifo);
-        }
+      default -> { // Nothing
       }
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
   }
 
+  private void notifyPiGraphForVertex(final Notification notification, final PiGraph graph) {
+    // It is safe to cast because we already checked that the
+    // notification was caused by an addition to the graph vertices.
+    switch (notification.getEventType()) {
+      case Notification.ADD -> addVertex((AbstractVertex) notification.getNewValue(), graph);
+
+      case Notification.ADD_MANY ->
+        ((List<?>) notification.getNewValue()).forEach(o -> addVertex((AbstractVertex) o, graph));
+
+      case Notification.REMOVE -> removeVertex((AbstractVertex) notification.getOldValue(), graph);
+
+      case Notification.REMOVE_MANY ->
+        ((List<?>) notification.getOldValue()).forEach(o -> removeVertex((AbstractVertex) o, graph));
+      default -> { // nothing
+      }
+    }
+  }
+
+  private void notifyPiGraphForEdge(final Notification notification, final PiGraph graph) {
+    // It is safe to cast because we already checked that the
+    // notification was caused by an addition to the graph edges.
+    switch (notification.getEventType()) {
+      case Notification.ADD -> addEdge((Edge) notification.getNewValue(), graph);
+
+      case Notification.ADD_MANY -> ((List<?>) notification.getNewValue()).forEach(o -> addEdge((Edge) o, graph));
+
+      case Notification.REMOVE -> removeEdge((Edge) notification.getOldValue(), graph);
+
+      case Notification.REMOVE_MANY -> ((List<?>) notification.getOldValue()).forEach(o -> removeEdge((Edge) o, graph));
+      default -> { // nothing
+      }
+    }
+  }
+
+  private void notifyFifoForDelay(final Notification notification, final Fifo fifo) {
+    final PiGraph graph = fifo.getContainingPiGraph();
+
+    // if the fifo isn't in a graph, nothing to do
+    if (graph == null) {
+      return;
+    }
+
+    final Delay oldDelay = (Delay) notification.getOldValue();
+    final Delay newDelay = (Delay) notification.getNewValue();
+
+    // Only the SET event is checked, should we check UNSET ?
+    if (notification.getEventType() == Notification.SET) {
+      // If the fifo change flipped between FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
+      if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
+        handleFifoDelayChange(graph, fifo);
+      }
+    }
+  }
+
+  // TODO break singleton pattern to prevent perf issues with this call
   private synchronized void handleFifoDelayChange(PiGraph graph, Fifo fifo) {
     // remove observer
     graph.eAdapters().remove(this);

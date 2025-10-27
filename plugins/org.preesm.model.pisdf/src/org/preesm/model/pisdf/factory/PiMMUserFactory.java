@@ -73,7 +73,6 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
-import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 
 /**
@@ -221,11 +220,11 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   @Override
   public Parameter createParameter() {
-    return createParameter(null, 0);
+    return this.createParameter(null, 0);
   }
 
   public Parameter createParameter(final String name) {
-    return createParameter(name, 0);
+    return this.createParameter(name, 0);
   }
 
   /**
@@ -241,11 +240,11 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   @Override
   public MoldableParameter createMoldableParameter() {
-    return createMoldableParameter(null, 0);
+    return this.createMoldableParameter(null, 0);
   }
 
   public MoldableParameter createMoldableParameter(final String name) {
-    return createMoldableParameter(name, 0);
+    return this.createMoldableParameter(name, 0);
   }
 
   /**
@@ -283,7 +282,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    *          the delay to set
    */
   public DataInputPort createDataInputPort(final Delay delay) {
-    final DataInputPort res = super.createDataInputPort();
+    final DataInputPort res = this.createDataInputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
     delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
@@ -314,7 +313,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    *          the delay to set
    */
   public DataOutputPort createDataOutputPort(final Delay delay) {
-    final DataOutputPort res = super.createDataOutputPort();
+    final DataOutputPort res = this.createDataOutputPort();
     final DelayLinkedExpression delayExpression = createDelayLinkedExpression();
     delayExpression.setProxy(delay);
     res.setExpression(delayExpression);
@@ -415,7 +414,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   public Expression createExpression() {
-    return createExpression(0d);
+    return this.createExpression(0d);
   }
 
   /**
@@ -423,13 +422,16 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    */
   public Expression createExpression(final String value) {
     // Clear expression evaluation cache when changing an expression
-    ExpressionEvaluator.clearExpressionCache();
+    // ExpressionEvaluator.clearExpressionCache();
     try {
       // try to convert the expression in its long value
-      return createExpression(Long.parseLong(value));
+      final Expression expression = this.createExpression(Long.parseLong(value));
+      expression.eAdapters().add(GraphObserver.getInstance());
+      return expression;
     } catch (final NumberFormatException e) {
       final StringExpression createStringExpression = super.createStringExpression();
       createStringExpression.setExpressionString(value);
+      createStringExpression.eAdapters().add(GraphObserver.getInstance());
       return createStringExpression;
     }
   }
@@ -439,9 +441,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
    */
   public Expression createExpression(final double value) {
     // Clear expression evaluation cache when changing an expression
-    ExpressionEvaluator.clearExpressionCache();
+    // ExpressionEvaluator.clearExpressionCache();
     final DoubleExpression createDoubleExpression = super.createDoubleExpression();
     createDoubleExpression.setValue(value);
+    // No need for observer ?
     return createDoubleExpression;
   }
 
