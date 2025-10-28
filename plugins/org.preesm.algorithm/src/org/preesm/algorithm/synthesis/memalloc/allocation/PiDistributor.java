@@ -854,9 +854,11 @@ public class PiDistributor {
    */
   private static Map<String, Set<PiMemoryExclusionVertex>> distributeMegMixedMerged(final PiMemoryExclusionGraph memEx,
       final Mapping mapping) {
+
     final LinkedHashMap<String, Set<PiMemoryExclusionVertex>> memExesVerticesSet = new LinkedHashMap<>();
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hosts = memEx.getPropertyBean()
         .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+
     for (final PiMemoryExclusionVertex memExVertex : memEx.vertexSet()) {
       if (((hosts != null) && !hosts.containsKey(memExVertex)) || (hosts == null)) {
         PiDistributor.findMObjBankMixed(memExVertex, memExesVerticesSet, mapping);
@@ -913,7 +915,13 @@ public class PiDistributor {
       final ComponentInstance tgtMapping = mapping.getSimpleMapping(tgtActor);
 
       if (srcMapping.equals(tgtMapping)) {
-        memory = srcMapping.getInstanceName();
+        // If both actors are clusters, we want the buffer to be not in their private memory bank, but on the shared
+        // memory
+        // So we skip the step.
+        if (!(srcActor.isCluster() && tgtActor.isCluster())) {
+          memory = srcMapping.getInstanceName();
+        } // Else => Shared memory
+
       } // Else => Shared memory
     } else {
       // The MObject is not associated to a DAGEdge
