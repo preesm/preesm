@@ -475,8 +475,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final List<String> acceleratorNames = new LinkedList<>();
     final List<String> memKernels = new LinkedList<>();
 
-    // for acceleratorCall instances, getName() will refer to the variable's name in the C code, and getActorName() to
-    // the instance's name in the bitfile
+    // For accelerator calls :
+    // C array name : getName()
+    // bitfile instance name : getActorName()
+    // openCL buffer name : getName() + direction ("input" or "output")
 
     for (final AcceleratorCall elt : coreBlock.getLoopBlock().getCodeElts().stream()
         .filter(AcceleratorCall.class::isInstance).map(AcceleratorCall.class::cast).toList()) {
@@ -520,8 +522,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     for (final AcceleratorCall acc : accelerators) {
       final String kernelName = PreesmCopyTracker.getOriginalSource(acc.getOriActor()).getName();
-      // result.append(" OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + acc.getActorName()
-      // + "\", &err));\n");
+
       result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read_"
           + kernelName + "\", &err));\n");
       result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \""
@@ -540,17 +541,25 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     for (final AcceleratorCall accelerator : accelerators) {
       for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance)
           .map(p -> (Buffer) p).toList()) {
-        final String name = param.getName();
+        final String arrayName = param.getName();
         final String type = param.getType();
         final String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
             .getName().toLowerCase();
-        final String accessType = direction.equals("input") ? "CL_MEM_READ_ONLY" : "CL_MEM_WRITE_ONLY";
-        result.append("OCL_CHECK(err, cl::Buffer " + name + "_buff(context, CL_MEM_USE_HOST_PTR | " + accessType
-            + ", sizeof(" + param.getType() + ")*" + param.getNbToken() + ", " + name + ", &err));\n");
+
+        final String accessType = switch (direction) {
+          case "input" -> "CL_MEM_READ_ONLY";
+          case "output" -> "CL_MEM_WRITE_ONLY";
+          case "inputOutput" -> "CL_MEM_READ_WRITE";
+          default -> "";
+        };
+
+        final String bufferName = arrayName + "_buff_" + direction;
+        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | " + accessType
+            + ", sizeof(" + type + ")*" + param.getNbToken() + ", " + arrayName + ", &err));\n");
 
         final String readWrite = direction.equals("input") ? "_read" : "_write";
         result.append(
-            "OCL_CHECK(err, err = " + accelerator.getName() + readWrite + ".setArg(0, " + name + "_buff));\n\n");
+            "OCL_CHECK(err, err = " + accelerator.getName() + readWrite + ".setArg(0, " + bufferName + "));\n\n");
       }
       result.append("\n\n");
     }
@@ -785,6 +794,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseAcceleratorCall(AcceleratorCall call) {
+
+    // For accelerator calls :
+    // C array name : getName()
+    // bitfile instance name : getActorName()
+    // openCL buffer name : getName() + direction ("input" or "output")
+
     final StringConcatenation result = new StringConcatenation();
     // copy data to buffers
     final List<
@@ -801,7 +816,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     for (final Buffer inputBuffer : inputBuffers) {
       // CL_TRUE for blocking read, at least for now
       // 0 for 0 offset to the read, at least for now
-      result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
+      result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff_input, CL_TRUE, 0, sizeof("
           + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
     }
     for (final Buffer inputBuffer : inputBuffers) {
@@ -818,7 +833,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
     result.append("OCL_CHECK(err, err = q.finish());\n");
     for (final var outputBuffer : outputBuffers) {
-      result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff, CL_TRUE, 0, sizeof("
+      result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff_output, CL_TRUE, 0, sizeof("
           + outputBuffer.getType() + ")*" + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
     }
     result.append("OCL_CHECK(err, err = q.finish());\n");
