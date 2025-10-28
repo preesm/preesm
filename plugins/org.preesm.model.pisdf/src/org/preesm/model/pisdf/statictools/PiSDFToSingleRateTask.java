@@ -95,7 +95,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
         .filter(g -> g.isCluster() && g.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).toList();
 
     // Flatten the graph
-    final PiGraph flatGraph = PiSDFHeterogeneousFlattener.flattenTest(graph, flattenExclusionList);
+    final PiGraph flatGraph = PiSDFHeterogeneousFlattener.flatten(graph, flattenExclusionList);
 
     // then convert to single-rate
     final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(flatGraph, method, flattenExclusionList,

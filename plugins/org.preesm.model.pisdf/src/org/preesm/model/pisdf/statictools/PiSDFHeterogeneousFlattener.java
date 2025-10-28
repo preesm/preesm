@@ -118,7 +118,7 @@ public class PiSDFHeterogeneousFlattener extends PiMMSwitch<Boolean> {
     this.flatteningExclusionList = new LinkedList<>();
   }
 
-  public static final PiGraph flattenTest(final PiGraph graph, List<String> exclusionList) {
+  public static final PiGraph flatten(final PiGraph graph, List<String> exclusionList) {
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
