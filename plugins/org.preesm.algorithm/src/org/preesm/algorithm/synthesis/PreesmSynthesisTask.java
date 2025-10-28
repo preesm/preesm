@@ -106,8 +106,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
   public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
   public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
   public static final String VALUE_SCHEDULER_CHOCO       = "choco";
-  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevalexact";
-  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
