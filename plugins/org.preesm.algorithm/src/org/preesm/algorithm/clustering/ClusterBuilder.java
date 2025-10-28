@@ -55,11 +55,6 @@ public class ClusterBuilder {
      */
     final List<PiGraph> listClusters = new LinkedList<>();
 
-    // need to convert to mutable list in order to remove elements later
-    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors());
-    final Map<AbstractActor,
-        Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
-
     final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
     final Component refCPUArch = refCPU.getComponent();
 
@@ -73,7 +68,8 @@ public class ClusterBuilder {
       listClusters.addAll(subClusterList);
     }
 
-    // We don't take into account special actors (fork, join...) as they can be executed anywhere.
+    // We don't take into account special actors (fork, join...) as they can be executed anywhere
+    //
     final List<AbstractActor> actors = graph.getActors().stream()
         .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
     List<Component> sharedComponents = scenario.getDesign().getComponents();
@@ -82,7 +78,16 @@ public class ClusterBuilder {
     for (final AbstractActor a : actors) {
       final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
       sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
+      if (sharedComponents.isEmpty()) {
+        // no intersection exists
+        break;
+      }
     }
+
+    // need to convert to mutable list in order to remove elements later
+    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors());
+    final Map<AbstractActor,
+        Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
     if (!sharedComponents.isEmpty()) {
       // All components share a common PE ! It's a cluster already
@@ -121,15 +126,20 @@ public class ClusterBuilder {
         final var nonMainCpuMappings = scenario.getPossibleMappings(actor).stream()
             .filter(c -> !(c.getComponent().equals(refCPUArch))).toList();
 
-        // check actor has not been tested before, and if it is mapped to a non-CPU PE
-        if (!actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
+        // Any actor that has a mapping to refArch is a valid seed, except if it is already a cluster graph, or if it is
+        // a UserSpecialActor (broadcast, roundbuffer, join, fork).
+        final boolean validActorType = !(actor instanceof UserSpecialActor) && !actor.isCluster();
+
+        // check actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
+        // clusterize from it
+        if (validActorType && !actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
           actorIsVisited.put(actor, true);
 
           // The actor has at least one non-main PE mapping ! First, let's decide which arch will be used for clustering
           // TODO faire retourner le composant plutôt que l'instance par seedArchHeuristic
           clusteringComponent = seedArchHeuristic(graph, scenario, actor, refCPUArch);
 
-          // now we can wark the actor for clustering
+          // now we can mark the actor for clustering
           seed_found = true;
 
           // final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
@@ -182,7 +192,7 @@ public class ClusterBuilder {
         // TODO change name to a better one...
         final String clusterName = "Cluster_" + actor.getName();
         final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-            + " into cluster " + clusterName + "on component(s) " + clusteringComponents;
+            + " into cluster " + clusterName + " on component(s) " + clusteringComponents;
         PreesmLogger.getLogger().log(Level.INFO, info);
         final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
@@ -209,14 +219,12 @@ public class ClusterBuilder {
 
     } while (!graph_is_fully_searched);
 
-    // now we add the cluster's mapping to the scenario
-
     return listClusters;
 
   }
 
   /***
-   * The heuristic that decides which of the PEs available as maping for actor will be used to start the clustering.
+   * The heuristic that decides which of the PEs available as mapping for actor will be used to start the clustering.
    *
    * @param graph
    *          the algorithm graph
