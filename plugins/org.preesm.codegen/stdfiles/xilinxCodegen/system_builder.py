@@ -117,7 +117,10 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 
 	# set the vitis compilation flag
 	status = comp.set_app_config(key="USER_COMPILE_DEFINITIONS", values="VITIS_COMPILATION")
-	status = comp.set_app_config(key="USER_CMAKE_CXX_STANDARD", values=project_config.cpp_version)
+	try: # for vitis > 2025 
+		status = comp.set_app_config(key="USER_CMAKE_CXX_STANDARD", values=project_config.cpp_version)
+	except:
+		project_config.flags += "-std=c++" + project_config.cpp_version
 	status = comp.set_app_config(key="USER_COMPILE_OTHER_FLAGS", values=project_config.flags)
 
 	# build application for hardware emulation
@@ -179,5 +182,3 @@ if __name__ == "__main__":
 	version = sys.argv[5]
 	vitis_loc = sys.argv[6]
 	main(comp_name, sys_proj_name, common_image, target, version, vitis_loc)
-
-
