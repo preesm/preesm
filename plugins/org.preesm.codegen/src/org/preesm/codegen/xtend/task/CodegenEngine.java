@@ -351,6 +351,10 @@ public class CodegenEngine {
               .read("stdfiles/xilinxCodegen/heterogeneous_makefile", FpgaCodeGenerator.class);
           PreesmIOHelper.getInstance().print(codegenPath, "Makefile", makefile);
 
+          final String timings_script = PreesmResourcesHelper.getInstance()
+              .read("stdfiles/xilinxCodegen/extract_syn_results.py", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_results.py", timings_script);
+
           final IFolder step1 = ResourcesPlugin.getWorkspace().getRoot()
               .getFolder(new Path(codegenPath + "/vivado_soc"));
           final IFolder step2 = ResourcesPlugin.getWorkspace().getRoot()
