@@ -72,11 +72,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    boolean ok = true;
-    for (final Fifo f : graph.getFifos()) {
-      ok &= doSwitch(f);
-    }
-    return ok;
+    return graph.getFifos().parallelStream().map(this::doSwitch).reduce(true, (x, y) -> (x && y));
   }
 
   @Override
