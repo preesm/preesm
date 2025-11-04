@@ -52,7 +52,6 @@ package org.preesm.model.pisdf
 
 import java.io.File
 import java.util.ArrayList
-import java.util.List
 import java.util.Collections
 import java.util.Optional
 import org.eclipse.emf.ecore.EMap
@@ -110,10 +109,11 @@ class StringExpression extends Expression {
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
 	op long evaluateAsLong() {
-		return Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
+		return Math.round(evaluateAsDouble)
 	}
 	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
+		val double dblValue = evaluateAsDouble
+		return dblValue == Math.floor(dblValue)
 	}
 }
 
@@ -129,7 +129,7 @@ class DoubleExpression extends Expression {
 		return Math.round(value)
 	}
 	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
+		return value == Math.round(value)
 	}
 }
 
@@ -145,7 +145,8 @@ interface ExpressionProxy extends Expression {
 		proxy.getExpression().evaluateAsLong()
 	}
 	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
+		val double dblExpr = evaluateAsDouble
+		return dblExpr == Math.floor(dblExpr)
 	}
 }
 
