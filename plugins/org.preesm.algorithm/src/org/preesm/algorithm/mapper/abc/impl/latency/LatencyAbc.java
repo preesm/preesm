@@ -79,7 +79,9 @@ import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -479,6 +481,16 @@ public abstract class LatencyAbc {
           + ". Consider relaxing constraints in scenario.";
       PreesmLogger.getLogger().log(Level.SEVERE, message);
       throw new PreesmRuntimeException(message);
+    }
+
+    // if the operator is a special actor (broadcast, round buffer, fork, join), and their containing graph is not a
+    // cluster, they must be mapped to a cpu component, not an accelerator (fpga for now)
+    // I wish I could have inserted this in a selection() method, not a findCandidates() method, but it's the one used
+    // to select the mapping so I don' have a choice
+    if (vertex.getReferencePiVertex() instanceof SpecialActor
+        && !vertex.getReferencePiVertex().getContainingPiGraph().isCluster()) {
+      // remove all accelerator mappings
+      initOperators.removeIf(ci -> !(ci.getComponent() instanceof CPU));
     }
 
     return initOperators;
