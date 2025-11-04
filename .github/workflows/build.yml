@@ -189,7 +189,7 @@ jobs:
     # the result of the previous workflow (see the documentation page)
     if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
     name: GihHub Release
-    needs: [build, complile_run]
+    needs: [build, compile_run]
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifacts
