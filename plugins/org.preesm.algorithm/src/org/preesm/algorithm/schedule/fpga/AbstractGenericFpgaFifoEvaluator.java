@@ -150,7 +150,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
    */
   public static AbstractGenericFpgaFifoEvaluator getEvaluatorInstance(final String fifoEvaluatorName) {
 
-    return switch (fifoEvaluatorName) {
+    return switch (fifoEvaluatorName.toLowerCase()) {
       case AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG ->
         new AsapFpgaFifoEvaluator(fifoEvaluatorName);
       case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT -> new AdfgOjalgoFpgaFifoEvaluator(true);
