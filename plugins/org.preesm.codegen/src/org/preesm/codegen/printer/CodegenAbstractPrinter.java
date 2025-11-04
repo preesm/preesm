@@ -539,28 +539,65 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     result.append("// Vectors containing interface elements, and buffers referencing them\n");
     result.append("// We also link the buffers to the memory read/write kernels \n");
     for (final AcceleratorCall accelerator : accelerators) {
-      for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance)
-          .map(p -> (Buffer) p).toList()) {
-        final String arrayName = param.getName();
-        final String type = param.getType();
-        final String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
-            .getName().toLowerCase();
+      final int nbTemplateParameters = (int) (accelerator.getParameters().stream().filter(b -> !(b instanceof Buffer))
+          .count());
 
-        final String accessType = switch (direction) {
-          case "input" -> "CL_MEM_READ_ONLY";
-          case "output" -> "CL_MEM_WRITE_ONLY";
-          case "inputOutput" -> "CL_MEM_READ_WRITE";
-          default -> "";
-        };
+      final var CpuBuffers = accelerator.getParameters().stream().filter(b -> b instanceof final Buffer buf)
+          .map(b -> (Buffer) b).filter(b -> ((CoreBlock) b.getCreator()).archIsCpu());
+      final List<Buffer> readBuffers = new LinkedList<>();
+      final List<Buffer> writeBuffers = new LinkedList<>();
+      CpuBuffers.forEach(p -> {
+        final String name = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(p)).getName()
+            .toLowerCase();
+        if (name.equals("input")) {
+          readBuffers.add(p);
+        } else {
+          writeBuffers.add(p);
+        }
+      });
 
-        final String bufferName = arrayName + "_buff_" + direction;
-        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | " + accessType
-            + ", sizeof(" + type + ")*" + param.getNbToken() + ", " + arrayName + ", &err));\n");
+      int position = 0;
+      for (final Buffer inputBuffer : readBuffers) {
+        final String arrayName = inputBuffer.getName();
+        final String type = inputBuffer.getType();
+        final String bufferName = arrayName + "_buff_input";
+        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY"
+            + ", sizeof(" + type + ")*" + inputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
 
-        final String readWrite = direction.equals("input") ? "_read" : "_write";
-        result.append(
-            "OCL_CHECK(err, err = " + accelerator.getName() + readWrite + ".setArg(0, " + bufferName + "));\n\n");
+        result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_read" + ".setArg(" + position + ", "
+            + bufferName + "));\n\n");
+        position += 2;
       }
+
+      position = 0;
+      for (final Buffer outputBuffer : writeBuffers) {
+        final String arrayName = outputBuffer.getName();
+        final String type = outputBuffer.getType();
+        final String bufferName = arrayName + "_buff_output";
+        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY"
+            + ", sizeof(" + type + ")*" + outputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
+
+        result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_write" + ".setArg(" + position + ", "
+            + bufferName + "));\n\n");
+        position += 2;
+      }
+      /*
+       * for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance) .map(p ->
+       * (Buffer) p).toList()) { final String arrayName = param.getName(); final String type = param.getType(); final
+       * String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
+       * .getName().toLowerCase(); final int position = accelerator.getParameters().indexOf(param) -
+       * nbTemplateParameters;
+       * 
+       * final String accessType = switch (direction) { case "input" -> "CL_MEM_READ_ONLY"; case "output" ->
+       * "CL_MEM_WRITE_ONLY"; case "inputOutput" -> "CL_MEM_READ_WRITE"; default -> ""; };
+       * 
+       * final String bufferName = arrayName + "_buff_" + direction; result.append("OCL_CHECK(err, cl::Buffer " +
+       * bufferName + "(context, CL_MEM_USE_HOST_PTR | " + accessType + ", sizeof(" + type + ")*" + param.getNbToken() +
+       * ", " + arrayName + ", &err));\n");
+       * 
+       * final String readWrite = direction.equals("input") ? "_read" : "_write"; result.append("OCL_CHECK(err, err = "
+       * + accelerator.getName() + readWrite + ".setArg(" + position + ", " + bufferName + "));\n\n"); }
+       */
       result.append("\n\n");
     }
 
@@ -819,18 +856,17 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff_input, CL_TRUE, 0, sizeof("
           + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
     }
-    for (final Buffer inputBuffer : inputBuffers) {
-      // CL_TRUE for blocking read, at least for now
-      // 0 for 0 offset to the read, at least for now
-      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
-    }
+    // for (final Buffer inputBuffer : inputBuffers) {
+    // CL_TRUE for blocking read, at least for now
+    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
+    // }
 
     // accelerators are free-running, therefore we don't need to call them
 
     // Retrieve output data from device
-    for (final var outputBuffer : outputBuffers) {
-      result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
-    }
+    // for (final var outputBuffer : outputBuffers) {
+    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
+    // }
     result.append("OCL_CHECK(err, err = q.finish());\n");
     for (final var outputBuffer : outputBuffers) {
       result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff_output, CL_TRUE, 0, sizeof("
