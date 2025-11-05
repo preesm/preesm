@@ -50,7 +50,7 @@ jobs:
 
       - name: Build & Test
         shell: bash
-        run: releng/build_and_test.sh --ci #--parallel
+        run: releng/build_and_test.sh --ci --parallel
 
       # - name: Save m2 cache # Only trigger on develop unscheduled
       #   if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
