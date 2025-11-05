@@ -117,7 +117,7 @@ jobs:
               archive_name: windows-products
           }
           - {
-              os_name: macos-13,
+              os_name: macos-15-intel,
               archive_name: mac-x86-products
           }
           - {
