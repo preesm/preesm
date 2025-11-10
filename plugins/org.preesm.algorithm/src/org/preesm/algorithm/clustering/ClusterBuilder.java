@@ -89,7 +89,7 @@ public class ClusterBuilder {
     final Map<AbstractActor,
         Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
-    if (!sharedComponents.isEmpty()) {
+    if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
       // All components share a common PE ! It's a cluster already
       graph.setClusterValue(true);
       final Component cp = sharedComponents.getFirst();
