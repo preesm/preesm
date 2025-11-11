@@ -12,9 +12,9 @@ import vitis
 
 def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	workspace = os.path.abspath("./")
-	hls_folder = os.path.abspath("../")
+	codegen_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
-
+	
 	sysroot = common_image + "/sysroots/cortexa72-cortexa53-xilinx-linux/"
 	if not(os.path.isdir(sysroot)):
 		print(sysroot)
@@ -44,7 +44,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	p_domain_name = "linux_psu_cortexa53"
 
 	if target == "kr260":
-		platform = client.create_platform_component(name="platform", hw_design=hls_folder+"/vitis_platform/mydevice/hw/kr260_hardware_platform.xsa", os=p_os, cpu=p_cpu, domain_name=p_domain_name)	
+		platform = client.create_platform_component(name="platform", hw_design=codegen_folder+"/vitis_platform/mydevice/hw/kr260_hardware_platform.xsa", os=p_os, cpu=p_cpu, domain_name=p_domain_name)	
 	elif target == "ultrascale":
 		platform = client.create_platform_component(name="platform", platform_xpfm_path=hw_path)
 		domain = platform.add_domain(cpu=p_cpu, os=p_os, name=p_domain_name)
@@ -58,7 +58,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 
 	status = domain.set_boot_dir(path=common_image)
 
-	status = domain.set_dtb(path=hls_folder + "/vitis_platform/mydevice/psu_cortexa53_0/device_tree_domain/bsp/system.dtb")
+	status = domain.set_dtb(path=codegen_folder + "/vitis_platform/mydevice/psu_cortexa53_0/device_tree_domain/bsp/system.dtb")
 
 	status = platform.build()
 
@@ -66,7 +66,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	""" ---- HLS Components creation ---- """
 
 	# for now I create only one hls component. Later it will have to be just as many as necessary.
-	accelerators = [line.rstrip() for line in open(code_folder + "/generated/clusters_list", "r")]
+	accelerators = [line.rstrip() for line in open(codegen_folder + "/clusters_list", "r")]
 	hls_kernels = []
 	for acc in accelerators:
 		hls_kernels.append(acc)
@@ -74,7 +74,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 		hls_kernels.append("mem_write_" + acc)
 
 	hls_kernel_files = [k + ".cpp" for k in hls_kernels]
-	testbench_files = [file for file in os.listdir(code_folder+"/generated") if "testbench" in file]
+	testbench_files = [file for file in os.listdir(codegen_folder) if "testbench" in file]
 
 
 	for kernel in hls_kernels:
@@ -84,8 +84,8 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 		cfg_obj.set_value('', key="part", value=targets[target])
 		liste_hls_usercmake = [
 		f"syn.top={kernel}",
-		f"syn.file={code_folder}/generated/{kernel}.cpp",
-		f"syn.cflags=-I{code_folder}/include -I{code_folder}/generated"
+		f"syn.file={codegen_folder}/{kernel}.cpp",
+		f"syn.cflags=-I{code_folder}/include -I{codegen_folder}"
 		]
 		cfg_obj.add_lines('hls', liste_hls_usercmake)
 
@@ -98,16 +98,16 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	status = comp.set_sysroot(sysroot=sysroot)
 
 	# set all .cpp files as app source. Vitis shall sort them out.
-	gen_CPPfiles = [file for file in os.listdir(code_folder+"/generated") if file.endswith(".cpp") and not(file in hls_kernel_files + testbench_files)]
-	status = comp.import_files(from_loc=code_folder+"/generated", files=gen_CPPfiles)
+	gen_CPPfiles = [file for file in os.listdir(codegen_folder) if file.endswith(".cpp") and not(file in hls_kernel_files + testbench_files)]
+	status = comp.import_files(from_loc=codegen_folder, files=gen_CPPfiles)
 
 	source_files = [file for file in os.listdir(code_folder+"/src") if not(file.endswith(".h")) and not(file in hls_kernel_files)]
 	status = comp.import_files(from_loc=code_folder+"/src", files=source_files)
 
-	status = comp.import_files(from_loc=code_folder+"/generated/libs/common/includes", files=["xcl2"])
+	status = comp.import_files(from_loc=codegen_folder+"/libs/common/includes", files=["xcl2"])
 
 	# include folders
-	include_paths = [f"{code_folder}/generated/libs/common/includes/xcl2", f"{code_folder}/generated", f"{code_folder}/include"] + project_config.includes
+	include_paths = [f"{codegen_folder}/libs/common/includes/xcl2", f"{codegen_folder}", f"{code_folder}/include"] + project_config.includes
 	status = comp.set_app_config(key="USER_INCLUDE_DIRECTORIES", values=include_paths)
 
 	# libs 
@@ -129,7 +129,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	
 	""" ---- Create System project ---- """
 
-	proj = client.create_sys_project(name="system_project", platform=f"{hls_folder}/system_project/platform/export/platform/platform.xpfm", template="empty_accelerated_application")
+	proj = client.create_sys_project(name="system_project", platform=f"{codegen_folder}/system_project/platform/export/platform/platform.xpfm", template="empty_accelerated_application")
 
 	proj = client.get_sys_project(name="system_project")
 
@@ -148,7 +148,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	packagecfg_path = os.path.join(workspace, sys_proj_name, 'package/package.cfg')
 	cfg_obj = client.get_config_file(packagecfg_path)
 	liste_cfg_package = [
-	f"dtb={hls_folder}/vitis_platform/dtbo_output/pl.dtbo",
+	f"dtb={codegen_folder}/vitis_platform/dtbo_output/pl.dtbo",
 	f"kernel_image={common_image}/Image",
 	f"rootfs={common_image}/rootfs.ext4"
 	]
@@ -157,7 +157,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	connectivity_cfg = os.path.join(workspace, sys_proj_name, 'hw_link/container-link.cfg')
 	cfg_obj = client.get_config_file(connectivity_cfg)
 	connections = []
-	with open(code_folder + "/generated/connectivity.cfg", "r") as file:
+	with open(codegen_folder + "/connectivity.cfg", "r") as file:
 		for line in file:
 			connections.append(line.rstrip())
 	cfg_obj.add_lines('connectivity', connections)
