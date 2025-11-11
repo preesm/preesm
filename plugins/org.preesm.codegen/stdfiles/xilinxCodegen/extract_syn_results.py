@@ -90,8 +90,8 @@ if __name__ == "__main__":
         cfg_obj.set_value("", key="part", value="xczu7ev-ffvc1156-2-e") # any target is fine since we just synthesize
         liste_hls_usercmake = [
         f"syn.top={kernel}",
-        f"syn.file={code_folder}/generated/{kernel}.cpp",
-        f"syn.cflags=-I{code_folder}/include -I{code_folder}/generated",
+        f"syn.file={generated_folder}/{kernel}.cpp",
+        f"syn.cflags=-I{code_folder}/include -I{generated_folder}/",
         ]
         cfg_obj.add_lines('hls', liste_hls_usercmake)
 
