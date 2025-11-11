@@ -147,13 +147,13 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
       final MapperDAGVertex pred = entry.getKey();
       final VertexTiming predTiming = pred.getTiming();
       final EdgeTiming edgeTiming = entry.getValue().getTiming();
-      if (!predTiming.hasTLevel() || !predTiming.hasCost() || !edgeTiming.hasCost()) {
+      if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
+        final long currentTLevel = predTiming.getTLevel() + predTiming.getCost() + edgeTiming.getCost();
+        if (currentTLevel > maxTLevel) {
+          maxTLevel = currentTLevel;
+        }
+      } else {
         timing.resetTLevel();
-        break;
-      }
-      final long currentTLevel = predTiming.getTLevel() + predTiming.getCost() + edgeTiming.getCost();
-      if (currentTLevel > maxTLevel) {
-        maxTLevel = currentTLevel;
       }
     }
 
