@@ -115,7 +115,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
   }
 
   /**
-   * Visiting a vertex to assign t-levels. Prececessors are considered already visited. Successors are accepted
+   * Visiting a vertex to assign t-levels. Predecessors are considered already visited. Successors are accepted
    *
    * @param dagVertex
    *          the dag vertex
