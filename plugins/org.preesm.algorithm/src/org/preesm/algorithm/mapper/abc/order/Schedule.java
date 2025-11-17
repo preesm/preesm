@@ -141,9 +141,7 @@ public class Schedule {
    *          the element
    */
   public void remove(final MapperDAGVertex element) {
-    if (this.elementList.contains(element)) {
-      this.elementList.remove(element);
-    }
+    this.elementList.remove(element);
   }
 
   // Access without modification
@@ -238,13 +236,10 @@ public class Schedule {
    * @return the schedule elt
    */
   public MapperDAGVertex getScheduleElt(final MapperDAGVertex v) {
-    final int index = this.elementList.indexOf(v);
 
-    // Searching in synchronized vertices
-    if (index != -1) {
+    if (this.elementList.contains(v)) {
       return v;
     }
-
     return null;
   }
 
@@ -256,7 +251,7 @@ public class Schedule {
    * @return true, if successful
    */
   public boolean contains(final MapperDAGVertex v) {
-    return getScheduleElt(v) != null;
+    return this.elementList.contains(v);
   }
 
   /**
@@ -314,8 +309,6 @@ public class Schedule {
    */
   public long getBusyTime() {
     return this.elementList.stream().filter(e -> e.getTiming().hasCost()).mapToLong(e -> e.getTiming().getCost()).sum();
-    // return this.elementList.stream().filter(e -> e.getTiming().hasCost()).map(e -> e.getTiming().getCost())
-    // .reduce(0L, (a, b) -> a + b);
   }
 
   /**

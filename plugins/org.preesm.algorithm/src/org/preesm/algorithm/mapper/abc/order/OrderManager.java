@@ -88,7 +88,7 @@ public class OrderManager extends Observable {
   }
 
   /**
-   * Find latest pred index for op.
+   * Find last pred index for op.
    *
    * @param cmp
    *          the cmp
@@ -128,22 +128,15 @@ public class OrderManager extends Observable {
       final ComponentInstance cmp = vertex.getEffectiveComponent();
       final int newSchedulingTotalOrder = totalIndexOf(vertex);
       final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(), newSchedulingTotalOrder);
-      // Testing a possible synchronized vertex
-      MapperDAGVertex elt = get(newSchedulingTotalOrder);
-      if ((elt != null) && !elt.equals(vertex)) {
-        final String msg = "Error in sched order!!";
-        throw new PreesmRuntimeException(msg);
-      }
-      elt = vertex;
 
       // Adds vertex or synchro vertices after its chosen predecessor
       final Schedule schedule = getSchedule(cmp);
       checkScheduleNull(schedule);
       if (maxPrec >= 0) {
         final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
-        schedule.insertAfter(previous, elt);
+        schedule.insertAfter(previous, vertex);
       } else {
-        schedule.addFirst(elt);
+        schedule.addFirst(vertex);
       }
 
     }
@@ -332,27 +325,17 @@ public class OrderManager extends Observable {
       final ComponentInstance cmp = vertex.getEffectiveComponent();
       sch = getSchedule(cmp);
     } else { // Looks for the right scheduling to remove the vertex
-      for (final Schedule locSched : this.schedules.values()) {
-        if (locSched.contains(vertex)) {
-          sch = locSched;
-          break;
-        }
-      }
+
+      // Maybe test this with a parallel with high pe count architecture
+      sch = this.schedules.values().stream().filter(locSched -> locSched.contains(vertex)).findAny().orElse(null);
     }
 
     if (sch != null) {
-      final MapperDAGVertex elt = sch.getScheduleElt(vertex);
-      if (elt != null && elt.equals(vertex)) {
-        sch.remove(elt);
-      }
+      sch.remove(vertex);
     }
 
     if (removeFromTotalOrder) {
-      final MapperDAGVertex elt = this.totalOrder.getScheduleElt(vertex);
-
-      if (elt != null) {
-        this.totalOrder.remove(elt);
-      }
+      this.totalOrder.remove(vertex);
     }
 
   }
