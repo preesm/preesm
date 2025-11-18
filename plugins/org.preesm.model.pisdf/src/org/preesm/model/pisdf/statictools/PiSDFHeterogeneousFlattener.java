@@ -213,6 +213,16 @@ public class PiSDFHeterogeneousFlattener extends PiMMSwitch<Boolean> {
     }
     for (final Parameter p : graph.getParameters()) {
       upperGraph.addParameter(p);
+      // copy all the parameter's dependencies that aren't linked to data interfaces
+      final List<Dependency> depToRemove = new LinkedList<>();
+      for (final var dep : p.getOutgoingDependencies()) {
+        if (!(dep.getTarget() instanceof DataInterface)) {
+          upperGraph.addDependency(dep);
+        } else {
+          depToRemove.add(dep);
+        }
+      }
+      p.getOutgoingDependencies().removeAll(depToRemove);
     }
 
     upperGraph.removeActorAndDependencies(graph);
