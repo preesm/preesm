@@ -38,9 +38,9 @@
  */
 package org.preesm.algorithm.mapper.abc.order;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -53,7 +53,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 public class Schedule {
 
   /** The ordered list of vertices in this schedule. */
-  private final LinkedList<MapperDAGVertex> elementList;
+  private final ArrayList<MapperDAGVertex> elementList;
 
   /**
    * Instantiates a new schedule.
@@ -61,7 +61,7 @@ public class Schedule {
   public Schedule() {
 
     super();
-    this.elementList = new LinkedList<>();
+    this.elementList = new ArrayList<>();
   }
 
   /**
