@@ -294,7 +294,9 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     // check fifo
     final boolean sourcePortNotNull = fifo.getSourcePort() != null;
     final boolean targetPortNotNull = fifo.getTargetPort() != null;
-    final boolean containedByGraph = this.graphStack.peek().getFifos().contains(fifo);
+    // Checking directly if the fifo is part of the edge list to avoid re-generating a fifo list every time.
+    final boolean containedByGraph = this.graphStack.peek().getEdges().contains(fifo);
+
     boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
 
     // Instantiate check result
