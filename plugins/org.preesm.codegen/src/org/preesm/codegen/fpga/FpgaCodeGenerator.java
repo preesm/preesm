@@ -1247,8 +1247,8 @@ public class FpgaCodeGenerator {
   public static String generateConnectivityCommands(PiGraph algo) {
     final StringBuilder sb = new StringBuilder("");
 
-    final List<
-        PiGraph> clusterList = algo.getAllClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA)).toList();
+    final List<PiGraph> clusterList = algo.getAllClusters().stream()
+        .filter(c -> c.getTargetArch().equals(Arch.FPGA) && !c.getContainingPiGraph().isCluster()).toList();
 
     // for now, I will assume no fpga cluster is linked to another fpga cluster
     // that means we simply have to link a cluster to its associated memory read and write kernels.
