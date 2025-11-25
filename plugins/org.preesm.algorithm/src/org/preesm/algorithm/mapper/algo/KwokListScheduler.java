@@ -182,6 +182,10 @@ public class KwokListScheduler {
       final long test = listImplementationCost(dag, currentvertex, currentoperator, archisimu);
       // test the earliest ready operator
       if (test < time) {
+        // if the operator is a special actor (broadcast, round buffer, fork, join), and their containing graph is not a
+        // cluster,
+        // they must be mapped to a cpu component, not an accelerator (fpga for now)
+        // if(currentvertex.get)
         chosenOperator = currentoperator;
         time = test;
       }
