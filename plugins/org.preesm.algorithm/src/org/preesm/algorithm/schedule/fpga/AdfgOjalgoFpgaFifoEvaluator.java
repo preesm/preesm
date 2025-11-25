@@ -118,6 +118,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
 
     // FifoAbstraction to phi Variable ID
     final Map<FifoAbstraction, Integer> fifoAbsToPhiVariableID = new LinkedHashMap<>();
+    // first, set a more-than-0 constraint on all fifos' phis
     for (final FifoAbstraction fifoAbs : dug.edgeSet()) {
       final int index = fifoAbsToPhiVariableID.size();
       fifoAbsToPhiVariableID.put(fifoAbs, index);

@@ -266,6 +266,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
       PreesmLogger.getLogger().log(Level.INFO, msg);
       for (final PiMemoryExclusionVertex vertex : meg.vertexSet()) {
+        // à quoi sert cet appel ? La fonction ne fait que retourner les voisins et on ne s'en sert pas
         meg.getAdjacentVertexOf(vertex);
       }
 
