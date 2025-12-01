@@ -104,8 +104,27 @@ public class OrderManager extends Observable {
     // Iterates the schedule to find the latest predecessor
     // Looking for the preceding vertex with maximum total order in vertex schedule
 
-    return currentSched.getList().reversed().parallelStream().mapToInt(this::totalIndexOf).filter(v -> v < refIndex)
-        .findFirst().orElse(-1);
+    return this.binarySearchLatestPred(currentSched.getList(), refIndex);
+  }
+
+  private int binarySearchLatestPred(List<MapperDAGVertex> schedList, int refIndex) {
+    int low = 0;
+    int high = schedList.size() - 1;
+    int result = -1;
+
+    while (low <= high) {
+      final int mid = low + ((high - low) / 2);
+
+      final int midValue = this.totalIndexOf(schedList.get(mid));
+      if (midValue < refIndex) {
+        low = mid + 1;
+        result = midValue;
+      } else {
+        high = mid - 1;
+      }
+    }
+
+    return result;
   }
 
   private void checkScheduleNull(final Schedule currentSched) {
