@@ -180,7 +180,7 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Update tand B levels.
+   * Update T and B levels.
    */
   public void updateTandBLevels() {
     final TLevelVisitor tLevelVisitor = new TLevelVisitor(this.dirtyVertices);
