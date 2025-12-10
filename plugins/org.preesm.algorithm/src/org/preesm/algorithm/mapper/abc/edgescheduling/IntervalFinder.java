@@ -99,7 +99,6 @@ public class IntervalFinder {
       final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.largestFreeInterval, 0);
-
   }
 
   /**
@@ -117,7 +116,6 @@ public class IntervalFinder {
       final MapperDAGVertex maxVertex) {
 
     return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, 0);
-
   }
 
   /**
@@ -163,46 +161,44 @@ public class IntervalFinder {
     Interval newInt = null;
     Interval freeInterval = new Interval(-1, -1, 0);
 
-    if (schedule != null) {
-      for (final MapperDAGVertex v : schedule) {
-        final VertexTiming props = v.getTiming();
+    if (schedule == null) {
+      return freeInterval;
+    }
 
-        // If we have the current vertex tLevel
-        if (props.getTLevel() >= 0) {
+    for (final MapperDAGVertex v : schedule) {
+      final VertexTiming props = v.getTiming();
 
-          // newInt is the interval corresponding to the execution of
-          // the vertex v: a non free interval
-          newInt = new Interval(props.getCost(), props.getTLevel(), this.orderManager.totalIndexOf(v));
+      // If we have the current vertex tLevel
+      if (props.getTLevel() >= 0) {
 
-          // end of the preceding non free interval
-          final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
-          // latest date between the end of minVertex and the end of
-          // oldInt
-          final long available = Math.max(minIndexVertexEndTime, oldEnd);
-          // Computing the size of the free interval
-          final long freeIntervalSize = newInt.getStartTime() - available;
+        // newInt is the interval corresponding to the execution of
+        // the vertex v: a non free interval
+        newInt = new Interval(props.getCost(), props.getTLevel(), this.orderManager.totalIndexOf(v));
 
-          if (type == FindType.largestFreeInterval) {
-            // Verifying that newInt is in the interval of search
-            if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)
-                && freeIntervalSize > freeInterval.getDuration()) {
-              // The free interval takes the index of its
-              // following task v.
-              // Inserting a vertex in this interval means
-              // inserting it before v.
-              freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
-            }
-          } else if (type == FindType.earliestBigEnoughInterval && (newInt.getTotalOrderIndex() > minIndex)
-              && (newInt.getTotalOrderIndex() <= maxIndex) && freeIntervalSize >= data) {
-            // The free interval takes the index of its
-            // following task v.
-            // Inserting a vertex in this interval means
-            // inserting it before v.
+        // end of the preceding non free interval
+        final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+        // latest date between the end of minVertex and the end of
+        // oldInt
+        final long available = Math.max(minIndexVertexEndTime, oldEnd);
+        // Computing the size of the free interval
+        final long freeIntervalSize = newInt.getStartTime() - available;
+
+        if (type == FindType.largestFreeInterval) {
+          // Verifying that newInt is in the interval of search
+          if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)
+              && freeIntervalSize > freeInterval.getDuration()) {
+            // The free interval takes the index of its following task v.
+            // Inserting a vertex in this interval means inserting it before v.
             freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
-            break;
           }
-          oldInt = newInt;
+        } else if (type == FindType.earliestBigEnoughInterval && (newInt.getTotalOrderIndex() > minIndex)
+            && (newInt.getTotalOrderIndex() <= maxIndex) && freeIntervalSize >= data) {
+          // The free interval takes the index of its following task v.
+          // Inserting a vertex in this interval means inserting it before v.
+          freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
+          break;
         }
+        oldInt = newInt;
       }
     }
 

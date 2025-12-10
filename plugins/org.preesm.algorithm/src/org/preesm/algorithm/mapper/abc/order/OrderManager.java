@@ -107,7 +107,7 @@ public class OrderManager extends Observable {
     return this.binarySearchLatestPred(currentSched.getList(), refIndex);
   }
 
-  private int binarySearchLatestPred(List<MapperDAGVertex> schedList, int refIndex) {
+  private int binarySearchLatestPred(final List<MapperDAGVertex> schedList, final int refIndex) {
     int low = 0;
     int high = schedList.size() - 1;
     int result = -1;
