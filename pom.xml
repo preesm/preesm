@@ -138,7 +138,7 @@
       <sonar.inclusions>**/*.java</sonar.inclusions>
       <sonar.exclusions>**/test/**,**/*Test.java,**/*.properties</sonar.exclusions>
       <!-- <sonar.tests.sources>tests</sonar.tests.sources> -->
-      <sonar.tests.inclusions>**/*Test.java</sonar.tests.inclusions>
+      <sonar.test.inclusions>**/*Test.java</sonar.test.inclusions>
       <!-- <sonar.tests.exclusions></sonar.tests.exclusions> -->
    </properties>
 
