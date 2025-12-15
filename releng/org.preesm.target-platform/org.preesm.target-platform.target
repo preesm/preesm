@@ -3,7 +3,7 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2025-09"/>
+			<repository location="https://download.eclipse.org/releases/2024-12"/>
 			<unit id="org.eclipse.cdt.sdk.feature.group"/>
 			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group"/>
 			<unit id="org.eclipse.egit.feature.group"/>
