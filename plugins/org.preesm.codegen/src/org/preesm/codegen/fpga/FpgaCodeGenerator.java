@@ -1237,7 +1237,7 @@ public class FpgaCodeGenerator {
   }
 
   /**
-   * Generates the stream_connect commands for this lgorithm's clusters. The generated file will be copied to the .cfg
+   * Generates the stream_connect commands for this algorithm's clusters. The generated file will be copied to the .cfg
    * file created by the system project.
    *
    * @param algo
@@ -1250,26 +1250,36 @@ public class FpgaCodeGenerator {
     final List<PiGraph> clusterList = algo.getAllClusters().stream()
         .filter(c -> c.getTargetArch().equals(Arch.FPGA) && !c.getContainingPiGraph().isCluster()).toList();
 
+    final Set<PiGraph> uniqueClusters = clusterList.stream().map(c -> PreesmCopyTracker.getOriginalSource(c))
+        .collect(Collectors.toSet());
+
+    final Map<PiGraph, Integer> clusterInstancesMap = clusterList.stream()
+        .collect(Collectors.toMap(PreesmCopyTracker::getOriginalSource, s -> 0, (a, b) -> a));
+
     // for now, I will assume no fpga cluster is linked to another fpga cluster
     // that means we simply have to link a cluster to its associated memory read and write kernels.
     for (final PiGraph c : clusterList) {
       final AnalysisResultFPGA synthesisResult = (AnalysisResultFPGA) c.getSynthesisResult();
       final PiGraph oc = PreesmCopyTracker.getOriginalSource(c);
+      final int instanceNumber = clusterInstancesMap.get(oc) + 1;
+      clusterInstancesMap.put(oc, instanceNumber);
+
       for (final InterfaceActor ia : synthesisResult.interfaceRates.keySet()) {
         sb.append("stream_connect=");
         final String read_name = "mem_read_" + oc.getName();
         final String write_name = "mem_write_" + oc.getName();
         if (ia instanceof DataInputInterface) {
-          sb.append(read_name + "_1.");
+          sb.append(read_name + "_" + instanceNumber + ".");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
-          sb.append(oc.getName() + "_1.");
+          sb.append(oc.getName() + "_" + instanceNumber + ".");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
         } else if (ia instanceof DataOutputInterface) {
-          sb.append(oc.getName() + "_1.");
+          sb.append(oc.getName() + "_" + instanceNumber + ".");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + ":");
-          sb.append(write_name + "_1.");
+          sb.append(write_name + "_" + instanceNumber + ".");
           sb.append(ia.getName() + SUFFIX_INTERFACE_STREAM + "\n");
         }
+
       }
     }
 
