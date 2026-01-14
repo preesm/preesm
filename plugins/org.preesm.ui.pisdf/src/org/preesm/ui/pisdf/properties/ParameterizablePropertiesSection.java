@@ -257,8 +257,8 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
       if (errorMP == null) {
         // we need to check, since isValid method is called only if an update is done
         try {
-          final double evaluate = mp.getExpression().evaluateAsDouble();
-          lblValueObj.setText(Double.toString(evaluate));
+          final String evaluate = mp.getExpression().evaluateAsString();
+          lblValueObj.setText(evaluate);
           txtExpression.setBackground(BG_NORMAL_WHITE);
         } catch (final ExpressionEvaluationException e) {
           lblValueObj.setText("A moldable is a sequence of expression separated by ';'. Error : " + e.getMessage());
@@ -277,11 +277,11 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
 
       try {
         // try out evaluating the expression
-        final double evaluate = elementValueExpression.evaluateAsDouble();
+        final String evaluate = elementValueExpression.evaluateAsString();
 
         // if evaluation went well, just write the result
         if (!(businessObject instanceof ConfigInputInterface)) {
-          this.lblValueObj.setText(Double.toString(evaluate));
+          this.lblValueObj.setText(evaluate);
         }
         this.txtExpression.setBackground(BG_NORMAL_WHITE);
       } catch (final ExpressionEvaluationException e) {

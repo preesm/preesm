@@ -103,7 +103,7 @@ import org.w3c.dom.Node;
  */
 public class PiWriter {
 
-  private static final String ZERO_STR = "0.0";
+  private static final String ZERO_STR = "0";
 
   /** The document created by this writer. */
   protected Document domDocument;
