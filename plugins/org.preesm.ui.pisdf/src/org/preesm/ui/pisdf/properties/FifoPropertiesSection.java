@@ -360,8 +360,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     try {
       // try out evaluating the expression
       // if evaluation went well, just write the result
-      final double evaluate = srcRate.evaluateAsDouble();
-      this.lblSourcePortValueObj.setText(Double.toString(evaluate));
+      final String evaluate = srcRate.evaluateAsString();
+      this.lblSourcePortValueObj.setText(evaluate);
 
       if (srcRate.isExpressionInteger()) {
         txtSourcePortExpression.setBackground(BG_NORMAL_WHITE);
@@ -376,9 +376,9 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     }
     try {
       // try out evaluating the expression
-      final double evaluate = tgtRate.evaluateAsDouble();
+      final String evaluate = tgtRate.evaluateAsString();
       // if evaluation went well, just write the result
-      this.lblTargetPortValueObj.setText(Double.toString(evaluate));
+      this.lblTargetPortValueObj.setText(evaluate);
 
       if (tgtRate.isExpressionInteger()) {
         txtTargetPortExpression.setBackground(BG_NORMAL_WHITE);
