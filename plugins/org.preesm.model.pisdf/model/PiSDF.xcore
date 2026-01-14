@@ -96,8 +96,20 @@ interface Expression {
 	refers ExpressionHolder holder opposite expression
 	op String getExpressionAsString()
 	op double evaluateAsDouble()
-	op long evaluateAsLong()
-	op boolean isExpressionInteger()
+	op long evaluateAsLong() {
+		return evaluateAsDouble as long
+	}
+	op String evaluateAsString() {
+		val dblValue = evaluateAsDouble
+		if (dblValue == dblValue as long) {
+			return Long.toString(dblValue as long)
+		}
+		return Double.toString(dblValue)
+	}
+	op boolean isExpressionInteger() {
+		val double dblValue = evaluateAsDouble
+		return dblValue == dblValue as long
+	}
 }
 
 class StringExpression extends Expression {
@@ -108,45 +120,31 @@ class StringExpression extends Expression {
 	op double evaluateAsDouble() {
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
-	op long evaluateAsLong() {
-		return Math.round(evaluateAsDouble)
-	}
-	op boolean isExpressionInteger() {
-		val double dblValue = evaluateAsDouble
-		return dblValue == Math.floor(dblValue)
-	}
 }
 
 class DoubleExpression extends Expression {
 	double value = "0"
 	op String getExpressionAsString() {
-		return Double.toString(value)
+		if (isExpressionInteger) {
+			return Long.toString(evaluateAsLong)
+		}
+		return Double.toString(evaluateAsDouble)
 	}
 	op double evaluateAsDouble() {
 		return value
-	}
-	op long evaluateAsLong() {
-		return Math.round(value)
-	}
-	op boolean isExpressionInteger() {
-		return value == Math.round(value)
 	}
 }
 
 interface ExpressionProxy extends Expression {
 	refers ExpressionHolder proxy
 	op String getExpressionAsString() {
-		return proxy.getExpression().getExpressionAsString
+		proxy.getExpression().getExpressionAsString()
 	}
 	op double evaluateAsDouble() {
 		proxy.getExpression().evaluateAsDouble()
 	}
 	op long evaluateAsLong() {
 		proxy.getExpression().evaluateAsLong()
-	}
-	op boolean isExpressionInteger() {
-		val double dblExpr = evaluateAsDouble
-		return dblExpr == Math.floor(dblExpr)
 	}
 }
 
