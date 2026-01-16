@@ -66,6 +66,8 @@ static bool readInput(T* in, hls::stream<T> &inStream) {
 		}
 		return true;
 	} else {
+		current_factor = 0;
+		current_rate = 0;
 		return false;
 	}
 

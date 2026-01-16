@@ -973,7 +973,7 @@ public class FpgaCodeGenerator {
       return null;
     }
     final String templatePart = init ? templates.getKey() : templates.getValue();
-    final String funcRawName = proto.getName();
+    final String funcRawName = proto.getName(); // containerActor.getName()
     final int indexStartTemplate = funcRawName.indexOf('<');
     final String funcShortName = indexStartTemplate < 0 ? funcRawName : funcRawName.substring(0, indexStartTemplate);
     final String funcTemplatedName = funcShortName + templatePart;
@@ -1095,22 +1095,24 @@ public class FpgaCodeGenerator {
       }
     }
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
+    sb.append("#pragma HLS dataflow \n");
 
     // read kernel body
+    // DÉBUT MODIFS
     int idxIa = 0;
-    if (isMulti) {
-      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
-    }
 
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
+        final String boolName = "shouldContinue" + idxIa;
         if (isMulti) {
           final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
               getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
-          sb.append("    shouldContinue |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+          sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n    " + boolName + " = false;\n");
+          sb.append("    " + boolName + " |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
               + ", " + getFifoStreamName(f) + ");\n");
+          sb.append("}\n");
         } else {
           sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
               + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)
@@ -1120,10 +1122,8 @@ public class FpgaCodeGenerator {
       }
     }
 
-    if (isMulti) {
-      sb.append("  }\n");
-    }
     sb.append("}\n");
+    // FIN MODIFS
 
     context.put("PREESM_READ_KERNEL", sb.toString());
 
@@ -1164,6 +1164,7 @@ public class FpgaCodeGenerator {
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
     sb.append(") {\n");
+    sb.append("#pragma HLS dataflow \n");
 
     // add interface protocols
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
@@ -1176,19 +1177,19 @@ public class FpgaCodeGenerator {
 
     // write kernel body
     int idxIa = 0;
-    if (isMulti) {
-      sb.append("  bool shouldContinue = true;\n  while (shouldContinue) {\n    shouldContinue = false;\n");
-    }
 
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
+        final String boolName = "shouldContinue" + idxIa;
         final Fifo f = ia.getDataPort().getFifo();
         if (isMulti) {
           final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
               getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
-          sb.append("    shouldContinue |= writeOutput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
-              + ", " + getFifoStreamName(f) + ");\n");
+          sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n    " + boolName + " = false;\n");
+          sb.append("    " + boolName + " |= writeOutput<" + templateParams + ">(" + ia.getName()
+              + SUFFIX_INTERFACE_ARRAY + ", " + getFifoStreamName(f) + ");\n");
+          sb.append("}");
         } else {
           sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
               + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)

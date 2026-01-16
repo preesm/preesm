@@ -75,6 +75,8 @@ static bool writeOutput(T* out, hls::stream<T> &outStream) {
 		}
 		return true;
 	} else {
+		current_factor = 0;
+		current_rate = 0;
 		return false;
 	}
 
