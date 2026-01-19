@@ -48,6 +48,8 @@ $PREESM_INCLUDES
 
 
 
+
+// legacy code, left just in case but no longer used
 template <typename T>
 static void readInput(T* in, hls::stream<T> &inStream, int rate, int factor) {
 	for (int j = 0; j < factor; j++) {

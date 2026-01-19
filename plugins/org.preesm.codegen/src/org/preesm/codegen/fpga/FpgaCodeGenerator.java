@@ -1088,37 +1088,44 @@ public class FpgaCodeGenerator {
     sb.append(") {\n");
 
     // add interface protocols
+    int idxIa = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
-        sb.append(getPragmaAXIMemory(ia));
+        sb.append(getPragmaAXIMemory(ia) + "bundle=gmem" + idxIa); // unique gmem port for dataflow constraints
         sb.append(getPragmaAXIStream(ia));
+        idxIa++;
       }
     }
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
-    sb.append("#pragma HLS dataflow \n");
+    sb.append("#pragma HLS dataflow \n\n");
 
     // read kernel body
     // DÉBUT MODIFS
-    int idxIa = 0;
 
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
-        final String boolName = "shouldContinue" + idxIa;
-        if (isMulti) {
-          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
-              getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
-          sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n    " + boolName + " = false;\n");
-          sb.append("    " + boolName + " |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
-              + ", " + getFifoStreamName(f) + ");\n");
-          sb.append("}\n");
-        } else {
-          sb.append("    readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-              + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)
-              + ");\n");
-        }
-        idxIa++;
+
+        final String body = "\t" + getFifoStreamName(f) + ".write(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+            + "[i]); \n";
+        final String forLoop = generateForLoop(body, getInterfaceRateNameMacro(ia));
+        sb.append(forLoop);
+
+        // final String boolName = "shouldContinue" + idxIa;
+        // if (isMulti) {
+        // final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
+        // getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
+        // sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n " + boolName + " = false;\n");
+        // sb.append(" " + boolName + " |= readInput<" + templateParams + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+        // + ", " + getFifoStreamName(f) + ");\n");
+        // sb.append("}\n");
+        // } else {
+        // sb.append(" readInput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+        // + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)
+        // + ");\n");
+        // }
+
       }
     }
 
@@ -1167,35 +1174,41 @@ public class FpgaCodeGenerator {
     sb.append("#pragma HLS dataflow \n");
 
     // add interface protocols
+    int idxIa = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
-        sb.append(getPragmaAXIMemory(ia));
+        sb.append(getPragmaAXIMemory(ia) + "bundle=gmem" + idxIa);
         sb.append(getPragmaAXIStream(ia));
+        idxIa++;
       }
     }
     sb.append(PRAGMA_AXILITE_CTRL + "\n");
 
     // write kernel body
-    int idxIa = 0;
 
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
-        final String boolName = "shouldContinue" + idxIa;
         final Fifo f = ia.getDataPort().getFifo();
-        if (isMulti) {
-          final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
-              getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
-          sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n    " + boolName + " = false;\n");
-          sb.append("    " + boolName + " |= writeOutput<" + templateParams + ">(" + ia.getName()
-              + SUFFIX_INTERFACE_ARRAY + ", " + getFifoStreamName(f) + ");\n");
-          sb.append("}");
-        } else {
-          sb.append("    writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
-              + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)
-              + ");\n");
-        }
-        idxIa++;
+
+        final String body = ia.getName() + SUFFIX_INTERFACE_ARRAY + "[i] = " + getFifoStreamName(f) + ".read(); \n";
+        final String forLoop = generateForLoop(body, getInterfaceRateNameMacro(ia));
+        sb.append(forLoop);
+
+        // final String boolName = "shouldContinue" + idxIa;
+        // if (isMulti) {
+        // final String templateParams = String.format("%s, %d, %s, %s", f.getType(), idxIa,
+        // getInterfaceFactorNameMacro(ia), getInterfaceRateNameMacro(ia));
+        // sb.append(" boolean " + boolName + " = true;\n while (" + boolName + ") {\n " + boolName + " = false;\n");
+        // sb.append(" " + boolName + " |= writeOutput<" + templateParams + ">(" + ia.getName()
+        // + SUFFIX_INTERFACE_ARRAY + ", " + getFifoStreamName(f) + ");\n");
+        // sb.append("}");
+        // } else {
+        // sb.append(" writeOutput<" + f.getType() + ">(" + ia.getName() + SUFFIX_INTERFACE_ARRAY + ", "
+        // + getFifoStreamName(f) + ", " + getInterfaceRateNameMacro(ia) + ", " + getInterfaceFactorNameMacro(ia)
+        // + ");\n");
+        // }
+
       }
     }
 
@@ -1330,7 +1343,10 @@ public class FpgaCodeGenerator {
   }
 
   public static final String getFifoStreamDeclaration(final Fifo fifo) {
-    return "hls_thread_local hls::stream<" + fifo.getType() + "> " + getFifoStreamName(fifo) + ";\n";
+    // remove stream from name, we know it's a stream
+    final String fifoName = getFifoStreamName(fifo).replace("stream__", "");
+    return "hls_thread_local hls::stream<" + fifo.getType() + "> " + getFifoStreamName(fifo) + "(\"" + fifoName + "\")"
+        + ";\n";
   }
 
   public static final String getFifoStreamSizeNameMacro(final Fifo fifo) {
