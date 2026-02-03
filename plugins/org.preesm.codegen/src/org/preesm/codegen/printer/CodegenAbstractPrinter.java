@@ -494,7 +494,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     while (graph.getContainingPiGraph() != null) {
       graph = graph.getContainingPiGraph();
     }
-    bitFile = "\"" + graph.getName() + ".xclbin\"";
+    // bitFile = "\"" + graph.getName() + ".xclbin\"";
+    bitFile = "\"container.xclbin\"";
 
     // the accelerator kernels
     result.append("\n\n" + "\n" + "    const char* binaryFile = " + bitFile + ";\n" + "\n"
@@ -587,14 +588,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
        * String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(param))
        * .getName().toLowerCase(); final int position = accelerator.getParameters().indexOf(param) -
        * nbTemplateParameters;
-       * 
+       *
        * final String accessType = switch (direction) { case "input" -> "CL_MEM_READ_ONLY"; case "output" ->
        * "CL_MEM_WRITE_ONLY"; case "inputOutput" -> "CL_MEM_READ_WRITE"; default -> ""; };
-       * 
+       *
        * final String bufferName = arrayName + "_buff_" + direction; result.append("OCL_CHECK(err, cl::Buffer " +
        * bufferName + "(context, CL_MEM_USE_HOST_PTR | " + accessType + ", sizeof(" + type + ")*" + param.getNbToken() +
        * ", " + arrayName + ", &err));\n");
-       * 
+       *
        * final String readWrite = direction.equals("input") ? "_read" : "_write"; result.append("OCL_CHECK(err, err = "
        * + accelerator.getName() + readWrite + ".setArg(" + position + ", " + bufferName + "));\n\n"); }
        */
