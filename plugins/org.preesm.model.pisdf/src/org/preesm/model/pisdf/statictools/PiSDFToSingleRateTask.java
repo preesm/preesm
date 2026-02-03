@@ -40,7 +40,6 @@
 package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -88,17 +87,19 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
     }
 
     // list of pigraphs that must not be flattened
-    final List<String> flattenExclusionList = new LinkedList<>();
+    final List<String> flattenExclusionList = graph.getAllChildrenGraphs().stream().filter(PiGraph::isClusterValue)
+        .map(c -> c.getName()).toList();
 
     // List of pigraphs that must not be converted to srdag
     final List<String> srdagExclusionList = graph.getAllChildrenGraphs().stream()
-        .filter(g -> g.isCluster() && g.getTargetArch().equals(Arch.FPGA)).map(c -> c.getName()).toList();
+        .filter(g -> (g.isCluster() && g.getTargetArch().equals(Arch.FPGA))).map(c -> c.getName()).toList();
 
     // Flatten the graph
-    final PiGraph flatGraph = PiSDFHeterogeneousFlattener.flatten(graph, flattenExclusionList);
+    // apparemment pas nécessaire ???
+    // final PiGraph flatGraph = PiSDFHeterogeneousFlattener.flatten(graph, flattenExclusionList);
 
     // then convert to single-rate
-    final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(flatGraph, method, flattenExclusionList,
+    final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(graph, method, flattenExclusionList,
         srdagExclusionList);
 
     final Map<String, Object> output = new LinkedHashMap<>();
