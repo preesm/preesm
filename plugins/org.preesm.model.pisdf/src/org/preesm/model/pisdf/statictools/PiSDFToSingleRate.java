@@ -58,6 +58,7 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -1068,9 +1069,14 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     // If it is a cluster, do nothing
-    if (graph instanceof final PiGraph g && g.isCluster()) {
+    if (graph.isCluster()) {
+      // Exclusion of the CPU case to separate our heterogeneous work from the multi-node work.
+      // Ugly but should work for now.
+      if (graph.getTargetArch().equals(Arch.CPU)) {
+        return true;
+      }
       this.currentGraphIsCluster = true;
-      return caseCluster(g);
+      return caseCluster(graph);
     }
 
     this.currentGraphIsCluster = false;
