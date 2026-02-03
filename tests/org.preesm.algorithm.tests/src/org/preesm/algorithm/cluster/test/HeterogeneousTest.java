@@ -220,7 +220,7 @@ public class HeterogeneousTest {
 
     assertEquals(7, algo.getActors().size());
     final List<AbstractActor> listHierActors = algo.getActors().stream().filter(a -> a instanceof PiGraphImpl).toList();
-    assertEquals(2, listHierActors.size());
+    assertEquals(4, listHierActors.size()); // 4 clusters : 0-1-2, 4-5-7-8, and 9 and 10 that have only one actor
 
     // check all actors have a rate of 10 in all their data ports
     algo.getActors().stream().flatMap(actor -> actor.getAllDataPorts().stream())
