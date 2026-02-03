@@ -150,13 +150,26 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
    */
   public static AbstractGenericFpgaFifoEvaluator getEvaluatorInstance(final String fifoEvaluatorName) {
 
-    return switch (fifoEvaluatorName.toLowerCase()) {
-      case AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG ->
-        new AsapFpgaFifoEvaluator(fifoEvaluatorName);
-      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT -> new AdfgOjalgoFpgaFifoEvaluator(true);
-      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR -> new AdfgOjalgoFpgaFifoEvaluator(false);
-      default -> throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
-    };
+    final String name = fifoEvaluatorName.toLowerCase();
+    if (name.equals(AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF.toLowerCase())
+        || name.equals(AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG.toLowerCase())) {
+      return new AsapFpgaFifoEvaluator(fifoEvaluatorName);
+    }
+    if (name.equals(AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT.toLowerCase())) {
+      return new AdfgOjalgoFpgaFifoEvaluator(true);
+    }
+    if (name.equals(AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR.toLowerCase())) {
+      return new AdfgOjalgoFpgaFifoEvaluator(false);
+    }
+    throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+
+    // return switch (fifoEvaluatorName.toLowerCase()) {
+    // case AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG ->
+    // new AsapFpgaFifoEvaluator(fifoEvaluatorName);
+    // case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT -> new AdfgOjalgoFpgaFifoEvaluator(true);
+    // case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR -> new AdfgOjalgoFpgaFifoEvaluator(false);
+    // default -> throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
+    // };
   }
 
   /**
