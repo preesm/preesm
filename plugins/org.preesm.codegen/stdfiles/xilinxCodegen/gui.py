@@ -27,7 +27,7 @@ vitis_dir = "tools/Xilinx/Vitis/2024.1/"
 target_platform = "kr260"
 target_build = "hardware"
 vivado_plaftorm_path = ""
-platform_name = "kr260_hardware_platform_full_150MHz"
+platform_name = "kr260_hardware_platform_full_200MHz"
 
 
 def run_step1():
@@ -40,7 +40,7 @@ def run_step1():
 	else:	# on copie juste la plateforme
 		res = subprocess.Popen([f"mkdir -p vivado_soc/build/vivado && cp {vivado_plaftorm_path + "/" + platform_name}.xsa vivado_soc/build/vivado"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
-		print(line.upper())
+		print(line)
 	print("step 1 fini")
 
 def run_step2():
@@ -50,7 +50,7 @@ def run_step2():
 	cmd_step2 = f"make step2 VERSION={vitis_version} VITIS_DIR={vitis_dir} COMMON_IMAGE={common_image} TARGET={target_platform} XSA_NAME={platform_name}"
 	res = subprocess.Popen([cmd_step2], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
-		print(line.upper())
+		print(line)
 
 	print("step 2 fini")
 
@@ -61,7 +61,7 @@ def run_step3():
 	print(cmd_step3)
 	res = subprocess.Popen([cmd_step3], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
-		print(line.upper())
+		print(line)
 	print("step 3 fini")
 
 def run_all():
@@ -123,4 +123,7 @@ step3 = tk.Button(action_frame, text="implémentation", command=run_step3) ; ste
 step3 = tk.Button(action_frame, text="run all", command=run_all)  ; step3.grid(row=1, column=1, padx=padx, pady=pady)
 
 
-window.mainloop()
+if len(sys.argv) > 1 and sys.argv[1] == "auto":
+	run_all()
+else:
+	window.mainloop()
