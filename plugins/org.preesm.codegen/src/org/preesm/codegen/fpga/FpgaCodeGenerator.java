@@ -1091,7 +1091,7 @@ public class FpgaCodeGenerator {
     int idxIa = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
-        sb.append(getPragmaAXIMemory(ia) + "bundle=gmem" + idxIa); // unique gmem port for dataflow constraints
+        sb.append(getPragmaAXIMemoryBundled(ia, idxIa)); // unique gmem port for dataflow constraints
         sb.append(getPragmaAXIStream(ia));
         idxIa++;
       }
@@ -1177,7 +1177,7 @@ public class FpgaCodeGenerator {
     int idxIa = 0;
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
-        sb.append(getPragmaAXIMemory(ia) + "bundle=gmem" + idxIa);
+        sb.append(getPragmaAXIMemoryBundled(ia, idxIa));
         sb.append(getPragmaAXIStream(ia));
         idxIa++;
       }
@@ -1212,9 +1212,9 @@ public class FpgaCodeGenerator {
       }
     }
 
-    if (isMulti) {
-      sb.append("  }\n");
-    }
+    // if (isMulti) {
+    // sb.append(" }\n");
+    // }
     sb.append("}\n");
 
     context.put("PREESM_WRITE_KERNEL", sb.toString());
@@ -1320,6 +1320,11 @@ public class FpgaCodeGenerator {
   protected static final String getPragmaAXIMemory(InterfaceActor ia) {
     final String name = ia.getName() + SUFFIX_INTERFACE_ARRAY;
     return "#pragma HLS INTERFACE m_axi offset=slave port=" + name + " name=" + name + "\n";
+  }
+
+  protected static final String getPragmaAXIMemoryBundled(InterfaceActor ia, int idx) {
+    final String name = ia.getName() + SUFFIX_INTERFACE_ARRAY;
+    return "#pragma HLS INTERFACE m_axi offset=slave port=" + name + " name=" + name + " bundle=gmem" + idx + "\n";
   }
 
   public static final String getInterfaceRateNameMacro(final InterfaceActor ia) {
