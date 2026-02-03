@@ -726,7 +726,10 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
 
     setDAGVertexPropertiesFromPiMM(cluster, vertex);
 
-    setArguments(cluster, vertex);
+    vertex.setPropertyValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER, true);
+
+    setArguments(cluster, vertex); // nécessaire ?
+
     // Add the vertex to the DAG
     this.result.addVertex(vertex);
 
