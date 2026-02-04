@@ -190,7 +190,7 @@ public class ExcelEnergyParser {
       }
 
       // Get row and column for the energy we are looking for
-      final Cell vertexCell = w.getSheet(0).findCell(actor.getVertexPath());
+      final Cell vertexCell = w.getSheet(0).findCell(actor.getRelativeVertexPath());
       final Cell operatorCell = w.getSheet(0).findCell(component.getVlnv().getName());
 
       if ((vertexCell != null) && (operatorCell != null)) {
