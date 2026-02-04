@@ -4,9 +4,9 @@
         <sizesAreInBit/>
     </flags>
     <files>
-        <algorithm url=""/>
-        <architecture url=""/>
-        <codegenDirectory url=""/>
+        <algorithm url="/org.ietr.preesm.sobel-morpho.partitioner/Algo/sobel_morpho.pi"/>
+        <architecture url="/org.ietr.preesm.sobel-morpho.partitioner/Archi/MPPA2.slam"/>
+        <codegenDirectory url="/org.ietr.preesm.sobel-morpho.partitioner/CodeMPPA2/generated"/>
     </files>
     <constraints excelUrl="">
         <constraintGroup>
