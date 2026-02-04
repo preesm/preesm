@@ -491,6 +491,11 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   }
 
   @Override
+  public ConfigInputPort createConfigInputPort() {
+    return super.createConfigInputPort();
+  }
+
+  @Override
   public ConfigOutputInterface createConfigOutputInterface() {
     final ConfigOutputInterface res = super.createConfigOutputInterface();
     final DataInputPort port = PiMMUserFactory.instance.createDataInputPort();
