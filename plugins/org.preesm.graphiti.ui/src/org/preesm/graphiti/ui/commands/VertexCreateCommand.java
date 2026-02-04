@@ -108,9 +108,8 @@ public class VertexCreateCommand extends Command {
     if (this.vertex != null) {
       final String type = this.vertex.getType().getName();
       return "Create " + type;
-    } else {
-      return "Create vertex";
     }
+    return "Create vertex";
   }
 
   /**
@@ -143,9 +142,8 @@ public class VertexCreateCommand extends Command {
     final String value = dialog.getValue();
     if ((value == null) || value.isEmpty()) {
       return null;
-    } else {
-      return value;
     }
+    return value;
   }
 
   /**
@@ -165,8 +163,8 @@ public class VertexCreateCommand extends Command {
    *          The model to use.
    */
   public void setModel(final Object model) {
-    if (model instanceof Graph) {
-      this.graph = (Graph) model;
+    if (model instanceof final Graph g) {
+      this.graph = g;
     }
   }
 
@@ -177,8 +175,8 @@ public class VertexCreateCommand extends Command {
    *          the newly created object.
    */
   public void setNewObject(final Object newObject) {
-    if (newObject instanceof Vertex) {
-      this.vertex = (Vertex) newObject;
+    if (newObject instanceof final Vertex v) {
+      this.vertex = v;
     }
   }
 

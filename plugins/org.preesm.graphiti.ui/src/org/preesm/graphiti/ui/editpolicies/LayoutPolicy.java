@@ -76,8 +76,7 @@ public class LayoutPolicy extends XYLayoutEditPolicy {
       final Object constraint) {
     VertexMoveCommand command = null;
 
-    if (child instanceof VertexEditPart) {
-      final VertexEditPart editPart = (VertexEditPart) child;
+    if (child instanceof final VertexEditPart editPart) {
       final Vertex vertex = (Vertex) editPart.getModel();
 
       command = new VertexMoveCommand(vertex, (Rectangle) constraint);
@@ -107,9 +106,8 @@ public class LayoutPolicy extends XYLayoutEditPolicy {
       final OpenRefinementCommand command = new OpenRefinementCommand();
       command.setSelection(new StructuredSelection(getHost()));
       return command;
-    } else {
-      return super.getCommand(request);
     }
+    return super.getCommand(request);
   }
 
   /*

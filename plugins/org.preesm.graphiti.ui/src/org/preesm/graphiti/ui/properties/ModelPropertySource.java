@@ -174,10 +174,10 @@ public class ModelPropertySource implements IPropertySource, PropertyChangeListe
       final IViewPart part = page.showView(IPageLayout.ID_PROP_SHEET);
       if (part instanceof PropertySheet) {
         final IPropertySheetPage propPage = (IPropertySheetPage) ((PropertySheet) part).getCurrentPage();
-        if (propPage instanceof PropertySheetPage) {
-          ((PropertySheetPage) propPage).refresh();
-        } else if (propPage instanceof TabbedPropertySheetPage) {
-          ((TabbedPropertySheetPage) propPage).refresh();
+        if (propPage instanceof final PropertySheetPage propSheetPage) {
+          propSheetPage.refresh();
+        } else if (propPage instanceof final TabbedPropertySheetPage tabbedPropPage) {
+          tabbedPropPage.refresh();
         }
       }
     } catch (final PartInitException e) {
@@ -206,20 +206,18 @@ public class ModelPropertySource implements IPropertySource, PropertyChangeListe
    */
   @Override
   public void setPropertyValue(final Object id, Object value) {
-    Graph graph;
-    if (this.model instanceof Vertex) {
-      graph = ((Vertex) this.model).getParent();
-    } else if (this.model instanceof Edge) {
-      graph = ((Edge) this.model).getParent();
-    } else {
-      graph = (Graph) this.model;
-    }
+
+    final Graph graph = switch (this.model) {
+      case final Vertex v -> v.getParent();
+      case final Edge e -> e.getParent();
+      default -> (Graph) this.model;
+    };
 
     final IWorkbench workbench = PlatformUI.getWorkbench();
     final IWorkbenchPage page = workbench.getActiveWorkbenchWindow().getActivePage();
     try {
       final IEditorPart part = IDE.openEditor(page, graph.getFile());
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final String parameterName = (String) id;
 
         // only update value if it is different than before
@@ -239,7 +237,7 @@ public class ModelPropertySource implements IPropertySource, PropertyChangeListe
         }
         command.setValue(parameterName, value);
         this.doRefresh = false;
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
         this.doRefresh = true;
       }
     } catch (final PartInitException e) {

@@ -139,12 +139,12 @@ public class PasteAction extends SelectionAction implements PropertyChangeListen
   @Override
   public void run() {
     final Object obj = getSelectedObjects().get(0);
-    GraphEditPart part = null;
-    if (obj instanceof final GraphEditPart gep) {
-      part = gep;
-    } else if (obj instanceof final VertexEditPart vep) {
-      part = (GraphEditPart) vep.getParent();
-    }
+
+    final GraphEditPart part = switch (obj) {
+      case final GraphEditPart gep -> gep;
+      case final VertexEditPart vep -> (GraphEditPart) vep.getParent();
+      default -> throw new IllegalArgumentException("Unexpected value: " + obj);
+    };
 
     // execute the paste command
     final List<Vertex> contents = getClipboardContents();

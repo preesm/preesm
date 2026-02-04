@@ -37,7 +37,6 @@
 package org.preesm.graphiti.ui.editpolicies;
 
 import org.eclipse.draw2d.PolylineConnection;
-import org.eclipse.gef.GraphicalEditPart;
 import org.eclipse.gef.editpolicies.ConnectionEndpointEditPolicy;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
@@ -76,7 +75,7 @@ public class DependencyEndPointEditPolicy extends ConnectionEndpointEditPolicy {
    * @return a PolylineConnection
    */
   protected PolylineConnection getConnectionFigure() {
-    return (PolylineConnection) ((GraphicalEditPart) getHost()).getFigure();
+    return (PolylineConnection) getHost().getFigure();
   }
 
   /*

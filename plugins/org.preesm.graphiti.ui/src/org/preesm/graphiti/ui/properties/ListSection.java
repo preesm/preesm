@@ -187,10 +187,10 @@ public class ListSection extends AbstractSection {
       newList.set(index, value);
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Change list value");
         command.setValue(ListSection.this.parameterName, newList);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
 
@@ -218,10 +218,10 @@ public class ListSection extends AbstractSection {
       newList.add(dialog.getValue());
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Add element to list");
         command.setValue(this.parameterName, newList);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
   }
@@ -244,10 +244,10 @@ public class ListSection extends AbstractSection {
       newList.remove(obj);
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Remove element from list");
         command.setValue(this.parameterName, newList);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
   }
@@ -365,10 +365,10 @@ public class ListSection extends AbstractSection {
       newList.add(index + offset, element);
 
       final IWorkbenchPart part = getPart();
-      if (part instanceof GraphEditor) {
+      if (part instanceof final GraphEditor graphEditor) {
         final ParameterChangeValueCommand command = new ParameterChangeValueCommand(model, "Move element");
         command.setValue(this.parameterName, newList);
-        ((GraphEditor) part).executeCommand(command);
+        graphEditor.executeCommand(command);
       }
     }
   }

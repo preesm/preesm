@@ -76,9 +76,8 @@ public class RoundedBoxPortAnchor extends ChopboxAnchor {
     final Point mgrReference = this.mgr.getReferencePoint(this);
     if (mgrReference == null) {
       return super.getLocation(reference);
-    } else {
-      return mgrReference;
     }
+    return mgrReference;
   }
 
   /*
@@ -91,15 +90,14 @@ public class RoundedBoxPortAnchor extends ChopboxAnchor {
     final Point reference = this.mgr.getReferencePoint(this);
     if (reference == null) {
       return super.getReferencePoint();
-    } else {
-      return reference;
     }
+    return reference;
   }
 
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof RoundedBoxPortAnchor) {
-      return super.equals(o) && ((RoundedBoxPortAnchor) o).mgr.equals(this.mgr);
+    if (o instanceof final RoundedBoxPortAnchor boxPortAnchor) {
+      return super.equals(o) && boxPortAnchor.mgr.equals(this.mgr);
     }
     return false;
   }

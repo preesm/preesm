@@ -76,9 +76,8 @@ public class EllipsePortAnchor extends EllipseAnchor {
     final Point mgrReference = this.mgr.getReferencePoint(this);
     if (mgrReference == null) {
       return super.getLocation(reference);
-    } else {
-      return mgrReference;
     }
+    return mgrReference;
   }
 
   /*
@@ -91,15 +90,14 @@ public class EllipsePortAnchor extends EllipseAnchor {
     final Point reference = this.mgr.getReferencePoint(this);
     if (reference == null) {
       return super.getReferencePoint();
-    } else {
-      return reference;
     }
+    return reference;
   }
 
   @Override
   public boolean equals(final Object o) {
-    if (o instanceof EllipsePortAnchor) {
-      return super.equals(o) && ((EllipsePortAnchor) o).mgr.equals(this.mgr);
+    if (o instanceof final EllipsePortAnchor ellPortAnchor) {
+      return super.equals(o) && ellPortAnchor.mgr.equals(this.mgr);
     }
     return false;
   }
