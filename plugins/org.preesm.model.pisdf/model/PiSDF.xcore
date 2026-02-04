@@ -186,6 +186,15 @@ interface AbstractVertex extends Vertex {
 		val actorName = name;
 		return Optional.ofNullable(containingPiGraph).map[it|it.vertexPath + "/" + actorName].orElse(actorName)
 	}
+	op String getRelativeVertexPath() {
+		val actorName = name;
+		if(containingPiGraph.containingGraph != null) {
+			return Optional.ofNullable(containingPiGraph).map[it|it.vertexPath + "/" + actorName].orElse(actorName)
+		}
+		else {
+			return actorName;
+		}
+	}
 }
 
 abstract class Configurable extends AbstractVertex, Parameterizable {

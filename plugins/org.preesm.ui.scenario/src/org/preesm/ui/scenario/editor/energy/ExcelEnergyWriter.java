@@ -126,7 +126,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
   }
 
   /**
-   * Add nergy cells to the newly created file.
+   * Add Energy cells to the newly created file.
    *
    * @param sheet
    *          the sheet
@@ -155,7 +155,7 @@ public class ExcelEnergyWriter extends ExcelWriter {
         final String energy = this.scenario.getEnergyConfig().getEnergyActorOrDefault(vertexName, opDefId);
 
         WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
-        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
+        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getRelativeVertexPath());
 
         try {
           if (opCell == null) {

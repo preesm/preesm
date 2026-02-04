@@ -161,7 +161,7 @@ public class ExcelTimingWriter extends ExcelWriter {
         final String timing = this.scenario.getTimings().getExecutionTimeOrDefault(vertexName, opDefId);
 
         WritableCell opCell = (WritableCell) sheet.findCell(opDefId.getVlnv().getName());
-        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getVertexPath());
+        WritableCell vCell = (WritableCell) sheet.findCell(vertexName.getRelativeVertexPath());
 
         try {
           if (opCell == null) {
