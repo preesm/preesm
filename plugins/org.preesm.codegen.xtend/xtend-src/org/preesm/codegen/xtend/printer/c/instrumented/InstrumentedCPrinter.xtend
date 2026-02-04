@@ -224,7 +224,6 @@ class InstrumentedCPrinter extends CPrinter {
 	}
 
 	override printDefinitionsFooter(List<Variable> list) '''
-		int idx;
 		«super.printDefinitionsFooter(list)»
 	'''
 
@@ -244,7 +243,7 @@ class InstrumentedCPrinter extends CPrinter {
 
 	def String printInstrumentedCall(CodeElt elt, CharSequence superPrint)'''
 	«IF (getState()== PrinterState::PRINTING_LOOP_BLOCK) && codeEltID.get(elt) !== null»
-	for(idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)/2»); idx++){
+	for(int idx=0; idx<*(«nbExec.doSwitch»+«codeEltID.get(elt)/2»); idx++){
 		«superPrint»
 	}
 	«ELSE»
