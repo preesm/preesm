@@ -71,23 +71,20 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class ExpressionEvaluator {
 
-  // The Map needs to be concurrent because of parallel tests during CI.
-  // Map containing the already resolved expression associated to parameterizable.
-  private static final Map<Parameterizable, Map<String, Double>> expressionCache = new ConcurrentHashMap<>();
+  // Map between Expression object (not expression value) and already computed result
+  private static final Map<StringExpression, Double> stringExpressionCache = new ConcurrentHashMap<>();
 
   private ExpressionEvaluator() {
     // forbid instantiation
   }
 
-  private static Map<String, Double> getFromCacheOrCompute(final Parameterizable holder,
-      final Map<Parameter, String> overridenValues) {
-
-    return expressionCache.computeIfAbsent(holder, h -> lookupParameterValues(h, overridenValues));
-  }
-
   // Explicit cache flush, when an expression is changed
   public static void clearExpressionCache() {
-    expressionCache.clear();
+    stringExpressionCache.clear();
+  }
+
+  public static void removeExpressionFromCache(Expression expression) {
+    stringExpressionCache.remove(expression);
   }
 
   /**
@@ -128,6 +125,7 @@ public class ExpressionEvaluator {
    */
   public static final double evaluate(final Expression expression,
       final Map<Parameter, String> overridenParameterValues) {
+
     return new InternalExpressionEvaluationVisitor(Collections.emptyMap(), overridenParameterValues)
         .doSwitch(expression);
   }
@@ -163,7 +161,7 @@ public class ExpressionEvaluator {
     final Map<String, Double> result = new LinkedHashMap<>();
     final Parameterizable holder = expression.getHolder();
     if (holder != null) {
-      result.putAll(getFromCacheOrCompute(holder, overridenValues));
+      result.putAll(lookupParameterValues(holder, overridenValues));
     }
     return result;
   }
@@ -294,25 +292,36 @@ public class ExpressionEvaluator {
 
     @Override
     public Double caseStringExpression(final StringExpression stringExpr) {
-      final String expressionString = stringExpr.getExpressionString();
-      try {
-        // try to parse a long value stored as String
-        // NumberFormatException is thrown if the expression String does not represent a long value
-        return Double.parseDouble(expressionString);
-      } catch (final NumberFormatException e) {
+
+      Double result;
+
+      while ((result = stringExpressionCache.get(stringExpr)) == null) {
+        double value;
+
+        final String expressionString = stringExpr.getExpressionString();
         try {
-          // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
-          // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
-          // This can speedup even with empty Map in case expression only involves constant values.
-          return JEPWrapper.evaluate(expressionString, this.parameterValues);
-        } catch (final ExpressionEvaluationException ex) {
-          // gather Expression parameters and evaluate the expression.
-          // ExpressionEvaluationException will still be thrown if something goes wrong.
-          final Map<String,
-              Double> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr, overridenValues);
-          return JEPWrapper.evaluate(expressionString, addInputParameterValues);
+          // try to parse a long value stored as String
+          // NumberFormatException is thrown if the expression String does not represent a long value
+          value = Double.parseDouble(expressionString);
+        } catch (final NumberFormatException e) {
+          try {
+            // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
+            // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
+            // This can speedup even with empty Map in case expression only involves constant values.
+            value = JEPWrapper.evaluate(expressionString, this.parameterValues);
+          } catch (final ExpressionEvaluationException ex) {
+            // gather Expression parameters and evaluate the expression.
+            // ExpressionEvaluationException will still be thrown if something goes wrong.
+            final Map<String, Double> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr,
+                overridenValues);
+            value = JEPWrapper.evaluate(expressionString, addInputParameterValues);
+          }
         }
+
+        stringExpressionCache.put(stringExpr, value);
       }
+
+      return result;
     }
   }
 }

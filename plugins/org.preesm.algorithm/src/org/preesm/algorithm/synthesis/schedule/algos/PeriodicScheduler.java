@@ -320,18 +320,13 @@ public class PeriodicScheduler extends AbstractScheduler {
     schedule();
 
     // get the implementation end time
-    long maxImpl = 0;
-    for (final CoreAbstraction ca : cores) {
-      if (ca.implTime > maxImpl) {
-        maxImpl = ca.implTime;
-      }
-    }
+    final long maxImpl = cores.stream().mapToLong(ca -> ca.implTime).max().orElse(0L);
 
     final long duration = System.nanoTime() - time;
     PreesmLogger.getLogger().info(() -> "Time+ " + Math.round(duration / 1e6) + " ms.");
 
-    PreesmLogger.getLogger()
-        .info("Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
+    PreesmLogger.getLogger().info(
+        () -> "Periodic scheduler found an implementation time of: " + maxImpl + " (not considering communications)");
 
     return new SynthesisResult(resultMapping, topParallelSchedule, null);
   }
@@ -350,6 +345,8 @@ public class PeriodicScheduler extends AbstractScheduler {
     final Map<AbstractActor, VertexAbstraction> aaTOva = new TreeMap<>(new AbstractActorNameComparator());
     final Map<AbstractActor, Long> loadMemoization = new TreeMap<>(new AbstractActorNameComparator());
     // copy actors of input PiGraph
+
+    // TODO check if loop is parallelizable
     for (final AbstractActor aa : piGraph.getActors()) {
       final VertexAbstraction va = new VertexAbstraction(aa);
       absGraph.addVertex(va);

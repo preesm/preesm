@@ -138,15 +138,14 @@ public class PasteCommand extends Command {
           return null;
         });
     final int res = dialog.open();
-    if (res == Window.OK) {
-      final String value = dialog.getValue();
-      if ((value == null) || value.isEmpty()) {
-        return null;
-      } else {
-        return value;
-      }
-    } else {
+    if (res != Window.OK) {
       return null;
+    }
+    final String value = dialog.getValue();
+    if ((value == null) || value.isEmpty()) {
+      return null;
+    } else {
+      return value;
     }
   }
 
@@ -191,8 +190,8 @@ public class PasteCommand extends Command {
   @Override
   public void undo() {
     for (final Object model : this.added) {
-      if (model instanceof Vertex) {
-        this.graph.removeVertex((Vertex) model);
+      if (model instanceof final Vertex vertex) {
+        this.graph.removeVertex(vertex);
       }
     }
   }

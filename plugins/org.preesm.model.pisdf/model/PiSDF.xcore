@@ -80,9 +80,9 @@ type long wraps long
 type double wraps double
 
 /*************************************
- *
+ * 
  * PiSDF Specification
- *
+ * 
  **************************************/
 interface Parameterizable {
 	op unique Parameter[] getInputParameters()
@@ -96,8 +96,20 @@ interface Expression {
 	refers ExpressionHolder holder opposite expression
 	op String getExpressionAsString()
 	op double evaluateAsDouble()
-	op long evaluateAsLong()
-	op boolean isExpressionInteger()
+	op long evaluateAsLong() {
+		return evaluateAsDouble as long
+	}
+	op String evaluateAsString() {
+		val dblValue = evaluateAsDouble
+		if (dblValue == dblValue as long) {
+			return Long.toString(dblValue as long)
+		}
+		return Double.toString(dblValue)
+	}
+	op boolean isExpressionInteger() {
+		val double dblValue = evaluateAsDouble
+		return dblValue == dblValue as long
+	}
 }
 
 class StringExpression extends Expression {
@@ -108,43 +120,31 @@ class StringExpression extends Expression {
 	op double evaluateAsDouble() {
 		return ExpressionEvaluator.evaluate(this, Collections.emptyMap)
 	}
-	op long evaluateAsLong() {
-		return Math.round(ExpressionEvaluator.evaluate(this, Collections.emptyMap))
-	}
-	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
-	}
 }
 
 class DoubleExpression extends Expression {
 	double value = "0"
 	op String getExpressionAsString() {
-		return Double.toString(value)
+		if (isExpressionInteger) {
+			return Long.toString(evaluateAsLong)
+		}
+		return Double.toString(evaluateAsDouble)
 	}
 	op double evaluateAsDouble() {
 		return value
-	}
-	op long evaluateAsLong() {
-		return Math.round(value)
-	}
-	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
 interface ExpressionProxy extends Expression {
 	refers ExpressionHolder proxy
 	op String getExpressionAsString() {
-		return proxy.getExpression().getExpressionAsString
+		proxy.getExpression().getExpressionAsString()
 	}
 	op double evaluateAsDouble() {
 		proxy.getExpression().evaluateAsDouble()
 	}
 	op long evaluateAsLong() {
 		proxy.getExpression().evaluateAsLong()
-	}
-	op boolean isExpressionInteger() {
-		return evaluateAsDouble == evaluateAsLong
 	}
 }
 
@@ -220,7 +220,6 @@ abstract class AbstractActor extends Configurable {
 	op unique DataOutputPort[] getAllConnectedDataOutputPorts() {
 		return (dataOutputPorts + configOutputPorts).filter[it.outgoingFifo !== null].toEList.unmodifiableView
 	}
-	
 	op unique Port[] getAllConfigPorts() {
 		return (super.allConfigPorts + configOutputPorts).toEList.unmodifiableView
 	}
@@ -230,20 +229,18 @@ abstract class AbstractActor extends Configurable {
 	op boolean isCluster() {
 		return false
 	}
-
 	/*
 	 * Check if an AbstractActor is contained in a top-level graph.
-	 *
+	 * 
 	 * @return true if the containing graph is not contained by another graph, false otherwise.
 	 */
 	op boolean isAtTopLevel() {
 		val PiGraph parent = getContainingPiGraph;
 		return (parent !== null && parent.isAtTopLevel);
 	}
-
 	/**
 	 * Compute the full repetition vector (among all hierarchies) of an actor.
-	 *
+	 * 
 	 * @param graphBRV
 	 *          Repetition vector map of the whole graph.
 	 * @return Full repetition vector of the actor according to the hierarchy.
@@ -273,60 +270,101 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
-
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
-	derived int parameterIndex get{
-		vertices.filter(Parameter).length
+	int parameterIndex = "0"
+	op void updateParameterIndex() {
+		parameterIndex = vertices.filter(Parameter).length
 	}
-
+	op void incrementParameterIndex() {
+		parameterIndex = parameterIndex + 1
+	}
+	op void decrementParameterIndex() {
+		parameterIndex = parameterIndex - 1
+		if (parameterIndex < 0) {
+			throw new PreesmRuntimeException("Error with parameterIndex")
+		}
+	}
 	/* Index used to know where to insert {@link AbstractActor} into the {@link PiGraph} vertex list */
-	derived int actorIndex get{
-		vertices.filter(AbstractActor).filter(aa | !(aa instanceof DelayActor)).length
+	int actorIndex = "0"
+	op void updateActorIndex() {
+		actorIndex = vertices.filter(AbstractActor).filter(aa|!(aa instanceof DelayActor)).length
 	}
-
+	op void incrementActorIndex() {
+		actorIndex = actorIndex + 1
+	}
+	op void decrementActorIndex() {
+		actorIndex = actorIndex - 1
+		if (actorIndex < 0) {
+			throw new PreesmRuntimeException("Error with actorIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Delay} into the {@link PiGraph} vertex list */
-	derived int delayIndex get{
-		vertices.filter(Delay).length
+	int delayIndex = "0"
+	op void updateDelayIndex() {
+		delayIndex = vertices.filter(Delay).length
 	}
-
+	op void incrementDelayIndex() {
+		delayIndex = delayIndex + 1
+	}
+	op void decrementDelayIndex() {
+		delayIndex = delayIndex - 1
+		if (delayIndex < 0) {
+			throw new PreesmRuntimeException("Error with delayIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Fifo} with {@link Delay} into the {@link PiGraph} edge list */
-	derived int fifoWithDelayIndex get {
-		edges.filter(Fifo).filter(f | f.getDelay() !== null).length
+	int fifoWithDelayIndex = "0"
+	op void updateFifoWithDelayIndex() {
+		fifoWithDelayIndex = edges.filter(Fifo).filter[f|f.getDelay() !== null].length
 	}
-
+	op void incrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex + 1
+	}
+	op void decrementFifoWithDelayIndex() {
+		fifoWithDelayIndex = fifoWithDelayIndex - 1
+		if (fifoWithDelayIndex < 0) {
+			throw new PreesmRuntimeException("Error with fifoWithDelayIndex")
+		}
+	}
 	/* Index used to know where to insert {@link Fifo} without {@link Delay} into the {@link PiGraph} edge list */
-	derived int fifoWithoutDelayIndex get {
-		edges.filter(Fifo).filter(f | f.getDelay() === null).length
+	int fifoWithoutDelayIndex = "0"
+	op void updateFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = edges.filter(Fifo).filter[f|f.getDelay() === null].length
 	}
-
+	op void incrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex + 1
+	}
+	op void decrementFifoWithoutDelayIndex() {
+		fifoWithoutDelayIndex = fifoWithoutDelayIndex - 1
+		if (fifoWithoutDelayIndex < 0) {
+			throw new PreesmRuntimeException("Error with fifoWithoutDelayIndex")
+		}
+	}
 	op boolean isCluster() {
 		return clusterValue
 	}
-
 	op String getPiGraphName() {
 		var graphName = url.substring(url.lastIndexOf('/') + 1, url.length - 3);
 		if (!graphName.isEmpty) {
 			graphName = graphName.substring(0, 1).toUpperCase() + graphName.substring(1);
 		}
 		return graphName;
-	} 
+	}
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
 		// and if all its children graphs are locally static
 		return super.isLocallyStatic && parameters.forall[isLocallyStatic] && childrenGraphs.forall[isLocallyStatic]
 	}
-
 	/*
 	 * Check if a graph is the top-level graph.
-	 *
+	 * 
 	 * @return true if the current graph is the top-level graph, false otherwise.
 	 */
 	op boolean isAtTopLevel() {
 		return this.getContainingPiGraph() === null;
 	}
-
 	/*
 	 * Add the {@link AbstractActor} at the end of the actor sublist before the first {@link Delay},<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
@@ -338,8 +376,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link AbstractActor} was successfully added, false otherwise
 	 */
-	op unique boolean addActor(AbstractActor actor) {
+	op boolean addActor(AbstractActor actor) {
 		if (actor instanceof DelayActor) {
+			// No indices to increment, DelayActor are last in list
 			return vertices.add(actor)
 		} else {
 			try {
@@ -377,7 +416,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			return true
 		}
 	}
-
 	/*
 	 * Add the {@link Parameter} at the end of the {@link Parameter} sublist before the first {@link AbstractActor},<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
@@ -389,7 +427,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Parameter} was successfully added, false otherwise
 	 */
-	op unique boolean addParameter(Parameter parameter) {
+	op boolean addParameter(Parameter parameter) {
 		try {
 			vertices.add(parameterIndex, parameter) // can't do addFirst
 		} catch (IllegalArgumentException ignore) {
@@ -405,24 +443,22 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 
 		return true
 	}
-
 	/*
 	 * Add the {@link Configurable} to the graph.
 	 * <br>
-	 *
+	 * 
 	 * @param configurable
 	 * 			The {@link Configurable} to be added to {@link PiGraph} vertex list
-	 *
+	 * 
 	 * @return true is the {@link Configurable} was successfully added, false otherwise
 	 */
-	op unique boolean addConfigurable(Configurable configurable) {
+	op boolean addConfigurable(Configurable configurable) {
 		switch configurable {
-			AbstractActor : return addActor(configurable)
-			Parameter : return addParameter(configurable)
-			default : throw new PreesmRuntimeException(configurable.toString + " cannot be added this way.")
+			AbstractActor: return addActor(configurable)
+			Parameter: return addParameter(configurable)
+			default: throw new PreesmRuntimeException(configurable.toString + " cannot be added this way.")
 		}
 	}
-
 	/*
 	 * Add the {@link Delay} at the end of the {@link Delay} sublist before the first {@link DelayActor},<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder vertices in a<br>
@@ -434,10 +470,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Delay} was successfully added, false otherwise
 	 */
-	op unique boolean addDelay(Delay delay) {
-
+	op boolean addDelay(Delay delay) {
 		if (delay.delayActor === null) {
-			throw new PreesmRuntimeException("A Delay cannot be added to a graph without it DelayActor.")
+			throw new PreesmRuntimeException("A Delay cannot be added to a graph without its DelayActor.")
 		}
 
 		var boolean additionStatus = false
@@ -449,7 +484,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		additionStatus = delay.equals(vertices.get(parameterIndex + actorIndex + delayIndex - 1))
 		return additionStatus && this.addActor(delay.delayActor)
 	}
-
 	/*
 	 * Add the {@link Fifo} at the end of the appropriate {@link Fifo} sublist before the first {@link Dependency},<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder edges in a<br>
@@ -461,7 +495,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Fifo} was successfully added, false otherwise
 	 */
-	op unique boolean addFifo(Fifo fifo) {
+	op boolean addFifo(Fifo fifo) {
 		try {
 			if (fifo.delayPresent) {
 				edges.add(fifoWithDelayIndex, fifo)
@@ -473,7 +507,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return true
 	}
-
 	/*
 	 * Add the {@link Dependency} at the end of the {@link PiGraph} edge list list,<br>
 	 * as the {@link org.preesm.model.pisdf.serialize.PiWriter <em>PiWriter</em>} reorder edges in a<br>
@@ -485,10 +518,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Dependency} was successfully added, false otherwise
 	 */
-	op unique boolean addDependency(Dependency dependency) {
+	op boolean addDependency(Dependency dependency) {
 		edges.add(dependency)
 	}
-
 	op unique Parameter[] getParameters() {
 		return vertices.filter(Parameter).toEList.unmodifiableView
 	}
@@ -513,7 +545,22 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Dependency[] getDependencies() {
 		return edges.filter(Dependency).toEList.unmodifiableView
 	}
-
+	/*
+	 * Remove the {@link Configurable} from the graph.
+	 * <br>
+	 * 
+	 * @param configurable
+	 * 			The {@link Configurable} to be removed to {@link PiGraph} vertex list
+	 * 
+	 * @return true is the {@link Configurable} was successfully removed, false otherwise
+	 */
+	op boolean removeConfigurable(Configurable configurable) {
+		switch configurable {
+			AbstractActor: return removeActor(configurable)
+			Parameter: return removeParameter(configurable)
+			default: throw new PreesmRuntimeException(configurable.toString + " cannot be removed this way.")
+		}
+	}
 	/*
 	 * Removes the {@link AbstractActor} from the {@link PiGraph} vertex list list,<br>
 	 * <br>fifo
@@ -523,7 +570,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link AbstractActor} was successfully removed, false otherwise
 	 */
-	op unique boolean removeActor(AbstractActor actor) {
+	op boolean removeActor(AbstractActor actor) {
 		if (actor instanceof InterfaceActor) {
 			// We remove from both lists, but only one removal will actually occur at most.
 			this.dataInputPorts.remove(actor.graphPort)
@@ -532,7 +579,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return vertices.remove(actor)
 	}
-
 	/*
 	 * Removes the {@link Delay} and its associated {@link DelayActor} from the {@link PiGraph} vertex list,<br>
 	 * <br>
@@ -542,7 +588,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Delay} its associated {@link DelayActor} were successfully removed, false otherwise
 	 */
-	op unique boolean removeDelay(Delay delay) {
+	op boolean removeDelay(Delay delay) {
 		if (vertices.contains(delay) && vertices.contains(delay.getDelayActor)) {
 			vertices.remove(delay.getDelayActor)
 			vertices.remove(delay)
@@ -550,7 +596,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return false
 	}
-
 	/*
 	 * Removes the {@link Fifo} from the {@link PiGraph} edge list,<br>
 	 * <br>
@@ -560,10 +605,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Fifo} was successfully removed, false otherwise
 	 */
-	op unique boolean removeFifo(Fifo fifo) {
+	op boolean removeFifo(Fifo fifo) {
 		return edges.remove(fifo)
 	}
-
 	/*
 	 * Removes the {@link Parameter} from the {@link PiGraph} vertex list,<br>
 	 * <br>
@@ -573,13 +617,13 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Parameter} was successfully removed, false otherwise
 	 */
-	op unique boolean removeParameter(Parameter param) {
+	op boolean removeParameter(Parameter param) {
 		if (param instanceof ConfigInputInterface) {
 			configInputPorts.remove(param.graphPort)
 		}
+
 		return vertices.remove(param)
 	}
-
 	/*
 	 * Removes the {@link Dependency} from the {@link PiGraph} edge list,<br>
 	 * <br>
@@ -589,13 +633,12 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * 
 	 * @return true is the {@link Dependency} was successfully removed, false otherwise
 	 */
-	op unique boolean removeDependency(Dependency dep) {
+	op boolean removeDependency(Dependency dep) {
 		return edges.remove(dep)
 	}
-	
 	/*
 	 * Remove dependencies of an actor, the configure input port if not used anymore.
-	 *
+	 * 
 	 * @param actor
 	 *          To remove from graph.
 	 */
@@ -607,18 +650,16 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 			setter.getOutgoingDependencies.remove(incomingDependency);
 
 			// Remove the setter if it is a Parameter and not in use anymore
-			if (setter instanceof Parameter && setter.getOutgoingDependencies.isEmpty
-				&& !(setter as Parameter).isConfigurationInterface) {
+			if (setter instanceof Parameter && setter.getOutgoingDependencies.isEmpty &&
+				!(setter as Parameter).isConfigurationInterface) {
 				removeParameter(setter as Parameter);
 			}
 		}
 	}
-
 	op void removeActorAndDependencies(AbstractActor actor) {
 		removeActorIncomingDependencies(actor);
 		removeActor(actor);
 	}
-
 	op unique Parameter[] getOnlyParameters() {
 		return parameters.filter(it|!((it instanceof ConfigInputInterface) || (it instanceof ConfigOutputInterface) )).
 			toEList.unmodifiableView
@@ -626,13 +667,11 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique MoldableParameter[] getMoldableParameters() {
 		return parameters.filter[it instanceof MoldableParameter].map[it as MoldableParameter].toEList.unmodifiableView
 	}
-
 	op unique Parameter[] getInputParameters() {
 		val ownParams = new ArrayList<Parameter>(getOnlyParameters())
 		ownParams.addAll(super.inputParameters)
 		return ownParams.toEList.unmodifiableView
 	}
-
 	op unique String[] getActorsNames() {
 		return actors.map[name].unmodifiableView
 	}
@@ -692,11 +731,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op Fifo lookupFifo(String fifoId) {
 		return fifos.findFirst[it.id == fifoId]
 	}
-
 	op Fifo[] lookupFifos(AbstractActor source, AbstractActor target) {
 		return fifos.filter[it.source == source && it.target == target].toEList
 	}
-
 	op Delay lookupDelay(String delayId) {
 		return delays.findFirst[it.name == delayId]
 	}
@@ -708,7 +745,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	/**
 	 * Resolve all parameter values of the reference PiGraph and its child sub-graph.
-	 *
+	 * 
 	 * @ the PiMMHandlerException exception
 	 */
 	op unique void resolveAllParameters() {
@@ -776,14 +813,12 @@ class ForkActor extends UserSpecialActor {
 class RoundBufferActor extends UserSpecialActor {
 }
 
-
 // special abstract class for special actors generated in the SRDAG
 abstract class SrdagActor extends SpecialActor {
 	op DataPort getDataPort() {
 		// Data in/out interfaces have only one data port
 		return allDataPorts.get(0)
 	}
-
 	// In case of init/end pair, returns the size of the Delay. Returns 0 otherwise
 	op long getDelaySize()
 	// In case of init/end pair, returns the persistence level of the Delay. Returns PersistanceLevel.NONE otherwise
@@ -869,24 +904,21 @@ class DelayActor extends NonExecutableActor, RefinementContainer {
 		if (!(refinement instanceof CHeaderRefinement)) {
 			return false
 		}
-		
+
 		var FunctionPrototype proto = (refinement as CHeaderRefinement).getInitPrototype()
 		if (proto.arguments.isEmpty) {
 			return false
 		}
 
-		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
-			!it.isIsConfigurationParameter].length != 1) {
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && !it.isIsConfigurationParameter].length != 1) {
 			return false
 		}
 
-		if (proto.arguments.filter[it.getDirection() === Direction.IN && 
-			!it.isIsConfigurationParameter].length > 0) {
+		if (proto.arguments.filter[it.getDirection() === Direction.IN && !it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
 
-		if (proto.arguments.filter[it.getDirection() === Direction.OUT && 
-			it.isIsConfigurationParameter].length > 0) {
+		if (proto.arguments.filter[it.getDirection() === Direction.OUT && it.isIsConfigurationParameter].length > 0) {
 			return false
 		}
 
@@ -973,12 +1005,10 @@ class Fifo extends Edge {
 	refers DataInputPort targetPort opposite incomingFifo
 	refers Delay delay opposite containingFifo
 	String ^type = "void"
-
 	/* Flag used to mark if the current {@link Fifo} is supposed to be associated with a {@link Delay} */
 	derived boolean delayPresent get {
 		this.delay !== null
 	}
-
 	op AbstractActor getSource() {
 		sourcePort.containingActor
 	}
@@ -988,7 +1018,6 @@ class Fifo extends Edge {
 	op PiGraph getContainingPiGraph() {
 		return containingGraph as PiGraph
 	}
-
 	/*
 	 * Removes and re-adds a {@link Fifo} from its containing {@link PiGraph}.
 	 * This ensures proper edge ordering.
@@ -1005,7 +1034,6 @@ class Fifo extends Edge {
 		piGraph.removeFifo(this)
 		piGraph.addFifo(this)
 	}
-
 	/*
 	 * Return a {@link String} composed as follow:<br>
 	 * "&lt;SourceName&gt;[&lt;SourcePortName&gt;]-&lt;TargetName&gt;[&lt;TargetPortName&gt;]" <br>
@@ -1029,9 +1057,8 @@ interface InterfaceActor extends NonExecutableActor {
 		return allDataPorts.get(0)
 	}
 	op InterfaceKind getKind()
-
 	// Properly rename the inner port during copy/pasting
-	op void setName(String newName){
+	op void setName(String newName) {
 		super.name = newName
 
 		if (!allDataPorts.empty) {
@@ -1050,7 +1077,7 @@ class DataInputInterface extends DataInterface {
 	op DataOutputPort getDataPort() {
 		return super.getDataPort as DataOutputPort
 	}
-	op DataInputPort getGraphPort(){
+	op DataInputPort getGraphPort() {
 		return super.graphPort as DataInputPort
 	}
 }
@@ -1062,7 +1089,7 @@ class DataOutputInterface extends DataInterface {
 	op DataInputPort getDataPort() {
 		return super.getDataPort as DataInputPort
 	}
-	op DataOutputPort getGraphPort(){
+	op DataOutputPort getGraphPort() {
 		return super.graphPort as DataOutputPort
 	}
 }
@@ -1114,19 +1141,24 @@ class CHeaderRefinement extends Refinement {
 		// C Header Refinement means it is obviously not a subgraph
 		return false
 	}
-	
 	op unique ConfigInputPort[] getLoopConfigInputPorts() {
-		return this.loopPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+		return this.loopPrototype.inputConfigParameters.filterNull.map [ arg |
+			Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].
+				orElse(null)
+		].toEList.unmodifiableView
 	}
-	
 	op unique ConfigOutputPort[] getLoopConfigOutputPorts() {
-		return this.loopPrototype.outputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigOutputPort].orElse(null)].toEList.unmodifiableView
+		return this.loopPrototype.outputConfigParameters.filterNull.map [ arg |
+			Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigOutputPort].
+				orElse(null)
+		].toEList.unmodifiableView
 	}
-	
 	op unique ConfigInputPort[] getInitConfigInputPorts() {
-		return this.initPrototype.inputConfigParameters.filterNull.map[arg | Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].orElse(null)].toEList.unmodifiableView
+		return this.initPrototype.inputConfigParameters.filterNull.map [ arg |
+			Optional.ofNullable(this.eContainer as AbstractActor).map[lookupPort(arg.name) as ConfigInputPort].
+				orElse(null)
+		].toEList.unmodifiableView
 	}
-	
 }
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
@@ -1150,7 +1182,8 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 		return false
 	}
 	op unique Parameter[] getInputDependentParameters() {
-		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.unmodifiableView
+		return getConfigInputPorts().map[incomingDependency].filterNull.map[setter].filter(Parameter).toEList.
+			unmodifiableView
 	}
 	op unique Parameter[] getOutputDependentParameters() {
 		return outgoingDependencies.filterNull.map[target].filter(Parameter).toEList.unmodifiableView
@@ -1169,9 +1202,9 @@ class Dependency extends Edge {
 	refers ConfigInputPort getter opposite incomingDependency
 	op Vertex getSource() {
 		return switch setter {
-			Parameter : setter as Parameter
-			ConfigOutputPort : (setter as ConfigOutputPort).containingActor
-			default : null
+			Parameter: setter as Parameter
+			ConfigOutputPort: (setter as ConfigOutputPort).containingActor
+			default: null
 		}
 	}
 	op Vertex getTarget() {
@@ -1247,16 +1280,20 @@ class FunctionPrototype {
 	boolean isCPPdefinition
 	contains FunctionArgument[] arguments
 	op unique FunctionArgument[] getInputConfigParameters() {
-		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.unmodifiableView;
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.IN].toEList.
+			unmodifiableView;
 	}
 	op unique FunctionArgument[] getOutputConfigParameters() {
-		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.OUT].toEList.unmodifiableView;
+		return arguments.filter[it.isConfigurationParameter == true && it.direction == Direction.OUT].toEList.
+			unmodifiableView;
 	}
 	op unique FunctionArgument[] getInputArguments() {
-		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.IN].toEList.unmodifiableView;
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.IN].toEList.
+			unmodifiableView;
 	}
 	op unique FunctionArgument[] getOutputArguments() {
-		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.unmodifiableView;
+		return arguments.filter[it.isConfigurationParameter == false && it.direction == Direction.OUT].toEList.
+			unmodifiableView;
 	}
 	op boolean isCPP() {
 		return isCPPdefinition || arguments.exists[isCPPdefinition]

@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.mapper.timekeeper;
 
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Observable;
@@ -47,7 +46,6 @@ import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
-import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -88,11 +86,7 @@ public class TimeKeeper implements Observer {
    * Resets the time keeper timings of the whole DAG.
    */
   public void resetTimings() {
-    final Iterator<DAGVertex> it = this.implementation.vertexSet().iterator();
-
-    while (it.hasNext()) {
-      ((MapperDAGVertex) it.next()).getTiming().reset();
-    }
+    this.implementation.vertexSet().parallelStream().map(v -> (MapperDAGVertex) v).forEach(v -> v.getTiming().reset());
   }
 
   // // Final Time Section
@@ -132,13 +126,11 @@ public class TimeKeeper implements Observer {
     for (final ComponentInstance o : this.orderManager.getArchitectureComponents()) {
       final long nextFinalTime = getFinalTime(o);
       // Returns TimingVertexProperty.UNAVAILABLE if at least one
-      // vertex has no final time. Otherwise returns the highest final
-      // time
+      // vertex has no final time. Otherwise returns the highest final time
       if (nextFinalTime == VertexTiming.UNAVAILABLE) {
         return VertexTiming.UNAVAILABLE;
-      } else {
-        finaltime = Math.max(finaltime, nextFinalTime);
       }
+      finaltime = Math.max(finaltime, nextFinalTime);
     }
 
     return finaltime;
@@ -188,7 +180,7 @@ public class TimeKeeper implements Observer {
   }
 
   /**
-   * Update tand B levels.
+   * Update T and B levels.
    */
   public void updateTandBLevels() {
     final TLevelVisitor tLevelVisitor = new TLevelVisitor(this.dirtyVertices);
@@ -206,8 +198,8 @@ public class TimeKeeper implements Observer {
   @Override
   @SuppressWarnings("unchecked")
   public void update(final Observable arg0, final Object arg1) {
-    if (arg1 instanceof MapperDAGVertex) {
-      this.dirtyVertices.add((MapperDAGVertex) arg1);
+    if (arg1 instanceof final MapperDAGVertex mDagVertex) {
+      this.dirtyVertices.add(mDagVertex);
     } else if (arg1 instanceof Set<?>) {
       this.dirtyVertices.addAll((Set<MapperDAGVertex>) arg1);
     }

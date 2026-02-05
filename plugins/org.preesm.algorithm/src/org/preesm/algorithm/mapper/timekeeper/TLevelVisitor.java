@@ -88,6 +88,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     // Visiting a DAG consists in computing T Levels for all its vertices,
     // starting from vertices without predecessors
     final TopologicalDAGIterator iterator = new TopologicalDAGIterator(dag);
+
     DAGVertex next = null;
     try {
       // Recomputing all TLevels
@@ -114,7 +115,7 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
   }
 
   /**
-   * Visiting a vertex to assign t-levels. Prececessors are considered already visited. Successors are accepted
+   * Visiting a vertex to assign t-levels. Predecessors are considered already visited. Successors are accepted
    *
    * @param dagVertex
    *          the dag vertex
@@ -126,39 +127,38 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     long maxTLevel = -1;
     final VertexTiming timing = dagVertex.getTiming();
 
-    // Synchronized vertices are taken into account to compute t-level
-    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
-
     if (dagVertex.incomingEdges().isEmpty()) {
       timing.setTLevel(0L);
-    } else {
-      final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new LinkedHashMap<>();
+      return;
+    }
 
-      for (final MapperDAGVertex v : synchroVertices) {
-        final Map<MapperDAGVertex, MapperDAGEdge> preds = v.getPredecessors(false);
-        predecessors.putAll(preds);
-      }
+    // Synchronised vertices are taken into account to compute t-level
+    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
+    final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new LinkedHashMap<>();
 
-      // From predecessors, computing the earliest time that the
-      // vertex can start
-      for (final Entry<MapperDAGVertex, MapperDAGEdge> entry : predecessors.entrySet()) {
-        final MapperDAGVertex pred = entry.getKey();
-        final VertexTiming predTiming = pred.getTiming();
-        final EdgeTiming edgeTiming = predecessors.get(pred).getTiming();
-        if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
-          final long currentTLevel = predTiming.getTLevel() + predTiming.getCost() + edgeTiming.getCost();
-          if (currentTLevel > maxTLevel) {
-            maxTLevel = currentTLevel;
-          }
-        } else {
-          timing.resetTLevel();
+    for (final MapperDAGVertex v : synchroVertices) {
+      final Map<MapperDAGVertex, MapperDAGEdge> preds = v.getPredecessors(false);
+      predecessors.putAll(preds);
+    }
+
+    // From predecessors, computing the earliest time that the
+    // vertex can start
+    for (final Entry<MapperDAGVertex, MapperDAGEdge> entry : predecessors.entrySet()) {
+      final MapperDAGVertex pred = entry.getKey();
+      final VertexTiming predTiming = pred.getTiming();
+      final EdgeTiming edgeTiming = entry.getValue().getTiming();
+      if (predTiming.hasTLevel() && predTiming.hasCost() && edgeTiming.hasCost()) {
+        final long currentTLevel = predTiming.getTLevel() + predTiming.getCost() + edgeTiming.getCost();
+        if (currentTLevel > maxTLevel) {
+          maxTLevel = currentTLevel;
         }
-      }
-
-      if (maxTLevel >= 0) {
-        timing.setTLevel(maxTLevel);
+      } else {
+        timing.resetTLevel();
       }
     }
-  }
 
+    if (maxTLevel >= 0) {
+      timing.setTLevel(maxTLevel);
+    }
+  }
 }

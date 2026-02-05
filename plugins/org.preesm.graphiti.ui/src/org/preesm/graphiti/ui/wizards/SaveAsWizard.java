@@ -93,11 +93,10 @@ public class SaveAsWizard extends Wizard implements INewWizard {
     // To improve user experience, the selection is the editor's input file.
     IStructuredSelection currentSelection = this.selection;
     final Object obj = currentSelection.getFirstElement();
-    if (obj instanceof GraphEditor) {
-      final GraphEditor editor = (GraphEditor) obj;
+    if (obj instanceof final GraphEditor editor) {
       final IEditorInput input = editor.getEditorInput();
-      if (input instanceof IFileEditorInput) {
-        final IFile file = ((IFileEditorInput) input).getFile();
+      if (input instanceof final IFileEditorInput fileEditInput) {
+        final IFile file = fileEditInput.getFile();
         currentSelection = new StructuredSelection(file);
       }
     }

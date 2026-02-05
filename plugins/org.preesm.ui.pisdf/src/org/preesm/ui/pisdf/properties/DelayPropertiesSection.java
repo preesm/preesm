@@ -220,8 +220,8 @@ public class DelayPropertiesSection extends ParameterizablePropertiesSection {
 
     try {
       // try out evaluating the expression
-      final double evaluate = elementValueExpression.evaluateAsDouble();
-      lblValueObj.setText(Double.toString(evaluate));
+      final String evaluate = elementValueExpression.evaluateAsString();
+      lblValueObj.setText(evaluate);
 
       if (elementValueExpression.isExpressionInteger()) {
         txtExpression.setBackground(BG_NORMAL_WHITE);

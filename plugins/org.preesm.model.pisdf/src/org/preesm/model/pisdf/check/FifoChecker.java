@@ -72,11 +72,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    boolean ok = true;
-    for (final Fifo f : graph.getFifos()) {
-      ok &= doSwitch(f);
-    }
-    return ok;
+    return graph.getFifos().parallelStream().map(this::doSwitch).reduce(true, (x, y) -> (x && y));
   }
 
   @Override
@@ -93,7 +89,7 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
    *
    * @param f
    *          the Fifo to check
-   * @return true if no rate of f is at 0, false otherwise
+   * @return true if no (or both) rate of f is at 0, false otherwise
    */
   private boolean checkFifoRates(final Fifo f) {
     long rateSource = 0L;
@@ -106,7 +102,11 @@ public class FifoChecker extends AbstractPiSDFObjectChecker {
           f.getId());
       return false;
     }
-    if ((rateSource == 0 && rateTarget != 0) || (rateSource != 0 && rateTarget == 0)) {
+    if (rateSource == 0 && rateTarget == 0) {
+      // the Fifo is valid but the user may have forgotten to set the rates
+      return true;
+    }
+    if (rateSource == 0 ^ rateTarget == 0) {
       reportError(CheckerErrorLevel.FATAL_ANALYSIS, f, "Fifo [%s] has one of its rates being 0, but not the other.",
           f.getId());
       return false;

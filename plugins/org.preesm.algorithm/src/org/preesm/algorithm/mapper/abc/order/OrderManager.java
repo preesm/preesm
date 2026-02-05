@@ -88,7 +88,7 @@ public class OrderManager extends Observable {
   }
 
   /**
-   * Find lastest pred index for op.
+   * Find last pred index for op.
    *
    * @param cmp
    *          the cmp
@@ -102,19 +102,29 @@ public class OrderManager extends Observable {
     final Schedule currentSched = getSchedule(cmp);
     checkScheduleNull(currentSched);
     // Iterates the schedule to find the latest predecessor
-    int maxPrec = -1;
-    for (final MapperDAGVertex current : currentSched.getList()) {
+    // Looking for the preceding vertex with maximum total order in vertex schedule
 
-      // Looking for the preceding vertex with maximum total order in
-      // vertex schedule
-      final int currentTotalOrder = totalIndexOf(current);
+    return this.binarySearchLatestPred(currentSched.getList(), refIndex);
+  }
 
-      if (currentTotalOrder < refIndex) {
-        maxPrec = currentTotalOrder;
+  private int binarySearchLatestPred(final List<MapperDAGVertex> schedList, final int refIndex) {
+    int low = 0;
+    int high = schedList.size() - 1;
+    int result = -1;
+
+    while (low <= high) {
+      final int mid = low + ((high - low) / 2);
+
+      final int midValue = this.totalIndexOf(schedList.get(mid));
+      if (midValue < refIndex) {
+        low = mid + 1;
+        result = midValue;
+      } else {
+        high = mid - 1;
       }
     }
 
-    return maxPrec;
+    return result;
   }
 
   private void checkScheduleNull(final Schedule currentSched) {
@@ -137,32 +147,22 @@ public class OrderManager extends Observable {
       final ComponentInstance cmp = vertex.getEffectiveComponent();
       final int newSchedulingTotalOrder = totalIndexOf(vertex);
       final int maxPrec = findLastestPredIndexForOp(vertex.getEffectiveComponent(), newSchedulingTotalOrder);
-      // Testing a possible synchronized vertex
-      MapperDAGVertex elt = get(newSchedulingTotalOrder);
-      if ((elt == null) || elt.equals(vertex)) {
-        elt = vertex;
-      } else {
-        final String msg = "Error in sched order!!";
-        throw new PreesmRuntimeException(msg);
-      }
 
       // Adds vertex or synchro vertices after its chosen predecessor
       final Schedule schedule = getSchedule(cmp);
       checkScheduleNull(schedule);
       if (maxPrec >= 0) {
         final MapperDAGVertex previous = this.totalOrder.get(maxPrec);
-        schedule.insertAfter(previous, elt);
+        schedule.insertAfter(previous, vertex);
       } else {
-        schedule.addFirst(elt);
+        schedule.addFirst(vertex);
       }
 
     }
 
     // Notifies the time keeper that it should update the successors
-    Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
-    if ((vSet == null) || vSet.isEmpty()) {
-      vSet = new LinkedHashSet<>();
-    }
+    final Set<MapperDAGVertex> vSet = this.totalOrder.getSuccessors(vertex);
+
     vSet.add(vertex);
     setChanged();
     notifyObservers(vSet);
@@ -241,16 +241,9 @@ public class OrderManager extends Observable {
 
     if (previous == null) {
       addLast(vertex);
-    } else {
-
-      if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
-
-        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(previous) >= 0) {
-          this.totalOrder.insertAfter(previous, vertex);
-        }
-        insertGivenTotalOrder(vertex);
-
-      }
+    } else if (previous.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+      this.totalOrder.insertAfter(previous, vertex);
+      insertGivenTotalOrder(vertex);
     }
   }
 
@@ -266,18 +259,13 @@ public class OrderManager extends Observable {
 
     if (next == null) {
       addFirst(vertex);
-    } else {
-
-      if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
-
-        if (!this.totalOrder.contains(vertex) && this.totalOrder.indexOf(next) >= 0) {
-          this.totalOrder.insertBefore(next, vertex);
-        }
-        insertGivenTotalOrder(vertex);
-
-      }
+      return;
     }
 
+    if (next.hasEffectiveComponent() && vertex.hasEffectiveComponent()) {
+      this.totalOrder.insertBefore(next, vertex);
+      insertGivenTotalOrder(vertex);
+    }
   }
 
   /**
@@ -306,7 +294,6 @@ public class OrderManager extends Observable {
    * @return the int
    */
   public int totalIndexOf(final MapperDAGVertex vertex) {
-
     return this.totalOrder.indexOf(vertex);
   }
 
@@ -357,27 +344,17 @@ public class OrderManager extends Observable {
       final ComponentInstance cmp = vertex.getEffectiveComponent();
       sch = getSchedule(cmp);
     } else { // Looks for the right scheduling to remove the vertex
-      for (final Schedule locSched : this.schedules.values()) {
-        if (locSched.contains(vertex)) {
-          sch = locSched;
-          break;
-        }
-      }
+
+      // Maybe test this with a parallel with high pe count architecture
+      sch = this.schedules.values().stream().filter(locSched -> locSched.contains(vertex)).findAny().orElse(null);
     }
 
     if (sch != null) {
-      final MapperDAGVertex elt = sch.getScheduleElt(vertex);
-      if (elt != null && elt.equals(vertex)) {
-        sch.remove(elt);
-      }
+      sch.remove(vertex);
     }
 
     if (removeFromTotalOrder) {
-      final MapperDAGVertex elt = this.totalOrder.getScheduleElt(vertex);
-
-      if (elt != null) {
-        this.totalOrder.remove(elt);
-      }
+      this.totalOrder.remove(vertex);
     }
 
   }

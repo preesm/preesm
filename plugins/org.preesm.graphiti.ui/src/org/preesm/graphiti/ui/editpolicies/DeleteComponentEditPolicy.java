@@ -61,8 +61,7 @@ public class DeleteComponentEditPolicy extends ComponentEditPolicy {
    */
   @Override
   protected Command createDeleteCommand(final GroupRequest deleteRequest) {
-    if (getHost() instanceof VertexEditPart) {
-      final VertexEditPart part = (VertexEditPart) getHost();
+    if (getHost() instanceof final VertexEditPart part) {
       final List<?> incoming = part.getSourceConnections();
       final List<?> outgoing = part.getTargetConnections();
       if (!incoming.isEmpty() || !outgoing.isEmpty()) {

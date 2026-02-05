@@ -42,6 +42,7 @@ package org.preesm.ui.pisdf.layout;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -49,6 +50,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListMap;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.emf.common.util.EList;
@@ -275,7 +277,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // some unexplained behavior makes the auto layout feature crash when the selection is not empty.
     // exact cause is not uncovered yet ...
-    emptyEditorSelcetion(diagram);
+    emptyEditorSelection(diagram);
 
     // Check if there are parameterization cycles in the graph.
     // In such a case, do not layout !
@@ -316,7 +318,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     layoutParameters(diagram);
   }
 
-  protected static void emptyEditorSelcetion(final Diagram diagram) {
+  protected static void emptyEditorSelection(final Diagram diagram) {
     final PiMMDiagramEditor activeEditor = (PiMMDiagramEditor) PlatformUI.getWorkbench().getActiveWorkbenchWindow()
         .getActivePage().getActiveEditor();
     activeEditor.selectPictogramElements(new PictogramElement[] { diagram });
@@ -336,7 +338,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
           break;
         }
       }
-      final EList<Port> allPorts = a.getAllPorts();
+
+      final List<Port> allPorts = a.getAllPorts();
       for (final Port p : allPorts) {
         final List<PictogramElement> pictogramElements = Graphiti.getLinkService().getPictogramElements(diagram, p);
         for (final PictogramElement pe : pictogramElements) {
@@ -480,14 +483,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // 0. Disconnect all delays from FIFOs
     final List<Fifo> fifos = graph.getFifos();
+
     for (final Fifo fifo : fifos) {
-      final Delay delay = fifo.getDelay();
-      if (delay != null) {
+      if (fifo.getDelay() != null) {
         final ContainerShape cs = DiagramPiGraphLinkHelper.getDelayPE(diagram, fifo);
 
         // Do the disconnection
         final DeleteDelayFeature df = new DeleteDelayFeature(getFeatureProvider());
-        df.disconnectDelayFromFifo(cs, delay);
+        df.disconnectDelayFromFifo(cs, fifo.getDelay());
       }
     }
 
@@ -586,10 +589,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
   private void layoutFifoToDelay(final Diagram diagram, final int currentY, final int currentX,
       final FreeFormConnection ffc, final Delay delay) {
-    // Get the gap end of the delay
-    // (or the gap just before if the delay is a feedback
-    // delay
-    // of an actor)
+    // Get the gap end of the delay (or the gap just before if the delay is a feedback
+    // delay of an actor)
     final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, delay.getContainingFifo());
     final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
 
@@ -634,14 +635,13 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   private void layoutInterStageFifos(final Diagram diagram, final List<Fifo> interStageFifos, final Range width,
       final List<Range> gaps) {
 
+    final Comparator<Fifo> fifoComparator = Comparator.comparing(Fifo::getId, Comparable::compareTo);
+
     // Find the FreeFormConnection of each FIFO
-    // LinkedHashMap to preserve order
-    final Map<Fifo, FreeFormConnection> fifoFfcMap = new LinkedHashMap<>();
-    for (final Fifo fifo : interStageFifos) {
-      // Get freeform connection
-      final FreeFormConnection ffc = DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, fifo);
-      fifoFfcMap.put(fifo, ffc);
-    }
+    // LinkedHashMap to preserve order (no longer the case, might cause issues)
+    final ConcurrentSkipListMap<Fifo, FreeFormConnection> fifoFfcMap = new ConcurrentSkipListMap<>(fifoComparator);
+    interStageFifos.parallelStream()
+        .forEach(f -> fifoFfcMap.put(f, DiagramPiGraphLinkHelper.getFreeFormConnectionOfEdge(diagram, f)));
 
     // Check if any FIFO has a Gap right in front of it
     final List<Fifo> fifoToLayout = new ArrayList<>(fifoFfcMap.keySet());
@@ -668,14 +668,10 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final Point penultimate = bendpoints.get(index);
 
       // Check Gaps one by one
-      Range matchedRange = null;
-      for (final Range range : gaps) {
-        if (((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
-            && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1))) {
-          matchedRange = range;
-          break;
-        }
-      }
+      final Range matchedRange = gaps.parallelStream()
+          .filter(range -> ((range.start + AutoLayoutFeature.FIFO_SPACE) <= penultimate.getY())
+              && (((range.end - AutoLayoutFeature.FIFO_SPACE) >= penultimate.getY()) || (range.end == -1)))
+          .findFirst().orElse(null);
 
       if (matchedRange != null) {
         // Create bendpoint
@@ -892,39 +888,43 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
     // Get the type of the getter
     final EObject getter = dependency.getGetter().eContainer();
-    final boolean newYUsed;
-    if (getter instanceof Parameter) {
-      newYUsed = currentYUsed;
-      layoutDependencyToParamter(stagedParameters, param, ffc, getter);
-    } else {
-      // Add a first point below the parameter
-      newYUsed = true;
-      final int xPosition = this.paramXPositions.get(param);
-      final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
-      ffc.getBendpoints().add(0, bPoint);
 
-      if (getter instanceof InterfaceActor) {
-        // fix strange behavior with FFC for interfaces ...
+    return switch (getter) {
+      case final Parameter p -> {
+        layoutDependencyToParamter(stagedParameters, param, ffc, getter);
+        yield currentYUsed;
+      }
+      case final InterfaceActor ia -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().clear();
         ffc.getBendpoints().add(0, bPoint);
         layoutDependencyToInterface(diagram, currentY, currentX, ffc, getter);
-      } else if (getter instanceof AbstractActor) {
-        layoutDependencyToActor(currentY, currentX, ffc);
-      } else if (getter instanceof Delay) {
-        layoutDependencyToDelay(diagram, currentY, currentX, ffc, getter);
-      } else {
-        throw new UnsupportedOperationException();
+        yield true;
       }
-    }
-    return newYUsed;
+      case final AbstractActor aa -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
+        ffc.getBendpoints().add(0, bPoint);
+        layoutDependencyToActor(currentY, currentX, ffc);
+        yield true;
+      }
+      case final Delay d -> {
+        final int xPosition = this.paramXPositions.get(param);
+        final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
+        ffc.getBendpoints().add(0, bPoint);
+        layoutDependencyToDelay(diagram, currentY, currentX, ffc, getter);
+        yield true;
+      }
+      default -> throw new UnsupportedOperationException();
+    };
   }
 
   private void layoutDependencyToParamter(final List<List<Parameter>> stagedParameters, final Parameter param,
       final FreeFormConnection ffc, final EObject getter) {
     // Get stage
     final int getterStage = getParameterStage(stagedParameters, (Parameter) getter);
-    // layout only if getter is more than one stage away from
-    // setter
+    // layout only if getter is more than one stage away from setter
     final int xPosition = this.paramXPositions.get(param);
     final int yPosition = this.yParamInitPos
         - ((stagedParameters.size() - 1 - (getterStage - 1)) * AutoLayoutFeature.Y_SPACE_PARAM);
@@ -934,10 +934,8 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
 
   private void layoutDependencyToDelay(final Diagram diagram, final int currentY, final int currentX,
       final FreeFormConnection ffc, final EObject getter) {
-    // Get the gap end of the delay
-    // (or the gap just before if the delay is a feedback
-    // delay
-    // of an actor)
+    // Get the gap end of the delay (or the gap just before if the delay is a feedback
+    // delay of an actor)
     final PictogramElement delayPE = DiagramPiGraphLinkHelper.getDelayPE(diagram, ((Delay) getter).getContainingFifo());
     final GraphicsAlgorithm delayGA = delayPE.getGraphicsAlgorithm();
 
@@ -949,8 +947,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         gapEnd = range.start;
       }
 
-      // If the delay is between this stage and the
-      // previous
+      // If the delay is between this stage and the previous
       if ((i > 0) && (range.start > delayGA.getX()) && (gapEnd == -1)) {
         gapEnd = range.start;
       }
@@ -968,9 +965,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
   }
 
   private static void layoutDependencyToActor(final int currentY, final int currentX, final FreeFormConnection ffc) {
-    // Retrieve the last bendpoint of the ffc (added when
-    // the
-    // actor was moved.)
+    // Retrieve the last bendpoint of the ffc (added when the actor was moved.)
     final int fccBpSize = ffc.getBendpoints().size();
     if (fccBpSize > 0) {
       final Point lastBp = ffc.getBendpoints().get(fccBpSize - 1);

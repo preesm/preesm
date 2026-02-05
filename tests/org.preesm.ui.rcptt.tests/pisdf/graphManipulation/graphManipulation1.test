@@ -6,8 +6,8 @@ Element-Type: testcase
 Element-Version: 3.0
 External-Reference: 
 Id: _x_OAAAxsEe-T4to_uoKAPw
-Runtime-Version: 2.5.5.202409031853
-Save-Time: 3/13/25, 3:09 PM
+Runtime-Version: 2.6.0.202507060744
+Save-Time: 1/14/26, 2:17 PM
 Testcase-Type: ecl
 Verifications: _L6vzQAyAEe-T4to_uoKAPw
 
@@ -116,7 +116,7 @@ with [get-window "Create Config. Input Interface"] {
     get-editbox -after [get-label "Enter new configuration input interface name"] | set-text paramIn
     get-button OK | click
 }
-get-view Properties | get-editbox -after [get-label "Name:"] | set-text "10.0"
+get-view Properties | get-editbox -after [get-label "Name:"] | set-text "10"
 with [get-editor graph] {
     get-diagram -index 1 | get-edit-part -name graph | get-edit-part -text paramIn
     with [get-palette | get-palette-entry "Config. Output Interface"] {

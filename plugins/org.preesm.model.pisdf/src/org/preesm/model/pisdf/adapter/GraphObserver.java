@@ -39,14 +39,22 @@
  */
 package org.preesm.model.pisdf.adapter;
 
+import java.util.List;
 import org.eclipse.emf.common.notify.Adapter;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
 import org.preesm.commons.graph.Edge;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiMMPackage;
+import org.preesm.model.pisdf.StringExpression;
+import org.preesm.model.pisdf.expression.ExpressionEvaluator;
 
 /**
  * The purpose of this {@link Adapter} is to observe the {@link Edge} list of a {@link PiGraph} to detect the addition,
@@ -88,36 +96,203 @@ public class GraphObserver extends AdapterImpl {
     // Nothing to do here
   }
 
+  /**
+   * Method called when an {@link AbstractVertex} is possibly added to the Observed {@link PiGraph}. <br>
+   * <br>
+   * This Method create the {@link Port} port corresponding to the added {@link InterfaceActor} or {@link Parameter} and
+   * add it to the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. It also handles the vertex storage indexes
+   *
+   * @param vertex
+   *          The {@link AbstractVertex} added to the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void addVertex(final AbstractVertex vertex, final PiGraph graph) {
+
+    switch (vertex) {
+      case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.incrementActorIndex();
+      case final Parameter p -> graph.incrementParameterIndex();
+      case final Delay d -> graph.incrementDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link Edge} is possibly added to the Observed {@link PiGraph}. <br>
+   * <br>
+   * It handles the {@link Edge} storage indexes
+   *
+   * @param vertex
+   *          The {@link Edge} added to the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void addEdge(final Edge edge, final PiGraph graph) {
+
+    switch (edge) {
+      case final Fifo fifo when !fifo.isDelayPresent() -> graph.incrementFifoWithoutDelayIndex();
+      case final Fifo fifo when fifo.isDelayPresent() -> graph.incrementFifoWithDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link AbstractVertex} is possibly removed to the Observed {@link PiGraph}. <br>
+   * <br>
+   * This Method remove the {@link Port} port corresponding to the removed {@link InterfaceActor} or {@link Parameter}
+   * and from the {@link PiGraph#getInputPorts()}, the {@link PiGraph#getOutputPorts()}, or the
+   * {@link PiGraph#getConfigInputPorts()} list of the {@link PiGraph}. Also handles storage indexes.
+   *
+   * @param vertex
+   *          The {@link AbstractVertex} removed from the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+
+  private void removeVertex(final AbstractVertex vertex, final PiGraph graph) {
+
+    switch (vertex) {
+      case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.decrementActorIndex();
+      case final Parameter p -> graph.decrementParameterIndex();
+      case final Delay d -> graph.decrementDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
+  /**
+   * Method called when an {@link Edge} is possibly removed to the Observed {@link PiGraph}. <br>
+   * <br>
+   * Handles storage indexes.
+   *
+   * @param edge
+   *          The {@link Edge} removed from the {@link PiGraph}
+   * @param graph
+   *          The {@link PiGraph}
+   */
+  private void removeEdge(final Edge edge, final PiGraph graph) {
+
+    switch (edge) {
+      case final Fifo fifo when !fifo.isDelayPresent() -> graph.decrementFifoWithoutDelayIndex();
+      case final Fifo fifo when fifo.isDelayPresent() -> graph.decrementFifoWithDelayIndex();
+      default -> {
+        /* Nothing */ }
+    }
+  }
+
   @Override
   public void notifyChanged(final Notification notification) {
     super.notifyChanged(notification);
 
-    if ((notification.getNotifier() instanceof final Fifo fifo)
-        && (notification.getFeatureID(null) == PiMMPackage.FIFO__DELAY)) {
+    final int featureId = notification.getFeatureID(null);
 
-      final PiGraph graph = fifo.getContainingPiGraph();
+    switch (notification.getNotifier()) {
+      case final PiGraph graph when featureId == PiMMPackage.PI_GRAPH__VERTICES ->
+        notifyPiGraphForVertex(notification, graph);
 
-      if (notification.getEventType() != Notification.SET) {
-        System.out.print("");
-      }
+      case final PiGraph graph when featureId == PiMMPackage.PI_GRAPH__EDGES ->
+        notifyPiGraphForEdge(notification, graph);
 
-      // if the fifo isn't in a graph, nothing to do
-      if (graph == null) {
-        return;
-      }
+      case final Fifo fifo when featureId == PiMMPackage.FIFO__DELAY -> notifyFifoForDelay(notification, fifo);
 
-      final Delay oldDelay = (Delay) notification.getOldValue();
-      final Delay newDelay = (Delay) notification.getNewValue();
+      // If the notifying expression is affected to a Parameter, the expression cache is flushed.
+      // TODO: Check if tracking/flushing every expression depending on this parameter would be faster than flushing the
+      // whole cache.
+      case final StringExpression expr when notification.getNewValue() instanceof Parameter ->
+        ExpressionEvaluator.clearExpressionCache();
 
-      // Only the SET event is checked
-      if (notification.getEventType() == Notification.SET) {
-        // If the fifo changed fliped FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
-        if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
-          fifo.refreshFifo();
-        }
+      // The expression was replaced, can be remove from cache
+      case final StringExpression expr when notification.getNewValue() == null ->
+        ExpressionEvaluator.removeExpressionFromCache(expr);
+
+      // Expression was modified, does not seem to happen in reality.
+      case final StringExpression expr when notification.getOldValue() == notification.getNewValue() ->
+        ExpressionEvaluator.removeExpressionFromCache(expr);
+
+      default -> { // Nothing
       }
     }
 
     // TODO Add support when a Parameter changes from a config interface to a non config param
   }
+
+  private void notifyPiGraphForVertex(final Notification notification, final PiGraph graph) {
+    // It is safe to cast because we already checked that the
+    // notification was caused by an addition to the graph vertices.
+    switch (notification.getEventType()) {
+      case Notification.ADD -> addVertex((AbstractVertex) notification.getNewValue(), graph);
+
+      case Notification.ADD_MANY ->
+        ((List<?>) notification.getNewValue()).forEach(o -> addVertex((AbstractVertex) o, graph));
+
+      case Notification.REMOVE -> removeVertex((AbstractVertex) notification.getOldValue(), graph);
+
+      case Notification.REMOVE_MANY ->
+        ((List<?>) notification.getOldValue()).forEach(o -> removeVertex((AbstractVertex) o, graph));
+      default -> { // nothing
+      }
+    }
+  }
+
+  private void notifyPiGraphForEdge(final Notification notification, final PiGraph graph) {
+    // It is safe to cast because we already checked that the
+    // notification was caused by an addition to the graph edges.
+    switch (notification.getEventType()) {
+      case Notification.ADD -> addEdge((Edge) notification.getNewValue(), graph);
+
+      case Notification.ADD_MANY -> ((List<?>) notification.getNewValue()).forEach(o -> addEdge((Edge) o, graph));
+
+      case Notification.REMOVE -> removeEdge((Edge) notification.getOldValue(), graph);
+
+      case Notification.REMOVE_MANY -> ((List<?>) notification.getOldValue()).forEach(o -> removeEdge((Edge) o, graph));
+      default -> { // nothing
+      }
+    }
+  }
+
+  private void notifyFifoForDelay(final Notification notification, final Fifo fifo) {
+    final PiGraph graph = fifo.getContainingPiGraph();
+
+    // if the fifo isn't in a graph, nothing to do
+    if (graph == null) {
+      return;
+    }
+
+    final Delay oldDelay = (Delay) notification.getOldValue();
+    final Delay newDelay = (Delay) notification.getNewValue();
+
+    // Only the SET event is checked, should we check UNSET ?
+    if (notification.getEventType() == Notification.SET) {
+      // If the fifo change flipped between FifoWithDelay and FifoWithoutDelay, it needs to be re-placed in the list
+      if ((oldDelay == null && newDelay != null) || (oldDelay != null && newDelay == null)) {
+        handleFifoDelayChange(graph, fifo);
+      }
+    }
+  }
+
+  // TODO break singleton pattern to prevent perf issues with this call
+  private synchronized void handleFifoDelayChange(PiGraph graph, Fifo fifo) {
+    // remove observer
+    graph.eAdapters().remove(this);
+
+    // remove fifo from graph
+    graph.removeFifo(fifo);
+
+    // manually decrement index
+    if (fifo.isDelayPresent()) {
+      graph.decrementFifoWithoutDelayIndex();
+    } else {
+      graph.decrementFifoWithDelayIndex();
+    }
+
+    // re-attach observer
+    graph.eAdapters().add(this);
+
+    // add fifo to graph
+    graph.addFifo(fifo);
+  }
+
 }

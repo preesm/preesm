@@ -108,37 +108,37 @@ import org.preesm.model.scenario.Scenario;
 public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> {
 
   /**
-   * @{link Scenario} to get data size from.
+   * {@link Scenario} to get data size from.
    */
   final Scenario scenario;
 
   /**
-   * @{link {@link CoreBlock} to add generate code element to.
+   * {@link CoreBlock} to add generate code element to.
    */
   final CoreBlock operatorBlock;
 
   /**
-   * @{link Map} that registers every cluster-internal @{link Buffer} with it's @{link Fifo}.
+   * {@link Map} that registers every cluster-internal {@link Buffer} with it's {@link Fifo}.
    */
   final Map<Fifo, Buffer> internalBufferMap;
 
   /**
-   * @{link Map} that registers every cluster-external @{link Buffer} with it's @{link Fifo}.
+   * {@link Map} that registers every cluster-external {@link Buffer} with it's {@link Fifo}.
    */
   final Map<Fifo, Buffer> externalBufferMap;
 
   /**
-   * @{link Map} that registers every delay @{link Buffer} with it's @{link Fifo}.
+   * {@link Map} that registers every delay {@link Buffer} with it's {@link Fifo}.
    */
   final List<Buffer> delayBufferList;
 
   /**
-   * @{link Map} that registers every delay @{link Buffer} with it's @{link Fifo}.
+   * {@link Map} that registers every delay {@link Buffer} with it's {@link Fifo}.
    */
   final Map<Fifo, Triple<SubBuffer, SubBuffer, SubBuffer>> delaySubBufferMap;
 
   /**
-   * @{link Map} that registers every @{link AbstractActor} repetition with it's @{link IntVar}.
+   * {@link Map} that registers every {@link AbstractActor} repetition with it's {@link IntVar}.
    */
   final Map<AbstractActor, IntVar> iterMap;
 

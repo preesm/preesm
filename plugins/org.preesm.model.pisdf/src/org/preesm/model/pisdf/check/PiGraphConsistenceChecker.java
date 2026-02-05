@@ -123,8 +123,8 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
     graphValid &= caseAbstractActor(graph);
 
-    final BinaryOperator<Boolean> reductor = (x, y) -> (x && y);
-    graphValid &= graph.getDependencies().stream().map(this::doSwitch).reduce(true, reductor);
+    final BinaryOperator<Boolean> andReductor = (x, y) -> (x && y);
+    graphValid &= graph.getDependencies().parallelStream().map(this::doSwitch).reduce(true, andReductor);
 
     final DependencyCycleDetector dcd = new DependencyCycleDetector();
     dcd.doSwitch(graph);
@@ -134,14 +134,14 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
           graph.getVertexPath());
     }
 
-    graphValid &= graph.getActors().stream().map(this::doSwitch).reduce(true, reductor);
+    graphValid &= graph.getOnlyActors().parallelStream().map(this::doSwitch).reduce(true, andReductor);
 
     final RefinementChecker refinementChecker = new RefinementChecker(throwExceptionLevel, loggerLevel);
     graphValid &= refinementChecker.doSwitch(graph);
     mergeMessages(refinementChecker);
 
-    graphValid &= graph.getFifos().stream().map(this::doSwitch).reduce(true, reductor);
-    graphValid &= graph.getChildrenGraphs().stream().map(this::doSwitch).reduce(true, reductor);
+    graphValid &= graph.getFifos().parallelStream().map(this::doSwitch).reduce(true, andReductor);
+    graphValid &= graph.getChildrenGraphs().stream().map(this::doSwitch).reduce(true, andReductor);
     this.graphStack.pop();
     return graphValid;
   }
@@ -294,7 +294,9 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     // check fifo
     final boolean sourcePortNotNull = fifo.getSourcePort() != null;
     final boolean targetPortNotNull = fifo.getTargetPort() != null;
-    final boolean containedByGraph = this.graphStack.peek().getFifos().contains(fifo);
+    // Checking directly if the fifo is part of the edge list to avoid re-generating a fifo list every time.
+    final boolean containedByGraph = this.graphStack.peek().getEdges().contains(fifo);
+
     boolean fifoValid = sourcePortNotNull && targetPortNotNull && containedByGraph;
 
     // Instantiate check result

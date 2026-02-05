@@ -86,10 +86,11 @@ public class TransactionManager {
 
   @Override
   public String toString() {
-    StringBuilder sb = new StringBuilder("{");
+    final StringBuilder sb = new StringBuilder("{");
 
     for (final Transaction t : transactionList) {
-      sb.append(t.toString() + ",");
+      sb.append(t.toString());
+      sb.append(',');
     }
     String s = sb.substring(0, sb.length() - 1);
     s += "}";

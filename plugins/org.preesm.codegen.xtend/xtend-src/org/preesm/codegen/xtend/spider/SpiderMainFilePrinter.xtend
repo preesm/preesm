@@ -253,7 +253,7 @@ class SpiderMainFilePrinter {
 	def static String printInitCall(Actor actor) '''
 	  «val proto = (actor.refinement as CHeaderRefinement).getInitPrototype»
 	  «proto.name»(«FOR param : proto.arguments SEPARATOR ", "»«
-	   ((actor.lookupPort(param.getName) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluateAsDouble.toString»«ENDFOR»);
+	   ((actor.lookupPort(param.getName) as ConfigInputPort).incomingDependency.setter as Parameter).valueExpression.evaluateAsString»«ENDFOR»);
 	'''
 
 	def CharSequence printInitCallRec(PiGraph g) '''

@@ -141,7 +141,7 @@ public class InitialLists {
   private void choosePredecessor(final MapperDAG dag, final MapperDAGVertex currentvertex,
       final List<MapperDAGVertex> orderlist, final LatencyAbc abc) {
 
-    MapperDAGVertex cpnvertex = null;
+    MapperDAGVertex cpnvertex;
 
     final Graph<DAGVertex, DAGEdge> castDag = dag;
     final NeighborCache<DAGVertex, DAGEdge> neighborindex = new NeighborCache<>(castDag);
@@ -158,12 +158,11 @@ public class InitialLists {
       cpnvertex = ibnChoice(predset, orderlist, abc);
       predset.clear();
 
-      if (cpnvertex != null) {
-        predset.addAll(neighborindex.predecessorsOf(cpnvertex));
-      } else {
+      if (cpnvertex == null) {
         final String msg = "Predecessor not found";
         throw new PreesmRuntimeException(msg);
       }
+      predset.addAll(neighborindex.predecessorsOf(cpnvertex));
 
     }
 
@@ -194,15 +193,20 @@ public class InitialLists {
     // if they have the same with the smallest t-level
     while (iter.hasNext()) {
       currentvertex = (MapperDAGVertex) iter.next();
+
+      if (orderlist.contains(currentvertex)) {
+        continue;
+      }
+
       final long bLevel = archi.getBLevel(currentvertex, false);
       final long tLevel = archi.getTLevel(currentvertex, false);
 
-      if ((bLevel == blevelmax) && !(orderlist.contains(currentvertex))) {
+      if ((bLevel == blevelmax)) {
         if (tLevel < tlevelmax) {
           tlevelmax = tLevel;
           vertexresult = currentvertex;
         }
-      } else if ((bLevel > blevelmax) && !(orderlist.contains(currentvertex))) {
+      } else if ((bLevel > blevelmax)) {
         vertexresult = currentvertex;
         blevelmax = bLevel;
         tlevelmax = tLevel;
@@ -359,14 +363,13 @@ public class InitialLists {
     this.blockingNodes.clear();
     this.criticalPath.clear();
 
-    if (simu != null) {
-      // construction of critical path and CPN dominant list with CPN and
-      // IBN actors
-      constructCPN(dag, this.cpnDominant, this.criticalPath, simu);
-    } else {
+    if (simu == null) {
       final String msg = "To construct initial lists, a latency ABC is needed.";
       throw new PreesmRuntimeException(msg);
     }
+    // construction of critical path and CPN dominant list with CPN and
+    // IBN actors
+    constructCPN(dag, this.cpnDominant, this.criticalPath, simu);
 
     PreesmLogger.getLogger().log(Level.INFO, "Adding OBN actors to CPN and IBN actors in CPN dominant list");
     addCPNobn(dag, this.cpnDominant, simu);

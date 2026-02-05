@@ -293,9 +293,14 @@ public class PiMMToolBehaviorProvider extends DefaultToolBehaviorProvider {
 
   @Override
   public boolean equalsBusinessObjects(final Object o1, final Object o2) {
-    boolean equalsBusinessObjects = super.equalsBusinessObjects(o1, o2);
+
+    final boolean equalsBusinessObjects = super.equalsBusinessObjects(o1, o2);
+    if (!equalsBusinessObjects) {
+      return false;
+    }
+
     if ((o1 instanceof final ConfigInputPort cip1) && (o2 instanceof final ConfigInputPort cip2)) {
-      equalsBusinessObjects &= super.equalsBusinessObjects(cip1.eContainer(), cip2.eContainer());
+      return super.equalsBusinessObjects(cip1.eContainer(), cip2.eContainer());
     }
     return equalsBusinessObjects;
   }

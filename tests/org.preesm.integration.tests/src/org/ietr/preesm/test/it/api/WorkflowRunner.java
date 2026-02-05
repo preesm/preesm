@@ -112,7 +112,7 @@ public class WorkflowRunner {
     project.open(null);
 
     final Logger logger = PreesmLogger.getLogger();
-    logger.setLevel(Level.ALL);
+    logger.setLevel(Level.OFF);
 
     try {
       // copy content

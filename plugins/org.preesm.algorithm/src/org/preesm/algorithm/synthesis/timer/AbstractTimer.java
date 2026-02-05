@@ -37,6 +37,7 @@
  */
 package org.preesm.algorithm.synthesis.timer;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,8 +79,16 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
   public Map<AbstractActor, ActorExecutionTiming> computeTimings(final ScheduleOrderManager scheduleOrderManager) {
     final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
     final List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
-    for (final AbstractActor actor : orderedActors) {
-      final long duration = this.doSwitch(actor);
+
+    final List<Long> orderedDurations = orderedActors.parallelStream().map(this::doSwitch).toList();
+
+    final Iterator<Long> durationsIter = orderedDurations.iterator();
+    final Iterator<AbstractActor> actorsIter = orderedActors.iterator();
+
+    while (durationsIter.hasNext() && actorsIter.hasNext()) {
+
+      final AbstractActor actor = actorsIter.next();
+      final long duration = durationsIter.next();
 
       long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
           .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
@@ -97,6 +106,7 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
       final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);
       res.put(actor, executionTiming);
     }
+
     return res;
   }
 

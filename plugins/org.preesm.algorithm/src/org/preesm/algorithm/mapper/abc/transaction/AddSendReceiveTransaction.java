@@ -128,8 +128,9 @@ public class AddSendReceiveTransaction implements Transaction {
   @Override
   public void execute(final List<MapperDAGVertex> resultList) {
 
-    MapperDAGVertex currentSource = null;
     final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
+
+    final MapperDAGVertex currentSource;
     if (this.precedingTransaction instanceof final AddSendReceiveTransaction asrt) {
       currentSource = asrt.receiveVertex;
 
@@ -139,8 +140,7 @@ public class AddSendReceiveTransaction implements Transaction {
     }
 
     // Careful!!! Those names are used in code generation
-    final String nameRadix = ((MapperDAGVertex) this.edge.getSource()).getName() + currentTarget.getName() + "_"
-        + this.routeIndex;
+    final String nameRadix = this.edge.getSource().getName() + currentTarget.getName() + "_" + this.routeIndex;
 
     final String sendVertexID = "s_" + nameRadix;
 
@@ -228,22 +228,25 @@ public class AddSendReceiveTransaction implements Transaction {
    */
   private void reorderReceiveVertex(final ComponentInstance senderOperator, final ComponentInstance receiverOperator) {
     // Get vertices scheduled on the same Operator
-    final Stream<MapperDAGVertex> verticesOnRecivingOperator2 = this.orderManager.getVertexList(receiverOperator)
-        .stream()
+    final Stream<MapperDAGVertex> verticesOnReceivingOperator2 = this.orderManager.getVertexList(receiverOperator)
+        .parallelStream()
         // Keep only receive vertices
         .filter(ReceiveVertex.class::isInstance)
-        // Keep only receiveVertex scheduled after the inserted one.
-        .filter(vertex -> this.orderManager.totalIndexOf(vertex) > this.orderManager.totalIndexOf(this.receiveVertex))
         // Keep only those with the same sender
         .filter(vertex -> (((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex).iterator().next().getSource())
             .getEffectiveOperator()).equals(senderOperator))
+        // Keep only receiveVertex scheduled after the inserted one.
+        .filter(vertex -> this.orderManager.totalIndexOf(vertex) > this.orderManager.totalIndexOf(this.receiveVertex))
         // Keep only those whose sender is scheduled before the current one
         .filter(vertex -> this.orderManager.totalIndexOf(((MapperDAGVertex) this.implementation.incomingEdgesOf(vertex)
             .iterator().next().getSource())) < this.orderManager.totalIndexOf(this.sendVertex));
 
     // Insert all receiveVertices satisfying previous filters before the current receiveVertex
-    verticesOnRecivingOperator2.peek(vertex -> this.orderManager.remove(vertex, true))
-        .forEachOrdered(vertex -> this.orderManager.insertBefore(this.receiveVertex, vertex));
+    verticesOnReceivingOperator2.sequential().forEachOrdered(vertex -> {
+      this.orderManager.remove(vertex, true);
+      this.orderManager.insertBefore(this.receiveVertex, vertex);
+    });
+
   }
 
   /*

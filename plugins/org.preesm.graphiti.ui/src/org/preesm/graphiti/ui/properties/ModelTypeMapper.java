@@ -53,8 +53,8 @@ public class ModelTypeMapper implements ITypeMapper {
   @SuppressWarnings("rawtypes")
   public Class mapType(final Object object) {
     Class type = object.getClass();
-    if (object instanceof EditPart) {
-      type = ((EditPart) object).getModel().getClass();
+    if (object instanceof final EditPart editPart) {
+      type = editPart.getModel().getClass();
     }
     return type;
   }

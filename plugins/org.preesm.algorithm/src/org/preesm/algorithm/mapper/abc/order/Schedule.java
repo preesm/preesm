@@ -38,9 +38,9 @@
  */
 package org.preesm.algorithm.mapper.abc.order;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
@@ -53,10 +53,7 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 public class Schedule {
 
   /** The ordered list of vertices in this schedule. */
-  private final LinkedList<MapperDAGVertex> elementList;
-
-  /** The total time of the schedule vertices. */
-  private long busyTime;
+  private final ArrayList<MapperDAGVertex> elementList;
 
   /**
    * Instantiates a new schedule.
@@ -64,8 +61,7 @@ public class Schedule {
   public Schedule() {
 
     super();
-    this.elementList = new LinkedList<>();
-    resetBusyTime();
+    this.elementList = new ArrayList<>();
   }
 
   /**
@@ -76,9 +72,6 @@ public class Schedule {
    */
   public void addLast(final MapperDAGVertex vertex) {
     if (!contains(vertex)) {
-      if (vertex.getTiming().hasCost()) {
-        this.busyTime += vertex.getTiming().getCost();
-      }
       this.elementList.addLast(vertex);
     }
   }
@@ -91,9 +84,6 @@ public class Schedule {
    */
   public void addFirst(final MapperDAGVertex vertex) {
     if (!contains(vertex)) {
-      if (vertex.getTiming().hasCost()) {
-        this.busyTime += vertex.getTiming().getCost();
-      }
       this.elementList.addFirst(vertex);
     }
   }
@@ -109,16 +99,10 @@ public class Schedule {
   public void insertAfter(final MapperDAGVertex previous, final MapperDAGVertex vertex) {
 
     if (!contains(vertex)) {
-      // Updating schedule busy time
-      if (vertex.getTiming().hasCost()) {
-        this.busyTime += vertex.getTiming().getCost();
-      }
-
       final int prevIndex = indexOf(previous);
       if (prevIndex >= 0) {
         if ((prevIndex + 1) < this.elementList.size()) {
-          final MapperDAGVertex next = this.elementList.get(prevIndex + 1);
-          this.elementList.add(indexOf(next), vertex);
+          this.elementList.add(prevIndex + 1, vertex);
         } else {
           this.elementList.addLast(vertex);
         }
@@ -136,10 +120,6 @@ public class Schedule {
    */
   public void insertBefore(final MapperDAGVertex next, final MapperDAGVertex vertex) {
     if (!contains(vertex)) {
-      if (vertex.getTiming().hasCost()) {
-        this.busyTime += vertex.getTiming().getCost();
-      }
-
       final int nextIndex = indexOf(next);
       if (nextIndex >= 0) {
         this.elementList.add(nextIndex, vertex);
@@ -151,16 +131,7 @@ public class Schedule {
    * Clear.
    */
   public void clear() {
-    resetBusyTime();
-
     this.elementList.clear();
-  }
-
-  /**
-   * Reset busy time.
-   */
-  private void resetBusyTime() {
-    this.busyTime = 0;
   }
 
   /**
@@ -170,13 +141,7 @@ public class Schedule {
    *          the element
    */
   public void remove(final MapperDAGVertex element) {
-    if (this.elementList.contains(element)) {
-      if (element.getTiming().hasCost()) {
-        this.busyTime -= element.getTiming().getCost();
-      }
-
-      this.elementList.remove(element);
-    }
+    this.elementList.remove(element);
   }
 
   // Access without modification
@@ -271,13 +236,10 @@ public class Schedule {
    * @return the schedule elt
    */
   public MapperDAGVertex getScheduleElt(final MapperDAGVertex v) {
-    final int index = this.elementList.indexOf(v);
 
-    // Searching in synchronized vertices
-    if (index != -1) {
+    if (this.elementList.contains(v)) {
       return v;
     }
-
     return null;
   }
 
@@ -289,7 +251,7 @@ public class Schedule {
    * @return true, if successful
    */
   public boolean contains(final MapperDAGVertex v) {
-    return getScheduleElt(v) != null;
+    return this.elementList.contains(v);
   }
 
   /**
@@ -346,7 +308,7 @@ public class Schedule {
    * @return the busy time
    */
   public long getBusyTime() {
-    return this.busyTime;
+    return this.elementList.stream().filter(e -> e.getTiming().hasCost()).mapToLong(e -> e.getTiming().getCost()).sum();
   }
 
   /**

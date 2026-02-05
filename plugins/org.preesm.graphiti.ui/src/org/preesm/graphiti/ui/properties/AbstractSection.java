@@ -200,8 +200,8 @@ public abstract class AbstractSection extends AbstractPropertySection implements
    */
   public IStructuredSelection getTableSelection() {
     final ISelection sel = this.tableViewer.getSelection();
-    if (sel instanceof IStructuredSelection) {
-      return (IStructuredSelection) sel;
+    if (sel instanceof final IStructuredSelection structuredSel) {
+      return structuredSel;
     }
     return null;
   }
@@ -251,26 +251,28 @@ public abstract class AbstractSection extends AbstractPropertySection implements
       oldModel.removePropertyChangeListener(this);
     }
 
-    if (selection instanceof IStructuredSelection) {
-      final Object object = ((IStructuredSelection) selection).getFirstElement();
-      if (object instanceof EditPart) {
-        final Object editPartModel = ((EditPart) object).getModel();
-        if (editPartModel instanceof AbstractObject) {
-          final AbstractObject model = (AbstractObject) editPartModel;
+    if (!(selection instanceof final IStructuredSelection structuredSelection)) {
+      return;
+    }
 
-          if (model.getParameter(this.parameterName) == null) {
-            this.tableViewer.getTable().setEnabled(false);
-            this.buttonAdd.setEnabled(false);
-            this.buttonRemove.setEnabled(false);
-          } else {
-            this.tableViewer.getTable().setEnabled(true);
-            this.buttonAdd.setEnabled(true);
-            this.buttonRemove.setEnabled(true);
+    final Object object = structuredSelection.getFirstElement();
+    if (!(object instanceof final EditPart editPart)) {
+      return;
+    }
 
-            model.addPropertyChangeListener(this);
-            this.tableViewer.setInput(model);
-          }
-        }
+    final Object editPartModel = editPart.getModel();
+    if (editPartModel instanceof final AbstractObject model) {
+      if (model.getParameter(this.parameterName) == null) {
+        this.tableViewer.getTable().setEnabled(false);
+        this.buttonAdd.setEnabled(false);
+        this.buttonRemove.setEnabled(false);
+      } else {
+        this.tableViewer.getTable().setEnabled(true);
+        this.buttonAdd.setEnabled(true);
+        this.buttonRemove.setEnabled(true);
+
+        model.addPropertyChangeListener(this);
+        this.tableViewer.setInput(model);
       }
     }
   }

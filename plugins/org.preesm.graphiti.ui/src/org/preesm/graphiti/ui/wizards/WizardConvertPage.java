@@ -96,8 +96,7 @@ public class WizardConvertPage extends WizardPage implements IGraphTypeSettable 
     setTitle("Convert types");
 
     final Object obj = selection.getFirstElement();
-    if (obj instanceof GraphEditor) {
-      final GraphEditor editor = (GraphEditor) obj;
+    if (obj instanceof final GraphEditor editor) {
       this.originalGraph = editor.getContents();
 
       // fills the original graph, vertex and edge types
@@ -295,8 +294,7 @@ public class WizardConvertPage extends WizardPage implements IGraphTypeSettable 
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.graphiti.ui.wizards.IGraphTypeSettable#setGraphType(org.preesm.graphiti.model.Configuration,
+   * @see org.preesm.graphiti.ui.wizards.IGraphTypeSettable#setGraphType(org.preesm.graphiti.model.Configuration,
    * org.preesm.graphiti.model.ObjectType)
    */
   @Override

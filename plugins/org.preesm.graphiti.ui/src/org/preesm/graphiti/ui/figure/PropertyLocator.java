@@ -69,10 +69,9 @@ public class PropertyLocator extends ConnectionLocator {
    */
   public PropertyLocator(final Connection c, final ParameterPosition p) {
     super(c);
-    if (this.positions.get(c) == null) {
-      final List<PropertyLocator> list = new ArrayList<>();
-      this.positions.put(c, list);
-    }
+
+    this.positions.computeIfAbsent(c, key -> new ArrayList<>());
+
     this.pos = p;
     this.positions.get(c).add(this);
   }

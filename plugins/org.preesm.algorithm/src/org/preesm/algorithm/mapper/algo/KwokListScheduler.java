@@ -154,7 +154,7 @@ public class KwokListScheduler {
     final ComponentInstance endReferenceOperator = getEndReferenceOperator(currentvertex);
 
     ComponentInstance chosenOperator = null;
-    // if operator is not overriden by init/end group constraint
+    // if operator is not overridden by init/end group constraint
     if (endReferenceOperator != null) {
       return endReferenceOperator;
     }

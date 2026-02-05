@@ -84,8 +84,7 @@ public class WizardSaveGraphPage extends WizardNewFileCreationPage implements IG
     // if the selection is a file, gets its file name and removes its
     // extension. Otherwise, let fileName be null.
     final Object obj = selection.getFirstElement();
-    if (obj instanceof IFile) {
-      final IFile file = (IFile) obj;
+    if (obj instanceof final IFile file) {
       final String ext = file.getFileExtension();
       this.fileName = file.getName();
       final int idx = this.fileName.indexOf(ext);
@@ -169,8 +168,7 @@ public class WizardSaveGraphPage extends WizardNewFileCreationPage implements IG
   /*
    * (non-Javadoc)
    *
-   * @see
-   * org.preesm.graphiti.ui.wizards.IGraphTypeSettable#setGraphType(org.preesm.graphiti.model.Configuration,
+   * @see org.preesm.graphiti.ui.wizards.IGraphTypeSettable#setGraphType(org.preesm.graphiti.model.Configuration,
    * org.preesm.graphiti.model.ObjectType)
    */
   @Override

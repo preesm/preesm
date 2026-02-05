@@ -4,49 +4,49 @@
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2024-12"/>
-			<unit id="org.eclipse.cdt.sdk.feature.group" version="11.6.1.202407022008"/>
-			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group" version="3.15.2.v20240812-1535"/>
-			<unit id="org.eclipse.egit.feature.group" version="7.1.0.202411261347-r"/>
-			<unit id="org.eclipse.emf.codegen.ecore.feature.group" version="2.40.0.v20240911-1442"/>
-			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group" version="2.40.0.v20240911-1442"/>
-			<unit id="org.eclipse.emf.codegen.feature.group" version="2.26.0.v20240911-1027"/>
-			<unit id="org.eclipse.emf.codegen.ui.feature.group" version="2.27.0.v20240911-1027"/>
-			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group" version="1.31.0.v20241001-1300"/>
-			<unit id="org.eclipse.emf.sdk.feature.group" version="2.40.0.v20241018-1213"/>
-			<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.2700.v20240929-1145"/>
-			<unit id="org.eclipse.gef.common.sdk.feature.group" version="5.0.1.202411181539"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group" version="0.19.2.202311281543"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group" version="0.19.2.202311281543"/>
-			<unit id="org.eclipse.pde.feature.group" version="3.16.100.v20241120-1800"/>
-			<unit id="org.eclipse.platform.feature.group" version="4.34.0.v20241120-1800"/>
-			<unit id="org.eclipse.sdk.feature.group" version="4.34.0.v20241120-1800"/>
-			<unit id="org.eclipse.tm.terminal.feature.feature.group" version="11.6.1.202406241230"/>
-			<unit id="org.eclipse.tm.terminal.view.feature.feature.group" version="11.6.1.202406241230"/>
-			<unit id="org.eclipse.xtend.sdk.feature.group" version="2.37.0.v20241119-0857"/>
-			<unit id="org.eclipse.xtext.sdk.feature.group" version="2.37.0.v20241119-0857"/>
+			<unit id="org.eclipse.cdt.sdk.feature.group"/>
+			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group"/>
+			<unit id="org.eclipse.egit.feature.group"/>
+			<unit id="org.eclipse.emf.codegen.ecore.feature.group"/>
+			<unit id="org.eclipse.emf.codegen.ecore.ui.feature.group"/>
+			<unit id="org.eclipse.emf.codegen.feature.group"/>
+			<unit id="org.eclipse.emf.codegen.ui.feature.group"/>
+			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group"/>
+			<unit id="org.eclipse.emf.sdk.feature.group"/>
+			<unit id="org.eclipse.equinox.executable.feature.group"/>
+			<unit id="org.eclipse.gef.common.sdk.feature.group"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group"/>
+			<unit id="org.eclipse.pde.feature.group"/>
+			<unit id="org.eclipse.platform.feature.group"/>
+			<unit id="org.eclipse.sdk.feature.group"/>
+			<unit id="org.eclipse.tm.terminal.feature.feature.group"/>
+			<unit id="org.eclipse.tm.terminal.view.feature.feature.group"/>
+			<unit id="org.eclipse.xtend.sdk.feature.group"/>
+			<unit id="org.eclipse.xtext.sdk.feature.group"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/21.0.7"/>
-			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group" version="21.0.7.v20250502-0916"/>
+			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/latest"/>
+			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group"/>
 		</location>
-		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" missingManifest="generate" type="Maven">
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeMode="planner" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-annotations</artifactId>
-					<version>2.18.3</version>
+					<version>2.20</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>com.fasterxml.jackson.core</groupId>
+					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
-					<version>2.18.3</version>
+					<version>3.0.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>com.fasterxml.jackson.core</groupId>
+					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
-					<version>2.18.3</version>
+					<version>3.0.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -58,21 +58,21 @@
 				<dependency>
 					<groupId>org.mockito</groupId>
 					<artifactId>mockito-core</artifactId>
-					<version>5.16.0</version>
+					<version>5.21.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy-agent</artifactId>
-					<version>1.17.2</version>
+					<version>1.18.2</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
-					<version>1.17.2</version>
+					<version>1.18.2</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -97,7 +97,7 @@
 				<dependency>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-collections4</artifactId>
-					<version>4.4</version>
+					<version>4.5.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -109,13 +109,13 @@
 				<dependency>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-lang3</artifactId>
-					<version>3.17.0</version>
+					<version>3.20.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 				    <groupId>commons-io</groupId>
 				    <artifactId>commons-io</artifactId>
-				    <version>2.19.0</version>
+				    <version>2.21.0</version>
 				    <type>jar</type>
 				</dependency>
 				<dependency>
@@ -145,7 +145,7 @@
 				<dependency>
 					<groupId>org.jfree</groupId>
 					<artifactId>jfreechart</artifactId>
-					<version>1.5.5</version>
+					<version>1.5.6</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -164,7 +164,7 @@
 					<!-- Required by jgrapht.io -->
 				    <groupId>org.apache.commons</groupId>
 				    <artifactId>commons-text</artifactId>
-				    <version>1.13.0</version>
+				    <version>1.15.0</version>
 				    <type>jar</type>
 				</dependency>
 				<dependency>
@@ -178,7 +178,7 @@
 					<!-- Required by jgrapht-core -->
 				    <groupId>org.apfloat</groupId>
 				    <artifactId>apfloat</artifactId>
-				    <version>1.14.0</version>
+				    <version>1.15.0</version>
 				    <type>jar</type>
 				</dependency>
 				<dependency>
@@ -190,7 +190,7 @@
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>55.2.0</version>
+					<version>56.1.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -214,7 +214,7 @@
 				<dependency>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
-					<version>2.4</version>
+					<version>2.5</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -227,12 +227,13 @@
 				<dependency>
 					<groupId>net.sf.saxon</groupId>
 					<artifactId>Saxon-HE</artifactId>
+					<!-- Keep this version -->
 					<version>9.9.1-8</version>
 					<type>jar</type>
 				</dependency>
 			</dependencies>
 		</location>
-		<location includeMode="planner" includeDependencyDepth="none" includeDependencyScopes="compile" includeSource="true" missingManifest="generate" type="Maven">
+		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeMode="planner" includeSource="true" missingManifest="generate" type="Maven">
 			<dependencies>
 				<dependency>
 					<groupId>org.jboss.tools.tycho-plugins</groupId>
@@ -249,4 +250,5 @@
 			</repositories>
 		</location>
 	</locations>
+	<targetJRE path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 </target>
