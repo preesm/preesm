@@ -10,13 +10,14 @@ import pdb
 # xc7z020-clg400-1 : pynq, part number tul.com.tw:pynq-z2:part0:1.0
 
 
-def main(comp_name, sys_proj_name, boot_dir, target):
+def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	workspace = os.path.abspath("./")
 	hls_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
-	sysroot = boot_dir + "sysroots/cortexa72-cortexa53-xilinx-linux/"
-	if not(os.path.isfile(sysroot)):
-		sysroot = boot_dir + "/sysroots/cortexa72-cortexa53-amd-linux/"
+	sysroot = common_image + "/sysroots/cortexa72-cortexa53-xilinx-linux/"
+	if not(os.path.isdir(sysroot)):
+		print(sysroot)
+		sysroot = common_image + "/sysroots/cortexa72-cortexa53-amd-linux/"
 
 	targets = {"kr260": "xck26-sfvc784-2LV-c", "ultrascale": "xck26-sfvc784-2LV-c"}
 
@@ -29,7 +30,11 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	""" ---- Build Platform ---- """
 
 	# default config for ultrascale zcu104 platform
-	hw_path = "/data/Xilinx/Vitis/2024.1/base_platforms/xilinx_zcu104_base_202410_1/xilinx_zcu104_base_202410_1.xpfm"
+	hw_version = "".join(version.split(".")) + "0_1" # worked so far
+	hw_path = f"{vitis_loc}/base_platforms/xilinx_zcu104_base_{hw_version}/xilinx_zcu104_base_{hw_version}.xpfm"
+	if not(os.path.isfile(hw_path)):
+		print("Resolved hardware path does not exist : " + hw_path)
+		sys.exit(1)
 	p_os = "linux"
 	p_cpu = "psu_cortexa53_0"
 	p_domain_name = "linux_psu_cortexa53"
@@ -47,7 +52,7 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 
 	status = domain.generate_bif()
 
-	status = domain.set_boot_dir(path=boot_dir)
+	status = domain.set_boot_dir(path=common_image)
 
 	status = domain.set_dtb(path=hls_folder + "/vitis_platform/mydevice/psu_cortexa53_0/device_tree_domain/bsp/system.dtb")
 
@@ -88,7 +93,7 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	comp = client.get_component("app_component")
 	status = comp.set_sysroot(sysroot=sysroot)
 
-	# set all .cpp files as app source. Vitis shall sort set out.
+	# set all .cpp files as app source. Vitis shall sort them out.
 	gen_CPPfiles = [file for file in os.listdir(code_folder+"/generated") if file.endswith(".cpp") and not(file in hls_kernel_files + testbench_files)]
 	status = comp.import_files(from_loc=code_folder+"/generated", files=gen_CPPfiles)
 
@@ -103,6 +108,10 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	# set the vitis compilation flag
 	status = comp.set_app_config(key="USER_COMPILE_DEFINITIONS", values="VITIS_COMPILATION")
 
+	# build application for hardware emulation
+	comp.build(target="hw")
+
+	
 	""" ---- Create System project ---- """
 
 	proj = client.create_sys_project(name="system_project", platform=f"{hls_folder}/system_project/platform/export/platform/platform.xpfm", template="empty_accelerated_application")
@@ -110,10 +119,14 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	proj = client.get_sys_project(name="system_project")
 
 	# mettre le nom de l'algo top ici
-	status = proj.add_container(name="exemple_cluster")
+	status = proj.add_container(name="container")
 
 	for comp in hls_kernels:
-		proj = proj.add_component(name=comp, container_name=["exemple_cluster"])
+		try:
+			proj = proj.add_component(name=comp, container_name=["container"])
+		except Exception as e:
+			print(e)
+			print(type(e))
 
 	proj = proj.add_component(name="app_component")
 
@@ -121,12 +134,12 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	cfg_obj = client.get_config_file(packagecfg_path)
 	liste_cfg_package = [
 	f"dtb={hls_folder}/vitis_platform/dtbo_output/pl.dtbo",
-	f"kernel_image={boot_dir}/Image",
-	f"rootfs={boot_dir}/rootfs.ext4"
+	f"kernel_image={common_image}/Image",
+	f"rootfs={common_image}/rootfs.ext4"
 	]
 	cfg_obj.add_lines('package', liste_cfg_package)
 
-	connectivity_cfg = os.path.join(workspace, sys_proj_name, 'hw_link/exemple_cluster-link.cfg')
+	connectivity_cfg = os.path.join(workspace, sys_proj_name, 'hw_link/container-link.cfg')
 	cfg_obj = client.get_config_file(connectivity_cfg)
 	connections = []
 	with open(code_folder + "/generated/connectivity.cfg", "r") as file:
@@ -143,12 +156,17 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 	#status = proj.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")
 
 if __name__ == "__main__":
-	if len(sys.argv) != 5:
-		print("Usage : python builder.py <component_name> <system project name> <common image path> <target>")
+	print("builder.py usage : python builder.py <component_name> <system project name> <common image path> <target> <vitis version> <vitis path>")
+	if len(sys.argv) != 7:
 		sys.exit(1)
 
 	comp_name = sys.argv[1]
 	sys_proj_name = sys.argv[2] 
-	boot_dir = sys.argv[3]
+	common_image = sys.argv[3]
 	target = sys.argv[4]
-	main(comp_name, sys_proj_name, boot_dir, target)
+	version = sys.argv[5]
+	vitis_loc = sys.argv[6]
+	main(comp_name, sys_proj_name, common_image, target, version, vitis_loc)
+
+
+
