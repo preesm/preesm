@@ -3,7 +3,6 @@ import vitis
 import os
 import sys
 import pdb
-import argparse
 
 # Component part numbers : 
 #xck26-sfvc784-2LV-c : kria 260, part number xilinx.com:kr260_som:part0:1.1
@@ -101,7 +100,6 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 
 	# set the vitis compilation flag
 	status = comp.set_app_config(key="USER_COMPILE_DEFINITIONS", values="VITIS_COMPILATION")
-
 
 	""" ---- Create System project ---- """
 
