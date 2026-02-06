@@ -56,12 +56,16 @@ public class ClusteringTask extends AbstractTaskImplementation {
     // final Map<AbstractActor, AbstractActor> clusterToActorMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
+    String heuristicName = parameters.get("clusterize");
+    if (heuristicName == null) {
+      heuristicName = "";
+    }
 
     List<PiGraph> clustersList = new LinkedList<>();
 
     if (CLUSTERIZE) {
       PreesmLogger.getLogger().info(" -- Clustering task --");
-      clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
+      clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario, heuristicName);
       updateSubgraphsMappings(algorithm.getAllClusters(), scenario);
 
     } else {
