@@ -51,7 +51,6 @@ import org.preesm.algorithm.mapper.stats.exporter.XMLStatsExporter;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.evaluation.latency.SimpleLatencyEvaluation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
@@ -107,7 +106,6 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
     final Schedule schedule = (Schedule) inputs.get("Schedule");
     final Mapping mapping = (Mapping) inputs.get("Mapping");
     final Allocation memAlloc = (Allocation) inputs.get("Allocation");
-    final Map<PiGraph, SynthesisResult> localSyntheses = (Map<PiGraph, SynthesisResult>) inputs.get("localSyntheses");
 
     final boolean isDisplay = "true".equalsIgnoreCase(parameters.get(DISPLAY_PARAM));
     final String exportPath = parameters.get(EXPORT_PARAM).trim();
@@ -122,8 +120,8 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
       pgcc.check(algorithm);
       // final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
       // scheduleOM);
-      final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluateClusteredGraph(algorithm, architecture,
-          scenario, mapping, scheduleOM, localSyntheses);
+      final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
+          scheduleOM);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
 
       PreesmLogger.getLogger().info("-- Output of Gantt");
