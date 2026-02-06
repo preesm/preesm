@@ -10,7 +10,7 @@ import vitis
 # xc7z020-clg400-1 : pynq, part number tul.com.tw:pynq-z2:part0:1.0
 
 
-def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
+def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, platform_name, target_build):
 	workspace = os.path.abspath("./")
 	codegen_folder = os.path.abspath("../")
 	code_folder = os.path.abspath("../../")
@@ -33,22 +33,11 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 
 	""" ---- Build Platform ---- """
 
-	# default config for ultrascale zcu104 platform
-	hw_version = "".join(version.split(".")) + "0_1" # worked so far
-	hw_path = f"{vitis_loc}/base_platforms/xilinx_zcu104_base_{hw_version}/xilinx_zcu104_base_{hw_version}.xpfm"
-	if not(os.path.isfile(hw_path)):
-		print("Resolved hardware path does not exist : " + hw_path)
-		sys.exit(1)
 	p_os = "linux"
 	p_cpu = "psu_cortexa53_0"
 	p_domain_name = "linux_psu_cortexa53"
 
-	if target == "kr260":
-		platform = client.create_platform_component(name="platform", hw_design=codegen_folder+"/vitis_platform/mydevice/hw/kr260_hardware_platform.xsa", os=p_os, cpu=p_cpu, domain_name=p_domain_name)	
-	elif target == "ultrascale":
-		platform = client.create_platform_component(name="platform", platform_xpfm_path=hw_path)
-		domain = platform.add_domain(cpu=p_cpu, os=p_os, name=p_domain_name)
-		status = platform.generate_boot_bsp(target_processor=p_cpu)
+	platform = client.create_platform_component(name="platform", hw_design=codegen_folder+f"/vitis_platform/mydevice/hw/{platform_name}.xsa", os=p_os, cpu=p_cpu, domain_name=p_domain_name)	
 
 	platform = client.get_component(name="platform")
 
@@ -89,11 +78,10 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 		]
 		cfg_obj.add_lines('hls', liste_hls_usercmake)
 
-
 	""" ---- Application Component creation ---- """
 	# TODO make it generic for several accelerators
 	comp = client.get_component(name=accelerators[0]) 
-	comp = client.create_app_component(name="app_component", platform = hw_path, domain = "linux_psu_cortexa53")
+	comp = client.create_app_component(name="app_component", platform = codegen_folder+"/system_project/platform/export/platform/platform.xpfm", domain = "linux_psu_cortexa53")
 	comp = client.get_component("app_component")
 	status = comp.set_sysroot(sysroot=sysroot)
 
@@ -124,7 +112,7 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	status = comp.set_app_config(key="USER_COMPILE_OTHER_FLAGS", values=project_config.flags)
 
 	# build application for hardware emulation
-	comp.build(target="hw")
+	comp.build(target=target_build)
 
 	
 	""" ---- Create System project ---- """
@@ -147,11 +135,15 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 
 	packagecfg_path = os.path.join(workspace, sys_proj_name, 'package/package.cfg')
 	cfg_obj = client.get_config_file(packagecfg_path)
+	print("package : ", cfg_obj.get_lines("package", "dtb"), "  ",cfg_obj.get_lines("package", "kernel_image"))
 	liste_cfg_package = [
 	f"dtb={codegen_folder}/vitis_platform/dtbo_output/pl.dtbo",
-	f"kernel_image={common_image}/Image",
-	f"rootfs={common_image}/rootfs.ext4"
 	]
+	if(not cfg_obj.get_lines("package", "rootfs")):
+		liste_cfg_package.append(f"rootfs={common_image}/rootfs.ext4")
+	if(not cfg_obj.get_lines("package", "kernel_image")):
+		liste_cfg_package.append(f"kernel_image={common_image}/Image")
+
 	cfg_obj.add_lines('package', liste_cfg_package)
 
 	connectivity_cfg = os.path.join(workspace, sys_proj_name, 'hw_link/container-link.cfg')
@@ -165,20 +157,22 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc):
 	# status = client.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")
 
 	# TODO uncomment to automatically build the project
-	# status = proj.build(target="hw_emu")
+	status = proj.build(target=target_build)
 
 	# je ne sais toujours pas comment créer automatiquement une config de lancement hélas
 	#status = proj.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")
 
 if __name__ == "__main__":
-	print("builder.py usage : python builder.py <component_name> <system project name> <common image path> <target> <vitis version> <vitis path>")
-	if len(sys.argv) != 7:
-		sys.exit(1)
+    print("builder.py usage : python builder.py <component_name> <system project name> <common image path> <target> <vitis version> <vitis path> <platform name>")
+    if len(sys.argv) != 9:
+        sys.exit(1)
 
-	comp_name = sys.argv[1]
-	sys_proj_name = sys.argv[2] 
-	common_image = sys.argv[3]
-	target = sys.argv[4]
-	version = sys.argv[5]
-	vitis_loc = sys.argv[6]
-	main(comp_name, sys_proj_name, common_image, target, version, vitis_loc)
+    comp_name = sys.argv[1]
+    sys_proj_name = sys.argv[2] 
+    common_image = sys.argv[3]
+    target = sys.argv[4]
+    version = sys.argv[5]
+    vitis_loc = sys.argv[6]
+    platform_name = sys.argv[7]
+    target_build = sys.argv[8]
+    main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, platform_name, target_build)

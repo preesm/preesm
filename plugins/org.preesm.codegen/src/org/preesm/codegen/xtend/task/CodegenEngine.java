@@ -355,6 +355,10 @@ public class CodegenEngine {
               .read("stdfiles/xilinxCodegen/extract_syn_results.py", FpgaCodeGenerator.class);
           PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_results.py", timings_script);
 
+          final String gui = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/gui.py",
+              FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(codegenPath, "gui.py", gui);
+
           final IFolder step1 = ResourcesPlugin.getWorkspace().getRoot()
               .getFolder(new Path(codegenPath + "/vivado_soc"));
           final IFolder step2 = ResourcesPlugin.getWorkspace().getRoot()
