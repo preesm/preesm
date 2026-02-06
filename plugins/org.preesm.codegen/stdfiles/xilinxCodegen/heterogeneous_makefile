@@ -27,13 +27,13 @@ endif
 all: step1 step2 step3 
 
 step1:
-	$(MAKE) -C vivado_soc all
+	$(MAKE) -C vivado_soc all VERSION=${VERSION}
 
 step2:
-	$(MAKE) -C vitis_platform all
+	$(MAKE) -C vitis_platform all VERSION=${VERSION}
 
 step3:
-	$(MAKE) -C system_project all
+	$(MAKE) -C system_project all VERSION=${VERSION}
 	spd-say "vitis process over"
 
 

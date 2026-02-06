@@ -33,10 +33,10 @@ help:
 	@echo "make all COMMON_IMAGE=<path/to/common_image/>  	## Generate platform with pre-built software components"
 	
 
-all: check-common-image dtb dtbo pfm #sysroot
+all: check-common-image remove_previous_builds write_version dtb dtbo pfm #sysroot
 
 #target : check  whether the common image is ready 
-check-common-image: remove_previous_builds
+check-common-image:
 ifeq ($(wildcard $(COMMON_IMAGE)),)
 	@echo "'COMMON_IMAGE' is not accessible, please download common image from Xilinx Downloads website and set this flag to specify the common image path."
 	@echo "Path tried :" $(COMMON_IMAGE)
@@ -72,6 +72,10 @@ $(SYSROOT): $(COMMON_IMAGE)/sdk.sh
 # keep only the makefile and .tcl files
 remove_previous_builds:
 	rm -rf $(shell find . -mindepth 1 -maxdepth 2 ! -name 'Makefile' ! -name 'platform_creation.py')
+	
+write_version:
+	mkdir _ide/
+	@echo "com.ide.version=${VERSION}" >> _ide/version.ini
 
 clean:
 	$(RM) -r IDE.log $(PLATFORM_NAME) $(PLATFORM_NAME_FSBL) device-tree-xlnx  mydevice dt_output dtg dtbo_output
