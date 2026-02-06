@@ -12,6 +12,7 @@ VERSION?=2024.1
 VITIS_DIR?=/tools/Xilinx/$(VERSION)/Vitis
 COMMON_IMAGE ?=${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)
 SYSROOT := $(COMMON_IMAGE)/sysroots/cortexa72-cortexa53-xilinx-linux
+INSTRUMENT?=false
 
 .PHONY: help  
 
@@ -26,7 +27,7 @@ shell.json:
 	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
 
 app_hw_package: remove_previous_builds write_version display_variables shell.json
-	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET) $(VERSION) $(VITIS_DIR) $(PLATFORM_NAME) $(TARGET_BUILD)
+	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET) $(VERSION) $(VITIS_DIR) $(PLATFORM_NAME) $(TARGET_BUILD) $(INSTRUMENT)
 	@echo "INFO: Packaging Completed"
 
 write_version:
