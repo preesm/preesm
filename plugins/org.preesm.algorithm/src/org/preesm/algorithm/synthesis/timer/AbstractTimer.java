@@ -53,6 +53,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.EndActor;
+import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
@@ -78,20 +79,21 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
    */
   public Map<AbstractActor, ActorExecutionTiming> computeTimings(final ScheduleOrderManager scheduleOrderManager) {
     final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
-    final List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
 
-    final List<Long> orderedDurations = orderedActors.parallelStream().map(this::doSwitch).toList();
+    List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
 
-    final Iterator<Long> durationsIter = orderedDurations.iterator();
-    final Iterator<AbstractActor> actorsIter = orderedActors.iterator();
+    // We want to keep only executable actors (e.g not interfaces), for the cases where the scheduling is called on a
+    // subgraph with input/output interfaces
+    // also buildScheduleAndTopologicalOrderedList() returns an unmodifiableList, so I have to copy.
+    orderedActors = orderedActors.stream().filter(actor -> actor instanceof ExecutableActor).toList();
 
-    while (durationsIter.hasNext() && actorsIter.hasNext()) {
+    for (final AbstractActor actor : orderedActors) {
+      final long duration = this.doSwitch(actor);
 
-      final AbstractActor actor = actorsIter.next();
-      final long duration = durationsIter.next();
-
+      // need the first filter to check only executable actors, and not for instance interfaces that have no timings
+      // associated
       long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
-          .mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
+          .filter(a -> a instanceof ExecutableActor).mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
 
       // refine the startTime of periodic actors from firing instance number
       if (actor instanceof final PeriodicElement pe) {
