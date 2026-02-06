@@ -4,14 +4,14 @@
 #*/
 
 ROOT_DIR=$(realpath $(dir $(lastword $(MAKEFILE_LIST))))
-PLATFORM_NAME=kr260_custom
-PLATFORM= $(ROOT_DIR)/../step2_pfm/$(PLATFORM_NAME)/export/$(PLATFORM_NAME)/$(PLATFORM_NAME).xpfm
-SW_COMP = $(ROOT_DIR)/../step2_pfm/sw_comp/
-VERSION=2024.1
+TARGET?=ultrascale
+PLATFORM_NAME=$(TARGET)_custom
+PLATFORM=$(ROOT_DIR)/../vitis_platform/$(PLATFORM_NAME)/export/$(PLATFORM_NAME)/$(PLATFORM_NAME).xpfm
+SW_COMP=$(ROOT_DIR)/../vitis_platform/sw_comp/
+VERSION?=2024.1
+VITIS_DIR?=/tools/Xilinx/$(VERSION)/Vitis
 COMMON_IMAGE ?=${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)
 SYSROOT := $(COMMON_IMAGE)/sysroots/cortexa72-cortexa53-xilinx-linux
-VADD_WORK=$(ROOT_DIR)/vadd_work
-TARGET?=ultrascale
 
 .PHONY: help  
 
@@ -25,9 +25,21 @@ all: app_hw_package
 shell.json:
 	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
 
-app_hw_package: remove_previous_builds shell.json
-	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET)
+app_hw_package: remove_previous_builds write_version display_variables shell.json
+	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET) $(VERSION) $(VITIS_DIR)
 	@echo "INFO: Packaging Completed"
+
+write_version:
+	mkdir _ide/
+	@echo "com.ide.version=${VERSION}" >> _ide/version.ini
+
+display_variables:
+	@echo "\nVariable values : "
+	@echo "\tTARGET = $(TARGET)"
+	@echo "\tVERSION = $(VERSION)"
+	@echo "\tVITIS_DIR = $(VITIS_DIR)"
+	@echo "\tCOMMON_IMAGE = $(COMMON_IMAGE)"
+	@echo "\n"
 
 # keep only the makefile, builder.py and shell.json
 remove_previous_builds:
@@ -40,3 +52,10 @@ clean:
 
 ultraclean:clean
 	rm -rf $(VADD_WORK)
+
+help:
+	@echo "Usage : make all <TARGET> <VERSION> <VITIS_DIR> <COMMON_IMAGE>"
+	@echo "TARGET : target name, defaults to ultrascale"
+	@echo "VERSION : vitis version, defaults to 2024.1"
+	@echo "VITIS_DIR : vitis directory location, defaults to /tools/Xilinx/$(VERSION)/Vitis"
+	@echo "COMMON_IMAGE : common image location, defaults to ${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)"
