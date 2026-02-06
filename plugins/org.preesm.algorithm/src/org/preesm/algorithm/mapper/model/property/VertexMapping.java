@@ -109,7 +109,7 @@ public class VertexMapping extends GroupProperty {
     // If we consider group mapping and a vertex in the group is mapped, we keep its operator only
     if (considerGroupMapping) {
       for (final MapperDAGVertex locVertex : relatedVertices) {
-        final ComponentInstance op = locVertex.getEffectiveComponent();
+        final ComponentInstance op = locVertex.getEffectiveComponent(); // retourne null dans le cas sans clustering
         if (op != null) {
           final Set<ComponentInstance> effectiveOp = new LinkedHashSet<>();
           effectiveOp.add(op);

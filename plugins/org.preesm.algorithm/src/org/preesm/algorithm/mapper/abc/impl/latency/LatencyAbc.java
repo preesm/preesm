@@ -463,7 +463,7 @@ public abstract class LatencyAbc {
     vertex = translateInImplementationVertex(vertex);
 
     List<ComponentInstance> initOperators = null;
-    final VertexMapping vm = vertex.getMapping();
+    final VertexMapping vm = vertex.getMapping(); // retourne le vertex "d'origine" pour retrouver le mapping au PE
 
     if (vm != null) {
       // Delegating the list construction to a mapping group

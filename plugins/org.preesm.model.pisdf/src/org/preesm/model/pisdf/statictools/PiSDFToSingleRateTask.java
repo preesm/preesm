@@ -61,7 +61,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "pisdf-srdag", name = "PiSDF Single-Rate Transformation", category = "Graph Transformation",
 
-    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class), },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,

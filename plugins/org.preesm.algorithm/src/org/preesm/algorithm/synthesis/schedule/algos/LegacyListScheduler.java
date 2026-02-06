@@ -88,14 +88,13 @@ public class LegacyListScheduler extends AbstractScheduler {
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
 
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(dag);
+
     scheduledDAGIterator.forEachRemaining(vert -> {
       final AbstractActor orderedActor = vert.getReferencePiVertex();
       if (orderedActor == null) {
         final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
             .toString();
-        if (VertexType.TYPE_SEND.equals(vertexType) || VertexType.TYPE_RECEIVE.equals(vertexType)) {
-          // skip
-        } else {
+        if (!VertexType.TYPE_SEND.equals(vertexType) && !VertexType.TYPE_RECEIVE.equals(vertexType)) {
           throw new PreesmRuntimeException(
               "MapperDag vertex '" + vert + "' of type [" + vertexType + "] has no PiSDF reference");
         }

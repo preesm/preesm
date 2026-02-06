@@ -14,6 +14,7 @@ import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
@@ -44,14 +45,14 @@ public class ClusterBuilder {
    *
    * @return the list of cluster actors created
    */
-  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
+  public static List<Cluster> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
     /*
      * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
      * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
      * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
-    final List<PiGraph> listClusters = new LinkedList<>();
+    final List<Cluster> listClusters = new LinkedList<>();
 
     final EList<AbstractActor> listActors = graph.getActors();
     final Map<AbstractActor,
@@ -144,10 +145,10 @@ public class ClusterBuilder {
         // Now we can merge
         // TODO change name to a better one...
         final String clusterName = "Merged" + actor.getName();
-        final PiGraph mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+        final Cluster mergeActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
-        mergeActor.setClusterValue(true);
+
         // TODO set better URL
         mergeActor.setUrl("");
         listClusters.add(mergeActor);
@@ -177,9 +178,9 @@ public class ClusterBuilder {
             }
           }
         }
-
-        // scenario.getConstraints().setGroupConstraints(newConstraint);
         scenario.getConstraints().addConstraint(clusteringArch, mergeActor);
+        graph.setIsClusterized(true);
+
       }
 
     } while (!graph_is_fully_searched);

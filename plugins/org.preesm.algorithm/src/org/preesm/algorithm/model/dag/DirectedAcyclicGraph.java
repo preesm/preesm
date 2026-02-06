@@ -115,8 +115,8 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
 
       this.removeEdge(newEdge);
       throw new PreesmRuntimeException(cycleString.toString());
-    }
-    if (detector.detectCyclesContainingVertex(target)) {
+
+    } else if (detector.detectCyclesContainingVertex(target)) {
       final Set<DAGVertex> cycle = detector.findCyclesContainingVertex(target);
       final StringBuilder cycleString = new StringBuilder("Added edge forms a cycle: {");
       for (final DAGVertex vertex : cycle) {

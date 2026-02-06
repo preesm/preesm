@@ -1,14 +1,15 @@
 package org.preesm.algorithm.clustering;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.Cluster;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -34,7 +35,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class) },
 
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
-        @Port(name = AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, type = Map.class),
+        @Port(name = AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, type = List.class),
         @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
     description = "Workflow task responsible for clustering hierarchical actors."
@@ -46,24 +47,25 @@ public class ClusteringTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    final PiGraph original_algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
-    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
-    // faire une copie du scénario pour la modifier et ensuite la retourner via outputs ? Mais comme il n'y a pas de
-    // copie facile de scénario ça m'emmerde
-    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
-    final PiGraph algorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(original_algorithm);
+    PreesmLogger.getLogger().info(" -- Clustering --");
+
+    final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
     // bi-directional map that links clusters to their placeholder actor
-    final Map<AbstractActor, AbstractActor> clusterToActorMap = new HashMap<>();
+    // final Map<AbstractActor, AbstractActor> clusterToActorMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
 
+    List<Cluster> clustersList = new LinkedList<>();
+
     if (CLUSTERIZE) {
-      final List<PiGraph> clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
-      UpdateSubgraphsMappings(clustersList, scenario);
+      clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario);
+      updateSubgraphsMappings(clustersList, scenario);
 
       // --------------------------------------------------------------------------------------
       // -------------------- replace hierarchical actors with placeholders -------------------
@@ -82,22 +84,11 @@ public class ClusteringTask extends AbstractTaskImplementation {
       final ComponentInstance accelerator = architecture.getComponentInstances().stream()
           .filter(c -> c.getComponent() != mainCPU.getComponent()).toList().getFirst();
 
-      for (final PiGraph cluster : clustersList) {
-        final Actor placeholder = PiMMFactory.createActor(cluster.getName() + "_placeholder");
-        placeholder.setRefinement(PiMMFactory.createCHeaderRefinement());
-
-        // algorithm.addActor(placeholder);
-        // replaceAndRemoveActor(cluster, placeholder, algorithm);
-
-        scenario.getConstraints().addConstraint(accelerator, placeholder); // test, idéalement ça serait une "non-archi"
-
-        clusterToActorMap.put(cluster, placeholder);
-        clusterToActorMap.put(placeholder, cluster);
-      }
     }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
-    outputs.put(AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, clusterToActorMap);
+    // outputs.put(AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, clusterToActorMap);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, clustersList);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
     return outputs;
@@ -111,8 +102,8 @@ public class ClusteringTask extends AbstractTaskImplementation {
    * @param scenario
    *          the scenario
    */
-  private void UpdateSubgraphsMappings(List<PiGraph> clustersList, Scenario scenario) {
-    for (final PiGraph cluster : clustersList) {
+  private void updateSubgraphsMappings(List<Cluster> clustersList, Scenario scenario) {
+    for (final Cluster cluster : clustersList) {
       // a cluster is mapped to only 1 component
       // vu que ce sont les acteurs du srdag mais qu'on a les mappings du pisdf, il ne va trouver aucun acteur ! Que
       // faire ?
