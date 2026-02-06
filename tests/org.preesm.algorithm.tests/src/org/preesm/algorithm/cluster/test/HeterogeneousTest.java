@@ -216,7 +216,7 @@ public class HeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
+    ClusterBuilder.buildArchHierarchyGraph(algo, scenario, ""); // default clustering heuristic
 
     assertEquals(7, algo.getActors().size());
     final List<AbstractActor> listHierActors = algo.getActors().stream().filter(a -> a instanceof PiGraphImpl).toList();

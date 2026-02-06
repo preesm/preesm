@@ -209,7 +209,7 @@ public class CpuOnlyHeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    ClusterBuilder.buildArchHierarchyGraph(algo, scenario);
+    ClusterBuilder.buildArchHierarchyGraph(algo, scenario, ""); // default clustering
 
     // since there are only CPUs, there should be no clustering with the current clustering algorithm
     assertEquals(13, algo.getActors().size());

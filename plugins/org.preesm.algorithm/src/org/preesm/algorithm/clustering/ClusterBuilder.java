@@ -46,7 +46,7 @@ public class ClusterBuilder {
    *
    * @return the list of cluster actors created
    */
-  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario) {
+  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario, String HeuristicName) {
     /*
      * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
      * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
@@ -64,7 +64,7 @@ public class ClusterBuilder {
 
     // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      final var subClusterList = buildArchHierarchyGraph(subGraph, scenario);
+      final var subClusterList = buildArchHierarchyGraph(subGraph, scenario, HeuristicName);
       listClusters.addAll(subClusterList);
     }
 
@@ -142,25 +142,6 @@ public class ClusterBuilder {
           // now we can mark the actor for clustering
           seed_found = true;
 
-          // final List<Actor> predecessors = actor.getDirectPredecessors().stream().filter(Actor.class::isInstance)
-          // .map(a -> (Actor) a).toList();
-          //
-          // // decide which arch will be used to clusterize
-          //
-          // // check if, among all the predecessors, any of them has a mapping whose arch is the same as the main PE's
-          // final boolean anyMainArchPredecessor = predecessors.stream().anyMatch(
-          // a -> scenario.getPossibleMappings(a).stream().anyMatch(CI -> CI.getComponent().equals(refCPUArch)));
-          //
-          // final List<Actor> successors = actor.getDirectSuccessors().stream().filter(Actor.class::isInstance)
-          // .map(a -> (Actor) a).toList();
-          //
-          // // cannot use refArch in .contains() because FUCK JAVA
-          // final var clusteringArchClone = clusteringComponent;
-          //
-          // final boolean anyClusteringArchSuccessor = successors.stream()
-          // .anyMatch(a -> scenario.getPossibleMappings(a).contains(clusteringArchClone));
-          //
-          // seed_found = (anyMainArchPredecessor || predecessors.isEmpty()) && anyClusteringArchSuccessor;
         }
 
         if (i == listActors.size()) {
@@ -245,6 +226,20 @@ public class ClusterBuilder {
     }
     return scenario.getPossibleMappings(actor).getFirst();
 
+  }
+
+  /**
+   * Returns the merging heuristic corresponding to heuristicName. Expand at will !
+   *
+   * @param heuristicName
+   *          the name
+   *
+   * @return a MergingHeuristic implementation class
+   */
+  private static MergingHeuristic getHeuristic(String heuristicName) {
+    return switch (heuristicName) {
+      default -> new MinimalMergingHeuristic();
+    };
   }
 
   /**
