@@ -3,11 +3,13 @@ import vitis
 import os
 import sys
 import pdb
+import argparse
 
 # Component part numbers : 
 #xck26-sfvc784-2LV-c : kria 260, part number xilinx.com:kr260_som:part0:1.1
 #xcvu9p-flga2104-2-i : virtex ultrascale+, 
 # xc7z020-clg400-1 : pynq, part number tul.com.tw:pynq-z2:part0:1.0
+
 
 def main(comp_name, sys_proj_name, boot_dir, target):
 	workspace = os.path.abspath("./")
@@ -131,8 +133,6 @@ def main(comp_name, sys_proj_name, boot_dir, target):
 		for line in file:
 			connections.append(line.rstrip())
 	cfg_obj.add_lines('connectivity', connections)
-
-
 
 	# status = client.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")
 
