@@ -431,7 +431,6 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, pla
 			connections.append(line.rstrip())
 	cfg_obj.add_lines('connectivity', connections)
 
-	# TODO uncomment to automatically build the project
 	print("----- Building system project -----")
 	status = platform.build()
 	status = proj.build(target=target_build)
