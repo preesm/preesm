@@ -1225,41 +1225,6 @@ class CHeaderRefinement extends Refinement {
 		return result + ")";
 	}
 	
-	// prints loop function signature without a terminating ";"
-	op String printLoopSignature() {
-		var result = "void* " + loopPrototype.name + "(";
-		for(var i=0 ; i<loopPrototype.arguments.size ; i++) {
-			var FunctionArgument arg = loopPrototype.arguments.get(i);
-			result += arg.^type;
-			if(arg.isPassedByReference) {
-				result += "*";
-			}
-			result += " " + arg.name;
-			
-			if(i < loopPrototype.arguments.size-1) {
-				result += ", ";
-			}
-		}
-		return result + ")";
-	}
-	
-	op String printInitSignature() {
-		var result = "void* " + initPrototype.name + "(";
-		for(var i=0 ; i<initPrototype.arguments.size ; i++) {
-			var FunctionArgument arg = initPrototype.arguments.get(i);
-			result += arg.^type;
-			if(arg.isPassedByReference) {
-				result += "*";
-			}
-			result += " " + arg.name;
-			
-			if(i < initPrototype.arguments.size-1) {
-				result += ", ";
-			}
-		}
-		return result + ")";
-	}
-	
 }
 
 class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {

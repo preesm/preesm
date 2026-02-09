@@ -76,18 +76,18 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     category = "Gantt exporters",
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-        @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-        @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class),
-        @Port(name = "localSyntheses", type = Map.class) },
+      @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
+      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class),
+      @Port(name = "localSyntheses", type = Map.class) },
 
     parameters = {
-        @Parameter(name = ClusteredStatEditorSynthesisTask.DISPLAY_PARAM,
-            description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
-            values = { @Value(name = "true/false") }),
-        @Parameter(name = ClusteredStatEditorSynthesisTask.EXPORT_PARAM,
-            description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
-                + "put \"/\" if at root, may be empty.",
-            values = { @Value(name = "/path/to") }) })
+      @Parameter(name = ClusteredStatEditorSynthesisTask.DISPLAY_PARAM,
+          description = "Specify if statistics, including Gantt diagram, must be displayed or not.",
+          values = { @Value(name = "true/false") }),
+      @Parameter(name = ClusteredStatEditorSynthesisTask.EXPORT_PARAM,
+          description = "Folder to store Gantt diagram as xml file. Path is relative to the project, "
+              + "put \"/\" if at root, may be empty.",
+          values = { @Value(name = "/path/to") }) })
 public class ClusteredStatEditorSynthesisTask extends AbstractTaskImplementation {
 
   public static final String DISPLAY_PARAM   = "display";

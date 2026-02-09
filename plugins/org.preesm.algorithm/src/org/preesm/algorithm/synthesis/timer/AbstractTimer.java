@@ -37,7 +37,6 @@
  */
 package org.preesm.algorithm.synthesis.timer;
 
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -107,43 +106,6 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
       long startTime = scheduleOM.getDirectPredecessors(actor).stream()
           .filter(a -> a instanceof ExecutableActor || a.isCluster()).mapToLong(a -> res.get(a).getEndTime()).max()
           .orElse(0L);
-
-      // refine the startTime of periodic actors from firing instance number
-      if (actor instanceof final PeriodicElement pe) {
-        final long period = pe.getPeriod().evaluateAsLong();
-        if (period > 0 && pe instanceof final Actor a) {
-          final long firingInstance = a.getFiringInstance();
-          final long ns = firingInstance * period;
-          startTime = Math.max(startTime, ns);
-        }
-      }
-
-      final ActorExecutionTiming executionTiming = new ActorExecutionTiming(actor, startTime, duration);
-      res.put(actor, executionTiming);
-    }
-    return res;
-  }
-
-  /**
-   * Build a map that associate a timing (i.e. start/end/duration) for every actor in the schedule.
-   */
-  public Map<AbstractActor, ActorExecutionTiming> computeTimings(final ScheduleOrderManager scheduleOrderManager) {
-    final Map<AbstractActor, ActorExecutionTiming> res = new LinkedHashMap<>();
-    List<AbstractActor> orderedActors = scheduleOrderManager.buildScheduleAndTopologicalOrderedList();
-
-    // We want to keep only executable actors (e.g not interfaces), for the cases where the scheduling is called on a
-    // subgraph with input/output interfaces
-    // also buildScheduleAndTopologicalOrderedList() returns an unmodifiableList, so I have to copy.
-    orderedActors = orderedActors.stream().filter(actor -> actor instanceof ExecutableActor || actor instanceof PiGraph)
-        .toList();
-
-    for (final AbstractActor actor : orderedActors) {
-      final long duration = this.doSwitch(actor);
-
-      // need the first filter to check only executable actors, and not for instance interfaces that have no timings
-      // associated
-      long startTime = scheduleOrderManager.getDirectPredecessors(actor).stream()
-          .filter(a -> a instanceof ExecutableActor).mapToLong(a -> res.get(a).getEndTime()).max().orElse(0L);
 
       // refine the startTime of periodic actors from firing instance number
       if (actor instanceof final PeriodicElement pe) {
