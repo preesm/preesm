@@ -9,10 +9,6 @@ import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputPort;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.scenario.Scenario;
@@ -52,9 +48,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
-    // bi-directional map that links clusters to their placeholder actor
-    // final Map<AbstractActor, AbstractActor> clusterToActorMap = new HashMap<>();
-
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
     String heuristicName = parameters.get("clusterize");
     if (heuristicName == null) {
@@ -73,7 +66,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
     }
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
-    // outputs.put(AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, clusterToActorMap);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SUBGRAPHS_LIST, clustersList);
     outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
 
@@ -107,54 +99,6 @@ public class ClusteringTask extends AbstractTaskImplementation {
             });
       }
     }
-  }
-
-  /***
-   * Creates a placeholder actor to replace a cluster actor, with the same timing characteristics. public or private, I
-   * don't care
-   *
-   * @param oldA
-   *          clusterActor
-   * @param newA
-   *          the new placeholder actor
-   * @param graph
-   *          the application graph
-   */
-  private void replaceAndRemoveActor(AbstractActor oldA, AbstractActor newA, PiGraph graph) {
-
-    // TODO brancher les dépendances dans le placeholder
-    // clone input and output outer interfaces
-    // plug fifos and copy rates
-
-    for (final DataInputPort olddip : oldA.getDataInputPorts()) {
-      final DataInputPort newdip = PiMMFactory.createDataInputPort(olddip.getName());
-
-      newdip.setExpression(olddip.getExpression());
-      newA.getDataInputPorts().add(newdip);
-      newdip.setIncomingFifo(olddip.getFifo());
-    }
-    for (final DataOutputPort olddop : oldA.getDataOutputPorts()) {
-      final DataOutputPort newdop = PiMMFactory.createDataOutputPort(olddop.getName());
-
-      newdop.setExpression(olddop.getExpression());
-      newA.getDataOutputPorts().add(newdop);
-      newdop.setOutgoingFifo(olddop.getFifo());
-    }
-
-    for (final ConfigInputPort oldcip : oldA.getConfigInputPorts()) {
-      // create a new dependency that will be plugged to a new config port
-      final ConfigInputPort newcip = PiMMFactory.createConfigInputPort();
-      newcip.setName(oldcip.getName());
-
-      final Dependency newDep = PiMMFactory.createDependency(oldcip.getIncomingDependency().getSetter(), newcip);
-
-      newA.getConfigInputPorts().add(newcip);
-      graph.addDependency(newDep);
-    }
-
-    // remove the old cluster actor from the graph
-    graph.removeActorAndDependencies(oldA);
-
   }
 
   @Override
