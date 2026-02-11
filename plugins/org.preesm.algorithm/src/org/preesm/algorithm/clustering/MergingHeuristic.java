@@ -2,6 +2,7 @@ package org.preesm.algorithm.clustering;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.slam.Component;
 
 /**
 *
@@ -23,16 +24,35 @@ public abstract class MergingHeuristic {
    *
    * @param seed
    *          the cluster's seed actor
-   * @param scenario
-   *          the scenario containing the actor's mappings
-   * @param refArchi
-   *          the PE architecture on which the clustering is based
    * @param actor
    *          the Actor to be evaluated for merging
-   * @param position
-   *          whether the actor is a predecessor or successor to the seed
-   * @return whether actor can be merged
+   * @param params
+   *          any parameter the heuristic requires
+   * @return true or false
    */
-  abstract boolean assess(AbstractActor seed, AbstractActor actor, Map<String, Object> params);
+  public abstract boolean assessMergeable(AbstractActor seed, AbstractActor actor, Map<String, Object> params);
+
+  /***
+   * Assesses whether actor can be used as a seed to cluster its neighbouring actors.
+   *
+   * @param actor
+   *          the actor
+   * @param params
+   *          any parameter necessary for the heuristic
+   * @return true or false
+   */
+  public abstract boolean assesSeedable(AbstractActor actor, Map<String, Object> params);
+
+  /***
+   * Picks which of the Components (CPU, GPU, FPGA...) the seed can be mapped to should be used as reference for
+   * clustering. NOT the precise instance ! Not necessary for all heuristics, feel free to use it or not.
+   *
+   * @param seed
+   *          the seed
+   * @param params
+   *          any parameter the heuristic requires
+   * @return the chosen component type
+   */
+  public abstract Component pickClusteringComponent(AbstractActor seed, Map<String, Object> params);
 
 }
