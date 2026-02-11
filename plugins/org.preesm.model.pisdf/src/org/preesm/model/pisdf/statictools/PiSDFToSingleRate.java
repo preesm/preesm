@@ -1401,7 +1401,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   // TODO this can very likely be made more efficient, f.e by having a map for actors which can be cleared entirely and
   // a map for clusters which is never cleared.
   /**
-   * does a clear() on actor256actors, but saves the mappings of cluster actors
+   * does a clear() on actor2SRactors, but saves the mappings of cluster actors
    */
   private void clearActor2SRActors() {
 

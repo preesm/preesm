@@ -84,7 +84,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
 
-    // then convert to single-rate
+    // convert to single-rate
     final PiGraph result = PiSDFToSingleRate.compute(graph, method);
 
     final Map<String, Object> output = new LinkedHashMap<>();

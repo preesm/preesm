@@ -243,7 +243,8 @@ public class HeterogeneousTest {
     final AbstractActor seed = listActors.get(5);
     final Set<AbstractActor> visitedActors = new HashSet<>();
     final MergingHeuristic heuristic = new MinimalMergingHeuristic();
-    final Set<AbstractActor> res = ClusterBuilder.buildMergeList(seed, scenario, fpga1, visitedActors, heuristic);
+    final Set<AbstractActor> res = ClusterBuilder.buildMergeList(seed, scenario, fpga1.getComponent(), visitedActors,
+        heuristic);
 
     assertEquals(5, res.size());
     assertTrue(res.contains(listActors.get(5)));
