@@ -22,7 +22,6 @@ import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.FPGA;
-import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -53,14 +52,16 @@ public class ClusterBuilder {
      * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
+
+    // ----- PART 1 : figure out whether we're already in a homogeneous cluster -----
+
+    // We don't take into account special actors (fork, join...) as they can be executed anywhere
+    final List<AbstractActor> actors = graph.getActors().stream()
+        .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
+
+    List<Component> sharedComponents = scenario.getDesign().getComponents();
+
     final List<PiGraph> listClusters = new LinkedList<>();
-
-    final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
-    final Component refCPUArch = refCPU.getComponent();
-
-    // list all processing elements (i.e component instances) used in the Design
-    final List<ComponentInstance> componentList = scenario.getDesign().getComponentInstances().stream()
-        .filter(ci -> ci.getComponent() instanceof ProcessingElement).toList();
 
     // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
@@ -68,13 +69,7 @@ public class ClusterBuilder {
       listClusters.addAll(subClusterList);
     }
 
-    // We don't take into account special actors (fork, join...) as they can be executed anywhere
-    //
-    final List<AbstractActor> actors = graph.getActors().stream()
-        .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
-    List<Component> sharedComponents = scenario.getDesign().getComponents();
-
-    // compute intersection for all actors
+    // 2) compute intersection for all actors
     for (final AbstractActor a : actors) {
       final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
       sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
@@ -89,6 +84,7 @@ public class ClusterBuilder {
     final Map<AbstractActor,
         Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
+    // 3) mark the current graph as "cluster" if all its actors share a common target PE (cpu, fpga...)
     if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
       // All components share a common PE ! It's a cluster already
       graph.setClusterValue(true);
@@ -108,6 +104,13 @@ public class ClusterBuilder {
       return listClusters;
     }
 
+    // ----- PART 2 : clusterize some of the actors if the graph is not already homogeneous -----
+
+    final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
+    final Component refCPUArch = refCPU.getComponent();
+
+    final MergingHeuristic heuristic = getHeuristic(HeuristicName);
+
     // 3) clusterize actors at this level of hierarchy
     int i = 0;
     boolean graph_is_fully_searched = false;
@@ -115,52 +118,48 @@ public class ClusterBuilder {
     do {
       boolean seed_found = false;
       AbstractActor actor;
-      ComponentInstance clusteringComponent = null;
+      Component clusteringComponent = null;
 
       // try to find a valid, non-visited seed
       do {
         actor = listActors.get(i);
         i++;
-
-        // all the PEs actor is mappable to that are not the same arch as refCPU
-        final var nonMainCpuMappings = scenario.getPossibleMappings(actor).stream()
-            .filter(c -> !(c.getComponent().equals(refCPUArch))).toList();
-
-        // Any actor that has a mapping to refArch is a valid seed, except if it is already a cluster graph, or if it is
-        // a UserSpecialActor (broadcast, roundbuffer, join, fork).
-        final boolean validActorType = !(actor instanceof UserSpecialActor) && !actor.isCluster();
-
-        // check actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
-        // clusterize from it
-        if (validActorType && !actorIsVisited.get(actor) && !nonMainCpuMappings.isEmpty()) {
+        if (!actorIsVisited.get(actor)) {
           actorIsVisited.put(actor, true);
 
-          // The actor has at least one non-main PE mapping ! First, let's decide which arch will be used for clustering
-          // TODO faire retourner le composant plutôt que l'instance par seedArchHeuristic
-          clusteringComponent = seedArchHeuristic(graph, scenario, actor, refCPUArch);
+          // check actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
+          // clusterize from it
+          final Map<String, Object> params = new HashMap<>();
+          params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
+          params.put("Component", refCPUArch);
 
-          // now we can mark the actor for clustering
-          seed_found = true;
+          if (heuristic.assesSeedable(actor, params)) {
 
-        }
+            // The actor has at least one non-main PE mapping !Let's decide which arch will be used for clustering
+            clusteringComponent = heuristic.pickClusteringComponent(actor, params);
 
-        if (i == listActors.size()) {
-          // this is the last actor to visit, last chance for a clustering
-          graph_is_fully_searched = true;
+            // now we can mark the actor for clustering
+            seed_found = true;
+
+          }
+
+          if (i == listActors.size()) {
+            // this is the last actor to visit, last chance for a clustering
+            graph_is_fully_searched = true;
+          }
         }
       } while (actorIsVisited.get(actor) && !seed_found && !graph_is_fully_searched);
 
       if (seed_found) {
         actorIsVisited.put(actor, true);
 
-        final Component clusteringArch = clusteringComponent.getComponent();
+        final Component clusteringArch = clusteringComponent;
         final var clusteringComponents = scenario.getDesign().getComponentInstances().stream()
             .filter(ci -> ci.getComponent() == clusteringArch).toList();
 
         // now we have a seed, let's build a list of all the actors we want to merge
         // they will be all (un)direct successors of the seed with only fpga inputs
         final Set<AbstractActor> visitedActors = new HashSet<>();
-        final MergingHeuristic heuristic = new MinimalMergingHeuristic();
         final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringComponent, visitedActors,
             heuristic);
 
@@ -183,15 +182,21 @@ public class ClusterBuilder {
         clusterActor.setUrl("");
         listClusters.add(clusterActor);
 
-        scenario.getConstraints().addConstraint(clusteringComponent, clusterActor);
+        final Component chosenComponent = clusteringComponent; // java needs this to be final...
+        final List<ComponentInstance> clusteringArchInstances = scenario.getDesign().getComponentInstances().stream()
+            .filter(ci -> ci.getComponent() == chosenComponent).toList();
+
+        for (final ComponentInstance ci : clusteringArchInstances) {
+          scenario.getConstraints().addConstraint(ci, clusterActor);
+        }
+
         clusterActor.setClusterValue(true);
 
-        switch (clusteringComponent.getComponent()) {
+        switch (clusteringComponent) {
           case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
           case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
           default -> {
-            final var comp = clusteringComponent;
-            PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + comp.getInstanceName()
+            PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + chosenComponent.getVlnv().toString()
                 + " is not documented in PiSDF.xcore's architecture enum, please add it");
           }
         }
@@ -201,30 +206,6 @@ public class ClusterBuilder {
     } while (!graph_is_fully_searched);
 
     return listClusters;
-
-  }
-
-  /***
-   * The heuristic that decides which of the PEs available as mapping for actor will be used to start the clustering.
-   *
-   * @param graph
-   *          the algorithm graph
-   * @param scenario
-   *          the scenario
-   * @param actor
-   *          the actor
-   * @return the component chosen
-   */
-  private static ComponentInstance seedArchHeuristic(PiGraph graph, Scenario scenario, AbstractActor actor,
-      Component refArch) {
-    // TODO make it smarter (or at least non-trivial)
-
-    if (scenario.getPossibleMappings(actor).stream().anyMatch(c -> !(c.getComponent().equals(refArch)))) {
-      // if there is a PE with a different arch than the main CPU, return it (or the first of the list)
-      return scenario.getPossibleMappings(actor).stream().filter(c -> !(c.getComponent().equals(refArch))).toList()
-          .getFirst();
-    }
-    return scenario.getPossibleMappings(actor).getFirst();
 
   }
 
@@ -256,14 +237,14 @@ public class ClusterBuilder {
    *          the set of already visited actors, used to prevent infinite loops
    * @return a cluster of actors that can be merge
    */
-  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario, ComponentInstance refArchi,
-      Set<AbstractActor> visitedActors, MergingHeuristic mergeChecker) {
+  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario, Component refArchi,
+      Set<AbstractActor> visitedActors, MergingHeuristic heuristic) {
     final Set<AbstractActor> actorsToMerge = new HashSet<>();
     actorsToMerge.add(seed);
 
-    final List<Actor> seedSuccessorsSameArch = seed
-        .getDirectSuccessors().stream().filter(Actor.class::isInstance).map(a -> (Actor) a).filter(a -> scenario
-            .getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi.getComponent())))
+    final List<Actor> seedSuccessorsSameArch = seed.getDirectSuccessors().stream().filter(Actor.class::isInstance)
+        .map(a -> (Actor) a)
+        .filter(a -> scenario.getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi)))
         .toList();
 
     for (final AbstractActor actor : seedSuccessorsSameArch) {
@@ -277,21 +258,20 @@ public class ClusterBuilder {
         params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
         params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
         params.put("position", MergingHeuristic.successor);
-        final boolean mergeable = mergeChecker.assess(seed, actor, params);
+        final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
 
         if (mergeable) {
           // we can add it to the merging list and probe its successors too
-          final Set<
-              AbstractActor> successorList = buildMergeList(actor, scenario, refArchi, visitedActors, mergeChecker);
+          final Set<AbstractActor> successorList = buildMergeList(actor, scenario, refArchi, visitedActors, heuristic);
           actorsToMerge.addAll(successorList);
         }
       }
 
     }
 
-    final List<Actor> seedPredecessorsSameArch = seed
-        .getDirectPredecessors().stream().filter(Actor.class::isInstance).map(a -> (Actor) a).filter(a -> scenario
-            .getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi.getComponent())))
+    final List<Actor> seedPredecessorsSameArch = seed.getDirectPredecessors().stream().filter(Actor.class::isInstance)
+        .map(a -> (Actor) a)
+        .filter(a -> scenario.getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi)))
         .toList();
 
     for (final AbstractActor actor : seedPredecessorsSameArch) {
@@ -302,12 +282,12 @@ public class ClusterBuilder {
         params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
         params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
         params.put("position", MergingHeuristic.predecessor);
-        final boolean mergeable = mergeChecker.assess(seed, actor, params);
+        final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
 
         if (mergeable) {
           // probe its predecessors too
           final Set<
-              AbstractActor> predecessorList = buildMergeList(actor, scenario, refArchi, visitedActors, mergeChecker);
+              AbstractActor> predecessorList = buildMergeList(actor, scenario, refArchi, visitedActors, heuristic);
           actorsToMerge.addAll(predecessorList);
         }
       }
