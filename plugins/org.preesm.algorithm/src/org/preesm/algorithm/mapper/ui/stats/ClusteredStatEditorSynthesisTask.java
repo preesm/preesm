@@ -152,7 +152,7 @@ public class ClusteredStatEditorSynthesisTask extends AbstractTaskImplementation
         final IProject project = root.getProject(projectName);
 
         // Get a complete valid path with all folders existing
-        final String exportAbsolutePath = project.getLocation() + exportPath;
+        final String exportAbsolutePath = project.getLocation() + "/" + exportPath;
         final File parent = new File(exportAbsolutePath);
         parent.mkdirs();
 
