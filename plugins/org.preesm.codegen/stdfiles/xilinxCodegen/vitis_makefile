@@ -10,7 +10,7 @@ TARGET?=ultrascale
 PLATFORM_NAME=$(TARGET)_custom
 PLATFORM_NAME_FSBL=$(TARGET)_custom_fsbl
 
-XSA_NAME=$(TARGET)_hardware_platform
+XSA_NAME?=$(TARGET)_hardware_platform
 VERSION=2024.1
 COMMON_IMAGE ?=../../xilinx-zynqmp-common-v$(VERSION)/
 DT_PLAT_NAME=mydevice
