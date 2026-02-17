@@ -85,6 +85,8 @@ def run_step3():
 	print("step 3 fini")
 
 def run_all():
+	run_step1()
+	run_step2()
 	run_step3()
 
 def retreive_values_gui():
