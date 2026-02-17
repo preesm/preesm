@@ -118,8 +118,7 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
 
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
       pgcc.check(algorithm);
-      // final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
-      // scheduleOM);
+
       final LatencyCost evaluate = new SimpleLatencyEvaluation().evaluate(algorithm, architecture, scenario, mapping,
           scheduleOM);
       PreesmLogger.getLogger().info(() -> "Simple latency evaluation : " + evaluate.getValue());
