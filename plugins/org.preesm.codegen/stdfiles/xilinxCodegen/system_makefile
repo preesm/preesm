@@ -8,9 +8,6 @@ TARGET?=ultrascale
 PLATFORM_NAME=$(TARGET)_custom
 PLATFORM=$(ROOT_DIR)/../vitis_platform/$(PLATFORM_NAME)/export/$(PLATFORM_NAME)/$(PLATFORM_NAME).xpfm
 SW_COMP=$(ROOT_DIR)/../vitis_platform/sw_comp/
-VERSION?=2024.1
-VITIS_DIR?=/tools/Xilinx/$(VERSION)/Vitis
-COMMON_IMAGE ?=${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)
 SYSROOT := $(COMMON_IMAGE)/sysroots/cortexa72-cortexa53-xilinx-linux
 INSTRUMENT?=false
 
@@ -27,7 +24,7 @@ shell.json:
 	printf '{\n  "shell_type" : "XRT_FLAT",\n  "num_slots": "1"\n}' > shell.json
 
 app_hw_package: remove_previous_builds write_version display_variables shell.json
-	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET) $(VERSION) $(VITIS_DIR) $(PLATFORM_NAME) $(TARGET_BUILD) $(INSTRUMENT)
+	vitis -s builder.py "hls_component" "system_project"  $(COMMON_IMAGE) $(TARGET) $(PLATFORM_NAME) $(TARGET_BUILD) $(INSTRUMENT)
 	@echo "INFO: Packaging Completed"
 
 write_version:
@@ -37,8 +34,6 @@ write_version:
 display_variables:
 	@echo $('\n') "Variable values : "
 	@echo $('\t')"TARGET = $(TARGET)"
-	@echo $('\t')"VERSION = $(VERSION)"
-	@echo $('\t')"VITIS_DIR = $(VITIS_DIR)"
 	@echo $('\t')"COMMON_IMAGE = $(COMMON_IMAGE)"
 	@echo $('\t')"PLATFORM_NAME = $(PLATFORM_NAME)"
 	@echo $('\n')
@@ -58,6 +53,5 @@ ultraclean:clean
 help:
 	@echo "Usage : make all <TARGET> <VERSION> <VITIS_DIR> <COMMON_IMAGE>"
 	@echo "TARGET : target name, defaults to ultrascale"
-	@echo "VERSION : vitis version, defaults to 2024.1"
-	@echo "VITIS_DIR : vitis directory location, defaults to /tools/Xilinx/$(VERSION)/Vitis"
 	@echo "COMMON_IMAGE : common image location, defaults to ${ROOT_DIR}/../xilinx-zynqmp-common-v$(VERSION)"
+	@echo $('\t')"PLATFORM_NAME = $(PLATFORM_NAME)"

@@ -8,10 +8,8 @@ from tkinter import ttk
 # default values (change whichever you want)
 
 default_common_image = "~/xilinx-zynqmp-common-v2024.1/"
-default_vitis_version = "2024.1"
-default_vitis_dir = "tools/Xilinx/Vitis/2024.1/"
 default_target_platform = ["kr260", "zcu104"]
-default_target_build = ["hardware", "\"hardware emulation\""]
+default_target_build = ["hardware", "hardware_emulation"]
 default_platform_name = "kr260_hardware_platform_full_150MHz"
 default_vivado_plaftorm_path = "~/vivado_soc/build/vivado"
 default_build_vivavo_platform = False #tk.IntVar()
@@ -21,22 +19,26 @@ default_font = ("latin modern sans",) # latin modern sans
 gui_used = True
 
 # just declaring them as global
-e_common_image = e_vitis_version = e_vitis_dir = list_target_platform = list_target_build = e_vivado_plaftorm_path = e_platform_name = list_target_build = b_instrument = 0
+e_common_image =  list_target_platform = list_target_build = e_vivado_plaftorm_path = e_platform_name = list_target_build = b_instrument = 0
 
 padx = 10
 pady = 10
 
+# all-caps parameters will be passed as arguments to makefiles
+# non-caps parameters will be used internally only
 dic_params = {
-	"common_image": 		   "~/xilinx-zynqmp-common-v2024.1/",
-	"vitis_version": 		   "2024.1",
-	"vitis_dir": 			   "tools/Xilinx/Vitis/2024.1/",
-	"target_platform": 	   "kr260",
-	"target_build": 		   "hardware",
+	"COMMON_IMAGE": 		   "~/xilinx-zynqmp-common-v2024.1/",
+	"TARGET": 	   "kr260",
+	"TARGET_BUILD": 		   "hardware",
 	"vivado_plaftorm_path":  "",
-	"platform_name": 		   "kr260_hardware_platform_full_200MHz",
+	"XSA_NAME": 		   "kr260_hardware_platform_full_200MHz",
 	"build_vivavo_platform": False,
 	"instrument": 		   True
 }
+
+# all caps parameters are passed to makefiles everytime to facilitate future parameter addition
+def get_parameters():
+	return " ".join(f"{key}={value}" for key, value in dic_params.items() if key.isupper())
 
 def run_step1():
 	print("step 1")
@@ -46,12 +48,12 @@ def run_step1():
 		retreive_value_auto()
 	
 	if dic_params["build_vivavo_platform"]:
-		cmd_step1 = f"make step1 VERSION={dic_params["vitis_version"]} VITIS_DIR={dic_params["vitis_dir"]} COMMON_IMAGE={dic_params["common_image"]} TARGET={dic_params["target_platform"]} XSA_NAME={dic_params["platform_name"]}.xsa"
+		cmd_step1 = f"make step1 " + get_parameters()
 		print(cmd_step1)
 		res = subprocess.Popen([cmd_step1], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	else:	# on copie juste la plateforme
-		print(f"mkdir -p vivado_soc/build/vivado && cp {dic_params["vivado_plaftorm_path"] + "/" + dic_params["platform_name"]}.xsa vivado_soc/build/vivado")
-		res = subprocess.Popen([f"mkdir -p vivado_soc/build/vivado && cp {dic_params["vivado_plaftorm_path"] + "/" + dic_params["platform_name"]}.xsa vivado_soc/build/vivado"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
+		print(f"mkdir -p vivado_soc/build/vivado && cp {dic_params["vivado_plaftorm_path"] + "/" + dic_params["XSA_NAME"]}.xsa vivado_soc/build/vivado")
+		res = subprocess.Popen([f"mkdir -p vivado_soc/build/vivado && cp {dic_params["vivado_plaftorm_path"] + "/" + dic_params["XSA_NAME"]}.xsa vivado_soc/build/vivado"], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
 		print(line)
 	print("step 1 fini")
@@ -63,7 +65,7 @@ def run_step2():
 	else: 
 		retreive_value_auto()
 
-	cmd_step2 = f"make step2 VERSION={dic_params["vitis_version"]} VITIS_DIR={dic_params["vitis_dir"]} COMMON_IMAGE={dic_params["common_image"]} TARGET={dic_params["target_platform"]} XSA_NAME={dic_params["platform_name"]}"
+	cmd_step2 = f"make step2 COMMON_IMAGE={dic_params["COMMON_IMAGE"]} TARGET={dic_params["TARGET"]} XSA_NAME={dic_params["XSA_NAME"]}"
 	print(cmd_step2)
 	res = subprocess.Popen([cmd_step2], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
@@ -77,7 +79,7 @@ def run_step3():
 	else: 
 		retreive_value_auto()
 
-	cmd_step3 = f"make step3 VERSION={dic_params["vitis_version"]} VITIS_DIR={dic_params["vitis_dir"]} COMMON_IMAGE={dic_params["common_image"]} TARGET={dic_params["target_platform"]} PLATFORM_NAME={dic_params["platform_name"]} TARGET_BUILD={dic_params["target_build"]} " + ("INSTRUMENT=true" if dic_params["instrument"] else "")
+	cmd_step3 = f"make step3 COMMON_IMAGE={dic_params["COMMON_IMAGE"]} TARGET={dic_params["TARGET"]} PLATFORM_NAME={dic_params["XSA_NAME"]} TARGET_BUILD={dic_params["TARGET_BUILD"]} " + ("INSTRUMENT=true" if dic_params["instrument"] else "")
 	print(cmd_step3)
 	res = subprocess.Popen([cmd_step3], shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, bufsize=0, text=True)
 	for line in map(str.rstrip, res.stdout):
@@ -91,31 +93,27 @@ def run_all():
 
 def retreive_values_gui():
 	dic_params["build_vivavo_platform"] = default_build_vivavo_platform.get()
-	dic_params["common_image"] 		 = e_common_image.get()
-	dic_params["vitis_version"] 		 = e_vitis_version.get()
-	dic_params["vitis_dir"] 			 = e_vitis_dir.get()
-	dic_params["target_platform"] 	 = list_target_platform.get()
+	dic_params["COMMON_IMAGE"] 		 = e_common_image.get()
+	dic_params["TARGET"] 	 = list_target_platform.get()
 	dic_params["vivado_plaftorm_path"] = e_vivado_plaftorm_path.get()
-	dic_params["platform_name"] 		 = e_platform_name.get().split(".")[0]
-	dic_params["target_build"] 		 = "hw" if list_target_build.get() == "hardware" else "hw_emu"
+	dic_params["XSA_NAME"] 		 = e_platform_name.get().split(".")[0]
+	dic_params["TARGET_BUILD"] 		 = "hw" if list_target_build.get() == "hardware" else "hw_emu"
 	dic_params["instrument"] 			 = default_instrument.get()
 	print("parameters : ", dic_params)
 
 def retreive_value_auto():	
 	dic_params["build_vivavo_platform"] = default_build_vivavo_platform
-	dic_params["common_image"] = default_common_image
-	dic_params["vitis_version"] = default_vitis_version
-	dic_params["vitis_dir"] = default_vitis_dir
-	dic_params["target_platform"] = "kr260"
-	dic_params["target_build"] = "hw"
+	dic_params["COMMON_IMAGE"] = default_common_image
+	dic_params["TARGET"] = "kr260"
+	dic_params["TARGET_BUILD"] = "hw"
 	dic_params["vivado_plaftorm_path"] = default_vivado_plaftorm_path
-	dic_params["platform_name"] = default_platform_name
+	dic_params["XSA_NAME"] = default_platform_name
 	dic_params["instrument"]  = default_instrument
 	print("parameters : ", dic_params)
 
 
 def run_gui():
-	global e_common_image, e_vitis_version, e_vitis_dir, list_target_platform, list_target_build, e_vivado_plaftorm_path, e_platform_name, list_target_build, default_build_vivavo_platform, b_instrument
+	global e_common_image, list_target_platform, list_target_build, e_vivado_plaftorm_path, e_platform_name, list_target_build, default_build_vivavo_platform, b_instrument
 	global default_build_vivavo_platform, default_instrument
 	print("running as gui")
 
@@ -131,18 +129,14 @@ def run_gui():
 	variable_frame = tk.LabelFrame(window, text="Variables") ; variable_frame.grid(row=0, column=0, padx=padx, pady=pady, sticky="W")
 
 	tk.Label(variable_frame, text="Common image").grid(row=0, sticky="W")
-	tk.Label(variable_frame, text="Vitis version").grid(row=1, sticky="W")
-	tk.Label(variable_frame, text="Vitis directory").grid(row=2, sticky="W")
 	tk.Label(variable_frame, text="Target platform").grid(row=3, sticky="W")
-	tk.Label(variable_frame, text="platform name").grid(row=4, sticky="W")
+	tk.Label(variable_frame, text="platform/xsa name").grid(row=4, sticky="W")
 	tk.Label(variable_frame, text="Target build").grid(row=5, sticky="W")
 	tk.Label(variable_frame, text="Build vivado platform").grid(row=6, sticky="W")
 	tk.Label(variable_frame, text="Instrument execution").grid(row=7, sticky="W")
 	tk.Label(variable_frame, text="Vivado platform path").grid(row=8, sticky="W")
 
 	e_common_image  = tk.Entry(variable_frame, width=40, font=defaultFont) ; e_common_image.grid(row=0, column=1, padx=padx, pady=pady, sticky="W")  ; e_common_image.insert(0, default_common_image)
-	e_vitis_version = tk.Entry(variable_frame, width=40, font=defaultFont) ; e_vitis_version.grid(row=1, column=1, padx=padx, pady=pady, sticky="W") ; e_vitis_version.insert(0, default_vitis_version)
-	e_vitis_dir     = tk.Entry(variable_frame, width=40, font=defaultFont) ; e_vitis_dir.grid(row=2, column=1, padx=padx, pady=pady, sticky="W")     ; e_vitis_dir.insert(0, default_vitis_dir)
 
 	list_target_platform = ttk.Combobox(variable_frame, values=default_target_platform, font=defaultFont) ; list_target_platform.current(0) ; list_target_platform.grid(row=3, column=1, padx=padx, pady=pady, sticky="W")
 	e_platform_name    	 = tk.Entry(variable_frame, width=40, font=defaultFont) ; e_platform_name.grid(row=4, column=1, padx=padx, pady=pady, sticky="W")     ; e_platform_name.insert(0, default_platform_name)

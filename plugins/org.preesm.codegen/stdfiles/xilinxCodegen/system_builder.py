@@ -257,7 +257,7 @@ def instrument_execution(codegen_path):
 	print(f"Instrumentation done")
 
 
-def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, platform_name, target_build, instrument):
+def main(comp_name, sys_proj_name, common_image, target, platform_name, target_build, instrument):
 	print("----- Starting vitis -----")
 
 	workspace = os.path.abspath("./")
@@ -432,15 +432,17 @@ def main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, pla
 	cfg_obj.add_lines('connectivity', connections)
 
 	print("----- Building system project -----")
-	status = platform.build()
-	status = proj.build(target=target_build)
+	#status = platform.build()
+	#status = proj.build(target=target_build)
 
 	# je ne sais toujours pas comment créer automatiquement une config de lancement hélas
 	#status = proj.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")
 
+	print("Build finished")
+
 if __name__ == "__main__":
-	if len(sys.argv) != 10:    
-		print("builder.py usage : python builder.py <component_name> <system project name> <common image path> <target> <vitis version> <vitis path> <platform name> <instrument true:false>")
+	if len(sys.argv) != 8:    
+		print("builder.py usage : python builder.py <component_name> <system project name> <common image path> <target> <platform name> <instrument true:false>")
 		print(sys.argv)
 		sys.exit(1)
 
@@ -448,9 +450,7 @@ if __name__ == "__main__":
 	sys_proj_name = sys.argv[2] 
 	common_image = sys.argv[3]
 	target = sys.argv[4]
-	version = sys.argv[5]
-	vitis_loc = sys.argv[6]
-	platform_name = sys.argv[7]
-	target_build = sys.argv[8]
-	instrument = sys.argv[9]
-	main(comp_name, sys_proj_name, common_image, target, version, vitis_loc, platform_name, target_build, instrument == "true")
+	platform_name = sys.argv[5]
+	target_build = sys.argv[6]
+	instrument = sys.argv[7]
+	main(comp_name, sys_proj_name, common_image, target, platform_name, target_build, instrument == "true")
