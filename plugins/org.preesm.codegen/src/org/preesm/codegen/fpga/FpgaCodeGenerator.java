@@ -42,6 +42,7 @@ import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -294,6 +295,9 @@ public class FpgaCodeGenerator {
     final String connectivityFileContent = fcg.writeConnectivityFile();
     final String xoclHostFileContent = fcg.writeXOCLHostFile();
 
+    // Task wrapper functions
+    final String wrapperFunctionsContent = fcg.writeWrapperFile();
+
     // Xilinx PYNQ specific
     final String pynqHostFileContent = fcg.writePYNQHostFile();
     final String pynqNotebookFileContent = fcg.writePYNQNotebookFile(pynqHostFileContent);
@@ -311,6 +315,9 @@ public class FpgaCodeGenerator {
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + ".cpp", topKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getReadKernelName() + ".cpp", readKernelFileContent);
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getWriteKernelName() + ".cpp", writeKernelFileContent);
+    PreesmIOHelper.getInstance().print(codegenPath,
+        "WRAPPER_" + PiMMUserFactory.instance.getUniqueVariableName(analysisResult.flatGraph) + ".hpp",
+        wrapperFunctionsContent);
 
     PreesmIOHelper.getInstance().print(codegenPath, fcg.getTopKernelName() + "_testbench.cpp",
         topKernelTestbenchFileContent);
@@ -607,6 +614,72 @@ public class FpgaCodeGenerator {
     return sb.toString();
   }
 
+  protected String writeWrapperFile() {
+    final StringBuilder result = new StringBuilder();
+
+    // boilerplate
+    result.append("#ifndef WRAPPER_" + graphName.toUpperCase() + "_HPP \n");
+    result.append("#define WRAPPER_" + graphName.toUpperCase() + "_HPP \n\n");
+
+    final List<
+        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
+
+    result.append(
+        findAllCHeaderFileNamesUsed.stream().map(FpgaCodeGenerator::includeCFile).collect(Collectors.joining()));
+    result.append("\n\n");
+
+    // first get all actors in this FPGA cluster
+    final List<Actor> actors = this.analysisResult.flatGraph.getActorsWithRefinement();
+    for (final Actor actor : actors) {
+      // function declaration : not templated, same arguments as the refinement it wraps
+      final CHeaderRefinement actorRefinement = (CHeaderRefinement) actor.getRefinement();
+      final Pair<String, String> template = AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(actor);
+
+      final var dataPorts = actor.getAllDataPorts();
+
+      final String funcCall = generateWrappedActorCall(actorRefinement, template, false);
+
+      // write wrapper declaration
+      String declaration = "void " + generateWrapperName(actor) + "(";
+
+      final List<String> functionVariables = new LinkedList<>();
+
+      for (final var arg : actorRefinement.getLoopPrototype().getArguments()) {
+        // 1 : extract the template type
+        final var templateVar = arg.getType().replaceAll(".*<(.*)>.*", "$1");
+
+        // 2 : trouver le dataport
+        // get first should be fine since there can not be (i think) two data ports with the same name
+        final DataPort dataPort = dataPorts.stream().filter(dp -> dp.getName().equals(arg.getName())).toList()
+            .getFirst();
+
+        // 3 : récupérer le type de la fifo correspondante
+        final String dataType = dataPort.getFifo().getType();
+
+        // '&' because streams are passed by reference
+        functionVariables.add(arg.getType().replace(templateVar, dataType) + "& " + arg.getName());
+      }
+
+      declaration += String.join(", ", functionVariables);
+
+      declaration += ") {\n";
+      result.append(declaration);
+
+      // write call to actual refinement
+      result.append("\t" + funcCall);
+      result.append("} \n");
+
+    }
+
+    result.append("\n#endif");
+
+    return result.toString();
+  }
+
+  private String generateWrapperName(Actor a) {
+    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase();
+  }
+
   protected String writeXOCLHostFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
@@ -860,7 +933,8 @@ public class FpgaCodeGenerator {
     final List<
         String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
 
-    context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
+    context.put(PREESM_INCLUDES,
+        includeCFile(TEMPLATE_DEFINE_HEADER_NAME) + "\n" + "#include \"WRAPPER_" + graphName + ".hpp\"");
 
     context.put("USER_INCLUDES",
         findAllCHeaderFileNamesUsed.stream().map(FpgaCodeGenerator::includeCFile).collect(Collectors.joining()));
@@ -878,8 +952,11 @@ public class FpgaCodeGenerator {
     // at this point, all actors should have a CHeaderRefinement
     analysisResult.flatGraph.getActorsWithRefinement()
         .forEach(x -> actorTemplateParts.put(x, AutoFillHeaderTemplatedFunctions.getFilledTemplateFunctionPart(x)));
-    generateRegularActorCalls(actorTemplateParts, initActorsCalls, true);
-    generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
+    generateRegularActorCalls(actorTemplateParts, initActorsCalls, true); // je n'y ai pas touché pour le moment
+
+    // generateRegularActorCalls(actorTemplateParts, loopActorsCalls, false);
+    generateWrapperCalls(actorTemplateParts, loopActorsCalls, false);
+
     // 2.3- we wrap the actor init calls
     if (!initActorsCalls.isEmpty()) {
       context.put("PREESM_INIT_WRAPPER", generateInitWrapper(initActorsCalls));
@@ -961,6 +1038,96 @@ public class FpgaCodeGenerator {
     }
   }
 
+  protected void generateWrapperCalls(final Map<Actor, Pair<String, String>> actorTemplateParts,
+      final Map<AbstractActor, String> actorCalls, final boolean init) {
+    for (final Entry<Actor, Pair<String, String>> e : actorTemplateParts.entrySet()) {
+      final Actor a = e.getKey();
+      final Pair<String, String> templates = e.getValue();
+      // templates cannot be null since we check in the constructor that all actors have a CHeaderRefinement
+      final String call = generateWrapperCall((CHeaderRefinement) a.getRefinement(), templates, init);
+      if (call != null) {
+        actorCalls.put(a, call);
+      }
+    }
+  }
+
+  protected String generateWrapperCall(final CHeaderRefinement cref, final Pair<String, String> templates,
+      final boolean init) {
+
+    final Actor containerActor = (Actor) cref.getRefinementContainer();
+    final String originalActorName = PreesmCopyTracker.getOriginalSource(containerActor).getName();
+    final FunctionPrototype proto = init ? cref.getInitPrototype() : cref.getLoopPrototype();
+    if (proto == null) {
+      return null;
+    }
+    final String prefix = RefinementChecker.getActorNamePrefix(containerActor);
+
+    // now manage the arguments
+    final List<String> listArgNames = new ArrayList<>();
+    for (final FunctionArgument arg : proto.getArguments()) {
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.OUT) {
+        throw new PreesmRuntimeException(
+            "FPGA codegen does not support dynamic parameters as in actor " + containerActor.getVertexPath());
+      }
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
+        if (containerActor instanceof final DelayActor delayActor) {
+          // the graph parameter name may have been prefixed during a flattening transformation
+          for (final Parameter inputParam : delayActor.getInputParameters()) {
+            if (inputParam.getName().equals(prefix + arg.getName())) {
+              listArgNames.add(Long.toString(inputParam.getExpression().evaluateAsLong()));
+              break;
+            }
+          }
+        } else {
+          // look for incoming parameter with same name
+          // more efficient with a map?
+          for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
+            if (cip.getName().equals(arg.getName())) {
+              final ISetter setter = cip.getIncomingDependency().getSetter();
+              if (setter instanceof final Parameter parameter) {
+                listArgNames.add(Long.toString(parameter.getExpression().evaluateAsLong()));
+                break;
+              }
+            }
+          }
+        }
+      } else if (!arg.isIsConfigurationParameter()) {
+        if (containerActor instanceof final DelayActor delayActor) {
+          // there is only one fifo, we take it
+          final Fifo f = delayActor.getLinkedDelay().getContainingFifo();
+          listArgNames.add(getFifoStreamName(f));
+        } else {
+          // look for incoming/outgoing fifo with same port name
+          // more efficient with a map?
+          for (final DataPort dp : containerActor.getAllDataPorts()) {
+            if (dp.getName().equals(arg.getName())) {
+              listArgNames.add(getFifoStreamName(dp.getFifo()));
+              break;
+            }
+          }
+        }
+      }
+    }
+    // check that we found as many objects as arguments:
+    if (listArgNames.size() != proto.getArguments().size()) {
+      throw new PreesmRuntimeException("FPGA codegen couldn't evaluate all the arguments of the prototype of actor "
+          + containerActor.getVertexPath() + ".");
+    }
+    // and otherwise we merge everything
+    return "hls_thread_local hls::task " + originalActorName + "(" + generateWrapperName(containerActor) + ", "
+        + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
+
+    //
+    //
+    //
+    //
+    // final List<String> listArgNames = ((CHeaderRefinement)
+    // actor.getRefinement()).getLoopPrototype().getArguments().stream().map(arg -> arg.getName()).toList();
+
+    // return "hls_thread_local hls::task " + generateWrapperName(actor) + "(" +
+    // listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
+  }
+
   protected String generateRegularActorCall(final CHeaderRefinement cref, final Pair<String, String> templates,
       final boolean init) {
     // this weird way of passing the refinement instead of the actor is needed to handle
@@ -1033,6 +1200,81 @@ public class FpgaCodeGenerator {
     // and otherwise we merge everything
     return "hls_thread_local hls::task " + containerActor.getName() + "_task(" + funcTemplatedName + ","
         + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
+  }
+
+  protected String generateWrappedActorCall(final CHeaderRefinement cref, final Pair<String, String> templates,
+      final boolean init) {
+    // this weird way of passing the refinement instead of the actor is needed to handle
+    // both Actor and DelayActor whose closest common ancestor is RefinementContainer
+    // (which can hold a PiGraph or a CHeaderRefinement)
+    // refinement container always is an actor for now
+    final AbstractActor containerActor = (AbstractActor) cref.getRefinementContainer();
+    final FunctionPrototype proto = init ? cref.getInitPrototype() : cref.getLoopPrototype();
+    if (proto == null) {
+      return null;
+    }
+    final String templatePart = init ? templates.getKey() : templates.getValue();
+    final String funcRawName = proto.getName(); // containerActor.getName()
+    final int indexStartTemplate = funcRawName.indexOf('<');
+    final String funcShortName = indexStartTemplate < 0 ? funcRawName : funcRawName.substring(0, indexStartTemplate);
+    final String funcTemplatedName = funcShortName + templatePart;
+    final String prefix = RefinementChecker.getActorNamePrefix(containerActor);
+
+    // now manage the arguments
+    final List<String> listArgNames = new ArrayList<>();
+    for (final FunctionArgument arg : proto.getArguments()) {
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.OUT) {
+        throw new PreesmRuntimeException(
+            "FPGA codegen does not support dynamic parameters as in actor " + containerActor.getVertexPath());
+      }
+      if (arg.isIsConfigurationParameter() && arg.getDirection() == Direction.IN) {
+        if (containerActor instanceof final DelayActor delayActor) {
+          // the graph parameter name may have been prefixed during a flattening transformation
+          for (final Parameter inputParam : delayActor.getInputParameters()) {
+            if (inputParam.getName().equals(prefix + arg.getName())) {
+              listArgNames.add(Long.toString(inputParam.getExpression().evaluateAsLong()));
+              break;
+            }
+          }
+        } else {
+          // look for incoming parameter with same name
+          // more efficient with a map?
+          for (final ConfigInputPort cip : containerActor.getConfigInputPorts()) {
+            if (cip.getName().equals(arg.getName())) {
+              final ISetter setter = cip.getIncomingDependency().getSetter();
+              if (setter instanceof final Parameter parameter) {
+                listArgNames.add(Long.toString(parameter.getExpression().evaluateAsLong()));
+                break;
+              }
+            }
+          }
+        }
+      } else if (!arg.isIsConfigurationParameter()) {
+        if (containerActor instanceof final DelayActor delayActor) {
+          // there is only one fifo, we take it
+          final Fifo f = delayActor.getLinkedDelay().getContainingFifo();
+          // listArgNames.add(getFifoStreamName(f));
+          listArgNames.add(arg.getName());
+        } else {
+          // look for incoming/outgoing fifo with same port name
+          // more efficient with a map?
+          for (final DataPort dp : containerActor.getAllDataPorts()) {
+            if (dp.getName().equals(arg.getName())) {
+              // listArgNames.add(getFifoStreamName(dp.getFifo()));
+              listArgNames.add(arg.getName());
+              break;
+            }
+          }
+        }
+      }
+    }
+    // check that we found as many objects as arguments:
+    if (listArgNames.size() != proto.getArguments().size()) {
+      throw new PreesmRuntimeException("FPGA codegen couldn't evaluate all the arguments of the prototype of actor "
+          + containerActor.getVertexPath() + ".");
+    }
+    // and otherwise we merge everything
+    return funcTemplatedName + "(" + listArgNames.stream().collect(Collectors.joining(",")) + ");\n";
   }
 
   protected String generateInitWrapper(final Map<AbstractActor, String> actorCalls) {
@@ -1400,4 +1642,5 @@ public class FpgaCodeGenerator {
 
     return topK.toString();
   }
+
 }
