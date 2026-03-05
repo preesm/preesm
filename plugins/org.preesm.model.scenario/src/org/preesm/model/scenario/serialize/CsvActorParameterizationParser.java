@@ -42,6 +42,7 @@ package org.preesm.model.scenario.serialize;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +59,11 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
+import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.ProcessingElement;
+import org.preesm.model.slam.TimingType;
 
 /**
  * Importing timings in a scenario from a csv file. task names are rows while operator types are columns
@@ -70,7 +74,7 @@ public class CsvActorParameterizationParser {
 
   /**
    * If the selected parameterization is energy or timing.
-   * 
+   *
    * @author ahonorat
    */
   public enum ParameterizationType {
@@ -112,58 +116,61 @@ public class CsvActorParameterizationParser {
     final Path path = new Path(url);
     final IFile file = workspace.getRoot().getFile(path);
     try (final BufferedReader br = new BufferedReader(new InputStreamReader(file.getContents()))) {
-      final Map<AbstractActor, Map<Component, String>> expressions = new LinkedHashMap<>();
+      // final Map<AbstractActor, Map<Component, String>> expressions = new LinkedHashMap<>();
+      final Map<AbstractActor, Map<String, String>> expressions = new LinkedHashMap<>();
       String line;
 
       /* Read header */
       line = br.readLine();
-      if (line != null) {
-        final String[] opNames = line.split(";");
-        if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
-          PreesmLogger.getLogger().log(Level.WARNING,
-              "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
-          return;
-        }
-
-        /* Parse the whole file to create the timings Map */
-        while ((line = br.readLine()) != null) {
-          processLine(expressions, line, opNames);
-        }
-
-        parseTimings(expressions, opDefIds);
-      } else {
+      if (line == null) {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
+      final String[] opNames = line.split(";");
+      if ((opNames.length <= 1) || !opNames[0].equals("Actors")) {
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "Timing csv file must have an header line starting with \"Actors\"\nNothing done");
+        return;
+      }
+
+      /* Parse the whole file to create the timings Map */
+      while ((line = br.readLine()) != null) {
+        processLine(expressions, line, opNames);
+      }
+
+      parseTimings(expressions, opDefIds);
     } catch (final IOException | CoreException e) {
       PreesmLogger.getLogger().log(Level.WARNING, "Could not par CSV timings.", e);
     }
   }
 
-  private void processLine(final Map<AbstractActor, Map<Component, String>> expressions, String lineToParse,
+  private void processLine(final Map<AbstractActor, Map<String, String>> expressions, String lineToParse,
       final String[] opNames) {
-    String line = lineToParse.trim();
+    final String line = lineToParse.trim();
     if (line.isEmpty()) {
       return;
     }
+    final Map<String, String> actorTimings = new HashMap<>();
     final String[] cells = line.split(";");
-    if (cells.length == opNames.length) {
-      final Map<Component, String> timing = new LinkedHashMap<>();
-
-      for (int i = 1; i < cells.length; i++) {
-        final String vlnvName = opNames[i];
-        final Component com = this.scenario.getDesign().getComponent(vlnvName);
-        timing.put(com, cells[i]);
-      }
-
-      final String string = cells[0];
-      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
-      if (lookupActor != null) {
-        expressions.put(lookupActor, timing);
-      }
-    } else {
-      String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
+    if (cells.length != opNames.length) {
+      final String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
       PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
       throw new PreesmRuntimeException(errMessage);
+    }
+    final Map<Component, String> timing = new LinkedHashMap<>();
+
+    for (int i = 1; i < cells.length; i++) {
+      final String vlnvName = opNames[i];
+      final Component com = this.scenario.getDesign().getComponent(vlnvName);
+      timing.put(com, cells[i]);
+      actorTimings.put(vlnvName, cells[i]);
+    }
+
+    final String string = cells[0];
+    // final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
+    final AbstractActor lookupActor = VertexPath.lookupCaseInsensitive(this.scenario.getAlgorithm(), string);
+    if (lookupActor != null) {
+      // expressions.put(lookupActor, timing);
+      expressions.put(lookupActor, actorTimings);
     }
   }
 
@@ -177,7 +184,7 @@ public class CsvActorParameterizationParser {
    * @throws CoreException
    *           the core exception
    */
-  private void parseTimings(final Map<AbstractActor, Map<Component, String>> timings,
+  private void parseTimings(final Map<AbstractActor, Map<String, String>> timings,
       final List<ProcessingElement> opDefIds) {
     // Depending on the type of SDF graph we process (IBSDF or PISDF), call
     // one or the other method
@@ -195,7 +202,7 @@ public class CsvActorParameterizationParser {
    * @param opDefIds
    *          the op def ids
    */
-  private void parseTimingsForPISDFGraph(final Map<AbstractActor, Map<Component, String>> timings,
+  private void parseTimingsForPISDFGraph(final Map<AbstractActor, Map<String, String>> timings,
       final PiGraph currentGraph, final List<ProcessingElement> opDefIds) {
     // parse timings of non hierarchical actors of currentGraph
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
@@ -214,26 +221,49 @@ public class CsvActorParameterizationParser {
    * @param componentList
    *          the op def ids
    */
-  private void parseTimingForVertex(final Map<AbstractActor, Map<Component, String>> timings, final AbstractActor actor,
+  private void parseTimingForVertex(final Map<AbstractActor, Map<String, String>> timings, final AbstractActor actor,
       final List<ProcessingElement> componentList) {
     // For each kind of processing elements, we look for a timing for given vertex
     for (final Component component : componentList) {
       if (component != null && actor != null) {
         // Get the timing we are looking for
+
         try {
-          final String expression = timings.get(actor).get(component);
+          if (component instanceof CPU) {
+            final var timing = timings.get(actor);
+            final var category = component.getVlnv().getName();
+            final String expression = timing.get(category);
 
-          String msg = "Importing: ";
-          if (paramType.equals(ParameterizationType.TIMING)) {
-            msg = "Importing timing/: ";
-            this.scenario.getTimings().setExecutionTime(actor, component, expression);
-          } else if (paramType.equals(ParameterizationType.ENERGY)) {
-            msg = "Importing energy/: ";
-            this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
+            String msg = "Importing: ";
+            if (paramType.equals(ParameterizationType.TIMING)) {
+              msg = "Importing timing/: ";
+              this.scenario.getTimings().setExecutionTime(actor, component, expression);
+            } else if (paramType.equals(ParameterizationType.ENERGY)) {
+              msg = "Importing energy/: ";
+              this.scenario.getEnergyConfig().setActorPeEnergy(actor, component, expression);
+            }
+
+            msg += actor.getVertexPath() + " on " + component.getVlnv().getName() + " takes " + expression;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
+          } else if (component instanceof FPGA) {
+            final var timing = timings.get(actor);
+            final var category = component.getVlnv().getName();
+            final String latencyExpression = timing.get(category + "-latency");
+            final String IIExpression = timing.get(category + "-II");
+
+            String msg = "Importing: ";
+            if (paramType.equals(ParameterizationType.TIMING)) {
+              msg = "Importing timing/: ";
+              this.scenario.getTimings().setTiming(actor, component, TimingType.EXECUTION_TIME, latencyExpression);
+              this.scenario.getTimings().setTiming(actor, component, TimingType.INITIATION_INTERVAL, IIExpression);
+            } else if (paramType.equals(ParameterizationType.ENERGY)) {
+              msg = "Energy import not implemented yet.";
+            }
+
+            msg += actor.getVertexPath() + " on " + component.getVlnv().getName() + " takes lat=" + latencyExpression
+                + " ; II=" + IIExpression;
+            PreesmLogger.getLogger().log(Level.INFO, msg);
           }
-
-          msg += actor.getVertexPath() + " on " + component.getVlnv().getName() + " takes " + expression;
-          PreesmLogger.getLogger().log(Level.INFO, msg);
 
         } catch (final Exception e) {
           PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
@@ -241,5 +271,6 @@ public class CsvActorParameterizationParser {
         }
       }
     }
+
   }
 }

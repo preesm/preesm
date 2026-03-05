@@ -96,4 +96,43 @@ public class VertexPath {
     }
     return null;
   }
+
+  public static final <T extends AbstractVertex> T lookupCaseInsensitive(final PiGraph graph, final String actorPath) {
+    if (actorPath == null) {
+      return null;
+    }
+    String safePath = actorPath.trim().replaceAll("/+", "/").replaceAll("^/", "").replaceAll("/$", "").toLowerCase();
+    if (safePath.equals(graph.getName().toLowerCase()) || safePath.isEmpty()) {
+      @SuppressWarnings("unchecked")
+      final T res = (T) graph;
+      return res;
+    }
+    // graph name is removed from path /!\ /!\
+    // we use replaceAll method instead of replace to benefit from regex
+    safePath = safePath.replaceAll("^" + graph.getName().toLowerCase() + "/", "");
+    final List<String> pathFragments = new ArrayList<>(Arrays.asList(safePath.split("/")));
+    final String firstFragment = pathFragments.remove(0);
+    final AbstractVertex current = graph.getActors().stream()
+        .filter(a -> firstFragment.equals(a.getName().toLowerCase())).findFirst().orElse(null);
+    if (pathFragments.isEmpty()) {
+      // we were at the end of the path, so what we found is what was asked
+      @SuppressWarnings("unchecked")
+      final T res = (T) current;
+      return res;
+    }
+    // we are NOT at the end of the path, so what we found is the next child to visit
+    // we must reintroduce the graph name in case of the subgraph having the same name
+    // of the first fragment name
+    final String remainingPathFragments = String.join("/", pathFragments);
+    if (current instanceof final PiGraph piGraph) {
+      final String recursionPath = piGraph.getName().toLowerCase() + "/" + remainingPathFragments;
+      return VertexPath.lookupCaseInsensitive(piGraph, recursionPath);
+    }
+    if ((current instanceof final Actor actor) && actor.isHierarchical()) {
+      final PiGraph refinementGraph = actor.getSubGraph();
+      final String recursionPath = refinementGraph.getName().toLowerCase() + "/" + remainingPathFragments;
+      return VertexPath.lookupCaseInsensitive(refinementGraph, recursionPath);
+    }
+    return null;
+  }
 }
