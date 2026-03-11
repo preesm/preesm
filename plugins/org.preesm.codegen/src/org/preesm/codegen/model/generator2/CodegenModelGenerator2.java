@@ -186,8 +186,6 @@ public class CodegenModelGenerator2 {
 
     // 0- init blocks and order
     final List<ComponentInstance> cmps = this.archi.getOperatorComponentInstances();
-    final List<Arch> acceleratorList = algo.getClusters().stream().map(c -> c.getTargetArch())
-        .filter(ta -> !(ta.equals(Arch.CPU))).toList();
     for (final ComponentInstance cmp : cmps) {
       final CoreBlock createCoreBlock = CodegenModelUserFactory.eINSTANCE.createCoreBlock(cmp);
 
