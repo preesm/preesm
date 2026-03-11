@@ -59,6 +59,8 @@ public class ClusteringTask extends AbstractTaskImplementation {
     if (CLUSTERIZE) {
       PreesmLogger.getLogger().info(" -- Clustering task --");
       clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario, heuristicName);
+
+      // TODO ne pas forcer les clusters à n'être mappé qu'à un composant !
       updateSubgraphsMappings(algorithm.getAllClusters(), scenario);
 
     } else {
