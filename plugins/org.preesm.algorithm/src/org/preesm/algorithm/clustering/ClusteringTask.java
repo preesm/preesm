@@ -60,7 +60,7 @@ public class ClusteringTask extends AbstractTaskImplementation {
       PreesmLogger.getLogger().info(" -- Clustering task --");
       clustersList = ClusterBuilder.buildArchHierarchyGraph(algorithm, scenario, heuristicName);
 
-      // TODO ne pas forcer les clusters à n'être mappé qu'à un composant !
+      // mark all subgraph actors as mappable to the same components as the graph, but only them
       updateSubgraphsMappings(algorithm.getAllClusters(), scenario);
 
     } else {
@@ -75,7 +75,7 @@ public class ClusteringTask extends AbstractTaskImplementation {
   }
 
   /***
-   * Sets all actors in each cluster to a single mapping, the same as the cluster that contains it
+   * Sets all actors in each cluster to be mapped to a single PE type, the same as the cluster that contains it.
    *
    * @param clustersList
    *          the list of clusters
@@ -85,33 +85,33 @@ public class ClusteringTask extends AbstractTaskImplementation {
   private void updateSubgraphsMappings(List<PiGraph> clustersList, Scenario scenario) {
     for (final PiGraph cluster : clustersList) {
       // a cluster is mapped to only 1 component
-      final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
+      final List<ComponentInstance> mappings = scenario.getPossibleMappings(cluster);
 
-      // Acteurs abstraits ou seulement acteurs avec refinement ?
-      for (final AbstractActor actor : cluster.getActors()) {
+      for (final ComponentInstance mapping : mappings) {
+        // Acteurs abstraits ou seulement acteurs avec refinement ?
+        for (final AbstractActor actor : cluster.getActors()) {
 
-        // get all cores and their mapped actors. If the core is not the same as mapping and a is mapped to it, remove
-        // actor from the constraint
-        scenario.getConstraints().getGroupConstraints().stream().filter(entry -> entry.getValue().contains(actor))
-            .forEach(entry -> {
-              if (entry.getKey() != mapping) { // if the actor is mapped to another core that mapping
-                // remove that mapping
-                entry.getValue().remove(actor);
-              }
-            });
+          // get all cores and their mapped actors. If the core is not the same as mapping and a is mapped to it, remove
+          // actor from the constraint
+          scenario.getConstraints().getGroupConstraints().stream().filter(entry -> entry.getValue().contains(actor))
+              .forEach(entry -> {
+                if (entry.getKey() != mapping) { // if the actor is mapped to another core that mapping
+                  // remove that mapping
+                  entry.getValue().remove(actor);
+                }
+              });
+        }
       }
     }
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String monitorMessage() {
-    // TODO Auto-generated method stub
     return null;
   }
 
