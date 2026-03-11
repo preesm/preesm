@@ -71,11 +71,15 @@ public final class RefinementResolver extends PiMMSwitch<AbstractActor> {
 
   @Override
   public AbstractActor casePiSDFRefinement(final PiSDFRefinement ref) {
+
     final Path path = Optional.ofNullable(ref.getFilePath()).map(Path::new).orElse(null);
+
     if ((path != null) && path.getFileExtension().equals("pi")) {
+
       final PiGraph piGraph = PiParser.getPiGraph(ref.getFilePath());
       piGraph.setName(((Actor) ref.eContainer()).getName());
       return piGraph;
+
     }
     return null;
   }
