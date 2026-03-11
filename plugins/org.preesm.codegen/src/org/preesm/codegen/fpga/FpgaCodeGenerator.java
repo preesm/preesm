@@ -1506,9 +1506,6 @@ public class FpgaCodeGenerator {
     final List<PiGraph> clusterList = algo.getAllClusters().stream()
         .filter(c -> c.getTargetArch().equals(Arch.FPGA) && !c.getContainingPiGraph().isCluster()).toList();
 
-    final Set<PiGraph> uniqueClusters = clusterList.stream().map(c -> PreesmCopyTracker.getOriginalSource(c))
-        .collect(Collectors.toSet());
-
     final Map<PiGraph, Integer> clusterInstancesMap = clusterList.stream()
         .collect(Collectors.toMap(PreesmCopyTracker::getOriginalSource, s -> 0, (a, b) -> a));
 
