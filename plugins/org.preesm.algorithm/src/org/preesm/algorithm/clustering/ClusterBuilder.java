@@ -88,9 +88,10 @@ public class ClusterBuilder {
     if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
       // All components share a common PE ! It's a cluster already
       graph.setClusterValue(true);
+
+      // TODO : have clusters not be mapped to only one type of PE
       final Component cp = sharedComponents.getFirst();
-      final ComponentInstance PE = scenario.getDesign().getComponentInstances().stream()
-          .filter(ci -> ci.getComponent().equals(cp)).findFirst().get();
+
       switch (sharedComponents.getFirst()) {
         case final FPGA f -> graph.setTargetArch(Arch.FPGA);
         default -> graph.setTargetArch(Arch.CPU);
@@ -100,7 +101,8 @@ public class ClusterBuilder {
       PreesmLogger.getLogger().log(Level.INFO, info);
       graph.setUrl("");
       listClusters.add(graph);
-      scenario.getConstraints().addConstraint(PE, graph);
+      scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp))
+          .forEach(pe -> scenario.getConstraints().addConstraint(pe, graph));
       return listClusters;
     }
 
@@ -174,6 +176,7 @@ public class ClusterBuilder {
         final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
             + " into cluster " + clusterName + " on component(s) " + clusteringComponents;
         PreesmLogger.getLogger().log(Level.INFO, info);
+
         final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
         final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
         pgcc.check(graph);
@@ -183,12 +186,9 @@ public class ClusterBuilder {
         listClusters.add(clusterActor);
 
         final Component chosenComponent = clusteringComponent; // java needs this to be final...
-        final List<ComponentInstance> clusteringArchInstances = scenario.getDesign().getComponentInstances().stream()
-            .filter(ci -> ci.getComponent() == chosenComponent).toList();
-
-        for (final ComponentInstance ci : clusteringArchInstances) {
-          scenario.getConstraints().addConstraint(ci, clusterActor);
-        }
+        // final List<ComponentInstance> clusteringArchInstances =
+        scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(chosenComponent))
+            .forEach(ci -> scenario.getConstraints().addConstraint(ci, clusterActor));
 
         clusterActor.setClusterValue(true);
 
