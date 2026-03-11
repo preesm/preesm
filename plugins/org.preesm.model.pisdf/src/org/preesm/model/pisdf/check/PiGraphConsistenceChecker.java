@@ -69,24 +69,26 @@ import org.preesm.model.pisdf.util.DependencyCycleDetector;
  * whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch} here because then we
  * would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete evaluation.
  * Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with {@code &=}.
- * 
+ *
  */
 public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   private final Deque<PiGraph> graphStack;
+  private final boolean        checkHierarchyFlag = false;
 
   /**
    * Builds the checker without logging messages nor stopping on errors. Then the user has to call the
    * {@link #check(PiGraph)} method.
-   * 
+   *
    */
   public PiGraphConsistenceChecker() {
+
     this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
   }
 
   /**
    * Builds the checker, then the user has to call the {@link #check(PiGraph)} method.
-   * 
+   *
    * @param throwExceptionLevel
    *          The maximum level of error throwing exceptions.
    * @param loggerLevel
@@ -99,12 +101,15 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check the whole graph, throwing exception for every warning but not logging them.
-   * 
+   *
    * @param graph
    *          The PiSDF graph to check.
    * @return Whether or not the PiSDF graph is consistent.
    */
   public final Boolean check(final PiGraph graph) {
+    // if (!checkHierarchyFlag) {
+    // return true;
+    // }
     final boolean graphIsConsistent = doSwitch(graph);
     final boolean hierarchyIsConsistent = graphStack.isEmpty();
     graphStack.clear();
@@ -141,7 +146,9 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     mergeMessages(refinementChecker);
 
     graphValid &= graph.getFifos().parallelStream().map(this::doSwitch).reduce(true, andReductor);
-    graphValid &= graph.getChildrenGraphs().stream().map(this::doSwitch).reduce(true, andReductor);
+
+    graphValid &= graph.getChildrenGraphs().stream().filter(g -> !g.getName().equals(graph.getName()))
+        .map(this::doSwitch).reduce(true, andReductor);
     this.graphStack.pop();
     return graphValid;
   }

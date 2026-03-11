@@ -125,12 +125,35 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
     return true;
   }
 
+  private Boolean canRemoveActor(final Actor a) {
+    long result = 0;
+    for (final DataInputPort port : a.getDataInputPorts()) {
+      final Fifo fifo = port.getFifo();
+      result += fifo.getSourcePort().getExpression().evaluateAsLong();
+      result += fifo.getTargetPort().getExpression().evaluateAsLong();
+    }
+    for (final DataOutputPort port : a.getDataOutputPorts()) {
+      final Fifo fifo = port.getFifo();
+      result += fifo.getSourcePort().getExpression().evaluateAsLong();
+      result += fifo.getTargetPort().getExpression().evaluateAsLong();
+    }
+    return result == 0;
+  }
+
   @Override
   public Boolean caseActor(final Actor a) {
     // If the refinement of the Actor a points to the description of
     // PiGraph, visit it to connect the subgraph to its supergraph
     if (a.isHierarchical()) {
+
+      final Boolean removeActor = canRemoveActor(a);
+
+      if (removeActor) {
+        return true;
+      }
+
       final PiGraph innerGraph = a.getSubGraph();
+
       if (innerGraph != null) {
         // Connect all Fifos and Dependencies incoming into a and outgoing
         // from a in order to make them incoming into innerGraph and
