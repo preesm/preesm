@@ -343,10 +343,12 @@ public class CodegenModelGenerator2 {
       // For now I suppose all input actors of fork/join actors are mapped to the same arch
       target = usa.getDataOutputPorts().getFirst().getFifo().getTarget();
     }
-    if (target instanceof final PiGraph g && g.isCluster() && g.getTargetArch().equals(Arch.FPGA)) {
+    if (target instanceof final PiGraph g && g.isCluster()
+        && scenario.getPossibleMappings(g).stream().anyMatch(map -> map.getComponent() instanceof FPGA)) {
       return;
     }
-    if (source instanceof final PiGraph g && g.isCluster() && g.getTargetArch().equals(Arch.FPGA)) {
+    if (source instanceof final PiGraph g && g.isCluster()
+        && scenario.getPossibleMappings(g).stream().anyMatch(map -> map.getComponent() instanceof FPGA)) {
       return;
     }
 
