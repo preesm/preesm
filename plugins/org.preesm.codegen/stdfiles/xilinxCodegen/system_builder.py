@@ -432,8 +432,8 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 	cfg_obj.add_lines('connectivity', connections)
 
 	print("----- Building system project -----")
-	#status = platform.build()
-	#status = proj.build(target=target_build)
+	status = platform.build()
+	status = proj.build(target=target_build)
 
 	# je ne sais toujours pas comment créer automatiquement une config de lancement hélas
 	#status = proj.create_launch_config(project_name="system_project", launch_config="system_project", target="system_project", build_output_path="system_project")

@@ -140,7 +140,7 @@ def run_gui():
 
 	list_target_platform = ttk.Combobox(variable_frame, values=default_target_platform, font=defaultFont) ; list_target_platform.current(0) ; list_target_platform.grid(row=3, column=1, padx=padx, pady=pady, sticky="W")
 	e_platform_name    	 = tk.Entry(variable_frame, width=40, font=defaultFont) ; e_platform_name.grid(row=4, column=1, padx=padx, pady=pady, sticky="W")     ; e_platform_name.insert(0, default_platform_name)
-	list_target_build    = ttk.Combobox(variable_frame, values=default_target_build, font=defaultFont) 	  ; list_target_build.current(1) 	; list_target_build.grid(row=5, column=1, padx=padx, pady=pady, sticky="W")
+	list_target_build    = ttk.Combobox(variable_frame, values=default_target_build, font=defaultFont) 	  ; list_target_build.current(0) 	; list_target_build.grid(row=5, column=1, padx=padx, pady=pady, sticky="W")
 
 	default_build_vivavo_platform = tk.IntVar()
 	default_instrument = tk.IntVar(value=1)
