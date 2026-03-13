@@ -2132,20 +2132,37 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     return func;
   }
 
-  private void addBuffer(final DAGVertex source, final DAGVertex target, final DAGEdge dagEdge, final SpecialCall f) {
-    for (final AbstractEdge<?, ?> agg : dagEdge.getAggregate()) {
-      final DAGEdge edge = (DAGEdge) agg;
-      // For broadcast and round
-      // buffersf.getType().equals(SpecialType.BROADCAST) vertices,
+  private void addBuffer(final DAGVertex source, final DAGVertex target, final DAGEdge dagEdge,
+      final SpecialCall specialCall, final String portName) {
+
+    final DAGEdge edge = switch (specialCall.getType()) {
+      case SpecialType.FORK ->
+        dagEdge.getAggregate().stream().map(e -> (DAGEdge) e).filter(dagAgg -> dagAgg.getSourceLabel().equals(portName))
+            .findAny().orElseThrow(() -> new PreesmRuntimeException(
+                "Could not find aggregated edge for port " + portName + " in special actor " + specialCall.getType()));
+      case SpecialType.BROADCAST ->
+        dagEdge.getAggregate().stream().map(e -> (DAGEdge) e).filter(dagAgg -> dagAgg.getSourceLabel().equals(portName))
+            .findAny().orElseThrow(() -> new PreesmRuntimeException(
+                "Could not find aggregated edge for port " + portName + " in special actor " + specialCall.getType()));
+      case SpecialType.JOIN ->
+        dagEdge.getAggregate().stream().map(e -> (DAGEdge) e).filter(dagAgg -> dagAgg.getTargetLabel().equals(portName))
+            .findAny().orElseThrow(() -> new PreesmRuntimeException(
+                "Could not find aggregated edge for port " + portName + " in special actor " + specialCall.getType()));
+      case SpecialType.ROUND_BUFFER ->
+        dagEdge.getAggregate().stream().map(e -> (DAGEdge) e).filter(dagAgg -> dagAgg.getTargetLabel().equals(portName))
+            .findAny().orElseThrow(() -> new PreesmRuntimeException(
+                "Could not find aggregated edge for port " + portName + " in special actor " + specialCall.getType()));
+      default -> throw new PreesmRuntimeException("Unrecognized special actor");
+    };
       // respectively skip the input and the outputs
-      if ((f.getType().equals(SpecialType.BROADCAST) || f.getType().equals(SpecialType.ROUND_BUFFER))
+    if ((specialCall.getType().equals(SpecialType.BROADCAST) || specialCall.getType().equals(SpecialType.ROUND_BUFFER))
           && (target != null) && target.equals(source)) {
-        continue;
+      // continue;
+      return;
       }
       // If neither source nor target is a task then return
       if (!source.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)
-          || !target.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
-              .equals(VertexType.TASK)) {
+        || !target.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)) {
         return;
       }
       // Corresponding edge
@@ -2176,7 +2193,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       Buffer buffer = null;
       if (firstFound instanceof final DistributedBuffer distributedBuffer) {
         String coreBlockName = "";
-        if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
+      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
           coreBlockName = source.getPropertyStringValue(OPERATOR_LITERAL);
         } else {
           coreBlockName = target.getPropertyStringValue(OPERATOR_LITERAL);
@@ -2198,12 +2215,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         throw new PreesmRuntimeException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
       }
       // Add it to the specialCall
-      if (f.getType().equals(SpecialType.FORK) || f.getType().equals(SpecialType.BROADCAST)) {
-        f.addOutputBuffer(buffer);
+      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+        // if (subBuffProperty.getSourceOutputPortID().equals(portName)) {
+      specialCall.addOutputBuffer(buffer);
+// }
       } else {
-        f.addInputBuffer(buffer);
+        specialCall.addInputBuffer(buffer);
       }
-    }
+    // }
   }
 
   /**
@@ -2249,16 +2268,25 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final Set<DAGEdge> outgoingEdges = dagVertex.outgoingEdges();
       final List<String> sinkOrder = dagVertex.getSinkNameList();
       final List<DAGEdge> orderedList = orderOutEdges(outgoingEdges, sinkOrder);
-      for (final DAGEdge edge : orderedList) {
-        addBuffer(dagVertex, edge.getTarget(), edge, specialCall);
+
+      for (int idx = 0; idx < orderedList.size(); idx++) {
+final DAGEdge edge = orderedList.get(idx);
+        final String sinkPortName = sinkOrder.get(idx);
+        addBuffer(dagVertex, edge.getTarget(), edge, specialCall, sinkPortName);
       }
     } else {
       final Set<DAGEdge> incomingEdges = dagVertex.incomingEdges();
       final List<String> sourceOrder = dagVertex.getSourceNameList();
       final List<DAGEdge> orderedList = orderInEdges(incomingEdges, sourceOrder);
-      for (final DAGEdge edge : orderedList) {
-        addBuffer(edge.getSource(), dagVertex, edge, specialCall);
+
+      for (int idx = 0; idx < orderedList.size(); idx++) {
+        final DAGEdge edge = orderedList.get(idx);
+        final String sourcePortName = sourceOrder.get(idx);
+        addBuffer(edge.getSource(), dagVertex, edge, specialCall, sourcePortName);
       }
+      // for (final DAGEdge edge : orderedList) {
+      // addBuffer(edge.getSource(), dagVertex, edge, specialCall, );
+      // }
     }
 
     // Find the last buffer that correspond to the
@@ -2353,13 +2381,14 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         }
 
         if (correspondingEdge == null) {
-          final BufferAggregate buffAggr = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
-          if (buffAggr != null && !buffAggr.isEmpty()) {
-            final BufferProperties bufferProperties = buffAggr.get(0);
-            final String destInputPortID = bufferProperties.getDestInputPortID();
+          final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
+          if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
+            for (final BufferProperties bufferProperty : bufferAggregate) {
+            final String destInputPortID = bufferProperty.getDestInputPortID();
             if (source.equals(destInputPortID)) {
               correspondingEdge = edge;
               break edgeIterate;
+}
             }
           }
         }
