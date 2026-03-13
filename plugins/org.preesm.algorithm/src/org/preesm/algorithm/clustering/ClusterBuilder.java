@@ -219,6 +219,7 @@ public class ClusterBuilder {
    */
   private static MergingHeuristic getHeuristic(String heuristicName) {
     return switch (heuristicName) {
+      case "minimal" -> new MinimalMergingHeuristic();
       default -> new MinimalMergingHeuristic();
     };
   }
