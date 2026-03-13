@@ -49,7 +49,7 @@ public class ClusteringTask extends AbstractTaskImplementation {
     final Map<String, Object> outputs = new LinkedHashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
-    String heuristicName = parameters.get("clusterize");
+    String heuristicName = parameters.get("heuristic");
     if (heuristicName == null) {
       heuristicName = "";
     }
