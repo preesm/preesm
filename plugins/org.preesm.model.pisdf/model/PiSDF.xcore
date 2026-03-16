@@ -786,7 +786,18 @@ abstract class ExecutableActor extends AbstractActor {
 }
 
 interface RefinementContainer {
-	contains Refinement refinement opposite refinementContainer
+	contains Refinement[] refinements opposite refinementContainer
+  	op Refinement getRefinement() {
+  		return refinements.first
+  	}
+  	op void setRefinement(Refinement ref) {
+  		if(refinements.size > 0) {
+  			refinements.set(0, ref)
+  		}
+  		else {
+  			refinements.add(ref)
+  		}
+  	}
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
@@ -796,13 +807,13 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
 	op boolean isHierarchical() {
-		return refinement !== null && refinement.isHierarchical
+		return refinement !== null && refinements.first.isHierarchical
 	}
 	op AbstractActor getChildAbstractActor() {
 		if (refinement === null) {
 			return null;
 		} else {
-			return refinement.abstractActor
+			return refinements.first.abstractActor
 		}
 	}
 	op PiGraph getSubGraph() {
@@ -1146,7 +1157,7 @@ class ConfigOutputInterface extends InterfaceActor {
 }
 
 interface Refinement {
-	refers RefinementContainer refinementContainer opposite refinement
+	refers RefinementContainer refinementContainer opposite refinements
 	String filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
