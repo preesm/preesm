@@ -85,6 +85,7 @@ import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 
 /**
  * The Class CodegenEngine.
@@ -311,7 +312,7 @@ public class CodegenEngine {
     // if any cluster runs on fpga, the project will be built by vitis which requires the extension to be cpp
     // nice work xilinx
     final boolean het_fpga_project = this.algo.getAllClusters().stream()
-        .anyMatch(c -> c.getTargetArch().equals(Arch.FPGA));
+        .anyMatch(c -> scenario.getPossibleMappings(c).stream().anyMatch(map -> map.getComponent() instanceof FPGA));
     // for later conditions to be added
     final boolean cpp = het_fpga_project;
 
