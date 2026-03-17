@@ -788,6 +788,9 @@ abstract class ExecutableActor extends AbstractActor {
 interface RefinementContainer {
 	contains Refinement[] refinements opposite refinementContainer
   	op Refinement getRefinement() {
+  		if(refinements === null || refinements.empty) {
+  			return null
+  		}
   		return refinements.first
   	}
   	op void setRefinement(Refinement ref) {
