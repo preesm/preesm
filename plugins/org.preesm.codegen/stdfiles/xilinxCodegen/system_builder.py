@@ -229,7 +229,7 @@ def instrument_execution(codegen_path):
 
 
 	# write loop number in preesm_gen.h
-	define_line = "#define PREESM_LOOP_SIZE 20\n"
+	define_line = "#define PREESM_LOOP_SIZE 10000\n"
 	try:
 	    with open(codegen_path + "/preesm_gen.h", "r") as f:
 	        lines = f.readlines()
