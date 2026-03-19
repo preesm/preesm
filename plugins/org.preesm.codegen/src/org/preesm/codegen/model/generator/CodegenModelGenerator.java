@@ -84,7 +84,6 @@ import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
-import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractVertex;
 import org.preesm.algorithm.model.CodeRefinement;
 import org.preesm.algorithm.model.CodeRefinement.Language;
@@ -2154,74 +2153,74 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
                 "Could not find aggregated edge for port " + portName + " in special actor " + specialCall.getType()));
       default -> throw new PreesmRuntimeException("Unrecognized special actor");
     };
-      // respectively skip the input and the outputs
+    // respectively skip the input and the outputs
     if ((specialCall.getType().equals(SpecialType.BROADCAST) || specialCall.getType().equals(SpecialType.ROUND_BUFFER))
-          && (target != null) && target.equals(source)) {
+        && (target != null) && target.equals(source)) {
       // continue;
       return;
-      }
-      // If neither source nor target is a task then return
-      if (!source.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)
+    }
+    // If neither source nor target is a task then return
+    if (!source.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)
         || !target.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE).equals(VertexType.TASK)) {
-        return;
-      }
-      // Corresponding edge
-      final DAGEdge correspondingEdge = this.algo.getEdge(source, target);
-      if (correspondingEdge == null) {
-        throw new PreesmRuntimeException("DAGEdge corresponding to srSDFEdge " + edge + " was not found.");
-      }
+      return;
+    }
+    // Corresponding edge
+    final DAGEdge correspondingEdge = this.algo.getEdge(source, target);
+    if (correspondingEdge == null) {
+      throw new PreesmRuntimeException("DAGEdge corresponding to srSDFEdge " + edge + " was not found.");
+    }
 
-      // Find the corresponding BufferProperty
-      BufferProperties subBuffProperty = null;
-      final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
-      for (final BufferProperties subBufferProperties : buffers) {
-        // The source and target actor are the same, check that the
-        // ports are corrects
-        if (edge.getTargetLabel().equals(subBufferProperties.getDestInputPortID())
-            && edge.getSourceLabel().equals(subBufferProperties.getSourceOutputPortID())) {
-          subBuffProperty = subBufferProperties;
+    // Find the corresponding BufferProperty
+    BufferProperties subBuffProperty = null;
+    final BufferAggregate buffers = correspondingEdge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
+    for (final BufferProperties subBufferProperties : buffers) {
+      // The source and target actor are the same, check that the
+      // ports are corrects
+      if (edge.getTargetLabel().equals(subBufferProperties.getDestInputPortID())
+          && edge.getSourceLabel().equals(subBufferProperties.getSourceOutputPortID())) {
+        subBuffProperty = subBufferProperties;
+        break;
+      }
+    }
+    if (subBuffProperty == null) {
+      throw new PreesmRuntimeException("Buffer property with ports " + edge.getTargetLabel() + " and "
+          + edge.getSourceLabel() + " was not found in DAGEdge aggregate " + correspondingEdge);
+    }
+
+    // Get the corresponding Buffer
+    final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
+    Buffer buffer = null;
+    if (firstFound instanceof final DistributedBuffer distributedBuffer) {
+      String coreBlockName = "";
+      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+        coreBlockName = source.getPropertyStringValue(OPERATOR_LITERAL);
+      } else {
+        coreBlockName = target.getPropertyStringValue(OPERATOR_LITERAL);
+      }
+      final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
+      for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
+        final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
+        final SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
+        if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
+          buffer = subBufferChecker;
           break;
         }
       }
-      if (subBuffProperty == null) {
-        throw new PreesmRuntimeException("Buffer property with ports " + edge.getTargetLabel() + " and "
-            + edge.getSourceLabel() + " was not found in DAGEdge aggregate " + correspondingEdge);
-      }
+    } else {
+      buffer = firstFound;
+    }
 
-      // Get the corresponding Buffer
-      final Buffer firstFound = this.srSDFEdgeBuffers.get(subBuffProperty);
-      Buffer buffer = null;
-      if (firstFound instanceof final DistributedBuffer distributedBuffer) {
-        String coreBlockName = "";
-      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
-          coreBlockName = source.getPropertyStringValue(OPERATOR_LITERAL);
-        } else {
-          coreBlockName = target.getPropertyStringValue(OPERATOR_LITERAL);
-        }
-        final EList<Buffer> repeatedBuffers = distributedBuffer.getDistributedCopies();
-        for (final Buffer bufferRepeatedChecker : repeatedBuffers) {
-          final SubBuffer subBufferChecker = (SubBuffer) bufferRepeatedChecker;
-          final SubBuffer repeatedContainer = (SubBuffer) subBufferChecker.getContainer();
-          if (repeatedContainer.getContainer().getName().equals(coreBlockName)) {
-            buffer = subBufferChecker;
-            break;
-          }
-        }
-      } else {
-        buffer = firstFound;
-      }
-
-      if (buffer == null) {
-        throw new PreesmRuntimeException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
-      }
-      // Add it to the specialCall
-      if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
-        // if (subBuffProperty.getSourceOutputPortID().equals(portName)) {
+    if (buffer == null) {
+      throw new PreesmRuntimeException("Buffer corresponding to DAGEdge" + correspondingEdge + "was not allocated.");
+    }
+    // Add it to the specialCall
+    if (specialCall.getType().equals(SpecialType.FORK) || specialCall.getType().equals(SpecialType.BROADCAST)) {
+      // if (subBuffProperty.getSourceOutputPortID().equals(portName)) {
       specialCall.addOutputBuffer(buffer);
-// }
-      } else {
-        specialCall.addInputBuffer(buffer);
-      }
+      // }
+    } else {
+      specialCall.addInputBuffer(buffer);
+    }
     // }
   }
 
@@ -2270,7 +2269,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       final List<DAGEdge> orderedList = orderOutEdges(outgoingEdges, sinkOrder);
 
       for (int idx = 0; idx < orderedList.size(); idx++) {
-final DAGEdge edge = orderedList.get(idx);
+        final DAGEdge edge = orderedList.get(idx);
         final String sinkPortName = sinkOrder.get(idx);
         addBuffer(dagVertex, edge.getTarget(), edge, specialCall, sinkPortName);
       }
@@ -2384,11 +2383,11 @@ final DAGEdge edge = orderedList.get(idx);
           final BufferAggregate bufferAggregate = edge.getPropertyBean().getValue(BufferAggregate.PROPERTY_BEAN_NAME);
           if (bufferAggregate != null && !bufferAggregate.isEmpty()) {
             for (final BufferProperties bufferProperty : bufferAggregate) {
-            final String destInputPortID = bufferProperty.getDestInputPortID();
-            if (source.equals(destInputPortID)) {
-              correspondingEdge = edge;
-              break edgeIterate;
-}
+              final String destInputPortID = bufferProperty.getDestInputPortID();
+              if (source.equals(destInputPortID)) {
+                correspondingEdge = edge;
+                break edgeIterate;
+              }
             }
           }
         }
