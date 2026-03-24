@@ -39,6 +39,7 @@ package org.preesm.algorithm.memory.bounds;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -122,17 +123,9 @@ public class HeuristicSolver<V extends IWeightedVertex<Long>, E extends DefaultE
 
     // Correct the adjacent vertices list so that it contains only
     // references to vertices from graph.vertexSet()
-    final Set<V> toAdd = new LinkedHashSet<>();
     result = this.adjacentVerticesBackup.get(vertex);
 
-    for (final V vert : result) {
-      for (final V vertin : this.graph.vertexSet()) {
-        if (vert.equals(vertin)) {
-          toAdd.add(vertin);
-          break;
-        }
-      }
-    }
+    final List<V> toAdd = result.stream().filter(vert -> this.graph.vertexSet().contains(vert)).toList();
 
     result.clear();
     result.addAll(toAdd);

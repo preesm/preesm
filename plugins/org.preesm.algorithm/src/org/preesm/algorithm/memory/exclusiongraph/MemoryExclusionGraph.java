@@ -817,17 +817,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // vertex using the getEdgeSource(edge), then modifies the vertex, the changes might not be applied to the same
     // vertex retrieved in the vertexSet() of the graph. The following lines ensures that the vertices returned in the
     // neighbors lists always belong to the vertexSet().
-    final Set<MemoryExclusionVertex> toAdd = new LinkedHashSet<>();
 
-    for (final MemoryExclusionVertex vert : result) {
-      for (final MemoryExclusionVertex vertin : vertexSet()) {
-        if (vert.equals(vertin)) {
-          // Correct the reference
-          toAdd.add(vertin);
-          break;
-        }
-      }
-    }
+    final List<MemoryExclusionVertex> toAdd = result.stream().filter(vert -> vertexSet().contains(vert)).toList();
 
     result.clear();
     result.addAll(toAdd);
