@@ -281,7 +281,7 @@ public class Range implements CloneableProperty<Range> {
    *
    * @return the updated newRange {@link Range}.
    */
-  public static Range lazyUnion(final List<Range> ranges, final Range newRange) {
+  public static Range lazyUnion(List<Range> ranges, Range newRange) {
     final Iterator<Range> iter = ranges.iterator();
     while (iter.hasNext()) {
       final Range range = iter.next();
