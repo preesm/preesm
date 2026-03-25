@@ -109,12 +109,14 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
     // Retrieve URC chains in input graph and verify that actors share component constraints.
     final List<List<AbstractActor>> graphURCs = new ClusteringPatternSeekerUrc(this.graph, brv).seek();
     final List<List<AbstractActor>> constrainedURCs = new LinkedList<>();
+
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
       if (!ClusteringHelper.getListOfCommonComponent(urc, this.scenario).isEmpty()) {
         constrainedURCs.add(urc);
       }
     }
+
     // Cluster constrained URC chains.
     if (!graphURCs.isEmpty()) {
       final List<AbstractActor> urc = graphURCs.get(0);// cluster one by one
@@ -131,7 +133,9 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         iActor.getDataPort().setExpression(iActor.getGraphPort().getExpression().evaluateAsLong());
       }
 
+      // RC : here is the action of memoryOptim --> no use of memory script, only MEGs !
       if (memoryOptim.equals(Boolean.TRUE)) {
+
         // reduce memory exclusion graph matches
         reduceMemExMatches(subGraph, scale, brv);
 
@@ -147,6 +151,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       subGraph.getFifos().stream().filter(x -> x.getTargetPort() == null).forEach(subGraph::removeFifo);
 
       subGraph.setClusterValue(true);
+
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
@@ -237,13 +242,18 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
   }
 
   public static void reduceMemExMatches(PiGraph subGraph, Long scale, Map<AbstractVertex, Long> rv) {
+
     for (final InterfaceActor iActor : subGraph.getDataInterfaces()) {
+
       if (iActor.getGraphPort().getFifo().getSource() instanceof final BroadcastActor broadcast) {
+
         final Long brdInput = broadcast.getDataInputPorts().get(0).getExpression().evaluateAsLong();
         final long interfaceRate = iActor.getGraphPort().getExpression().evaluateAsLong();
         final DataInputPort targetPort = iActor.getDataPort().getFifo().getTargetPort();
+
         // set output broadcast expression
         iActor.getGraphPort().getFifo().getSourcePort().setExpression(brdInput * scale);
+
         // scale cluster in put on broadcast new value
         iActor.getGraphPort().setExpression(brdInput * rv.get(broadcast));
         iActor.getDataPort().setExpression(brdInput * rv.get(broadcast));
@@ -252,6 +262,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
         brd.setName("Broadcast_" + broadcast.getName());
         subGraph.addActor(brd);
+
         // connect interface to the new broadcast
         final DataInputPort dataInputPort = PiMMUserFactory.instance.createDataInputPort();
         dataInputPort.setName("in");
@@ -263,6 +274,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
         fin.setSourcePort(iActor.getDataPort().getFifo().getSourcePort());
         fin.setTargetPort(dataInputPort);
         subGraph.addFifo(fin);
+
         // connect broadcast to target
         final DataOutputPort dataOutputPort = PiMMUserFactory.instance.createDataOutputPort();
         dataOutputPort.setName("out");

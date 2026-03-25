@@ -80,4 +80,10 @@ public class MinimalMergingHeuristic extends MergingHeuristic {
     return scenario.getPossibleMappings(actor).getFirst().getComponent();
   }
 
+  @Override
+  public void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params) {
+    // TODO Auto-generated method stub
+
+  }
+
 }

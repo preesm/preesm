@@ -172,11 +172,14 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
    */
 
   public List<List<AbstractActor>> seek() {
+
     // Clear the list of identified URCs
     this.identifiedURCs.clear();
     this.topoOrderASAP.clear();
+
     // arranges actors in topological order
     computeTopoASAP();
+
     // Explore all executable actors of the graph
     for (final Entry<Long, List<AbstractActor>> rank : this.topoOrderASAP.entrySet()) {
       rank.getValue().stream()
@@ -197,6 +200,7 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
    * @return true if a URC list is constructed, otherwise false.
    */
   private Boolean process(AbstractActor base, Long rank) {
+
     // filter dummy single source starter
     if (base.getName().equals("single_source")
         || base.getDataInputPorts().stream().anyMatch(x -> x.getFifo().getSource().getName().equals("single_source"))) {
@@ -264,20 +268,26 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
    */
   private AbstractActor hasCandidate(Long currentRank, AbstractActor base, List<AbstractActor> actorURC,
       AbstractActor finisher) {
+
     // Iterate over all candidates at the current rank
     for (final AbstractActor candidate : this.topoOrderASAP.get(currentRank)) {
+
       // Check if adding this candidate would create a cycle
       final Boolean noCycle = candidate.getDataInputPorts().stream().allMatch(
           x -> actorURC.contains(x.getFifo().getSource()) || getRank(x.getFifo().getSource()) < getRank(base));
+      // -----[one of actorURC] -{FIFO}-> [candidate] --- or rank of [actor] -{FIFO}-> [candidate] < rank of base
+
       // Check if the candidate satisfies the parallel conditions
       final Boolean para = finisher.getDataOutputPorts().stream().allMatch(
           x -> x.getFifo().getTarget().equals(candidate) || getRank(x.getFifo().getTarget()) > getRank(candidate));
+
       // If candidate meets all criteria (same BRV as base, no cycles, parallel conditions, and not already part of a
       // URC)
       if (Boolean.TRUE.equals(
           Objects.equals(brv.get(candidate), brv.get(base)) && noCycle && para && !(candidate instanceof PiGraph))
           && !candidate.getName().startsWith("urc_") && !candidate.getName().startsWith("srv_")
           && !candidate.getName().startsWith("loop_") && candidate != base) {
+
         // Return the candidate
         return candidate;
       }
@@ -311,15 +321,18 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
 
     // feed the 1st rank
     for (final AbstractActor a : graph.getActors()) {
+
+      // if actor has no input port or actor has delay in every input ports
       if (!(a instanceof DelayActor) && (a.getDataInputPorts().isEmpty()
           || a.getDataInputPorts().stream().allMatch(x -> x.getFifo().isDelayPresent()))) {
         rankList.add(a);
         fullList.remove(a);
       }
     }
-    topoOrderASAP.put(rank, rankList);
-    // feed the rest
 
+    topoOrderASAP.put(rank, rankList);
+
+    // feed the rest
     while (!fullList.isEmpty()) {
       final List<AbstractActor> list = new ArrayList<>();
 
@@ -327,8 +340,8 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
         processDirectSuccessors(a, rank, list, fullList);
         processGetter(list, fullList, rank);
       }
-      if (list.isEmpty()) {
 
+      if (list.isEmpty()) {
         PreesmLogger.getLogger().log(Level.SEVERE,
             "Issue computing Topological order, it will run in an infinite loop");
       }

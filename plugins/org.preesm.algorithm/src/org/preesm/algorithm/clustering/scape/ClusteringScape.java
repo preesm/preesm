@@ -145,17 +145,26 @@ public class ClusteringScape extends ClusterPartitioner {
    */
   private void initHierarchy() {
     final List<AbstractActor> graphSingleLOOPs = new ClusteringPatternSeekerLoop(graph).singleLocalseek();
+
     for (final PiGraph subGraph : graph.getAllChildrenGraphs()) {
+
       final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+
       if (brv.get(subGraph) != 1 && !graphSingleLOOPs.contains(subGraph)) {
+
         // apply scaling
         final Long scale = brv.get(subGraph);
+
         for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
+
           din.getGraphPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong() * scale);
+
           din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
         }
         for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
+
           dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong() * scale);
+
           dout.getDataPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong());
         }
       }
@@ -198,18 +207,30 @@ public class ClusteringScape extends ClusterPartitioner {
       do {
         final int size = graph.getAllChildrenGraphs().size();
         final Map<AbstractVertex, Long> rv = PiBRV.compute(g, BRVMethod.LCM);
-        // URC transfo
+
+        // URC
         newCluster = new ClusterPartitionerURC(g, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode,
             memoryOptim).cluster();
+
+        // SRV
+        // RC : graph might be modified in ClusterPartitionerURC,
+        // maybe with scenario parameter ?
+        // In any way, it seems that we call ClusterPartionerSRV
+        // if ClusterPartitionerURC has done nothing
         if (graph.getAllChildrenGraphs().size() == size) {
-          // SRV transfo
+
           newCluster = new ClusterPartitionerSRV(g, scenario, coreEquivalent.intValue(), rv, clusterId, scapeMode)
               .cluster();
         }
+
+        // RC : if there is no modifications of the subgraph, we go out of the loop
         if (graph.getAllChildrenGraphs().size() == size) {
           isHasCluster = false;
         }
+
         if (!newCluster.getChildrenGraphs().isEmpty()) {
+
+          // RC : study cluster function (not that useful but might be interesting)
           cluster(newCluster.getChildrenGraphs().get(0), scenario, stackSize, memoryOptim);
           clusterId++;
         }

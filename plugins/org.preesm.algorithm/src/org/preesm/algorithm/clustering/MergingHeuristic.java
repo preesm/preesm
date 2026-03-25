@@ -2,6 +2,8 @@ package org.preesm.algorithm.clustering;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 
 /**
@@ -18,6 +20,18 @@ public abstract class MergingHeuristic {
 
   public static final int predecessor = 0;
   public static final int successor   = 1;
+
+  /***
+   * Initializes the parameters of the heuristic
+   *
+   * @param graph
+   *          the subgraph to inspect
+   * @param scenario
+   *          the scenario that links to the whole PiSDF graph, the S-LAM graph, the constraints...
+   * @param params
+   *          the output of the method, that will be pass to the other methods to build the clusters
+   */
+  public abstract void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params);
 
   /***
    * Assesses whether actor can be merged with the cluster started from the Actor seed.
