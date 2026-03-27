@@ -20,10 +20,9 @@ import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
 
 public class URCHeuristic extends MergingHeuristic {
-
+  private final String alreadyIdentifiedActorsName = "alreadyIdentifiedActors";
   /*
    * ------------------------------------------------------------------------------------------------------
    *
@@ -35,11 +34,11 @@ public class URCHeuristic extends MergingHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params) {
 
-    // Computing topoOrderASAP
+    // Computing the topological graph, in ASAP order
     final Map<Long, List<AbstractActor>> topoOrderASAP = new HashMap<>();
     computeTopoASAP(graph, topoOrderASAP);
 
-    // Computing brv
+    // Computing the basic repetition vector of the graph
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     // Creating alreadyIdentifiedActors list
@@ -50,7 +49,7 @@ public class URCHeuristic extends MergingHeuristic {
     // Adding in params list
     params.put("topoOrderASAP", topoOrderASAP);
     params.put("brv", brv);
-    params.put("alreadyIdentifiedActors", alreadyIdentifiedActors);
+    params.put(alreadyIdentifiedActorsName, alreadyIdentifiedActors);
 
   }
 
@@ -59,7 +58,7 @@ public class URCHeuristic extends MergingHeuristic {
 
     // ----------{ Retrieving parameters }---------- //
     // Getting the list of actors already identified as part of the URC cluster.
-    final List<AbstractActor> alreadyIdentifiedActors = (List<AbstractActor>) params.get("alreadyIdentifiedActors");
+    final List<AbstractActor> alreadyIdentifiedActors = (List<AbstractActor>) params.get(alreadyIdentifiedActorsName);
 
     // Getting the graph stored in topological ASAP order
     final Map<Long, List<AbstractActor>> topoOrderASAP = (Map<Long, List<AbstractActor>>) params.get("topoOrderASAP");
@@ -96,16 +95,11 @@ public class URCHeuristic extends MergingHeuristic {
     isSeedable &= actor.getHierarchichalRV(brv) > (int) params.get("nCore");
 
     if (isSeedable) {
-      final List<AbstractActor> alreadyIdentifiedActors = (List<AbstractActor>) params.get("alreadyIdentifiedActors");
+      final List<AbstractActor> alreadyIdentifiedActors = (List<AbstractActor>) params.get(alreadyIdentifiedActorsName);
       alreadyIdentifiedActors.clear();
       alreadyIdentifiedActors.add(actor);
     }
     return isSeedable;
-  }
-
-  @Override
-  public Component pickClusteringComponent(AbstractActor seed, Map<String, Object> params) {
-    return null;
   }
 
   /*
