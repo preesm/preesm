@@ -1,17 +1,18 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2020)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  * Jonathan Piat [jpiat@laas.fr] (2009)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2017 - 2019)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2012)
+ * Ophelie-Renaud [ophelie.renaud@insa-rennes.fr] (2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
