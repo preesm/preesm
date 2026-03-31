@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2020 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2020 - 2021)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Mickaël Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  *

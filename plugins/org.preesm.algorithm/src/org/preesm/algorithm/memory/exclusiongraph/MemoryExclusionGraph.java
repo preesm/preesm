@@ -1,11 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2026) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2026)
  * Julien Hascoet [jhascoet@kalray.eu] (2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2012 - 2017)
  *
@@ -458,44 +458,47 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
   public void deallocate() {
     final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hostVertices = getPropertyBean()
         .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
+
+    // Early exit
+    if (hostVertices == null) {
+      return;
+    }
+
     // Scan host vertices
-    if (hostVertices != null) {
-      for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostVertices.entrySet()) {
-        final MemoryExclusionVertex hostVertex = entry.getKey();
-        final Set<MemoryExclusionVertex> value = entry.getValue();
-        // Put the host back to its original size (if it was changed, i.e. if it was allocated)
-        final Object hostSizeObj = hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
-        if (hostSizeObj != null) {
-          final long hostSize = (long) hostSizeObj;
-          hostVertex.setWeight(hostSize);
-          hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
+    for (final Entry<MemoryExclusionVertex, Set<MemoryExclusionVertex>> entry : hostVertices.entrySet()) {
+      final MemoryExclusionVertex hostVertex = entry.getKey();
+      final Set<MemoryExclusionVertex> value = entry.getValue();
+      // Put the host back to its original size (if it was changed, i.e. if it was allocated)
+      final Object hostSizeObj = hostVertex.getPropertyBean().getValue(MemoryExclusionVertex.HOST_SIZE);
+      if (hostSizeObj != null) {
+        final long hostSize = (long) hostSizeObj;
+        hostVertex.setWeight(hostSize);
+        hostVertex.getPropertyBean().removeProperty(MemoryExclusionVertex.HOST_SIZE);
 
-          // Scan merged vertices
-          for (final MemoryExclusionVertex mergedVertex : value) {
-            // If the merged vertex was in the graph (i.e. it was already allocated)
-            if (containsVertex(mergedVertex)) {
-              // Add exclusions between host and adjacent vertex of the merged vertex
-              for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
-                this.addEdge(hostVertex, adjacentVertex);
-              }
-              // Remove it from the MEG
-              removeVertex(mergedVertex);
+        // Scan merged vertices
+        for (final MemoryExclusionVertex mergedVertex : value) {
+          // If the merged vertex was in the graph (i.e. it was already allocated)
+          if (containsVertex(mergedVertex)) {
+            // Add exclusions between host and adjacent vertex of the merged vertex
+            for (final MemoryExclusionVertex adjacentVertex : getAdjacentVertexOf(mergedVertex)) {
+              this.addEdge(hostVertex, adjacentVertex);
+            }
+            // Remove it from the MEG
+            removeVertex(mergedVertex);
 
-              // If the merged vertex is not split
-              if (mergedVertex.getWeight() != 0) {
-                // Put it back to its real weight
-                final long emptySpace = mergedVertex.getPropertyBean()
-                    .getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
-                mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
-              } else {
-                // The vertex was divided. Remove all fake mobjects
-                final List<MemoryExclusionVertex> fakeMobjects = mergedVertex.getPropertyBean()
-                    .getValue(MemoryExclusionVertex.FAKE_MOBJECT);
-                for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
-                  removeVertex(fakeMobj);
-                }
-                fakeMobjects.clear();
+            // If the merged vertex is not split
+            if (mergedVertex.getWeight() != 0) {
+              // Put it back to its real weight
+              final long emptySpace = mergedVertex.getPropertyBean().getValue(MemoryExclusionVertex.EMPTY_SPACE_BEFORE);
+              mergedVertex.setWeight(mergedVertex.getWeight() - emptySpace);
+            } else {
+              // The vertex was divided. Remove all fake mobjects
+              final List<MemoryExclusionVertex> fakeMobjects = mergedVertex.getPropertyBean()
+                  .getValue(MemoryExclusionVertex.FAKE_MOBJECT);
+              for (final MemoryExclusionVertex fakeMobj : fakeMobjects) {
+                removeVertex(fakeMobj);
               }
+              fakeMobjects.clear();
             }
           }
         }
@@ -817,17 +820,8 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     // vertex using the getEdgeSource(edge), then modifies the vertex, the changes might not be applied to the same
     // vertex retrieved in the vertexSet() of the graph. The following lines ensures that the vertices returned in the
     // neighbors lists always belong to the vertexSet().
-    final Set<MemoryExclusionVertex> toAdd = new LinkedHashSet<>();
 
-    for (final MemoryExclusionVertex vert : result) {
-      for (final MemoryExclusionVertex vertin : vertexSet()) {
-        if (vert.equals(vertin)) {
-          // Correct the reference
-          toAdd.add(vertin);
-          break;
-        }
-      }
-    }
+    final List<MemoryExclusionVertex> toAdd = result.stream().filter(vert -> vertexSet().contains(vert)).toList();
 
     result.clear();
     result.addAll(toAdd);

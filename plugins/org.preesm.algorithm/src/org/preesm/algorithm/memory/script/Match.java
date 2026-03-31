@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2026) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2026)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -40,7 +40,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.eclipse.xtext.xbase.lib.Pair;
 
 /**
@@ -278,13 +277,15 @@ public class Match {
 
     // Copy the overlapping indivisible range(s)
     final List<Range> indivisibleRanges = getLocalBuffer().indivisibleRanges;
-    // toList to make sure the map function is applied only once
-    // This List needs to be mutable.
-    final List<Range> overlappingIndivisibleRanges = indivisibleRanges.stream()
-        .filter(r -> Range.hasOverlap(r, localIndivisiblerange)).map(Range::copy).collect(Collectors.toList());
 
-    // Do the lazy union of the match and its overlapping indivisible
-    // ranges
+    final List<Range> overlappingIndivisibleRanges = new ArrayList<>();
+    for (final Range range : indivisibleRanges) {
+      if (Range.hasOverlap(range, localIndivisiblerange)) {
+        overlappingIndivisibleRanges.add(range.copy());
+      }
+    }
+
+    // Do the lazy union of the match and its overlapping indivisible ranges
     return Range.lazyUnion(overlappingIndivisibleRanges, localIndivisiblerange);
   }
 
@@ -313,7 +314,7 @@ public class Match {
   }
 
   /**
-   * Overriden to forbid
+   * Overridden to forbid
    */
   @Override
   public int hashCode() {

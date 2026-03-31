@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
@@ -7,7 +7,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2019)

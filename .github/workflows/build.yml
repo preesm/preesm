@@ -23,7 +23,7 @@ jobs:
     timeout-minutes: 90
     steps:
       - name: Git Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
 
@@ -36,7 +36,7 @@ jobs:
 
       # This step should soon be unnecessary: https://github.com/actions/runner-images/issues/11093
       - name: Set up Maven
-        uses: stCarolas/setup-maven@v5
+        uses: stCarolas/setup-maven@v5.1
         with:
           maven-version: 3.9.9
 
@@ -66,25 +66,25 @@ jobs:
         run: mvn -X -B -e -c -Dtycho.mode=maven jacoco:report -Djacoco.dataFile=../../target/jacoco.exec -Dsonar.projectKey=preesm_preesm -Dsonar.token=$SONAR_TOKEN sonar:sonar
 
       - name: Archive Linux product
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: linux-products
           path: releng/org.preesm.product/target/products/preesm-*-linux.gtk.x86_64.zip
 
       - name: Archive macOS aarch64 product
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mac-aarch64-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.aarch64.zip
 
       - name: Archive macOS x86_64 product
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: mac-x86-products
           path: releng/org.preesm.product/target/products/preesm-*-macosx.cocoa.x86_64.zip
 
       - name: Archive Windows product
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: windows-products
           path: releng/org.preesm.product/target/products/preesm-*-win32.win32.x86_64.zip
@@ -96,7 +96,7 @@ jobs:
 
       - name: Upload changelog
         if: github.ref == 'refs/heads/develop' && github.event.schedule != '0 7 * * MON'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: changelog
           path: dev-changelog.txt
@@ -167,12 +167,12 @@ jobs:
               fi
 
       - name: Pull preesm-apps
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           repository: preesm/preesm-apps
 
       - name: Get Preesm from artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: ${{ matrix.config.archive_name }}
 
@@ -193,27 +193,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download Linux artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: linux-products
 
       - name: Download Mac aarch64 artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: mac-aarch64-products
 
       - name: Download Mac x86 artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: mac-x86-products
 
       - name: Download Windows artifacts
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: windows-products
 
       - name: Download changelog
-        uses: actions/download-artifact@v5
+        uses: actions/download-artifact@v8
         with:
           name: changelog
 
