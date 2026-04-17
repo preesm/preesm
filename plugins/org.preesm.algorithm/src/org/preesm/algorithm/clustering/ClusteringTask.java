@@ -93,8 +93,8 @@ public class ClusteringTask extends AbstractTaskImplementation {
 
           // get all cores and their mapped actors. If the core is not the same as mapping and a is mapped to it, remove
           // actor from the constraint
-          scenario.getConstraints().getGroupConstraints().stream().filter(entry -> entry.getValue().contains(actor))
-              .forEach(entry -> {
+          scenario.getConstraints().getRefinementConstraints().stream()
+              .filter(entry -> entry.getValue().contains(actor)).forEach(entry -> {
                 if (entry.getKey() != mapping) { // if the actor is mapped to another core that mapping
                   // remove that mapping
                   entry.getValue().remove(actor);

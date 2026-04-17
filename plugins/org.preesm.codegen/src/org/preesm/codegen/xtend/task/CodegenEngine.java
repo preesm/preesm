@@ -81,7 +81,6 @@ import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -340,11 +339,12 @@ public class CodegenEngine {
       // - cluster list
       // - vitis build files (python, tcl and makefile)
       if (het_fpga_project) {
-        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
+        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo, scenario);
         PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
         PreesmIOHelper.getInstance().print(codegenPath, "clusters_list",
-            algo.getClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA))
+            algo.getClusters().stream()
+                .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(FPGA.class::isInstance))
                 .map(c -> PreesmCopyTracker.getOriginalSource(c).getName()).collect(Collectors.joining("\n")));
 
         try {

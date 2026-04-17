@@ -559,7 +559,7 @@ public class DAGTransformation<T extends DirectedAcyclicGraph>
     dagVertex.setName(sdfVertex.getName());
     dagVertex.setTime(new LongVertexPropertyType(0));
     dagVertex.setNbRepeat(new LongVertexPropertyType(0));
-    dagVertex.setRefinement(sdfVertex.getRefinement());
+    dagVertex.setRefinement(sdfVertex.getRefinements());
     dagVertex.setArgumentSet(sdfVertex.getArguments());
     dagVertex.setId(sdfVertex.getId());
     dagVertex.setInfo(sdfVertex.getInfo());

@@ -8,8 +8,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
@@ -40,14 +41,15 @@ public class EuclideTransfoTask extends AbstractTaskImplementation {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph transfo = new EuclideTransfo(scenario).execute();
 
-    for (final Entry<ComponentInstance, EList<AbstractActor>> gp : scenario.getConstraints().getGroupConstraints()) {
+    for (final Entry<ComponentInstance, EList<Refinement>> gp : scenario.getConstraints().getRefinementConstraints()) {
       final int size = gp.getValue().size();
       for (int i = 1; !gp.getValue().isEmpty(); i++) {
         final int k = size - i;
         gp.getValue().remove(k);
       }
 
-      transfo.getAllActors().forEach(actor -> gp.getValue().add(actor));
+      transfo.getAllActors().stream().filter(RefinementContainer.class::isInstance).map(a -> (RefinementContainer) a)
+          .forEach(actor -> gp.getValue().addAll(actor.getRefinements()));
     }
 
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ALL,

@@ -43,7 +43,6 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -66,16 +65,13 @@ public class CHeaderUsedLocator {
         .map(a -> ((Actor) a).getRefinement());
 
     refinements.forEach(cHeaderRef -> {
-      // we don't want to include headers for fpga generated code
-      if (!(cHeaderRef.getAbstractActor() instanceof final PiGraph g && g.isCluster()
-          && g.getTargetArch().equals(Arch.FPGA))) {
+      // we don't want to include headers for fpga-generated code (i.e .hpp files)
 
-        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
-        if ((filePath != null) && !(result.contains(filePath))) {
-          result.add(filePath);
-        }
-
+      final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
+      if ((filePath != null) && !(result.contains(filePath) && !filePath.getFileExtension().equals("hpp"))) {
+        result.add(filePath);
       }
+
     });
 
     return result;

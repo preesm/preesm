@@ -43,6 +43,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
@@ -83,7 +84,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.DataInputPort;
@@ -103,9 +103,11 @@ import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.SrdagActor;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamRouteStep;
 
@@ -191,8 +193,16 @@ public class CodegenModelGenerator2 {
 
       // add all the accelerator architectures that will have to be initialized to the main core
       if (cmp.equals(scenario.getSimulationInfo().getMainOperator())) {
-        algo.getClusters().stream().map(PiGraph::getTargetArch).filter(ta -> !(ta.equals(Arch.CPU)))
-            .forEach(createCoreBlock::addAcceleratorArch);
+
+        // check all the component types used in the architecture
+        final Set<Component> PETypes = scenario.getDesign().getComponents().stream()
+            .filter(ProcessingElement.class::isInstance).collect(Collectors.toSet());
+
+        // make all the adapted prints for your accelerators
+        if (PETypes.stream().anyMatch(FPGA.class::isInstance)) {
+          createCoreBlock.addAcceleratorArch("fpga");
+        }
+
       }
       coreBlocks.put(cmp, createCoreBlock);
     }
@@ -719,8 +729,10 @@ public class CodegenModelGenerator2 {
         coreBlock.getSinkFifoBuffers().add((Buffer) variable);
       }
     }
-
-    final Refinement refinement = cluster.getRefinement();
+    // TODO have the CHeaderRefinement replace the PiSDFRefinement in the localCodegenTask so we don't have to search
+    // for it.
+    final Refinement refinement = cluster.getRefinements().stream().filter(CHeaderRefinement.class::isInstance).toList()
+        .getFirst();
     if (refinement instanceof final CHeaderRefinement cHeaderRef) {
       final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {

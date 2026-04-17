@@ -58,7 +58,6 @@ import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -146,10 +145,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   private PiGraph currentResultSrDAG;
 
-  private static List<String> flattenExclusionList;
-
-  private static List<String> srdagExclusionList;
-
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
@@ -167,13 +162,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // copy input graph period
     this.result.setExpression(inputGraph.getPeriod().evaluateAsLong());
-  }
-
-  public static final PiGraph computeWithExclusionLists(final PiGraph graph, final BRVMethod method,
-      List<String> flattenExclusion, List<String> srdagExclusion) {
-    flattenExclusionList = flattenExclusion;
-    srdagExclusionList = srdagExclusion;
-    return compute(graph, method);
   }
 
   /**
@@ -1068,15 +1056,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
-    // If it is a cluster, do nothing
+
     if (graph.isCluster()) {
-      // Exclusion of the CPU case to separate our heterogeneous work from the multi-node work.
-      // Ugly but should work for now.
-      if (graph.getTargetArch().equals(Arch.CPU)) {
-        return true;
+      if (!graph.isToSrdag()) {
+        this.currentGraphIsCluster = true;
+        return caseCluster(graph);
       }
-      this.currentGraphIsCluster = true;
-      return caseCluster(graph);
+      return true;
     }
 
     this.currentGraphIsCluster = false;
@@ -1170,12 +1156,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseCluster(PiGraph cluster) {
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
 
-    if (!flattenExclusionList.contains(cluster.getName())) {
+    if (cluster.isToFlatten()) {
       // flatten
       PiSDFFlattener.flatten(copyGraph, true);
     }
 
-    if (!srdagExclusionList.contains(cluster.getName())) {
+    if (cluster.isToSrdag()) {
       // convert to srdag
       // absolutely the same lines as casePiGraph, I was just too lazy to mutualize into a single function.
 

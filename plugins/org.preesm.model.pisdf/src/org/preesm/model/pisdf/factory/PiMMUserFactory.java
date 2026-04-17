@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -72,6 +73,7 @@ import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
@@ -454,6 +456,10 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
 
   public Expression createExpression() {
     return this.createExpression(0d);
+  }
+
+  public EList<PiSDFRefinement> createPiSDFRefinements() {
+    return new BasicEList<>();
   }
 
   /**

@@ -197,8 +197,8 @@ public class CpuOnlyHeterogeneousTest {
     cpu2Actors.add(listActors.get(10));
     cpu2Actors.add(listActors.get(11));
 
-    scenario.getConstraints().addConstraints(cpu1, cpu1Actors);
-    scenario.getConstraints().addConstraints(cpu2, cpu2Actors);
+    scenario.addConstraints(cpu1, cpu1Actors);
+    scenario.addConstraints(cpu2, cpu2Actors);
 
   }
 

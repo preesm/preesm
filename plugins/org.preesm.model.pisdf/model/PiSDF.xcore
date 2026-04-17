@@ -276,19 +276,29 @@ abstract class AbstractActor extends Configurable {
 	}
 }
 
-class PiGraph extends AbstractActor, Graph, PeriodicElement {
+class PiGraph extends AbstractActor, RefinementContainer, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
 	
-	// is used to link the cluster to its to-be-made C refinement code
-	contains Refinement refinement 
+	// is used to link the cluster to its to-be-made C refinement code	
+	// contains Refinement[] refinements
 	
 	// wish I could set the type as SynthesisResult, but this causes double inclusion
 	// we'll have to cast manually every time...
 	Object synthesisResult
 	
-	Arch targetArch
+	// whether the graph should be flattened if it is a cluster/subgraph
+	boolean toFlatten = "true"
+	
+	// whether the graph should be converted to single-rate if it is a cluster/subgraph
+	boolean toSrdag = "true"
+	
+	// returns the first refinement in the list.
+	// To use only AFTER scheduling-mapping, where a single refinement is chosen for implementation
+	op Refinement getRefinement() {
+		return refinements.first
+	}
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
@@ -778,9 +788,21 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		val PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor
 		piMMResolverVisitor.casePiGraph(this);
 	}
+	
+	op void addRefinement(Refinement ref) {
+		refinements.add(ref)
+	}
+	
+	op Refinement[] getHeaderRefinements() {
+		return refinements.filter(CHeaderRefinement).toEList
+	}
+	
+	op Refinement[] getPiSDFRefinements() {
+		return refinements.filter(PiSDFRefinement).toEList
+	}
+	
 }
 
-enum Arch{CPU, FPGA}
 
 abstract class ExecutableActor extends AbstractActor {
 }
@@ -800,6 +822,12 @@ interface RefinementContainer {
   		else {
   			refinements.add(ref)
   		}
+  	}
+  	op void addRefinement(Refinement ref) {
+  		refinements.add(ref)
+  	}
+  	op void clearRefinements() {
+  		refinement.remove
   	}
 }
 
@@ -1170,11 +1198,15 @@ interface Refinement {
 	}
 	op boolean isHierarchical()
 	boolean generated = "false"
+	op String getName()
 }
 
 class PiSDFRefinement extends Refinement {
 	op boolean isHierarchical() {
 		return (getFilePath() !== null) && !getFilePath().isEmpty()
+	}
+	op String getName() {
+		return getFilePath()
 	}
 }
 
@@ -1237,6 +1269,15 @@ class CHeaderRefinement extends Refinement {
 			}
 		}
 		return result + ")";
+	}	
+	
+	op String getName() {
+		if(loopPrototype !== null) {
+			return loopPrototype.name
+			}
+		else {
+			return null
+		}
 	}
 	
 }
@@ -1268,6 +1309,7 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op unique Parameter[] getOutputDependentParameters() {
 		return outgoingDependencies.filterNull.map[target].filter(Parameter).toEList.unmodifiableView
 	}
+
 }
 
 class MoldableParameter extends Parameter {

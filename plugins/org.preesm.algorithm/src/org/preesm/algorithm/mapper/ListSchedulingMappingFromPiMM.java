@@ -144,6 +144,7 @@ public class ListSchedulingMappingFromPiMM extends ListSchedulingMappingFromDAG 
       inputs.put(AbstractWorkflowNodeImplementation.KEY_SDF_DAG, dag);
       mapping = super.execute(inputs, parameters, monitor, nodeName, workflow);
     }
+
     return mapping;
   }
 

@@ -44,13 +44,11 @@
  */
 package org.preesm.algorithm.mapper.graphtransfo;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
@@ -73,13 +71,13 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -358,65 +356,160 @@ public class SdfToDagConverter {
    * @param scenario
    *          the scenario
    */
+  // private static void addInitialConstraintsProperties_Sauvegarde(final MapperDAG dag, final Scenario scenario) {
+  // final EList<
+  // Entry<ComponentInstance, EList<AbstractActor>>> entrySet = scenario.getRefConstraints().getGroupConstraints();
+  //
+  // for (final Entry<ComponentInstance, EList<AbstractActor>> cg : entrySet) {
+  // // Iterating over vertices in DAG with their SDF ref in the
+  // // constraint group
+  // final Set<
+  // String> sdfVertexIds = cg.getValue().stream().map(AbstractVertex::getVertexPath).collect(Collectors.toSet());
+  //
+  // for (final DAGVertex dagVertex : dag.vertexSet()) {
+  // final MapperDAGVertex mapperVertex = (MapperDAGVertex) dagVertex;
+  //
+  // final AbstractVertex referencePiVertex = mapperVertex.getReferencePiVertex();
+  // final String lookingFor = mapperVertex.getInfo();
+  //
+  // if (sdfVertexIds.contains(lookingFor)) {
+  //
+  // final ComponentInstance currentComponentInstance = cg.getKey();
+  // if (currentComponentInstance.getComponent() instanceof ProcessingElement) {
+  //
+  // if (!mapperVertex.getInit().isMapable(currentComponentInstance)) {
+  //
+  // mapperVertex.getInit().addOperator(currentComponentInstance);
+  //
+  // // Initializes a default timing that may be erased
+  // // when timings are imported
+  // if (referencePiVertex instanceof final AbstractActor actor) {
+  // final Timing newTiming = new Timing(currentComponentInstance.getComponent(), actor);
+  // mapperVertex.getInit().addTiming(newTiming);
+  // } else {
+  // mapperVertex.getInit().addTiming(new Timing(currentComponentInstance.getComponent(), null));
+  // }
+  // }
+  //
+  // }
+  // }
+  // }
+  // }
+  // }
+
+  /**
+   * Retrieves the constraints and adds them to the DAG initial properties. Also imports timings.
+   *
+   * @param dag
+   *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
+   */
   private static void addInitialConstraintsProperties(final MapperDAG dag, final Scenario scenario) {
-    final EList<
-        Entry<ComponentInstance, EList<AbstractActor>>> entrySet = scenario.getConstraints().getGroupConstraints();
+    final List<
+        Entry<ComponentInstance, EList<Refinement>>> entrySet = scenario.getConstraints().getRefinementConstraints();
 
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : entrySet) {
-      // Iterating over vertices in DAG with their SDF ref in the
-      // constraint group
-      final Set<
-          String> sdfVertexIds = cg.getValue().stream().map(AbstractVertex::getVertexPath).collect(Collectors.toSet());
-      // We want to also add all actors that are in clusters
-      // cg.getValue().stream().filter(actor -> actor instanceof PiGraph)
-      // .flatMap(cluster -> ((Cluster) cluster).getActors().stream()).map(AbstractVertex::getVertexPath)
-      // .map(path -> sdfVertexIds.add(path));
+    // boucler sur les vertex du dag
+    final Set<DAGVertex> allVertices = dag.vertexSet();
 
-      for (final DAGVertex v : dag.vertexSet()) {
-        final MapperDAGVertex mv = (MapperDAGVertex) v;
+    for (final DAGVertex dagVertex : allVertices) {
+      final MapperDAGVertex mapperVertex = (MapperDAGVertex) dagVertex;
 
-        final AbstractVertex referencePiVertex = mv.getReferencePiVertex();
-        final String lookingFor = mv.getInfo();
+      // trouver leur acteur correspondant
+      final AbstractVertex correspondingActor = mapperVertex.getReferencePiVertex();
 
-        if (sdfVertexIds.contains(lookingFor)) {
+      // récupérer ses refinements et leurs mapping si il a des refinement, ajouter les timings
+      // et si rc n'est mappable nulle part ? Et si il n'est pas un abstractActor ?
+      if (correspondingActor instanceof final AbstractActor rc) {
+        final List<ComponentInstance> actorMappings = scenario.getPossibleMappings(rc);
 
-          final ComponentInstance currentIOp = cg.getKey();
-          if (currentIOp.getComponent() instanceof ProcessingElement) {
+        for (final ComponentInstance mapping : actorMappings) {
+          final Timing newTiming = new Timing(mapping.getComponent(), rc);
+          mapperVertex.getInit().addTiming(newTiming);
 
-            if (!mv.getInit().isMapable(currentIOp)) {
-
-              mv.getInit().addOperator(currentIOp);
-
-              // Initializes a default timing that may be erased
-              // when timings are imported
-              if (referencePiVertex instanceof final AbstractActor actor) {
-                final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
-                mv.getInit().addTiming(newTiming);
-              } else {
-                mv.getInit().addTiming(new Timing(currentIOp.getComponent(), null));
-              }
-            }
-
+          if (!mapperVertex.getInit().isMapable(mapping)) {
+            mapperVertex.getInit().addOperator(mapping);
           }
         }
+      } else {
+        // this is a vertex with no corresponding actor ! Probably a delay, or maybe a created specialActor
+        // it will therefore be mapped to the specialVertex-cappable components
+        scenario.getSimulationInfo().getSpecialVertexOperators().forEach(op -> mapperVertex.getInit().addOperator(op));
       }
+
     }
 
-    /*
-     * Special type vertices are first enabled on any core set in scenario to execute them
-     */
-    final TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
-    final List<DAGVertex> vList = new ArrayList<>();
-    final List<ComponentInstance> specialOpIds = scenario.getSimulationInfo().getSpecialVertexOperators();
-
-    while (it.hasNext()) {
-      final MapperDAGVertex v = (MapperDAGVertex) it.next();
-      if (SpecialVertexManager.isSpecial(v)) {
-        vList.add(v);
-        for (final ComponentInstance o : specialOpIds) {
-          v.getInit().addOperator(o);
-        }
-      }
-    }
   }
+
+  /**
+   * Retrieves the constraints and adds them to the DAG initial properties. Also imports timings
+   *
+   * @param dag
+   *          the dag
+   * @param architecture
+   *          the architecture
+   * @param scenario
+   *          the scenario
+   */
+  // private static void addInitialRefinementConstraintsProperties(final MapperDAG dag, final Scenario scenario) {
+  //
+  // final EList<
+  // Entry<ComponentInstance, EList<Refinement>>> refEntrySet = scenario.getRefConstraints().getGroupConstraints();
+  //
+  // for (final Entry<ComponentInstance, EList<Refinement>> cg : refEntrySet) {
+  // // Iterating over vertices in DAG with their SDF ref in the
+  // // constraint group
+  // final Set<
+  // String> sdfVertexIds = cg.getValue().stream().map(AbstractVertex::getVertexPath).collect(Collectors.toSet());
+  // // Set<String> sdfVertexIds = cg.getValue()
+  //
+  // for (final DAGVertex dagVertex : dag.vertexSet()) {
+  // final MapperDAGVertex mapperVertex = (MapperDAGVertex) dagVertex;
+  //
+  // final AbstractVertex referencePiVertex = mapperVertex.getReferencePiVertex();
+  // final String lookingFor = mapperVertex.getInfo();
+  //
+  // if (sdfVertexIds.contains(lookingFor)) {
+  //
+  // final ComponentInstance currentComponentInstance = cg.getKey();
+  // if (currentComponentInstance.getComponent() instanceof ProcessingElement) {
+  //
+  // if (!mapperVertex.getInit().isMapable(currentComponentInstance)) {
+  //
+  // mapperVertex.getInit().addOperator(currentComponentInstance);
+  //
+  // // Initializes a default timing that may be erased
+  // // when timings are imported
+  // if (referencePiVertex instanceof final AbstractActor actor) {
+  // final Timing newTiming = new Timing(currentComponentInstance.getComponent(), actor);
+  // mapperVertex.getInit().addTiming(newTiming);
+  // } else {
+  // mapperVertex.getInit().addTiming(new Timing(currentComponentInstance.getComponent(), null));
+  // }
+  // }
+  //
+  // }
+  // }
+  // }
+  // }
+  //
+  // /*
+  // * Special type vertices are first enabled on any core set in scenario to execute them
+  // */
+  // final TopologicalDAGIterator it = new TopologicalDAGIterator(dag);
+  // final List<DAGVertex> vList = new ArrayList<>();
+  // final List<ComponentInstance> specialOpIds = scenario.getSimulationInfo().getSpecialVertexOperators();
+  //
+  // while (it.hasNext()) {
+  // final MapperDAGVertex v = (MapperDAGVertex) it.next();
+  // if (SpecialVertexManager.isSpecial(v)) {
+  // vList.add(v);
+  // for (final ComponentInstance o : specialOpIds) {
+  // v.getInit().addOperator(o);
+  // }
+  // }
+  // }
+  // }
 }

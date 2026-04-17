@@ -68,7 +68,8 @@ import org.preesm.model.slam.Design;
 import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
 
 /**
- * This class performs scheduling thanks to a choco constraint programming formulation.
+ * This class performs scheduling thanks to a choco constraint programming formulation. Operates on Single-Rate Directed
+ * Acyclic Graph.
  * <p>
  * Be aware that the mapping constraints specified by the user will not be respected!
  *
@@ -172,7 +173,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     final Solution s = new Solution(schedModel);
     while (solver.solve()) {
       s.record();
-      // if there was a graph period, then we just look for one solution
+      // if there was a graph period given, then we just look for one solution
       if (graphPeriod > 0) {
         break;
       }
@@ -277,12 +278,19 @@ public class ChocoScheduler extends PeriodicScheduler {
     }
   }
 
+  /**
+   *
+   * @param absGraph
+   *          the abstract graph
+   * @return a map of IDs and the corresponding tasks
+   */
   protected SortedMap<Integer, Task>
       createTasksFromAbsGraph(DefaultDirectedGraph<VertexAbstraction, EdgeAbstraction> absGraph) {
 
     final SortedMap<Integer, Task> res = new TreeMap<>();
     final Map<VertexAbstraction, Task> vaTOtask = new HashMap<>();
-    int tid = 0; // it must start at 0 since it is use in arrays in the model
+    int tid = 0; // it must start at 0 since it is used in arrays in the model
+
     // set ids and create task set
     List<VertexAbstraction> toVisit = new LinkedList<>(firstNodes);
     while (!toVisit.isEmpty()) {
@@ -300,11 +308,13 @@ public class ChocoScheduler extends PeriodicScheduler {
         updateNbVisits(absGraph, oppositeva, false, toVisit);
       }
     }
+
     // set predId
     toVisit = new LinkedList<>(lastNodes);
     while (!toVisit.isEmpty()) {
       final VertexAbstraction va = toVisit.remove(0);
       final Task tva = vaTOtask.get(va);
+
       for (final EdgeAbstraction ea : absGraph.incomingEdgesOf(va)) {
         final VertexAbstraction oppositeva = absGraph.getEdgeSource(ea);
         tva.predId.add(vaTOtask.get(oppositeva).id);
@@ -312,6 +322,7 @@ public class ChocoScheduler extends PeriodicScheduler {
         updateNbVisits(absGraph, oppositeva, true, toVisit);
       }
     }
+
     // set allPredId
     toVisit = new LinkedList<>(firstNodes);
     while (!toVisit.isEmpty()) {

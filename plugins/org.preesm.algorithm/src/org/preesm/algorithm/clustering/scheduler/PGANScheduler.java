@@ -273,7 +273,7 @@ public class PGANScheduler {
 
     // Add constraint to the cluster
     for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(actors, scenario)) {
-      scenario.getConstraints().addConstraint(component, cluster);
+      scenario.addConstraint(component, cluster);
     }
 
     // Build corresponding hierarchical schedule
@@ -361,7 +361,8 @@ public class PGANScheduler {
 
         // Add constraint to the cluster
         for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(childActors, scenario)) {
-          scenario.getConstraints().addConstraint(component, newCluster);
+          // scenario.getConstraints().addConstraint(component, newCluster);
+          scenario.addConstraint(component, graph);
         }
 
         // Attached to the new schedule

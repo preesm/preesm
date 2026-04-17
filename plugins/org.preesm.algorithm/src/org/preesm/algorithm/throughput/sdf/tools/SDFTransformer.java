@@ -188,6 +188,8 @@ public interface SDFTransformer {
 
   /**
    * normalize an SDF graph for the liveness test with the sufficient condition and for periodic schedule computation.
+   * This method computes a normalized rate for each actor, based on its prod/cons and the LCM of all actors' repetition
+   * value.
    *
    * @param sdf
    *          graph

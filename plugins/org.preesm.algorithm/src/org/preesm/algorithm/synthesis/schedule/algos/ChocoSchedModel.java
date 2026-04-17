@@ -59,7 +59,7 @@ public class ChocoSchedModel {
   protected final int         nbTasks;
   protected final Model       model;
   protected final IntVar[]    startTimeVars;
-  protected final BoolVar[][] mapping;
+  protected final BoolVar[][] mapping;      // Array with tasks on a side and PEs on the other
 
   /**
    *
@@ -113,6 +113,8 @@ public class ChocoSchedModel {
 
     for (int ic = 1; ic < nbCores; ic++) {
       for (int it = ic; it < nbTasks; it++) {
+        // Supposition : this constraint tries to equalize the load on all cores
+        // by forcing the load on the previous core to be more or equal to the load on the current core
         model.addClausesSumBoolArrayGreaterEqVar(Arrays.copyOfRange(mappingT[ic - 1], 0, it), mappingT[ic][it]);
       }
       // all cores must be used at least once if less than tasks
@@ -122,7 +124,7 @@ public class ChocoSchedModel {
       }
     }
 
-    // start time and finish
+    // start time and finish time constraints on each task
     for (final Task t : tasks.values()) {
       startTimeVars[t.id] = model.intVar("s" + t.id, t.ns, t.xs, false);
       finishTimeVars[t.id] = model.intVar("f" + t.id, t.ns + t.load, t.xs + t.load, false);
@@ -134,7 +136,7 @@ public class ChocoSchedModel {
     // all other constraints
     for (final Task t : tasks.values()) {
 
-      // start time and preds
+      // start time and predecessors
       for (final Integer pred : t.predId) {
         final Task temp = tasks.get(pred);
         model.arithm(finishTimeVars[temp.id], "<=", startTimeVars[t.id]).post();

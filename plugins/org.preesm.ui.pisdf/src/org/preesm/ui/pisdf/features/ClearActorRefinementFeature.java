@@ -146,7 +146,7 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
       }
 
       if (rc != null) {
-        rc.setRefinement(null);
+        rc.clearRefinements();
 
         // Call the layout feature
         layoutPictogramElement(pes[0]);

@@ -124,6 +124,7 @@ public class ScenarioConstants {
   public static final String TIMING_TYPE   = "timingtype";
   public static final String TIMINGS       = "timings";
   public static final String TYPE          = "type";
+  public static final String REFINEMENT    = "refinement";
 
   public static final String URL = "url";
 

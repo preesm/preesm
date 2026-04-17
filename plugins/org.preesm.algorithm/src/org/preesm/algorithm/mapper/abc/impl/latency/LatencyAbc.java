@@ -476,7 +476,10 @@ public abstract class LatencyAbc {
       PreesmLogger.getLogger().log(Level.WARNING, msg);
     }
 
-    if (initOperators.isEmpty()) {
+    // if a vertex has no corresponding pisdf actor, I suppose it must be a special actor (comms, implode/explode...)
+    // and therefore can be mapped to any arch anyway
+    if (initOperators.isEmpty() && vertex.getReferencePiVertex() != null) {
+      // if (initOperators.isEmpty()) {
       final String message = "Empty operator set for a vertex: " + vertex.getName()
           + ". Consider relaxing constraints in scenario.";
       PreesmLogger.getLogger().log(Level.SEVERE, message);

@@ -86,7 +86,6 @@ import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -421,7 +420,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     StringConcatenation result = new StringConcatenation();
     final CharSequence coreBlockHeader = printCoreBlockHeader(coreBlock);
     result.append(coreBlockHeader);
-    if (coreBlock.getAcceleratorArchs().contains(Arch.FPGA)) {
+    if (coreBlock.getAcceleratorTypes().contains("fpga")) {
       result.append("#include \"xcl2.hpp\"\n\n");
     }
     final String indentationCoreBlock = (coreBlockHeader.length() > 0)
@@ -444,11 +443,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // Visit init block
     result = printInitBlock(coreBlock, result, indentationCoreBlock);
 
-    for (final Arch arch : coreBlock.getAcceleratorArchs()) {
-      switch (arch) {
-        case FPGA -> printOpenclFpgaDeclarations(result, coreBlock);
-        default -> throw new PreesmRuntimeException("unimplemented accelerator architecture : " + arch);
-      }
+    if (coreBlock.getAcceleratorTypes().contains("fpga")) {
+      printOpenclFpgaDeclarations(result, coreBlock);
     }
 
     // Visit loop block

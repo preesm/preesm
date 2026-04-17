@@ -281,7 +281,8 @@ public class ScenariosGenerator {
     for (final ComponentInstance coreId : coreIds) {
       for (final AbstractActor actor : piGraph.getAllActors()) {
         // Add constraint: aa can be run on ci
-        scenario.getConstraints().addConstraint(coreId, actor);
+        // scenario.getConstraints().addConstraint(coreId, actor);
+        scenario.addConstraint(coreId, actor);
       }
       // Add special actors operator id (all cores can execute special
       // actors)

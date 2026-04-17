@@ -33,6 +33,7 @@ import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
@@ -133,11 +134,16 @@ public class ClusteringScape extends ClusterPartitioner {
   private void scenarioUpdate() {
 
     // remove all actors to force mapping of each to the appropriate architecture type
-    scenario.getConstraints().getGroupConstraints().forEach(x -> x.getValue().clear());
+    scenario.getConstraints().getRefinementConstraints().forEach(x -> x.getValue().clear());
 
     // map all call on CPU
-    scenario.getConstraints().getGroupConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
-        .forEach(x -> scenario.getAlgorithm().getAllActors().forEach(actor -> x.getValue().add(actor)));
+    // scenario.getConstraints().getGroupConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
+    // .forEach(x -> scenario.getAlgorithm().getAllActors().forEach(actor -> x.getValue().add(actor)));
+    // Pardon pour cette horreur
+    scenario.getConstraints().getRefinementConstraints().stream().filter(x -> x.getKey().getComponent() instanceof CPU)
+        .forEach(
+            x -> scenario.getAlgorithm().getAllActors().stream().filter(actor -> actor instanceof RefinementContainer)
+                .forEach(actor -> x.getValue().addAll(((RefinementContainer) actor).getRefinements())));
   }
 
   /**

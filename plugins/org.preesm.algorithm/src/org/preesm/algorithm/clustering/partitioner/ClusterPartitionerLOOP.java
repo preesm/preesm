@@ -115,7 +115,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       subGraph.setClusterValue(true);
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(localPluralLOOPs,
           this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+        this.scenario.addConstraint(component, subGraph);
       }
       // check consistency
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
@@ -152,7 +152,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       subGraph.setClusterValue(true);
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(graphNotLocalSingleLOOPs,
           this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+        this.scenario.addConstraint(component, subGraph);
       }
 
     }
@@ -271,7 +271,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
     subGraph.setClusterValue(true);
 
     ClusteringHelper.getListOfCommonComponent(subloop, this.scenario)
-        .forEach(c -> this.scenario.getConstraints().addConstraint(c, subGraph));
+        .forEach(c -> this.scenario.addConstraint(c, subGraph));
 
     clusterId++;
     for (final AbstractActor dupActor : dupActorsList) {
@@ -283,7 +283,7 @@ public class ClusterPartitionerLOOP extends ClusterPartitioner {
       subGraph.setClusterValue(true);
 
       ClusteringHelper.getListOfCommonComponent(subloop, this.scenario)
-          .forEach(c -> this.scenario.getConstraints().addConstraint(c, subGraph));
+          .forEach(c -> this.scenario.addConstraint(c, subGraph));
 
       clusterId++;
     }

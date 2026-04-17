@@ -88,6 +88,7 @@ public class PeriodicSchedulerSDF {
     // set edges value : v = h (use the normalized version of the graph)
     // h = (out - M0 - gcd)* alpha(e)
     final Map<String, Double> edgeValue = new LinkedHashMap<>(graph.edgeSet().size());
+
     for (final SDFEdge e : graph.edgeSet()) {
       final double gcd = MathFunctionsHelper.gcd(e.getProd().longValue(), e.getCons().longValue());
       final double alpha = (double) e.getPropertyBean().getValue("normalizationFactor");
@@ -139,7 +140,7 @@ public class PeriodicSchedulerSDF {
             if (vertexDistance.get(e.getTarget().getName()) > (vertexDistance.get(e.getSource().getName())
                 + edgeValue.get(e.getPropertyBean().getValue("edgeName")))) {
               // negative circuit detected if a part of the graph is not live the global graph is not too
-              final String message = "Negativ cycle detected !!";
+              final String message = "Negative cycle detected !!";
               throw new PreesmRuntimeException(message);
             }
           }
@@ -172,46 +173,44 @@ public class PeriodicSchedulerSDF {
     SDFTransformer.normalize(graph);
 
     // if a periodic schedule exists for the graph
-    if (isPeriodic(graph)) {
-      // add a self loop edge for each actor if selfLoopEdge = true
-      ArrayList<SDFEdge> selfLoopEdgesList = null;
-      if (selfLoopEdge) {
-        selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
-        for (final SDFAbstractVertex actor : graph.vertexSet()) {
-          final int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
-          final Double alpha = 1.;
-          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z,
-              z, null);
-          selfLoopEdgesList.add(edge);
-          edge.setPropertyValue("normalizationFactor", alpha);
-        }
-      }
-
-      // Step 2: compute the normalized period K
-      computeNormalizedPeriod(graph, method);
-
-      // remove the self loop edges added before
-      if (selfLoopEdge) {
-        for (final SDFEdge edge : selfLoopEdgesList) {
-          graph.removeEdge(edge);
-        }
-      }
-
-      // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      final double throughput = computeActorsPeriod(graph);
-
-      // Step 4: compute the start date of the first execution of each actor
-      computeActorsStartingTime(graph);
-
-      timer.stop();
-      return throughput;
-
-    } else {
+    if (!isPeriodic(graph)) {
 
       timer.stop();
       final String message = "A Periodic Schedule does not exist for this graph";
       throw new PreesmRuntimeException(message);
     }
+    // add a self loop edge for each actor if selfLoopEdge = true
+    ArrayList<SDFEdge> selfLoopEdgesList = null;
+    if (selfLoopEdge) {
+      selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
+        final int z = ((Double) actor.getPropertyBean().getValue("normalizedRate")).intValue();
+        final Double alpha = 1.;
+        final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null, z, z, z,
+            null);
+        selfLoopEdgesList.add(edge);
+        edge.setPropertyValue("normalizationFactor", alpha);
+      }
+    }
+
+    // Step 2: compute the normalized period K
+    computeNormalizedPeriod(graph, method);
+
+    // remove the self loop edges added before
+    if (selfLoopEdge) {
+      for (final SDFEdge edge : selfLoopEdgesList) {
+        graph.removeEdge(edge);
+      }
+    }
+
+    // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
+    final double throughput = computeActorsPeriod(graph);
+
+    // Step 4: compute the start date of the first execution of each actor
+    computeActorsStartingTime(graph);
+
+    timer.stop();
+    return throughput;
 
   }
 
@@ -232,37 +231,35 @@ public class PeriodicSchedulerSDF {
     SDFTransformer.normalize(graph);
 
     // if a periodic schedule exists for the graph
-    if (isPeriodic(graph)) {
-      // add a self loop edge for each actor if selfLoopEdge = true
-      ArrayList<SDFEdge> selfLoopEdgesList = null;
-      if (selfLoopEdge) {
-        selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
-        for (final SDFAbstractVertex actor : graph.vertexSet()) {
-          final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"),
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"),
-              (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
-          selfLoopEdgesList.add(edge);
-        }
-      }
-
-      // Step 2: compute the normalized period K
-      computeNormalizedPeriod(graph, method);
-
-      // remove the self loop edges added before
-      if (selfLoopEdge) {
-        for (final SDFEdge edge : selfLoopEdgesList) {
-          graph.removeEdge(edge);
-        }
-      }
-
-      // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
-      return computeActorsPeriod(graph);
-
-    } else {
+    if (!isPeriodic(graph)) {
       final String message = "A Periodic Schedule does not exist for this graph";
       throw new PreesmRuntimeException(message);
     }
+    // add a self loop edge for each actor if selfLoopEdge = true
+    ArrayList<SDFEdge> selfLoopEdgesList = null;
+    if (selfLoopEdge) {
+      selfLoopEdgesList = new ArrayList<>(graph.vertexSet().size());
+      for (final SDFAbstractVertex actor : graph.vertexSet()) {
+        final SDFEdge edge = GraphStructureHelper.addEdge(graph, actor.getName(), null, actor.getName(), null,
+            (Integer) actor.getPropertyBean().getValue("normalizedRate"),
+            (Integer) actor.getPropertyBean().getValue("normalizedRate"),
+            (Integer) actor.getPropertyBean().getValue("normalizedRate"), null);
+        selfLoopEdgesList.add(edge);
+      }
+    }
+
+    // Step 2: compute the normalized period K
+    computeNormalizedPeriod(graph, method);
+
+    // remove the self loop edges added before
+    if (selfLoopEdge) {
+      for (final SDFEdge edge : selfLoopEdgesList) {
+        graph.removeEdge(edge);
+      }
+    }
+
+    // Step 3: compute actors period and define the maximum throughput of the computed periodic schedule
+    return computeActorsPeriod(graph);
   }
 
   /**
@@ -382,8 +379,10 @@ public class PeriodicSchedulerSDF {
     for (final SDFAbstractVertex a : graph.vertexSet()) {
       // add an edge between the dummy actor and the selected actor
       final SDFEdge e = GraphStructureHelper.addEdge(graph, "dummy", null, a.getName(), null, 1, 1, 0, null);
+
       // set the value of the added edge to 0
       edgeValue.put((String) e.getPropertyBean().getValue("edgeName"), 0.);
+
       // set the vertex distance to 0
       vertexDistance.put(a.getName(), .0);
     }

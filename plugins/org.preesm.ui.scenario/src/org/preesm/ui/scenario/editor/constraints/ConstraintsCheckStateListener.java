@@ -56,7 +56,9 @@ import org.eclipse.ui.forms.widgets.FormToolkit;
 import org.eclipse.ui.forms.widgets.Section;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -140,6 +142,9 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       } else if (element instanceof final AbstractActor actor) {
         fireOnCheck(actor, isChecked);
         updateCheck();
+      } else if (element instanceof final CHeaderRefinement ref) {
+        fireOnCheckRefinement(ref, isChecked);
+        updateCheck();
       }
     });
     this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);
@@ -177,13 +182,14 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void fireOnCheck(final AbstractActor abstractActor, final boolean isChecked) {
     if (this.currentOpId != null) {
       if (isChecked) {
-        this.scenario.getConstraints().addConstraint(this.currentOpId, abstractActor);
+        // this.scenario.getConstraints().addConstraint(this.currentOpId, abstractActor);
+        this.scenario.addConstraint(currentOpId, abstractActor);
       } else {
-        this.scenario.getConstraints().getGroupConstraints().get(currentOpId).remove(abstractActor);
+        // this.scenario.getConstraints().getGroupConstraints().get(currentOpId).remove(abstractActor);
+        this.scenario.addConstraint(currentOpId, abstractActor);
       }
     }
 
-    // Checks the children of the current vertex
     if (abstractActor instanceof final Actor actor && actor.isHierarchical()) {
       final PiGraph subGraph = actor.getSubGraph();
       for (final AbstractActor v : this.contentProvider.filterPISDFChildren(subGraph.getActors())) {
@@ -191,6 +197,27 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       }
     }
 
+  }
+
+  /**
+   * Fire on check.
+   *
+   * @param ref
+   *          the refinement
+   * @param isChecked
+   *          the is checked
+   */
+  private void fireOnCheckRefinement(final Refinement ref, final boolean isChecked) {
+    if (this.currentOpId != null) {
+      if (isChecked) {
+        this.scenario.getConstraints().addConstraint(this.currentOpId, ref);
+        // the corresponding actor is automatically checked
+        fireOnCheck(ref.getAbstractActor(), true);
+      } else {
+        this.scenario.getConstraints().getRefinementConstraints().get(currentOpId).remove(ref);
+        // un-check the corresponding actor if no other refinement is checked
+      }
+    }
   }
 
   /*
@@ -226,6 +253,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   public void updateCheck() {
     if (this.scenario != null) {
       updateCheckPISDF();
+      updateCheckActor();
     }
   }
 
@@ -235,9 +263,12 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   private void updateCheckPISDF() {
     final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      final Set<AbstractActor> cgSet = new LinkedHashSet<>();
+      // final Set<AbstractActor> cgSet = new LinkedHashSet<>();
+      final Set<Object> cgSet = new LinkedHashSet<>();
 
-      final List<AbstractActor> cg = this.scenario.getConstraints().getGroupConstraints().get(this.currentOpId);
+      final List<AbstractActor> cg = this.scenario.getConstraints().getRefinementConstraints().get(this.currentOpId)
+          .stream().map(Refinement::getAbstractActor).toList();
+      final List<Refinement> crg = this.scenario.getConstraints().getRefinementConstraints().get(this.currentOpId);
 
       if (cg != null) {
         // Retrieves the elements in the tree that have the same name as
@@ -249,12 +280,28 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
         }
       }
 
+      if (crg != null) {
+        for (final Refinement ref : crg) {
+          if (ref != null) {
+            cgSet.add(ref);
+          }
+        }
+      }
+
       this.treeViewer.setCheckedElements(cgSet.toArray());
 
       // If all the children of a graph are checked, it is checked itself
       boolean allChildrenChecked = true;
       for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getActors())) {
-        allChildrenChecked &= this.treeViewer.getChecked(v);
+        boolean allRefinementsChecked = true;
+        for (final Refinement ref : this.contentProvider.filterRefinements(v)) {
+          // allChildrenChecked &= this.treeViewer.getChecked(v);
+          allRefinementsChecked &= this.treeViewer.getChecked(ref);
+        }
+        if (!allRefinementsChecked) {
+          this.treeViewer.setChecked(v, false);
+        }
+        allChildrenChecked &= allRefinementsChecked;
       }
 
       if (allChildrenChecked) {
@@ -262,6 +309,13 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       }
 
     }
+  }
+
+  /**
+   * Update check actors.
+   */
+  private void updateCheckActor() {
+
   }
 
   /**

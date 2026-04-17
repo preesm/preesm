@@ -37,6 +37,8 @@
  */
 package org.preesm.ui.scenario.editor.simulation;
 
+import org.eclipse.emf.common.util.BasicEList;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.jface.viewers.CheckStateChangedEvent;
 import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ICheckStateListener;
@@ -46,6 +48,8 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.forms.widgets.Section;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 
@@ -113,9 +117,17 @@ public class OperatorCheckStateListener implements ICheckStateListener, PaintLis
 
           if (isChecked) {
             OperatorCheckStateListener.this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
+
+            final EList<AbstractActor> sas = new BasicEList<>(OperatorCheckStateListener.this.scenario.getAlgorithm()
+                .getAllActors().stream().filter(SpecialActor.class::isInstance).map(a -> (SpecialActor) a).toList());
+
+            OperatorCheckStateListener.this.scenario.getConstraints().addConstraints(componentInstance, sas);
           } else {
             OperatorCheckStateListener.this.scenario.getSimulationInfo().getSpecialVertexOperators()
                 .remove(componentInstance);
+
+            OperatorCheckStateListener.this.scenario.getConstraints().getSpecialConstraints()
+                .removeIf(entry -> entry.getKey().equals(componentInstance));
           }
 
           OperatorCheckStateListener.this.propertyListener.propertyChanged(this, IEditorPart.PROP_DIRTY);

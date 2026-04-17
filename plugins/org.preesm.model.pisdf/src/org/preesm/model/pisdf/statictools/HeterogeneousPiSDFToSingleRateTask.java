@@ -40,7 +40,6 @@
 package org.preesm.model.pisdf.statictools;
 
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -50,7 +49,6 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.workflow.elements.Workflow;
@@ -64,7 +62,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 @PreesmTask(id = "heterogeneous-pisdf-srdag", name = "Heterogeneous PiSDF Single-Rate Transformation",
     category = "Graph Transformation",
 
-    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class), },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = HeterogeneousPiSDFToSingleRateTask.CONSISTENCY_METHOD,
@@ -79,6 +77,7 @@ public class HeterogeneousPiSDFToSingleRateTask extends AbstractTaskImplementati
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
     final PiGraph graph = (PiGraph) inputs.get(KEY_PI_GRAPH);
+
     logger.info(() -> "Computing Repetition Vector for graph [" + graph.getName() + "]");
 
     final String consistencyMethod = parameters.get(CONSISTENCY_METHOD);
@@ -87,21 +86,14 @@ public class HeterogeneousPiSDFToSingleRateTask extends AbstractTaskImplementati
       throw new PreesmRuntimeException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
 
-    // list of pigraphs that must not be flattened
-    final List<String> flattenExclusionList = graph.getAllChildrenGraphs().stream().filter(PiGraph::isClusterValue)
-        .map(c -> c.getName()).toList();
-
-    // List of pigraphs that must not be converted to srdag
-    final List<String> srdagExclusionList = graph.getAllChildrenGraphs().stream()
-        .filter(g -> (g.isCluster() && g.getTargetArch().equals(Arch.FPGA))).map(c -> c.getName()).toList();
-
     // Flatten the graph
     // apparemment pas nécessaire ???
     // final PiGraph flatGraph = PiSDFHeterogeneousFlattener.flatten(graph, flattenExclusionList);
 
     // then convert to single-rate
-    final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(graph, method, flattenExclusionList,
-        srdagExclusionList);
+    // final PiGraph result = PiSDFToSingleRate.computeWithExclusionLists(graph, method, flattenExclusionList,
+    // srdagExclusionList);
+    final PiGraph result = PiSDFToSingleRate.compute(graph, method);
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(KEY_PI_GRAPH, result);
