@@ -129,16 +129,18 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   public PiSDFSubgraphBuilder(PiGraph parentGraph, List<AbstractActor> subGraphActors, String subGraphName) {
     this.parentGraph = parentGraph;
     this.subGraphActors = new LinkedList<>(subGraphActors);
+
     // Create a PiGraph for the subgraph
     this.subGraph = PiMMUserFactory.instance.createPiGraph();
     this.subGraph.setName(subGraphName);
     this.subGraph.setUrl(this.parentGraph.getUrl() + "/" + subGraphName + ".pi");
     this.visitedFifo = new LinkedList<>();
     this.nbInputCfgInterface = 0;
+
     // Compute BRV for the parent graph
     this.repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
-    // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
 
+    // Compute repetition count of the subgraph with great common divisor over all subgraph actors repetition counts
     this.subGraphRepetition = MathFunctionsHelper.gcd(CollectionUtil.mapGetAll(repetitionVector, subGraphActors));
     if (subGraphName.contains("sub")) {
       this.subGraphRepetition = 1L;
@@ -152,14 +154,16 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
    * @return The resulting subgraph.
    */
   public PiGraph build() {
+
     // Add subgraph to parent graph
     this.parentGraph.addActor(subGraph);
+
     // Add actors to the new subgraph
     for (final AbstractActor actor : this.subGraphActors) {
       doSwitch(actor);
     }
 
-    // Check consistency of parent graph
+    // Check consistency of parent graph &
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
@@ -179,8 +183,10 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseDataInputPort(DataInputPort object) {
+
     // If caseFifo returns true, it means that the port lead to an actor outside the subgraph
     if (Boolean.TRUE.equals(doSwitch(object.getFifo()))) {
+
       // Setup the input interface
       // Interfaces are named in numerical order to enable mapping between topgraph and subgraphs in SimSDP
       final DataInputInterface inputInterface = PiMMUserFactory.instance.createDataInputInterface();
@@ -195,6 +201,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       // Setup input of hierarchical actor
       final DataInputPort inputPort = inputInterface.getGraphPort();
       inputPort.setName(inputName); // same name than DataInputInterface
+
       // Compute port expression
       final long actorRepetition = this.repetitionVector.get(object.getContainingActor());
       long portExpression = object.getExpression().evaluateAsLong() * actorRepetition / this.subGraphRepetition;

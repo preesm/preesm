@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.preesm.algorithm.clustering.MergingHeuristics.MinimalMergingHeuristic;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -54,6 +55,7 @@ public class ClusterBuilder {
      */
 
     // ----- PART 1 : figure out whether we're already in a homogeneous cluster -----
+    // RC : move this in assessGraph of MinimalMergingHeuristic
 
     // We don't take into account special actors (fork, join...) as they can be executed anywhere
     final List<AbstractActor> actors = graph.getActors().stream()
@@ -115,10 +117,11 @@ public class ClusterBuilder {
 
     // 3) clusterize actors at this level of hierarchy
     int i = 0;
-    boolean graph_is_fully_searched = false;
+    boolean graphIsFullySearched = false;
+
     // visit all actors to search those that can act as seeds
-    do {
-      boolean seed_found = false;
+    while (!graphIsFullySearched) {
+      boolean seedFound = false;
       AbstractActor actor;
       Component clusteringComponent = null;
 
@@ -129,7 +132,7 @@ public class ClusterBuilder {
         if (!actorIsVisited.get(actor)) {
           actorIsVisited.put(actor, true);
 
-          // check actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
+          // check if actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
           // clusterize from it
           final Map<String, Object> params = new HashMap<>();
           params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
@@ -141,18 +144,18 @@ public class ClusterBuilder {
             clusteringComponent = heuristic.pickClusteringComponent(actor, params);
 
             // now we can mark the actor for clustering
-            seed_found = true;
+            seedFound = true;
 
           }
 
           if (i == listActors.size()) {
             // this is the last actor to visit, last chance for a clustering
-            graph_is_fully_searched = true;
+            graphIsFullySearched = true;
           }
         }
-      } while (actorIsVisited.get(actor) && !seed_found && !graph_is_fully_searched);
+      } while (actorIsVisited.get(actor) && !seedFound && !graphIsFullySearched);
 
-      if (seed_found) {
+      if (seedFound) {
         actorIsVisited.put(actor, true);
 
         final Component clusteringArch = clusteringComponent;
@@ -200,10 +203,8 @@ public class ClusterBuilder {
                 + " is not documented in PiSDF.xcore's architecture enum, please add it");
           }
         }
-
       }
-
-    } while (!graph_is_fully_searched);
+    }
 
     return listClusters;
 
@@ -267,7 +268,6 @@ public class ClusterBuilder {
           actorsToMerge.addAll(successorList);
         }
       }
-
     }
 
     final List<Actor> seedPredecessorsSameArch = seed.getDirectPredecessors().stream().filter(Actor.class::isInstance)

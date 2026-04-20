@@ -186,12 +186,15 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
           .filter(x -> x instanceof ExecutableActor && !(x instanceof DelayActor) && !(x instanceof PiGraph))
           .forEach(x -> process(x, rank.getKey()));
     }
+
     // Return identified URCs
     return identifiedURCs;
   }
 
   /**
    * Processes the given base actor at the specified rank to construct URC lists.
+   *
+   * RC : first part is "seedable" part, and while loop part is "mergeable" part
    *
    * @param base
    *          The base actor to process.
@@ -201,6 +204,9 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
    */
   private Boolean process(AbstractActor base, Long rank) {
 
+    /*
+     * SEEDABLE PART
+     */
     // filter dummy single source starter
     if (base.getName().equals("single_source")
         || base.getDataInputPorts().stream().anyMatch(x -> x.getFifo().getSource().getName().equals("single_source"))) {
@@ -217,14 +223,20 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
     }
 
     // Check that all fifos are without delay
+    // RC : pretty straight-forward to use. Watch caseFifo method to see effect of the doSwitch
+    // RC : is a condition to seedable and mergeable ?
     final boolean hasDelay = base.getDataOutputPorts().stream().allMatch(x -> doSwitch(x.getFifo()).booleanValue());
 
     // Return false if rates are not homogeneous or that the corresponding actor was a sink (no output)
+    // RC : why is it a problem if actor is a sink ?
     if (!hasDelay || base.getDataOutputPorts().isEmpty()) {
       return false;
     }
 
-    // for each base construct an URC list
+    /*
+     * MERGEABLE PART
+     */
+    // for each base, construct an URC list
     final List<AbstractActor> actorURC = new LinkedList<>();
     actorURC.add(base);
     Long currentRank = rank + 1;
@@ -275,7 +287,6 @@ public class ClusteringPatternSeekerUrc extends ClusteringPatternSeeker {
       // Check if adding this candidate would create a cycle
       final Boolean noCycle = candidate.getDataInputPorts().stream().allMatch(
           x -> actorURC.contains(x.getFifo().getSource()) || getRank(x.getFifo().getSource()) < getRank(base));
-      // -----[one of actorURC] -{FIFO}-> [candidate] --- or rank of [actor] -{FIFO}-> [candidate] < rank of base
 
       // Check if the candidate satisfies the parallel conditions
       final Boolean para = finisher.getDataOutputPorts().stream().allMatch(

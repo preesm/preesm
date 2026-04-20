@@ -79,11 +79,13 @@ public class ClusteringPatternSeekerSrv extends ClusteringPatternSeeker {
    * @return first of identified SRV candidate.
    */
   public List<List<AbstractActor>> seek() {
+
     final List<List<AbstractActor>> identifiedSRVs = new LinkedList<>();
     final List<AbstractActor> actorSRV = new LinkedList<>();
 
     for (final AbstractActor srvCandidate : graph.getOnlyActors().stream()
         .filter(a -> a instanceof Actor || a instanceof SpecialActor).collect(Collectors.toList())) {
+
       if (brv.get(srvCandidate) > nPEs && !srvCandidate.getName().equals("single_source")
           && !srvCandidate.getName().contains("urc") && !srvCandidate.getName().contains("srv")) {
         actorSRV.add(srvCandidate);

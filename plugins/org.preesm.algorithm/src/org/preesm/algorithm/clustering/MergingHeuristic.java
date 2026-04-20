@@ -22,7 +22,7 @@ public abstract class MergingHeuristic {
   public static final int successor   = 1;
 
   /***
-   * Initializes the parameters of the heuristic
+   * Initializes the parameters of the heuristic. Can be skipped.
    *
    * @param graph
    *          the subgraph to inspect
@@ -31,7 +31,41 @@ public abstract class MergingHeuristic {
    * @param params
    *          the output of the method, that will be pass to the other methods to build the clusters
    */
-  public abstract void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params);
+  public void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params) {
+  }
+
+  /***
+   * Optional method. For some heuristics, it should be interesting to flatten subgraphs, especially if there is a lot
+   * of hierarchical levels, to accelerate horizontal clusterization or express parallelism to unlock new clusterization
+   * opportunities. If assessFlattening is not override, the graph will just be flattened.
+   *
+   * @param topGraph
+   *          the top graph
+   * @param subGraph
+   *          the current graph
+   * @param scenario
+   *          the scenario
+   * @param params
+   *          any parameter the heuristic requires
+   */
+  public void assessFlattening(PiGraph topGraph, PiGraph subGraph, Scenario scenario, Map<String, Object> params) {
+
+  }
+
+  /***
+   * Optional method. If there is hierarchy in the top graph, an entire subgraph could already be considered a cluster.
+   * Using this method can allow a faster clusterization compared to using assessSeedable and assessMergeable, using a
+   * more generalist heuristic.
+   *
+   * @param graph
+   *          the subgraph to inspect
+   * @param params
+   *          any parameter the heuristic requires
+   * @return true if the graph has been clusterized, false otherwise.
+   */
+  public boolean assessGraph(PiGraph graph, Map<String, Object> params) {
+    return false;
+  }
 
   /***
    * Assesses whether actor can be merged with the cluster started from the Actor seed.
@@ -47,7 +81,7 @@ public abstract class MergingHeuristic {
   public abstract boolean assessMergeable(AbstractActor seed, AbstractActor actor, Map<String, Object> params);
 
   /***
-   * Assesses whether actor can be used as a seed to cluster its neighbouring actors.
+   * Assesses whether actor can be used as a seed to cluster its neighboring actors.
    *
    * @param actor
    *          the actor
@@ -67,6 +101,8 @@ public abstract class MergingHeuristic {
    *          any parameter the heuristic requires
    * @return the chosen component type
    */
-  public abstract Component pickClusteringComponent(AbstractActor seed, Map<String, Object> params);
+  public Component pickClusteringComponent(AbstractActor seed, Map<String, Object> params) {
+    return null;
+  }
 
 }

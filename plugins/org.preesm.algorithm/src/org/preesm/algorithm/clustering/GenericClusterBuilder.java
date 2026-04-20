@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
+import org.preesm.algorithm.clustering.MergingHeuristics.MinimalMergingHeuristic;
 import org.preesm.algorithm.clustering.MergingHeuristics.SRVHeuristic;
 import org.preesm.algorithm.clustering.MergingHeuristics.URCHeuristic;
 import org.preesm.commons.logger.PreesmLogger;

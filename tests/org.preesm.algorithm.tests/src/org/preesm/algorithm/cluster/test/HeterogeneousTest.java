@@ -20,7 +20,7 @@ import org.junit.Test;
 import org.preesm.algorithm.clustering.ActorMerger;
 import org.preesm.algorithm.clustering.ClusterBuilder;
 import org.preesm.algorithm.clustering.MergingHeuristic;
-import org.preesm.algorithm.clustering.MinimalMergingHeuristic;
+import org.preesm.algorithm.clustering.MergingHeuristics.MinimalMergingHeuristic;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.Schedule;

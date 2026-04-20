@@ -1,7 +1,8 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.MergingHeuristics;
 
 import java.util.List;
 import java.util.Map;
+import org.preesm.algorithm.clustering.MergingHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -17,6 +18,16 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 
 public class MinimalMergingHeuristic extends MergingHeuristic {
+
+  public MinimalMergingHeuristic() {
+
+  }
+
+  @Override
+  public void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params) {
+    // TODO Auto-generated method stub
+
+  }
 
   /***
    * Successor actors are eligible for merging if all their predecessors have a mapping to the same arch refArchi.
@@ -78,12 +89,6 @@ public class MinimalMergingHeuristic extends MergingHeuristic {
           .getFirst();
     }
     return scenario.getPossibleMappings(actor).getFirst().getComponent();
-  }
-
-  @Override
-  public void initHeuristicParameters(PiGraph graph, Scenario scenario, Map<String, Object> params) {
-    // TODO Auto-generated method stub
-
   }
 
 }

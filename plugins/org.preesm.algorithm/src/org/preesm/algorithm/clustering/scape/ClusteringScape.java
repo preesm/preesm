@@ -114,13 +114,15 @@ public class ClusteringScape extends ClusterPartitioner {
 
     // Coarse clustering while cluster-able level are not reached
     coarseCluster();
+
     // Pattern identification
     patternIDs();
+
     // remove the temporary single sources that helped optimization algorithms
     final PiGraph multiBranch = new MultiBranch(graph).removeInitialSource();
     scenario.setAlgorithm(multiBranch);
-    // check consistency
 
+    // check consistency
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(multiBranch);

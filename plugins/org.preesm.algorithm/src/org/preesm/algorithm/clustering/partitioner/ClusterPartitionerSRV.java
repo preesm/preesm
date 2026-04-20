@@ -107,6 +107,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
         constrainedSRVs.add(srv);
       }
     }
+
     // Cluster constrained SRV chains.
     if (!graphSRVs.isEmpty()) {
       final List<AbstractActor> srv = graphSRVs.get(0);// cluster one by one
@@ -116,6 +117,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       final Long nPE = (long) numberOfPEs;
 
       subGraph.setClusterValue(true);
+
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
@@ -130,6 +132,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
             * brv.get(subGraph.getExecutableActors().get(0)) / scale);
         din.getDataPort().setExpression(din.getGraphPort().getExpression().evaluateAsLong());
       }
+
       for (final DataOutputInterface dout : subGraph.getDataOutputInterfaces()) {
         dout.getGraphPort().setExpression(dout.getGraphPort().getExpression().evaluateAsLong()
             * brv.get(subGraph.getExecutableActors().get(0)) / scale);
@@ -137,7 +140,8 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
       }
 
       subGraph.setClusterValue(true);
-      // Add constraints of the cluster in the scenario.
+
+      // Add constraints of the cluster in the scenario. //RC : why two times ??
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
         this.scenario.getConstraints().addConstraint(component, subGraph);
       }
