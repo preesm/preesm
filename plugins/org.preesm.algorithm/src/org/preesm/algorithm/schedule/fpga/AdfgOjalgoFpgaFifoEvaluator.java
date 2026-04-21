@@ -167,8 +167,16 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     }
 
     logModel(model);
-    // call objective function (minimize buffer sizes + phi)
-    final Result modelResult = model.minimise();
+
+    final Result modelResult;
+
+    // In a synchronized block to prevent potential deadlocks during parallel executions
+    // (only concerns integration tests for now)
+    synchronized (AdfgOjalgoFpgaFifoEvaluator.class) {
+      // call objective function (minimize buffer sizes + phi)
+      modelResult = model.minimise();
+    }
+
     final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + model.countVariables() + "\n");
     for (int i = 0; i < model.countVariables(); i++) {
       final Variable v = model.getVariable(i);
