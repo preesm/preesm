@@ -40,6 +40,7 @@ import com.google.common.base.Strings;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -69,20 +70,17 @@ import org.preesm.model.pisdf.util.DependencyCycleDetector;
  * whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch} here because then we
  * would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete evaluation.
  * Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with {@code &=}.
- *
  */
 public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   private final Deque<PiGraph> graphStack;
-  private final boolean        checkHierarchyFlag = false;
+  private final Set<String>    visitedPiGraph;
 
   /**
    * Builds the checker without logging messages nor stopping on errors. Then the user has to call the
    * {@link #check(PiGraph)} method.
-   *
    */
   public PiGraphConsistenceChecker() {
-
     this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
   }
 
@@ -97,6 +95,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   public PiGraphConsistenceChecker(final CheckerErrorLevel throwExceptionLevel, final CheckerErrorLevel loggerLevel) {
     super(throwExceptionLevel, loggerLevel);
     this.graphStack = new ArrayDeque<>();
+    this.visitedPiGraph = new HashSet<>();
   }
 
   /**
@@ -107,9 +106,6 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
    * @return Whether or not the PiSDF graph is consistent.
    */
   public final Boolean check(final PiGraph graph) {
-    // if (!checkHierarchyFlag) {
-    // return true;
-    // }
     final boolean graphIsConsistent = doSwitch(graph);
     final boolean hierarchyIsConsistent = graphStack.isEmpty();
     graphStack.clear();
@@ -118,9 +114,12 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
+
     this.graphStack.push(graph);
+
     // visit children & references
     boolean graphValid = graph.getUrl() != null;
+
     if (!graphValid) {
       // for an unknown reason, this cannot be a fatal error, otherwise it is triggered at each saving operation
       reportError(CheckerErrorLevel.FATAL_ANALYSIS, graph, "Graph [%s] has null URL.", graph.getVertexPath());
@@ -147,8 +146,15 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
     graphValid &= graph.getFifos().parallelStream().map(this::doSwitch).reduce(true, andReductor);
 
-    graphValid &= graph.getChildrenGraphs().stream().filter(g -> !g.getName().equals(graph.getName()))
+    // Adding the current graph in the set of visited sub graphs
+    this.visitedPiGraph.add(graph.getName());
+
+    // If a child graph of current graph is the same as one in the set, it means that there is hierarchical recursivity.
+    // No checks is made for now for them, as it would break PREESM with a stackoverflow (infinite recursivity).
+    // Checks of infinite recursivity is made further in the process, when the BRV/SRDAG is computed.
+    graphValid &= graph.getChildrenGraphs().stream().filter(g -> !this.visitedPiGraph.contains(g.getName()))
         .map(this::doSwitch).reduce(true, andReductor);
+
     this.graphStack.pop();
     return graphValid;
   }

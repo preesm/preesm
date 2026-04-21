@@ -211,5 +211,4 @@ public class PiGraphFiringBalancerTest {
         CheckerErrorLevel.NONE);
     pgcc.check(this.topGraph);
   }
-
 }

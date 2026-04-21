@@ -146,11 +146,13 @@ public class SubgraphReconnector extends PiMMSwitch<Boolean> {
     // PiGraph, visit it to connect the subgraph to its supergraph
     if (a.isHierarchical()) {
 
+      // TODO : remove this, parameters are not meant to be checked in semantic check
       final Boolean removeActor = canRemoveActor(a);
 
-      if (removeActor) {
+      if (Boolean.TRUE.equals(removeActor)) {
         return true;
       }
+      // end --
 
       final PiGraph innerGraph = a.getSubGraph();
 

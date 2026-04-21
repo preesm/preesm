@@ -8,7 +8,6 @@
  * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2024)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Dardaillon Mickael [mickael.dardaillon@insa-rennes.fr] (2022)
- * Rémi Cazoulat [remi.cazoulat@insa-rennes.fr] (2026)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -352,9 +351,6 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		}
 		return graphName;
 	}
-	/*
-	 * Test 
-	 */
 	op boolean isLocallyStatic() {
 		// a PiGraph is static if all the parameters it contains are static
 		// and if the input setters on its config interfaces are static
@@ -688,18 +684,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op unique Parameter[] getAllParameters() {
 		return (parameters + childrenGraphs.map[allParameters].flatten).toEList.unmodifiableView
 	}
-	
-	op unique PiGraph[] getChildrenGraphV2() {
-		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
-			unmodifiableView
-	}
-	
 	op unique PiGraph[] getChildrenGraphs() {
-		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isFired].filter[isHierarchical].map[subGraph]
-		).toEList.
-			unmodifiableView
-	}
-	op unique PiGraph[] getNonRecursiveChildrenGraphs() {
 		return (actors.filter(PiGraph) + actorsWithRefinement.filter[isHierarchical].map[subGraph]).toEList.
 			unmodifiableView
 	}
@@ -785,11 +770,6 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 	op boolean isHierarchical() {
 		return refinement !== null && refinement.isHierarchical
 	}
-	
-	op boolean isFired() {
-		return configInputPorts.filter[!it.equals(0)].size === 0 && configOutputPorts.filter[!it.equals(0)].size === 0
-	}
-	
 	
 	op AbstractActor getChildAbstractActor() {
 		if (refinement === null) {
