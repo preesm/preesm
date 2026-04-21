@@ -43,6 +43,7 @@
  */
 package org.preesm.model.pisdf.serialize;
 
+import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -169,7 +170,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String platformString = uri.toPlatformString(true);
     final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
     final String osString = documentFile.getLocation().toOSString();
-    try (final OutputStream outStream = new FileOutputStream(osString);) {
+    try (final OutputStream outStream = new BufferedOutputStream(new FileOutputStream(osString))) {
       // Write the Graph to the OutputStream using the Pi format
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
