@@ -141,7 +141,7 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
   public boolean hasScenario() {
     int nbScenarios = 0;
     for (final AbstractWorkflowNode<?> node : vertexSet()) {
-      if (node.isScenarioNode()) {
+      if (node instanceof ScenarioNode) {
         nbScenarios++;
       }
     }
