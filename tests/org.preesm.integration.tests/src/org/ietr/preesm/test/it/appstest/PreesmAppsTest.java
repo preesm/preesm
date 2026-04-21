@@ -100,14 +100,14 @@ class PreesmAppsTest {
       preesmAppsFolder = Files.createTempDirectory("preesmAppsFolder", attr).toFile();
     } else {
 
-      boolean fail = true;
+      boolean success = true;
 
       preesmAppsFolder = Files.createTempDirectory("preesmAppsFolder").toFile();
-      fail &= preesmAppsFolder.setReadable(true, true);
-      fail &= preesmAppsFolder.setWritable(true, true);
-      fail &= preesmAppsFolder.setExecutable(true, true);
+      success &= preesmAppsFolder.setReadable(true, true);
+      success &= preesmAppsFolder.setWritable(true, true);
+      success &= preesmAppsFolder.setExecutable(true, true);
 
-      Assertions.assertTrue(fail);
+      Assertions.assertTrue(success);
     }
 
     preesmAppsFolder.deleteOnExit();
