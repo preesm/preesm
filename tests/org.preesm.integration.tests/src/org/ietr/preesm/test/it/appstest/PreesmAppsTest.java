@@ -48,7 +48,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Stream;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -146,7 +145,6 @@ class PreesmAppsTest {
                       final String scenarioFilePathStr = "/Scenarios/" + ciCase.get(SCENARIO_KEY);
                       final String workflowFilePathStr = "/Workflows/" + ciCase.get(WORKFLOW_KEY);
 
-                      WorkflowRunner.setLogLevel(Level.ALL);
                       final boolean success = WorkflowRunner.runWorkFlow(projectRoot, projectName, workflowFilePathStr,
                           scenarioFilePathStr);
                       Assertions.assertTrue(success, "Workflow [" + workflowFilePathStr + "] with scenario ["

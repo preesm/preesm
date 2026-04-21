@@ -67,8 +67,6 @@ import org.preesm.workflow.AbstractWorkflowExecutor;
  */
 public class WorkflowRunner {
 
-  private static Level logLevel = Level.OFF;
-
   private static ConcurrentHashMap<String, ReentrantLock> mutexMap = new ConcurrentHashMap<>();
 
   private static void acquireMutex(String mutexName) {
@@ -82,10 +80,6 @@ public class WorkflowRunner {
   private static void releaseMutex(String mutexName) {
     // release lock
     mutexMap.get(mutexName).unlock();
-  }
-
-  public static void setLogLevel(Level level) {
-    logLevel = level;
   }
 
   /**
@@ -118,8 +112,7 @@ public class WorkflowRunner {
     project.open(null);
 
     final Logger logger = PreesmLogger.getLogger();
-    logger.setLevel(logLevel);
-    logLevel = Level.OFF;
+    logger.setLevel(Level.OFF);
 
     try {
       // copy content
