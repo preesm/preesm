@@ -132,8 +132,8 @@
       <sonar.project>preesm</sonar.project>
       <sonar.host.url>https://sonarcloud.io</sonar.host.url>
       <sonar.coverage.jacoco.xmlReportPaths>${project.reporting.outputDirectory}/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
-      <sonar.log.level>DEBUG</sonar.log.level>
-      <sonar.verbose>true</sonar.verbose>
+      <sonar.log.level>INFO</sonar.log.level>
+      <sonar.verbose>false</sonar.verbose>
       <!-- <sonar.sources>plugins</sonar.sources> -->
       <!-- <sonar.inclusions>**/*.java</sonar.inclusions> -->
       <sonar.exclusions>**/test/**,**/*Test.java</sonar.exclusions>
