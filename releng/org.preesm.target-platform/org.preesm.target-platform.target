@@ -34,19 +34,19 @@
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-annotations</artifactId>
-					<version>2.20</version>
+					<version>2.21</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
-					<version>3.0.3</version>
+					<version>3.1.2</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
-					<version>3.0.3</version>
+					<version>3.1.2</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -58,28 +58,28 @@
 				<dependency>
 					<groupId>org.mockito</groupId>
 					<artifactId>mockito-core</artifactId>
-					<version>5.21.0</version>
+					<version>5.23.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy-agent</artifactId>
-					<version>1.18.2</version>
+					<version>1.18.8</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
-					<version>1.18.2</version>
+					<version>1.18.8</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>org.objenesis</groupId>
 					<artifactId>objenesis</artifactId>
-					<version>3.4</version>
+					<version>3.5</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -127,7 +127,7 @@
 				<dependency>
 					<groupId>org.choco-solver</groupId>
 					<artifactId>choco-solver</artifactId>
-					<version>4.10.18</version>
+					<version>5.0.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -178,7 +178,7 @@
 					<!-- Required by jgrapht-core -->
 				    <groupId>org.apfloat</groupId>
 				    <artifactId>apfloat</artifactId>
-				    <version>1.15.0</version>
+				    <version>1.16.0</version>
 				    <type>jar</type>
 				</dependency>
 				<dependency>
@@ -190,7 +190,7 @@
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>56.1.1</version>
+					<version>56.2.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -214,7 +214,7 @@
 				<dependency>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
-					<version>2.5</version>
+					<version>2.6</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
