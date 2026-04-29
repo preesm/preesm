@@ -62,6 +62,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 import org.preesm.commons.exceptions.PreesmResourceException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -69,7 +70,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
-public class PreesmAppsTest {
+class PreesmAppsTest {
 
   private static final String CI_FILENAME = ".ci.yaml";
 
@@ -89,7 +90,7 @@ public class PreesmAppsTest {
   }
 
   @BeforeAll
-  public static void setupTest() throws IOException, GitAPIException {
+  static void setupTest() throws IOException, GitAPIException {
 
     // Create temp folder with specific access
     if (SystemUtils.IS_OS_UNIX) {
@@ -98,20 +99,23 @@ public class PreesmAppsTest {
       preesmAppsFolder = Files.createTempDirectory("preesmAppsFolder", attr).toFile();
     } else {
 
-      boolean fail = true;
+      boolean success = true;
 
       preesmAppsFolder = Files.createTempDirectory("preesmAppsFolder").toFile();
-      fail &= preesmAppsFolder.setReadable(true, true);
-      fail &= preesmAppsFolder.setWritable(true, true);
-      fail &= preesmAppsFolder.setExecutable(true, true);
+      success &= preesmAppsFolder.setReadable(true, true);
+      success &= preesmAppsFolder.setWritable(true, true);
+      success &= preesmAppsFolder.setExecutable(true, true);
 
-      Assertions.assertTrue(fail);
+      Assertions.assertTrue(success);
     }
 
     preesmAppsFolder.deleteOnExit();
 
     // pulling preesm-apps repo with submodules
     Git.cloneRepository().setURI(PREESM_APP_REPO).setDirectory(preesmAppsFolder).setCloneSubmodules(true).call();
+
+    PreesmLogger.getLogger().info(() -> "Finished cloning " + PREESM_APP_REPO);
+
   }
 
   @TestFactory

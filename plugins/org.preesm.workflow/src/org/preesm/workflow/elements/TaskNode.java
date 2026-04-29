@@ -123,16 +123,6 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
     return this.parameters.get(key);
   }
 
-  @Override
-  public boolean isScenarioNode() {
-    return false;
-  }
-
-  @Override
-  public boolean isTaskNode() {
-    return true;
-  }
-
   /**
    * Specifies the inputs and outputs types of the workflow task using information from the plugin extension.
    *

@@ -86,16 +86,6 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
     return this.implementation;
   }
 
-  @Override
-  public boolean isScenarioNode() {
-    return true;
-  }
-
-  @Override
-  public boolean isTaskNode() {
-    return false;
-  }
-
   /**
    * Initializes the outputs types of the scenario using information from the plugin extension.
    *

@@ -448,7 +448,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         features.add(new MoveDownActorPortFeature(this));
       }
 
-      if (obj instanceof DataPort) {
+      if (obj instanceof DataPort) { // Port
         features.add(new SetPortMemoryAnnotationFeature(this));
       }
 

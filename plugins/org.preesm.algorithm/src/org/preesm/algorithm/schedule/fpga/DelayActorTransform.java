@@ -38,7 +38,6 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.util.List;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -74,8 +73,7 @@ public class DelayActorTransform extends ActorConstructTransform {
     flatGraph.addActor(delayActor);
 
     // Map delayActor to FPGA targeted by source of delay
-    final ComponentInstance target = scenario.getPossibleMappings((AbstractActor) delay.getContainingFifo().getSource())
-        .get(0);
+    final ComponentInstance target = scenario.getPossibleMappings(delay.getContainingFifo().getSource()).get(0);
     scenario.getConstraints().addConstraint(target, delayActor);
 
     // Add delayActor timing infos

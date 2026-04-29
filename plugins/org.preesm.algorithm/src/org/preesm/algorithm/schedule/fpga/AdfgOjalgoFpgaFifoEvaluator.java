@@ -167,15 +167,23 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     }
 
     logModel(model);
-    // call objective function (minimize buffer sizes + phi)
-    final Result modelResult = model.minimise();
+
+    final Result modelResult;
+
+    // In a synchronized block to prevent potential deadlocks during parallel executions
+    // (only concerns integration tests for now)
+    synchronized (AdfgOjalgoFpgaFifoEvaluator.class) {
+      // call objective function (minimize buffer sizes + phi)
+      modelResult = model.minimise();
+    }
+
     final StringBuilder sbLogResult = new StringBuilder("# variable final values: " + model.countVariables() + "\n");
     for (int i = 0; i < model.countVariables(); i++) {
       final Variable v = model.getVariable(i);
       if (v.isInteger()) {
-        sbLogResult.append("var " + v.getName() + " integer = " + modelResult.get(i) + ";\n");
+        sbLogResult.append("var ").append(v.getName()).append(" integer = ").append(modelResult.get(i)).append(";\n");
       } else {
-        sbLogResult.append("var " + v.getName() + " = " + modelResult.get(i) + ";\n");
+        sbLogResult.append("var ").append(v.getName()).append(" = ").append(modelResult.get(i)).append(";\n");
       }
     }
     PreesmLogger.getLogger().finer(sbLogResult::toString);
@@ -202,6 +210,7 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     // TODO build a schedule using the normalized graph II and each actor offset (computed by the ILP)
     // same ILP as in ADFG but not fixing Tbasis: only fixing all T being greater than 1
     // result will be a period in number of cycles and will be overestimated, seems not useful
+
   }
 
   /**
@@ -217,9 +226,9 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     // we have only integer variables without upper limit in our case
     for (final Variable v : model.getVariables()) {
       if (v.isInteger()) {
-        sbLogModel.append("var " + v.getName() + " integer >= " + v.getLowerLimit() + ";\n");
+        sbLogModel.append("var ").append(v.getName()).append(" integer >= ").append(v.getLowerLimit()).append(";\n");
       } else {
-        sbLogModel.append("var " + v.getName() + " >= " + v.getLowerLimit() + ";\n");
+        sbLogModel.append("var ").append(v.getName()).append(" >= ").append(v.getLowerLimit()).append(";\n");
       }
     }
     sbLogModel.append("minimize o: ");
@@ -228,12 +237,12 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
     sbLogModel.append(";\n# constraints: " + model.countExpressions() + "\n");
     // we have only expressions with lower limit in our case, except for cycles (lower = upper = 0)
     for (final Expression exp : model.getExpressions()) {
-      sbLogModel.append("subject to " + exp.getName() + ": " + exp.getLowerLimit() + " <= ");
+      sbLogModel.append("subject to ").append(exp.getName()).append(": ").append(exp.getLowerLimit()).append(" <= ");
       sbLogModel.append(exp.getLinearEntrySet().stream()
           .map(e -> e.getValue().longValue() + "*" + model.getVariable(e.getKey()).getName())
           .collect(Collectors.joining(" + ")));
       if (exp.getUpperLimit() != null) {
-        sbLogModel.append(" <= " + exp.getUpperLimit());
+        sbLogModel.append(" <= ").append(exp.getUpperLimit());
       }
       sbLogModel.append(";\n");
     }

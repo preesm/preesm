@@ -113,16 +113,16 @@ public abstract class AbstractWorkflowExecutor {
 
     boolean workflowOk = true;
     for (final AbstractWorkflowNode<?> node : workflow.vertexSet()) {
-      if (node.isScenarioNode()) {
-        workflowOk = ((ScenarioNode) node).getExtensionInformation();
+      if (node instanceof final ScenarioNode scenarioNode) {
+        workflowOk = scenarioNode.getExtensionInformation();
 
         // The plugin declaring the scenario class was not found
         if (!workflowOk) {
           log(Level.SEVERE, "Workflow.FailedFindScenarioPlugin", node.getName());
           return false;
         }
-      } else if (node.isTaskNode() && !workflow.edgesOf(node).isEmpty()) {
-        workflowOk = ((TaskNode) node).getExtensionInformation();
+      } else if (node instanceof final TaskNode taskNode && !workflow.edgesOf(node).isEmpty()) {
+        workflowOk = taskNode.getExtensionInformation();
 
         // The plugin declaring the task class was not found
         if (!workflowOk) {
@@ -296,11 +296,10 @@ public abstract class AbstractWorkflowExecutor {
       Map<String, Object> outputs = null;
       String nodeId = null;
 
-      if (node.isScenarioNode()) {
+      if (node instanceof final ScenarioNode scenarioNode) {
         // The scenario node is special because it gets a reference
         // path and generates the inputs of the rapid prototyping
         // process
-        final ScenarioNode scenarioNode = (ScenarioNode) node;
         final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
         // Checks that the scenario node output edges fit the task
@@ -340,8 +339,7 @@ public abstract class AbstractWorkflowExecutor {
             nodeResult = false;
           }
         }
-      } else if (node.isTaskNode()) {
-        final TaskNode taskNode = (TaskNode) node;
+      } else if (node instanceof final TaskNode taskNode) {
         final AbstractTaskImplementation task = taskNode.getTask();
         nodeId = taskNode.getName();
 

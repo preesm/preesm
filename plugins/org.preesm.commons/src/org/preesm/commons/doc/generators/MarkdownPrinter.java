@@ -73,7 +73,7 @@ public class MarkdownPrinter {
     try {
       Files.asCharSink(f, StandardCharsets.UTF_8, FileWriteMode.APPEND).write(prettyPrint);
     } catch (final IOException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Could not output MarkDown task reference to " + filePath, e);
+      PreesmLogger.getLogger().log(Level.SEVERE, e, () -> "Could not output MarkDown task reference to " + filePath);
     }
   }
 
