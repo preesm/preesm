@@ -67,7 +67,7 @@ public class URCHeuristic extends HorizontalClusteringHeuristic {
     // Computing the basic repetition vector of the graph
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);
 
-    // Adding nCore (from scenario)
+    // Computing number of equivalent cores
     this.nPEs = EuclideTransfo.computeSingleNodeCoreEquivalent(scenario);
   }
 

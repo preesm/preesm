@@ -52,6 +52,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -349,6 +350,56 @@ public class ClusteringHelper {
       globalList.retainAll(componentList);
     }
     return globalList;
+  }
+
+  /**
+   *
+   * @param subGraph
+   *          the subgraph
+   * @param clusteredActorRepetition
+   *          the repetition count of an actor in the subgraph
+   * @param nPE
+   *          number of processing elements
+   * @return the scaling factor
+   */
+  public static Long computeScalingFactor(PiGraph subGraph, Long clusteredActorRepetition, Long nPE) {
+
+    Long scale;
+
+    // If there is delay in a fifo linked to a data interface
+    if (subGraph.getDataInterfaces().stream().anyMatch(x -> x.getGraphPort().getFifo().isDelayPresent())) {
+
+      final Long ratio = computeDelayRatio(subGraph);
+      scale = MathFunctionsHelper.gcd(ratio, clusteredActorRepetition);
+
+    } else {
+      scale = MathFunctionsHelper.gcd(nPE, clusteredActorRepetition);
+    }
+    if (scale == 0L) {
+      scale = 1L;
+    }
+    return scale;
+  }
+
+  /**
+   *
+   * @param subGraph
+   *          the cluster
+   * @return the delay ratio
+   */
+  private static Long computeDelayRatio(PiGraph subGraph) {
+
+    long count = 0L;
+
+    for (final DataInputInterface din : subGraph.getDataInputInterfaces()) {
+
+      if (din.getGraphPort().getFifo().isDelayPresent()) {
+        final long ratio = din.getGraphPort().getFifo().getDelay().getExpression().evaluateAsLong()
+            / din.getGraphPort().getExpression().evaluateAsLong();
+        count = Math.max(count, ratio);
+      }
+    }
+    return count;
   }
 
 }

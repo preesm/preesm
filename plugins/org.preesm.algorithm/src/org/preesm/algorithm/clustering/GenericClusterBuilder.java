@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.clusteringheuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.clusteringheuristics.PartitionerHeuristic;
 import org.preesm.algorithm.clustering.clusteringheuristics.VerticalClusteringHeuristic;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -17,6 +18,7 @@ import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
@@ -55,8 +57,25 @@ public class GenericClusterBuilder {
     heuristic.assessFlattening(parentGraph, graph);
   }
 
+  /***
+   * This function will regroup horizontally the graph, following a given heuristic.
+   *
+   * @param graph
+   *          the current graph where to seek horizontal clusters
+   * @param scenario
+   *          the scenario
+   * @param arch
+   *          the S-LAM architecture graph
+   * @param heuristic
+   *          the heuristic to cluster horizontally
+   * @param partitioner
+   *          the partitioner, that will balance the firings of clusters and actors in the clusters, according to an
+   *          heuristic
+   * @return the list of clusters that have been created. The graph will be modified if clusters have been detected and
+   *         created.
+   */
   public static List<PiGraph> buildHorizontalClusters(PiGraph graph, Scenario scenario, Design arch,
-      HorizontalClusteringHeuristic heuristic) {
+      final HorizontalClusteringHeuristic heuristic, final PartitionerHeuristic partitioner, final boolean verbose) {
 
     // The list that will be returned
     final List<PiGraph> listClusters = new LinkedList<>();
@@ -74,8 +93,10 @@ public class GenericClusterBuilder {
       graph.setUrl("");
 
       // Log
-      final String info = "\t - Detected cluster " + graph.getName() + " with assessGraph method";
-      PreesmLogger.getLogger().log(Level.INFO, info);
+      if (verbose) {
+        final String info = " >>> Detected cluster " + graph.getName() + " with assessGraph method";
+        PreesmLogger.getLogger().log(Level.INFO, info);
+      }
 
       // Return
       listClusters.add(graph);
@@ -89,7 +110,7 @@ public class GenericClusterBuilder {
      */
 
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      final var subClusterList = buildHorizontalClusters(subGraph, scenario, arch, heuristic);
+      final var subClusterList = buildHorizontalClusters(subGraph, scenario, arch, heuristic, partitioner, verbose);
       listClusters.addAll(subClusterList);
     }
 
@@ -167,11 +188,6 @@ public class GenericClusterBuilder {
       // If the created cluster is not valid according the used heuristic, we continue the iteration, without adding the
       // cluster to the graph.
       if (!heuristic.validateCluster(actorsToMerge)) {
-        PreesmLogger.getLogger().info(" USED heuristic : " + heuristic);
-
-        PreesmLogger.getLogger()
-            .info(" DEBUG - result of validate cluster : " + heuristic.validateCluster(actorsToMerge));
-        PreesmLogger.getLogger().info(" WARNING - INVALID CLUSTER : " + actorsToMerge);
         continue;
       }
 
@@ -188,16 +204,34 @@ public class GenericClusterBuilder {
       final String clusterName = heuristic.getPrefix() + "_" + seedName;
 
       // Log
-      final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-          + " into cluster " + clusterName;
-      PreesmLogger.getLogger().log(Level.INFO, info);
+      if (verbose) {
+        final String info = "> Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
+            + " into cluster " + clusterName;
+        PreesmLogger.getLogger().log(Level.INFO, info);
 
+      }
       // Creating the cluster
-      final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+      // final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+      final PiGraph clusterActor = new PiSDFSubgraphBuilder(graph, new LinkedList<>(actorsToMerge), clusterName)
+          .build();
 
       // Checking modified graph (with the new cluster) consistency
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
       pgcc.check(graph);
+
+      if (partitioner != null) {
+        if (verbose) {
+          final String info = "> Partitioning cluster " + clusterName + " with " + partitioner;
+          PreesmLogger.getLogger().log(Level.INFO, info);
+
+        }
+        partitioner.balanceFirings(graph, clusterActor);
+        if (verbose) {
+          final String info = "> cluster partitionnment done.";
+          PreesmLogger.getLogger().log(Level.INFO, info);
+
+        }
+      }
 
       // Setting URL
       clusterActor.setUrl("");
@@ -221,8 +255,6 @@ public class GenericClusterBuilder {
           PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + clusteringComponent.getVlnv().toString()
               + " is not documented in PiSDF.xcore's architecture enum, please add it");
       }
-
-      PreesmLogger.getLogger().info("-- CLUSTER CREATED : " + clusterActor);
     }
 
     return listClusters;

@@ -7,7 +7,9 @@ import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.clustering.clusteringheuristics.ClusteringHeuristic;
 import org.preesm.algorithm.clustering.clusteringheuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.clusteringheuristics.PartitionerHeuristic;
 import org.preesm.algorithm.clustering.clusteringheuristics.SRVHeuristic;
+import org.preesm.algorithm.clustering.clusteringheuristics.SimplePartitionerHeuristic;
 import org.preesm.algorithm.clustering.clusteringheuristics.URCHeuristic;
 import org.preesm.algorithm.clustering.clusteringheuristics.VerticalClusteringHeuristic;
 import org.preesm.commons.doc.annotations.Port;
@@ -54,19 +56,15 @@ public class GenericClusteringTask extends AbstractTaskImplementation {
 
     // Getting parameters
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
-    String verticalHeuristicName = parameters.get("vertical heuristic");
-    String horizontalHeuristicName = parameters.get("horizontal heuristic");
-
-    if (verticalHeuristicName == null) {
-      verticalHeuristicName = "";
-    }
-    if (horizontalHeuristicName == null) {
-      horizontalHeuristicName = "";
-    }
-
+    final boolean verbose = "true".equalsIgnoreCase(parameters.get("verbose"));
     List<PiGraph> clustersList = new LinkedList<>();
 
     if (CLUSTERIZE) {
+
+      final String verticalHeuristicName = parameters.get("vertical heuristic");
+      final String horizontalHeuristicName = parameters.get("horizontal heuristic");
+      final String partitionerName = parameters.get("partitioner");
+
       PreesmLogger.getLogger().info(" -- Clustering task --");
 
       // --------------------------------
@@ -81,10 +79,15 @@ public class GenericClusteringTask extends AbstractTaskImplementation {
 
       GenericClusterBuilder.buildVerticalClusters(null, algorithm, vertiHeuristic);
 
+      if (verbose) {
+        PreesmLogger.getLogger().info("> Building vertical Clusters done.");
+      }
+
       // ----------------------------------
       // -- Building horizontal clusters --
       // It will modify the algorithm graph, in addition to returning the list of all created clusters
-      // first, retrieving the heuristic and initializes its parameters
+
+      // First, retrieving the heuristic and initializes its parameters
       HorizontalClusteringHeuristic horizHeuristic = (HorizontalClusteringHeuristic) getHeuristic(
           horizontalHeuristicName);
 
@@ -95,13 +98,25 @@ public class GenericClusteringTask extends AbstractTaskImplementation {
 
       horizHeuristic.initHeuristicParameters(algorithm, scenario, architecture, parameters);
 
-      clustersList = GenericClusterBuilder.buildHorizontalClusters(algorithm, scenario, architecture, horizHeuristic);
+      // Then, retrieving partitioner heuristic, if there is one (it is not mandatory)
+      final PartitionerHeuristic partitioner = getPartitioner(partitionerName);
+      if (partitioner != null) {
+        partitioner.initHeuristicParameters(algorithm, scenario, architecture, parameters);
+      }
+
+      // Creating horizontal clusters, according to horizontal clusterization heuristic, and partitioner heuristic
+      clustersList = GenericClusterBuilder.buildHorizontalClusters(algorithm, scenario, architecture, horizHeuristic,
+          partitioner, verbose);
 
       // Mark all subgraph actors as mappable to the same components as the graph, but only them
       updateSubgraphsMappings(algorithm.getAllClusters(), scenario);
 
+      if (verbose) {
+        PreesmLogger.getLogger().info("> Building horizontal Clusters done.");
+      }
+
     } else {
-      PreesmLogger.getLogger().info(" - Clustering was not activated");
+      PreesmLogger.getLogger().info("> Clustering was not activated");
     }
 
     // Building outputs list
@@ -155,8 +170,17 @@ public class GenericClusteringTask extends AbstractTaskImplementation {
    */
   private static ClusteringHeuristic getHeuristic(String heuristicName) {
     return switch (heuristicName) {
+      case null -> null;
       case "SRV" -> new SRVHeuristic();
       case "URC" -> new URCHeuristic();
+      default -> null;
+    };
+  }
+
+  private static PartitionerHeuristic getPartitioner(String heuristicName) {
+    return switch (heuristicName) {
+      case null -> null;
+      case "simple" -> new SimplePartitionerHeuristic();
       default -> null;
     };
   }
