@@ -9,7 +9,8 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.preesm.algorithm.clustering.MergingHeuristics.MinimalMergingHeuristic;
+import org.preesm.algorithm.clustering.clusteringheuristics.ClusteringHeuristic;
+import org.preesm.algorithm.clustering.clusteringheuristics.MinimalArchClusteringHeuristic;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -113,7 +114,7 @@ public class ClusterBuilder {
     final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
     final Component refCPUArch = refCPU.getComponent();
 
-    final MergingHeuristic heuristic = getHeuristic(HeuristicName);
+    final ClusteringHeuristic heuristic = getHeuristic(HeuristicName);
 
     // 3) clusterize actors at this level of hierarchy
     int i = 0;
@@ -218,10 +219,10 @@ public class ClusterBuilder {
    *
    * @return a MergingHeuristic implementation class
    */
-  private static MergingHeuristic getHeuristic(String heuristicName) {
+  private static ClusteringHeuristic getHeuristic(String heuristicName) {
     return switch (heuristicName) {
-      case "minimal" -> new MinimalMergingHeuristic();
-      default -> new MinimalMergingHeuristic();
+      case "minimal" -> new MinimalArchClusteringHeuristic();
+      default -> new MinimalArchClusteringHeuristic();
     };
   }
 
@@ -240,7 +241,7 @@ public class ClusterBuilder {
    * @return a cluster of actors that can be merge
    */
   public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario, Component refArchi,
-      Set<AbstractActor> visitedActors, MergingHeuristic heuristic) {
+      Set<AbstractActor> visitedActors, ClusteringHeuristic heuristic) {
     final Set<AbstractActor> actorsToMerge = new HashSet<>();
     actorsToMerge.add(seed);
 
@@ -259,7 +260,7 @@ public class ClusterBuilder {
         final Map<String, Object> params = new HashMap<>();
         params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
         params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
-        params.put("position", MergingHeuristic.successor);
+        params.put("position", ClusteringHeuristic.successor);
         final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
 
         if (mergeable) {
@@ -282,7 +283,7 @@ public class ClusterBuilder {
         final Map<String, Object> params = new HashMap<>();
         params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
         params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
-        params.put("position", MergingHeuristic.predecessor);
+        params.put("position", ClusteringHeuristic.predecessor);
         final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
 
         if (mergeable) {

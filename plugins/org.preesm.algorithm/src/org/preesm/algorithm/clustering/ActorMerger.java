@@ -37,7 +37,6 @@ public class ActorMerger {
     final var PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
 
     final PiGraph innerSDF = PiMMFactory.createCluster();
-    innerSDF.setClusterValue(true);
     innerSDF.setName(name);
     innerSDF.setExpression(PiMMFactory.createExpression());
     graph.addActor(innerSDF);
