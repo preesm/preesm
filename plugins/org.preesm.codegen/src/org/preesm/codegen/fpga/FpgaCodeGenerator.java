@@ -682,7 +682,8 @@ public class FpgaCodeGenerator {
   }
 
   private String generateWrapperName(Actor a) {
-    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase();
+    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase() + "__"
+        + PreesmCopyTracker.getOriginalSource(a.getContainingPiGraph()).getName().toUpperCase();
   }
 
   protected String writeXOCLHostFile() {
@@ -1541,7 +1542,7 @@ public class FpgaCodeGenerator {
     final StringBuilder sb = new StringBuilder("");
 
     final List<PiGraph> clusterList = algo.getAllClusters().stream()
-        .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(FPGA.class::isInstance)
+        .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(comp -> comp.getComponent() instanceof FPGA)
             && !c.getContainingPiGraph().isCluster())
         .toList();
 
