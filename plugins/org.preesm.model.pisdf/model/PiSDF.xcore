@@ -64,6 +64,7 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor
 import org.preesm.model.pisdf.util.RefinementResolver
+import org.eclipse.emf.ecore.xml.^type.Name
 
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -789,17 +790,7 @@ class PiGraph extends AbstractActor, RefinementContainer, Graph, PeriodicElement
 		piMMResolverVisitor.casePiGraph(this);
 	}
 	
-	op void addRefinement(Refinement ref) {
-		refinements.add(ref)
-	}
-	
-	op Refinement[] getHeaderRefinements() {
-		return refinements.filter(CHeaderRefinement).toEList
-	}
-	
-	op Refinement[] getPiSDFRefinements() {
-		return refinements.filter(PiSDFRefinement).toEList
-	}
+
 	
 }
 
@@ -823,12 +814,38 @@ interface RefinementContainer {
   			refinements.add(ref)
   		}
   	}
-  	op void addRefinement(Refinement ref) {
-  		refinements.add(ref)
-  	}
+//  	op void addRefinement(Refinement ref) {
+//  		refinements.add(ref)
+//  	}
   	op void clearRefinements() {
   		refinement.remove
   	}
+  	
+  	op void addRefinement(Refinement ref) {
+		// check that no other refinement uses the same prototype : same name. So no 2 prototypes on the same actor with the same name !
+		if(ref instanceof CHeaderRefinement) {
+			var alreadyPresent = refinements.filter(CHeaderRefinement).map[it.loopPrototype].filterNull.exists[it.name.equals(ref.name)]
+			if(!alreadyPresent) {
+				refinements.add(ref)
+			}
+		}
+		
+		else if(ref instanceof org.preesm.model.pisdf.PiSDFRefinement) {
+			var alreadyPresent = refinements.filter(PiSDFRefinement).exists[it.name.equals(ref.name)]
+			if(!alreadyPresent) {
+				refinements.add(ref)
+			}
+		}
+	}
+	
+	op Refinement[] getHeaderRefinements() {
+		return refinements.filter(CHeaderRefinement).toEList
+	}
+	
+	op Refinement[] getPiSDFRefinements() {
+		return refinements.filter(PiSDFRefinement).toEList
+	}
+	
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
