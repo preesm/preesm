@@ -303,6 +303,14 @@ class Scenario {
 		constraints.refinementConstraints.add(c)
 	}
 	
+	op void removeConstraint(ComponentInstance cmp, Refinement r) {
+		constraints.removeConstraint(cmp, r)
+	}
+	
+	op void removeConstraint(ComponentInstance cmp, AbstractActor a) {
+		constraints.removeConstraint(cmp, a)
+	}
+	
 	op ComponentInstance[] getRefinementPEs(Refinement ref) {
 		var ComponentInstance[] res
 		for(ComponentInstance ci: constraints.refinementConstraints.keySet) {
@@ -435,6 +443,31 @@ class Constraints {
 		}
 		specialConstraints.get(cmpInstance).add(sa)
 	}
+	
+	op void removeConstraint(ComponentInstance cmpInstance, Refinement r) {
+		if(refinementConstraints.containsKey(cmpInstance) && refinementConstraints.get(cmpInstance).contains(r)) {
+			refinementConstraints.get(cmpInstance).remove(r)
+		}
+	}
+	
+	op void removeConstraint(ComponentInstance cmpInstance, AbstractActor a) {
+		if(a instanceof SpecialActor) {
+			// if this actor has no refinement, it has no mapping anyway
+			removeSpecialConstraint(cmpInstance, a)
+		}
+		else if(a instanceof RefinementContainer) {
+			if (refinementConstraints.containsKey(cmpInstance)) {
+				refinementConstraints.get(cmpInstance).removeAll(a.refinements)
+			}
+		}
+	}
+	
+	op void removeSpecialConstraint(ComponentInstance cmpInstance, SpecialActor sa) {
+		if (specialConstraints.containsKey(cmpInstance)) {
+			specialConstraints.get(cmpInstance).remove(sa)
+		}
+	}
+		
 	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
 		return refinementConstraints.filter[e | e.value.contains(actor)].map[e | e.key].toEList.unmodifiableView
 	}
