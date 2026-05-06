@@ -186,7 +186,7 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
         this.scenario.addConstraint(currentOpId, abstractActor);
       } else {
         // this.scenario.getConstraints().getGroupConstraints().get(currentOpId).remove(abstractActor);
-        this.scenario.addConstraint(currentOpId, abstractActor);
+        this.scenario.removeConstraint(currentOpId, abstractActor);
       }
     }
 
@@ -253,21 +253,19 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
   public void updateCheck() {
     if (this.scenario != null) {
       updateCheckPISDF();
-      updateCheckActor();
     }
   }
 
-  /**
-   * Update check PISDF.
-   */
   private void updateCheckPISDF() {
     final PiGraph currentGraph = this.contentProvider.getPISDFCurrentGraph();
     if ((this.currentOpId != null) && (currentGraph != null)) {
-      // final Set<AbstractActor> cgSet = new LinkedHashSet<>();
-      final Set<Object> cgSet = new LinkedHashSet<>();
+      final Set<AbstractActor> cgSet = new LinkedHashSet<>();
+      final Set<Refinement> crgSet = new LinkedHashSet<>();
 
+      // les acteurs ayant au moins un refinement sur currentOpId
       final List<AbstractActor> cg = this.scenario.getConstraints().getRefinementConstraints().get(this.currentOpId)
           .stream().map(Refinement::getAbstractActor).toList();
+      // tous les refinement sur currentOpId
       final List<Refinement> crg = this.scenario.getConstraints().getRefinementConstraints().get(this.currentOpId);
 
       if (cg != null) {
@@ -283,38 +281,45 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
       if (crg != null) {
         for (final Refinement ref : crg) {
           if (ref != null) {
-            cgSet.add(ref);
+            crgSet.add(ref);
           }
         }
       }
 
       this.treeViewer.setCheckedElements(cgSet.toArray());
+      this.treeViewer.setCheckedElements(crgSet.toArray());
 
       // If all the children of a graph are checked, it is checked itself
       boolean allChildrenChecked = true;
       for (final AbstractActor v : this.contentProvider.filterPISDFChildren(currentGraph.getActors())) {
-        boolean allRefinementsChecked = true;
-        for (final Refinement ref : this.contentProvider.filterRefinements(v)) {
-          // allChildrenChecked &= this.treeViewer.getChecked(v);
-          allRefinementsChecked &= this.treeViewer.getChecked(ref);
-        }
-        if (!allRefinementsChecked) {
-          this.treeViewer.setChecked(v, false);
-        }
+        final boolean allRefinementsChecked = areAllRefinementsChecked(v);
+        this.treeViewer.setChecked(v, allRefinementsChecked);
         allChildrenChecked &= allRefinementsChecked;
       }
-
-      if (allChildrenChecked) {
-        this.treeViewer.setChecked(currentGraph, true);
-      }
+      this.treeViewer.setChecked(currentGraph, allChildrenChecked);
 
     }
   }
 
-  /**
-   * Update check actors.
-   */
-  private void updateCheckActor() {
+  private boolean areAllRefinementsChecked(AbstractActor a) {
+    if (a instanceof final PiGraph g) {
+      boolean allRefinementsChecked = true;
+      for (final AbstractActor v : this.contentProvider.filterPISDFChildren(g.getActors())) {
+        final boolean thisActorChecked = areAllRefinementsChecked(v);
+        allRefinementsChecked &= thisActorChecked;
+        this.treeViewer.setChecked(v, thisActorChecked);
+      }
+
+      return allRefinementsChecked;
+    }
+
+    // if otherwise it is an actor
+    boolean allRefinementsChecked = true;
+    for (final Refinement ref : this.contentProvider.filterRefinements(a)) {
+      allRefinementsChecked &= this.treeViewer.getChecked(ref);
+    }
+
+    return allRefinementsChecked;
 
   }
 
