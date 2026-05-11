@@ -23,7 +23,6 @@ public class MinimalArchClusteringHeuristic extends HorizontalClusteringHeuristi
   public static final int predecessor = 1;
 
   int       position;
-  Scenario  scenario;
   Component refArchi;
 
   /***
@@ -31,6 +30,7 @@ public class MinimalArchClusteringHeuristic extends HorizontalClusteringHeuristi
    * Predecessors are eligible if they have a mapping to the same arch refArchi. For now clusters are immediately ruled
    * out.
    */
+  @Override
   public boolean assessMergeable(AbstractActor seed, AbstractActor actor) {
     if (actor instanceof PiGraph) {
       return false;
@@ -57,6 +57,7 @@ public class MinimalArchClusteringHeuristic extends HorizontalClusteringHeuristi
    * Assesses whether actor can be used as a seed for clustering its surrounding actors.
    *
    */
+  @Override
   public boolean assesSeedable(AbstractActor actor) {
 
     // all the PEs actor is mappable to that are not the same arch as refCPU
@@ -67,17 +68,24 @@ public class MinimalArchClusteringHeuristic extends HorizontalClusteringHeuristi
     // a UserSpecialActor (broadcast, roundbuffer, join, fork).
     final boolean validActorType = !(actor instanceof UserSpecialActor) && !actor.isCluster();
 
-    return validActorType && !nonMainCpuMappings.isEmpty();
+    final boolean seedable = validActorType && !nonMainCpuMappings.isEmpty();
+
+    if (seedable) {
+
+      if (this.scenario.getPossibleMappings(actor).stream().anyMatch(c -> !(c.getComponent().equals(this.refArchi)))) {
+
+        // if there is a PE with a different arch than the main CPU, return it (or the first of the list)
+        this.refArchi = this.scenario.getPossibleMappings(actor).stream()
+            .filter(c -> !(c.getComponent().equals(this.refArchi))).toList().getFirst().getComponent();
+      }
+      this.refArchi = this.scenario.getPossibleMappings(actor).getFirst().getComponent();
+    }
+    return seedable;
   }
 
-  public Component pickClusteringComponent(AbstractActor actor) {
-
-    if (this.scenario.getPossibleMappings(actor).stream().anyMatch(c -> !(c.getComponent().equals(this.refArchi)))) {
-      // if there is a PE with a different arch than the main CPU, return it (or the first of the list) return
-      this.scenario.getPossibleMappings(actor).stream().filter(c -> !(c.getComponent().equals(this.refArchi))).toList()
-          .getFirst();
-    }
-    return this.scenario.getPossibleMappings(actor).getFirst().getComponent();
+  @Override
+  public Component pickClusteringComponent(PiGraph cluster) {
+    return this.refArchi;
   }
 
   @Override

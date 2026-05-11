@@ -14,16 +14,12 @@ import org.preesm.algorithm.clustering.clusteringheuristics.PartitionerHeuristic
 import org.preesm.algorithm.clustering.clusteringheuristics.VerticalClusteringHeuristic;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
-import org.preesm.model.slam.FPGA;
 
 public class GenericClusterBuilder {
 
@@ -210,53 +206,58 @@ public class GenericClusterBuilder {
         PreesmLogger.getLogger().log(Level.INFO, info);
 
       }
+      /* ----- SUB-STEP 1 : creating the subgraph */
       // Creating the cluster
-      // final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
-      final PiGraph clusterActor = new PiSDFSubgraphBuilder(graph, new LinkedList<>(actorsToMerge), clusterName)
-          .build();
+      final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
 
       // Checking modified graph (with the new cluster) consistency
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
       pgcc.check(graph);
 
+      /* ----- SUB-STEP 2 : partitioning the cluster */
+      /*
+       * The goal here is to adapt the weights of the cluster interfaces ports, according to an partitioning heuristic
+       */
+
+      // balanceFirings could create new clusters, so we create a list just in case
+      List<PiGraph> clusterActors;
       if (partitioner != null) {
         if (verbose) {
           final String info = "> Partitioning cluster " + clusterName + " with " + partitioner;
           PreesmLogger.getLogger().log(Level.INFO, info);
 
         }
-        partitioner.balanceFirings(graph, clusterActor);
-        if (verbose) {
-          final String info = "> cluster partitionnment done.";
-          PreesmLogger.getLogger().log(Level.INFO, info);
+        clusterActors = partitioner.balanceFirings(graph, clusterActor);
 
-        }
+        pgcc.check(graph);
+
+      } else {
+        clusterActors = new ArrayList<>();
+        clusterActors.add(clusterActor);
       }
 
-      // Setting URL
-      clusterActor.setUrl("");
-      listClusters.add(clusterActor);
+      for (final PiGraph cluster : clusterActors) {
 
-      // Adding scenario constraints
-      // Depending on the seed, the architecture component might be different
-      final Component clusteringComponent = heuristic.pickClusteringComponent(seed, actorsToMerge);
-      arch.getComponentInstances().stream().filter(ci -> ci.getComponent().equals(clusteringComponent))
-          .forEach(ci -> scenario.getConstraints().addConstraint(ci, clusterActor));
+        cluster.setClusterValue(true);
 
-      // Setting the cluster value at true, so that the next workflow tasks are aware that this graph
-      // is not a simple hierarchical actor
-      clusterActor.setClusterValue(true);
+        // Adding scenario constraints
+        // Depending on the seed, the architecture component might be different
+        final Component clusteringComponent = heuristic.pickClusteringComponent(cluster);
+        arch.getComponentInstances().stream().filter(ci -> ci.getComponent().equals(clusteringComponent))
+            .forEach(ci -> scenario.getConstraints().addConstraint(ci, clusterActor));
+      }
+
+      listClusters.addAll(clusterActors);
 
       // Setting target architecture
-      switch (clusteringComponent) {
-        case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
-        case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
-        default ->
-          PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + clusteringComponent.getVlnv().toString()
-              + " is not documented in PiSDF.xcore's architecture enum, please add it");
-      }
+      // switch (clusteringComponent) {
+      // case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
+      // case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
+      // default ->
+      // PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + clusteringComponent.getVlnv().toString()
+      // + " is not documented in PiSDF.xcore's architecture enum, please add it");
+      // }
     }
-
     return listClusters;
   }
 

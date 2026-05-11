@@ -55,16 +55,14 @@ public abstract class HorizontalClusteringHeuristic extends ClusteringHeuristic 
   /***
    * Picks which of the Components (CPU, GPU, FPGA...) the seed can be mapped to should be used as reference for
    * clustering. NOT the precise instance ! Not necessary for all heuristics, feel free to use it or not. By default,
-   * will return the first component of the seed.
+   * will return the first component of the cluster.
    *
-   * @param seed
-   *          the seed
    * @param cluster
    *          all actors of the cluster
    * @return the chosen component type
    */
-  public Component pickClusteringComponent(AbstractActor seed, Set<AbstractActor> cluster) {
-    return this.scenario.getPossibleMappings(seed).getFirst().getComponent();
+  public Component pickClusteringComponent(PiGraph cluster) {
+    return this.scenario.getPossibleMappings(cluster).getFirst().getComponent();
 
   }
 }

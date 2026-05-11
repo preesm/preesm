@@ -353,6 +353,8 @@ public class ClusteringHelper {
   }
 
   /**
+   * Will return the greatest common divisor between nPE and clusterdActorRepetition. Will perform additional
+   * computation if there is a delay in a fifo linked to data interface.
    *
    * @param subGraph
    *          the subgraph

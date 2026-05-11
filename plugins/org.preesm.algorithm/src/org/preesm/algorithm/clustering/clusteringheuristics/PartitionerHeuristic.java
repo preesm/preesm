@@ -1,5 +1,6 @@
 package org.preesm.algorithm.clustering.clusteringheuristics;
 
+import java.util.List;
 import org.preesm.model.pisdf.PiGraph;
 
 public abstract class PartitionerHeuristic extends Heuristic {
@@ -12,5 +13,5 @@ public abstract class PartitionerHeuristic extends Heuristic {
    * @param cluster
    *          the sub graph
    */
-  public abstract void balanceFirings(PiGraph topgraph, PiGraph cluster);
+  public abstract List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster);
 }
