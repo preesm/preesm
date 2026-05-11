@@ -203,6 +203,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
 
     for (final V vertex : vertexSet()) {
       if (vertex.getGraphDescription() != null) {
+        //
         vset.addAll(vertex.getGraphDescription().getHierarchicalVertexSet());
       }
     }

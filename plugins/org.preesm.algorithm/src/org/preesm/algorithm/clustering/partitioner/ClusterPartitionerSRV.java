@@ -120,7 +120,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+        this.scenario.addConstraint(component, subGraph);
       }
 
       // apply scaling
@@ -143,7 +143,7 @@ public class ClusterPartitionerSRV extends ClusterPartitioner {
 
       // Add constraints of the cluster in the scenario. //RC : why two times ??
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(srv, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+        this.scenario.addConstraint(component, subGraph);
       }
     }
 

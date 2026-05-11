@@ -169,6 +169,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
         CheckerErrorLevel.NONE);
     pgcc.check(this.subGraph);
     pgcc.check(this.parentGraph);
+    this.subGraph.addRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
     return this.subGraph;
   }
 

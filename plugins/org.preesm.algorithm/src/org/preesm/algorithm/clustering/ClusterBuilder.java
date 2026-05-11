@@ -14,9 +14,11 @@ import org.preesm.algorithm.clustering.clusteringheuristics.MinimalArchClusterin
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PiMMFactory;
+import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.scenario.Scenario;
@@ -24,6 +26,7 @@ import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.FPGA;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
@@ -62,7 +65,7 @@ public class ClusterBuilder {
     final List<AbstractActor> actors = graph.getActors().stream()
         .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
 
-    List<Component> sharedComponents = scenario.getDesign().getComponents();
+    List<ComponentInstance> sharedComponents = scenario.getDesign().getComponentInstances();
 
     final List<PiGraph> listClusters = new LinkedList<>();
 
@@ -74,7 +77,8 @@ public class ClusterBuilder {
 
     // 2) compute intersection for all actors
     for (final AbstractActor a : actors) {
-      final var mappings = scenario.getPossibleMappings(a).stream().map(ci -> ci.getComponent()).distinct().toList();
+      final List<ComponentInstance> mappings = scenario.getPossibleMappings(a);
+
       sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
       if (sharedComponents.isEmpty()) {
         // no intersection exists
@@ -83,7 +87,8 @@ public class ClusterBuilder {
     }
 
     // need to convert to mutable list in order to remove elements later
-    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors());
+    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors()).stream()
+        .filter(a -> !(a instanceof DataInterface)).toList();
     final Map<AbstractActor,
         Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
 
@@ -92,20 +97,53 @@ public class ClusterBuilder {
       // All components share a common PE ! It's a cluster already
       graph.setClusterValue(true);
 
-      // TODO : have clusters not be mapped to only one type of PE
-      final Component cp = sharedComponents.getFirst();
+      graph.setToFlatten(false);
 
-      switch (sharedComponents.getFirst()) {
-        case final FPGA f -> graph.setTargetArch(Arch.FPGA);
-        default -> graph.setTargetArch(Arch.CPU);
+      if (sharedComponents.stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
+        graph.setToSrdag(false);
       }
-      listActors.remove(graph);
+
+      // TODO : have clusters not be mapped to only one type of PE
+      final ComponentInstance cp = sharedComponents.getFirst();
+      // map the cluster to the components in sharedComponents
+      // retain only the actors' sharedComponents mappings
+
+      // switch (sharedComponents.getFirst().getComponent()) {
+      // case final FPGA f -> graph.setTargetArch(Arch.FPGA);
+      // default -> graph.setTargetArch(Arch.CPU);
+      // }
+
+      // map the cluster
+      for (final ComponentInstance comp : sharedComponents) {
+        final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
+        graph.addRefinement(newRefinement);
+        scenario.addConstraint(comp, newRefinement);
+      }
+
+      // update all the actors' mappings : they can only retain the same mappings as their containing cluster
+      // boucle sur tous les pe. Si un pe est dans sharedComponent on passe. Sinon (et que c'est un processingElement),
+      // on cherche les refinements des acteurs du cluster et on les supprime de la map.
+      final List<ComponentInstance> sharedComponentsFinal = sharedComponents; // JAVAAAAAAAAAAAAAAAAAA
+      for (final ComponentInstance ci : scenario.getDesign().getComponentInstances().stream()
+          .filter(ci -> ci.getComponent() instanceof ProcessingElement && !sharedComponentsFinal.contains(ci))
+          .map(ci -> ci).toList()) {
+
+        // we have all the PEs actors must not be mapped to
+        for (final AbstractActor a : graph.getActors()) {
+          if (scenario.getPossibleMappings(a).contains(ci)) {
+            scenario.removeConstraintsToPE(a, ci);
+          }
+        }
+      }
+
       final String info = "\t - Detected cluster " + graph.getName();
       PreesmLogger.getLogger().log(Level.INFO, info);
       graph.setUrl("");
       listClusters.add(graph);
-      scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp))
-          .forEach(pe -> scenario.getConstraints().addConstraint(pe, graph));
+
+      scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp.getComponent()))
+          .forEach(pe -> scenario.addConstraint(pe, graph));
+
       return listClusters;
     }
 
@@ -190,23 +228,17 @@ public class ClusterBuilder {
         listClusters.add(clusterActor);
 
         final Component chosenComponent = clusteringComponent; // java needs this to be final...
-        // final List<ComponentInstance> clusteringArchInstances =
+
         scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(chosenComponent))
             .forEach(ci -> scenario.getConstraints().addConstraint(ci, clusterActor));
 
         clusterActor.setClusterValue(true);
-
-        switch (clusteringComponent) {
-          case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
-          case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
-          default -> {
-            PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + chosenComponent.getVlnv().toString()
-                + " is not documented in PiSDF.xcore's architecture enum, please add it");
-          }
+        graph.setToFlatten(false);
+        if (chosenComponent instanceof FPGA) {
+          graph.setToSrdag(false);
         }
       }
     }
-
     return listClusters;
 
   }
@@ -223,6 +255,7 @@ public class ClusterBuilder {
     return switch (heuristicName) {
       case "minimal" -> new MinimalArchClusteringHeuristic();
       default -> new MinimalArchClusteringHeuristic();
+
     };
   }
 

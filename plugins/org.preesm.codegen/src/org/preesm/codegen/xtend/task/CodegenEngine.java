@@ -81,10 +81,10 @@ import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.FPGA;
 
 /**
  * The Class CodegenEngine.
@@ -311,7 +311,7 @@ public class CodegenEngine {
     // if any cluster runs on fpga, the project will be built by vitis which requires the extension to be cpp
     // nice work xilinx
     final boolean het_fpga_project = this.algo.getAllClusters().stream()
-        .anyMatch(c -> c.getTargetArch().equals(Arch.FPGA));
+        .anyMatch(c -> scenario.getPossibleMappings(c).stream().anyMatch(map -> map.getComponent() instanceof FPGA));
     // for later conditions to be added
     final boolean cpp = het_fpga_project;
 
@@ -339,12 +339,12 @@ public class CodegenEngine {
       // - cluster list
       // - vitis build files (python, tcl and makefile)
       if (het_fpga_project) {
-        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo);
+        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo, scenario);
         PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
-        PreesmIOHelper.getInstance().print(codegenPath, "clusters_list",
-            algo.getClusters().stream().filter(c -> c.getTargetArch().equals(Arch.FPGA))
-                .map(c -> PreesmCopyTracker.getOriginalSource(c).getName()).collect(Collectors.joining("\n")));
+        PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
+            .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(comp -> comp.getComponent() instanceof FPGA))
+            .map(c -> PreesmCopyTracker.getOriginalSource(c).getName()).collect(Collectors.joining("\n")));
 
         try {
           final String makefile = PreesmResourcesHelper.getInstance()

@@ -47,6 +47,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
 import org.preesm.commons.logger.PreesmLogger;
@@ -54,6 +55,8 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.scenario.EnergyConfig;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
 import org.preesm.model.scenario.PapiComponent;
@@ -501,15 +504,21 @@ public class ScenarioWriter {
     final Element constraints = this.dom.createElement(ScenarioConstants.CONSTRAINTS);
     parent.appendChild(constraints);
 
+    // final String groupConstraintsFileURL = this.scenario.getConstraints().getGroupConstraintsFileURL();
     final String groupConstraintsFileURL = this.scenario.getConstraints().getGroupConstraintsFileURL();
     constraints.setAttribute(ScenarioConstants.EXCEL_URL, groupConstraintsFileURL);
 
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cst : this.scenario.getConstraints()
-        .getGroupConstraints()) {
+    for (final Entry<ComponentInstance, EList<Refinement>> cst : this.scenario.getConstraints()
+        .getRefinementConstraints()) {
+
       final ComponentInstance component = cst.getKey();
+
       if (component != null) {
-        final EList<AbstractActor> actors = cst.getValue();
-        writeConstraints(constraints, component, actors);
+        final EList<Refinement> constrainedRefinements = cst.getValue();
+        final Set<AbstractActor> constrainedActors = constrainedRefinements.stream()
+            .map(ref -> (AbstractActor) ref.getRefinementContainer()).collect(Collectors.toSet());
+        // writeConstraints(constraints, component, actors);
+        writeRefinenementConstraints(constraints, component, constrainedActors, constrainedRefinements);
       }
     }
   }
@@ -537,6 +546,48 @@ public class ScenarioWriter {
         final Element vtxelt = this.dom.createElement(ScenarioConstants.TASK);
         constraintGroupElt.appendChild(vtxelt);
         vtxelt.setAttribute(ScenarioConstants.NAME, actor.getVertexPath());
+      }
+    }
+  }
+
+  /**
+   * Adds the constraint (only for regular actors).
+   *
+   * @param parent
+   *          the parent
+   * @param cmpi
+   *          the component
+   * @param actors
+   *          the actors
+   * @param refinementConstrained
+   *          all the refinements that are constrained on this component
+   */
+  private void writeRefinenementConstraints(final Element parent, final ComponentInstance cmpi,
+      final Set<AbstractActor> actors, EList<Refinement> allConstrainedRefinements) {
+
+    final Element constraintGroupElt = this.dom.createElement(ScenarioConstants.CONSTRAINT_GROUP);
+    parent.appendChild(constraintGroupElt);
+
+    final Element opdefelt = this.dom.createElement(ScenarioConstants.OPERATOR);
+    constraintGroupElt.appendChild(opdefelt);
+    final String instanceName = cmpi.getInstanceName();
+    opdefelt.setAttribute(ScenarioConstants.NAME, instanceName);
+
+    for (final AbstractActor actor : actors) {
+      // if (actor instanceof Actor || actor instanceof PiGraph) {
+      if (actor instanceof final RefinementContainer rc) {
+        final Element vtxelt = this.dom.createElement(ScenarioConstants.TASK);
+        constraintGroupElt.appendChild(vtxelt);
+        vtxelt.setAttribute(ScenarioConstants.NAME, actor.getVertexPath());
+
+        final EList<Refinement> thisActorRefinements = rc.getRefinements();
+        thisActorRefinements.retainAll(allConstrainedRefinements);
+
+        for (final Refinement ref : thisActorRefinements) {
+          final Element vtxrefelt = this.dom.createElement(ScenarioConstants.REFINEMENT);
+          constraintGroupElt.appendChild(vtxrefelt);
+          vtxrefelt.setAttribute(ScenarioConstants.NAME, ref.getName());
+        }
       }
     }
   }

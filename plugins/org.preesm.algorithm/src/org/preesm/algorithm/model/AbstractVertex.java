@@ -37,6 +37,7 @@ package org.preesm.algorithm.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Observable;
@@ -95,6 +96,7 @@ public abstract class AbstractVertex<G> extends Observable
   protected AbstractVertex() {
     this.properties = new PropertyBean();
     this.interfaces = new ArrayList<>();
+    this.refinements = new LinkedList<>();
   }
 
   /**
@@ -185,15 +187,22 @@ public abstract class AbstractVertex<G> extends Observable
   // of the vertex, or a header file giving signatures of functions to call
   /** The refinement. */
   // when executing the vertex).
-  private IRefinement refinement;
+  // private IRefinement refinement;
+
+  private final List<IRefinement> refinements;
 
   /**
    * Gets the refinement.
    *
    * @return the refinement
    */
-  public IRefinement getRefinement() {
-    return this.refinement;
+  public IRefinement getRefinements() {
+    // return this.refinement;
+    // TODO no getFirst() !
+    if (this.refinements != null && !this.refinements.isEmpty()) {
+      return this.refinements.getFirst();
+    }
+    return null;
   }
 
   /**
@@ -202,10 +211,30 @@ public abstract class AbstractVertex<G> extends Observable
    * @param desc
    *          the new refinement
    */
+  // public void setRefinement(final IRefinement desc) {
+  // this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
+  // this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
+  // this.refinement = desc;
+  // setChanged();
+  // this.notifyObservers();
+  // }
+
+  /**
+   * sets the refinement list
+   *
+   * @param desc
+   *          the refinement to add
+   */
   public void setRefinement(final IRefinement desc) {
     this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
         this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
-    this.refinement = desc;
+    // TODO not setFirst() !!
+    if (this.refinements.size() > 0) {
+      this.refinements.set(0, desc);
+    } else {
+      this.refinements.add(desc);
+    }
+
     setChanged();
     this.notifyObservers();
   }
@@ -220,7 +249,8 @@ public abstract class AbstractVertex<G> extends Observable
   public void setGraphDescription(final AbstractGraph desc) {
     this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
         this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
-    this.refinement = desc;
+    this.refinements.clear();
+    this.refinements.add(desc);
     desc.setParentVertex(this);
   }
 
@@ -231,9 +261,11 @@ public abstract class AbstractVertex<G> extends Observable
    */
   @SuppressWarnings("rawtypes")
   public AbstractGraph getGraphDescription() {
-    if (this.refinement instanceof final AbstractGraph abstractGraph) {
-      return abstractGraph;
+    if (!this.refinements.isEmpty() && this.refinements.stream().allMatch(AbstractGraph.class::isInstance)) {
+      // TODO no getFirst() !!!!
+      return (AbstractGraph) this.refinements.getFirst();
     }
+
     return null;
   }
 

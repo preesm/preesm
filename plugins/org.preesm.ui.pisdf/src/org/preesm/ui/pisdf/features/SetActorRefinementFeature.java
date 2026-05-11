@@ -312,7 +312,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
             newRefinement.setLoopPrototype(loopProto);
             newRefinement.setInitPrototype(initProto);
             newRefinement.setFilePath(newFilePath.toString());
-            actor.setRefinement(newRefinement);
+            // actor.setRefinement(newRefinement);
+            actor.addRefinement(newRefinement);
           }
         }
       } else {
@@ -320,7 +321,8 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
         validRefinement = true;
         final PiSDFRefinement createPiSDFRefinement = PiMMUserFactory.instance.createPiSDFRefinement();
         createPiSDFRefinement.setFilePath(newFilePath.toString());
-        actor.setRefinement(createPiSDFRefinement);
+        // actor.setRefinement(createPiSDFRefinement);
+        actor.addRefinement(createPiSDFRefinement);
         this.hasDoneChanges = true;
       }
     } while (!validRefinement);

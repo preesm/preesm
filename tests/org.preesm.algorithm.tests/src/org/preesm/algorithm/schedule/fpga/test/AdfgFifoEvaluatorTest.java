@@ -45,6 +45,8 @@ import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RefinementContainer;
+import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 import org.preesm.model.pisdf.test.PiGraphGenerator;
 import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.Scenario;
@@ -205,7 +207,10 @@ public class AdfgFifoEvaluatorTest {
   private AbstractActor getMappedActor(final PiGraph graph, final Design design, final Scenario scenario,
       final String actorName) {
     final AbstractActor actor = VertexPath.lookup(graph, actorName);
-    scenario.getConstraints().addConstraint(design.getComponentInstance("Fpga"), actor);
+    scenario.addConstraint(design.getComponentInstance("Fpga"), actor);
+    final var ref = PiMMFactoryImpl.eINSTANCE.createCHeaderRefinement();
+    ((RefinementContainer) actor).addRefinement(ref);
+    scenario.addConstraint(design.getComponentInstance("Fpga"), ref);
     return actor;
   }
 

@@ -71,7 +71,6 @@ package org.preesm.codegen.model
 import org.eclipse.emf.ecore.EEList
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.CHeaderRefinement
-import org.preesm.model.pisdf.Arch
 
 class Block extends CodeElt {
 	contains readonly CodeElt[] codeElts
@@ -168,7 +167,7 @@ class ActorFunctionCall extends FunctionCall {
 }
 
 class AcceleratorCall extends ActorFunctionCall {
-	Arch archi
+//	Arch archi
 }
 
 class PapifyFunctionCall extends FunctionCall {
@@ -229,12 +228,12 @@ class CoreBlock extends Block {
 	refers Buffer[] sinkFifoBuffers
 	String coreType
 	unordered id int coreID
+	// the accelerators used in the design 
+	// used to print the necessary declaration/initialization code in the main operator
+	String[] acceleratorTypes
 	
-	// all the accelerator archs (fpga...) that will have to be supported and thus initialized by the main core code
-	Arch[] acceleratorArchs
-	
-	op void addAcceleratorArch(Arch a) {
-		acceleratorArchs += a
+	op void addAcceleratorArch(String a) {
+		acceleratorTypes += a
 	}
 	
 	op boolean archIsCpu() {

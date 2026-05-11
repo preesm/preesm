@@ -70,9 +70,11 @@ def extract_metrics(folder_path, xml_path, cluster_name):
             result_root = result_tree.getroot()
 
             lat = module_latency.get(name, {"Worst-caseLatency": max(int(result_root.findtext(".//Worst-caseLatency")), 1), "Interval-max": max(int(result_root.findtext(".//Interval-max")), 1)})
+
+            # name format for actor wrappers : *actor name*__*CLUSTER NAME*
             results.append({
                 "file": filename,
-                "actor": cluster_name + "/" + name,
+                "actor": cluster_name + "/" + name.split("__")[0], 
                 "latency": lat["Worst-caseLatency"],
                 "II": lat["Interval-max"],
             })

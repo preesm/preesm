@@ -106,15 +106,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
-      // find the main PE
-      ComponentInstance mainCPU;
-      if (scenario.getSimulationInfo().getMainOperator() instanceof CPU) {
-        mainCPU = scenario.getSimulationInfo().getMainOperator();
-      } else {
-        mainCPU = architecture.getComponentInstances().stream().filter(c -> c.getComponent() instanceof CPU).toList()
-            .getFirst();
-      }
-
       for (final PiGraph cluster : algorithm.getClusters()) {
         recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap);
       }

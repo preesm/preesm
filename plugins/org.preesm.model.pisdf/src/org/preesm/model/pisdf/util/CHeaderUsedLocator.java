@@ -43,7 +43,6 @@ import java.util.Optional;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -61,39 +60,25 @@ public class CHeaderUsedLocator {
    */
   public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
     final List<IPath> result = new ArrayList<>();
-    final var refinements = graph.getAllActors().stream().filter(a -> a instanceof Actor)
+
+    final var refinements = graph.getAllActors().stream().filter(Actor.class::isInstance)
         .map(a -> ((Actor) a).getRefinement());
+
     refinements.forEach(cHeaderRef -> {
-      // we don't want to include headers for fpga generated code
-      if (!(cHeaderRef.getAbstractActor() instanceof final PiGraph g && g.isCluster()
-          && g.getTargetArch().equals(Arch.FPGA))) {
+      // we don't want to include headers for fpga-generated code (i.e .hpp files)
 
-        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
-        if ((filePath != null) && !(result.contains(filePath))) {
-          result.add(filePath);
-        }
-
+      final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
+      if ((filePath != null) && !(result.contains(filePath) && !filePath.getFileExtension().equals("hpp"))) {
+        result.add(filePath);
       }
+
     });
-    // graph.eAllContents().forEachRemaining(element -> {
-    // if (element instanceof final CHeaderRefinement cHeaderRef) {
-    //
-    // // we don't want to include headers for fpga generated code
-    // if (!(cHeaderRef.getAbstractActor() instanceof final Cluster cluster
-    // && cluster.getTargetArch().equals(Arch.FPGA))) {
-    //
-    // final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
-    // if ((filePath != null) && !(result.contains(filePath))) {
-    // result.add(filePath);
-    // }
-    //
-    // }
-    // }
-    // });
+
     return result;
   }
 
   public static final List<String> findAllCHeaderFileNamesUsed(final PiGraph graph) {
     return findAllCHeadersUsed(graph).stream().map(IPath::toFile).map(File::getName).toList();
   }
+
 }

@@ -65,6 +65,7 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor
 import org.preesm.model.pisdf.util.RefinementResolver
+import org.eclipse.emf.ecore.xml.^type.Name
 
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -277,19 +278,29 @@ abstract class AbstractActor extends Configurable {
 	}
 }
 
-class PiGraph extends AbstractActor, Graph, PeriodicElement {
+class PiGraph extends AbstractActor, RefinementContainer, Graph, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"
 	
-	// is used to link the cluster to its to-be-made C refinement code
-	contains Refinement refinement 
+	// is used to link the cluster to its to-be-made C refinement code	
+	// contains Refinement[] refinements
 	
 	// wish I could set the type as SynthesisResult, but this causes double inclusion
 	// we'll have to cast manually every time...
 	Object synthesisResult
 	
-	Arch targetArch
+	// whether the graph should be flattened if it is a cluster/subgraph
+	boolean toFlatten = "true"
+	
+	// whether the graph should be converted to single-rate if it is a cluster/subgraph
+	boolean toSrdag = "true"
+	
+	// returns the first refinement in the list.
+	// To use only AFTER scheduling-mapping, where a single refinement is chosen for implementation
+	op Refinement getRefinement() {
+		return refinements.first
+	}
 
 	// Indexes used for vertices and edges insertion/deletion in a way that matches the .pi
 	/* Index used to know where to insert {@link Parameter} into the {@link PiGraph} vertex list */
@@ -793,15 +804,63 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		val PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor
 		piMMResolverVisitor.casePiGraph(this);
 	}
+	
+
+	
 }
 
-enum Arch{CPU, FPGA}
 
 abstract class ExecutableActor extends AbstractActor {
 }
 
 interface RefinementContainer {
-	contains Refinement refinement opposite refinementContainer
+	contains Refinement[] refinements opposite refinementContainer
+  	op Refinement getRefinement() {
+  		if(refinements === null || refinements.empty) {
+  			return null
+  		}
+  		return refinements.first
+  	}
+  	op void setRefinement(Refinement ref) {
+  		if(refinements.size > 0) {
+  			refinements.set(0, ref)
+  		}
+  		else {
+  			refinements.add(ref)
+  		}
+  	}
+//  	op void addRefinement(Refinement ref) {
+//  		refinements.add(ref)
+//  	}
+  	op void clearRefinements() {
+  		refinement.remove
+  	}
+  	
+  	op void addRefinement(Refinement ref) {
+		// check that no other refinement uses the same prototype : same name. So no 2 prototypes on the same actor with the same name !
+		if(ref instanceof CHeaderRefinement) {
+			var alreadyPresent = refinements.filter(CHeaderRefinement).map[it.loopPrototype].filterNull.exists[it.name.equals(ref.name)]
+			if(!alreadyPresent) {
+				refinements.add(ref)
+			}
+		}
+		
+		else if(ref instanceof org.preesm.model.pisdf.PiSDFRefinement) {
+			var alreadyPresent = refinements.filter(PiSDFRefinement).exists[it.name.equals(ref.name)]
+			if(!alreadyPresent) {
+				refinements.add(ref)
+			}
+		}
+	}
+	
+	op Refinement[] getHeaderRefinements() {
+		return refinements.filter(CHeaderRefinement).toEList
+	}
+	
+	op Refinement[] getPiSDFRefinements() {
+		return refinements.filter(PiSDFRefinement).toEList
+	}
+	
 }
 
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
@@ -811,7 +870,7 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
 	op boolean isHierarchical() {
-		return refinement !== null && refinement.isHierarchical
+		return refinement !== null && refinements.first.isHierarchical
 	}
 	
 	op boolean isFired() {
@@ -823,7 +882,7 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		if (refinement === null) {
 			return null;
 		} else {
-			return refinement.abstractActor
+			return refinements.first.abstractActor
 		}
 	}
 	op PiGraph getSubGraph() {
@@ -1167,7 +1226,7 @@ class ConfigOutputInterface extends InterfaceActor {
 }
 
 interface Refinement {
-	refers RefinementContainer refinementContainer opposite refinement
+	refers RefinementContainer refinementContainer opposite refinements
 	String filePath
 	op AbstractActor getAbstractActor() {
 		return RefinementResolver.resolveAbstractActor(this)
@@ -1177,11 +1236,15 @@ interface Refinement {
 	}
 	op boolean isHierarchical()
 	boolean generated = "false"
+	op String getName()
 }
 
 class PiSDFRefinement extends Refinement {
 	op boolean isHierarchical() {
 		return (getFilePath() !== null) && !getFilePath().isEmpty()
+	}
+	op String getName() {
+		return getFilePath()
 	}
 }
 
@@ -1244,6 +1307,15 @@ class CHeaderRefinement extends Refinement {
 			}
 		}
 		return result + ")";
+	}	
+	
+	op String getName() {
+		if(loopPrototype !== null) {
+			return loopPrototype.name
+			}
+		else {
+			return null
+		}
 	}
 	
 }
@@ -1275,6 +1347,7 @@ class Parameter extends Vertex, Configurable, ISetter, ExpressionHolder {
 	op unique Parameter[] getOutputDependentParameters() {
 		return outgoingDependencies.filterNull.map[target].filter(Parameter).toEList.unmodifiableView
 	}
+
 }
 
 class MoldableParameter extends Parameter {

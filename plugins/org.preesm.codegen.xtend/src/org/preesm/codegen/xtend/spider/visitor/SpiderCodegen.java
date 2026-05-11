@@ -54,6 +54,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
@@ -71,6 +72,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.scenario.PapiComponent;
 import org.preesm.model.scenario.PapiEvent;
 import org.preesm.model.scenario.PapifyConfig;
@@ -242,9 +244,14 @@ public class SpiderCodegen {
 
     // Generate constraints
     this.constraints = new LinkedHashMap<>();
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : this.scenario.getConstraints()
-        .getGroupConstraints()) {
-      for (final AbstractActor aa : cg.getValue()) {
+    // for (final Entry<ComponentInstance, EList<AbstractActor>> cg :
+    // this.scenario.getRefConstraints().getGroupConstraints()) {
+    for (final Entry<ComponentInstance, EList<Refinement>> cg : this.scenario.getConstraints()
+        .getRefinementConstraints()) {
+      // not sure the AbstractActor conversion always works...
+      final Set<AbstractActor> actors = cg.getValue().stream().map(ref -> (AbstractActor) ref.getRefinementContainer())
+          .collect(Collectors.toSet());
+      for (final AbstractActor aa : actors) {
         if (this.constraints.get(aa) == null) {
           this.constraints.put(aa, new LinkedHashSet<>());
         }

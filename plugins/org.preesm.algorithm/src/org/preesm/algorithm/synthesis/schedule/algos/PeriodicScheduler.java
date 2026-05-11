@@ -73,7 +73,7 @@ import org.preesm.model.slam.Design;
 
 /**
  * This scheduler handles the periods defined in the PiGraph and in its actors. However, it does not take into account
- * communication time.
+ * communication time. Operates on Single-Rate Directed Acyclic Graphs.
  * <p>
  * For more details, see conference paper "Scheduling of Synchronous Dataflow Graphs with Partially Periodic Real-Time
  * Constraints", published at RTNS 2020 (DOI 10.1145/3394810.3394820).
@@ -432,7 +432,7 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   /**
-   *
+   * Computes the start, end and average execution start times for each VertexAbstraction in the SRDAG.
    *
    * @param absGraph
    *          Graph abstraction of SRDAG.
@@ -723,7 +723,14 @@ public class PeriodicScheduler extends AbstractScheduler {
     }
   }
 
-  // ascending as, and ascending ns if equality of as
+  /**
+   * Inserts tasks in the queue based on start time ascending as, and ascending ns if equality of as
+   *
+   * @param va
+   *          vertexAbstraction
+   * @param queue
+   *          the queue
+   */
   protected static void insertTaskInScheduleQueue(VertexAbstraction va, List<VertexAbstraction> queue) {
     final ListIterator<VertexAbstraction> it = queue.listIterator();
     while (it.hasNext()) {

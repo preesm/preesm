@@ -60,7 +60,9 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -71,6 +73,8 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.serialize.PiParser;
 import org.preesm.model.pisdf.util.VertexPath;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
@@ -343,6 +347,11 @@ public class ScenarioParser {
           final ComponentInstance componentInstance = design.getComponentInstance(path);
           if (componentInstance != null) {
             this.scenario.getSimulationInfo().addSpecialVertexOperator(componentInstance);
+
+            final EList<AbstractActor> sas = new BasicEList<>(this.scenario.getAlgorithm().getAllActors().stream()
+                .filter(SpecialActor.class::isInstance).map(a -> (SpecialActor) a).toList());
+
+            this.scenario.getConstraints().addConstraints(componentInstance, sas);
           } else {
             PreesmLogger.getLogger()
                 .warning(() -> "Could not add special vertex operator '" + path + "' as it is not part of the design");
@@ -435,6 +444,7 @@ public class ScenarioParser {
   private void parseConstraintGroups(final Element cstGroupsElt) {
 
     final String excelFileUrl = cstGroupsElt.getAttribute(ScenarioConstants.EXCEL_URL);
+    // this.scenario.getConstraints().setGroupConstraintsFileURL(excelFileUrl);
     this.scenario.getConstraints().setGroupConstraintsFileURL(excelFileUrl);
 
     Node node = cstGroupsElt.getFirstChild();
@@ -461,8 +471,10 @@ public class ScenarioParser {
    */
   private void parseConstraintGroup(final Element cstGroupElt) {
     ComponentInstance opId = null;
+    AbstractActor actorId = null;
 
     final Set<AbstractActor> actors = new LinkedHashSet<>();
+    final Set<Refinement> refinements = new LinkedHashSet<>();
 
     if (scenario.isProperlySet()) {
       Node node = cstGroupElt.getFirstChild();
@@ -474,18 +486,56 @@ public class ScenarioParser {
             final AbstractActor actorFromPath = getActorFromPath(name);
             if (actorFromPath instanceof Actor || actorFromPath instanceof PiGraph) {
               actors.add(actorFromPath);
+              actorId = actorFromPath;
             }
           } else if (type.equals(ScenarioConstants.OPERATOR)
               && this.scenario.getDesign().containsComponentInstance(name)) {
             opId = this.scenario.getDesign().getComponentInstance(name);
+          } else if (type.equals(ScenarioConstants.REFINEMENT)) {
+            // mapper ce couple refinement-acteur (stocké dans une Pair ?) à un PE
+
+            // anyMatch should be fine since no two prototype should have the same name anyway
+            final Refinement ref = getRefinementFromName(actorId, name);
+            if (ref != null) {
+              refinements.add(ref);
+            }
           }
         }
         node = node.getNextSibling();
       }
     }
     if (opId != null) {
-      this.scenario.getConstraints().addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
+      this.scenario.addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
     }
+  }
+
+  private Refinement getRefinementFromName(AbstractActor actor, String name) {
+    Refinement res = null;
+    switch (actor) {
+      case final Actor a:
+        if (a.getRefinements() != null) {
+          res = a.getRefinements().stream().filter(r -> r.getName() != null && r.getName().equals(name)).findAny()
+              .orElse(null);
+        }
+        break;
+      case final PiGraph g:
+        if (g.getRefinements() != null) {
+          res = g.getRefinements().stream().filter(r -> r.getName() != null && r.getName().equals(name)).findAny()
+              .orElse(null);
+        }
+        break;
+      default:
+        PreesmLogger.getLogger().log(Level.WARNING,
+            "Actor " + actor.getName() + " is not a PiGraph or an actor with a refinement");
+        return null;
+    }
+
+    if (res == null) {
+      PreesmLogger.getLogger().log(Level.WARNING, "Actor " + actor.getName() + " has no refinement named " + name);
+      return null;
+    }
+    return res;
+
   }
 
   /**

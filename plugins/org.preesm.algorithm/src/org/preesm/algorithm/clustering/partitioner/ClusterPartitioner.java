@@ -47,6 +47,7 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
 import org.preesm.model.pisdf.util.ClusteringPatternSeekerUrc;
 import org.preesm.model.pisdf.util.PiGraphFiringBalancer;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
@@ -114,9 +115,10 @@ public class ClusterPartitioner {
     for (final List<AbstractActor> URC : graphURCs) {
       final PiGraph subGraph = new PiSDFSubgraphBuilder(this.graph, URC, "urc_" + index++).build();
       subGraph.setClusterValue(true);
+      subGraph.addRefinement(PiMMFactoryImpl.eINSTANCE.createPiSDFRefinement());
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
-        this.scenario.getConstraints().addConstraint(component, subGraph);
+        this.scenario.addConstraint(component, subGraph);
       }
       subGraphs.add(subGraph);
     }

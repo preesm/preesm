@@ -53,6 +53,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.impl.ActorImpl;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
@@ -143,10 +144,14 @@ public class EnergyAwarenessProvider {
   public void updateScenario() {
 
     /** Reset --> Like this so as to keep group constraints order unaltered */
-    this.scenarioMapping.getConstraints().getGroupConstraints()
-        .addAll(this.scenarioOriginal.getConstraints().getGroupConstraints());
-    this.scenarioOriginal.getConstraints().getGroupConstraints()
-        .addAll(this.scenarioMapping.getConstraints().getGroupConstraints());
+    // this.scenarioMapping.getConstraints().getGroupConstraints()
+    // .addAll(this.scenarioOriginal.getConstraints().getGroupConstraints());
+    // this.scenarioOriginal.getConstraints().getGroupConstraints()
+    // .addAll(this.scenarioMapping.getConstraints().getGroupConstraints());
+    this.scenarioMapping.getConstraints().getRefinementConstraints()
+        .addAll(this.scenarioOriginal.getConstraints().getRefinementConstraints());
+    this.scenarioOriginal.getConstraints().getRefinementConstraints()
+        .addAll(this.scenarioMapping.getConstraints().getRefinementConstraints());
 
     /** Add the constraints that represents the new config */
     updateConfigConstrains(this.scenarioOriginal, this.scenarioMapping, this.pesAlwaysAdded, this.coresUsedOfEachType);
@@ -260,10 +265,10 @@ public class EnergyAwarenessProvider {
    */
 
   public Scenario getFinalScenario() {
-    this.scenarioMapping.getConstraints().getGroupConstraints()
-        .addAll(this.scenarioOriginal.getConstraints().getGroupConstraints());
-    this.scenarioOriginal.getConstraints().getGroupConstraints()
-        .addAll(this.scenarioMapping.getConstraints().getGroupConstraints());
+    this.scenarioMapping.getConstraints().getRefinementConstraints()
+        .addAll(this.scenarioOriginal.getConstraints().getRefinementConstraints());
+    this.scenarioOriginal.getConstraints().getRefinementConstraints()
+        .addAll(this.scenarioMapping.getConstraints().getRefinementConstraints());
     copyScenario(this.scenarioMapping, this.scenarioOriginal);
     return this.scenarioOriginal;
   }
@@ -280,7 +285,7 @@ public class EnergyAwarenessProvider {
     copy.setDesign(original.getDesign());
     copy.setTimings(original.getTimings());
     copy.setEnergyConfig(original.getEnergyConfig());
-    copy.getConstraints().getGroupConstraints().addAll(original.getConstraints().getGroupConstraints());
+    copy.getConstraints().getRefinementConstraints().addAll(original.getConstraints().getRefinementConstraints());
   }
 
   /**
@@ -348,17 +353,17 @@ public class EnergyAwarenessProvider {
   /**
    *
    */
-  public static List<Entry<ComponentInstance, EList<AbstractActor>>> getConstraintsOfType(Scenario scenario,
+  public static List<Entry<ComponentInstance, EList<Refinement>>> getConstraintsOfType(Scenario scenario,
       String peType) {
-    return scenario.getConstraints().getGroupConstraints().stream()
+    return scenario.getConstraints().getRefinementConstraints().stream()
         .filter(e -> e.getKey().getComponent().getVlnv().getName().equalsIgnoreCase(peType)).toList();
   }
 
   /**
    *
    */
-  public static Entry<ComponentInstance, EList<AbstractActor>> getConstraintByPeName(Scenario scenario, String peName) {
-    return scenario.getConstraints().getGroupConstraints().stream()
+  public static Entry<ComponentInstance, EList<Refinement>> getConstraintByPeName(Scenario scenario, String peName) {
+    return scenario.getConstraints().getRefinementConstraints().stream()
         .filter(e -> e.getKey().getInstanceName().equalsIgnoreCase(peName)).toList().get(0);
   }
 
@@ -376,14 +381,14 @@ public class EnergyAwarenessProvider {
   public static void updateConfigConstrains(Scenario scenario, Scenario scenarioMapping, Set<String> pesAlwaysAdded,
       Map<String, Integer> coresUsedOfEachType) {
     for (final String peName : pesAlwaysAdded) {
-      final Entry<ComponentInstance, EList<AbstractActor>> constraint = getConstraintByPeName(scenario, peName);
-      scenarioMapping.getConstraints().getGroupConstraints().add(constraint);
+      final Entry<ComponentInstance, EList<Refinement>> constraint = getConstraintByPeName(scenario, peName);
+      scenarioMapping.addConstraint(constraint);
     }
     final Map<String,
         Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessProvider.getCoresOfEachType(scenarioMapping);
     for (final Entry<String, Integer> instance : coresUsedOfEachType.entrySet()) {
-      final List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = getConstraintsOfType(scenario,
-          instance.getKey());
+      final List<
+          Entry<ComponentInstance, EList<Refinement>>> constraints = getConstraintsOfType(scenario, instance.getKey());
       int coresLeft = 0;
       if (coresOfEachTypeAlreadyAdded.containsKey(instance.getKey())) {
         coresLeft = instance.getValue() - coresOfEachTypeAlreadyAdded.get(instance.getKey());
@@ -391,7 +396,7 @@ public class EnergyAwarenessProvider {
         coresLeft = instance.getValue();
       }
       if (!constraints.isEmpty() && coresLeft > 0) {
-        scenarioMapping.getConstraints().getGroupConstraints().addAll(constraints.subList(0, coresLeft));
+        scenarioMapping.getConstraints().getRefinementConstraints().addAll(constraints.subList(0, coresLeft));
       }
     }
 
@@ -408,7 +413,7 @@ public class EnergyAwarenessProvider {
     scenarioMapping.getSimulationInfo().setMainOperator(null);
     if (!scenarioMapping.getConstraints()
         .isCoreContained(scenario.getSimulationInfo().getMainOperator().getInstanceName())) {
-      final ComponentInstance newMainNode = scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey();
+      final ComponentInstance newMainNode = scenarioMapping.getConstraints().getRefinementConstraints().get(0).getKey();
       scenarioMapping.getSimulationInfo().setMainOperator(newMainNode);
     } else {
       scenarioMapping.getSimulationInfo().setMainOperator(scenario.getSimulationInfo().getMainOperator());
@@ -425,7 +430,7 @@ public class EnergyAwarenessProvider {
     }
     if (needToUpdate) {
       scenarioMapping.getSimulationInfo()
-          .addSpecialVertexOperator(scenarioMapping.getConstraints().getGroupConstraints().get(0).getKey());
+          .addSpecialVertexOperator(scenarioMapping.getConstraints().getRefinementConstraints().get(0).getKey());
     }
   }
 
@@ -623,10 +628,13 @@ public class EnergyAwarenessProvider {
     final Set<String> imprescindiblePes = new LinkedHashSet<>();
     for (final AbstractActor actor : scenarioMapping.getAlgorithm().getAllActors()) {
       if (actor != null && actor.getClass().equals(ActorImpl.class)) {
-        final List<Entry<ComponentInstance, EList<AbstractActor>>> constraints = scenarioMapping.getConstraints()
-            .getGroupConstraints().stream().filter(e -> e.getValue().contains(actor)).toList();
+        // among all constraints, keep those that link this actor to a PE
+        final List<Entry<ComponentInstance, EList<Refinement>>> constraints = scenarioMapping.getConstraints()
+            .getRefinementConstraints().stream()
+            .filter(c -> c.getValue().stream().anyMatch(ref -> ref.getRefinementContainer() == actor)).toList();
+
         if (constraints.size() == 1) {
-          for (final Entry<ComponentInstance, EList<AbstractActor>> constraint : constraints) {
+          for (final Entry<ComponentInstance, EList<Refinement>> constraint : constraints) {
             imprescindiblePes.add(constraint.getKey().getInstanceName());
           }
         }

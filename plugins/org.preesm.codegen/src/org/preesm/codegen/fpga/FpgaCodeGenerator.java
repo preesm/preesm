@@ -37,6 +37,7 @@
 
 package org.preesm.codegen.fpga;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -46,11 +47,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
@@ -64,7 +68,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.Arch;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
@@ -188,12 +191,14 @@ public class FpgaCodeGenerator {
   private final String             graphName;
   private final AnalysisResultFPGA analysisResult;
   private final Map<Fifo, Long>    allFifoDepths;
+  private final Scenario           scenario;
 
   private FpgaCodeGenerator(final Scenario scenario, final FPGA fpga, final AnalysisResultFPGA analysisResult) {
     this.fpga = fpga;
     this.graphName = PiMMUserFactory.instance.getUniqueVariableName(analysisResult.flatGraph);
     this.analysisResult = analysisResult;
     this.allFifoDepths = new LinkedHashMap<>();
+    this.scenario = scenario;
     final PiGraph graph = analysisResult.flatGraph;
 
     // the fifo sizes are given in bits while we want the depth in number of elements
@@ -677,7 +682,8 @@ public class FpgaCodeGenerator {
   }
 
   private String generateWrapperName(Actor a) {
-    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase();
+    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase() + "__"
+        + PreesmCopyTracker.getOriginalSource(a.getContainingPiGraph()).getName().toUpperCase();
   }
 
   protected String writeXOCLHostFile() {
@@ -923,6 +929,35 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
+  private List<String> findAllCHeaderFileNamesUsedExcludingArchs(final PiGraph graph, final Scenario scenario,
+      List<org.preesm.model.slam.Component> excludedComponents) {
+    return findAllCHeadersUsedExcludingArches(graph, scenario, excludedComponents).stream().map(IPath::toFile)
+        .map(File::getName).toList();
+  }
+
+  private List<IPath> findAllCHeadersUsedExcludingArches(final PiGraph graph, final Scenario scenario,
+      List<org.preesm.model.slam.Component> excludedComponents) {
+    final List<IPath> result = new ArrayList<>();
+
+    final var refinements = graph.getAllActors().stream().filter(Actor.class::isInstance)
+        .map(a -> ((Actor) a).getRefinement());
+
+    refinements.forEach(cHeaderRef -> {
+      // we don't want to include headers for fpga generated code
+      if (!(cHeaderRef.getAbstractActor() instanceof final PiGraph g && g.isCluster()
+          && scenario.getPossibleMappings(g).stream().anyMatch(map -> map.getComponent() instanceof FPGA))) {
+
+        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
+        if ((filePath != null) && !(result.contains(filePath))) {
+          result.add(filePath);
+        }
+
+      }
+    });
+
+    return result;
+  }
+
   protected String writeTopKernelFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
@@ -930,8 +965,11 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-    final List<
-        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
+
+    final List<org.preesm.model.slam.Component> excludedComponents = new LinkedList<>();
+
+    final List<String> findAllCHeaderFileNamesUsed = findAllCHeaderFileNamesUsedExcludingArchs(analysisResult.flatGraph,
+        scenario, excludedComponents);
 
     context.put(PREESM_INCLUDES,
         includeCFile(TEMPLATE_DEFINE_HEADER_NAME) + "\n" + "#include \"WRAPPER_" + graphName + ".hpp\"");
@@ -1500,11 +1538,14 @@ public class FpgaCodeGenerator {
    *          the top algorithm
    * @return the stream_connect commands as a string
    */
-  public static String generateConnectivityCommands(PiGraph algo) {
+  public static String generateConnectivityCommands(PiGraph algo, Scenario scenario) {
     final StringBuilder sb = new StringBuilder("");
 
     final List<PiGraph> clusterList = algo.getAllClusters().stream()
-        .filter(c -> c.getTargetArch().equals(Arch.FPGA) && !c.getContainingPiGraph().isCluster()).toList();
+
+        .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(comp -> comp.getComponent() instanceof FPGA)
+            && !c.getContainingPiGraph().isCluster())
+        .toList();
 
     final Map<PiGraph, Integer> clusterInstancesMap = clusterList.stream()
         .collect(Collectors.toMap(PreesmCopyTracker::getOriginalSource, s -> 0, (a, b) -> a));

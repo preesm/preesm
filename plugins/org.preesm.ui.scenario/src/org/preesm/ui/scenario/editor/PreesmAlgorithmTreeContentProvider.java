@@ -44,7 +44,9 @@ import org.eclipse.jface.viewers.CheckboxTreeViewer;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.scenario.Scenario;
 
 /**
@@ -84,6 +86,8 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
       if (actor.isHierarchical()) {
         final PiGraph subGraph = actor.getSubGraph();
         table = filterPISDFChildren(subGraph.getActors()).toArray();
+      } else {
+        table = filterRefinements(actor).toArray();
       }
     }
 
@@ -112,7 +116,9 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     if (element instanceof final PiGraph graph) {
       hasChildren = !graph.getActors().isEmpty();
     } else if (element instanceof final Actor actor) {
-      hasChildren = actor.getRefinement() != null;
+      hasChildren = actor.getRefinement() != null || !actor.getRefinements().isEmpty();
+    } else if (element instanceof final CHeaderRefinement chr) {
+      hasChildren = false;
     }
 
     return hasChildren;
@@ -159,6 +165,21 @@ public class PreesmAlgorithmTreeContentProvider implements ITreeContentProvider 
     for (final AbstractActor actor : vertices) {
       if (actor instanceof Actor || actor instanceof PiGraph) {
         result.add(actor);
+      }
+    }
+    return result;
+  }
+
+  public Set<Refinement> filterRefinements(AbstractActor actor) {
+    if (!(actor instanceof final Actor a)) {
+      return new LinkedHashSet<>();
+    }
+
+    // else
+    final Set<Refinement> result = new LinkedHashSet<>();
+    for (final Refinement ref : a.getRefinements()) {
+      if (ref.getName() != null) {
+        result.add(ref);
       }
     }
     return result;

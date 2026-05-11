@@ -56,6 +56,8 @@ import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
@@ -200,14 +202,28 @@ public class PiSDFHeterogeneousFlattener extends PiMMSwitch<Boolean> {
     // 3 : move all parameters and actors (except data interfaces) to the upper graph
     for (final AbstractActor a : graph.getActors()) {
       upperGraph.addActor(a);
-      for (final DataPort dp : a.getAllDataPorts()) {
-        final Fifo f = dp.getFifo();
+      if (a instanceof final DelayActor da) {
+        final Delay linkedDelay = da.getLinkedDelay();
+        final Fifo f = linkedDelay.getContainingFifo();
         if (f.getTarget() instanceof DataOutputInterface || f.getSource() instanceof DataInputInterface) {
           // should never happen since we discard fifos when dealing with data ports
           graph.removeFifo(f);
         } else {
           graph.removeFifo(f);
           upperGraph.addFifo(f);
+          upperGraph.addDelay(linkedDelay);
+        }
+
+      } else {
+        for (final DataPort dp : a.getAllDataPorts()) {
+          final Fifo f = dp.getFifo();
+          if (f.getTarget() instanceof DataOutputInterface || f.getSource() instanceof DataInputInterface) {
+            // should never happen since we discard fifos when dealing with data ports
+            graph.removeFifo(f);
+          } else {
+            graph.removeFifo(f);
+            upperGraph.addFifo(f);
+          }
         }
       }
     }

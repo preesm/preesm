@@ -205,8 +205,8 @@ public class HeterogeneousTest {
     fpgaActors.add(listActors.get(10));
     fpgaActors.add(listActors.get(11));
 
-    scenario.getConstraints().addConstraints(cpu1, cpuActors);
-    scenario.getConstraints().addConstraints(fpga1, fpgaActors);
+    scenario.addConstraints(cpu1, cpuActors);
+    scenario.addConstraints(fpga1, fpgaActors);
   }
 
   @After

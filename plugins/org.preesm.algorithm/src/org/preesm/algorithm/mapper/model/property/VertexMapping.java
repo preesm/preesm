@@ -118,7 +118,7 @@ public class VertexMapping extends GroupProperty {
       }
     }
 
-    if (operators.isEmpty()) {
+    if (operators.isEmpty() && vertex.getReferencePiVertex() != null) { // 2e cond ajoutée par moi, casse-gueule
       final String msg = "Relative constraint with no operator." + relatedVertices;
       PreesmLogger.getLogger().log(Level.SEVERE, msg);
     }

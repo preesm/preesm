@@ -229,7 +229,7 @@ def instrument_execution(codegen_path):
 
 
 	# write loop number in preesm_gen.h
-	define_line = "#define PREESM_LOOP_SIZE 20\n"
+	define_line = "#define PREESM_LOOP_SIZE 10000\n"
 	try:
 	    with open(codegen_path + "/preesm_gen.h", "r") as f:
 	        lines = f.readlines()
@@ -352,7 +352,7 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 	gen_CPPfiles = [file for file in os.listdir(codegen_folder) if file.endswith(".cpp") and not(file in hls_kernel_files + testbench_files)]
 	status = comp.import_files(from_loc=codegen_folder, files=gen_CPPfiles)
 
-	source_files = [file for file in os.listdir(code_folder+"/src") if not(file.endswith(".h")) and not(file in hls_kernel_files)]
+	source_files = [file for file in os.listdir(code_folder+"/src") if not(file.endswith(".h") or file.endswith(".hpp")) and not(file in hls_kernel_files)]
 	status = comp.import_files(from_loc=code_folder+"/src", files=source_files)
 
 	status = comp.import_files(from_loc=codegen_folder+"/libs/common/includes", files=["xcl2"])

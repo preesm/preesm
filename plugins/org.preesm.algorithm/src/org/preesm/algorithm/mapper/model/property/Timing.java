@@ -42,10 +42,15 @@
 package org.preesm.algorithm.mapper.model.property;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.ExpressionHolder;
+import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.expression.ExpressionEvaluator;
-import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.slam.Component;
 
 /**
@@ -60,18 +65,22 @@ public class Timing {
 
   private final Component component;
 
-  private final AbstractActor actor;
+  // TODO replace all uses of actor by refinement
+  private final AbstractActor           actor;
+  private final Map<Refinement, String> RefinementTimingValues;
 
   /**
    */
   public Timing(final Component component, final AbstractActor actor) {
-    this(component, actor, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
+    // this(component, actor, ScenarioConstants.DEFAULT_TIMING_TASK.getValue());
+    this(component, actor, new HashMap<>());
   }
 
   /**
    */
   public Timing(final Component component, final AbstractActor actor, final long time) {
     this(component, actor, String.valueOf(time));
+    // this(component, actor, String.valueOf(time), new HashMap<Refinement,String>());
   }
 
   /**
@@ -80,6 +89,44 @@ public class Timing {
     this.component = component;
     this.actor = actor;
     this.stringValue = expression;
+    this.RefinementTimingValues = new HashMap<>();
+    for (final Refinement ref : ((RefinementContainer) actor).getRefinements()) {
+      RefinementTimingValues.put(ref, expression);
+    }
+  }
+
+  /**
+   * Can accept empty expressions, it will create a map with default timing values for all refinements
+   *
+   * @param component
+   *          the component
+   * @param actor
+   *          the actor
+   * @param expressions
+   *          a list of timing expression as string
+   */
+  public Timing(final Component component, final AbstractActor actor, final Map<Refinement, String> expressions) {
+    this.component = component;
+    this.actor = actor;
+    this.stringValue = "100";
+    this.RefinementTimingValues = expressions;
+    // si PiGraph : les PiGraphs n'ont pas de timing intrinsèque
+    // si ExpressionHolder et expressions de la bonne taille : on copie
+    // si expressions pas de la bonne taille: on met une valeur par défaut
+
+    if (actor instanceof ExpressionHolder && !(actor instanceof PiGraph)) {
+      if (expressions.size() == ((RefinementContainer) actor).getRefinements().size()) {
+
+        for (final Refinement ref : ((RefinementContainer) actor).getRefinements()) {
+          this.RefinementTimingValues.put(ref, expressions.get(ref));
+        }
+
+      } else {
+        for (final Refinement ref : ((RefinementContainer) actor).getRefinements()) {
+          this.RefinementTimingValues.put(ref, "100");
+        }
+      }
+    }
   }
 
   public Component getComponent() {

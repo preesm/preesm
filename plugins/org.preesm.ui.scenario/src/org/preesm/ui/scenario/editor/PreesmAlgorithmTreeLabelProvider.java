@@ -38,6 +38,7 @@ package org.preesm.ui.scenario.editor;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.CHeaderRefinement;
 
 // TODO: Auto-generated Javadoc
 /**
@@ -54,12 +55,11 @@ public class PreesmAlgorithmTreeLabelProvider extends LabelProvider {
    */
   @Override
   public String getText(final Object element) {
-    String name = "";
-    if (element instanceof final AbstractActor abstractActor) {
-      name = abstractActor.getName();
-    }
-
-    return name;
+    return switch (element) {
+      case final AbstractActor abstractActor -> abstractActor.getName();
+      case final CHeaderRefinement chr -> chr.getName();
+      default -> "";
+    };
   }
 
 }

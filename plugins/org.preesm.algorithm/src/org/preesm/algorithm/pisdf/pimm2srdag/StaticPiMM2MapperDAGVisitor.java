@@ -44,11 +44,16 @@
  */
 package org.preesm.algorithm.pisdf.pimm2srdag;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
@@ -654,12 +659,30 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    * Update the Scenario with timing/mapping constraints for copyActor.
    */
   private static final void updateScenarioData(final AbstractActor copyActor, final Scenario scenario) {
+    // TODO refractor to remove the disgusting conversion of refinements into actors and use the new, refinement-only
+    // mappings
     final AbstractActor actor = PreesmCopyTracker.getOriginalSource(copyActor);
     // Add the scenario constraints
     final List<ComponentInstance> currentOperatorIDs = new ArrayList<>();
-    final List<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroups = scenario.getConstraints()
-        .getGroupConstraints();
-    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : constraintGroups) {
+    // final List<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroupsReference =
+    // scenario.getRefConstraints().getGroupConstraints();
+    final List<Entry<ComponentInstance, EList<AbstractActor>>> constraintGroupsReference = new LinkedList<>();
+
+    // extract
+    final List<Entry<ComponentInstance, EList<Refinement>>> constraintGroups = scenario.getConstraints()
+        .getRefinementConstraints();
+    for (final var val : constraintGroups) {
+      final ComponentInstance ci = val.getKey();
+
+      // conversion to set because I don't want duplicate actors
+      final Set<
+          AbstractActor> actors = val.getValue().stream().map(Refinement::getAbstractActor).collect(Collectors.toSet());
+      final AbstractMap.SimpleEntry<ComponentInstance,
+          EList<AbstractActor>> truc = new AbstractMap.SimpleEntry<>(ci, new BasicEList<>(actors));
+      constraintGroupsReference.addLast(truc);
+    }
+
+    for (final Entry<ComponentInstance, EList<AbstractActor>> cg : constraintGroupsReference) {
       final List<AbstractActor> vertexPaths = cg.getValue();
       final ComponentInstance operatorId = cg.getKey();
       if (vertexPaths.contains(actor)) {

@@ -175,11 +175,12 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
       final SynthesisResult localSynthesisResults = localSyntheses.get(original);
       PreesmLogger.getLogger().info("\tLocal codegen of cluster " + original.getName());
 
-      // a cluster should have only one mapping (at least for now)
       final ComponentInstance mapping = scenario.getPossibleMappings(cluster).getFirst();
       if (mapping.getComponent() instanceof final FPGA fpga) {
         FpgaCodeGenerator.generateFiles(scenario, fpga, (AnalysisResultFPGA) cluster.getSynthesisResult());
-        cluster.setRefinement(buildClusterRefinement(cluster, scenario));
+        // TODO : have the created CHeaderRefinement replace the PiSDF refinement of this cluster (including in the
+        // mappings for example)
+        cluster.addRefinement(buildClusterRefinement(cluster, scenario));
       } else {
         buildClusterCode(cluster, scenario, localSynthesisResults, archi);
       }
@@ -285,7 +286,7 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
 
     prototype.getArguments().addAll(Arrays.asList(args));
 
-    cluster.setRefinement(clusterHeader);
+    cluster.addRefinement(clusterHeader);
 
     return clusterHeader;
   }
