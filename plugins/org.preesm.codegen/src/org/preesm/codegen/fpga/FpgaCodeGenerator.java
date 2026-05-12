@@ -655,8 +655,13 @@ public class FpgaCodeGenerator {
 
         // 2 : trouver le dataport
         // get first should be fine since there can not be (i think) two data ports with the same name
-        final DataPort dataPort = dataPorts.stream().filter(dp -> dp.getName().equals(arg.getName())).toList()
-            .getFirst();
+        final var truc = dataPorts.stream().filter(dp -> dp.getName().equals(arg.getName())).toList();
+        if (truc.isEmpty()) {
+          throw new PreesmRuntimeException("No dataport could be associated with argument " + arg.getName()
+              + " in function " + actorRefinement.getLoopPrototype().getName()
+              + ". Remember all const arguments must be passed as templates to HLS functions.");
+        }
+        final DataPort dataPort = truc.getFirst();
 
         // 3 : récupérer le type de la fifo correspondante
         final String dataType = dataPort.getFifo().getType();
