@@ -103,6 +103,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
   public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
 
   public static final String VALUE_SCHEDULER_SIMPLE      = "simple";
+  public static final String VALUE_SCHEDULER_MR_SIMPLE   = "MRsimple";
   public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
   public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
   public static final String VALUE_SCHEDULER_CHOCO       = "choco";

@@ -24,6 +24,7 @@ import org.preesm.algorithm.synthesis.schedule.algos.FpgaScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.PeriodicScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.SimpleMRScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.SimpleScheduler;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
@@ -288,13 +289,15 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
    * @return the sceduler-mapper instance
    */
   private IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
-    // TODO expand switch
+    // expand switch at will
     switch (localSchedulerMapperName.toLowerCase()) {
       case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
           AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
         return new FpgaScheduler(localSchedulerMapperName);
       case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE:
         return new SimpleScheduler();
+      case PreesmSynthesisTask.VALUE_SCHEDULER_MR_SIMPLE:
+        return new SimpleMRScheduler();
       case PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
         return new LegacyListScheduler();
       case PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC:
