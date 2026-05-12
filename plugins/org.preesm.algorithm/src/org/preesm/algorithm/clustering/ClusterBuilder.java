@@ -10,7 +10,6 @@ import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.commons.logger.PreesmLogger;
-import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInterface;
@@ -238,19 +237,9 @@ public class ClusterBuilder {
           scenario.addConstraint(comp, newRefinement);
         }
 
-        // switch (clusteringComponent) {
-        // case final CPU cpu -> clusterActor.setTargetArch(Arch.CPU);
-        // case final FPGA fpga -> clusterActor.setTargetArch(Arch.FPGA);
-        // default -> {
-        // PreesmLogger.getLogger().log(Level.SEVERE, () -> "Architecture " + chosenComponent.getVlnv().toString()
-        // + " is not documented in PiSDF.xcore's architecture enum, please add it");
-        // }
-        // }
-
       }
 
     } while (!graph_is_fully_searched);
-    PreesmCopyTracker.getOriginalSource(listClusters.getFirst());
     return listClusters;
 
   }
