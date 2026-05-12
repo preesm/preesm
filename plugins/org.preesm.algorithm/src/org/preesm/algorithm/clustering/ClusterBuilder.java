@@ -56,8 +56,6 @@ public class ClusterBuilder {
      * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
      */
 
-    // ----- PART 1 : figure out whether we're already in a homogeneous cluster -----
-
     // We don't take into account special actors (fork, join...) as they can be executed anywhere
     final List<AbstractActor> actors = graph.getActors().stream()
         .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
@@ -66,82 +64,82 @@ public class ClusterBuilder {
 
     final List<PiGraph> listClusters = new LinkedList<>();
 
+    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors()).stream()
+        .filter(a -> !(a instanceof DataInterface)).toList();
+
+    final Map<AbstractActor,
+        Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
+
+    // ----- PART 1 : figure out whether we're already in a homogeneous cluster -----
+
     // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
       final var subClusterList = buildArchHierarchyGraph(subGraph, scenario, HeuristicName);
       listClusters.addAll(subClusterList);
     }
 
-    // 2) compute intersection for all actors
-    for (final AbstractActor a : actors) {
-      final List<ComponentInstance> mappings = scenario.getPossibleMappings(a);
+    if (!graph.isAtTopLevel()) { // we don't want to declare the top level a cluster
 
-      sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
-      if (sharedComponents.isEmpty()) {
-        // no intersection exists
-        break;
-      }
-    }
+      // 2) compute intersection for all actors
+      for (final AbstractActor a : actors) {
+        final List<ComponentInstance> mappings = scenario.getPossibleMappings(a);
 
-    // need to convert to mutable list in order to remove elements later
-    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors()).stream()
-        .filter(a -> !(a instanceof DataInterface)).toList();
-    final Map<AbstractActor,
-        Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
-
-    // 3) mark the current graph as "cluster" if all its actors share a common target PE (cpu, fpga...)
-    if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
-      // All components share a common PE ! It's a cluster already
-      graph.setClusterValue(true);
-      graph.setToFlatten(false);
-
-      if (sharedComponents.stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
-        graph.setToSrdag(false);
-      }
-
-      // TODO : have clusters not be mapped to only one type of PE
-      final ComponentInstance cp = sharedComponents.getFirst();
-      // map the cluster to the components in sharedComponents
-      // retain only the actors' sharedComponents mappings
-
-      // switch (sharedComponents.getFirst().getComponent()) {
-      // case final FPGA f -> graph.setTargetArch(Arch.FPGA);
-      // default -> graph.setTargetArch(Arch.CPU);
-      // }
-
-      // map the cluster
-      for (final ComponentInstance comp : sharedComponents) {
-        final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
-        graph.addRefinement(newRefinement);
-        scenario.addConstraint(comp, newRefinement);
-      }
-
-      // update all the actors' mappings : they can only retain the same mappings as their containing cluster
-      // boucle sur tous les pe. Si un pe est dans sharedComponent on passe. Sinon (et que c'est un processingElement),
-      // on cherche les refinements des acteurs du cluster et on les supprime de la map.
-      final List<ComponentInstance> sharedComponentsFinal = sharedComponents; // JAVAAAAAAAAAAAAAAAAAA
-      for (final ComponentInstance ci : scenario.getDesign().getComponentInstances().stream()
-          .filter(ci -> ci.getComponent() instanceof ProcessingElement && !sharedComponentsFinal.contains(ci))
-          .map(ci -> ci).toList()) {
-
-        // we have all the PEs actors must not be mapped to
-        for (final AbstractActor a : graph.getActors()) {
-          if (scenario.getPossibleMappings(a).contains(ci)) {
-            scenario.removeConstraintsToPE(a, ci);
-          }
+        sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
+        if (sharedComponents.isEmpty()) {
+          // no intersection exists
+          break;
         }
       }
 
-      final String info = "\t - Detected cluster " + graph.getName();
-      PreesmLogger.getLogger().log(Level.INFO, info);
-      graph.setUrl("");
-      listClusters.add(graph);
-      scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp.getComponent()))
-          .forEach(pe -> scenario.addConstraint(pe, graph));
+      // 3) mark the current graph as "cluster" if all its actors share a common target PE (cpu, fpga...)
+      if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
+        // All components share a common PE ! It's a cluster already
+        graph.setClusterValue(true);
+        graph.setToFlatten(false);
 
-      return listClusters;
+        if (sharedComponents.stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
+          graph.setToSrdag(false);
+        }
+
+        // TODO : have clusters not be mapped to only one type of PE
+        final ComponentInstance cp = sharedComponents.getFirst();
+        // map the cluster to the components in sharedComponents
+        // retain only the actors' sharedComponents mappings
+
+        // map the cluster
+        for (final ComponentInstance comp : sharedComponents) {
+          final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
+          graph.addRefinement(newRefinement);
+          scenario.addConstraint(comp, newRefinement);
+        }
+
+        // update all the actors' mappings : they can only retain the same mappings as their containing cluster
+        // boucle sur tous les pe. Si un pe est dans sharedComponent on passe. Sinon (et que c'est un
+        // processingElement),
+        // on cherche les refinements des acteurs du cluster et on les supprime de la map.
+        final List<ComponentInstance> sharedComponentsFinal = sharedComponents; // JAVAAAAAAAAAAAAAAAAAA
+        for (final ComponentInstance ci : scenario.getDesign().getComponentInstances().stream()
+            .filter(ci -> ci.getComponent() instanceof ProcessingElement && !sharedComponentsFinal.contains(ci))
+            .map(ci -> ci).toList()) {
+
+          // we have all the PEs actors must not be mapped to
+          for (final AbstractActor a : graph.getActors()) {
+            if (scenario.getPossibleMappings(a).contains(ci)) {
+              scenario.removeConstraintsToPE(a, ci);
+            }
+          }
+        }
+
+        final String info = "\t - Detected cluster " + graph.getName();
+        PreesmLogger.getLogger().log(Level.INFO, info);
+        graph.setUrl("");
+        listClusters.add(graph);
+        scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp.getComponent()))
+            .forEach(pe -> scenario.addConstraint(pe, graph));
+
+        return listClusters;
+      }
     }
-
     // ----- PART 2 : clusterize some of the actors if the graph is not already homogeneous -----
 
     final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
