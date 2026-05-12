@@ -274,8 +274,11 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 	client = vitis.create_client()
 	client.set_workspace(path=workspace)
 
-
-	sys.path.append(os.path.abspath(os.path.join(os.path.dirname("project_config.py"), code_folder)))
+	config_path = os.path.abspath(os.path.join(os.path.dirname("project_config.py"), code_folder))
+	if not(os.path.exists(config_path + "/project_config.py")):
+		print("No config file (\"project_config.py\") found, create one in " + config_path)
+		sys.exit(1)
+	sys.path.append(config_path)
 
 	import project_config
 
