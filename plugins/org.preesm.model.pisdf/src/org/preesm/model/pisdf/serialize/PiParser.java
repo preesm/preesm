@@ -45,6 +45,7 @@ import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.core.runtime.IPath;
@@ -188,6 +189,32 @@ public class PiParser {
     return null;
   }
 
+  /**
+   * Retrieve the values of a property of the given {@link Element}. A property is a data element child of the given
+   * element.<br>
+   * <br>
+   *
+   *
+   * @author Jacques Morin
+   * @param elt
+   *          The element containing the property
+   * @param propertyName
+   *          The name of the property
+   * @return The property value or null if the property was not found
+   */
+  private static List<Node> getProperties(final Element elt, final String propertyName) {
+    final List<Node> res = new LinkedList<>();
+    final NodeList childList = elt.getChildNodes();
+    for (int i = 0; i < childList.getLength(); i++) {
+      if (childList.item(i).getNodeName().equals("data")
+          && ((Element) childList.item(i)).getAttribute("key").equals(propertyName)) {
+        // return childList.item(i).getTextContent();
+        res.add(childList.item(i));
+      }
+    }
+    return res;
+  }
+
   /** The URI of the parsed file. */
   private final URI documentURI;
 
@@ -270,7 +297,8 @@ public class PiParser {
     // Add the actor to the parsed graph
     graph.addActor(actor);
 
-    parseRefinement(nodeElt, actor);
+    // parseRefinement(nodeElt, actor);
+    parseRefinements(nodeElt, actor);
 
     final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
     if ((memoryScript != null) && !memoryScript.isEmpty()) {
@@ -291,6 +319,7 @@ public class PiParser {
    */
   private void parseRefinement(final Element nodeElt, final RefinementContainer actor) {
     final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
+
     if ((refinement != null) && !refinement.isEmpty()) {
       final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(refinement));
       final String refinementExtension = path.getFileExtension();
@@ -308,6 +337,118 @@ public class PiParser {
       hr.setFilePath(null);
       actor.setRefinement(hr);
     }
+
+  }
+
+  /**
+   * Parses the refinement(s). For now, it is required to have only C or only PiPigraph refinements, not a mix of both.
+   *
+   * @param nodeElt
+   *          the node elt
+   * @param actor
+   *          the actor
+   */
+  private void parseRefinements(final Element nodeElt, final RefinementContainer actor) {
+    final List<Node> refinements = PiParser.getProperties(nodeElt, PiIdentifiers.REFINEMENT);
+    // check all the refinements are the same type (pigraph or c refinements
+    final boolean pigraphRefinementsPresent = refinements.stream().map(r -> WorkspaceUtils
+        .getWorkspaceRelativePathFrom(this.documentURI, new Path(r.getTextContent())).getFileExtension())
+        .anyMatch(p -> "pi".equals(p));
+    final boolean headerRefinementPresent = refinements.stream().map(r -> WorkspaceUtils
+        .getWorkspaceRelativePathFrom(this.documentURI, new Path(r.getTextContent())).getFileExtension())
+        .anyMatch(p -> RefinementChecker.isAsupportedHeaderFileExtension(p));
+
+    if (pigraphRefinementsPresent && headerRefinementPresent) { // can't have a mix of both types (for now)
+      throw new UnsupportedOperationException("Actors must have only C refinements or only PiGraph refinements.");
+    }
+
+    if (headerRefinementPresent) {
+      parseHeaderRefinements(nodeElt, actor);
+    } else if (pigraphRefinementsPresent) {
+      // TODO faire un parser de pigraph multiples !
+      final String refinement = PiParser.getProperty(nodeElt, PiIdentifiers.REFINEMENT);
+      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(refinement));
+      parsePiRefinement(actor, path);
+    } else if (!(actor instanceof DelayActor)) {
+      // if there is no refinement property, set by default a C header refinement with empty file path
+      final CHeaderRefinement hr = PiMMUserFactory.instance.createCHeaderRefinement();
+      hr.setFilePath(null);
+      actor.setRefinement(hr);
+    }
+  }
+
+  /**
+   * Parses the C refinements. For now, it is required to have only C or only PiPigraph refinements, not a mix of both.
+   *
+   * @param nodeElt
+   *          the node elt
+   * @param actor
+   *          the actor
+   */
+  private void parseHeaderRefinements(final Element nodeElt, final RefinementContainer actor) {
+    /*
+     * structure of the .pi file for refinements : <data> refinement path </data> <loop> </loop> <init> </init> <data>
+     * refinement path </data> <loop> </loop> <init> </init> ...
+     */
+    Node child = nodeElt.getFirstChild();
+
+    while (child != null) {
+
+      if (child.getNodeName().equals("data")) {
+        final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
+        final String refinementPath = child.getTextContent();
+        final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(refinementPath));
+
+        child = child.getNextSibling(); // loop and init prototypes follow this node
+        if (child == null) {
+          throw new PreesmRuntimeException("Syntax error in .pi file : data fode followed by null child.");
+        }
+
+        // find the first following tag that is a loop or an init declaration
+        boolean continueSearch = true;
+        boolean foundLoop = false;
+        while (continueSearch) {
+
+          switch (child.getNodeName()) {
+
+            case PiIdentifiers.REFINEMENT_LOOP:
+              // parse the loop
+              final Element elmtLoop = (Element) child;
+              hrefinement.setLoopPrototype(parseFunctionPrototype(elmtLoop,
+                  elmtLoop.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+              foundLoop = true;
+              child = child.getNextSibling();
+              break;
+
+            case PiIdentifiers.REFINEMENT_INIT:
+              // parse the init
+              final Element elmtInit = (Element) child;
+              hrefinement.setInitPrototype(parseFunctionPrototype(elmtInit,
+                  elmtInit.getAttribute(PiIdentifiers.REFINEMENT_FUNCTION_PROTOTYPE_NAME)));
+              child = child.getNextSibling();
+              break;
+
+            default:
+              final Node futureChild = child.getNextSibling();
+              if (futureChild != null
+                  && !(futureChild.getNodeName().equals("loop") || futureChild.getNodeName().equals("init"))) {
+                // the next child will be neither a loop nor an init --> we're done examining this refinement
+                continueSearch = false;
+                if (foundLoop) {
+                  hrefinement.setFilePath(path.toString());
+                  actor.addRefinement(hrefinement);
+                }
+              } else {
+                child = futureChild;
+              }
+          }
+        }
+
+      } else {
+        child = child.getNextSibling();
+      }
+    }
+
   }
 
   private void parsePiRefinement(final RefinementContainer actor, final IPath path) {
@@ -321,8 +462,7 @@ public class PiParser {
 
   private void parseHeaderRefinement(final Element nodeElt, final RefinementContainer actor, final IPath path) {
     final CHeaderRefinement hrefinement = PiMMUserFactory.instance.createCHeaderRefinement();
-    // The nodeElt should have a loop element, and may have an init
-    // element
+    // nodeElt should have a loop element, and may have an init element
     final NodeList childList = nodeElt.getChildNodes();
     for (int i = 0; i < childList.getLength(); i++) {
       final Node elt = childList.item(i);
