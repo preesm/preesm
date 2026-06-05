@@ -682,7 +682,7 @@ public class FpgaCodeGenerator {
   }
 
   private String generateWrapperName(Actor a) {
-    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase() + "-"
+    return PreesmCopyTracker.getOriginalSource(a).getName().toLowerCase() + "_CLUSTEREDIN_"
         + PreesmCopyTracker.getOriginalSource(a.getContainingPiGraph()).getName().toUpperCase();
   }
 
