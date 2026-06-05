@@ -71,13 +71,15 @@ def extract_metrics(folder_path, xml_path, cluster_name):
 
             lat = module_latency.get(name, {"Worst-caseLatency": max(int(result_root.findtext(".//Worst-caseLatency")), 1), "Interval-max": max(int(result_root.findtext(".//Interval-max")), 1)})
 
-            # name format for actor wrappers : *actor name*__*CLUSTER NAME*
+            # name format for actor wrappers : *actor name*-*CLUSTER NAME*
+            print(name, "\t", name.split("-")[0])
             results.append({
                 "file": filename,
                 "actor": cluster_name + "/" + name.split("__")[0], 
                 "latency": lat["Worst-caseLatency"],
                 "II": lat["Interval-max"],
             })
+            #print(results)
 
         return results  # returns a list of dicts, one per first-level module
 
@@ -88,7 +90,7 @@ def extract_metrics(folder_path, xml_path, cluster_name):
 
 def update_timings_xlsx(xlsx_path, timings):
     try:
-        df = pd.read_excel(xlsx_path, index_col=0)
+        df = pd.read_excel(xlsx_path, index_col=0, engine='openpyxl')
     except FileNotFoundError:
         print(f"creating file {xlsx_path}")
         df = pd.DataFrame(columns=["FPGA-latency", "FPGA-II"])
@@ -164,7 +166,7 @@ if __name__ == "__main__":
             clusters_list.append(line.rstrip())
     print("list of cluster kernels : ", ", ".join(clusters_list))
 
-    
+    """
     import vitis
     shutil.rmtree(workspace + "/", ignore_errors=True)
     os.makedirs(workspace)
@@ -190,7 +192,7 @@ if __name__ == "__main__":
         # ‘C_SIMULATION’, ‘SYNTHESIS’, ‘CO_SIMULATION’, ‘IMPLEMENTATION’, ‘ANALYSIS_OPTIMIZATION’, and ‘PACKAGE’
 
     vitis.dispose()
-    
+    """
 
     functiontoactor = {}
     for kernel in clusters_list:
