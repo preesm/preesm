@@ -10,6 +10,7 @@ PLATFORM=$(ROOT_DIR)/../vitis_platform/$(PLATFORM_NAME)/export/$(PLATFORM_NAME)/
 SW_COMP=$(ROOT_DIR)/../vitis_platform/sw_comp/
 SYSROOT := $(COMMON_IMAGE)/sysroots/cortexa72-cortexa53-xilinx-linux
 INSTRUMENT?=false
+TARGET_BUILD?=hw
 
 .PHONY: help  
 
@@ -43,9 +44,7 @@ remove_previous_builds:
 	rm -rf $(shell find . -mindepth 1 -maxdepth 2 ! -name 'builder.py' ! -name 'Makefile' ! -name 'shell.json')
 
 clean:
-	-$(MAKE) -C $(VADD_WORK) clean
-	-$(MAKE) -C platforminfo/ clean
-	rm -rf vadd/
+	remove_previous_builds
 
 ultraclean:clean
 	rm -rf $(VADD_WORK)

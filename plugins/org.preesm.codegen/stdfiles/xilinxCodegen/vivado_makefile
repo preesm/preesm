@@ -21,7 +21,7 @@ all: hw
 hw: remove_previous_builds
 	mkdir -p $(ABS_HW_PATH)
 	cd $(ABS_HW_PATH); vivado -mode batch -notrace -source $(ABS_BD_TCL) -source $(ROOT_DIR)/export_xsa.tcl
-	mv $(ABS_HW_PATH)/kr260_hardware_platform.xsa $(ABS_HW_PATH)/${XSA_NAME}.xsa
+	cp $(ABS_HW_PATH)/kr260_hardware_platform.xsa $(ABS_HW_PATH)/${XSA_NAME}.xsa
 
 # keep only the makefile and .tcl files
 remove_previous_builds:

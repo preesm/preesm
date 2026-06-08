@@ -38,9 +38,9 @@ step3:
 
 
 clean:
-	$(MAKE) -C step1_vivado clean
-	$(MAKE) -C step2_pfm clean
-	$(MAKE) -C step3_validate clean
+	$(MAKE) -C step1 clean
+	$(MAKE) -C step2 clean
+	$(MAKE) -C step3 clean
 ultraclean:clean
-	$(MAKE) -C step2_pfm ultraclean
-	$(MAKE) -C step3_validate ultraclean
+	$(MAKE) -C step2 ultraclean
+	$(MAKE) -C step3 ultraclean
