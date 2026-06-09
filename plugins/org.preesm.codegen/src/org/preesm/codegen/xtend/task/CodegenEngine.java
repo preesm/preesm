@@ -390,8 +390,8 @@ public class CodegenEngine {
           PreesmIOHelper.createFolderRecursively(step3, false, true, null);
           final var system_makefile = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/system_makefile",
               FpgaCodeGenerator.class);
-          final var system_builder = PreesmResourcesHelper.getInstance()
-              .read("stdfiles/xilinxCodegen/system_builder.py", FpgaCodeGenerator.class);
+          final var system_builder = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/builder.py",
+              FpgaCodeGenerator.class);
           PreesmIOHelper.getInstance().print(step3.getFullPath().toString() + "/", "Makefile", system_makefile);
           PreesmIOHelper.getInstance().print(step3.getFullPath().toString() + "/", "builder.py", system_builder);
 
