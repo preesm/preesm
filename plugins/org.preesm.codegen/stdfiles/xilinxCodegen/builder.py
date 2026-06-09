@@ -285,7 +285,6 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 
 
 	""" ---- Create Platform ---- """
-
 	print("----- Creating platform -----")
 
 	p_os = "linux"
@@ -306,7 +305,6 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 
 
 	""" ---- HLS Components creation ---- """
-
 	print("----- Creating HLS components -----")
 
 	# for now I create only one hls component. Later it will have to be just as many as necessary.
