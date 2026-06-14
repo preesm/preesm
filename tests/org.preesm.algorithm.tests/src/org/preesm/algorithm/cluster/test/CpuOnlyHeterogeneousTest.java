@@ -14,6 +14,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ClusterBuilder;
+import org.preesm.algorithm.clustering.ClusteringTask;
+import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -209,7 +211,9 @@ public class CpuOnlyHeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    ClusterBuilder.buildArchHierarchyGraph(algo, scenario, ""); // default clustering
+    final HorizontalClusteringHeuristic hh = (HorizontalClusteringHeuristic) ClusteringTask
+        .getHeuristic("heterogeneous");
+    ClusterBuilder.buildHorizontalClusters(algo, scenario, homoDesign, hh, null, false); // default clustering
 
     // since there are only CPUs, there should be no clustering with the current clustering algorithm
     assertEquals(13, algo.getActors().size());

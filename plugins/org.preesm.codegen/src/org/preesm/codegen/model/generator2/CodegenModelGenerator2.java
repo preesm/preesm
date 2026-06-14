@@ -198,6 +198,7 @@ public class CodegenModelGenerator2 {
         final Set<Component> PETypes = scenario.getDesign().getComponents().stream()
             .filter(ProcessingElement.class::isInstance).collect(Collectors.toSet());
 
+        // RC : what is happening when there is multiple FPGA ? Ask JM
         // make all the adapted prints for your accelerators
         if (PETypes.stream().anyMatch(FPGA.class::isInstance)) {
           createCoreBlock.addAcceleratorArch("fpga");

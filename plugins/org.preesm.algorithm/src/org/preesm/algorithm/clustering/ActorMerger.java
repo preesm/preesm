@@ -163,9 +163,14 @@ public class ActorMerger {
       });
     }
 
+    // This line is here because of a bug occurring when creating a cluster in a cluster.
+    // In details, it seems that the actorIndex (here just to keep track of the number of actors in the graph) of
+    // innerSDF is not updated when adding an existing actor (of graph) is
+    // added in innerSDF. So for now, we update by hand the actorIndex at the end of the method.
+    innerSDF.setActorIndex(innerSDF.getActors().size());
+    innerSDF.setFifoWithoutDelayIndex(innerSDF.getFifosWithoutDelay().size());
+    innerSDF.setFifoWithDelayIndex(innerSDF.getFifosWithDelay().size());
+
     return innerSDF;
-
-    // Je suppose que : actorIndex est mis à jour par addActor() ; on se fout de clusterValue et eFlags ;
-
   }
 }

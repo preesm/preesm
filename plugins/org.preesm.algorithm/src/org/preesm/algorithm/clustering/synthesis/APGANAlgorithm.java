@@ -33,58 +33,55 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.schedule.transform;
+package org.preesm.algorithm.clustering.synthesis;
 
-import java.util.LinkedList;
 import java.util.List;
-import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
-import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import java.util.Map;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.math3.util.ArithmeticUtils;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 
 /**
  * @author dgageot
  *
- *         Perform a flattening of schedule tree (uniformize repetition on sequential hierarchical schedule)
- *
  */
-public class ScheduleFlattener implements IScheduleTransform {
+public class APGANAlgorithm {
 
-  @Override
-  public Schedule performTransform(final Schedule schedule) {
+  private APGANAlgorithm() {
+    // forbid instantiation
+  }
 
-    // If it is an hierarchical schedule, explore and cluster actors
-    if (schedule instanceof final HierarchicalSchedule hierSchedule && schedule.hasAttachedActor()) {
+  /**
+   * @param couples
+   *          list of candidates
+   * @param brv
+   *          repetition vector
+   * @return best candidate
+   */
+  public static Pair<AbstractActor, AbstractActor> getBestCouple(List<Pair<AbstractActor, AbstractActor>> couples,
+      Map<AbstractVertex, Long> brv) {
 
-      // Retrieve children schedule and actors
-      final List<Schedule> childSchedules = new LinkedList<>(hierSchedule.getChildren());
-
-      // Clear list of children schedule
-      hierSchedule.getChildren().clear();
-
-      for (final Schedule child : childSchedules) {
-
-        final Schedule processedChild = performTransform(child);
-
-        // Sequential flattening
-        if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
-            && (child.getRepetition() == 1)) {
-
-          hierSchedule.getChildren().addAll(processedChild.getChildren());
-
-          // Parallel flattening
-        } else if ((hierSchedule instanceof ParallelHiearchicalSchedule)
-            && (child instanceof ParallelHiearchicalSchedule) && (child.getRepetition() == 1)) {
-
-          hierSchedule.getChildren().addAll(processedChild.getChildren());
-
-        } else {
-          hierSchedule.getChildren().add(processedChild);
-        }
+    // Find the couple that maximize gcd
+    long maxGcdRv = 0;
+    Pair<AbstractActor, AbstractActor> maxCouple = null;
+    for (Pair<AbstractActor, AbstractActor> l : couples) {
+      // Compute RV gcd
+      long tmpGcdRv = ArithmeticUtils.gcd(brv.get(l.getLeft()), brv.get(l.getRight()));
+      if (tmpGcdRv > maxGcdRv) {
+        maxGcdRv = tmpGcdRv;
+        maxCouple = l;
       }
     }
 
-    return schedule;
+    // If no couple has been found, throw an exception
+    if (maxCouple == null) {
+      throw new PreesmRuntimeException("APGANAlgorithm: Cannot find a couple to work on");
+    }
+
+    return new ImmutablePair<>(maxCouple.getLeft(), maxCouple.getRight());
   }
 
 }

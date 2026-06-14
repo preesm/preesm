@@ -10,6 +10,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.emf.common.util.BasicEList;
@@ -19,8 +21,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ActorMerger;
 import org.preesm.algorithm.clustering.ClusterBuilder;
-import org.preesm.algorithm.clustering.MergingHeuristic;
-import org.preesm.algorithm.clustering.MergingHeuristics.MinimalMergingHeuristic;
+import org.preesm.algorithm.clustering.ClusteringTask;
+import org.preesm.algorithm.clustering.SimpleHeteroArchClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -63,43 +66,43 @@ public class HeterogeneousTest {
   public void setup() {
 
     // ┌────────────────┐
-    // │ f0 │
+    // │ f0 ............│
     // └┬──────────────┬┘
-    // │ ┌▽─┐
-    // │ │f1│
-    // │ └┬─┘
-    // ┌▽─┐ │
-    // │f2│ │
-    // └┬─┘ │
-    // │┌─────────┐ │
-    // ││ f5 │ │
-    // │└△─┬─┬─┬─△┘ │
-    // │ │ │ │ │┌┴─┐ │
-    // │ │ │ │ ││f4│ │
-    // │ │ │ │ │└──┘ │
-    // │ │ │ │┌▽────┐ │
-    // │ │ │ ││ c6 │ │
-    // │ │ │ │└┬───┬┘ │
-    // │ │ │ │┌▽──┐│ │
-    // │ │ │ ││f10││ │
-    // │ │ │ │└───┘│ │
-    // │ │ │ │┌────▽─┐│
-    // │ │ │ ││ f9 ││
-    // │ │ │ │└──────┘│
-    // │ │ │┌▽────┐ │
-    // │ │ ││ f7 │ │
-    // │ │ │└┬───┬┘ │
-    // │ │ │┌▽──┐│ │
-    // │ │ ││c12││ │
-    // │ │ │└───┘│ │
-    // │ │ │┌────▽─┐ │
-    // │ │ ││ f11 │ │
-    // │ │ │└──────┘ │
-    // │ │┌▽─┐ │
-    // │ ││f8│ │
-    // │ │└──┘ │
+    // .│ ............┌▽─┐
+    // .│ ............│f1│
+    // .│ ............└┬─┘
+    // ┌▽─┐ ...........│
+    // │f2│ ...........│
+    // └┬─┘ ...........│
+    // .│┌─────────┐ ..│
+    // .││ f5 .....│ ..│
+    // .│└△─┬─┬─┬─△┘ ..│
+    // .│ │ │ │ │┌┴─┐ .│
+    // .│ │ │ │ ││f4│ .│
+    // .│ │ │ │ │└──┘ .│
+    // .│ │ │ │┌▽────┐ │
+    // .│ │ │ ││ c6 .│ │
+    // .│ │ │ │└┬───┬┘ │
+    // .│ │ │ │┌▽──┐│ .│
+    // .│ │ │ ││f10││ .│
+    // .│ │ │ │└───┘│ .│
+    // .│ │ │ │┌────▽─┐│
+    // .│ │ │ ││ f9.. ││
+    // .│ │ │ │└──────┘│
+    // .│ │ │┌▽────┐ ..│
+    // .│ │ ││ f7. │ ..│
+    // .│ │ │└┬───┬┘ ..│
+    // .│ │ │┌▽──┐│ ...│
+    // .│ │ ││c12││ ...│
+    // .│ │ │└───┘│ ...│
+    // .│ │ │┌────▽─┐ .│
+    // .│ │ ││ f11. │ .│
+    // .│ │ │└──────┘ .│
+    // .│ │┌▽─┐ .......│
+    // .│ ││f8│ .......│
+    // .│ │└──┘ .......│
     // ┌▽─┴────────────▽─┐
-    // │ c3 │
+    // │ c3 .............│
     // └─────────────────┘
 
     // ---------- heterogeneous design ----------
@@ -216,7 +219,9 @@ public class HeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    ClusterBuilder.buildArchHierarchyGraph(algo, scenario, ""); // default clustering heuristic
+    final HorizontalClusteringHeuristic hh = (HorizontalClusteringHeuristic) ClusteringTask
+        .getHeuristic("heterogeneous");
+    ClusterBuilder.buildHorizontalClusters(algo, scenario, heteroDesign, hh, null, false); // default clustering
 
     assertEquals(7, algo.getActors().size());
     final List<AbstractActor> listHierActors = algo.getActors().stream().filter(a -> a instanceof PiGraphImpl).toList();
@@ -242,9 +247,12 @@ public class HeterogeneousTest {
 
     final AbstractActor seed = listActors.get(5);
     final Set<AbstractActor> visitedActors = new HashSet<>();
-    final MergingHeuristic heuristic = new MinimalMergingHeuristic();
-    final Set<AbstractActor> res = ClusterBuilder.buildMergeList(seed, scenario, fpga1.getComponent(), visitedActors,
-        heuristic);
+    visitedActors.add(seed);
+    final HorizontalClusteringHeuristic heuristic = new SimpleHeteroArchClusteringHeuristic();
+    final Map<AbstractActor, Boolean> identifiedSeedAndMergedActors = algo.getActors().stream()
+        .collect(Collectors.toMap(Function.identity(), v -> false));
+    final Set<AbstractActor> res = ClusterBuilder.buildMergeList(seed, scenario, visitedActors,
+        identifiedSeedAndMergedActors, heuristic);
 
     assertEquals(5, res.size());
     assertTrue(res.contains(listActors.get(5)));

@@ -66,6 +66,8 @@ type int wraps int
 type long wraps long
 
 type double wraps double
+ 
+
 
 /*
  * Represent a schedule, that is an order of execution. Its hierarchy make possible
@@ -82,6 +84,7 @@ interface Schedule {
 	long repetition
 	contains volatile Schedule[] children
 	refers HierarchicalSchedule parent opposite scheduleTree
+	
 
 	op Schedule getRoot() {
 		if (parent === null)
@@ -122,13 +125,13 @@ interface Schedule {
 }
 
 class ScapeSchedule{
-		int repetition
-		refers AbstractActor actor
-		boolean beginLoop
-		boolean endLoop
-		boolean LoopPrec
-		int endLoopNb
-		refers ComponentInstance cmp	
+	int repetition
+	refers AbstractActor actor
+	boolean beginLoop
+	boolean endLoop
+	boolean LoopPrec
+	int endLoopNb
+	refers ComponentInstance cmp	
 }
 
 class ScapeBuilder{
@@ -157,6 +160,7 @@ interface ParallelSchedule extends Schedule {
 		else
 			return children.map[span].max
 	}
+	
 }
 
 /*
@@ -197,11 +201,18 @@ interface ActorSchedule extends Schedule {
 	 * The list may be ordered if {@link #isParallel} returns true.
 	 */
 	refers AbstractActor[] actorList
-
+	
+	
 	// Actor schedules have no children
 	op Schedule[] getChildren() {
 		return ECollections.emptyEList
 	}
+	
+	/* 
+	op boolean checkMemoryScripts() {
+		return memoryScripts.filter(ms | actorList.contains(ms.getActor())).length === memoryScripts.length
+	}
+	*/
 }
 
 /*

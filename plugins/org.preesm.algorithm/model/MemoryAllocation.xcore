@@ -71,6 +71,7 @@ interface Buffer {
 	op Allocation getAllocation() {
 		return bank.allocation
 	}
+	
 	op boolean isEqualsOrRecursivelyContains(Buffer other) {
 		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
 	}
@@ -131,12 +132,15 @@ class DelayAllocationEntry wraps java.util.Map$Entry {
 }
 
 class Allocation {
+	
 	// memory banks used by this allocation
 	contains PhysicalBuffer[] physicalBuffers opposite allocation
+	
 	// buffers allocated for the fifos
 	contains FifoAllocationEntry[] fifoAllocations
+	
 	// Buffers allocated for the permanent and local delays. The values are pushed by the
-	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
+	// EndActor and popped by the InitActor. To get the buffer for an EndActor, get its
 	// init reference allocated buffer.
 	contains DelayAllocationEntry[] delayAllocations
 
@@ -150,6 +154,12 @@ class Allocation {
 	// and this buffer children (recursively)
 	op InitActor[] getDelayAllocationEntry(Buffer b) {
 		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
+	}
+	
+	op void mergeAllocation(Allocation a) {
+		physicalBuffers.addAll(a.getPhysicalBuffers)
+		fifoAllocations.addAll(a.getFifoAllocations)
+		delayAllocations.addAll(a.getDelayAllocations)
 	}
 }
 

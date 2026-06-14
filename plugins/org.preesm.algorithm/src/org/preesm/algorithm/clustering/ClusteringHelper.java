@@ -319,6 +319,18 @@ public class ClusteringHelper {
   }
 
   /**
+   * @param graph
+   *          input graph
+   * @param brv
+   *          repetition vector
+   * @return list of clusterizable couple
+   */
+  public static List<Pair<AbstractActor, AbstractActor>>
+      getClusterizableCouplesWithoutScenarioConstraints(final PiGraph graph, final Map<AbstractVertex, Long> brv) {
+    return PiSDFMergeabilty.getConnectedCouple(graph, brv);
+  }
+
+  /**
    * @param couples
    *          list of mergeable couple
    * @param scenario

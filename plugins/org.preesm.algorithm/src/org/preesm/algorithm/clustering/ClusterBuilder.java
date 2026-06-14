@@ -1,6 +1,6 @@
 package org.preesm.algorithm.clustering;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,326 +9,313 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.preesm.algorithm.clustering.clusteringheuristics.ClusteringHeuristic;
-import org.preesm.algorithm.clustering.clusteringheuristics.MinimalArchClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.PartitionerHeuristic;
+import org.preesm.algorithm.clustering.heuristics.VerticalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.VerticalClusteringHeuristic.FlatteningOrder;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.Actor;
-import org.preesm.model.pisdf.DataInterface;
-import org.preesm.model.pisdf.NonExecutableActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.PiMMFactory;
-import org.preesm.model.pisdf.PiSDFRefinement;
-import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
-import org.preesm.model.slam.ComponentInstance;
-import org.preesm.model.slam.FPGA;
-import org.preesm.model.slam.ProcessingElement;
-import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
+import org.preesm.model.slam.Design;
 
 /**
- *
- * @author jamorin
- *
+ * @author rcazoulat
  */
-
 public class ClusterBuilder {
 
-  /**
-   * this function will inspect all actors in the graph and try to identify seed actors from which clustering is
-   * possible. Their successors will be probed to see if their mapping and inputs allow them to be included in the
-   * cluster. For now there must be some edge cases where two hierarchical actors are built for the same arch that could
-   * merge into one, but they should be pretty rare.
-   *
-   * @param graph
-   *          the inspected graph
-   * @param scenario
-   *          the corresponding scenario
-   *
-   * @return the list of cluster actors created
-   */
-  public static List<PiGraph> buildArchHierarchyGraph(PiGraph graph, Scenario scenario, String HeuristicName) {
-    /*
-     * Start : find a first actor mapped to FPGA (the seed, rpz segmentation), with at least 1 non-FPGA source actor (so
-     * the seed has good chances of being the "first" actor) then find and add its FPGA successor actors. An actor is
-     * eligible if it has only FPGA predecessors (since I don't know in which order I iterate over actors, I want to
-     * make sure I don't start in the middle of the actor's succession) and the same mapping as the seed.
-     */
-
-    // ----- PART 1 : figure out whether we're already in a homogeneous cluster -----
-    // RC : move this in assessGraph of MinimalMergingHeuristic
-
-    // We don't take into account special actors (fork, join...) as they can be executed anywhere
-    final List<AbstractActor> actors = graph.getActors().stream()
-        .filter(a -> !(a instanceof UserSpecialActor || a instanceof NonExecutableActor)).toList();
-
-    List<ComponentInstance> sharedComponents = scenario.getDesign().getComponentInstances();
-
-    final List<PiGraph> listClusters = new LinkedList<>();
-
-    // 1) Find all subgraphs that are homogeneous and remove them from the actors to explore
-    for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      final var subClusterList = buildArchHierarchyGraph(subGraph, scenario, HeuristicName);
-      listClusters.addAll(subClusterList);
-    }
-
-    // 2) compute intersection for all actors
-    for (final AbstractActor a : actors) {
-      final List<ComponentInstance> mappings = scenario.getPossibleMappings(a);
-
-      sharedComponents = sharedComponents.stream().filter(mappings::contains).toList();
-      if (sharedComponents.isEmpty()) {
-        // no intersection exists
-        break;
-      }
-    }
-
-    // need to convert to mutable list in order to remove elements later
-    final List<AbstractActor> listActors = new LinkedList<>(graph.getActors()).stream()
-        .filter(a -> !(a instanceof DataInterface)).toList();
-    final Map<AbstractActor,
-        Boolean> actorIsVisited = listActors.stream().collect(Collectors.toMap(Function.identity(), v -> false));
-
-    // 3) mark the current graph as "cluster" if all its actors share a common target PE (cpu, fpga...)
-    if (!sharedComponents.isEmpty() && sharedComponents.stream().anyMatch(c -> !(c instanceof CPU))) {
-      // All components share a common PE ! It's a cluster already
-      graph.setClusterValue(true);
-
-      graph.setToFlatten(false);
-
-      if (sharedComponents.stream().anyMatch(c -> c.getComponent() instanceof FPGA)) {
-        graph.setToSrdag(false);
-      }
-
-      // TODO : have clusters not be mapped to only one type of PE
-      final ComponentInstance cp = sharedComponents.getFirst();
-      // map the cluster to the components in sharedComponents
-      // retain only the actors' sharedComponents mappings
-
-      // switch (sharedComponents.getFirst().getComponent()) {
-      // case final FPGA f -> graph.setTargetArch(Arch.FPGA);
-      // default -> graph.setTargetArch(Arch.CPU);
-      // }
-
-      // map the cluster
-      for (final ComponentInstance comp : sharedComponents) {
-        final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
-        graph.addRefinement(newRefinement);
-        scenario.addConstraint(comp, newRefinement);
-      }
-
-      // update all the actors' mappings : they can only retain the same mappings as their containing cluster
-      // boucle sur tous les pe. Si un pe est dans sharedComponent on passe. Sinon (et que c'est un processingElement),
-      // on cherche les refinements des acteurs du cluster et on les supprime de la map.
-      final List<ComponentInstance> sharedComponentsFinal = sharedComponents; // JAVAAAAAAAAAAAAAAAAAA
-      for (final ComponentInstance ci : scenario.getDesign().getComponentInstances().stream()
-          .filter(ci -> ci.getComponent() instanceof ProcessingElement && !sharedComponentsFinal.contains(ci))
-          .map(ci -> ci).toList()) {
-
-        // we have all the PEs actors must not be mapped to
-        for (final AbstractActor a : graph.getActors()) {
-          if (scenario.getPossibleMappings(a).contains(ci)) {
-            scenario.removeConstraintsToPE(a, ci);
-          }
-        }
-      }
-
-      final String info = "\t - Detected cluster " + graph.getName();
-      PreesmLogger.getLogger().log(Level.INFO, info);
-      graph.setUrl("");
-      listClusters.add(graph);
-
-      scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp.getComponent()))
-          .forEach(pe -> scenario.addConstraint(pe, graph));
-
-      return listClusters;
-    }
-
-    // ----- PART 2 : clusterize some of the actors if the graph is not already homogeneous -----
-
-    final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
-    final Component refCPUArch = refCPU.getComponent();
-
-    final ClusteringHeuristic heuristic = getHeuristic(HeuristicName);
-
-    // 3) clusterize actors at this level of hierarchy
-    int i = 0;
-    boolean graphIsFullySearched = false;
-
-    // visit all actors to search those that can act as seeds
-    while (!graphIsFullySearched) {
-      boolean seedFound = false;
-      AbstractActor actor;
-      Component clusteringComponent = null;
-
-      // try to find a valid, non-visited seed
-      do {
-        actor = listActors.get(i);
-        i++;
-        if (!actorIsVisited.get(actor)) {
-          actorIsVisited.put(actor, true);
-
-          // check if actor has not been tested before, and if it is mapped to a non-CPU PE, and if we even want to
-          // clusterize from it
-          final Map<String, Object> params = new HashMap<>();
-          params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-          params.put("Component", refCPUArch);
-
-          if (heuristic.assesSeedable(actor, params)) {
-
-            // The actor has at least one non-main PE mapping !Let's decide which arch will be used for clustering
-            clusteringComponent = heuristic.pickClusteringComponent(actor, params);
-
-            // now we can mark the actor for clustering
-            seedFound = true;
-
-          }
-
-          if (i == listActors.size()) {
-            // this is the last actor to visit, last chance for a clustering
-            graphIsFullySearched = true;
-          }
-        }
-      } while (actorIsVisited.get(actor) && !seedFound && !graphIsFullySearched);
-
-      if (seedFound) {
-        actorIsVisited.put(actor, true);
-
-        final Component clusteringArch = clusteringComponent;
-        final var clusteringComponents = scenario.getDesign().getComponentInstances().stream()
-            .filter(ci -> ci.getComponent() == clusteringArch).toList();
-
-        // now we have a seed, let's build a list of all the actors we want to merge
-        // they will be all (un)direct successors of the seed with only fpga inputs
-        final Set<AbstractActor> visitedActors = new HashSet<>();
-        final Set<AbstractActor> actorsToMerge = buildMergeList(actor, scenario, clusteringComponent, visitedActors,
-            heuristic);
-
-        // mark the merged actors as visited
-        for (final AbstractActor a : actorsToMerge) {
-          actorIsVisited.put(a, true);
-        }
-
-        // Now we can merge
-        // TODO change name to a better one...
-        final String clusterName = "Cluster_" + actor.getName();
-        final String info = "\t - Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-            + " into cluster " + clusterName + " on component(s) " + clusteringComponents;
-        PreesmLogger.getLogger().log(Level.INFO, info);
-
-        final PiGraph clusterActor = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
-        final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
-        pgcc.check(graph);
-
-        // TODO set better URL
-        clusterActor.setUrl("");
-        listClusters.add(clusterActor);
-
-        final Component chosenComponent = clusteringComponent; // java needs this to be final...
-
-        scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(chosenComponent))
-            .forEach(ci -> scenario.getConstraints().addConstraint(ci, clusterActor));
-
-        clusterActor.setClusterValue(true);
-        graph.setToFlatten(false);
-        if (chosenComponent instanceof FPGA) {
-          graph.setToSrdag(false);
-        }
-      }
-    }
-    return listClusters;
-
+  private ClusterBuilder() {
+    /* This utility class should not be instantiated */
   }
 
   /**
-   * Returns the merging heuristic corresponding to heuristicName. Expand at will !
+   * This function will regroup vertically the graph, following a given heuristic. For now, it will cluster it in a
+   * top-down way, starting from the top graph. At each level of hierarchy, it will execute the vertical clustering
+   * heuristic function named assessFlattening. If the vertical clustering heuristic is set to null, the current graph
+   * will just be flattened. TODO : add an option to cluster vertically in a bottom-up approach
    *
-   * @param heuristicName
-   *          the name
-   *
-   * @return a MergingHeuristic implementation class
+   * @param parentGraph
+   *          the graph containing the current graph. If set to null, it means that the current graph is the top graph
+   *          of the algorithm.
+   * @param graph
+   *          the current graph.
+   * @param heuristic
+   *          the vertical clustering heuristic, used to merge different graphs.
    */
-  private static ClusteringHeuristic getHeuristic(String heuristicName) {
-    return switch (heuristicName) {
-      case "minimal" -> new MinimalArchClusteringHeuristic();
-      default -> new MinimalArchClusteringHeuristic();
+  public static void buildVerticalClusters(PiGraph parentGraph, PiGraph graph, VerticalClusteringHeuristic heuristic) {
+    if (heuristic == null) {
+      PiSDFFlattener.flatten(graph, true);
+      return;
+    }
 
-    };
+    if (heuristic.getFlatteningOrder() == FlatteningOrder.TOP_DOWN) {
+      heuristic.assessFlattening(parentGraph, graph);
+    }
+
+    for (final PiGraph subgraph : graph.getChildrenGraphs()) {
+      buildVerticalClusters(graph, subgraph, heuristic);
+    }
+
+    if (heuristic.getFlatteningOrder() == FlatteningOrder.BOTTOM_UP) {
+      heuristic.assessFlattening(parentGraph, graph);
+    }
+  }
+
+  /***
+   * This function will regroup horizontally the graph, following a given heuristic.
+   *
+   * @param graph
+   *          the current graph where to seek horizontal clusters
+   * @param scenario
+   *          the scenario
+   * @param arch
+   *          the S-LAM architecture graph
+   * @param heuristic
+   *          the heuristic to cluster horizontally
+   * @param partitioner
+   *          the partitioner, that will balance the firings of clusters and actors in the clusters, according to an
+   *          heuristic
+   * @return the list of clusters that have been created. The graph will be modified if clusters have been detected and
+   *         created.
+   */
+  public static List<PiGraph> buildHorizontalClusters(PiGraph graph, Scenario scenario, Design arch,
+      final HorizontalClusteringHeuristic heuristic, final PartitionerHeuristic partitioner, final boolean verbose) {
+
+    // The list that will be returned
+    final List<PiGraph> listClusters = new LinkedList<>();
+
+    /*---------------------------------------
+     * STEP 1
+     *---------------------------------------
+     * This step is optional, and its purpose is only to accelerate the clustering. Check if the whole graph can be
+     * clustered.
+     */
+
+    if (heuristic.assessGraph(graph)) {
+
+      graph.setClusterValue(true);
+      graph.setUrl("");
+
+      // Log
+      if (verbose) {
+        final String info = " >>> Detected cluster " + graph.getName() + " with assessGraph method";
+        PreesmLogger.getLogger().log(Level.INFO, info);
+      }
+
+      // Return
+      listClusters.add(graph);
+      return listClusters;
+    }
+
+    /*---------------------------------------
+     * STEP 2
+     *---------------------------------------
+     * Exploring the children graphs, in a recursive way
+     */
+
+    for (final PiGraph subGraph : graph.getChildrenGraphs()) {
+      final var subClusterList = buildHorizontalClusters(subGraph, scenario, arch, heuristic, partitioner, verbose);
+      listClusters.addAll(subClusterList);
+    }
+
+    /*---------------------------------------
+     * STEP 3
+     *---------------------------------------
+     * Seek for clusters within the graph. The first step is to choose an actor to start the cluster from : the "seed".
+     * The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
+     */
+
+    // Actors of the graph
+    final List<AbstractActor> actors = graph.getActors();
+
+    // This map keeps track of all identified seeds and merged actors, so we don't iterate over them twice.
+    final Map<AbstractActor, Boolean> identifiedSeedAndMergedActors = actors.stream()
+        .collect(Collectors.toMap(Function.identity(), v -> false));
+
+    String seedName = ""; // Only for log and cluster name
+    int i = 0; // The index to iterate on actors list
+    boolean graphIsFullySearched = false; // boolean that allows us to quit the two while loops.
+
+    /* **First while loop** : Visit all actors of current graph */
+    while (!graphIsFullySearched) {
+
+      boolean seedFound = false;
+
+      // A bit dumb, as the seed value is set again the **Nested while loop**.
+      // But it is mandatory so we don't get an error because seed is not initialized in the ** First while loop**.
+      AbstractActor seed = actors.get(i);
+
+      /* ----- SUB-STEP 1 : identify a seed */
+      /* **Nested while loop** : Try to find a valid seed */
+      while (!seedFound && !graphIsFullySearched) {
+
+        // getting actor before incrementing i
+        seed = actors.get(i++);
+
+        // Current actor has already been visited.
+        if (Boolean.TRUE.equals(identifiedSeedAndMergedActors.get(seed))) {
+          continue;
+        }
+
+        // If a seed is found, end of the **Nested while loop**
+        if (heuristic.assesSeedable(seed)) {
+          seedFound = true;
+          seedName = seed.getName();
+        }
+
+        // All actor have been explored, end of the 2 while loops
+        if (i == actors.size()) {
+          graphIsFullySearched = true;
+        }
+      }
+
+      // If the nested while loop has ended, but no seed has been found,
+      // it means that the graph is fully searched. End of the First while loop.
+      if (!seedFound) {
+        PreesmLogger.getLogger().info(" WARNING - NO SEED FOUND");
+
+        continue;
+      }
+
+      /* ----- SUB-STEP 2 : identify mergeable actors according to the seed. */
+
+      // Now we have a seed, let's build a list of all the actors we want to merge.
+      // They will all be (un)direct neighbors of the seed.
+
+      // This list will be used only in buildMergeList. Because it is a recursive function,
+      // it has to be declared outside its scope
+      final Set<AbstractActor> visitedActors = new HashSet<>();
+      final Set<AbstractActor> actorsToMerge = buildMergeList(seed, scenario, visitedActors,
+          identifiedSeedAndMergedActors, heuristic);
+
+      // If the created cluster is not valid according the used heuristic, we continue the iteration, without adding the
+      // cluster to the graph.
+      if (!heuristic.validateCluster(actorsToMerge)) {
+        continue;
+      }
+
+      /*---------------------------------------
+       * STEP 4
+       *---------------------------------------
+       * Merging of identified actors
+       */
+
+      // Mark the seed and the merged actors as visited
+      for (final AbstractActor a : actorsToMerge) {
+        identifiedSeedAndMergedActors.put(a, true);
+      }
+      identifiedSeedAndMergedActors.put(seed, true);
+
+      // Set cluster name
+      final String clusterName = heuristic.getPrefix() + "_" + seedName;
+
+      // Log
+      if (verbose) {
+        final String info = "> Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
+            + " into cluster " + clusterName;
+        PreesmLogger.getLogger().log(Level.INFO, info);
+
+      }
+      /* ----- SUB-STEP 1 : creating the subgraph */
+      // Creating the cluster
+      final PiGraph cluster = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
+      cluster.setClusterValue(true);
+      cluster.setToFlatten(false);
+      cluster.setToSrdag(false);
+
+      // Checking modified graph (with the new cluster) consistency
+      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+      pgcc.check(graph);
+
+      /* ----- SUB-STEP 2 : partitioning the cluster */
+      /*
+       * The goal here is to adapt the weights of the cluster interfaces ports, according to an partitioning heuristic
+       */
+
+      // balanceFirings could create new clusters, so we create a list just in case
+      List<PiGraph> clusterActors;
+      if (partitioner != null) {
+
+        if (verbose) {
+          final String info = "> Partitioning cluster " + clusterName + " with " + partitioner.getClass();
+          PreesmLogger.getLogger().log(Level.INFO, info);
+        }
+
+        clusterActors = partitioner.balanceFirings(graph, cluster);
+
+        if (verbose) {
+          final String info = "> Partitioning done.";
+          PreesmLogger.getLogger().log(Level.INFO, info);
+        }
+
+        pgcc.check(graph);
+
+      } else {
+
+        clusterActors = new ArrayList<>();
+        clusterActors.add(cluster);
+      }
+
+      listClusters.addAll(clusterActors);
+
+    }
+
+    return listClusters;
   }
 
   /**
    * This function will build a list of actors that can be merged with the seed actor.
    *
    * @param seed
-   *          an actor we know will be added to the merging list and whose successors are to be evaluated for merging
-   *          Actors are mergeable if all their successors and themself are the same arch as the seed (pas au point)
+   *          Starting actor of the clustering
    * @param scenario
    *          the scenario
-   * @param refArchi
-   *          the arch whose mapped actors we want to merge
    * @param visitedActors
-   *          the set of already visited actors, used to prevent infinite loops
+   *          the set of already visited actors for this specific seed (re-init for each seed), used to prevent infinite
+   *          loops
+   * @param seedAndMerged
+   *          actors already part of a cluster (the seeds and the merged ones)
    * @return a cluster of actors that can be merge
    */
-  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario, Component refArchi,
-      Set<AbstractActor> visitedActors, ClusteringHeuristic heuristic) {
+  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario,
+      Set<AbstractActor> visitedActors, Map<AbstractActor, Boolean> seedAndMerged,
+      HorizontalClusteringHeuristic heuristic) {
+
+    // The set that will be returned
     final Set<AbstractActor> actorsToMerge = new HashSet<>();
+
+    // adding the seed
     actorsToMerge.add(seed);
 
-    final List<Actor> seedSuccessorsSameArch = seed.getDirectSuccessors().stream().filter(Actor.class::isInstance)
-        .map(a -> (Actor) a)
-        .filter(a -> scenario.getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi)))
-        .toList();
+    // Getting all seed neighbors
+    final List<
+        AbstractActor> seedSucc = seed.getDataOutputPorts().stream().map(dop -> dop.getFifo().getTarget()).toList();
 
-    for (final AbstractActor actor : seedSuccessorsSameArch) {
+    final List<
+        AbstractActor> seedPred = seed.getDataInputPorts().stream().map(dop -> dop.getFifo().getSource()).toList();
 
-      if (!visitedActors.contains(actor)) {
-        visitedActors.add(actor);
+    final List<AbstractActor> seedNeighbors = new ArrayList<>(seedSucc);
+    seedNeighbors.addAll(seedPred);
 
-        // check if the actor can be added to the merger list
-        // (i.e it only has predecessors with the same arch as the seed
-        final Map<String, Object> params = new HashMap<>();
-        params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-        params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
-        params.put("position", ClusteringHeuristic.successor);
-        final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
+    // Iterating on direct neighbors
+    for (final AbstractActor actor : seedNeighbors) {
+      if (visitedActors.contains(actor) || Boolean.TRUE.equals(seedAndMerged.get(actor))) {
+        continue;
+      }
+      visitedActors.add(actor);
 
-        if (mergeable) {
-          // we can add it to the merging list and probe its successors too
-          final Set<AbstractActor> successorList = buildMergeList(actor, scenario, refArchi, visitedActors, heuristic);
-          actorsToMerge.addAll(successorList);
-        }
+      // check if the actor can be added to the merge list
+      final boolean mergeable = heuristic.assessMergeable(seed, actor);
+      if (mergeable) {
+
+        // If actor is mergeable, exploring the neighbors of the current actor as a seed
+        final Set<
+            AbstractActor> successorList = buildMergeList(actor, scenario, visitedActors, seedAndMerged, heuristic);
+        actorsToMerge.addAll(successorList);
       }
     }
-
-    final List<Actor> seedPredecessorsSameArch = seed.getDirectPredecessors().stream().filter(Actor.class::isInstance)
-        .map(a -> (Actor) a)
-        .filter(a -> scenario.getPossibleMappings(a).stream().anyMatch(map -> map.getComponent().equals(refArchi)))
-        .toList();
-
-    for (final AbstractActor actor : seedPredecessorsSameArch) {
-      if (!visitedActors.contains(actor)) {
-        visitedActors.add(actor);
-
-        final Map<String, Object> params = new HashMap<>();
-        params.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
-        params.put(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, refArchi);
-        params.put("position", ClusteringHeuristic.predecessor);
-        final boolean mergeable = heuristic.assessMergeable(seed, actor, params);
-
-        if (mergeable) {
-          // probe its predecessors too
-          final Set<
-              AbstractActor> predecessorList = buildMergeList(actor, scenario, refArchi, visitedActors, heuristic);
-          actorsToMerge.addAll(predecessorList);
-        }
-      }
-
-    }
-
     return actorsToMerge;
   }
 }

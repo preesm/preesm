@@ -143,38 +143,47 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
    * @return the SDFGraph obtained by visiting graph
    */
   public static final PiGraph flatten(final PiGraph graph, boolean performOptim) {
+
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,
         CheckerErrorLevel.NONE);
     pgcc.check(graph);
 
-    // 0. we copy the graph since the transformation has side effects (especially on delay actors)
+    // 0. We copy the graph since the transformation has side effects (especially on delay actors)
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+
     // 1. First we resolve all parameters.
     // It must be done first because, when removing persistence, local parameters have to be known at upper level
     graphCopy.resolveAllParameters();
+
     // 2. Compute BRV following the chosen method
     Map<AbstractVertex, Long> brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
     PiBRV.printRV(brv);
-    // then we remove all actors which will be not fired
-    // we do it before the persistence transformation whose new delays may change the BRV
+
+    // Then we remove all actors which will be not fired
+    // We do it before the persistence transformation whose new delays may change the BRV
     PiMMHelper.removeNonExecutedActorsAndFifos(graphCopy, brv);
+
     // 3. We perform the delay transformation step that deals with persistence
     PiMMHelper.removePersistence(graphCopy);
-    // recompute brv since new delays added from persistence are not known yet
+
+    // Recompute brv since new delays added from persistence are not known yet
     brv = PiBRV.compute(graphCopy, BRVMethod.LCM);
-    // 4 Check periods with BRV
+
+    // 4. Check periods with BRV
     PiMMHelper.checkPeriodicity(graphCopy, brv);
+
     // 5. Now, flatten the graph
     final PiSDFFlattener staticPiMM2FlatPiMMVisitor = new PiSDFFlattener(brv, graph.isCluster());
     staticPiMM2FlatPiMMVisitor.doSwitch(graphCopy);
     final PiGraph result = staticPiMM2FlatPiMMVisitor.result;
 
     if (performOptim) {
+
       // 6- do some optimization on the graph
       final ForkJoinOptimization forkJoinOptimization = new ForkJoinOptimization();
-      forkJoinOptimization.optimize(result);
       final BroadcastRoundBufferOptimization brRbOptimization = new BroadcastRoundBufferOptimization();
+      forkJoinOptimization.optimize(result);
       brRbOptimization.optimize(result);
       removeUselessStuffAfterOptim(result);
     }

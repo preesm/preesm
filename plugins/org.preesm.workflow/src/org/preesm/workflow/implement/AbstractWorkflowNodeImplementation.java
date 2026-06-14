@@ -71,6 +71,8 @@ public abstract class AbstractWorkflowNodeImplementation {
   public static final String KEY_BOUND_MIN_SET      = "minBounds";
   public static final String KEY_BOUND_MAX_SET      = "maxBounds";
   public static final String KEY_SUBGRAPHS_LIST     = "subgraphs";
+  public static final String KEY_SCHEDULES_LIST      = "schedules";
+  public static final String KEY_SCHEDULE           = "schedule";
 
   /**
    * Id and fully qualified names of node output retrieved from the extension.
