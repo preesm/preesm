@@ -484,6 +484,12 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       memKernels.add(elt.getName() + "_write");
     }
 
+    if (accelerators.isEmpty()) {
+      // in the event the accelerator is not used by the schedule generated earlier.
+      // Unlikely but possible.
+      return;
+    }
+
     String bitFile;
     // find top graph name
     var graph = accelerators.getFirst().getOriActor().getContainingPiGraph();

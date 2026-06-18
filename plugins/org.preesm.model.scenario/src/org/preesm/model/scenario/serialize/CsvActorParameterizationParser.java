@@ -266,8 +266,8 @@ public class CsvActorParameterizationParser {
           }
 
         } catch (final Exception e) {
-          PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
-              new Object[] { actor, component });
+          PreesmLogger.getLogger().log(Level.INFO,
+              "Cannot retreive timing for (" + actor.getName() + "), " + component.getVlnv().getName() + ")");
         }
       }
     }

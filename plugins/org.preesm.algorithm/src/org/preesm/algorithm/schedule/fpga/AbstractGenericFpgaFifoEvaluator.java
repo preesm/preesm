@@ -162,14 +162,6 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
       return new AdfgOjalgoFpgaFifoEvaluator(false);
     }
     throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
-
-    // return switch (fifoEvaluatorName.toLowerCase()) {
-    // case AsapFpgaFifoEvaluator.FIFO_EVALUATOR_SDF, AsapFpgaFifoEvaluator.FIFO_EVALUATOR_AVG ->
-    // new AsapFpgaFifoEvaluator(fifoEvaluatorName);
-    // case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT -> new AdfgOjalgoFpgaFifoEvaluator(true);
-    // case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR -> new AdfgOjalgoFpgaFifoEvaluator(false);
-    // default -> throw new PreesmRuntimeException("Could not recognize fifo evaluator name: " + fifoEvaluatorName);
-    // };
   }
 
   /**

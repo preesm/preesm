@@ -1058,11 +1058,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean casePiGraph(final PiGraph graph) {
 
     if (graph.isCluster()) {
-      if (!graph.isToSrdag()) {
-        this.currentGraphIsCluster = true;
-        return caseCluster(graph);
-      }
-      return true;
+      // if (!graph.isToSrdag()) { // already managed in caseCluster
+      this.currentGraphIsCluster = true;
+      return caseCluster(graph);
+      // }
+      // return true;
     }
 
     this.currentGraphIsCluster = false;

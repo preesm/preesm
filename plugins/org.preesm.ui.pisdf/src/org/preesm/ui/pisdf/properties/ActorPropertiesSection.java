@@ -563,12 +563,14 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
 
       Refinement refinement = null;
+      // List<Refinement> refinements = null;
       boolean enabled = true;
       if (bo instanceof final Delay delay) {
         enabled = delay.getLevel() == PersistenceLevel.PERMANENT;
         refinement = delay.getDelayActor().getRefinement();
       } else {
         refinement = ((RefinementContainer) bo).getRefinement();
+        // refinements = ((RefinementContainer) bo).getRefinements();
       }
       if ((refinement == null) || (refinement.getFilePath() == null)) {
         this.lblRefinementObj.setText(NONE);
