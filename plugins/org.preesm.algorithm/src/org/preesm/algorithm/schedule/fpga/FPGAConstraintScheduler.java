@@ -1,7 +1,5 @@
 package org.preesm.algorithm.schedule.fpga;
 
-import static org.chocosolver.solver.search.strategy.Search.intVarSearch;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,9 +13,7 @@ import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorContradiction;
-import org.chocosolver.solver.search.strategy.selectors.values.IntDomainMin;
-import org.chocosolver.solver.search.strategy.selectors.variables.InputOrder;
-import org.chocosolver.solver.variables.BoolVar;
+import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.events.IEventType;
@@ -45,11 +41,12 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX  = 100_000_000;// trouver le chemin critique et sommer latence*brv pour chaque acteur ?
-  static final int TOKENS_MAX = 100_000_000;
+  static final int CYCLE_MAX    = Integer.MAX_VALUE / 2; // chemin critique et sommer latence*brv pour chaque acteur ?
+  static final int TOKENS_MAX   = CYCLE_MAX / 2;         // arbitrary
+  static final int MAX_MULTIPLE = 100;
 
   final boolean monitor = true;
-  final boolean logs    = true;
+  final boolean logs    = false;
 
   public static long pgcd(long a, long b) {
     if (b == 0) {
@@ -138,7 +135,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     res.repetitionCount = brv.get(actor).intValue();
 
     // arbitrary limit : period <= 100 * executionTime
-    res.period_var = model.intVar("period_" + actor.getName() + "_var", res.executionTime, 100 * res.executionTime);
+    res.period_var = model.intVar("period_" + actor.getName() + "_var", res.executionTime,
+        MAX_MULTIPLE * res.executionTime);
 
     // must start early enough to finish all its periods (=brv) before MAX_CYCLE
     // could even be bounded by its followers' latencies sum
@@ -205,7 +203,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     // // we know the actor's start date is superior or equal to all its predecessors' start dates
     // for (final var pred : actor.getDirectPredecessors().stream().filter(actors::contains).toList()) {
     // final ActorTimings predTiming = schedule.get(pred);
-    // model.arithm(at.startDate_var, ">=", predTiming.startDate).post(); // Vraiment utile comme contrainte ?
+    // model.arithm(at.startDate_var, ">=", predTiming.startDate_var).post(); // Vraiment utile comme contrainte ?
     // }
     // }
 
@@ -229,8 +227,13 @@ public class FPGAConstraintScheduler implements IScheduler {
       final int basisOfTp = (int) (prod_rate / pgcd(prod_rate, cons_rate));
       final int basisOfTc = (int) (cons_rate / pgcd(prod_rate, cons_rate));
 
-      final IntVar TpMultiple = model.intVar("TpMultiple_" + fifo.getId(), 0, 100);
-      final IntVar TcMultiple = model.intVar("TpMultiple_" + fifo.getId(), 0, 100);
+      // On suppose arbitrairement que la période sera inférieure à 10 fois la latence
+      // TODO : j'ai peur que cette borne soit trop petite dans beaucoup de cas
+      // TODO : calculer une bonne borne supérieure
+      final IntVar TpMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
+          MAX_MULTIPLE * source.executionTime / basisOfTp);
+      final IntVar TcMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
+          MAX_MULTIPLE * target.executionTime / basisOfTc);
 
       // the periods must be a multiple of their base, starting from the minimum allowed : their latency
       // we generate 100 possible values, assuming it is unlikely that period > 100 * latency (C'est au pif !)
@@ -297,7 +300,6 @@ public class FPGAConstraintScheduler implements IScheduler {
           // delay_cons + (bk - 1) * periodCons + taux_cons
           breakpoints[bk - 1].eq(target.startDate_var.add(target.period_var.mul(bk - 1)).add(cons_rate)).post();
         }
-
       }
 
       // les valeurs aux breakpoints
@@ -319,21 +321,35 @@ public class FPGAConstraintScheduler implements IScheduler {
 
         // t - delay_prod : always positive, since breakpoints at prod are after it started, and cons starts after prod
         // at most the biggest breakpoint, which are capped to CYCLE_MAX
+
         final IntVar delta_prod = model.intVar("deltaProd_" + fifo.getId() + "_" + bk + "_var", 0, CYCLE_MAX);
 
-        final IntVar prodInPeriod = model.intVar("inPeriodProd_" + fifo.getId() + "_" + bk + "_var", 0, TOKENS_MAX);
-        final IntVar inter2 = model.intVar("inter2_" + bk + "_var", -TOKENS_MAX, TOKENS_MAX);
+        final IntVar prodInPeriod = model.intVar("inPeriodProd_" + fifo.getId() + "_" + bk + "_var", 0, prod_rate);
+        final IntVar prodFromPreviousPeriods = model
+            .intVar("prodFromPreviousPeriods" + fifo.getId() + "_" + bk + "_var", 0, TOKENS_MAX);
 
         model.arithm(delta_prod, "=", t, "-", source.startDate_var).post();
 
         // in-period production
-        // (t - delay_prod) % periodProd - periodProd + taux_prod
-        inter2.eq((delta_prod.mod(source.period_var)).sub(source.period_var).add(prod_rate)).post();
-        model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
 
+        if (chosenBreakpoints.equals("Prod")) {
+          // when the breakpoints are on the producer, it has not produced tokens yet
+          // ==> prodInPeriod = 0 for all breakpoints
+          model.arithm(prodInPeriod, "=", zero).post();
+        } else {
+          // Non-simplified formula : prodInPeriod = (t - delay_prod) % periodProd - periodProd + taux_prod
+          final IntVar inter2 = model.intVar("inter2_" + bk + "_var", 0, TOKENS_MAX); // forced to 0 or more later
+
+          inter2.eq((delta_prod.mod(source.period_var)).sub(source.period_var).add(prod_rate)).post();
+          model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
+        }
+
+        // Production from previous periods : ((t - delay_prod) / periodProd) * taux_prod
         // choco operates on natural numbers so the fraction results are automatically floored
-        // ((t - delay_prod) / periodProd) * taux_prod + inter2
-        cumP[bk - 1].eq(((delta_prod.div(source.period_var)).mul(prod_rate)).add(prodInPeriod)).post();
+        prodFromPreviousPeriods.eq((delta_prod.div(source.period_var)).mul(prod_rate)).post();
+
+        // prodFromPreviousPeriods + prodInPeriod
+        model.arithm(cumP[bk - 1], "=", prodFromPreviousPeriods, "+", prodInPeriod).post();
 
         // ---------------------------------
         // -- cumulated consumption at bk --
@@ -345,33 +361,36 @@ public class FPGAConstraintScheduler implements IScheduler {
         // Upper bound : the cons should start before the prod has finished an iteration's worth of firings I guess ?
         final IntVar delta_cons = model.intVar("deltaCons_" + fifo.getId() + "_" + bk + "_var",
             0 /* source.executionTime - prod_rate */, CYCLE_MAX /* target.repetitionCount * source.executionTime */);
-        final BoolVar consNotYetStarted = model.boolVar("consNotYetStarted_" + fifo.getId() + "_" + bk + "_var");
-        consNotYetStarted.addMonitor((vari, evt) -> System.out.printf("%s -> %s%n", vari.getName(), vari));
 
-        // METTRE PLUTÔT UN MAX(delta_prod, 0) ???????
+        final IntVar consInPeriod = model.intVar("inPeriodCons_" + fifo.getId() + "_" + bk + "_var", 0, cons_rate);
+        final IntVar consFromPreviousPeriods = model
+            .intVar("consFromPreviousPeriods" + fifo.getId() + "_" + bk + "_var", 0, TOKENS_MAX);
 
-        // since t - delay_cons can be negative and we DON'T want that, we create an intermediary that stores
-        // 0 if delay_cons > t, else (t - delay_cons)
-        model.reifyXgtY(target.startDate_var, t, consNotYetStarted);
-        model.ifThen(consNotYetStarted, delta_cons.eq(0).decompose());
-        model.ifThen(consNotYetStarted.not(), delta_cons.eq(t.sub(target.startDate_var)).decompose());
+        // To have t - delay_cons be 0 or more
+        model.max(delta_cons, t.sub(target.startDate_var).intVar(), zero).post();
 
-        // this intermediate variable can be negative
-        // min(x, rate_cons) <= rate_cons
-        final IntVar inPeriodCons = model.intVar("inPeriodCons_" + fifo.getId() + "_" + bk + "_var", 0, cons_rate);
-        final IntVar inter4 = model.intVar("inter4_" + bk + "_var", 0, TOKENS_MAX);
+        if (chosenBreakpoints.equals("Cons")) {
+          // in this special case, the breakpoint happens always after the consumer has consumed
+          // a period's worth of tokens
+          // ==> consInPeriod = rate_cons
+          model.arithm(consInPeriod, "=", cons_rate).post();
 
-        // (t - delay_cons) % periodCons
-        inter4.eq(delta_cons.mod(target.period_var)).post();
-        // inter4 = min(inter3, taux_cons)
-        model.min(inPeriodCons, inter4, rate_cons).post();
+        } else {
+          // this intermediate variable can be negative
+          // min(x, rate_cons) <= rate_cons
+          final IntVar inter4 = model.intVar("inter4_" + bk + "_var", -TOKENS_MAX, TOKENS_MAX);
 
-        // METTRE PLUTÔT UN MAX(cumC, 0) ???????
+          // (t - delay_cons) % periodCons : the production in this period
+          inter4.eq(delta_cons.mod(target.period_var)).post();
 
-        // ((t - delay_cons) / periodCons) * taux_cons + inter4
-        model.ifThenElse(consNotYetStarted, // conditional value
-            cumC[bk - 1].eq(0).decompose(), // if cons start > bk, cumC[bk] = 0
-            cumC[bk - 1].eq((delta_cons.div(target.period_var).mul(cons_rate)).add(inter4)).decompose());
+          model.min(consInPeriod, inter4, rate_cons).post();
+        }
+
+        // ((t - delay_cons) / periodCons) * taux_cons
+        consFromPreviousPeriods.eq(delta_cons.div(target.period_var).mul(cons_rate)).post();
+
+        // consFromPreviousPeriods + consInPeriod
+        model.arithm(cumC[bk - 1], "=", consFromPreviousPeriods, "+", consInPeriod).post();
 
         model.arithm(cumP[bk - 1], ">=", cumC[bk - 1]).post();
       }
@@ -383,8 +402,9 @@ public class FPGAConstraintScheduler implements IScheduler {
     // le plus tardif
     final IntVar latency = model.max("latency", latencies);
 
-    final IntVar[] variablesToMonitor = Stream
-        .of(new IntVar[] { latency }, latencies, periods, listCumP.toArray(), listCumC.toArray())
+    // optimiser periods avant latencies permet de bien réduire l'espace d'état avant
+    final IntVar[] variablesToOptimize = Stream
+        .of(new IntVar[] { latency }, periods, latencies/* , listCumP.toArray(), listCumC.toArray() */)
         .flatMap(Arrays::stream).toArray(IntVar[]::new);
 
     // --------
@@ -393,23 +413,16 @@ public class FPGAConstraintScheduler implements IScheduler {
     final Solver solver = model.getSolver();
 
     if (monitor) {
-      solver.showContradiction();
       solver.showDashboard();
       solver.showStatisticsDuringResolution(1000);
+      System.out.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
+          model.getNbCstrs());
       // solver.verboseSolving(1000); // marche pas
-
-      System.out.printf("Variables : %n %s %n", String.join("\n",
-          schedule.values().stream()
-              .map(a -> a.period_var.toString() + "\t" + a.startDate_var.toString() + "\t" + a.endDate_var.toString())
-              .toList()));
-      System.out.printf("%s%n", String.join("\n", Arrays.asList(model.getVars()).stream()
-          .filter(v -> v.getName().contains("left") || v.getName().contains("right")).map(Object::toString).toList()));
-
     }
     if (logs) {
+      solver.showContradiction();
       solver.showDecisions();
       solver.showContradiction();
-
       final Map<String, int[]> lastDomain = new HashMap<>();
       for (final var v : model.getVars()) {
         if (v instanceof final IntVar iv) {
@@ -428,10 +441,10 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
 
       solver.plugMonitor(new IMonitorContradiction() {
+
         @Override
         public void onContradiction(ContradictionException cex) {
           final int depth = solver.getDecisionPath().size();
-
           if (depth == 0) {
             // Happens during root propagation — directly proves UNSAT
             System.out.println("[ROOT CONTRADICTION] " + cex.c);
@@ -458,39 +471,34 @@ public class FPGAConstraintScheduler implements IScheduler {
     solver.limitTime("5s");
 
     // on veut en fait choisir la latence, pour qu'il comprenne que la première valeur qui réussit est l'optim
-    solver.setSearch(intVarSearch(new InputOrder<>(model), // pick variables in order
-        new IntDomainMin(), // try smallest value first
-        variablesToMonitor // toutes les variables sur lesquelles "brancher" (?)
-    ));
+    solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
 
-    // model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
+    model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
 
     Solution solution = new Solution(model);
 
     try {
+      System.out.println("Starting initial propagation (might take some time)");
       solver.propagate();
+      System.out.println("Initial propagation finished");
     } catch (final ContradictionException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
-      System.out.println("First propagation failed : model might be unsolvable.");
+      System.out.println("Initial propagation failed : model might be unsolvable.");
     }
 
-    System.out.printf("%s %n", model.toString());
+    if (logs) {
+      System.out.printf("%s %n", model.toString());
+    }
+    model.displayPropagatorOccurrences();
+    System.out.printf("%s %n", Arrays.toString(model.getVars()));
 
     // AFFICHER TOUTES LES SOLUTIONS JUSQU'À TROUVER L'OPTIMALE
     solution = solver.findOptimalSolution(latency, Model.MINIMIZE);
-    // solution = solver.findLexOptimalSolution(objectives, Model.MINIMIZE); // beaucoup trop lent, besoin de
-    // l'améliorer
-
-    // Now that the latency is minimized, we want to fix a value for all other variables
-    // for example, we may want to minimize start delays
 
     if (solver.getSolutionCount() != 0) {
       final FpgaSchedule result = new FpgaSchedule(solution.getIntVal(latency));
       System.out.println("Solution found !");
-      // for (final IntVar var : model.retrieveIntVars(true)) {
-      // System.out.println(var.getName() + " = " + solution.getIntVal(var));
-      // }
       for (final var res : schedule.entrySet()) {
         res.getValue().storeResults(solution);
         res.getValue().printSchedule(res.getKey());
@@ -498,6 +506,8 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
       System.out.println("latency = " + result.latency);
       System.out.println("hyperperiod = " + ppcm(schedule.values().stream().map(a -> (long) a.period).toList()));
+      // System.out.println("CumP : " + listCumP.toString());
+      // System.out.println("CumC : " + listCumC.toString());
       System.out.print("\n");
 
     } else {
