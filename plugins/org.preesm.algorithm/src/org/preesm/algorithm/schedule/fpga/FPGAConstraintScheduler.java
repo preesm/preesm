@@ -16,6 +16,7 @@ import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
 import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
+import org.chocosolver.solver.variables.RealVar;
 import org.chocosolver.solver.variables.events.IEventType;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
@@ -276,17 +277,34 @@ public class FPGAConstraintScheduler implements IScheduler {
 
       updatePeriodsBases(prod_rate, cons_rate, sourceTimings, targetTimings);
 
+      // final IntVar left = model.intVar("left_" + fifo.getId() + "_var", 0,
+      // cons_rate * sourceTimings.period_var.getUB());
+      // final IntVar right = model.intVar("right_" + fifo.getId() + "_var", 0,
+      // prod_rate * targetTimings.period_var.getUB());
+      final double precision = 1d; // since we work on int multiplication, no need to waste precision on decimal
+      final RealVar left = model.realVar("left_" + fifo.getId() + "_var", 0,
+          (double) cons_rate * sourceTimings.period_var.getUB(), precision);
+      final RealVar right = model.realVar("right_" + fifo.getId() + "_var", 0,
+          (double) prod_rate * targetTimings.period_var.getUB(), precision);
+
+      final RealVar sourcePeriodReal = model.realVar(sourceTimings.period_var.getLB(), sourceTimings.period_var.getUB(),
+          precision);
+      model.eq(sourcePeriodReal, sourceTimings.period_var).post();
+      left.eq(sourcePeriodReal.mul(cons_rate)).post();
+
+      final RealVar targetPeriodView = model.realVar(targetTimings.period_var.getLB(), targetTimings.period_var.getUB(),
+          precision);
+      model.eq(targetPeriodView, targetTimings.period_var).post();
+      right.eq(targetPeriodView.mul(prod_rate)).post();
+
       // CONSTRAINT : equal rates --> Tc * rp = Tp * rc
       // Note : pas redondant avec d'autres contraintes ! J'ai trouvé un cas où l'enlever casse la résolution.
       // Allez savoir pourquoi, mais sans elle le modèle met tous les start_date à 0... Peut-être que cette contrainte
       // fait un lien implicite entre des variables, si oui il vaudrait mieux un lien explicite et la dégager.
-      final IntVar left = model.intVar("left_" + fifo.getId() + "_var", 0,
-          cons_rate * sourceTimings.period_var.getUB());
-      final IntVar right = model.intVar("right_" + fifo.getId() + "_var", 0,
-          prod_rate * targetTimings.period_var.getUB());
-      model.times(sourceTimings.period_var, cons_rate, left).post();
-      model.times(targetTimings.period_var, prod_rate, right).post();
-      model.arithm(left, "=", right).post();
+      left.eq(right).post();
+      // model.times(sourceTimings.period_var, cons_rate, left).post();
+      // model.times(targetTimings.period_var, prod_rate, right).post();
+      // model.arithm(left, "=", right).post();
 
       // -- Computing breakpoints positions --
 
@@ -436,7 +454,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     solver.showStatistics();
-    solver.limitTime("10s");
+    solver.limitTime("30s");
 
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
