@@ -50,6 +50,70 @@ public class FPGAConstraintScheduler implements IScheduler {
   final boolean monitor = true;
   final boolean logs    = true;
 
+  public FPGAConstraintScheduler() {
+    super();
+  }
+
+  /**
+   * Structure storing the timing information for each actor in the graph
+   */
+  public class FpgaSchedule {
+    protected List<ActorTimings> actorTimings;
+    protected int                latency;
+
+    public FpgaSchedule(int l) {
+      super();
+      actorTimings = new LinkedList<>();
+      latency = l;
+    }
+
+    public void addActorTimings(ActorTimings t) {
+      actorTimings.add(t);
+    }
+  }
+
+  /**
+   * Structure holding an actor's timing information, both the variables to be used in solving, and the result integers
+   * to be used afterward by PREESM
+   */
+  public class ActorTimings {
+    // Solving variables
+    private IntVar period_var;
+    private IntVar startDate_var;
+    private IntVar endDate_var;
+
+    // Timing variables
+    public int repetitionCount;
+    public int executionTime;
+    public int period;
+    public int startDate;
+    public int endDate;
+
+    ActorTimings() {
+      super();
+    }
+
+    public void printSchedule(AbstractActor a) {
+      System.out.printf("%s : start=%d \t latency=%d \t end=%d \t period=%d %n", a.getName(), startDate, executionTime,
+          endDate, period);
+    }
+
+    public void storeResults(Solution s) {
+      period = s.getIntVal(period_var);
+      startDate = s.getIntVal(startDate_var);
+      endDate = s.getIntVal(endDate_var);
+
+      // no longer needed after solving
+      period_var = null;
+      startDate_var = null;
+      endDate_var = null;
+    }
+  }
+
+  // -------------------------------------------
+  // ------------ Helper functions -------------
+  // -------------------------------------------
+
   public static long gcd(long a, long b) {
     if (b == 0) {
       return a;
@@ -69,56 +133,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     return result;
-  }
-
-  public FPGAConstraintScheduler() {
-    super();
-  }
-
-  public class FpgaSchedule {
-    protected List<ActorTimings> actorTimings;
-    protected int                latency;
-
-    public FpgaSchedule(int l) {
-      super();
-      actorTimings = new LinkedList<>();
-      latency = l;
-    }
-
-    public void addActorTimings(ActorTimings t) {
-      actorTimings.add(t);
-    }
-  }
-
-  public class ActorTimings {
-    private IntVar period_var;
-    private IntVar startDate_var;
-    private IntVar endDate_var;
-    public int     repetitionCount;
-    public int     executionTime;
-    public int     period;
-    public int     startDate;
-    public int     endDate;
-
-    ActorTimings() {
-      super();
-    }
-
-    public void printSchedule(AbstractActor a) {
-      System.out.printf("%s : start=%d \t latency=%d \t end=%d \t period=%d %n", a.getName(), startDate, executionTime,
-          endDate, period);
-    }
-
-    public void storeResults(Solution s) {
-      period = s.getIntVal(period_var);
-      startDate = s.getIntVal(startDate_var);
-      endDate = s.getIntVal(endDate_var);
-
-      // no longer needed
-      period_var = null;
-      startDate_var = null;
-      endDate_var = null;
-    }
   }
 
   /**
@@ -150,79 +164,6 @@ public class FPGAConstraintScheduler implements IScheduler {
 
   private int getConsRate(Fifo fifo) {
     return (int) fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
-  }
-
-  /**
-   * Runs a first call to the propagation method to check the model's viability. Prints an error message if failure.
-   *
-   * @param solver
-   *          the parameterized solver
-   */
-  private void runInitialPropagation(Solver solver) {
-    try {
-      System.out.println("Starting initial propagation (might take some time)");
-      solver.propagate();
-      System.out.println("Initial propagation finished");
-    } catch (final ContradictionException e) {
-      e.printStackTrace();
-      System.out.println("Initial propagation failed : model might be unsolvable.");
-    }
-  }
-
-  /**
-   * Creates the constraints forcing periods to be multiples of a base computed from the fifo's prod and cons rates.
-   *
-   * @param prod_rate
-   *          the fifo's rate of production
-   * @param cons_rate
-   *          the fifo's rate of consumption
-   * @param sourceTimings
-   *          the timings structure for the source actor
-   * @param targetTimings
-   *          the timings structure for the target actor
-   * @param model
-   *          the model
-   */
-  private void generatePeriodBasisConstraints(int prod_rate, int cons_rate, ActorTimings sourceTimings,
-      ActorTimings targetTimings, Model model) {
-
-    final int basisOfTp = (int) (prod_rate / gcd(prod_rate, cons_rate));
-    final int basisOfTc = (int) (cons_rate / gcd(prod_rate, cons_rate));
-
-    // the periods must be a multiple of their base, starting from the minimum allowed : their latency
-    // we generate 100 possible values, assuming it is unlikely that period > 100 * latency (C'est au pif !)
-    // TODO : j'ai peur que cette borne soit trop petite dans beaucoup de cas
-    // TODO : calculer une bonne borne supérieure
-    if (basisOfTp != 1) {
-      // Méthode 1 : restriction de l'ensemble de définition de la période à une liste de multiples de la base
-      // Avantages : une seule contrainte par période
-
-      // Inconvénient : un ensemble trop grand est converti en intervalle [LB, UB] --> on perd l'élagage de valeurs
-      final int startMultiple = (sourceTimings.executionTime + basisOfTp - 1) / basisOfTp;
-      final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTp)
-          .toArray();
-      model.member(sourceTimings.period_var, possibleTpValues).post();
-
-      // Méthode 2 : forcer la période à être un multiple de la base
-      // Avantage : on ne perd pas l'élagage de valeur
-      // Inconvénient : multiplication des contraintes à évaluer sur la période
-
-      // final IntVar TpMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
-      // MAX_MULTIPLE * source.executionTime / basisOfTp);
-      // source.period_var.eq(TpMultiple.mul(basisOfTp)).post();
-
-    }
-    if (basisOfTc != 1) {
-      // Même commentaire qu'au-dessus
-      final int startMultiple = (targetTimings.executionTime + basisOfTc - 1) / basisOfTc;
-      final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTc)
-          .toArray();
-      model.member(targetTimings.period_var, possibleTpValues).post();
-
-      // final IntVar TcMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
-      // MAX_MULTIPLE * target.executionTime / basisOfTc);
-      // target.period_var.eq(TcMultiple.mul(basisOfTc)).post();
-    }
   }
 
   private ActorTimings initActorTimings(AbstractActor actor, Scenario scenario, Component component,
@@ -266,10 +207,14 @@ public class FPGAConstraintScheduler implements IScheduler {
     return res;
   }
 
+  // -------------------------------------------
+  // ------------ Scheduling method ------------
+  // -------------------------------------------
+
   @Override
-  /***
+  /**
    * The method assumes it is scheduling a flat graph. If it encounters a cluster, it will be treated as an actor.
-   ***/
+   */
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
 
     final Map<AbstractActor, ActorTimings> schedule = new HashMap<>();
@@ -521,6 +466,83 @@ public class FPGAConstraintScheduler implements IScheduler {
     inputs.put("algorithm", piGraph);
     // truc.execute(null, null, null, null, null)
     return new AnalysisResultFPGA(piGraph, null, null);
+  }
+
+  // -------------------------------------------
+  // ------------ Solver functions -------------
+  // -------------------------------------------
+
+  /**
+   * Creates the constraints forcing periods to be multiples of a base computed from the fifo's prod and cons rates.
+   *
+   * @param prod_rate
+   *          the fifo's rate of production
+   * @param cons_rate
+   *          the fifo's rate of consumption
+   * @param sourceTimings
+   *          the timings structure for the source actor
+   * @param targetTimings
+   *          the timings structure for the target actor
+   * @param model
+   *          the model
+   */
+  private void generatePeriodBasisConstraints(int prod_rate, int cons_rate, ActorTimings sourceTimings,
+      ActorTimings targetTimings, Model model) {
+
+    final int basisOfTp = (int) (prod_rate / gcd(prod_rate, cons_rate));
+    final int basisOfTc = (int) (cons_rate / gcd(prod_rate, cons_rate));
+
+    // the periods must be a multiple of their base, starting from the minimum allowed : their latency
+    // we generate 100 possible values, assuming it is unlikely that period > 100 * latency (C'est au pif !)
+    // TODO : j'ai peur que cette borne soit trop petite dans beaucoup de cas
+    // TODO : calculer une bonne borne supérieure
+    if (basisOfTp != 1) {
+      // Méthode 1 : restriction de l'ensemble de définition de la période à une liste de multiples de la base
+      // Avantages : une seule contrainte par période
+
+      // Inconvénient : un ensemble trop grand est converti en intervalle [LB, UB] --> on perd l'élagage de valeurs
+      final int startMultiple = (sourceTimings.executionTime + basisOfTp - 1) / basisOfTp;
+      final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTp)
+          .toArray();
+      model.member(sourceTimings.period_var, possibleTpValues).post();
+
+      // Méthode 2 : forcer la période à être un multiple de la base
+      // Avantage : on ne perd pas l'élagage de valeur
+      // Inconvénient : multiplication des contraintes à évaluer sur la période
+
+      // final IntVar TpMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
+      // MAX_MULTIPLE * source.executionTime / basisOfTp);
+      // source.period_var.eq(TpMultiple.mul(basisOfTp)).post();
+
+    }
+    if (basisOfTc != 1) {
+      // Même commentaire qu'au-dessus
+      final int startMultiple = (targetTimings.executionTime + basisOfTc - 1) / basisOfTc;
+      final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTc)
+          .toArray();
+      model.member(targetTimings.period_var, possibleTpValues).post();
+
+      // final IntVar TcMultiple = model.intVar("TpMultiple_" + fifo.getId(), 1,
+      // MAX_MULTIPLE * target.executionTime / basisOfTc);
+      // target.period_var.eq(TcMultiple.mul(basisOfTc)).post();
+    }
+  }
+
+  /**
+   * Runs a first call to the propagation method to check the model's viability. Prints an error message if failure.
+   *
+   * @param solver
+   *          the parameterized solver
+   */
+  private void runInitialPropagation(Solver solver) {
+    try {
+      System.out.println("Starting initial propagation (might take some time)");
+      solver.propagate();
+      System.out.println("Initial propagation finished");
+    } catch (final ContradictionException e) {
+      e.printStackTrace();
+      System.out.println("Initial propagation failed : model might be unsolvable.");
+    }
   }
 
   private void saveAndPrintResults(Solution solution, IntVar latency, Map<AbstractActor, ActorTimings> schedule) {
