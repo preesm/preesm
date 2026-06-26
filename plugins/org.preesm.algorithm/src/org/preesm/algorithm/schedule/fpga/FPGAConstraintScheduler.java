@@ -85,6 +85,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     // Timing variables
     public int repetitionCount;
     public int executionTime;
+    public int initiationInterval;
     public int period;
     public int startDate;
     public int endDate;
@@ -94,8 +95,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     public void printSchedule(AbstractActor a) {
-      System.out.printf("%s : start=%d \t latency=%d \t end=%d \t period=%d %n", a.getName(), startDate, executionTime,
-          endDate, period);
+      System.out.printf("%s : start=%d \t latency=%d \t II= \t end=%d \t period=%d %n", a.getName(), startDate,
+          executionTime, initiationInterval, endDate, period);
     }
 
     public void storeResults(Solution s) {
@@ -108,6 +109,51 @@ public class FPGAConstraintScheduler implements IScheduler {
       startDate_var = null;
       endDate_var = null;
     }
+  }
+
+  private ActorTimings initActorTimings(AbstractActor actor, Scenario scenario, Component component,
+      Map<AbstractVertex, Long> brv, Model model) {
+    final ActorTimings res = new ActorTimings();
+
+    // default value for broadcast and round buffer actors
+    if (actor instanceof SpecialActor) {
+      // a special actor's latency is estimated to be its max rate of input/output.
+      // TODO est-ce que ça marche tout le temps ? probablement pas...
+      res.executionTime = actor.getAllDataPorts().stream().map(dp -> (int) dp.getPortRateExpression().evaluateAsLong())
+          .max(Integer::compare).orElse(1);
+      res.initiationInterval = 1;
+    } else {
+      res.executionTime = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
+          TimingType.EXECUTION_TIME);
+      res.initiationInterval = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
+          TimingType.INITIATION_INTERVAL);
+    }
+
+    res.repetitionCount = brv.get(actor).intValue();
+
+    // TODO : tous les acteurs sont liés par une égalité de débit : dès qu'on a fixé la période d'un acteur, toutes les
+    // autres en découlent ! On n'a donc besoin de spécifier qu'une variable de période, et tout le reste n'est
+    // qu'à calculer.
+    // arbitrary limit : period <= 100 * executionTime
+    res.period_var = model.intVar("period_" + actor.getName() + "_var", res.initiationInterval,
+        MAX_MULTIPLE * res.executionTime);
+
+    // must start early enough to finish all its periods (=brv) before MAX_CYCLE
+    // could even be bounded by its followers' latencies sum
+    res.startDate_var = model.intVar("start_" + actor.getName() + "_var", 0,
+        CYCLE_MAX - res.executionTime * res.repetitionCount); // affinable mais ça fera l'affaire
+
+    // must have at least executed all its firings by end time
+    res.endDate_var = model.intVar("end_" + actor.getName() + "_var", 0 /* res.executionTime * res.repetitionCount */,
+        CYCLE_MAX);
+
+    // endDate = startDate + T * (repetition_count - 1) + execution_time
+    // le dernier token est produit à la fin de l'exécution du dernier acteur, qui est possiblement bien avant la fin
+    // de sa période = le début du prochain firing
+    res.endDate_var.eq(res.startDate_var.add(res.period_var.mul(res.repetitionCount - 1).add(res.executionTime)))
+        .post();
+
+    return res;
   }
 
   // -------------------------------------------
@@ -164,47 +210,6 @@ public class FPGAConstraintScheduler implements IScheduler {
 
   private int getConsRate(Fifo fifo) {
     return (int) fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
-  }
-
-  private ActorTimings initActorTimings(AbstractActor actor, Scenario scenario, Component component,
-      Map<AbstractVertex, Long> brv, Model model) {
-    final ActorTimings res = new ActorTimings();
-
-    // default value for broadcast and round buffer actors
-    if (actor instanceof SpecialActor) {
-      // TODO est-ce que 1 marche tout le temps ? probablement pas...
-      res.executionTime = 1;
-    } else {
-      res.executionTime = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
-          TimingType.EXECUTION_TIME);
-    }
-
-    res.repetitionCount = brv.get(actor).intValue();
-
-    // TODO : tous les acteurs sont liés par une égalité de débit : dès qu'on a fixé la période d'un acteur, toutes les
-    // autres en découlent ! On n'a donc besoin de spécifier qu'une variable de période, et tout le reste n'est
-    // qu'à calculer.
-    // arbitrary limit : period <= 100 * executionTime
-    res.period_var = model.intVar("period_" + actor.getName() + "_var", res.executionTime,
-        MAX_MULTIPLE * res.executionTime);
-
-    // must start early enough to finish all its periods (=brv) before MAX_CYCLE
-    // could even be bounded by its followers' latencies sum
-    res.startDate_var = model.intVar("start_" + actor.getName() + "_var", 0,
-        CYCLE_MAX - res.executionTime * res.repetitionCount);
-
-    // must have at least executed all its firings by end time
-    res.endDate_var = model.intVar("end_" + actor.getName() + "_var", 0 /* res.executionTime * res.repetitionCount */,
-        CYCLE_MAX);
-
-    // endDate = startDate + T * (repetition_count - 1) + execution_time
-    // le dernier token est produit à la fin de l'exécution du dernier acteur, qui est possiblement bien avant la fin
-    // de sa période = le début du prochain firing
-    res.endDate_var.eq(res.startDate_var.add(res.period_var.mul(res.repetitionCount - 1).add(res.executionTime)))
-        .post();
-    // bornes : [-repetition_count + execution_time ; LAT_MAX + 101 * res.executionTime]
-
-    return res;
   }
 
   // -------------------------------------------
@@ -499,9 +504,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     if (basisOfTp != 1) {
       // Méthode 1 : restriction de l'ensemble de définition de la période à une liste de multiples de la base
       // Avantages : une seule contrainte par période
-
       // Inconvénient : un ensemble trop grand est converti en intervalle [LB, UB] --> on perd l'élagage de valeurs
-      final int startMultiple = (sourceTimings.executionTime + basisOfTp - 1) / basisOfTp;
+      final int startMultiple = (sourceTimings.period_var.getLB() + basisOfTp - 1) / basisOfTp;
       final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTp)
           .toArray();
       model.member(sourceTimings.period_var, possibleTpValues).post();
@@ -517,7 +521,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
     if (basisOfTc != 1) {
       // Même commentaire qu'au-dessus
-      final int startMultiple = (targetTimings.executionTime + basisOfTc - 1) / basisOfTc;
+      final int startMultiple = (targetTimings.period_var.getLB() + basisOfTc - 1) / basisOfTc;
       final int[] possibleTpValues = IntStream.rangeClosed(startMultiple, startMultiple * 100).map(n -> n * basisOfTc)
           .toArray();
       model.member(targetTimings.period_var, possibleTpValues).post();
