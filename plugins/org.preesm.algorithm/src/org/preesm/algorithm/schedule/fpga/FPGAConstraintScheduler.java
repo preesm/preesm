@@ -47,7 +47,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   static final int MAX_PERIOD_MULTIPLIER = 100;
 
   final boolean monitor = true;
-  final boolean logs    = true;
+  final boolean logs    = false;
 
   public FPGAConstraintScheduler() {
     super();
@@ -277,9 +277,13 @@ public class FPGAConstraintScheduler implements IScheduler {
       updatePeriodsBases(prod_rate, cons_rate, sourceTimings, targetTimings);
 
       // CONSTRAINT : equal rates --> Tc * rp = Tp * rc
-      // redondant avec le calcul des valeurs de possibleTpValues et possibleTcValues ?
-      final IntVar left = model.intVar("left_" + fifo.getId() + "_var", 0, CYCLE_MAX);
-      final IntVar right = model.intVar("right_" + fifo.getId() + "_var", 0, CYCLE_MAX);
+      // Note : pas redondant avec d'autres contraintes ! J'ai trouvé un cas où l'enlever casse la résolution.
+      // Allez savoir pourquoi, mais sans elle le modèle met tous les start_date à 0... Peut-être que cette contrainte
+      // fait un lien implicite entre des variables, si oui il vaudrait mieux un lien explicite et la dégager.
+      final IntVar left = model.intVar("left_" + fifo.getId() + "_var", 0,
+          cons_rate * sourceTimings.period_var.getUB());
+      final IntVar right = model.intVar("right_" + fifo.getId() + "_var", 0,
+          prod_rate * targetTimings.period_var.getUB());
       model.times(sourceTimings.period_var, cons_rate, left).post();
       model.times(targetTimings.period_var, prod_rate, right).post();
       model.arithm(left, "=", right).post();
@@ -432,7 +436,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     solver.showStatistics();
-    solver.limitTime("5s");
+    solver.limitTime("10s");
 
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
@@ -447,7 +451,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     runInitialPropagation(solver);
 
     if (logs) {
-      // System.out.printf("%s %n", model.toString());
+      System.out.printf("%s %n", model.toString());
     }
 
     // AFFICHER TOUTES LES SOLUTIONS JUSQU'À TROUVER L'OPTIMALE ?
