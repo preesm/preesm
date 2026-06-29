@@ -45,8 +45,8 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX             = 100_000_000;   // chemin critique et sommer latence*brv pour chaque acteur ?
-  static final int TOKENS_MAX            = CYCLE_MAX / 2; // arbitrary
+  static final int CYCLE_MAX             = 100_000_000; // chemin critique et sommer latence*brv pour chaque acteur ?
+  static final int TOKENS_MAX            = 100_000;     // arbitrary
   static final int MAX_PERIOD_MULTIPLIER = 100;
 
   final boolean monitor = true;
@@ -412,6 +412,7 @@ public class FPGAConstraintScheduler implements IScheduler {
             0 /* source.executionTime - prod_rate */, CYCLE_MAX /* target.repetitionCount * source.executionTime */);
 
         final IntVar consInPeriod = model.intVar("inPeriodCons_" + fifo.getId() + "_" + bk + "_var", 0, cons_rate);
+        // IntStream.range(1, 1 + TOKENS_MAX / cons_rate).map(n -> n * cons_rate).toArray()
         final IntVar consFromPreviousPeriods = model
             .intVar("consFromPreviousPeriods_" + fifo.getId() + "_" + bk + "_var", 0, TOKENS_MAX);
 
@@ -488,7 +489,18 @@ public class FPGAConstraintScheduler implements IScheduler {
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
     // premières et élaguer l'arbre des possibles le plus vite possible
-    solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
+    final String strategy = "inputOrderLBSearch";
+    switch (strategy) {
+      case "minDomLBSearch": // trop lent : échoue à l'algo test pour size=10000, max=10s
+        solver.setSearch(Search.minDomLBSearch(variablesToOptimize));
+        break;
+      case "inputOrderLBSearch":
+        solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
+        break;
+      default:
+        solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
+        break;
+    }
     BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
     model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
