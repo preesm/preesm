@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -51,7 +50,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   static final int MAX_PERIOD_MULTIPLIER = 100;
 
   final boolean monitor = true;
-  final boolean logs    = true;
+  final boolean logs    = false;
 
   public FPGAConstraintScheduler() {
     super();
@@ -265,15 +264,11 @@ public class FPGAConstraintScheduler implements IScheduler {
     // mieux : déclarer un tableau mais pas de variable choco
     final IntVar[] latencies = new IntVar[actors.size()];
     final IntVar[] periods = new IntVar[actors.size()];
-    final IntVar hyperperiod = model.intVar("hyperperiod", 0, CYCLE_MAX);
 
     int i = 0;
     // TODO faut-il mettre le startDate du 1er acteur à 0 ?
     for (final AbstractActor actor : actors) {
       final ActorTimings at = initActorTimings(actor, scenario, Fpga, brv, model);
-
-      final IntVar multiplier = model.intVar("multiplier_" + actor.getName(), 0, 1_000); // arbitraire
-      model.arithm(hyperperiod, "=", multiplier, "*", at.period_var).post(); // the hyperperiode is lcm of all periods
 
       schedule.put(actor, at);
       latencies[i] = at.endDate_var;
@@ -451,12 +446,6 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
     }
 
-    // Now that we have computed each actor's period basis, we use them to compute the hyperperiod's basis, which is
-    // their lcm
-    final int basisOfHyperperiod = schedule.values().stream().map(t -> t.basisOfPeriod).reduce(1,
-        FPGAConstraintScheduler::lcm);
-    model.member(hyperperiod, IntStream.range(0, 100).map(m -> m * basisOfHyperperiod).toArray());
-
     // objectif : optimiser la latence = la date de fin du dernier acteur relative à une période
     // on pourrait utiliser le chemin critique, mais pour le moment je vais juste optimiser la fin d'exécution de
     // l'acteur le plus tardif
@@ -466,8 +455,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     // optimiser periods avant latencies permet de bien réduire l'espace d'état avant
     // Astuce : minimiser d'abord l'hyperpériode, dont on peut grandement réduire l'espace d'états.
-    final IntVar[] variablesToOptimize = Stream
-        .of(new IntVar[] { latency }, periods, new IntVar[] { hyperperiod }, latencies).flatMap(Arrays::stream)
+    final IntVar[] variablesToOptimize = Stream.of(new IntVar[] { latency }, periods, latencies).flatMap(Arrays::stream)
         .toArray(IntVar[]::new);
 
     // --------
