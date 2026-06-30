@@ -16,6 +16,7 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorContradiction;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
+import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
@@ -45,8 +46,8 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX             = 100_000_000; // chemin critique et sommer latence*brv pour chaque acteur ?
-  static final int TOKENS_MAX            = 100_000;     // arbitrary
+  static final int CYCLE_MAX             = 1_000_000_000; // chemin critique et sommer latence*brv pour chaque acteur ?
+  static final int TOKENS_MAX            = 100_000;       // arbitrary
   static final int MAX_PERIOD_MULTIPLIER = 100;
 
   final boolean monitor = true;
@@ -314,16 +315,16 @@ public class FPGAConstraintScheduler implements IScheduler {
 
       final double ratesGcd = gcd(prod_rate, cons_rate);
 
-      final RealVar sourcePeriodReal = model.realVar(sourceTimings.period_var.getLB(), sourceTimings.period_var.getUB(),
-          precision);
+      final RealVar sourcePeriodReal = model.realVar("sourcePeriodReal", sourceTimings.period_var.getLB(),
+          sourceTimings.period_var.getUB(), precision);
       model.eq(sourcePeriodReal, sourceTimings.period_var).post();
-      left.eq(sourcePeriodReal.mul(cons_rate / ratesGcd)).post();
+      left.eq(sourcePeriodReal.mul(cons_rate / ratesGcd)).equation().post();
       // left.eq(sourcePeriodReal.div(prod_rate / ratesGcd)).post();
 
-      final RealVar targetPeriodReal = model.realVar(targetTimings.period_var.getLB(), targetTimings.period_var.getUB(),
-          precision);
+      final RealVar targetPeriodReal = model.realVar("targetPeriodReal", targetTimings.period_var.getLB(),
+          targetTimings.period_var.getUB(), precision);
       model.eq(targetPeriodReal, targetTimings.period_var).post();
-      right.eq(targetPeriodReal.mul(prod_rate / ratesGcd)).post();
+      right.eq(targetPeriodReal.mul(prod_rate / ratesGcd)).equation().post();
       // right.eq(targetPeriodReal.div(cons_rate / ratesGcd)).post();
 
       left.eq(right).post();
@@ -489,29 +490,23 @@ public class FPGAConstraintScheduler implements IScheduler {
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
     // premières et élaguer l'arbre des possibles le plus vite possible
-    final String strategy = "inputOrderLBSearch";
-    switch (strategy) {
-      case "minDomLBSearch": // trop lent : échoue à l'algo test pour size=10000, max=10s
-        solver.setSearch(Search.minDomLBSearch(variablesToOptimize));
-        break;
-      case "inputOrderLBSearch":
-        solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
-        break;
-      default:
-        solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
-        break;
-    }
+    // stratégies essayées sur l'algo test sans logs avec 10s de temps de résolution :
+    // - inputOrderLBSearch : minimise les variables de la liste dans l'ordre. Craque pour size=90_000.
+    // - minDomLBSearch : variable de domaine min. assignée à lsa LB. Craque pour size=10_000.
+    final AbstractStrategy strategy = Search.inputOrderLBSearch(variablesToOptimize);
+    solver.setSearch(strategy);
+
     BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
     model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
 
     Solution solution = new Solution(model);
 
-    runInitialPropagation(solver);
-
     if (logs) {
       System.out.printf("%s %n", model.toString());
     }
+
+    runInitialPropagation(solver);
 
     // AFFICHER TOUTES LES SOLUTIONS JUSQU'À TROUVER L'OPTIMALE ?
     solution = solver.findOptimalSolution(latency, Model.MINIMIZE);
