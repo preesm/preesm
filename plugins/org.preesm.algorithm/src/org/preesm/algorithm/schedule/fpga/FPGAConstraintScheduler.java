@@ -17,7 +17,6 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.search.loop.monitors.IMonitorContradiction;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.strategy.AbstractStrategy;
 import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
@@ -53,7 +52,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   static final int THRESHOLD_RV   = 5;
 
   final boolean monitor = true;
-  final boolean logs    = false;
+  final boolean logs    = true;
 
   public FPGAConstraintScheduler() {
     super();
@@ -515,22 +514,14 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
     if (logs) {
       solver.showContradiction();
-      solver.showDecisions();
-      solver.showContradiction();
-      setLoggingMonitors(model, solver);
+      // solver.showDecisions();
+      // setLoggingMonitors(model, solver);
     }
 
     solver.showStatistics();
     solver.limitTime("10s");
 
-    // va optimiser les variables dans l'ordre d'apparition dans le tableau
-    // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
-    // premières et élaguer l'arbre des possibles le plus vite possible
-    // stratégies essayées sur l'algo test sans logs avec 10s de temps de résolution :
-    // - inputOrderLBSearch : minimise les variables de la liste dans l'ordre. Craque pour size=90_000.
-    // - minDomLBSearch : variable de domaine min. assignée à lsa LB. Craque pour size=10_000.
-    final AbstractStrategy strategy = Search.inputOrderLBSearch(variablesToOptimize);
-    solver.setSearch(strategy);
+    setStrategy(solver, variablesToOptimize);
 
     BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
@@ -573,6 +564,16 @@ public class FPGAConstraintScheduler implements IScheduler {
   // -------------------------------------------
   // ------------ Solver functions -------------
   // -------------------------------------------
+
+  private void setStrategy(Solver solver, IntVar[] variablesToOptimize) {
+    // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
+    // premières et élaguer l'arbre des possibles le plus vite possible
+
+    // stratégies essayées sur l'algo test sans logs avec 10s de temps de résolution :
+    // - inputOrderLBSearch : minimise les variables de la liste dans l'ordre. Craque pour size=90_000.
+    // - minDomLBSearch : variable de domaine min. assignée à lsa LB. Craque pour size=10_000.
+    solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
+  }
 
   /**
    * Updates the actors' basis for their period to be lcm(current basis, fifo-induced basis)
