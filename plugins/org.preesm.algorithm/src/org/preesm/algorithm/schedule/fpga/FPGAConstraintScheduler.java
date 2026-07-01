@@ -46,13 +46,13 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX      = 1_000_000;      // chemin critique et sommer latence*brv de chaque acteur ?
-  static final int TOKENS_MAX     = 100_000;        // arbitrary
-  static final int MAX_START_TIME = CYCLE_MAX / 10; // abitrary
-  static final int THRESHOLD_RV   = 5;
+  static final int CYCLE_MAX      = 100_000;       // chemin critique et sommer latence*brv de chaque acteur ?
+  static final int TOKENS_MAX     = 1_000;         // arbitrary
+  static final int MAX_START_TIME = CYCLE_MAX / 2; // abitrary
+  static final int THRESHOLD_RV   = 50;
 
   final boolean monitor = true;
-  final boolean logs    = true;
+  final boolean logs    = false;
 
   public FPGAConstraintScheduler() {
     super();
@@ -164,7 +164,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     // must have at least executed all its firings by end time
     res.endDate_var = model.intVar("end_" + actor.getName() + "_var",
-        0 /* res.initiationInterval * res.repetitionCount */, CYCLE_MAX);
+        res.startDate_var.getLB() + res.initiationInterval * res.repetitionCount, CYCLE_MAX);
 
     // endDate = startDate + T * (repetition_count - 1) + execution_time
     // le dernier token est produit à la fin de l'exécution du dernier acteur, qui est possiblement bien avant la fin
@@ -194,6 +194,7 @@ public class FPGAConstraintScheduler implements IScheduler {
         model.member(at.period_var, IntStream.range(range_start, range_end).map(n -> n * at.basisOfPeriod).toArray())
             .post();
       }
+      // on peut aussi mettre à jour les domaines de start : startDate >= max(pred.startDate)
     }
 
   }
@@ -569,9 +570,11 @@ public class FPGAConstraintScheduler implements IScheduler {
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
     // premières et élaguer l'arbre des possibles le plus vite possible
 
-    // stratégies essayées sur l'algo test sans logs avec 10s de temps de résolution :
-    // - inputOrderLBSearch : minimise les variables de la liste dans l'ordre. Craque pour size=90_000.
-    // - minDomLBSearch : variable de domaine min. assignée à lsa LB. Craque pour size=10_000.
+    // stratégies essayées sur l'algo test sans logs, 10s, avec CYCLE_MAX = 1_000_000_000 :
+    // - activityBasedSearch : voir papier en doc de la méthode. Craque à size=100_000 avec 0,7 n/s.
+    // - conflictHistorySearch : sélectionne une variable en conflits et l'instancie. Craque à size=10_000 avec 131 n/s.
+    // - inputOrderLBSearch : minimise les variables de la liste dans l'ordre. Craque à size=10_000_000 avec 3,6 n/s.
+    // - minDomLBSearch : variable de domaine min. assignée à lsa LB. Craque à size=10_000 avec 147,6 n/s (!).
     solver.setSearch(Search.inputOrderLBSearch(variablesToOptimize));
   }
 
