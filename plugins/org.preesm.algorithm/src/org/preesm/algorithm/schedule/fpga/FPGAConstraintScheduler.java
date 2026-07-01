@@ -416,7 +416,9 @@ public class FPGAConstraintScheduler implements IScheduler {
               Math.min(sourceTimings.period_var.getUB(), TOKENS_MAX));
           final IntVar inter2 = model.intVar("inter2_" + bk + "_var", 0, TOKENS_MAX); // forced to 0 or more later
 
+          // prod_modulo = delta_prod % period_var
           model.mod(delta_prod, sourceTimings.period_var, prod_modulo).post();
+
           inter2.eq(prod_modulo.sub(sourceTimings.period_var).add(prod_rate)).post();
 
           model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
@@ -459,13 +461,14 @@ public class FPGAConstraintScheduler implements IScheduler {
 
         } else {
           // this intermediate variable cannot be negative since we force delta_cons >= 0
-          final IntVar inter4 = model.intVar("inter4_" + bk + "_var", 0, TOKENS_MAX);
+          final IntVar modulo_cons = model.intVar("modulo_cons_" + bk + "_var", 0,
+              Math.min(targetTimings.period_var.getUB(), TOKENS_MAX));
 
-          // (t - delay_cons) % periodCons : the consumption in this period
-          model.mod(delta_cons, targetTimings.period_var, inter4).post();
+          // (t - delta_cons) % periodCons : the consumption in this period
+          model.mod(delta_cons, targetTimings.period_var, modulo_cons).post();
 
           // min(x, rate_cons) <= rate_cons
-          model.min(consInPeriod, inter4, rate_cons).post();
+          model.min(consInPeriod, modulo_cons, rate_cons).post();
         }
 
         // ((t - delay_cons) / periodCons) * taux_cons
