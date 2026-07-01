@@ -46,9 +46,9 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX             = 1_000_000_000; // chemin critique et sommer latence*brv pour chaque acteur ?
-  static final int TOKENS_MAX            = 100_000;       // arbitrary
-  static final int MAX_PERIOD_MULTIPLIER = 100;
+  static final int CYCLE_MAX      = 10_000_000;      // chemin critique et sommer latence*brv de chaque acteur ?
+  static final int TOKENS_MAX     = 100_000;         // arbitrary
+  static final int MAX_START_TIME = CYCLE_MAX / 100; // abitrary
 
   final boolean monitor = true;
   final boolean logs    = false;
@@ -130,13 +130,11 @@ public class FPGAConstraintScheduler implements IScheduler {
           .max(Integer::compare).orElse(1);
       res.initiationInterval = 1;
 
-      // TODO : tous les acteurs sont liés par une égalité de débit : dès qu'on a fixé la période d'un acteur, toutes
-      // les autres en découlent ! On n'a donc besoin de spécifier qu'une variable de période, et tout le reste n'est
-      // qu'à calculer.
-      // arbitrary limit : period <= 100 * executionTime for regular actors
-      // arbitrary limit : (CYCLE_MAX / BRV) / 10 for special actors
+      // TODO mettre : period_var = other_period * tp/tp for actor in connecte_actors ?
+      // on n'aurait ainse que des views et une seule période libre, qui pourrait être celle avec le moins de
+      // combinaisons possibles.
       res.period_var = model.intVar("period_" + actor.getName() + "_var", res.initiationInterval,
-          CYCLE_MAX / (10 * res.repetitionCount));
+          CYCLE_MAX / res.repetitionCount);
 
     } else {
       res.executionTime = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
@@ -147,14 +145,15 @@ public class FPGAConstraintScheduler implements IScheduler {
       // TODO : tous les acteurs sont liés par une égalité de débit : dès qu'on a fixé la période d'un acteur, toutes
       // les autres en découlent ! On n'a donc besoin de spécifier qu'une variable de période, et tout le reste n'est
       // qu'à calculer.
-      // arbitrary limit : period <= 100 * executionTime for regular actors
+
+      // arbitrary UB to reduce domain size
       res.period_var = model.intVar("period_" + actor.getName() + "_var", res.initiationInterval,
-          MAX_PERIOD_MULTIPLIER * res.executionTime);
+          CYCLE_MAX / (10 * res.repetitionCount));
     }
 
     // CONSTRAINT : the period is proportional to its basis. This basis will be updated as we iterate over the fifos.
-    // TODO : borne complètement arbitraire !
-    res.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var", 0, 100_000);
+    res.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var", 0,
+        res.period_var.getUB() / res.basisOfPeriod);
     model.arithm(res.period_var, "=", res.basisMultiplier, "*", res.basisOfPeriod).post();
 
     // must start early enough to finish all its periods (=brv) before MAX_CYCLE
@@ -315,14 +314,14 @@ public class FPGAConstraintScheduler implements IScheduler {
 
       final double ratesGcd = gcd(prod_rate, cons_rate);
 
-      final RealVar sourcePeriodReal = model.realVar("sourcePeriodReal", sourceTimings.period_var.getLB(),
-          sourceTimings.period_var.getUB(), precision);
+      final RealVar sourcePeriodReal = model.realVar("sourcePeriodReal_" + fifo.getId(),
+          sourceTimings.period_var.getLB(), sourceTimings.period_var.getUB(), precision);
       model.eq(sourcePeriodReal, sourceTimings.period_var).post();
       left.eq(sourcePeriodReal.mul(cons_rate / ratesGcd)).equation().post();
       // left.eq(sourcePeriodReal.div(prod_rate / ratesGcd)).post();
 
-      final RealVar targetPeriodReal = model.realVar("targetPeriodReal", targetTimings.period_var.getLB(),
-          targetTimings.period_var.getUB(), precision);
+      final RealVar targetPeriodReal = model.realVar("targetPeriodReal_" + fifo.getId(),
+          targetTimings.period_var.getLB(), targetTimings.period_var.getUB(), precision);
       model.eq(targetPeriodReal, targetTimings.period_var).post();
       right.eq(targetPeriodReal.mul(prod_rate / ratesGcd)).equation().post();
       // right.eq(targetPeriodReal.div(cons_rate / ratesGcd)).post();
@@ -372,7 +371,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
         // t - delay_prod : always positive, since breakpoints at prod are after it started, and cons starts after prod
         // at most the biggest breakpoint, which are capped to CYCLE_MAX
-        final IntVar delta_prod = model.intVar("deltaProd_" + fifo.getId() + "_" + bk + "_var", 0, CYCLE_MAX);
+        final IntVar delta_prod = model.intVar("deltaProd_" + fifo.getId() + "_" + bk + "_var", 0, MAX_START_TIME);
 
         final IntVar prodInPeriod = model.intVar("inPeriodProd_" + fifo.getId() + "_" + bk + "_var", 0, prod_rate);
         final IntVar prodFromPreviousPeriods = model
@@ -388,9 +387,13 @@ public class FPGAConstraintScheduler implements IScheduler {
           model.arithm(prodInPeriod, "=", zero).post();
         } else {
           // Non-simplified formula : prodInPeriod = (t - delay_prod) % periodProd - periodProd + taux_prod
+          final IntVar prod_modulo = model.intVar("prod_modulo_" + fifo.getId(), 0,
+              Math.min(sourceTimings.period_var.getUB(), TOKENS_MAX));
           final IntVar inter2 = model.intVar("inter2_" + bk + "_var", 0, TOKENS_MAX); // forced to 0 or more later
 
-          inter2.eq((delta_prod.mod(sourceTimings.period_var)).sub(sourceTimings.period_var).add(prod_rate)).post();
+          model.mod(delta_prod, sourceTimings.period_var, prod_modulo).post();
+          inter2.eq(prod_modulo.sub(sourceTimings.period_var).add(prod_rate)).post();
+          // inter2.eq((delta_prod.mod(sourceTimings.period_var)).sub(sourceTimings.period_var).add(prod_rate)).post();
           model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
         }
 
@@ -410,7 +413,8 @@ public class FPGAConstraintScheduler implements IScheduler {
         // this time is prod.executionTime - rate (at least ! In general : prod.period - rate)
         // Upper bound : the cons should start before the prod has finished an iteration's worth of firings I guess ?
         final IntVar delta_cons = model.intVar("deltaCons_" + fifo.getId() + "_" + bk + "_var",
-            0 /* source.executionTime - prod_rate */, CYCLE_MAX /* target.repetitionCount * source.executionTime */);
+            0 /* source.executionTime - prod_rate */,
+            MAX_START_TIME /* target.repetitionCount * source.executionTime */);
 
         final IntVar consInPeriod = model.intVar("inPeriodCons_" + fifo.getId() + "_" + bk + "_var", 0, cons_rate);
         // IntStream.range(1, 1 + TOKENS_MAX / cons_rate).map(n -> n * cons_rate).toArray()
@@ -431,7 +435,8 @@ public class FPGAConstraintScheduler implements IScheduler {
           final IntVar inter4 = model.intVar("inter4_" + bk + "_var", -TOKENS_MAX, TOKENS_MAX);
 
           // (t - delay_cons) % periodCons : the consumption in this period
-          inter4.eq(delta_cons.mod(targetTimings.period_var)).post();
+          model.mod(delta_cons, targetTimings.period_var, inter4).post();
+          // inter4.eq(delta_cons.mod(targetTimings.period_var)).post();
 
           // min(x, rate_cons) <= rate_cons
           model.min(consInPeriod, inter4, rate_cons).post();
@@ -485,7 +490,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     solver.showStatistics();
-    solver.limitTime("10s");
+    solver.limitTime("30s");
 
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
