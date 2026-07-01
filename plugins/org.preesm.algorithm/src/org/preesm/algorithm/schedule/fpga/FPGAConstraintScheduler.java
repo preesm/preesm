@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -49,6 +50,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   static final int CYCLE_MAX      = 1_000_000;      // chemin critique et sommer latence*brv de chaque acteur ?
   static final int TOKENS_MAX     = 100_000;        // arbitrary
   static final int MAX_START_TIME = CYCLE_MAX / 10; // abitrary
+  static final int THRESHOLD_RV   = 5;
 
   final boolean monitor = true;
   final boolean logs    = false;
@@ -148,7 +150,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
       // arbitrary UB to reduce domain size
       res.period_var = model.intVar("period_" + actor.getName() + "_var", res.initiationInterval,
-          CYCLE_MAX / (10 * res.repetitionCount));
+          CYCLE_MAX / res.repetitionCount);
     }
 
     // CONSTRAINT : the period is proportional to its basis. This basis will be updated as we iterate over the fifos.
@@ -172,6 +174,29 @@ public class FPGAConstraintScheduler implements IScheduler {
         .post();
 
     return res;
+  }
+
+  private void updateActorsPeriodDomain(List<ExecutableActor> actors, Map<AbstractActor, ActorTimings> schedule,
+      Model model) {
+    for (final var actor : actors) {
+      final ActorTimings at = schedule.get(actor);
+      if (at.repetitionCount >= THRESHOLD_RV) {
+        // période max : CYCLE_MAX / RV
+        // période min : II
+        // nombre d'éléments à énumérer : 1 + (CYCLE_MAX / RV - II) / basisOfPeriod
+        // however we can also reuse the initial boundaries :
+        // range start : max(period_var.LB / basisOfPeriod, II / basisOfPeriod)
+        // range end : min(period_var.UB / basisOfPeriod , 1 + (CYCLE_MAX / RV - II) / basisOfPeriod)
+        final int range_start = Math.max(at.period_var.getLB() / at.basisOfPeriod,
+            at.initiationInterval / at.basisOfPeriod);
+        final int range_end = Math.min(at.period_var.getUB() / at.basisOfPeriod,
+            1 + (CYCLE_MAX / at.repetitionCount - at.initiationInterval) / at.basisOfPeriod);
+
+        model.member(at.period_var, IntStream.range(range_start, range_end).map(n -> n * at.basisOfPeriod).toArray())
+            .post();
+      }
+    }
+
   }
 
   // -------------------------------------------
@@ -393,7 +418,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
           model.mod(delta_prod, sourceTimings.period_var, prod_modulo).post();
           inter2.eq(prod_modulo.sub(sourceTimings.period_var).add(prod_rate)).post();
-          // inter2.eq((delta_prod.mod(sourceTimings.period_var)).sub(sourceTimings.period_var).add(prod_rate)).post();
+
           model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
         }
 
@@ -438,7 +463,6 @@ public class FPGAConstraintScheduler implements IScheduler {
 
           // (t - delay_cons) % periodCons : the consumption in this period
           model.mod(delta_cons, targetTimings.period_var, inter4).post();
-          // inter4.eq(delta_cons.mod(targetTimings.period_var)).post();
 
           // min(x, rate_cons) <= rate_cons
           model.min(consInPeriod, inter4, rate_cons).post();
@@ -454,6 +478,8 @@ public class FPGAConstraintScheduler implements IScheduler {
         model.arithm(cumP[bk - 1], ">=", cumC[bk - 1]).post();
       }
     }
+    // now that the periods' bases have all been computed, we can restrict the periods' domains
+    updateActorsPeriodDomain(actors, schedule, model);
 
     // objectif : optimiser la latence = la date de fin du dernier acteur relative à une période
     // on pourrait utiliser le chemin critique, mais pour le moment je vais juste optimiser la fin d'exécution de
