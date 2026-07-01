@@ -46,9 +46,9 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX      = 10_000_000;      // chemin critique et sommer latence*brv de chaque acteur ?
-  static final int TOKENS_MAX     = 100_000;         // arbitrary
-  static final int MAX_START_TIME = CYCLE_MAX / 100; // abitrary
+  static final int CYCLE_MAX      = 1_000_000;      // chemin critique et sommer latence*brv de chaque acteur ?
+  static final int TOKENS_MAX     = 100_000;        // arbitrary
+  static final int MAX_START_TIME = CYCLE_MAX / 10; // abitrary
 
   final boolean monitor = true;
   final boolean logs    = false;
@@ -416,7 +416,9 @@ public class FPGAConstraintScheduler implements IScheduler {
             0 /* source.executionTime - prod_rate */,
             MAX_START_TIME /* target.repetitionCount * source.executionTime */);
 
+        // the consumption in-period is bounded between 0 and cons_rate
         final IntVar consInPeriod = model.intVar("inPeriodCons_" + fifo.getId() + "_" + bk + "_var", 0, cons_rate);
+
         // IntStream.range(1, 1 + TOKENS_MAX / cons_rate).map(n -> n * cons_rate).toArray()
         final IntVar consFromPreviousPeriods = model
             .intVar("consFromPreviousPeriods_" + fifo.getId() + "_" + bk + "_var", 0, TOKENS_MAX);
@@ -431,8 +433,8 @@ public class FPGAConstraintScheduler implements IScheduler {
           model.arithm(consInPeriod, "=", cons_rate).post();
 
         } else {
-          // this intermediate variable can be negative
-          final IntVar inter4 = model.intVar("inter4_" + bk + "_var", -TOKENS_MAX, TOKENS_MAX);
+          // this intermediate variable cannot be negative since we force delta_cons >= 0
+          final IntVar inter4 = model.intVar("inter4_" + bk + "_var", 0, TOKENS_MAX);
 
           // (t - delay_cons) % periodCons : the consumption in this period
           model.mod(delta_cons, targetTimings.period_var, inter4).post();
@@ -490,7 +492,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     solver.showStatistics();
-    solver.limitTime("30s");
+    solver.limitTime("10s");
 
     // va optimiser les variables dans l'ordre d'apparition dans le tableau
     // TODO : vérifier si on peut donner des priorités aux contraintes, pour vérifier les plus contraignantes en
@@ -522,6 +524,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     } else {
       printFailureAndLog(model);
     }
+
     try {
       searchTreeFile.close();
     } catch (final IOException e) {
