@@ -1,8 +1,12 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.io.Closeable;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -12,15 +16,11 @@ import java.util.stream.Stream;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
-import org.chocosolver.solver.constraints.Propagator;
 import org.chocosolver.solver.exception.ContradictionException;
-import org.chocosolver.solver.search.loop.monitors.IMonitorContradiction;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.variables.IVariableMonitor;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
-import org.chocosolver.solver.variables.events.IEventType;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
@@ -46,13 +46,14 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static final int CYCLE_MAX      = 100_000;       // chemin critique et sommer latence*brv de chaque acteur ?
-  static final int TOKENS_MAX     = 1_000;         // arbitrary
-  static final int MAX_START_TIME = CYCLE_MAX / 2; // abitrary
+  static int       CYCLE_MAX      = 100_000_000;    // chemin critique et sommer latence*brv de chaque acteur ?
+  static int       TOKENS_MAX     = CYCLE_MAX / 10; // arbitrary
+  static int       MAX_START_TIME = CYCLE_MAX / 2;  // abitrary
   static final int THRESHOLD_RV   = 50;
 
-  final boolean monitor = true;
-  final boolean logs    = false;
+  final boolean logsLv1    = true;
+  final boolean logsLv2    = false;
+  boolean       logsInFile = false;
 
   public FPGAConstraintScheduler() {
     super();
@@ -100,9 +101,9 @@ public class FPGAConstraintScheduler implements IScheduler {
       super();
     }
 
-    public void printSchedule(AbstractActor a) {
-      System.out.printf("%s : start=%d  \t  latency=%d  \t  II=%d  \t  end=%d  \t  period=%d  %n", a.getName(),
-          startDate, executionTime, initiationInterval, endDate, period);
+    public void printSchedule(AbstractActor a, PrintStream writer) {
+      writer.printf("%s : start=%d  \t  latency=%d  \t  II=%d  \t  end=%d  \t  period=%d  %n", a.getName(), startDate,
+          executionTime, initiationInterval, endDate, period);
     }
 
     public void storeResults(Solution s) {
@@ -111,9 +112,11 @@ public class FPGAConstraintScheduler implements IScheduler {
       endDate = s.getIntVal(endDate_var);
 
       // no longer needed after solving
-      period_var = null;
-      startDate_var = null;
-      endDate_var = null;
+      if (!(logsLv1 || logsLv2)) {
+        period_var = null;
+        startDate_var = null;
+        endDate_var = null;
+      }
     }
   }
 
@@ -175,7 +178,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     return res;
   }
 
-  private void updateActorsPeriodDomain(List<ExecutableActor> actors, Map<AbstractActor, ActorTimings> schedule,
+  private void updateActorsDomain(List<ExecutableActor> actors, Map<AbstractActor, ActorTimings> schedule,
       Model model) {
     for (final var actor : actors) {
       final ActorTimings at = schedule.get(actor);
@@ -194,7 +197,12 @@ public class FPGAConstraintScheduler implements IScheduler {
         model.member(at.period_var, IntStream.range(range_start, range_end).map(n -> n * at.basisOfPeriod).toArray())
             .post();
       }
-      // on peut aussi mettre à jour les domaines de start : startDate >= max(pred.startDate)
+
+      // on peut mettre à jour les domaines de start : startDate >= pred.startDate for pred in predecessors
+      // N'a pas vraiment d'impact mais je la laisse, ell ne fait pas de mal.
+      actor.getDirectPredecessors().stream().filter(schedule::containsKey).map(schedule::get)
+          .forEach(pt -> model.arithm(at.startDate_var, ">=", pt.startDate_var).post());
+
     }
 
   }
@@ -482,7 +490,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
     }
     // now that the periods' bases have all been computed, we can restrict the periods' domains
-    updateActorsPeriodDomain(actors, schedule, model);
+    updateActorsDomain(actors, schedule, model);
 
     // objectif : optimiser la latence = la date de fin du dernier acteur relative à une période
     // on pourrait utiliser le chemin critique, mais pour le moment je vais juste optimiser la fin d'exécution de
@@ -490,6 +498,19 @@ public class FPGAConstraintScheduler implements IScheduler {
     // TODO : trouver des contraintes pour réduire l'espace d'état de latency, parce que là on ne fait qu'énumérer comme
     // des cons.
     final IntVar latency = model.max("latency", latencies);
+
+    // l'hyperpériode ne fait que ralentir l'exemple test et n'aide pas vraiment pour wavelet, au moins sous 10s.
+    final int basis = schedule.values().stream().map(at -> at.basisOfPeriod).reduce(1, (a, b) -> a * b);
+    final IntVar hyperPeriod;
+    if (basis > CYCLE_MAX / 100) {
+      hyperPeriod = model.intVar("hyperPeriod", IntStream.range(1, CYCLE_MAX / basis).map(n -> n * basis).toArray());
+    } else {
+      hyperPeriod = model.intVar("hyperPeriod", basis, CYCLE_MAX);
+    }
+
+    for (final var at : schedule.values()) {
+      model.arithm(hyperPeriod, "=", at.period_var, "*", at.repetitionCount).post();
+    }
 
     // optimiser periods avant latencies permet de bien réduire l'espace d'état avant
     // Astuce : minimiser d'abord l'hyperpériode, dont on peut grandement réduire l'espace d'états.
@@ -500,58 +521,145 @@ public class FPGAConstraintScheduler implements IScheduler {
     // Solution
     // --------
     final Solver solver = model.getSolver();
-    // solver.makeCompleteStrategy(true); // Possiblement utile ! Enquêter.
-    solver.observeSolving();
-    // solver.toCSV();
-    // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
-    final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz("/home/jamorin/recherche.dot");
 
-    if (monitor) {
-      solver.showDashboard();
-      solver.showStatisticsDuringResolution(1000);
-      System.out.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
-          model.getNbCstrs());
-      // solver.verboseSolving(1000); // marche pas
-    }
-    if (logs) {
-      solver.showContradiction();
-      // solver.showDecisions();
-      // setLoggingMonitors(model, solver);
-    }
+    PrintStream writer = System.out;
+    PrintStream resultsCsv = null;
+    final Date date = new Date();
 
-    solver.showStatistics();
-    solver.limitTime("10s");
-
-    setStrategy(solver, variablesToOptimize);
-
-    BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
-
-    model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
-
-    Solution solution = new Solution(model);
-
-    if (logs) {
-      System.out.printf("%s %n", model.toString());
-    }
-
-    runInitialPropagation(solver);
-
-    // AFFICHER TOUTES LES SOLUTIONS JUSQU'À TROUVER L'OPTIMALE ?
-    solution = solver.findOptimalSolution(latency, Model.MINIMIZE);
-
-    if (solver.getSolutionCount() != 0) {
-      saveAndPrintResults(solution, latency, schedule);
-      // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
-    } else {
-      printFailureAndLog(model);
+    final File dir = new File("/home/jamorin/Documents/these/data/fpga_scheduling/choco-run__" + piGraph.getName()
+        + "__" + date.getMonth() + "-" + date.getDay() + "-" + date.getHours() + "h" + date.getMinutes());
+    dir.mkdirs();
+    final String fileName = dir.getAbsolutePath() + "/choco_solver_logs";
+    if (logsInFile) {
+      try {
+        writer = new PrintStream(fileName + ".txt");
+        System.out.printf("Writing logs to file \"%s\" %n", fileName);
+      } catch (final FileNotFoundException e) {
+        System.out.println("Could not create file " + fileName);
+        writer = System.out;
+      }
     }
 
     try {
-      searchTreeFile.close();
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
+      resultsCsv = new PrintStream(fileName + ".csv");
+      resultsCsv.println(
+          "CYCLE_MAX ; TOKENS_MAX ; MAX_START_TIME ; solving time (s) ; latency (cycles) ; graph period (cycles)");
+    } catch (final FileNotFoundException e) {
       e.printStackTrace();
     }
+
+    solver.log().remove(System.out);
+    solver.log().add(writer);
+
+    if (logsLv1) {
+      writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
+          model.getNbCstrs());
+      // solver.verboseSolving(1000); // marche pas
+    }
+    if (logsLv2) {
+      solver.showStatisticsDuringResolution(1000);
+      model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
+      solver.showContradiction();
+      solver.showDecisions();
+    }
+    solver.showStatistics();
+
+    final String paramName = "size";
+    final int[] params = new int[] { 100 };// inutile : les paramètres doivent être maj avant de faire le modèle...
+    final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
+    final int[] start_divisors = new int[] { 1, };// 2, 5, 20, 50, 100, 10
+    final int[] nbs_cycles = new int[] { 100_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000,
+    final int max_time_seconds = 10;
+    final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length * params.length;
+    System.out.printf("Total number of combinations : %d %n", nb_comb);
+    System.out.printf("Estimated max duration : %d seconds %n", nb_comb * max_time_seconds);
+
+    int run = 0;
+    for (final int param : params) {
+      for (final int tokens_divisor : token_divisors) {
+        for (final int start_divisor : start_divisors) {
+          for (final int nb_cycles : nbs_cycles) {
+            writer.printf("%n%n");
+            run++;
+            System.out.printf("Starting run number %d/%d %n", run, nb_comb);
+
+            CYCLE_MAX = nb_cycles;
+            TOKENS_MAX = CYCLE_MAX / tokens_divisor; // arbitrary
+            MAX_START_TIME = CYCLE_MAX / start_divisor; // abitrary
+
+            String config = String.format("CYCLE_MAX=%d-TOKENS_MAX=%d-MAX_START_TIME=%d", CYCLE_MAX, TOKENS_MAX,
+                MAX_START_TIME);
+
+            final var t = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName)).findFirst()
+                .orElse(null);
+            if (t != null) {
+              t.setExpression(param);
+              config += "-" + paramName + "=" + param;
+            }
+            writer.println(config);
+            if (writer != System.out) {
+              System.out.printf("\tRunning config : %s %n", config);
+            }
+
+            PrintStream gantt_data = null;
+            try {
+              gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + config + ".py");
+            } catch (final FileNotFoundException e) {
+              e.printStackTrace();
+            }
+
+            // solver.makeCompleteStrategy(true); // Possiblement utile ! Enquêter.
+            solver.observeSolving();
+            // solver.toCSV();
+            solver.limitTime(max_time_seconds + "s");
+
+            // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
+            final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
+
+            setStrategy(solver, variablesToOptimize);
+
+            BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
+
+            Solution solution = new Solution(model);
+
+            if (logsLv2) {
+              writer.printf("%s %n", model.toString());
+            }
+
+            runInitialPropagation(solver, writer);
+
+            solution = solver.findOptimalSolution(latency, Model.MINIMIZE);
+
+            try {
+              if (solver.getSolutionCount() != 0) {
+                gantt_data.println("tasks = [");
+                saveAndPrintResults(solution, latency, schedule, writer, resultsCsv, solver, gantt_data);
+                gantt_data.println("\n]");
+                // solver.printStatistics();
+                // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
+              } else {
+                printFailureAndLog(model, writer);
+              }
+            } catch (final Exception e) {
+              e.printStackTrace();
+            }
+
+            gantt_data.close();
+
+            solver.getMeasures().reset();
+            solver.hardReset();
+
+            try {
+              searchTreeFile.close();
+            } catch (final IOException e) {
+              e.printStackTrace();
+            }
+          }
+        }
+      }
+    }
+
+    writer.close();
 
     final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
     final Map<String, Object> inputs = new HashMap<>();
@@ -607,78 +715,57 @@ public class FPGAConstraintScheduler implements IScheduler {
    * @param solver
    *          the parameterized solver
    */
-  private void runInitialPropagation(Solver solver) {
+  private void runInitialPropagation(Solver solver, PrintStream writer) {
     try {
-      System.out.println("Starting initial propagation (might take some time)");
+      writer.println("Starting initial propagation (might take some time)");
       solver.propagate();
-      System.out.println("Initial propagation finished");
+      writer.println("Initial propagation finished");
     } catch (final ContradictionException e) {
-      e.printStackTrace();
-      System.out.println("Initial propagation caught a contradiction : model might be unsolvable.");
+      writer.println("Initial propagation caught a contradiction : model might be unsolvable.");
     }
   }
 
-  private void saveAndPrintResults(Solution solution, IntVar latency, Map<AbstractActor, ActorTimings> schedule) {
+  private FpgaSchedule saveAndPrintResults(Solution solution, IntVar latency, Map<AbstractActor, ActorTimings> schedule,
+      PrintStream writer, PrintStream resultsCsv, Solver solver, PrintStream gantt_data) {
+
     final FpgaSchedule result = new FpgaSchedule(solution.getIntVal(latency));
-    System.out.println("Solution found !");
-    for (final var res : schedule.entrySet()) {
-      res.getValue().storeResults(solution);
-      res.getValue().printSchedule(res.getKey());
-      result.addActorTimings(res.getValue());
-    }
-    System.out.println("latency = " + result.latency);
-    System.out.println("hyperperiod = " + lcm(schedule.values().stream().map(a -> (long) a.period).toList()));
-    System.out.print("\n");
-  }
 
-  private void printFailureAndLog(Model model) {
-    System.out.println("No solution was found !");
-    final List<String> truc = Arrays.asList(model.getVars()).stream().filter(v -> v.getName().endsWith("_var"))
-        .map(Object::toString).toList();
-    System.out.printf("%s %n", String.join("\n", truc));
-  }
+    writer.println("Solution found in " + solver.getTimeCount() + "s");
 
-  private void setLoggingMonitors(Model model, Solver solver) {
-    final Map<String, int[]> lastDomain = new HashMap<>();
-    for (final var v : model.getVars()) {
-      if (v instanceof final IntVar iv) {
-        lastDomain.put(iv.getName(), new int[] { iv.getLB(), iv.getUB() });
-
-        iv.addMonitor(new IVariableMonitor<IntVar>() {
-          @Override
-          public void onUpdate(IntVar variable, IEventType evt) {
-            final int[] prev = lastDomain.get(variable.getName());
-            System.out.printf("[UPDATE] %-20s %s → [%d, %d] (was [%d, %d])%n", variable.getName(), evt,
-                variable.getLB(), variable.getUB(), prev[0], prev[1]);
-            lastDomain.put(variable.getName(), new int[] { variable.getLB(), variable.getUB() });
-          }
-        });
-      }
+    for (final var entry : schedule.entrySet()) {
+      final var a = entry.getKey();
+      final var res = entry.getValue();
+      entry.getValue().storeResults(solution);
+      entry.getValue().printSchedule(entry.getKey(), writer);
+      result.addActorTimings(entry.getValue());
+      gantt_data.printf("{%n \"%s\": \"%s\",%n \"%s\": %s,%n \"%s\":%s,%n \"%s\":%s,%n \"%s\":%s%n %n},", "name",
+          a.getName(), "start", res.startDate, "II", res.initiationInterval, "duration", res.executionTime, "period",
+          res.period);
     }
 
-    solver.plugMonitor(new IMonitorContradiction() {
-      @Override
-      public void onContradiction(ContradictionException cex) {
-        final int depth = solver.getDecisionPath().size();
-        if (depth == 0) {
-          // Happens during root propagation — directly proves UNSAT
-          System.out.println("[ROOT CONTRADICTION] " + cex.c);
-        } else {
-          // Just pruning a branch at depth " + depth
-          System.out.println("[pruning d=" + depth + "] " + cex.c);
-        }
-        if (cex.v instanceof final IntVar v) {
-          final int[] prev = lastDomain.get(v.getName());
-          System.out.printf(" Variable : %s%n", v.getName());
-          System.out.printf(" Domain now : [%d, %d]%n", v.getLB(), v.getUB());
-          System.out.printf(" Previous domain : [%d, %d]%n", prev[0], prev[1]);
-        }
-        if (cex.c instanceof final Propagator<?> p) {
-          System.out.printf(" Propagator : %s%n", p);
-          System.out.printf(" Constraint : %s%n", p.getConstraint());
-        }
-        System.out.printf("%n");
-      }
-    });
+    writer.println("latency = " + result.latency);
+    final long hyperperiod = lcm(schedule.values().stream().map(a -> (long) a.period).toList());
+    writer.println("hyperperiod = " + hyperperiod);
+    writer.print("\n");
+
+    resultsCsv.printf("%d ; %d ; %d ; %f ; %d ; %d %n", CYCLE_MAX, TOKENS_MAX, MAX_START_TIME, solver.getTimeCount(),
+        result.latency, hyperperiod);
+
+    return result;
   }
+
+  private void printFailureAndLog(Model model, PrintStream writer) {
+    writer.println("No solution was found !");
+    if (logsLv2) {
+      final List<String> truc = Arrays.asList(model.getVars()).stream().filter(v -> v.getName().endsWith("_var"))
+          .map(Object::toString).toList();
+      writer.printf("%s %n", String.join("\n", truc));
+    } else {
+      final List<String> truc = Arrays.asList(model.getVars()).stream().filter(
+          v -> v.getName().startsWith("period_") || v.getName().startsWith("start_") || v.getName().startsWith("end_"))
+          .map(Object::toString).toList();
+      writer.printf("%s %n", String.join("\n", truc));
+    }
+  }
+
 }
