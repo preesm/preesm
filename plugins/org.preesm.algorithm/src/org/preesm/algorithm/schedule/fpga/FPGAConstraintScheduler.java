@@ -13,6 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import org.chocosolver.solver.Model;
 import org.chocosolver.solver.Solution;
@@ -171,8 +172,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     final boolean allPredecessorsDataInterface = actor.getDirectPredecessors().stream()
         .allMatch(DataInputInterface.class::isInstance);
     if (allPredecessorsDataInterface) {
-      // If all the predecessors are data interfaces, we assume the actor will start early
-      model.arithm(res.startDate_var, "<", 1000).post(); // TODO arbitrary !
+      // If all the predecessors are data interfaces, we assume the actor can start right away
+      model.arithm(res.startDate_var, "=", 0).post();
     }
 
     // must have at least executed all its firings by end time
@@ -331,7 +332,25 @@ public class FPGAConstraintScheduler implements IScheduler {
       return actors.stream()
           .filter(a -> a.getDirectSuccessors().stream().anyMatch(DataOutputInterface.class::isInstance)).toList();
     }
+    return res;
+  }
 
+  /**
+   * Returns the list of fifos linking actor src to actor snk.
+   *
+   * @param src
+   *          the producer.
+   * @param snk
+   *          the consumer.
+   * @return the list of fifos.
+   */
+  private List<Fifo> getLinkingFifos(ExecutableActor src, ExecutableActor snk) {
+    final List<Fifo> res = new LinkedList<>();
+    for (final var f : src.getOutgoingEdges().stream().map(e -> (Fifo) e).toList()) {
+      if (f.getTarget().equals(snk)) {
+        res.add(f);
+      }
+    }
     return res;
   }
 
@@ -479,6 +498,9 @@ public class FPGAConstraintScheduler implements IScheduler {
               }
 
               runInitialPropagation(solver, writer);
+
+              writer.println("The variables to instanciate after the initial propagation :");
+              writer.println(variablesToAssign.stream().map(Object::toString).collect(Collectors.joining("\n")));
 
               solution = solver.findOptimalSolution(variableToOptimize, Model.MINIMIZE);
               // solution = solver.findLexOptimalSolution(variablesToAssign.toArray(new IntVar[0]), Model.MINIMIZE,
@@ -748,7 +770,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     final IntVar latency = model.max("latency", getEdgeActorsEndDates(schedule).toArray(new IntVar[0]));
 
     // Branch on latency in last, because otherwise choco tries all values...
-    variablesToAssign.add(latency);
     variablesToAssign.add(period);
     // variablesToAssign.addAll(Arrays.asList(latencies));
 
@@ -756,6 +777,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     variablesToAssign.addAll(schedule.values().stream().map(at -> at.period_var).toList());
     // as well as their start date
     variablesToAssign.addAll(schedule.values().stream().map(at -> at.startDate_var).toList());
+
+    variablesToAssign.add(latency);
 
     return latency;
   }
@@ -832,9 +855,42 @@ public class FPGAConstraintScheduler implements IScheduler {
       entry.getValue().storeResults(solution);
       entry.getValue().printSchedule(entry.getKey(), writer);
       result.addActorTimings(entry.getValue());
-      gantt_data.printf("{%n \"%s\": \"%s\",%n \"%s\": %s,%n \"%s\":%s,%n \"%s\":%s,%n \"%s\":%s%n}, %n", "name",
-          a.getName(), "start", res.startDate, "II", res.initiationInterval, "duration", res.executionTime, "period",
-          res.period);
+
+      final List<ExecutableActor> preds = a.getDirectPredecessors().stream().filter(schedule::containsKey)
+          .map(ea -> (ExecutableActor) ea).toList();
+      final List<String> predsString = preds.stream().map(p -> "\"" + p.getName() + "\"").toList();
+
+      final List<ExecutableActor> succs = a.getDirectSuccessors().stream().filter(schedule::containsKey)
+          .map(ea -> (ExecutableActor) ea).toList();
+      final var succsString = succs.stream().map(s -> "\"" + s.getName() + "\"").toList();
+
+      String prod_rates = "{";
+      String cons_rates = "{";
+
+      // the tokens a produces
+      for (final var s : succs) {
+        final var fifos = getLinkingFifos(a, s);
+        prod_rates += "\"" + s.getName() + "\":"
+            + fifos.getFirst().getSourcePort().getPortRateExpression().evaluateAsLong() + ", ";
+      }
+
+      // the tokens a consumes
+      for (final var p : preds) {
+        final var fifos = getLinkingFifos(p, a);
+        // TODO gérer les cas où on a plusieurs fifos vers un même acteur !
+        cons_rates += "\"" + p.getName() + "\":"
+            + fifos.getFirst().getTargetPort().getPortRateExpression().evaluateAsLong() + ", ";
+      }
+      prod_rates += "}";
+
+      cons_rates += "}";
+
+      gantt_data.printf(
+          "{%n \"%s\": \"%s\",%n \"%s\": %s,%n \"%s\":%s,%n \"%s\":%s,%n \"%s\":%s,%n \"%s\":%s,%n \"%s\":%s,%n "
+              + "\"%s\":%s,%n \"%s\":%s,%n \"%s\":%s,%n}, %n",
+          "name", a.getName(), "start", res.startDate, "II", res.initiationInterval, "duration", res.executionTime,
+          "period", res.period, "predecessors", predsString, "successors", succsString, "prod_rates", prod_rates,
+          "cons_rates", cons_rates, "RC", res.repetitionCount);
     }
 
     final long hyperperiod = lcm(schedule.values().stream().map(a -> (long) a.period).toList());
