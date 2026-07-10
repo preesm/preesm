@@ -170,19 +170,18 @@ public class ClusterBuilder {
           params.put("Component", refCPUArch);
 
           if (heuristic.assesSeedable(actor, params)) {
-
             // The actor has at least one non-main PE mapping !Let's decide which arch will be used for clustering
             clusteringComponent = heuristic.pickClusteringComponent(actor, params);
 
             // now we can mark the actor for clustering
             seed_found = true;
-
           }
 
-          if (i == listActors.size()) {
-            // this is the last actor to visit, last chance for a clustering
-            graph_is_fully_searched = true;
-          }
+        }
+
+        if (i == listActors.size()) {
+          // this is the last actor to visit, last chance for a clustering
+          graph_is_fully_searched = true;
         }
       } while (actorIsVisited.get(actor) && !seed_found && !graph_is_fully_searched);
 
