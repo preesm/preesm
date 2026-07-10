@@ -101,7 +101,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   /**
    * Gives the source label.
    *
-   * @return The label of the source, usually the name of the port this edge is conected to
+   * @return The label of the source, usually the name of the port this edge is connected to
    */
   public String getSourceLabel() {
     if (getPropertyBean().getValue(AbstractEdge.SOURCE_PORT) != null) {
@@ -113,7 +113,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   /**
    * Gives the target label.
    *
-   * @return The label of the target, usually the name of the port this edge is conected to
+   * @return The label of the target, usually the name of the port this edge is connected to
    */
   public String getTargetLabel() {
     if (getPropertyBean().getValue(AbstractEdge.TARGET_PORT) != null) {
@@ -126,7 +126,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    * Sets the target label.
    *
    * @param label
-   *          The label of the target, usually the name of the port this edge is conected to
+   *          The label of the target, usually the name of the port this edge is connected to
    */
   public void setTargetLabel(final String label) {
     getPropertyBean().setValue(AbstractEdge.TARGET_PORT, label);
@@ -136,7 +136,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    * Sets the source label.
    *
    * @param label
-   *          The label of the source, usually the name of the port this edge is conected to
+   *          The label of the source, usually the name of the port this edge is connected to
    */
   public void setSourceLabel(final String label) {
     getPropertyBean().setValue(AbstractEdge.SOURCE_PORT, label);
