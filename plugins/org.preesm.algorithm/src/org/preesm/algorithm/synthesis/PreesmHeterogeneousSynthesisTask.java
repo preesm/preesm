@@ -10,6 +10,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
+import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
@@ -83,8 +84,9 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
   public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
   public static final String VALUE_SCHEDULER_CHOCO       = "choco";
-  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevalexact";
-  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
+  public static final String VALUE_FPGA_TEST             = "testscheduler";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   final SlamFactory     SLAMFactory = SlamFactory.eINSTANCE;
