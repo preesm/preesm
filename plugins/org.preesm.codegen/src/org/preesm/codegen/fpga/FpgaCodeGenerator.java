@@ -1354,8 +1354,16 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
     context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
+    final List<
+        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
+
+    final StringBuilder sb = new StringBuilder();
+
+    sb.append(findAllCHeaderFileNamesUsed.stream().map(FpgaCodeGenerator::includeCFile).collect(Collectors.joining()));
+    sb.append("\n\n");
+
     // read kernel prototype
-    final StringBuilder sb = new StringBuilder("void " + getReadKernelName() + "(\n  ");
+    sb.append("void " + getReadKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataInputInterface) {
@@ -1439,8 +1447,16 @@ public class FpgaCodeGenerator {
     final VelocityContext context = new VelocityContext();
     context.put(PREESM_INCLUDES, includeCFile(TEMPLATE_DEFINE_HEADER_NAME));
 
+    final StringBuilder sb = new StringBuilder();
+
+    final List<
+        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
+
+    sb.append(findAllCHeaderFileNamesUsed.stream().map(FpgaCodeGenerator::includeCFile).collect(Collectors.joining()));
+    sb.append("\n\n");
+
     // write kernel prototype
-    final StringBuilder sb = new StringBuilder("void " + getWriteKernelName() + "(\n  ");
+    sb.append("void " + getWriteKernelName() + "(\n  ");
     final List<String> args = new ArrayList<>();
     for (final InterfaceActor ia : analysisResult.interfaceRates.keySet()) {
       if (ia instanceof DataOutputInterface) {
