@@ -38,6 +38,7 @@ package org.preesm.algorithm.model.dag;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -140,8 +141,19 @@ public class DirectedAcyclicGraph extends AbstractGraph<DAGVertex, DAGEdge> {
    */
   @Override
   public DAGVertex getVertex(final String name) {
+    return getVertex(Objects.hashCode(name));
+  }
+
+  /**
+   * Gives the DAGVertex with the given name in the graph.
+   *
+   * @param hashcode
+   *          The name of the vertex we want to obtain
+   * @return The DAG vertex with the given name
+   */
+  public DAGVertex getVertex(final int hashcode) {
     for (final DAGVertex vertex : vertexSet()) {
-      if (vertex.getName().equals(name)) {
+      if (vertex.hashCode() == hashcode) {
         return vertex;
       }
     }
