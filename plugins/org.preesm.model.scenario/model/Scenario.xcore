@@ -72,6 +72,14 @@ import org.preesm.model.slam.ComponentInstance
 import org.preesm.model.slam.Design
 import org.preesm.model.slam.TimingType
 import org.preesm.model.slam.serialize.SlamParser
+import org.preesm.model.pisdf.Refinement
+import org.preesm.model.pisdf.RefinementContainer
+import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.common.util.BasicEList
+import org.preesm.model.slam.ProcessingElement
+import javax.swing.text.html.HTMLDocument.HTMLReader.SpecialAction
+import org.preesm.model.pisdf.serialize.PiParser
+import org.preesm.model.pisdf.serialize.PiParser
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
