@@ -332,7 +332,7 @@ public class PFastAlgorithm {
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subIter.next(), true, abcParams, fastParams,
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subIter.next(), false, abcParams, fastParams,
             scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
