@@ -772,7 +772,7 @@ public abstract class LatencyAbc {
   public void setDAG(final MapperDAG dag) {
 
     this.dag = dag;
-    this.implementation = dag.copy();
+    this.implementation = dag.createImplementationCopy();
 
     this.orderManager.reconstructTotalOrderFromDAG(this.implementation);
 
