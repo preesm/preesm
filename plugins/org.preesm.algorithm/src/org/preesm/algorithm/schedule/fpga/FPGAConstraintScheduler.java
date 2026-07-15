@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
@@ -12,6 +13,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -343,7 +346,7 @@ public class FPGAConstraintScheduler implements IScheduler {
    * @return the list of ExecutableActor
    */
   private List<ExecutableActor> getNonDataInterfaceActors(PiGraph graph) {
-    return graph.getExecutableActors().stream().filter(a -> !(a instanceof DataInterface)).toList();
+    return new ArrayList<>(graph.getExecutableActors().stream().filter(a -> !(a instanceof DataInterface)).toList());
   }
 
   /**
@@ -405,6 +408,46 @@ public class FPGAConstraintScheduler implements IScheduler {
     return res;
   }
 
+  /**
+   * Computes each actor's distance to the closest data interface and sorts executableActors by increasing order of
+   * distance.
+   *
+   * @param graph
+   *          the graph
+   * @param executableActors
+   *          the actors
+   */
+  private void sortByDistanceToInput(PiGraph graph, List<ExecutableActor> executableActors) {
+    final Map<AbstractActor, Integer> distances = new HashMap<>();
+
+    for (final ExecutableActor ea : executableActors) {
+      distances.put(ea, Integer.MAX_VALUE);
+    }
+
+    final Queue<AbstractActor> q = new ConcurrentLinkedQueue<>();
+    for (final DataInputInterface dii : graph.getDataInputInterfaces()) {
+      q.add(dii);
+      distances.put(dii, 0);
+    }
+
+    while (!q.isEmpty()) {
+      final AbstractActor u = q.poll();
+
+      for (final AbstractActor e : u.getDirectSuccessors().stream().map(a -> (AbstractActor) a).toList()) {
+        if (distances.containsKey(e) && distances.get(e) > distances.get(u) + 1) {
+          distances.put(e, distances.get(u) + 1);
+          q.add(e);
+        }
+
+      }
+    }
+
+    distances.entrySet().removeIf(e -> !(e.getKey() instanceof ExecutableActor));
+
+    executableActors.sort((a, b) -> distances.get(a) - distances.get(b));
+
+  }
+
   // -------------------------------------------
   // ------------ Scheduling method ------------
   // -------------------------------------------
@@ -453,7 +496,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     final Map<String, List<Integer>> parameters = new HashMap<>();
     parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
 
-    final int max_time_seconds = 20;
+    final int max_time_seconds = 10;
     final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
         * parameters.values().stream().mapToInt(l -> l.size()).sum();
     System.out.printf("Total number of combinations : %d %n", nb_comb);
@@ -619,6 +662,9 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     // TODO récupérer en ordre d'exécution pour forcer startDate du 1er acteur à 0 ?
     final List<ExecutableActor> actors = getNonDataInterfaceActors(piGraph);
+
+    // we will sort the actors based on their distance to the graph's input interfaces.
+    sortByDistanceToInput(piGraph, actors);
 
     // for now, we will not consider fifos linking actors from/to data interfaces.
     // It may by interesting to model them as actors with a start date equal to the comm. time and rate of comm size
@@ -830,10 +876,11 @@ public class FPGAConstraintScheduler implements IScheduler {
     // variablesToAssign.addAll(Arrays.asList(latencies));
 
     if (this.computeGantt) {
-      // we want to know all the actor's periods, to reduce domain size and/or for the gantt
-      variablesToAssign.addAll(schedule.values().stream().map(at -> at.period_var).toList());
+      // we want to know all the actor's periods, to reduce domain size and/or for the gantt. Sttream() preserves order
+      // so we can optimize first the first actors, with the lowest startDate, to further constraints their successors
+      variablesToAssign.addAll(actors.stream().map(a -> schedule.get(a).period_var).toList());
       // as well as their start date, to reduce domain size and/or for the gantt
-      variablesToAssign.addAll(schedule.values().stream().map(at -> at.startDate_var).toList());
+      variablesToAssign.addAll(actors.stream().map(a -> schedule.get(a).startDate_var).toList());
     }
 
     // Branch on latency in last, because otherwise choco tries all values...
@@ -963,6 +1010,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     writer.println("latency = " + result.latency);
     writer.println("hyperperiod = " + hyperperiod);
+    writer.println("Solving time : " + solver.getTimeCount());
     writer.print("\n");
 
     resultsCsv.printf("%d ; %d ; %d ; %f ; %d ; %d %n", CYCLE_MAX, TOKENS_MAX, MAX_START_TIME, solver.getTimeCount(),
