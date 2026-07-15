@@ -10,7 +10,6 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler;
-import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler.ActorTimings;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
 import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
@@ -84,8 +83,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
   public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
   public static final String VALUE_SCHEDULER_CHOCO       = "choco";
-  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevalexact";
-  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
+  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
   public static final String VALUE_FPGA_TEST             = "testscheduler";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
@@ -110,7 +109,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
       for (final PiGraph cluster : algorithm.getClusters()) {
         recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap);
-        final ActorTimings t;
       }
     }
 
@@ -151,7 +149,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     outputs.put("localSyntheses", localSynthesesMap);
 
     return outputs;
-
   }
 
   private IScheduler selectScheduler(final String schedulerName) {
@@ -162,7 +159,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
       case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_LINEAR);
       case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_EXACT);
-      case VALUE_FPGA_TEST -> new FPGAConstraintScheduler();
+      case VALUE_FPGA_TEST -> new FPGAConstraintScheduler(true);
 
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
