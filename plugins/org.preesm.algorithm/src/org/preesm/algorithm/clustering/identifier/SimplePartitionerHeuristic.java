@@ -1,10 +1,11 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.deprecated.EuclideTransfo;
 import org.preesm.algorithm.clustering.heuristics.PartitionerHeuristic;
+import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractActor;
@@ -41,7 +42,7 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
    */
   Map<AbstractVertex, Long> brv;
 
-  boolean verbose = false;
+  boolean verbose;
 
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
@@ -54,17 +55,17 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
 
     // Computing the basic repetition vector of the graph
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);
+
+    verbose = "true".equalsIgnoreCase(taskParameters.get(ClusteringTask.PARAM_VERBOSE));
+
   }
 
   @Override
   public List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster1) {
-    /***
-     *
-     */
+
     final List<PiGraph> clusters = new ArrayList<>();
     clusters.add(cluster1);
 
-    // Log utils
     final List<Long> cluster1OldExprs = cluster1.getAllDataPorts().stream()
         .map(dp -> dp.getExpression().evaluateAsLong()).toList();
     List<Long> oldExprs;
@@ -75,7 +76,7 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
     final long clusterRepetition = MathFunctionsHelper
         .gcd(cluster1.getActors().stream().filter(a -> brv.get(a) != null).map(a -> brv.get(a)).toList());
 
-    // if nPEs is not a divisor of clusterRepetition
+    // if nPEs is not a divisor of clusterRepetition, rest != 0
     final long rest = clusterRepetition % this.nPEs;
 
     // clusterRepetition, without the rest. Used to compute scale and scale1
@@ -144,33 +145,27 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
           }
 
           // 2. Make a broadcast actor in the cluster to compensate
-          final BroadcastActor brdActor = PiMMUserFactory.instance
-              .createBroadcastActor(previousActor.getName() + "_in_cluster");
-          cluster1.addActor(brdActor);
-
-          final DataInputPort brdInPort = PiMMUserFactory.instance.createDataInputPort();
-          final DataOutputPort brdOutPort = PiMMUserFactory.instance.createDataOutputPort();
-          brdInPort.setName("in");
-          brdOutPort.setName("out");
-          brdInPort.setExpression(tokensOneExec);
-          brdOutPort.setExpression(tokensOneExec * (double) ratio1);
-
-          brdActor.getDataInputPorts().add(brdInPort);
-          brdActor.getDataOutputPorts().add(brdOutPort);
-
-          final Fifo inFifo = dataInterface.getDataPort().getFifo();
-          final DataInputPort inPortNextActor = inFifo.getTargetPort();
-
-          inFifo.setTargetPort(brdInPort);
-          final Fifo outFifo = PiMMUserFactory.instance.createFifo(brdOutPort, inPortNextActor, inFifo.getType());
-          cluster1.addFifo(outFifo);
-
-          // Log -> track creation of brdActor in cluster1
-          if (verbose) {
-            log = makeCompareLog(brdActor, cluster1, null);
-            PreesmLogger.getLogger().info(log);
-          }
-
+          // Not useful anymore with a pass to create broadcast and round buffer actors in clusters if they are missing
+          /*
+           * final BroadcastActor brdActor = PiMMUserFactory.instance .createBroadcastActor(previousActor.getName() +
+           * "_in_cluster"); cluster1.addActor(brdActor);
+           *
+           * final DataInputPort brdInPort = PiMMUserFactory.instance.createDataInputPort(); final DataOutputPort
+           * brdOutPort = PiMMUserFactory.instance.createDataOutputPort(); brdInPort.setName("in");
+           * brdOutPort.setName("out"); brdInPort.setExpression(tokensOneExec); brdOutPort.setExpression(tokensOneExec *
+           * (double) ratio1);
+           *
+           * brdActor.getDataInputPorts().add(brdInPort); brdActor.getDataOutputPorts().add(brdOutPort);
+           *
+           * final Fifo inFifo = dataInterface.getDataPort().getFifo(); final DataInputPort inPortNextActor =
+           * inFifo.getTargetPort();
+           *
+           * inFifo.setTargetPort(brdInPort); final Fifo outFifo = PiMMUserFactory.instance.createFifo(brdOutPort,
+           * inPortNextActor, inFifo.getType()); cluster1.addFifo(outFifo);
+           *
+           * // Log -> track creation of brdActor in cluster1 if (verbose) { log = makeCompareLog(brdActor, cluster1,
+           * null); PreesmLogger.getLogger().info(log); }
+           */
           expr = tokensOneExec;
 
         } else {
@@ -277,19 +272,17 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
           // 2. Modify existing broadcast
           // Because cluster2 is a copy of cluster1, the broadcast is already created.
           // We just need to modify its ports expression.
-
-          final BroadcastActor brdActor = (BroadcastActor) inputInterface2.getDataPort().getFifo().getTarget();
-          final DataInputPort brdInPort = brdActor.getDataInputPorts().get(0);
-          final DataOutputPort brdOutPort = brdActor.getDataOutputPorts().get(0);
-
-          brdInPort.setExpression(tokensOneExec);
-          brdOutPort.setExpression(tokensOneExec * (double) ratio2);
-
-          // Log -> track brdActor creation in cluster2
-          if (verbose) {
-            log = makeCompareLog(brdActor, cluster2, null);
-            PreesmLogger.getLogger().info(log);
-          }
+          /*
+           * final BroadcastActor brdActor = (BroadcastActor) inputInterface2.getDataPort().getFifo().getTarget(); final
+           * DataInputPort brdInPort = brdActor.getDataInputPorts().get(0); final DataOutputPort brdOutPort =
+           * brdActor.getDataOutputPorts().get(0);
+           *
+           *
+           * brdInPort.setExpression(tokensOneExec); brdOutPort.setExpression(tokensOneExec * (double) ratio2);
+           *
+           * // Log -> track brdActor creation in cluster2 if (verbose) { log = makeCompareLog(brdActor, cluster2,
+           * null); PreesmLogger.getLogger().info(log); }
+           */
 
           // Setting expression of input interface 2
           inputInterface2.getGraphPort().setExpression(tokensOneExec);
@@ -417,6 +410,9 @@ public class SimplePartitionerHeuristic extends PartitionerHeuristic {
       }
 
     }
+
+    // Facilitate the memory reuse in cluster
+    clusters.stream().forEach(ClusterSynthesisHelper::addSpecialActors);
 
     return clusters;
 

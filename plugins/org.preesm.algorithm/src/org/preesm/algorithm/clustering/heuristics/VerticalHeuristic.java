@@ -5,7 +5,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
-public abstract class VerticalClusteringHeuristic extends ClusteringHeuristic {
+public abstract class VerticalHeuristic extends IdentificationHeuristic {
   public enum FlatteningOrder {
     TOP_DOWN, BOTTOM_UP
   }

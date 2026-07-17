@@ -35,7 +35,6 @@
 package org.preesm.algorithm.synthesis;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -92,9 +91,9 @@ public class SynthesisResult {
       }
     } else {
       final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(sched);
+
       for (final AbstractActor actor : actors) {
-        final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName())
-            .collect(Collectors.toList());
+        final List<String> collect = mapp.getMapping(actor).stream().map(m -> m.getInstanceName()).toList();
         res.append(indent + "  " + collect + " " + actor.getName() + "\n");
       }
     }

@@ -10,7 +10,7 @@ package org.preesm.algorithm.clustering.heuristics;
  * An interface for all merging heuristics used in the clustering phase. The merging test can be different for
  * predecessor actors than for successor actors. See the assess method's description for details.
  */
-public abstract class ClusteringHeuristic extends Heuristic {
+public abstract class IdentificationHeuristic extends Heuristic {
 
   /***
    * Heuristic prefix, to know what name will be given to clusters. For example, if getPrefix returns "cluster", the

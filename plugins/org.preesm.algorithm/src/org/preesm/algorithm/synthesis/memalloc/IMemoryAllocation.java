@@ -61,4 +61,5 @@ public interface IMemoryAllocation {
       default -> -1;
     };
   }
+
 }

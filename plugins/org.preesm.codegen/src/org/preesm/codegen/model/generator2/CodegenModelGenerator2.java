@@ -157,29 +157,6 @@ public class CodegenModelGenerator2 {
     this.memoryLinker = memLinker;
   }
 
-  public static List<Block> generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
-      SynthesisResult localSynthesis, final boolean papify, Map<ComponentInstance, CoreBlock> coreBlocks,
-      List<AbstractActor> totallyOrderedActors) {
-
-    // 1- generate variables (and keep track of them with a linker)
-    final var memLinker = AllocationToCodegenBuffer.link(localSynthesis.alloc, scenario, algo, totallyOrderedActors);
-
-    final CodegenModelGenerator2 codegen = new CodegenModelGenerator2(archi, algo, scenario, localSynthesis, memLinker,
-        papify);
-
-    codegen.generateCode(coreBlocks, totallyOrderedActors);
-
-    // sort blocks
-    final List<Block> resultList = coreBlocks.entrySet().stream()
-        .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
-        .collect(Collectors.toList());
-
-    // generate buffer definitions
-    codegen.generateBuffers(coreBlocks);
-
-    return Collections.unmodifiableList(resultList);
-  }
-
   private List<Block> generate() {
     final String msg = "Starting codegen2 with papify set to " + papify;
     PreesmLogger.getLogger().log(Level.FINE, msg);
@@ -198,7 +175,6 @@ public class CodegenModelGenerator2 {
         final Set<Component> PETypes = scenario.getDesign().getComponents().stream()
             .filter(ProcessingElement.class::isInstance).collect(Collectors.toSet());
 
-        // RC : what is happening when there is multiple FPGA ? Ask JM
         // make all the adapted prints for your accelerators
         if (PETypes.stream().anyMatch(FPGA.class::isInstance)) {
           createCoreBlock.addAcceleratorArch("fpga");

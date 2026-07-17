@@ -1,8 +1,8 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -18,7 +18,7 @@ import org.preesm.model.slam.Design;
  *
  */
 
-public class SimpleHeteroArchClusteringHeuristic extends HorizontalClusteringHeuristic {
+public class SimpleHeteroArchClusteringHeuristic extends HorizontalHeuristic {
 
   public static final int successor   = 0;
   public static final int predecessor = 1;

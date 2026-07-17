@@ -1,5 +1,6 @@
 package org.preesm.algorithm.clustering.synthesis;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.EMap;
@@ -7,6 +8,9 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.Buffer;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
+import org.preesm.algorithm.schedule.model.ActorSchedule;
+import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
@@ -17,6 +21,7 @@ import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -45,7 +50,7 @@ public class ClusterSynthesisHelper {
     // addForkActors(cluster);
     // addJoinActors(cluster);
     addBroadcastActors(cluster);
-    addRoundBufferActors(cluster);
+    // addRoundBufferActors(cluster);
   }
 
   /**
@@ -59,43 +64,6 @@ public class ClusterSynthesisHelper {
    */
   private static void addForkActors(PiGraph cluster) {
 
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
-
-    // Iterating on every FIFO of the cluster
-    for (final Fifo fifo : cluster.getFifos()) {
-      final AbstractActor a = fifo.getSource();
-      final AbstractActor b = fifo.getTarget();
-
-      // Fork is useless if one of the actors is a already a special actor (fork, join, broadcast, or round buffer)
-      // Or if a is executed more time than b
-      if (a instanceof SpecialActor || b instanceof SpecialActor || (brv.get(a) >= brv.get(b))) {
-        continue;
-      }
-
-      final DataInputPort bIn = fifo.getTargetPort();
-      final DataOutputPort aOut = fifo.getSourcePort();
-
-      // Creating fork actor
-      final ForkActor fork = PiMMUserFactory.instance.createForkActor();
-
-      // Creating in/out fork ports
-      final DataInputPort forkIn = PiMMUserFactory.instance.createDataInputPort();
-      final DataOutputPort forkOut = PiMMUserFactory.instance.createDataOutputPort();
-      fork.getDataInputPorts().add(forkIn);
-      fork.getDataOutputPorts().add(forkOut);
-
-      // Setting expression of ports
-      forkIn.setExpression(aOut.getExpression());
-      forkOut.setExpression(aOut.getExpression());
-
-      // Linking fork with a and b
-      final String dataType = aOut.getFifo().getType();
-      final Fifo a2fork = PiMMUserFactory.instance.createFifo(aOut, forkIn, dataType);
-      final Fifo fork2b = PiMMUserFactory.instance.createFifo(forkOut, bIn, dataType);
-      cluster.addActor(fork);
-      cluster.addFifo(a2fork);
-      cluster.addFifo(fork2b);
-    }
   }
 
   /**
@@ -107,43 +75,7 @@ public class ClusterSynthesisHelper {
    *          the input cluster
    */
   private static void addJoinActors(PiGraph cluster) {
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
 
-    // Iterating on every FIFO of the cluster
-    for (final Fifo fifo : cluster.getFifos()) {
-      final AbstractActor a = fifo.getSource();
-      final AbstractActor b = fifo.getTarget();
-
-      // Join is useless if one of the actors is a already a special actor (fork, join, broadcast, or round buffer)
-      // Or if a is executed less time than b
-      if (a instanceof SpecialActor || b instanceof SpecialActor || (brv.get(a) <= brv.get(b))) {
-        continue;
-      }
-
-      final DataInputPort bIn = fifo.getTargetPort();
-      final DataOutputPort aOut = fifo.getSourcePort();
-
-      // Creating join actor
-      final JoinActor join = PiMMUserFactory.instance.createJoinActor();
-
-      // Creating in/out join ports
-      final DataInputPort joinIn = PiMMUserFactory.instance.createDataInputPort();
-      final DataOutputPort joinOut = PiMMUserFactory.instance.createDataOutputPort();
-      join.getDataInputPorts().add(joinIn);
-      join.getDataOutputPorts().add(joinOut);
-
-      // Setting expression of ports
-      joinIn.setExpression(aOut.getExpression());
-      joinOut.setExpression(aOut.getExpression());
-
-      // Linking join with a and b
-      final String dataType = aOut.getFifo().getType();
-      final Fifo a2join = PiMMUserFactory.instance.createFifo(aOut, joinIn, dataType);
-      final Fifo join2b = PiMMUserFactory.instance.createFifo(joinOut, bIn, dataType);
-      cluster.addActor(join);
-      cluster.addFifo(a2join);
-      cluster.addFifo(join2b);
-    }
   }
 
   /**
@@ -156,39 +88,50 @@ public class ClusterSynthesisHelper {
    *          the input cluster
    */
   private static void addBroadcastActors(PiGraph cluster) {
+
+    long nameCounter = 0;
+
     final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
     for (final DataInputInterface a : cluster.getDataInputInterfaces()) {
       final DataOutputPort aOut = a.getDataPort();
-      final AbstractActor b = aOut.getFifo().getTarget();
+      final Fifo a2b = aOut.getFifo();
+      final AbstractActor b = a2b.getTarget();
+      final DataInputPort bIn = a2b.getTargetPort();
+      final long aExpr = a.getGraphPort().getExpression().evaluateAsLong();
+      final long bInExpr = bIn.getExpression().evaluateAsLong();
 
-      // If b is executed only once, it means no broadcast is necessary
-      if (brv.get(b) == 1) {
+      // If b is executed only once or next actor is already a broadcast actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(b) * bInExpr == aExpr || b instanceof BroadcastActor) {
         continue;
       }
 
-      final DataInputPort bIn = aOut.getFifo().getTargetPort();
-
       // Creating broadcast actor
       final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
+      brd.setName("brd_" + nameCounter++);
 
       // Creating in/out broadcast ports
       final DataInputPort brdIn = PiMMUserFactory.instance.createDataInputPort();
+      brdIn.setName("brd_in");
       final DataOutputPort brdOut = PiMMUserFactory.instance.createDataOutputPort();
+      brdOut.setName("brd_out");
       brd.getDataInputPorts().add(brdIn);
       brd.getDataOutputPorts().add(brdOut);
 
       // Setting expression of ports
-      brdIn.setExpression(aOut.getExpression());
-      brdOut.setExpression(aOut.getExpression().evaluateAsDouble() * brv.get(b));
+      aOut.setExpression(aExpr); // otherwise it bugs...
+      brdIn.setExpression(aExpr);
+      brdOut.setExpression(brv.get(b) * bInExpr / aExpr);
 
       // Linking broadcast with a and b
-      final String dataType = aOut.getFifo().getType();
-      final Fifo a2brd = PiMMUserFactory.instance.createFifo(aOut, brdIn, dataType);
+      final String dataType = a2b.getType();
+      final Fifo a2brd = a2b;
+      a2brd.setTargetPort(brdIn);
       final Fifo brd2b = PiMMUserFactory.instance.createFifo(brdOut, bIn, dataType);
       cluster.addActor(brd);
       cluster.addFifo(a2brd);
       cluster.addFifo(brd2b);
-
     }
   }
 
@@ -202,39 +145,44 @@ public class ClusterSynthesisHelper {
    *          the input cluster
    */
   private static void addRoundBufferActors(PiGraph cluster) {
+
     final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
     for (final DataOutputInterface b : cluster.getDataOutputInterfaces()) {
       final DataInputPort bIn = b.getDataPort();
       final AbstractActor a = bIn.getFifo().getSource();
-
-      // If b is executed only once, it means no broadcast is necessary
-      if (brv.get(a) == 1) {
+      final DataOutputPort aOut = bIn.getFifo().getSourcePort();
+      final long bExpr = b.getGraphPort().getExpression().evaluateAsLong();
+      final long aOutExpr = bIn.getExpression().evaluateAsLong();
+      // If b is executed only once or next actor is already a broadcast actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(a) * aOutExpr == bExpr || a instanceof RoundBufferActor) {
         continue;
       }
 
-      final DataOutputPort aOut = bIn.getFifo().getSourcePort();
+      // Creating broadcast actor
+      final RoundBufferActor rb = PiMMUserFactory.instance.createRoundBufferActor();
 
-      // Creating round buffer actor
-      final BroadcastActor rb = PiMMUserFactory.instance.createBroadcastActor();
-
-      // Creating in/out round buffer ports
+      // Creating in/out broadcast ports
       final DataInputPort rbIn = PiMMUserFactory.instance.createDataInputPort();
+      rbIn.setName("rb_in");
       final DataOutputPort rbOut = PiMMUserFactory.instance.createDataOutputPort();
+      rbOut.setName("rb_out");
       rb.getDataInputPorts().add(rbIn);
       rb.getDataOutputPorts().add(rbOut);
 
       // Setting expression of ports
-      rbIn.setExpression(aOut.getExpression());
-      rbOut.setExpression(aOut.getExpression().evaluateAsDouble() * brv.get(b));
+      bIn.setExpression(bExpr); // otherwise it bugs...
+      rbOut.setExpression(bExpr);
+      rbIn.setExpression(brv.get(a) * aOutExpr / bExpr);
 
-      // Linking round buffer with a and b
+      // Linking broadcast with a and b
       final String dataType = aOut.getFifo().getType();
       final Fifo a2rb = PiMMUserFactory.instance.createFifo(aOut, rbIn, dataType);
       final Fifo rb2b = PiMMUserFactory.instance.createFifo(rbOut, bIn, dataType);
       cluster.addActor(rb);
       cluster.addFifo(a2rb);
       cluster.addFifo(rb2b);
-
     }
   }
 
@@ -262,4 +210,104 @@ public class ClusterSynthesisHelper {
     dstDelaysAlloc.addAll(allocDelaysAlloc);
   }
 
+  /**
+   * Computes the scope repetition of actor a in schedule s. For example, with s = a2(b4c), the scope repetition of b
+   * and c will be 2, and 1 for a. CARE : This method supposes that each actor appears one and only one time in the
+   * schedule. For example, if s = a2(b4c)ab, s is not valid (because a and b repeat multiple times) and the method will
+   * return -1 for actor a and b. Additionally, if a is not present in s, the method will also return -1.
+   *
+   * @param a
+   *          current actor
+   * @param s
+   *          the schedule (it is not mandatory that the schedule is the root of the hierarchical schedule to have an
+   *          exhaustive search, the method will automatically start from the root of the given schedule)
+   * @return the scope repetition of actor a, or -1 if there is multiple occurrences of a, or if a is not present in the
+   *         schedule.
+   */
+  public static long getActorScopeRepetition(final AbstractActor a, final Schedule s) {
+
+    if (a instanceof InterfaceActor) {
+      return 1;
+    }
+
+    final List<Long> results = getScopeRecursively(a, s.getRoot());
+    final long nbRep = results.stream().filter(x -> x != -1).toList().size();
+    if (nbRep != 1) {
+      // PreesmLogger.getLogger().info("[DEBUG] passing here, nbRep = " + nbRep);
+      return -1;
+    }
+    final long result = results.stream().filter(x -> x != -1).toList().getFirst();
+
+    // PreesmLogger.getLogger().info("[DEBUG]: results = " + results + ", result = " + result);
+
+    return result;
+  }
+
+  /**
+   * Checks if actor a is in every {@link SequentialActorSchedule}. It returns a list that has a size equals to the
+   * number of {@link SequentialActorSchedule} in the schedule. If a is not in a {@link SequentialActorSchedule}, the
+   * value in the list will be equal to -1.
+   *
+   * @param a
+   *          current actor
+   * @param s
+   *          current schedule
+   * @return the list that keeps track of actor a presence in every {@link SequentialActorSchedule}
+   */
+  private static List<Long> getScopeRecursively(AbstractActor a, Schedule s) {
+    final List<Long> result = new ArrayList<>();
+
+    /*
+     * PreesmLogger.getLogger()
+     * .info(String.format("[DEBUG] getScopeRecur >> Actor = %s, Schedule = %s, schedule type = %s", a.getName(),
+     * s.shortPrint(), s.getClass()));
+     */
+    if (s instanceof final ActorSchedule as) {
+      final List<AbstractActor> actors = as.getActorList();
+      boolean aIsFound = false;
+      for (final AbstractActor current : actors) {
+        if (a == current) {
+          result.add(computeScopeRepetition(s));
+          aIsFound = true;
+        }
+      }
+      if (!aIsFound) {
+        result.add(-1L);
+      }
+
+    } else {
+
+      /*
+       * String log = "["; for (final Schedule child : s.getChildren()) { log += child.shortPrint(); log += child ==
+       * s.getChildren().getLast() ? "]" : ", "; }
+       * PreesmLogger.getLogger().info(String.format("[DEBUG] getScopeRecur >> schedule children = %s", log));
+       */
+      for (final Schedule child : s.getChildren()) {
+
+        result.addAll(getScopeRecursively(a, child));
+      }
+    }
+    return result;
+  }
+
+  /**
+   * Computes the scope repetition of current schedule. For example, if s.getRoot = a2(b3(c2d)), computeScopeRepetition
+   * of b3(c2d) will be equal to 2, and computeScopeRepetition of c2d will be equal to 2 * 3 = 6.
+   *
+   * @param s
+   *          current schedule
+   * @return the scope repetition of s
+   */
+  public static long computeScopeRepetition(final Schedule s) {
+    long scopeRepetition = s.getRepetition();
+    Schedule parent = s.getParent();
+    while (parent != null) {
+      final long parentRep = parent.getRepetition();
+      if (parentRep > 0) {
+        scopeRepetition *= parent.getRepetition();
+      }
+      parent = parent.getParent();
+    }
+    return scopeRepetition;
+  }
 }

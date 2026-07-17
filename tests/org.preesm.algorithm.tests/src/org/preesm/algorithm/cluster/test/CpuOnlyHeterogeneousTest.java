@@ -13,9 +13,9 @@ import org.eclipse.emf.common.util.EList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.preesm.algorithm.clustering.ClusterBuilder;
-import org.preesm.algorithm.clustering.ClusteringTask;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
+import org.preesm.algorithm.clustering.identifier.ClusterBuilder;
+import org.preesm.algorithm.clustering.identifier.ClusteringTask;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -211,7 +211,7 @@ public class CpuOnlyHeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    final HorizontalClusteringHeuristic hh = (HorizontalClusteringHeuristic) ClusteringTask
+    final HorizontalHeuristic hh = (HorizontalHeuristic) ClusteringTask
         .getHeuristic("heterogeneous");
     ClusterBuilder.buildHorizontalClusters(algo, scenario, homoDesign, hh, null, false); // default clustering
 

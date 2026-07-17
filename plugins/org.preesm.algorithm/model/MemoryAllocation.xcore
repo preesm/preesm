@@ -124,6 +124,8 @@ class FifoAllocation {
 	op Buffer[] getAllBuffers() {
 		return (#[sourceBuffer] + routeBuffers + #[targetBuffer]).toEList
 	}
+	
+	
 }
 
 class DelayAllocationEntry wraps java.util.Map$Entry {
@@ -156,10 +158,8 @@ class Allocation {
 		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
 	}
 	
-	op void mergeAllocation(Allocation a) {
-		physicalBuffers.addAll(a.getPhysicalBuffers)
-		fifoAllocations.addAll(a.getFifoAllocations)
-		delayAllocations.addAll(a.getDelayAllocations)
+	op String shortPrint() {
+		return "["+ String.join(",", fifoAllocations.map[it.key.source.getName + "->" + it.key.target.getName]) + "]"
 	}
 }
 

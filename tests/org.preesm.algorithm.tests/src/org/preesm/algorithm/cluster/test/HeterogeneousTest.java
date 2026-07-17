@@ -19,11 +19,11 @@ import org.eclipse.emf.common.util.EList;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.preesm.algorithm.clustering.ActorMerger;
-import org.preesm.algorithm.clustering.ClusterBuilder;
-import org.preesm.algorithm.clustering.ClusteringTask;
-import org.preesm.algorithm.clustering.SimpleHeteroArchClusteringHeuristic;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
+import org.preesm.algorithm.clustering.identifier.ActorMerger;
+import org.preesm.algorithm.clustering.identifier.ClusterBuilder;
+import org.preesm.algorithm.clustering.identifier.ClusteringTask;
+import org.preesm.algorithm.clustering.identifier.SimpleHeteroArchClusteringHeuristic;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -219,7 +219,7 @@ public class HeterogeneousTest {
 
   @Test
   public void testBuildArchHierarchyGraph() {
-    final HorizontalClusteringHeuristic hh = (HorizontalClusteringHeuristic) ClusteringTask
+    final HorizontalHeuristic hh = (HorizontalHeuristic) ClusteringTask
         .getHeuristic("heterogeneous");
     ClusterBuilder.buildHorizontalClusters(algo, scenario, heteroDesign, hh, null, false); // default clustering
 
@@ -248,7 +248,7 @@ public class HeterogeneousTest {
     final AbstractActor seed = listActors.get(5);
     final Set<AbstractActor> visitedActors = new HashSet<>();
     visitedActors.add(seed);
-    final HorizontalClusteringHeuristic heuristic = new SimpleHeteroArchClusteringHeuristic();
+    final HorizontalHeuristic heuristic = new SimpleHeteroArchClusteringHeuristic();
     final Map<AbstractActor, Boolean> identifiedSeedAndMergedActors = algo.getActors().stream()
         .collect(Collectors.toMap(Function.identity(), v -> false));
     final Set<AbstractActor> res = ClusterBuilder.buildMergeList(seed, scenario, visitedActors,

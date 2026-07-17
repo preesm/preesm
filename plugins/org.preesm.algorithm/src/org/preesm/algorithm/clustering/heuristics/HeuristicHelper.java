@@ -9,9 +9,9 @@ import org.preesm.model.slam.Component;
  * The goal of this class is to store generic static methods that can be used by many clustering heuristics. For more
  * detail, go see the description of each individual methods.
  */
-public class ClusteringHeuristicHelper {
+public class HeuristicHelper {
 
-  private ClusteringHeuristicHelper() {
+  private HeuristicHelper() {
   }
 
   /**

@@ -1,4 +1,4 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.clustering.deprecated.EuclideTransfo;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.commons.graph.Vertex;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -25,7 +25,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
-public class URCHeuristic extends HorizontalClusteringHeuristic {
+public class URCHeuristic extends HorizontalHeuristic {
 
   /**
    * basic repetition vector, one value for each vertex of the graph

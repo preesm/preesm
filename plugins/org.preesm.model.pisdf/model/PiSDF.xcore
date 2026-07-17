@@ -1073,6 +1073,13 @@ class DataInputPort extends DataPort {
 		return incomingFifo
 	}
 	op DataOutputPort getOppositePort() {
+		if (incomingFifo === null) {
+			throw new PreesmRuntimeException("DataInputPort " + this.name + " (of actor " + this.containingActor.name  + ") doesn't have an incoming fifo.")
+		}
+		val sourcePort = incomingFifo.sourcePort
+		if (sourcePort === null) {
+			throw new PreesmRuntimeException("incoming fifo of DataInputPort "  + this.name + " (of actor " + this.containingActor.name  + ") doesn't have a source port.")
+		}
 		return incomingFifo?.sourcePort
 	}
 }
@@ -1086,6 +1093,13 @@ class DataOutputPort extends DataPort {
 		return outgoingFifo;
 	}
 	op DataInputPort getOppositePort() {
+		if (outgoingFifo === null) {
+			throw new PreesmRuntimeException("DataOutputPort " + this.name + " (of actor " + this.containingActor.name  + ") doesn't have an outgoing fifo.")
+		}
+		val targetPort = outgoingFifo.targetPort
+		if (targetPort === null) {
+			throw new PreesmRuntimeException("outgoing fifo of DataOutputPort " + this.name + " (of actor " + this.containingActor.name  + ") doesn't have a target port.")
+		}
 		return outgoingFifo?.targetPort
 	}
 }
@@ -1151,9 +1165,9 @@ class Fifo extends Edge {
 	 */
 	op String getId() {
 		return Optional.ofNullable(sourcePort).map[id].orElseThrow [
-			new PreesmRuntimeException("Fifo has no source port.")
+			new PreesmRuntimeException("Fifo has no source port (graph : " + getContainingPiGraph.getName() + "), target port is : " + targetPort)
 		] + "-" + Optional.ofNullable(targetPort).map[id].orElseThrow [
-			new PreesmRuntimeException("Fifo has no target port.")
+			new PreesmRuntimeException("Fifo has no target port. (graph : " + getContainingPiGraph.getName() + "), source port is : " + sourcePort)
 		]
 	}
 }

@@ -156,4 +156,23 @@ public class SmartAllocationHeuristic extends AllocationHeuristic {
     // TODO : ugly,
     clusterAllocation.getPhysicalBuffers().get(0).setSizeInBit(size);
   }
+
+  /*
+   * // TODO : begin of a smart allocation with clustering factorization
+   *
+   *
+   * // Computing the size of the buffer (in number of tokens for now) bufferSize =
+   * port.getExpression().evaluateAsLong() * actorRepInScope;
+   *
+   * // If target actor is not in the same scope, we multiply bufferSize by the number of time a has to be // executed
+   * before executing target. okFor example, if s = 4(B2C)D, we multiply bufferSize associated at fifo // CD by 4 //
+   * (scope of C = 4 | scope of D = 1 | 4 / 1 = 4) if (!actorsInScope.contains(target)) { final long
+   * targetScopeRepetition = ClusterSynthesisHelper.getActorScopeRepetition(target, s);
+   *
+   * if (targetScopeRepetition == -1) { throw new PreesmRuntimeException(String.format(
+   * "Actor %s doesn't exist or appears multiple times in schedule %s " + "(root schedule : %s)." +
+   * "Multiple occurrence of an actor in a schedule is, for now, not supported.", target.getName(), s.shortPrint(),
+   * s.getRoot().shortPrint())); } if (targetScopeRepetition > scopeRepetition && scopeRepetition %
+   * targetScopeRepetition == 0) { bufferSize *= scopeRepetition / targetScopeRepetition; } }
+   */
 }

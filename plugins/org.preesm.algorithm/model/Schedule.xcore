@@ -124,6 +124,7 @@ interface Schedule {
 	}
 }
 
+/* 
 class ScapeSchedule{
 	int repetition
 	refers AbstractActor actor
@@ -144,6 +145,7 @@ class ScapeBuilder{
 	String[] freeBuffer
 	String[] offloadBuffer
 }
+*/
 
 /*
  * Denotes a schedule whose children can be executed simultaneously.

@@ -94,7 +94,8 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
     for (final AbstractActor actor : orderedActors) {
       long duration = 0;
       if (actor instanceof final PiGraph g && g.isCluster()) {
-        // we already computed the fpga cluster's latency during the local synthesis step
+
+        // we already computed the cluster's latency during the local synthesis step
         final SynthesisResult sr = (SynthesisResult) g.getSynthesisResult();
         duration = sr.latency.getValue();
       } else {

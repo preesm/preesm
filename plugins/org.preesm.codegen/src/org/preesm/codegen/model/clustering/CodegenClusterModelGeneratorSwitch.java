@@ -46,7 +46,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.algorithm.clustering.identifier.ClusteringHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -323,8 +323,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       if (this.delaySubBufferMap.containsKey(associatedFifo)) {
         // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
         // a write, otherwise we print a pop only if it's in input
-        final boolean precedence = helper.isPredecessor((AbstractActor) associatedFifo.getTarget(),
-            (AbstractActor) associatedFifo.getSource());
+        final boolean precedence = helper.isPredecessor(associatedFifo.getTarget(), associatedFifo.getSource());
 
         if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)
             || ((dp.getKind() == PortKind.DATA_OUTPUT) && precedence)) {
@@ -445,8 +444,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     // Fill delay buffer information
     final long workingBufferSize = delayBuffer.getNbToken();
     final long delayCapacity = fifo.getDelay().getExpression().evaluateAsLong();
-    delayBuffer.setName("delay_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
-        + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
+    delayBuffer.setName("delay_" + fifo.getSource().getName() + "_to_" + fifo.getTarget().getName() + "_" + iterator);
     delayBuffer.setNbToken(delayCapacity + workingBufferSize);
     this.delayBufferList.add(delayBuffer);
 
@@ -597,8 +595,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
 
     // Fill buffer information by looking at the Fifo
-    buffer.setName("mem_" + ((AbstractActor) fifo.getSource()).getName() + "_to_"
-        + ((AbstractActor) fifo.getTarget()).getName() + "_" + iterator);
+    buffer.setName("mem_" + fifo.getSource().getName() + "_to_" + fifo.getTarget().getName() + "_" + iterator);
     buffer.setType(fifo.getType());
     buffer.setTokenTypeSizeInBit(this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType()));
     buffer.setNbToken(fifo.getSourcePort().getExpression().evaluateAsLong() * this.repVector.get(fifo.getSource()));

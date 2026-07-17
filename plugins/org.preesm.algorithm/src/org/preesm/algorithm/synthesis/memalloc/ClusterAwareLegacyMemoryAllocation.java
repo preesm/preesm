@@ -88,8 +88,9 @@ import org.preesm.model.slam.Design;
  *
  *
  * @author anmorvan
+ * @author rcazoulat
  */
-public class LegacyMemoryAllocation implements IMemoryAllocation {
+public class ClusterAwareLegacyMemoryAllocation extends AClusterAwareMemoryAllocation {
 
   /**
    * Parameters of all workflow tasks called during the allocation.
@@ -99,7 +100,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   /**
    * Creates new legacy memory allocation process, with default parameters.
    */
-  public LegacyMemoryAllocation() {
+  public ClusterAwareLegacyMemoryAllocation() {
     parameters = getDefaultParameters();
   }
 
@@ -109,7 +110,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
    * @param parameters
    *          Parameters replacing the default values given by {@link #getDefaultParameters()}
    */
-  public LegacyMemoryAllocation(Map<String, String> parameters) {
+  public ClusterAwareLegacyMemoryAllocation(Map<String, String> parameters) {
     this();
     this.parameters.putAll(parameters);
   }

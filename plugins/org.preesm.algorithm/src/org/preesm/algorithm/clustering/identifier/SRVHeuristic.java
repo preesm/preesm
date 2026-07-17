@@ -1,8 +1,8 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.Map;
 import org.preesm.algorithm.clustering.deprecated.EuclideTransfo;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.PiGraph;
@@ -12,7 +12,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
-public class SRVHeuristic extends HorizontalClusteringHeuristic {
+public class SRVHeuristic extends HorizontalHeuristic {
 
   Map<AbstractVertex, Long> brv;
   long                      nPEs;

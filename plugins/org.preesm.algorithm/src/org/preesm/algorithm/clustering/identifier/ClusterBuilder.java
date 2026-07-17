@@ -1,22 +1,31 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
-import org.preesm.algorithm.clustering.heuristics.HorizontalClusteringHeuristic;
-import org.preesm.algorithm.clustering.heuristics.PartitionerHeuristic;
-import org.preesm.algorithm.clustering.heuristics.VerticalClusteringHeuristic;
-import org.preesm.algorithm.clustering.heuristics.VerticalClusteringHeuristic.FlatteningOrder;
+import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
+import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic;
+import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic.FlatteningOrder;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.FunctionArgument;
+import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -34,7 +43,7 @@ public class ClusterBuilder {
    * This function will regroup vertically the graph, following a given heuristic. For now, it will cluster it in a
    * top-down way, starting from the top graph. At each level of hierarchy, it will execute the vertical clustering
    * heuristic function named assessFlattening. If the vertical clustering heuristic is set to null, the current graph
-   * will just be flattened. TODO : add an option to cluster vertically in a bottom-up approach
+   * will just be flattened.
    *
    * @param parentGraph
    *          the graph containing the current graph. If set to null, it means that the current graph is the top graph
@@ -44,7 +53,7 @@ public class ClusterBuilder {
    * @param heuristic
    *          the vertical clustering heuristic, used to merge different graphs.
    */
-  public static void buildVerticalClusters(PiGraph parentGraph, PiGraph graph, VerticalClusteringHeuristic heuristic) {
+  public static void buildVerticalClusters(PiGraph parentGraph, PiGraph graph, VerticalHeuristic heuristic) {
     if (heuristic == null) {
       PiSDFFlattener.flatten(graph, true);
       return;
@@ -68,23 +77,18 @@ public class ClusterBuilder {
    *
    * @param graph
    *          the current graph where to seek horizontal clusters
-   * @param scenario
-   *          the scenario
    * @param arch
    *          the S-LAM architecture graph
    * @param heuristic
    *          the heuristic to cluster horizontally
-   * @param partitioner
-   *          the partitioner, that will balance the firings of clusters and actors in the clusters, according to an
-   *          heuristic
    * @return the list of clusters that have been created. The graph will be modified if clusters have been detected and
    *         created.
    */
-  public static List<PiGraph> buildHorizontalClusters(PiGraph graph, Scenario scenario, Design arch,
-      final HorizontalClusteringHeuristic heuristic, final PartitionerHeuristic partitioner, final boolean verbose) {
+  public static List<PiGraph> buildHorizontalClusters(PiGraph graph, Design arch, Scenario scenario,
+      final HorizontalHeuristic heuristic, final boolean verbose) {
 
     // The list that will be returned
-    final List<PiGraph> listClusters = new LinkedList<>();
+    final List<PiGraph> listClusters = new ArrayList<>();
 
     /*---------------------------------------
      * STEP 1
@@ -116,7 +120,7 @@ public class ClusterBuilder {
      */
 
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
-      final var subClusterList = buildHorizontalClusters(subGraph, scenario, arch, heuristic, partitioner, verbose);
+      final var subClusterList = buildHorizontalClusters(subGraph, arch, scenario, heuristic, verbose);
       listClusters.addAll(subClusterList);
     }
 
@@ -187,8 +191,8 @@ public class ClusterBuilder {
       // This list will be used only in buildMergeList. Because it is a recursive function,
       // it has to be declared outside its scope
       final Set<AbstractActor> visitedActors = new HashSet<>();
-      final Set<AbstractActor> actorsToMerge = buildMergeList(seed, scenario, visitedActors,
-          identifiedSeedAndMergedActors, heuristic);
+      final Set<
+          AbstractActor> actorsToMerge = buildMergeList(seed, visitedActors, identifiedSeedAndMergedActors, heuristic);
 
       // If the created cluster is not valid according the used heuristic, we continue the iteration, without adding the
       // cluster to the graph.
@@ -218,7 +222,7 @@ public class ClusterBuilder {
         PreesmLogger.getLogger().log(Level.INFO, info);
 
       }
-      /* ----- SUB-STEP 1 : creating the subgraph */
+
       // Creating the cluster
       final PiGraph cluster = ActorMerger.mergeActors(graph, actorsToMerge, clusterName);
       cluster.setClusterValue(true);
@@ -229,36 +233,7 @@ public class ClusterBuilder {
       final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
       pgcc.check(graph);
 
-      /* ----- SUB-STEP 2 : partitioning the cluster */
-      /*
-       * The goal here is to adapt the weights of the cluster interfaces ports, according to an partitioning heuristic
-       */
-
-      // balanceFirings could create new clusters, so we create a list just in case
-      List<PiGraph> clusterActors;
-      if (partitioner != null) {
-
-        if (verbose) {
-          final String info = "> Partitioning cluster " + clusterName + " with " + partitioner.getClass();
-          PreesmLogger.getLogger().log(Level.INFO, info);
-        }
-
-        clusterActors = partitioner.balanceFirings(graph, cluster);
-
-        if (verbose) {
-          final String info = "> Partitioning done.";
-          PreesmLogger.getLogger().log(Level.INFO, info);
-        }
-
-        pgcc.check(graph);
-
-      } else {
-
-        clusterActors = new ArrayList<>();
-        clusterActors.add(cluster);
-      }
-
-      listClusters.addAll(clusterActors);
+      listClusters.add(cluster);
 
     }
 
@@ -270,8 +245,6 @@ public class ClusterBuilder {
    *
    * @param seed
    *          Starting actor of the clustering
-   * @param scenario
-   *          the scenario
    * @param visitedActors
    *          the set of already visited actors for this specific seed (re-init for each seed), used to prevent infinite
    *          loops
@@ -279,9 +252,8 @@ public class ClusterBuilder {
    *          actors already part of a cluster (the seeds and the merged ones)
    * @return a cluster of actors that can be merge
    */
-  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Scenario scenario,
-      Set<AbstractActor> visitedActors, Map<AbstractActor, Boolean> seedAndMerged,
-      HorizontalClusteringHeuristic heuristic) {
+  public static Set<AbstractActor> buildMergeList(AbstractActor seed, Set<AbstractActor> visitedActors,
+      Map<AbstractActor, Boolean> seedAndMerged, HorizontalHeuristic heuristic) {
 
     // The set that will be returned
     final Set<AbstractActor> actorsToMerge = new HashSet<>();
@@ -311,11 +283,55 @@ public class ClusterBuilder {
       if (mergeable) {
 
         // If actor is mergeable, exploring the neighbors of the current actor as a seed
-        final Set<
-            AbstractActor> successorList = buildMergeList(actor, scenario, visitedActors, seedAndMerged, heuristic);
+        final Set<AbstractActor> successorList = buildMergeList(actor, visitedActors, seedAndMerged, heuristic);
         actorsToMerge.addAll(successorList);
       }
     }
     return actorsToMerge;
+  }
+
+  public static void buildClusterRefinement(PiGraph cluster, Scenario scenario) {
+
+    // 1 : extract function's arguments
+    final CHeaderRefinement clusterHeader = PiMMUserFactory.instance.createCHeaderRefinement();
+    clusterHeader.setFilePath(scenario.getCodegenDirectory() + "/clusters/" + cluster.getName() + ".h");
+
+    final FunctionPrototype prototype = PiMMUserFactory.instance.createFunctionPrototype();
+    prototype.setName(cluster.getName() + "_loop");
+    clusterHeader.setLoopPrototype(prototype);
+
+    final List<org.preesm.model.pisdf.Port> clusterInputsOutputs = new ArrayList<>();
+    clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
+    clusterInputsOutputs.addAll(cluster.getAllDataPorts());
+
+    final FunctionArgument[] args = new FunctionArgument[clusterInputsOutputs.size()];
+
+    for (int i = 0; i < clusterInputsOutputs.size(); i++) {
+      final org.preesm.model.pisdf.Port port = clusterInputsOutputs.get(i);
+
+      args[i] = PiMMUserFactory.instance.createFunctionArgument();
+      args[i].setDirection(port instanceof DataOutputPort ? Direction.OUT : Direction.IN);
+      args[i].setIsConfigurationParameter(port instanceof ConfigInputPort);
+      args[i].setIsPassedByReference(port instanceof DataPort);
+      args[i].setName(clusterInputsOutputs.get(i).getName());
+
+      if (port instanceof ConfigInputPort) {
+        args[i].setType("int");
+      } else if (port instanceof final DataInputPort dip) {
+        args[i].setType(dip.getFifo().getType());
+      } else if (port instanceof final DataOutputPort dop) {
+        args[i].setType(dop.getFifo().getType());
+      } else {
+        throw new PreesmRuntimeException(
+            "Port" + port.getName() + " is neither config nor data input/output, I don't know how to process it !");
+      }
+
+      args[i].setPosition(i);
+    }
+
+    prototype.getArguments().addAll(Arrays.asList(args));
+
+    cluster.addRefinement(clusterHeader);
+
   }
 }

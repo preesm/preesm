@@ -7,6 +7,6 @@ import org.preesm.model.pisdf.PiGraph;
 
 public abstract class AllocationHeuristic extends Heuristic {
 
-  public abstract Allocation allocate(PiGraph cluster, Schedule clusterSchedule, Mapping clusterMapping);
+  public abstract Allocation allocate(PiGraph cluster, Schedule clusterSchedule, Mapping mapping);
 
 }

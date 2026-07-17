@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.emf.common.util.EList;
@@ -60,10 +59,9 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputInterface;
-import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
@@ -96,9 +94,6 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final Allocation          memAlloc;
   private final List<AbstractActor> totallyOrderedActors;
 
-  /**
-   *
-   */
   private AllocationToCodegenBuffer(Allocation memAlloc, Scenario scenario, PiGraph algo,
       List<AbstractActor> totallyOrderedActors) {
     this.memAlloc = memAlloc;
@@ -107,26 +102,23 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.totallyOrderedActors = totallyOrderedActors;
   }
 
-  /**
-   *
-   */
   private void link() {
     this.doSwitch(this.memAlloc);
 
     // link variables for Fifos and set names
     for (final AbstractActor actor : totallyOrderedActors) {
-      final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
+      final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).toList();
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);
 
         org.preesm.algorithm.memalloc.model.Buffer srcBuffer;
-        final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer;
+        org.preesm.algorithm.memalloc.model.Buffer tgtBuffer;
 
-        // check if the fifo is an input/output data liaison
-        if ((fifo.getSource() instanceof final DataInputInterface dii)
-            || (fifo.getTarget() instanceof final DataOutputInterface doi)) {
-          continue;
-        }
+        /*
+         * // check if the fifo is an input/output data liaison if ((fifo.getSource() instanceof final
+         * DataInputInterface dii) || (fifo.getTarget() instanceof final DataOutputInterface doi)) { continue; // TODO:
+         * not continue !!! }
+         */
 
         if (fifoAllocation == null) {
           throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "] has no allocation.");
@@ -243,6 +235,30 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     }
 
     // set names for buffers that are NullBuffers linked to fork/join actors ?
+
+    // Mostly for debug -> set a name for codegen buffers that don't have a name, and raise a warning to identify them
+
+    for (final Buffer b : getCodegenBuffers()) {
+      if (b.getName() != null) {
+        continue;
+      }
+
+      final List<Fifo> assoFifos = memAlloc.getFifoAllocationEntry(btb.getKey(b));
+
+      String bufferName = "ghost_";
+      for (final Fifo assoFifo : assoFifos) {
+        if (assoFifo != assoFifos.getFirst()) {
+          bufferName += "_AND_";
+        }
+        bufferName += assoFifo.getSource().getName() + "_to_" + assoFifo.getTarget().getName();
+      }
+      b.setName(bufferName);
+
+      final String log = "[WARNING] link >> the buffer " + bufferName
+          + " had no name ! It might compromise the codegen.";
+      PreesmLogger.getLogger().info(log);
+    }
+
   }
 
   private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();

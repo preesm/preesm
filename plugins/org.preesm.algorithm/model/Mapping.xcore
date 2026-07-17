@@ -71,7 +71,11 @@ class Mapping {
 			 if(graph.clusterValue) {
 			 	actorMappings = mappings.get(graph);
 			 }
+
 		}
+		if(actorMappings == null) {
+        	return emptyEList;
+    	}
 		return actorMappings.unmodifiableView;
 	}
 	op ComponentInstance[] getAllInvolvedComponentInstances() {
@@ -83,6 +87,12 @@ class Mapping {
         	throw new UnsupportedOperationException();
 		}
 		return mappings.get(0)
+	}
+	
+	op String shortPrint() {
+		var instances = getAllInvolvedComponentInstances();
+		    return "[" + instances.join(", ", [x | x.toString()]) + "]";
+		
 	}
 }
 

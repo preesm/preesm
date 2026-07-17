@@ -5,7 +5,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.Component;
 
-public abstract class HorizontalClusteringHeuristic extends ClusteringHeuristic {
+public abstract class HorizontalHeuristic extends IdentificationHeuristic {
 
   /***
    * Optional method. If there is hierarchy in the top graph, an entire subgraph could already be considered a cluster.

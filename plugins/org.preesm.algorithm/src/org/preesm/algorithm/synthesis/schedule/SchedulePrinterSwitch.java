@@ -65,6 +65,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   @Override
   public String caseActorSchedule(final ActorSchedule object) {
     final StringBuilder toPrint = new StringBuilder();
+
     if (object.getRepetition() > 1) {
       toPrint.append(object.getRepetition());
       if (object.getParent().isParallel()) {
@@ -72,6 +73,12 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
       }
       toPrint.append("(");
     }
+
+    toPrint.append(object.getRepetition());
+    if (object.getParent().isParallel()) {
+      toPrint.append("/");
+    }
+    toPrint.append("(");
 
     // Print actors names
     final List<String> actorsNames = new LinkedList<>();
@@ -84,6 +91,9 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
     if (object.getRepetition() > 1) {
       toPrint.append(")");
     }
+
+    toPrint.append(")");
+
     return toPrint.toString();
   }
 
@@ -98,6 +108,12 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
       }
       toPrint.append("(");
     }
+
+    toPrint.append(object.getRepetition());
+    if ((this.parentNode != null) && this.parentNode.isParallel()) {
+      toPrint.append("/");
+    }
+    toPrint.append("(");
 
     // Print sequential operator
     final List<String> schedulesExpressions = new LinkedList<>();

@@ -210,7 +210,7 @@ public abstract class PiBRV {
     final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
-      final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
+      final DataInputPort dataInputPort = out.getDataPort();
       final long cons = dataInputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, out, cons);
       final Fifo fifo = dataInputPort.getIncomingFifo();
@@ -239,7 +239,7 @@ public abstract class PiBRV {
           String message = String.format(
               "The output interface [%s] does not correspond to its source total production (%d vs %d).",
               out.getVertexPath(), cons, tmp);
-          if (higherProd) {
+          if (graph.isToSrdag() && higherProd) {
             message += " A Roundbuffer will be added in SRDAG.";
           } else {
             message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);
@@ -272,7 +272,7 @@ public abstract class PiBRV {
     final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
-      final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
+      final DataOutputPort dataOutputPort = in.getDataPort();
       final long prod = dataOutputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, in, prod);
       final Fifo fifo = dataOutputPort.getOutgoingFifo();
@@ -301,7 +301,7 @@ public abstract class PiBRV {
           String message = String.format(
               "The input interface [%s] does not correspond to its target total production (%d vs %d).",
               in.getVertexPath(), prod, tmp);
-          if (higherCons) {
+          if (graph.isToSrdag() && higherCons) {
             message += " A Broadcast will be added in SRDAG.";
           } else {
             message += String.format(" Scaling factor (>= x%d) is needed.", scaleScaleFactor);

@@ -38,6 +38,7 @@ package org.preesm.algorithm.mapper.ui.stats;
 
 import java.io.File;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.resources.IProject;
@@ -75,8 +76,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
       @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class),
-      @Port(name = "localSyntheses", type = Map.class) },
+      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class)},
     parameters = {
       @Parameter(name = StatEditorSynthesisTask.DISPLAY_PARAM,
           description = "Specify if statistics, including Gantt diagram, must be displayed or not.",

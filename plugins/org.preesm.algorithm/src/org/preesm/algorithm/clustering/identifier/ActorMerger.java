@@ -1,4 +1,4 @@
-package org.preesm.algorithm.clustering;
+package org.preesm.algorithm.clustering.identifier;
 
 import java.util.Map;
 import java.util.Optional;
@@ -59,14 +59,15 @@ public class ActorMerger {
         // if the fifo connects one inner and one outer actor, we have to connect them through the graph ports
         if (!(actorsToMerge.contains(dip.getIncomingFifo().getSource()))) {
 
-          // interface seen from the inside
+          // Interface seen from the inside
           final DataInputInterface inInterface = PiMMUserFactory.instance.createDataInputInterface(dip.getName());
           innerSDF.addActor(inInterface);
 
           final String FifoDataType = dip.getFifo().getType();
           inInterface.getGraphPort().setIncomingFifo(dip.getFifo()); // set the outer port's incoming fifo
-          // PreesmLogger.getLogger().info("[DEBUG] > In mergeActors, previousActor check : " +
-          // inInterface.getGraphPort().getFifo().getSource())
+
+          final Fifo internalFifo = PiMMUserFactory.instance.createFifo(inInterface.getDataPort(), dip, FifoDataType);
+          innerSDF.addFifo(internalFifo);
 
           // set outer port's rate : inner port's rate times actor's repetition value
           // It is easier to simply evaluate it now that keeping it in parametric form, though a bit less generic
@@ -76,9 +77,7 @@ public class ActorMerger {
 
           inInterface.getGraphPort().setExpression(interfaceRate);
           inInterface.getDataPort().setExpression(interfaceRate);
-
-          final Fifo internalFifo = PiMMUserFactory.instance.createFifo(inInterface.getDataPort(), dip, FifoDataType);
-          innerSDF.addFifo(internalFifo);
+          final int tmp = 1;
 
         } else { // if the fifos connects 2 inner actors, add it to the inner graph (which removes it from the outer
           // one)
@@ -90,7 +89,6 @@ public class ActorMerger {
       // Data Output Interfaces creation
       // ------------------------------------------------------------------------------------------- //
       actor.getDataOutputPorts().stream().forEach(dop -> {
-
         // Il faut aussi ajouter aux nouvelles interfaces d'I/O créées les dépendances aux acteurs auxquels ils sont
         // liés, pour les taux paramétrés de leurs fifos
         // Ou plus simplement, on évalue l'expression en double à ce moment

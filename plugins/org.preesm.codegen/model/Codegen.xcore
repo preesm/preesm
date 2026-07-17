@@ -80,6 +80,7 @@ class Block extends CodeElt {
 	
 	// indicates whether this code block implements a cluster
 	boolean isClusterBlock
+	
 	// if so, this contains the cluster's refinement
 	refers CHeaderRefinement refinement
 }
@@ -114,7 +115,7 @@ class Buffer extends Variable {
 	refers SubBuffer[] childrens opposite ^container
 	long tokenTypeSizeInBit // in Bits
 	//long size
-	transient EEList<range>mergedRange
+	transient EEList<range> mergedRange
 	boolean ^local = "false"
 
 	op long getTokenTypeSizeInByte() {
