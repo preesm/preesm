@@ -109,7 +109,7 @@ public abstract class LatencyAbc {
   /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
    */
-  protected MapperDAG implementation;
+  private MapperDAG implementation;
 
   /** Current Abc type. */
   private AbcType abcType = null;

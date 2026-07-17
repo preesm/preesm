@@ -361,14 +361,14 @@ public class PFastAlgorithm {
 
       } catch (final InterruptedException | ExecutionException e) {
         Thread.currentThread().interrupt();
-        es.shutdown();
+        es.close();
         throw new PreesmRuntimeException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;
 
     }
-    es.shutdown();
+    es.close();
 
     if (population) {
       final Iterator<MapperDAG> ite = mappedDAGSet.iterator();
