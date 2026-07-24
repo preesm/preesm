@@ -675,7 +675,6 @@ public class FPGAConstraintScheduler implements IScheduler {
               final PropagationProfiler profiler;
               final var w = writer; // fuck java
               if (logLevel >= 2) {
-                // writer.printf("%s %n", model.toString());
                 profiler = solver.profilePropagation();
               }
               runInitialPropagation(solver, writer);
@@ -703,7 +702,6 @@ public class FPGAConstraintScheduler implements IScheduler {
                 try {
                   profiler.writeTo(new File(folderPath + "/choco-profiling.txt"), true);
                 } catch (final IOException e) {
-                  // TODO Auto-generated catch block
                   e.printStackTrace();
                 }
               }
@@ -783,7 +781,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     // useful later
     final IntVar zero = model.intVar("zero", 0);
 
-    // int i = 0;
     for (final ExecutableActor actor : actors) {
       final ActorTimings at = createActorTimings(actor, actors, scenario, Fpga, brv, model);
       schedule.put(actor, at);
@@ -809,7 +806,6 @@ public class FPGAConstraintScheduler implements IScheduler {
       // CONSTRAINT : equal rates : Tc / rc = Tp / rp --> Tc * rp = Tp * rc
       // --> Tc * rp / gcd = Tp * rc / gcd ; with gcd(BasisTc * tp, BasisTp * tc)
 
-      final double rateGcd = gcd(prod_rate, cons_rate);
       final double rateTimesBasisGcd = gcd((long) prod_rate * consTimings.basisOfPeriod,
           (long) cons_rate * prodTimings.basisOfPeriod);
 
@@ -820,39 +816,6 @@ public class FPGAConstraintScheduler implements IScheduler {
       final RealVar right = model.realVar("right__" + fifo.getId() + "_var",
           (double) prod_rate * consTimings.period_var.getLB() / rateTimesBasisGcd,
           (double) prod_rate * consTimings.period_var.getUB() / rateTimesBasisGcd, precision);
-
-      // if (right.getName().equals("right__Duplicate.sink1-RGBtoH.source_var")) {
-      // right.le(20).post();
-      // right.addMonitor((var, event) -> {
-      // writer.printf("%s : %s -> %s%n", event, var.getName(), var);
-      // });
-      // }
-      // if (left.getName().equals("left__Duplicate.sink1-RGBtoH.source_var")) {
-      // left.addMonitor((var, event) -> {
-      // writer.printf("%s : %s -> %s%n", event, var.getName(), var);
-      // });
-      // }
-
-      // méthode 1 : calcul avec des réels
-
-      // final RealVar sourcePeriodReal = model.realVar("sourcePeriodReal_" + fifo.getId(),
-      // prodTimings.period_var.getLB(),
-      // prodTimings.period_var.getUB(), precision);
-      // model.eq(sourcePeriodReal, prodTimings.period_var).post();
-      // left.eq(sourcePeriodReal.mul(cons_rate / rateGcd)).post();
-      //
-      // final RealVar targetPeriodReal = model.realVar("targetPeriodReal_" + fifo.getId(),
-      // consTimings.period_var.getLB(),
-      // consTimings.period_var.getUB(), precision);
-      // model.eq(targetPeriodReal, consTimings.period_var).post();
-      // right.eq(targetPeriodReal.mul(prod_rate / rateGcd)).post();
-      //
-      // left.eq(right).post();
-
-      // méthode 2 : réels avec pgcd des bases et taux, avec ordre des opé pour éviter les virgules.
-      // bonne nouvelle, choco semble respecter l'ordre des opérations et ne pas optimiser le .mul.did impliquant 2
-      // constantes
-      // --> on peut éviter les décimales intermédiaires et donc simplifier par le gros pgcd
 
       final RealVar sourcePeriodReal = model.realVar("prodPeriodReal_" + fifo.getId(), prodTimings.period_var.getLB(),
           prodTimings.period_var.getUB(), precision);
@@ -948,14 +911,11 @@ public class FPGAConstraintScheduler implements IScheduler {
 
           // delta_prod % period_var = prod_modulo
           model.ifThen(activeProdBreakpoints, model.mod(delta_prod, prodTimings.period_var, prod_modulo));
-          // model.mod(delta_prod, prodTimings.period_var, prod_modulo).post();
 
           model.ifThen(activeProdBreakpoints,
               inter2.eq(prod_modulo.sub(prodTimings.period_var).add(prod_rate)).decompose());
-          // inter2.eq(prod_modulo.sub(prodTimings.period_var).add(prod_rate)).post();
 
           model.ifThen(activeProdBreakpoints, model.max(prodInPeriod, inter2, zero));
-          // model.max(prodInPeriod, inter2, zero).post(); // force it to be 0 or more
         }
 
         // Production from previous periods : ((t - delay_prod) / periodProd) * taux_prod
@@ -967,7 +927,6 @@ public class FPGAConstraintScheduler implements IScheduler {
             model.arithm(cumP[bk - 1], "=", prodFromPreviousPeriods, "+", prodInPeriod), // common case
             model.arithm(cumP[bk - 1], "=", prodFromPreviousPeriods) // particular case
         );
-        // model.arithm(cumP[bk - 1], "=", prodFromPreviousPeriods, "+", prodInPeriod).post();
 
         // ---------------------------------
         // -- cumulated consumption at bk --
@@ -1005,12 +964,10 @@ public class FPGAConstraintScheduler implements IScheduler {
           // (t - delta_cons) % periodCons : the consumption in this period
           // The constraint is posted only if we're not in the case period = cons_rate
           model.ifThen(activeConsBreakpoints, model.mod(delta_cons, consTimings.period_var, cons_modulo));
-          // model.mod(delta_cons, consTimings.period_var, cons_modulo).post();
 
           // min(x, rate_cons) <= rate_cons
           // The constraint is posted only if we're not in the case period = cons_rate
           model.ifThen(activeConsBreakpoints, model.min(consInPeriod, cons_modulo, rate_cons));
-          // model.min(consInPeriod, cons_modulo, rate_cons).post();
         }
 
         // ((t - delay_cons) / periodCons) * taux_cons
@@ -1022,7 +979,6 @@ public class FPGAConstraintScheduler implements IScheduler {
             model.arithm(cumC[bk - 1], "=", consFromPreviousPeriods, "+", consInPeriod), // common case
             model.arithm(cumC[bk - 1], "=", consFromPreviousPeriods) // particular case
         );
-        // model.arithm(cumC[bk - 1], "=", consFromPreviousPeriods, "+", consInPeriod).post();
 
         // CONSTRAINT : production superior or equal to consumption at the breakpoint
         model.arithm(cumP[bk - 1], ">=", cumC[bk - 1]).post();
@@ -1039,19 +995,6 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     // branch on it even if no gantt, to reduce latency's domain size
     variablesToAssign.add(freePeriod);
-    // variablesToAssign.addAll(Arrays.asList(latencies));
-
-    if (this.computeGantt) {
-      // we want to know all the actor's periods, to reduce domain size and/or for the gantt. Stream() preserves order
-      // so we can optimize first the first actors, with the lowest startDate, to further constraints their successors,
-      // as well as their start date, to reduce domain size and/or for the gantt
-      // variablesToAssign.addAll(actors.stream().map(a -> schedule.get(a).period_var).toList());
-
-      // actors.stream().map(a -> schedule.get(a).startDatesFromInputs)
-      // .forEach(sdfi -> variablesToAssign.addAll(Arrays.asList(sdfi)));
-
-      // variablesToAssign.addAll(actors.stream().map(a -> schedule.get(a).startDate_var).toList());
-    }
 
     // Branch on latency in last, because otherwise choco tries all values...
     variablesToAssign.add(latency);
