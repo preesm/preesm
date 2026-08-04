@@ -32,6 +32,7 @@ import org.chocosolver.solver.variables.RealVar;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
+import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -43,7 +44,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -355,8 +355,27 @@ public class FPGAConstraintScheduler implements IScheduler {
         final int prod_rate = getProdRate(f);
         final int cons_rate = getConsRate(f);
 
-        updatePeriodsBasis(prod_rate, cons_rate, sourceTimings, this);
+        this.updatePeriodsBasis(prod_rate, cons_rate, sourceTimings);
       }
+    }
+
+    /**
+     * Updates the actors' basis for their period to be lcm(current basis, fifo-induced basis)
+     *
+     * @param prod_rate
+     *          the fifo's rate of production
+     * @param cons_rate
+     *          the fifo's rate of consumption
+     * @param sourceTimings
+     *          the timings structure for the source actor
+     */
+    private void updatePeriodsBasis(int prod_rate, int cons_rate, ActorTimings sourceTimings) {
+
+      final int basisOfTp = (int) (prod_rate / gcd(prod_rate, cons_rate));
+      final int basisOfTc = (int) (cons_rate / gcd(prod_rate, cons_rate));
+
+      sourceTimings.basisOfPeriod = lcm(sourceTimings.basisOfPeriod, basisOfTp);
+      this.basisOfPeriod = lcm(this.basisOfPeriod, basisOfTc);
     }
   }
 
@@ -413,13 +432,12 @@ public class FPGAConstraintScheduler implements IScheduler {
           final int mult_ceil = Math.ceilDiv(cons_rate, prod_rate);
           final int mult_floor = Math.floorDiv(cons_rate, prod_rate);
 
-          at.startDatesFromInputs[nb].eq(pt.startDate_var.add(pt.period_var.mul(mult_ceil))/* .add(pt.executionTime) */ // erreur
+          at.startDatesFromInputs[nb].eq(pt.startDate_var.add(pt.period_var.mul(mult_ceil))/* .add(pt.executionTime) */
               .sub(prod_rate * (mult_floor + 1))).post();
 
           model.arithm(at.startDate_var, ">=", at.startDatesFromInputs[nb]).post();
           nb++;
         }
-        // model.max(at.startDate_var, at.startDatesFromInputs).post();
 
       }
 
@@ -506,28 +524,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     return res;
   }
 
-  /**
-   * Updates the actors' basis for their period to be lcm(current basis, fifo-induced basis)
-   *
-   * @param prod_rate
-   *          the fifo's rate of production
-   * @param cons_rate
-   *          the fifo's rate of consumption
-   * @param sourceTimings
-   *          the timings structure for the source actor
-   * @param targetTimings
-   *          the timings structure for the target actor
-   */
-  private void updatePeriodsBasis(int prod_rate, int cons_rate, ActorTimings sourceTimings,
-      ActorTimings targetTimings) {
-
-    final int basisOfTp = (int) (prod_rate / gcd(prod_rate, cons_rate));
-    final int basisOfTc = (int) (cons_rate / gcd(prod_rate, cons_rate));
-
-    sourceTimings.basisOfPeriod = lcm(sourceTimings.basisOfPeriod, basisOfTp);
-    targetTimings.basisOfPeriod = lcm(targetTimings.basisOfPeriod, basisOfTc);
-  }
-
   // -------------------------------------------
   // ------------ Scheduling method ------------
   // -------------------------------------------
@@ -570,194 +566,208 @@ public class FPGAConstraintScheduler implements IScheduler {
       e.printStackTrace();
     }
 
-    final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
-    final int[] start_divisors = new int[] { 1, };// 2, 5, 20,50, 100, 10
-    final int[] nbs_cycles = new int[] { 1_000_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
-    final Map<String, List<Integer>> parameters = new HashMap<>();
-    parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
+//    final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
+//    final int[] start_divisors = new int[] { 1, };// 2, 5, 20,50, 100, 10
+//    final int[] nbs_cycles = new int[] { 1_000_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
+//    final Map<String, List<Integer>> parameters = new HashMap<>();
+//    parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
 
     final int max_time_seconds = 10;
-    final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
-        * parameters.values().stream().mapToInt(l -> l.size()).sum();
-    System.out.printf("Total number of combinations : %d %n", nb_comb);
-    System.out.printf("Estimated max duration : %d seconds %n", nb_comb * max_time_seconds);
+//    final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
+//        * parameters.values().stream().mapToInt(l -> l.size()).sum();
+//    System.out.printf("Total number of combinations : %d %n", nb_comb);
+    System.out.printf("Max duration : %d seconds %n", max_time_seconds);
 
-    int nbRun = 0;
-    Expression savedParameterValue = null;
-    for (final var paramName : parameters.keySet()) {
-      for (final int nb_cycles : nbs_cycles) {
-        CYCLE_MAX = nb_cycles;
+    final int nbRun = 0;
+    final Expression savedParameterValue = null;
+    // for (final var paramName : parameters.keySet()) {
+    // for (final int nb_cycles : nbs_cycles) {
+    // CYCLE_MAX = nb_cycles;
 
-        final Parameter graphParameter = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName))
-            .findFirst().orElse(null);
+    // final Parameter graphParameter = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName))
+    // .findFirst().orElse(null);
 
-        int nbParams;
-        if (graphParameter != null) {
-          savedParameterValue = graphParameter.getExpression();
-          nbParams = parameters.get(paramName).size();
-        } else {
-          writer.println("No parameter named " + paramName + " found in graph " + piGraph.getName()
-              + ", running scheduling with only base parameter values.");
-          nbParams = 1;
-        }
+    // int nbParams;
+    // if (graphParameter != null) {
+    // savedParameterValue = graphParameter.getExpression();
+    // nbParams = parameters.get(paramName).size();
+    // } else {
+    // writer.println("No parameter named " + paramName + " found in graph " + piGraph.getName()
+    // + ", running scheduling with only base parameter values.");
+    // nbParams = 1;
+    // }
 
-        for (int param_index = 0; param_index < nbParams; param_index++) {
-          if (graphParameter != null) {
-            graphParameter.setExpression(parameters.get(paramName).get(param_index));
-          }
+    // for (int param_index = 0; param_index < nbParams; param_index++) {
+    // if (graphParameter != null) {
+    // graphParameter.setExpression(parameters.get(paramName).get(param_index));
+    // }
 
-          final Model model = new Model("Period computing");
-          final List<IntVar> variablesToInstantiate = new LinkedList<>();
-          final IntVar variableToOptimize = buildModel(model, piGraph, slamDesign, scenario, schedule,
-              variablesToInstantiate, writer);
+    final Model model = new Model("Period computing");
+    final List<IntVar> variablesToInstantiate = new LinkedList<>();
+    // final IntVar latency = null; // initialized by buildModel
+    final List<IntVar> variablesToOptimize = new LinkedList<>();
+    // final IntVar variableToOptimize = buildModel(model, piGraph, slamDesign, scenario, schedule,
+    // variablesToInstantiate,
+    // writer, latency);
+    final IntVar latency = buildModel(model, piGraph, slamDesign, scenario, schedule, variablesToInstantiate, writer,
+        variablesToOptimize);
 
-          // --------
-          // Solution
-          // --------
+    // --------
+    // Solution
+    // --------
 
-          final Solver solver = model.getSolver();
+    final Solver solver = model.getSolver();
 
-          solver.log().remove(System.out);
-          solver.log().add(writer);
+    solver.log().remove(System.out);
+    solver.log().add(writer);
 
-          if (logLevel >= 1) {
-            writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
-                model.getNbCstrs());
-            // solver.verboseSolving(1000); // marche pas
-          }
-          if (logLevel >= 2) {
-            // solver.showStatisticsDuringResolution(1000);
-            model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
-            solver.showContradiction();
-            solver.showDecisions();
-          }
+    if (logLevel >= 1) {
+      writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
+          model.getNbCstrs());
+      // solver.verboseSolving(1000); // marche pas
+    }
+    if (logLevel >= 2) {
+      // solver.showStatisticsDuringResolution(1000);
+      model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
+      solver.showContradiction();
+      solver.showDecisions();
+    }
 
-          for (final int tokens_divisor : token_divisors) {
-            for (final int start_divisor : start_divisors) {
-              nbRun++;
-              writer.printf("%n%n");
-              System.out.printf("Starting run number %d/%d %n", nbRun, nb_comb);
+    // for (final int tokens_divisor : token_divisors) {
+    // for (final int start_divisor : start_divisors) {
+    // nbRun++;
+    // writer.printf("%n%n");
+    // System.out.printf("Starting run number %d/%d %n", nbRun, nb_comb);
 
-              TOKENS_MAX = CYCLE_MAX / tokens_divisor;
-              MAX_START_TIME = CYCLE_MAX / start_divisor;
+    // TOKENS_MAX = CYCLE_MAX / tokens_divisor;
+    // MAX_START_TIME = CYCLE_MAX / start_divisor;
 
-              // No need to enumerate all parameters, since only one is set to a non-base value at a time.
-              final String config = String.format("CYCLE_MAX=%d-TOKENS_MAX=%d-MAX_START_TIME=%d-%s=%s", CYCLE_MAX,
-                  TOKENS_MAX, MAX_START_TIME, paramName, parameters.get(paramName).get(param_index));
+    // No need to enumerate all parameters, since only one is set to a non-base value at a time.
+    // final String config = String.format("CYCLE_MAX=%d-TOKENS_MAX=%d-MAX_START_TIME=%d-%s=%s", CYCLE_MAX,
+    // TOKENS_MAX, MAX_START_TIME, paramName, parameters.get(paramName).get(param_index));
 
-              writer.println(config);
-              if (writer != System.out) {
-                System.out.printf("\tRunning config : %s %n", config);
-              }
+    // writer.println(config);
+    // if (writer != System.out) {
+    // System.out.printf("\tRunning config : %s %n", config);
+    // }
 
-              PrintStream gantt_data = null;
-              if (this.computeGantt) {
-                try {
-                  gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + config + ".py");
-                } catch (final FileNotFoundException e) {
-                  e.printStackTrace();
-                }
-              }
+    PrintStream gantt_data = null;
+    if (this.computeGantt) {
+      try {
+        // gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + config + ".py");
+        gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + ".py");
+      } catch (final FileNotFoundException e) {
+        e.printStackTrace();
+      }
+    }
 
-              // solver.makeCompleteStrategy(true); // Possiblement utile ! Enquêter.
-              solver.observeSolving();
-              // solver.toCSV();
-              solver.limitTime(max_time_seconds + "s");
+    // solver.makeCompleteStrategy(true); // Possiblement utile ! Enquêter.
+    solver.observeSolving();
+    // solver.toCSV();
+    solver.limitTime(max_time_seconds + "s");
 
-              // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
-              final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
+    // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
+    final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
 
-              setStrategy(solver, variablesToInstantiate.toArray(new IntVar[0]));
+    setStrategy(solver, variablesToInstantiate.toArray(new IntVar[0]));
 
-              BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
+    BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
-              final Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
+    final Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
 
-              final PropagationProfiler profiler;
-              final var w = writer; // fuck java
-              if (logLevel >= 2) {
-                profiler = solver.profilePropagation();
-              }
-              runInitialPropagation(solver, writer);
+    final PropagationProfiler profiler;
+    final var w = writer; // fuck java
+    if (logLevel >= 2) {
+      profiler = solver.profilePropagation();
+    }
+    runInitialPropagation(solver, writer);
 
-              writer.println("State of variables to instanciate after the initial propagation :");
-              writer.println(variablesToInstantiate.stream().map(Object::toString).collect(Collectors.joining("\n")));
+    writer.println("State of variables to instanciate after the initial propagation :");
+    writer.println(variablesToInstantiate.stream().map(Object::toString).collect(Collectors.joining("\n")));
 
-              writer.println("All vars : \n"
-                  + String.join("\n", Arrays.asList(model.getVars()).stream().map(Object::toString).toList()));
-              writer.println("Starting schedule search \n");
+    writer.println(
+        "All vars : \n" + String.join("\n", Arrays.asList(model.getVars()).stream().map(Object::toString).toList()));
+    writer.println("Starting schedule search \n");
 
-              if (logLevel >= 2) {
-                for (final var v : model.getVars()) {
-                  if (v.getName().contains("var")) {
-                    v.addMonitor((va, event) -> w.printf("%s : %s -> %s%n", event, va.getName(), va));
-                  }
-                }
-              }
-
-              model.setObjective(Model.MINIMIZE, variableToOptimize);
-              while (solver.solve()) {
-                solution.record();
-              }
-
-              if (logLevel >= 2) {
-                try {
-                  profiler.writeTo(new File(folderPath + "/choco-profiling.txt"), true);
-                } catch (final IOException e) {
-                  e.printStackTrace();
-                }
-              }
-
-              try {
-                if (solver.getSolutionCount() != 0) {
-                  System.out.println("Solution found !");
-                  saveAndPrintResults(solution, variableToOptimize, schedule, writer, resultsCsv, solver, gantt_data);
-                  // solver.printStatistics();
-                  // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
-                } else {
-                  System.out.println("No solution was found");
-                  printFailureAndLog(model, writer);
-                }
-              } catch (final Exception e) {
-                System.out.println("An exception happened");
-                e.printStackTrace();
-              }
-
-              if (computeGantt) {
-                gantt_data.close();
-              }
-
-              solver.getMeasures().reset();
-              solver.hardReset();
-
-              try {
-                searchTreeFile.close();
-              } catch (final IOException e) {
-                e.printStackTrace();
-              }
-            }
-
-          }
-
-        }
-        // reset to base value
-        if (graphParameter != null) {
-          graphParameter.setExpression(savedParameterValue);
+    if (logLevel >= 2) {
+      for (final var v : model.getVars()) {
+        if (v.getName().contains("var")) {
+          v.addMonitor((va, event) -> w.printf("%s : %s -> %s%n", event, va.getName(), va));
         }
       }
     }
 
-    if (writer != System.out) {
-      writer.close();
+    if (variablesToOptimize.size() == 1) {
+      model.setObjective(Model.MINIMIZE, variablesToOptimize.getFirst());
+      while (solver.solve()) {
+        solution.record();
+      }
+    } else {
+      solution = solver.findLexOptimalSolution(, computeGantt, null)
     }
+
+
+    if (logLevel >= 2) {
+      try {
+        profiler.writeTo(new File(folderPath + "/choco-profiling.txt"), true);
+      } catch (final IOException e) {
+        System.out.println("Could not create file " + folderPath + "/choco-profiling.txt");
+      }
+    }
+
+    try {
+      if (solver.getSolutionCount() != 0) {
+        System.out.println("Solution found !");
+        saveAndPrintResults(solution, schedule, writer, resultsCsv, solver, gantt_data, latency);
+        // solver.printStatistics();
+        // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
+      } else {
+        System.out.println("No solution was found");
+        printFailureAndLog(model, writer);
+      }
+    } catch (final Exception e) {
+      System.out.println("An exception happened");
+      e.printStackTrace();
+    }
+
+    if (computeGantt) {
+      gantt_data.close();
+    }
+
+    // solver.getMeasures().reset();
+    // solver.hardReset();
+
+    try {
+      searchTreeFile.close();
+      resultsCsv.close();
+      if (writer != System.out) {
+        writer.close();
+      }
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
+
+    // }
+
+    // }
+
+    // }
+    // reset to base value
+    // if (graphParameter != null) {
+    // graphParameter.setExpression(savedParameterValue);
+    // }
+    // }
+    // }
 
     final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
     final Map<String, Object> inputs = new HashMap<>();
     inputs.put("scenario", scenario);
     inputs.put("architecture", scenario.getDesign());
     inputs.put("algorithm", piGraph);
-    // truc.execute(null, null, null, null, null)
-    return new AnalysisResultFPGA(piGraph, null, null);
+
+    final AnalysisResultFPGA results = new AnalysisResultFPGA(piGraph, null, null);
+    final LatencyCost lc = new LatencyCost(solution.getIntVal(latency), null);
+    return results;
   }
 
   // ============================================
@@ -765,7 +775,8 @@ public class FPGAConstraintScheduler implements IScheduler {
   // ============================================
 
   private IntVar buildModel(Model model, final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
-      Map<ExecutableActor, ActorTimings> schedule, List<IntVar> variablesToInstantiate, PrintStream writer) {
+      Map<ExecutableActor, ActorTimings> schedule, List<IntVar> variablesToInstantiate, PrintStream writer,
+      List<IntVar> variablesToOptimize) {
 
     final Map<AbstractVertex, Long> brv = PiBRV.compute(piGraph, BRVMethod.LCM);
 
@@ -1011,7 +1022,10 @@ public class FPGAConstraintScheduler implements IScheduler {
     // Branch on latency in last, because otherwise choco tries all values...
     variablesToInstantiate.add(latency);
 
-    return latency; // we return the variable to minimize (could be the period too)
+    // for now, we optimize only latency. Later we may perform multi-objective optimizations.
+    variablesToOptimize.add(latency);
+
+    return latency; // we return the latency variable
   }
 
   private void setStrategy(Solver solver, IntVar[] variablesToAssign) {
@@ -1070,15 +1084,18 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
   }
 
+  void computeWorstCaseBufferSizes(Map<ExecutableActor, ActorTimings> schedule, ) {
+
+  }
+
   // ====================================================
   // ============= Logging/saving functions =============
   // ====================================================
 
-  private FpgaSchedule saveAndPrintResults(Solution solution, IntVar varToOptimize,
-      Map<ExecutableActor, ActorTimings> schedule, PrintStream writer, PrintStream resultsCsv, Solver solver,
-      PrintStream gantt_data) {
+  private FpgaSchedule saveAndPrintResults(Solution solution, Map<ExecutableActor, ActorTimings> schedule,
+      PrintStream writer, PrintStream resultsCsv, Solver solver, PrintStream gantt_data, IntVar latency) {
 
-    final FpgaSchedule result = new FpgaSchedule(solution.getIntVal(varToOptimize));
+    final FpgaSchedule result = new FpgaSchedule(solution.getIntVal(latency));
 
     if (this.computeGantt) {
       gantt_data.println("tasks = [");
