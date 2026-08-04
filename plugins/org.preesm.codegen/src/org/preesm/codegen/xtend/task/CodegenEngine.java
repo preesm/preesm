@@ -352,8 +352,8 @@ public class CodegenEngine {
           PreesmIOHelper.getInstance().print(codegenPath, "Makefile", makefile);
 
           final String timings_script = PreesmResourcesHelper.getInstance()
-              .read("stdfiles/xilinxCodegen/extract_syn_results.py", FpgaCodeGenerator.class);
-          PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_results.py", timings_script);
+              .read("stdfiles/xilinxCodegen/extract_syn_timings.py", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_timings.py", timings_script);
 
           final String gui = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/gui.py",
               FpgaCodeGenerator.class);
