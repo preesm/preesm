@@ -29,7 +29,9 @@ import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
+import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
@@ -42,8 +44,8 @@ import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.ExecutableActor;
-import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -534,6 +536,14 @@ public class FPGAConstraintScheduler implements IScheduler {
    */
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
 
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(piGraph, BRVMethod.LCM);
+    final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = FpgaAnalysis.checkInterfaces(piGraph, brv);
+    final AnalysisResultFPGA results = new AnalysisResultFPGA(piGraph, brv, interfaceRates);
+
+    // A bit overkill, but useful as a sanity check. It might be useful to use mapActorNormalizedInfos in the code.
+    final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos = AbstractGenericFpgaFifoEvaluator
+        .logCheckAndSetActorNormalizedInfos(scenario, results);
+
     final Map<ExecutableActor, ActorTimings> schedule = new HashMap<>();
 
     PrintStream writer = System.out;
@@ -566,49 +576,21 @@ public class FPGAConstraintScheduler implements IScheduler {
       e.printStackTrace();
     }
 
-//    final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
-//    final int[] start_divisors = new int[] { 1, };// 2, 5, 20,50, 100, 10
-//    final int[] nbs_cycles = new int[] { 1_000_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
-//    final Map<String, List<Integer>> parameters = new HashMap<>();
-//    parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
+    // final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
+    // final int[] start_divisors = new int[] { 1, };// 2, 5, 20,50, 100, 10
+    // final int[] nbs_cycles = new int[] { 1_000_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
+    // final Map<String, List<Integer>> parameters = new HashMap<>();
+    // parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
 
     final int max_time_seconds = 10;
-//    final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
-//        * parameters.values().stream().mapToInt(l -> l.size()).sum();
-//    System.out.printf("Total number of combinations : %d %n", nb_comb);
+    // final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
+    // * parameters.values().stream().mapToInt(l -> l.size()).sum();
+    // System.out.printf("Total number of combinations : %d %n", nb_comb);
     System.out.printf("Max duration : %d seconds %n", max_time_seconds);
-
-    final int nbRun = 0;
-    final Expression savedParameterValue = null;
-    // for (final var paramName : parameters.keySet()) {
-    // for (final int nb_cycles : nbs_cycles) {
-    // CYCLE_MAX = nb_cycles;
-
-    // final Parameter graphParameter = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName))
-    // .findFirst().orElse(null);
-
-    // int nbParams;
-    // if (graphParameter != null) {
-    // savedParameterValue = graphParameter.getExpression();
-    // nbParams = parameters.get(paramName).size();
-    // } else {
-    // writer.println("No parameter named " + paramName + " found in graph " + piGraph.getName()
-    // + ", running scheduling with only base parameter values.");
-    // nbParams = 1;
-    // }
-
-    // for (int param_index = 0; param_index < nbParams; param_index++) {
-    // if (graphParameter != null) {
-    // graphParameter.setExpression(parameters.get(paramName).get(param_index));
-    // }
 
     final Model model = new Model("Period computing");
     final List<IntVar> variablesToInstantiate = new LinkedList<>();
-    // final IntVar latency = null; // initialized by buildModel
     final List<IntVar> variablesToOptimize = new LinkedList<>();
-    // final IntVar variableToOptimize = buildModel(model, piGraph, slamDesign, scenario, schedule,
-    // variablesToInstantiate,
-    // writer, latency);
     final IntVar latency = buildModel(model, piGraph, slamDesign, scenario, schedule, variablesToInstantiate, writer,
         variablesToOptimize);
 
@@ -633,29 +615,10 @@ public class FPGAConstraintScheduler implements IScheduler {
       solver.showDecisions();
     }
 
-    // for (final int tokens_divisor : token_divisors) {
-    // for (final int start_divisor : start_divisors) {
-    // nbRun++;
-    // writer.printf("%n%n");
-    // System.out.printf("Starting run number %d/%d %n", nbRun, nb_comb);
-
-    // TOKENS_MAX = CYCLE_MAX / tokens_divisor;
-    // MAX_START_TIME = CYCLE_MAX / start_divisor;
-
-    // No need to enumerate all parameters, since only one is set to a non-base value at a time.
-    // final String config = String.format("CYCLE_MAX=%d-TOKENS_MAX=%d-MAX_START_TIME=%d-%s=%s", CYCLE_MAX,
-    // TOKENS_MAX, MAX_START_TIME, paramName, parameters.get(paramName).get(param_index));
-
-    // writer.println(config);
-    // if (writer != System.out) {
-    // System.out.printf("\tRunning config : %s %n", config);
-    // }
-
     PrintStream gantt_data = null;
     if (this.computeGantt) {
       try {
-        // gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + config + ".py");
-        gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data_" + ".py");
+        gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data.py");
       } catch (final FileNotFoundException e) {
         e.printStackTrace();
       }
@@ -673,7 +636,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
-    final Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
+    Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
 
     final PropagationProfiler profiler;
     final var w = writer; // fuck java
@@ -703,9 +666,8 @@ public class FPGAConstraintScheduler implements IScheduler {
         solution.record();
       }
     } else {
-      solution = solver.findLexOptimalSolution(, computeGantt, null)
+      solution = solver.findLexOptimalSolution(variablesToInstantiate.toArray(new IntVar[0]), Model.MINIMIZE);
     }
-
 
     if (logLevel >= 2) {
       try {
@@ -719,6 +681,11 @@ public class FPGAConstraintScheduler implements IScheduler {
       if (solver.getSolutionCount() != 0) {
         System.out.println("Solution found !");
         saveAndPrintResults(solution, schedule, writer, resultsCsv, solver, gantt_data, latency);
+        final var res = computeWorstCaseBufferSizes(piGraph, schedule, scenario);
+        for (final var t : res.entrySet()) {
+          System.out.println(t.getKey().getSource().getName() + "->" + t.getKey().getTarget().getName() + " : "
+              + t.getValue() + " bits");
+        }
         // solver.printStatistics();
         // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
       } else {
@@ -734,9 +701,6 @@ public class FPGAConstraintScheduler implements IScheduler {
       gantt_data.close();
     }
 
-    // solver.getMeasures().reset();
-    // solver.hardReset();
-
     try {
       searchTreeFile.close();
       resultsCsv.close();
@@ -747,25 +711,12 @@ public class FPGAConstraintScheduler implements IScheduler {
       e.printStackTrace();
     }
 
-    // }
-
-    // }
-
-    // }
-    // reset to base value
-    // if (graphParameter != null) {
-    // graphParameter.setExpression(savedParameterValue);
-    // }
-    // }
-    // }
-
     final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
     final Map<String, Object> inputs = new HashMap<>();
     inputs.put("scenario", scenario);
     inputs.put("architecture", scenario.getDesign());
     inputs.put("algorithm", piGraph);
 
-    final AnalysisResultFPGA results = new AnalysisResultFPGA(piGraph, null, null);
     final LatencyCost lc = new LatencyCost(solution.getIntVal(latency), null);
     return results;
   }
@@ -906,9 +857,9 @@ public class FPGAConstraintScheduler implements IScheduler {
       for (int bk = 1; bk <= nbBreakpoints; bk++) {
         final IntVar t = breakpointsPositions[bk - 1];
 
-        // -------------------------------------------
-        // -- cumulated production at breakpoint bk --
-        // -------------------------------------------
+        // ----------------------------------------------
+        // --- cumulative production at breakpoint bk ---
+        // ----------------------------------------------
 
         // t - delay_prod : always positive, since breakpoints at prod are after it started, and cons starts after prod
         // at most the biggest breakpoint, which are capped to CYCLE_MAX
@@ -951,9 +902,9 @@ public class FPGAConstraintScheduler implements IScheduler {
             model.arithm(cumP[bk - 1], "=", prodFromPreviousPeriods) // particular case
         );
 
-        // ---------------------------------
-        // -- cumulated consumption at bk --
-        // ---------------------------------
+        // ------------------------------------
+        // --- cumulative consumption at bk ---
+        // ------------------------------------
 
         // t - delay_cons
         // lower bound : the consumer is delayed from the producer by at least the time it takes to start producing
@@ -1084,8 +1035,76 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
   }
 
-  void computeWorstCaseBufferSizes(Map<ExecutableActor, ActorTimings> schedule, ) {
+  /***
+   * computes worst-case buffer sizes for each fifo.
+   *
+   * @param graph
+   *          the graph.
+   * @param schedule
+   *          the schedule.
+   * @return a map of fifo to buffer size.
+   */
+  Map<Fifo, Long> computeWorstCaseBufferSizes(PiGraph graph, Map<ExecutableActor, ActorTimings> schedule,
+      Scenario scenario) {
+    final List<Fifo> fifos = getRelevantFifos(graph);
+    final Map<Fifo, Long> bufferSizes = new HashMap<>();
 
+    for (final Fifo f : fifos) {
+      final AbstractActor prodActor = f.getSource();
+      final ActorTimings prodTimings = schedule.get(prodActor);
+      final AbstractActor consActor = f.getTarget();
+      final ActorTimings consTimings = schedule.get(consActor);
+
+      final int prod_rate = getProdRate(f);
+      final int cons_rate = getConsRate(f);
+
+      // Producers and consumers have the same breakpoint formulas as before, but swapped
+      // the consumer now consumes at the end of its execution
+      // the producer now produces at the beginning of its execution
+
+      final int nbBreakpointsProd = lcm(prod_rate, cons_rate) / prod_rate; // bornes : [1 ; cons_rate]
+      final int nbBreakpointsCons = lcm(prod_rate, cons_rate) / cons_rate; // bornes : [1 ; prod_rate]
+      final String chosenBreakpoints = nbBreakpointsProd <= nbBreakpointsCons ? "Prod" : "Cons";
+      final int nbBreakpoints = Math.min(nbBreakpointsProd, nbBreakpointsCons);
+
+      final int[] breakpointsPositions = new int[nbBreakpoints];
+
+      if (chosenBreakpoints.equals("Cons")) {
+        // consumer breakpoints
+        for (int bk = 1; bk <= nbBreakpointsCons; bk++) {
+          // delay_cons + bk * periodCons - taux_cons
+          breakpointsPositions[bk - 1] = consTimings.startDate + bk * consTimings.period - cons_rate;
+        }
+      } else {
+        // producer breakpoints
+        for (int bk = 1; bk <= nbBreakpointsProd; bk++) {
+          // delay_prod + (bk - 1) * periodProd + taux_prod
+          breakpointsPositions[bk - 1] = prodTimings.startDate + (bk - 1) * consTimings.period + prod_rate;
+        }
+      }
+
+      // now for every breakpoint, we evaluate the cumulative production and consumption
+      // again with the same formulas as before, but swapped.
+
+      int maxBufferSize = 0;
+
+      for (int bk = 1; bk <= nbBreakpoints; bk++) {
+        final int t = breakpointsPositions[bk - 1];
+
+        // cumulative production at bk :
+        final int cumProd = (t - prodTimings.startDate) / prodTimings.period * prod_rate // previous firings
+            + Math.min((t - prodTimings.startDate) % consTimings.period, prod_rate); // current prod.
+
+        // cumulative consumption at bk :
+        final int cumCons = (t - consTimings.startDate) / consTimings.period * cons_rate // previous firings
+            + Math.max((t - consTimings.startDate) % consTimings.period - (consTimings.period - cons_rate), 0);
+        maxBufferSize = Math.max(cumProd - cumCons, maxBufferSize);
+      }
+
+      bufferSizes.put(f, maxBufferSize * scenario.getSimulationInfo().getDataTypeSizeInBit(f.getType()));
+    }
+
+    return bufferSizes;
   }
 
   // ====================================================
