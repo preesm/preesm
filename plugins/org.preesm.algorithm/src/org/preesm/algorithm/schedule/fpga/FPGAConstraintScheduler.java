@@ -60,7 +60,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static int       CYCLE_MAX      = 100_000;       // chemin critique et sommer latence*brv de chaque acteur ?
+  static int       CYCLE_MAX      = 1_000_000_000; // chemin critique et sommer latence*brv de chaque acteur ?
   static int       TOKENS_MAX     = CYCLE_MAX / 2; // arbitrary
   static int       MAX_START_TIME = CYCLE_MAX / 2; // abitrary
   static final int THRESHOLD_RV   = 1_000;         // arbitrary
@@ -383,7 +383,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
       at.computePeriodBasis(actors, schedule);
 
-      at.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var", 0,
+      at.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var", 1,
           at.period_var.getUB() / at.basisOfPeriod);
 
       // CONSTRAINT : the period is proportional to its basis. This basis must have been computed beforehand.
@@ -413,13 +413,13 @@ public class FPGAConstraintScheduler implements IScheduler {
           final int mult_ceil = Math.ceilDiv(cons_rate, prod_rate);
           final int mult_floor = Math.floorDiv(cons_rate, prod_rate);
 
-          at.startDatesFromInputs[nb]
-              .eq(pt.startDate_var.add(pt.period_var.mul(mult_floor)).add(pt.executionTime).sub(prod_rate * mult_ceil))
-              .post();
+          at.startDatesFromInputs[nb].eq(pt.startDate_var.add(pt.period_var.mul(mult_ceil))/* .add(pt.executionTime) */ // erreur
+              .sub(prod_rate * (mult_floor + 1))).post();
 
+          model.arithm(at.startDate_var, ">=", at.startDatesFromInputs[nb]).post();
           nb++;
         }
-        model.max(at.startDate_var, at.startDatesFromInputs).post();
+        // model.max(at.startDate_var, at.startDatesFromInputs).post();
 
       }
 
@@ -539,7 +539,6 @@ public class FPGAConstraintScheduler implements IScheduler {
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
 
     final Map<ExecutableActor, ActorTimings> schedule = new HashMap<>();
-    final List<IntVar> variablesToAssign = new LinkedList<>();
 
     PrintStream writer = System.out;
     PrintStream resultsCsv = null;
@@ -577,7 +576,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     final Map<String, List<Integer>> parameters = new HashMap<>();
     parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
 
-    final int max_time_seconds = 100;
+    final int max_time_seconds = 10;
     final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
         * parameters.values().stream().mapToInt(l -> l.size()).sum();
     System.out.printf("Total number of combinations : %d %n", nb_comb);
@@ -586,57 +585,59 @@ public class FPGAConstraintScheduler implements IScheduler {
     int nbRun = 0;
     Expression savedParameterValue = null;
     for (final var paramName : parameters.keySet()) {
-      final Parameter graphParameter = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName))
-          .findFirst().orElse(null);
+      for (final int nb_cycles : nbs_cycles) {
+        CYCLE_MAX = nb_cycles;
 
-      int nbParams;
-      if (graphParameter != null) {
-        savedParameterValue = graphParameter.getExpression();
-        nbParams = parameters.get(paramName).size();
-      } else {
-        writer.println("No parameter named " + paramName + " found in graph " + piGraph.getName()
-            + ", running scheduling with only base parameter values.");
-        nbParams = 1;
-      }
+        final Parameter graphParameter = piGraph.getParameters().stream().filter(p -> p.getName().contains(paramName))
+            .findFirst().orElse(null);
 
-      for (int param_index = 0; param_index < nbParams; param_index++) {
+        int nbParams;
         if (graphParameter != null) {
-          graphParameter.setExpression(parameters.get(paramName).get(param_index));
+          savedParameterValue = graphParameter.getExpression();
+          nbParams = parameters.get(paramName).size();
+        } else {
+          writer.println("No parameter named " + paramName + " found in graph " + piGraph.getName()
+              + ", running scheduling with only base parameter values.");
+          nbParams = 1;
         }
 
-        final Model model = new Model("Period computing");
-        final IntVar variableToOptimize = buildModel(model, piGraph, slamDesign, scenario, schedule, variablesToAssign,
-            writer);
+        for (int param_index = 0; param_index < nbParams; param_index++) {
+          if (graphParameter != null) {
+            graphParameter.setExpression(parameters.get(paramName).get(param_index));
+          }
 
-        // --------
-        // Solution
-        // --------
+          final Model model = new Model("Period computing");
+          final List<IntVar> variablesToInstantiate = new LinkedList<>();
+          final IntVar variableToOptimize = buildModel(model, piGraph, slamDesign, scenario, schedule,
+              variablesToInstantiate, writer);
 
-        final Solver solver = model.getSolver();
+          // --------
+          // Solution
+          // --------
 
-        solver.log().remove(System.out);
-        solver.log().add(writer);
+          final Solver solver = model.getSolver();
 
-        if (logLevel >= 1) {
-          writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
-              model.getNbCstrs());
-          // solver.verboseSolving(1000); // marche pas
-        }
-        if (logLevel >= 2) {
-          // solver.showStatisticsDuringResolution(1000);
-          model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
-          solver.showContradiction();
-          solver.showDecisions();
-        }
+          solver.log().remove(System.out);
+          solver.log().add(writer);
 
-        for (final int tokens_divisor : token_divisors) {
-          for (final int start_divisor : start_divisors) {
-            for (final int nb_cycles : nbs_cycles) {
+          if (logLevel >= 1) {
+            writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
+                model.getNbCstrs());
+            // solver.verboseSolving(1000); // marche pas
+          }
+          if (logLevel >= 2) {
+            // solver.showStatisticsDuringResolution(1000);
+            model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
+            solver.showContradiction();
+            solver.showDecisions();
+          }
+
+          for (final int tokens_divisor : token_divisors) {
+            for (final int start_divisor : start_divisors) {
               nbRun++;
               writer.printf("%n%n");
               System.out.printf("Starting run number %d/%d %n", nbRun, nb_comb);
 
-              CYCLE_MAX = nb_cycles;
               TOKENS_MAX = CYCLE_MAX / tokens_divisor;
               MAX_START_TIME = CYCLE_MAX / start_divisor;
 
@@ -666,11 +667,11 @@ public class FPGAConstraintScheduler implements IScheduler {
               // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
               final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
 
-              setStrategy(solver, variablesToAssign.toArray(new IntVar[0]));
+              setStrategy(solver, variablesToInstantiate.toArray(new IntVar[0]));
 
               BlackBoxConfigurator.forCOP(); // Utile ? J'ai l'impression que non...
 
-              Solution solution = new Solution(model);
+              final Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
 
               final PropagationProfiler profiler;
               final var w = writer; // fuck java
@@ -680,7 +681,7 @@ public class FPGAConstraintScheduler implements IScheduler {
               runInitialPropagation(solver, writer);
 
               writer.println("State of variables to instanciate after the initial propagation :");
-              writer.println(variablesToAssign.stream().map(Object::toString).collect(Collectors.joining("\n")));
+              writer.println(variablesToInstantiate.stream().map(Object::toString).collect(Collectors.joining("\n")));
 
               writer.println("All vars : \n"
                   + String.join("\n", Arrays.asList(model.getVars()).stream().map(Object::toString).toList()));
@@ -689,14 +690,15 @@ public class FPGAConstraintScheduler implements IScheduler {
               if (logLevel >= 2) {
                 for (final var v : model.getVars()) {
                   if (v.getName().contains("var")) {
-                    v.addMonitor((var, event) -> w.printf("%s : %s -> %s%n", event, var.getName(), var));
+                    v.addMonitor((va, event) -> w.printf("%s : %s -> %s%n", event, va.getName(), va));
                   }
                 }
               }
 
-              solution = solver.findOptimalSolution(variableToOptimize, Model.MINIMIZE);
-              // solution = solver.findLexOptimalSolution(variablesToAssign.toArray(new IntVar[0]), Model.MINIMIZE,
-              // null);
+              model.setObjective(Model.MINIMIZE, variableToOptimize);
+              while (solver.solve()) {
+                solution.record();
+              }
 
               if (logLevel >= 2) {
                 try {
@@ -709,14 +711,15 @@ public class FPGAConstraintScheduler implements IScheduler {
               try {
                 if (solver.getSolutionCount() != 0) {
                   System.out.println("Solution found !");
-                  saveAndPrintResults(solution, variableToOptimize, variablesToAssign, schedule, writer, resultsCsv,
-                      solver, gantt_data);
+                  saveAndPrintResults(solution, variableToOptimize, schedule, writer, resultsCsv, solver, gantt_data);
                   // solver.printStatistics();
                   // SolvingStatisticsFlow.toJSON(solver); // marche pas, dommage
                 } else {
+                  System.out.println("No solution was found");
                   printFailureAndLog(model, writer);
                 }
               } catch (final Exception e) {
+                System.out.println("An exception happened");
                 e.printStackTrace();
               }
 
@@ -735,11 +738,12 @@ public class FPGAConstraintScheduler implements IScheduler {
             }
 
           }
+
         }
-      }
-      // reset to base value
-      if (graphParameter != null) {
-        graphParameter.setExpression(savedParameterValue);
+        // reset to base value
+        if (graphParameter != null) {
+          graphParameter.setExpression(savedParameterValue);
+        }
       }
     }
 
@@ -761,7 +765,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   // ============================================
 
   private IntVar buildModel(Model model, final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
-      Map<ExecutableActor, ActorTimings> schedule, List<IntVar> variablesToAssign, PrintStream writer) {
+      Map<ExecutableActor, ActorTimings> schedule, List<IntVar> variablesToInstantiate, PrintStream writer) {
 
     final Map<AbstractVertex, Long> brv = PiBRV.compute(piGraph, BRVMethod.LCM);
 
@@ -783,6 +787,14 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     for (final ExecutableActor actor : actors) {
       final ActorTimings at = createActorTimings(actor, actors, scenario, Fpga, brv, model);
+      if (computeGantt) {
+        // the period and end date are linked to other variables by equations, and thus will be computed during the
+        // minimization of the latency. However, the start dates are only constrained with >=, not =, so we need to
+        // branch on them. The others are also branched on because ça fait pas de mal.
+        variablesToInstantiate.add(at.startDate_var);
+        variablesToInstantiate.add(at.period_var);
+        variablesToInstantiate.add(at.endDate_var);
+      }
       schedule.put(actor, at);
     }
 
@@ -876,7 +888,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       final IntVar rate_cons = model.intVar("rate_cons_" + fifo.getId(), cons_rate);
 
       // These variables record whether we are in the particular case period = rate, in which there is not breakpoint
-      // (change from idle/cons to idle/prod)
+      // (change from idle/cons to prod/idle)
       final BoolVar activeProdBreakpoints = model.arithm(prodTimings.period_var, "!=", prod_rate).reify();
       final BoolVar activeConsBreakpoints = model.arithm(consTimings.period_var, "!=", cons_rate).reify();
 
@@ -994,10 +1006,10 @@ public class FPGAConstraintScheduler implements IScheduler {
     final IntVar latency = model.max("latency", getEdgeActorsEndDates(schedule).toArray(new IntVar[0]));
 
     // branch on it even if no gantt, to reduce latency's domain size
-    variablesToAssign.add(freePeriod);
+    variablesToInstantiate.add(freePeriod);
 
     // Branch on latency in last, because otherwise choco tries all values...
-    variablesToAssign.add(latency);
+    variablesToInstantiate.add(latency);
 
     return latency; // we return the variable to minimize (could be the period too)
   }
@@ -1062,7 +1074,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   // ============= Logging/saving functions =============
   // ====================================================
 
-  private FpgaSchedule saveAndPrintResults(Solution solution, IntVar varToOptimize, List<IntVar> variablesToAssign,
+  private FpgaSchedule saveAndPrintResults(Solution solution, IntVar varToOptimize,
       Map<ExecutableActor, ActorTimings> schedule, PrintStream writer, PrintStream resultsCsv, Solver solver,
       PrintStream gantt_data) {
 
@@ -1124,6 +1136,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     if (this.computeGantt) {
       gantt_data.println("\n]");
       gantt_data.println("hyperperiod = " + hyperperiod);
+      gantt_data.println("latency = " + result.latency);
     }
 
     writer.println("\nlatency = " + result.latency);
@@ -1138,6 +1151,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   }
 
   private void printFailureAndLog(Model model, PrintStream writer) {
+    writer.println();
     writer.println("No solution was found !");
     if (logLevel >= 2) {
       final List<String> truc = Arrays.asList(model.getVars()).stream().filter(v -> v.getName().endsWith("_var"))
