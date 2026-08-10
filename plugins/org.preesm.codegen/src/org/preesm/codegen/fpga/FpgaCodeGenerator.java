@@ -673,6 +673,12 @@ public class FpgaCodeGenerator {
       declaration += String.join(", ", functionVariables);
 
       declaration += ") {\n";
+      declaration += """
+          #ifndef TIMINGS_EXTRACTION
+          #pragma HLS inline
+          #endif
+          """;
+
       result.append(declaration);
 
       // write call to actual refinement

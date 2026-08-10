@@ -6,15 +6,44 @@ import re
 import pandas as pd
 
 
+def get_innermost_module_name(start_node):
+    """Helper to traverse down to the innermost module in an imbricated chain."""
+    current_node = start_node
+    while True:
+        ilist = current_node.find('InstancesList')
+        if ilist is not None:
+            sub_instances = ilist.findall('Instance')
+            if len(sub_instances) == 1:
+                # Move down to the next nested module
+                current_node = sub_instances[0]
+                continue
+        break
+    return current_node.findtext('ModuleName')
+
+
 def extract_latencies_and_intervals(xml_path):
     tree = ET.parse(xml_path)
     root = tree.getroot()
 
-    # Dictionnaire pour stocker les résultats
+    # Dictionary to store the results
     results = {}
 
-    # Recherche dans la section PerformanceEstimates / SummaryOfOverallLatency
+    # Default to the top-level performance estimates
     summary = root.find(".//PerformanceEstimates/SummaryOfOverallLatency")
+
+    # Trace from TopModule to see if it is just a wrapper, and find the innermost module
+    top_module = root.find(".//RTLDesignHierarchy/TopModule")
+    if top_module is not None:
+        innermost_name = get_innermost_module_name(top_module)
+        if innermost_name:
+            # Look for the module block corresponding to the innermost module
+            for module in root.findall(".//ModuleInformation/Module"):
+                if module.findtext("n") == innermost_name:
+                    inner_summary = module.find("PerformanceEstimates/SummaryOfOverallLatency")
+                    if inner_summary is not None:
+                        summary = inner_summary  # Override with innermost timings
+                    break
+
     if summary is not None:
         results["Best-caseLatency"] = summary.findtext("Best-caseLatency")
         results["Average-caseLatency"] = summary.findtext("Average-caseLatency")
@@ -24,15 +53,19 @@ def extract_latencies_and_intervals(xml_path):
         results["Average-caseRealTimeLatency"] = summary.findtext("Average-caseRealTimeLatency")
         results["Worst-caseRealTimeLatency"] = summary.findtext("Worst-caseRealTimeLatency")
 
-        results["Interval-min"] = max(int(summary.findtext("Interval-min")),1)
-        results["Interval-max"] = max(int(summary.findtext("Interval-max")),1)
+        # Safely extract intervals (innermost summaries might lack these tags if using PipelineInitiationInterval)
+        interval_min = summary.findtext("Interval-min")
+        results["Interval-min"] = max(int(interval_min), 1) if interval_min else 1
+
+        interval_max = summary.findtext("Interval-max")
+        results["Interval-max"] = max(int(interval_max), 1) if interval_max else 1
 
     return results
 
 
 def extract_metrics(folder_path, xml_path, cluster_name):
     """Extract per-first-level-module Worst-caseLatency and Interval-max 
-    from a HLS synthesis XML file."""
+    from an HLS synthesis XML file, using the innermost module's timings."""
     try:
         tree = ET.parse(xml_path)
         root = tree.getroot()
@@ -53,33 +86,52 @@ def extract_metrics(folder_path, xml_path, cluster_name):
                     "Interval-max": max(int(interval), 1) if interval else 1,
                 }
 
-        # Get first-level module names from RTLDesignHierarchy/TopModule
+        # Get first-level instances from RTLDesignHierarchy/TopModule
         top_module = root.find(".//RTLDesignHierarchy/TopModule")
-        first_level_names = []
+        first_level_instances = []
         if top_module is not None:
             for instance in top_module.findall("InstancesList/Instance"):
-                mod_name = instance.findtext("ModuleName")
-                if mod_name:
-                    first_level_names.append(mod_name)
+                first_level_instances.append(instance)
 
         filename = os.path.basename(xml_path)
         results = []
-        for name in first_level_names:
-            report_file_path = os.path.join(folder_path, name + "_csynth.xml")
-            result_tree = ET.parse(report_file_path)
-            result_root = result_tree.getroot()
+        
+        for instance in first_level_instances:
+            base_name = instance.findtext("ModuleName")
+            if not base_name:
+                continue
 
-            lat = module_latency.get(name, {"Worst-caseLatency": max(int(result_root.findtext(".//Worst-caseLatency")), 1), "Interval-max": max(int(result_root.findtext(".//Interval-max")), 1)})
+            # Trace down to find the innermost module name
+            innermost_name = get_innermost_module_name(instance)
+            
+            # Use innermost_name for XML lookup, fallback to base_name if file doesn't exist
+            report_file_path = os.path.join(folder_path, innermost_name + "_csynth.xml")
+            if not os.path.exists(report_file_path):
+                report_file_path = os.path.join(folder_path, base_name + "_csynth.xml")
+                
+            try:
+                result_tree = ET.parse(report_file_path)
+                result_root = result_tree.getroot()
+                file_worst = result_root.findtext(".//Worst-caseLatency")
+                file_interval = result_root.findtext(".//Interval-max")
+            except Exception:
+                file_worst = None
+                file_interval = None
 
-            # name format for actor wrappers : *actor name*-*CLUSTER NAME*
+            lat = module_latency.get(innermost_name, {
+                "Worst-caseLatency": max(int(file_worst), 1) if file_worst else 1, 
+                "Interval-max": max(int(file_interval), 1) if file_interval else 1
+            })
+
+            # Keep the name format mapping to the original top-level wrapper, but apply innermost timings
             results.append({
                 "file": filename,
-                "actor": cluster_name + "/" + name.split("_CLUSTEREDIN_")[0], 
+                "actor": cluster_name + "/" + base_name.split("_CLUSTEREDIN_")[0], 
                 "latency": lat["Worst-caseLatency"],
                 "II": lat["Interval-max"],
             })
 
-        return results  # returns a list of dicts, one per first-level module
+        return results
 
     except ET.ParseError:
         print("Warning: could not parse {}".format(xml_path))
@@ -125,7 +177,6 @@ def update_timings_xls(xls_path, timings):
     df.to_excel(xls_path)
 
 def update_timings_csv(csv_path, timings):
-    """ généré par claude, pas encore testé """
     try:
         df = pd.read_csv(csv_path, index_col=0, sep=";")
     except FileNotFoundError:
@@ -143,6 +194,7 @@ def update_timings_csv(csv_path, timings):
     df["FPGA-latency"] = df["FPGA-latency"].astype("Int64")
     df["FPGA-II"] = df["FPGA-II"].astype("Int64")
     df.to_csv(csv_path, sep=";")
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
@@ -164,7 +216,6 @@ if __name__ == "__main__":
             clusters_list.append(line.rstrip())
     print("list of cluster kernels : ", ", ".join(clusters_list))
 
-    
     import vitis
     shutil.rmtree(workspace + "/", ignore_errors=True)
     os.makedirs(workspace)
@@ -181,7 +232,7 @@ if __name__ == "__main__":
         liste_hls_usercmake = [
         f"syn.top={kernel}",
         f"syn.file={generated_folder}/{kernel}.cpp",
-        f"syn.cflags=-I{code_folder}/include -I{generated_folder}/",
+        f"syn.cflags=-I{code_folder}/include -I{generated_folder}/ -DTIMINGS_EXTRACTION",
         ]
         cfg_obj.add_lines('hls', liste_hls_usercmake)
 
@@ -190,13 +241,12 @@ if __name__ == "__main__":
         # ‘C_SIMULATION’, ‘SYNTHESIS’, ‘CO_SIMULATION’, ‘IMPLEMENTATION’, ‘ANALYSIS_OPTIMIZATION’, and ‘PACKAGE’
 
     vitis.dispose()
-    
 
     functiontoactor = {}
     for kernel in clusters_list:
         xml_file = workspace + "/" + kernel + "/" + kernel + "/hls/syn/report/" + kernel + "_csynth.xml"
 
-        # first extract the timing of the overall FPGA cluster
+        # first extract the timing of the overall FPGA cluster (using innermost logic)
         metrics = extract_latencies_and_intervals(xml_file)
 
         print(f"\n=== HlS estimated timings of cluster kernel {kernel} ===")
@@ -209,8 +259,10 @@ if __name__ == "__main__":
         longest_lat_line = 10
         longest_interval_line = 10
         report_dir = workspace + "/" + kernel + "/" + kernel + "/hls/syn/report/"
+        report_file = os.path.join(report_dir, "csynth.xml")
 
-        results = extract_metrics(report_dir, os.path.join(report_dir, "csynth.xml"), kernel) 
+        # extract_metrics now fetches timings directly from the innermost submodules
+        results = extract_metrics(report_dir, report_file, kernel) 
 
         if ext == ".xlsx":
             update_timings_xlsx(timing_file_path, results)
