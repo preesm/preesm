@@ -650,24 +650,29 @@ public class FpgaCodeGenerator {
       final List<String> functionVariables = new LinkedList<>();
 
       for (final var arg : actorRefinement.getLoopPrototype().getArguments()) {
-        // 1 : extract the template type
-        final var templateVar = arg.getType().replaceAll(".*<(.*)>.*", "$1");
-
-        // 2 : trouver le dataport
-        // get first should be fine since there can not be (i think) two data ports with the same name
-        final var truc = dataPorts.stream().filter(dp -> dp.getName().equals(arg.getName())).toList();
-        if (truc.isEmpty()) {
+        // 1 : trouver le dataport
+        final var dataports = dataPorts.stream().filter(dp -> dp.getName().equals(arg.getName())).toList();
+        if (dataports.isEmpty()) {
           throw new PreesmRuntimeException("No dataport could be associated with argument " + arg.getName()
               + " in function " + actorRefinement.getLoopPrototype().getName()
               + ". Remember all const arguments must be passed as templates to HLS functions.");
         }
-        final DataPort dataPort = truc.getFirst();
-
-        // 3 : récupérer le type de la fifo correspondante
+        final DataPort dataPort = dataports.getFirst();
+        // 2 : récupérer le type de la fifo correspondante
         final String dataType = dataPort.getFifo().getType();
 
+        final String fullType;
+        if (arg.getType().contains("<")) {
+          // Replaces everything between the outermost '<' and '>' with dataType
+          fullType = arg.getType().replaceFirst("<.*>", "<" + java.util.regex.Matcher.quoteReplacement(dataType) + ">");
+        } else {
+          // If arg.getType() is just a plain template variable (e.g., "T")
+          fullType = dataType;
+        }
+
         // '&' because streams are passed by reference
-        functionVariables.add(arg.getType().replace(templateVar, dataType) + "& " + arg.getName());
+        functionVariables.add(fullType + "& " + arg.getName());
+
       }
 
       declaration += String.join(", ", functionVariables);
