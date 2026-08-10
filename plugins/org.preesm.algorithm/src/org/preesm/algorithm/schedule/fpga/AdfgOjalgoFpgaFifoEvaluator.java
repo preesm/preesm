@@ -197,6 +197,9 @@ public class AdfgOjalgoFpgaFifoEvaluator extends AbstractGenericFpgaFifoEvaluato
       computedFifoSizes.put(k, fifoSizeInBits);
       PreesmLogger.getLogger().info("FIFO " + k.getId() + " size: " + fifoSizeInBits + " bits");
     });
+    final int totalFifoSizes = (int) computedFifoSizes.values().stream().mapToLong(Long::longValue).sum();
+
+    PreesmLogger.getLogger().info("Total fifos size : " + totalFifoSizes + " bits");
 
     // store the results before returning
     analysisResult.flatFifoSizes = computedFifoSizes;
