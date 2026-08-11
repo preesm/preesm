@@ -38,7 +38,10 @@
  */
 package org.preesm.algorithm.synthesis;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -102,14 +105,16 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
   public static final String VALUE_ALLOCATORS_SIMPLE = "simple";
   public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
 
-  public static final String VALUE_SCHEDULER_SIMPLE      = "simple";
-  public static final String VALUE_SCHEDULER_MR_SIMPLE   = "MRsimple";
-  public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
-  public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
-  public static final String VALUE_SCHEDULER_CHOCO       = "choco";
-  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
-  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
-  public static final String VALUE_FPGA_TEST             = "testscheduler";
+  public static final String       VALUE_SCHEDULER_SIMPLE      = "simple";
+  public static final String       VALUE_SCHEDULER_MR_SIMPLE   = "MRsimple";
+  public static final String       VALUE_SCHEDULER_LEGACY      = "legacy";
+  public static final String       VALUE_SCHEDULER_PERIODIC    = "periodic";
+  public static final String       VALUE_SCHEDULER_CHOCO       = "choco";
+  public static final String       VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
+  public static final String       VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
+  public static final String       VALUE_FPGA_CONSTRAINT       = "constraintscheduler";
+  public static final List<String> FPGA_SCHEDULERS             = new ArrayList<>(
+      Arrays.asList(VALUE_SCHEDULER_FPGA_LINEAR, VALUE_SCHEDULER_FPGA_EXACT, VALUE_FPGA_CONSTRAINT));
 
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
