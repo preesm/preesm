@@ -28,6 +28,10 @@ import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
+import org.eclipse.core.resources.IWorkspaceRoot;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
@@ -35,6 +39,8 @@ import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.Analy
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.commons.files.PreesmIOHelper;
+import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -449,9 +455,10 @@ public class FPGAConstraintScheduler implements IScheduler {
             // bound.
             final int delay_size = (int) fifo.getDelay().getExpression().evaluateAsLong();
             final int nbFirings = delay_size / cons_rate;
+            final int supplementaryTokens = delay_size % cons_rate;
 
             startDateFromInput.eq(pt.startDate_var.add(pt.executionTime).add(pt.period_var.mul(k_max))
-                .sub(prod_rate * (k_max + 1)).sub(at.period_var.mul(nbFirings))).post();
+                .sub(prod_rate * (k_max + 1)).sub(at.period_var.mul(nbFirings)).sub(supplementaryTokens)).post();
           }
 
           model.arithm(at.startDate_var, ">=", startDateFromInput /* at.startDatesFromInputs[nb] */).post();
@@ -567,11 +574,31 @@ public class FPGAConstraintScheduler implements IScheduler {
     PrintStream resultsCsv = null;
     final Date date = new Date();
 
-    final File dir = new File("/home/jamorin/Documents/these/data/fpga_scheduling/choco-run__" + piGraph.getName()
-        + "__" + date.getMonth() + "-" + date.getDay() + "-" + date.getHours() + "h" + date.getMinutes());
+    final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
+    final IPath osIPath = root.getFolder(new Path(scenario.getCodegenDirectory())).getLocation();
+    final String absolutePathString = osIPath.toOSString();
+
+    final File dir = new File(absolutePathString + "/choco-run__" + piGraph.getName() + "__" + date.getMonth() + "-"
+        + date.getDay() + "-" + date.getHours() + "h" + date.getMinutes() + "/");
     dir.mkdirs();
     final String folderPath = dir.getAbsolutePath();
     final String fileName = folderPath + "/choco_solver_logs";
+
+    try {
+      final String codegen_dir = scenario.getCodegenDirectory() + "/";
+      PreesmIOHelper.getInstance().print(codegen_dir, "plot_gantt.py",
+          PreesmResourcesHelper.getInstance().read("resources/scripts/plot_gantt.py", this.getClass()));
+      PreesmIOHelper.getInstance().print(codegen_dir, "plot_fifos_worst_buffer_sizes.py", PreesmResourcesHelper
+          .getInstance().read("resources/scripts/plot_fifos_worst_buffer_sizes.py", this.getClass()));
+      PreesmIOHelper.getInstance().print(codegen_dir, "plot_fifos_worst_latency.py",
+          PreesmResourcesHelper.getInstance().read("resources/scripts/plot_fifos_worst_latency.py", this.getClass()));
+      PreesmIOHelper.getInstance().print(codegen_dir, "plot_schedule.sh",
+          PreesmResourcesHelper.getInstance().read("resources/scripts/plot_schedule.sh", this.getClass()));
+      PreesmIOHelper.getInstance().print(codegen_dir, "collapse_dot_chains.py",
+          PreesmResourcesHelper.getInstance().read("resources/scripts/collapse_dot_chains.py", this.getClass()));
+    } catch (final IOException e) {
+      e.printStackTrace();
+    }
 
     if (logsInFile) {
       try {
@@ -1075,6 +1102,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     final List<Fifo> fifos = getRelevantFifos(graph);
     final Map<Fifo, Long> bufferSizes = new HashMap<>();
 
+    int totalSize = 0;
+
     for (final Fifo f : fifos) {
       final AbstractActor prodActor = f.getSource();
       final ActorTimings prodTimings = schedule.get(prodActor);
@@ -1138,8 +1167,7 @@ public class FPGAConstraintScheduler implements IScheduler {
 
           final int cumCons = previous_periods_cons + current_period_cons;
 
-          System.out.println("\tbreakpoint " + bk + " à t=" + t + " : cumP = " + cumProd + "\t cumC = " + cumCons
-              + " = " + previous_periods_cons + " + " + current_period_cons);
+          System.out.println("\tbreakpoint " + bk + " à t=" + t + " : cumP = " + cumProd + "\t cumC = " + cumCons);
           maxBufferSize = Math.max(cumProd - cumCons, maxBufferSize);
         }
         System.out.println("max buffer size for " + f.getId() + " : " + maxBufferSize + " tokens");
@@ -1162,7 +1190,9 @@ public class FPGAConstraintScheduler implements IScheduler {
         System.out.println("breakpoint à t=" + t + " : cumP = " + cumProd + "\t cumC = 0");
         System.out.println("max buffer size for " + f.getId() + " : " + cumProd + " tokens");
       }
+      totalSize += bufferSizes.get(f);
     }
+    System.out.println("Total buffer size : " + totalSize + " bits");
 
     return bufferSizes;
   }
