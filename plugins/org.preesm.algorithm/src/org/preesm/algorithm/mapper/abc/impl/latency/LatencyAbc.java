@@ -109,7 +109,7 @@ public abstract class LatencyAbc {
   /**
    * Current implementation: the internal model that will be used to add edges/vertices and calculate times.
    */
-  protected MapperDAG implementation;
+  private MapperDAG implementation;
 
   /** Current Abc type. */
   private AbcType abcType = null;
@@ -578,7 +578,11 @@ public abstract class LatencyAbc {
    */
   public final MapperDAGVertex translateInImplementationVertex(final MapperDAGVertex vertex) {
 
-    final MapperDAGVertex internalVertex = this.implementation.getMapperDAGVertex(vertex.getName());
+    if (vertex.vertexKind.equals(MapperDAGVertex.IMPLEMENTATION_VERTEX)) {
+      return vertex;
+    }
+
+    final MapperDAGVertex internalVertex = vertex.getAssociatedMDAGVertex();
 
     if (internalVertex == null) {
       final String message = "No simulator internal vertex with id " + vertex.getName();
@@ -596,8 +600,8 @@ public abstract class LatencyAbc {
    */
   private final MapperDAGEdge translateInImplementationEdge(final MapperDAGEdge edge) {
 
-    final MapperDAGVertex sourceVertex = translateInImplementationVertex((MapperDAGVertex) edge.getSource());
-    final MapperDAGVertex destVertex = translateInImplementationVertex((MapperDAGVertex) edge.getTarget());
+    final MapperDAGVertex sourceVertex = translateInImplementationVertex(edge.getSource());
+    final MapperDAGVertex destVertex = translateInImplementationVertex(edge.getTarget());
 
     return (MapperDAGEdge) this.implementation.getEdge(sourceVertex, destVertex);
   }
@@ -737,7 +741,7 @@ public abstract class LatencyAbc {
     this.dag = dag;
 
     // implementation is a duplicate from dag
-    this.implementation = dag.copy();
+    this.implementation = dag.createImplementationCopy();
 
     this.archi = archi;
     this.scenario = scenario;
@@ -768,7 +772,7 @@ public abstract class LatencyAbc {
   public void setDAG(final MapperDAG dag) {
 
     this.dag = dag;
-    this.implementation = dag.copy();
+    this.implementation = dag.createImplementationCopy();
 
     this.orderManager.reconstructTotalOrderFromDAG(this.implementation);
 

@@ -37,7 +37,11 @@
  */
 package org.preesm.algorithm.mapper.abc.edgescheduling;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import org.preesm.algorithm.mapper.abc.order.OrderManager;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.mapper.model.property.VertexTiming;
@@ -55,26 +59,6 @@ public class IntervalFinder {
   private OrderManager orderManager = null;
 
   /**
-   */
-  private static class FindType {
-
-    public static final FindType largestFreeInterval = new FindType();
-
-    public static final FindType earliestBigEnoughInterval = new FindType();
-
-    @Override
-    public String toString() {
-      if (this == FindType.largestFreeInterval) {
-        return "largestFreeInterval";
-      }
-      if (this == FindType.earliestBigEnoughInterval) {
-        return "earliestBigEnoughInterval";
-      }
-      return "";
-    }
-  }
-
-  /**
    * Instantiates a new interval finder.
    *
    * @param orderManager
@@ -83,23 +67,6 @@ public class IntervalFinder {
   public IntervalFinder(final OrderManager orderManager) {
     super();
     this.orderManager = orderManager;
-  }
-
-  /**
-   * Finds the largest free interval in a schedule.
-   *
-   * @param component
-   *          the component
-   * @param minVertex
-   *          the min vertex
-   * @param maxVertex
-   *          the max vertex
-   * @return the interval
-   */
-  public Interval findLargestFreeInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
-      final MapperDAGVertex maxVertex) {
-
-    return findInterval(component, minVertex, maxVertex, FindType.largestFreeInterval, 0);
   }
 
   /**
@@ -116,26 +83,7 @@ public class IntervalFinder {
   public Interval findEarliestNonNullInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
       final MapperDAGVertex maxVertex) {
 
-    return findInterval(component, minVertex, maxVertex, FindType.earliestBigEnoughInterval, 0);
-  }
-
-  /**
-   * Finds the largest free interval in a schedule between a minVertex and a maxVertex.
-   *
-   * @param component
-   *          the component
-   * @param minVertex
-   *          the min vertex
-   * @param maxVertex
-   *          the max vertex
-   * @param type
-   *          the type
-   * @param data
-   *          the data
-   * @return the interval
-   */
-  private Interval findInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
-      final MapperDAGVertex maxVertex, final FindType type, final long data) {
+    final int data = 0;
 
     final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
 
@@ -172,9 +120,11 @@ public class IntervalFinder {
       // If we have the current vertex tLevel
       if (props.getTLevel() >= 0) {
 
+        final int vertexTotalOrderIndex = this.orderManager.totalIndexOf(v);
+
         // newInt is the interval corresponding to the execution of
         // the vertex v: a non free interval
-        newInt = new Interval(props.getCost(), props.getTLevel(), this.orderManager.totalIndexOf(v));
+        newInt = new Interval(props.getCost(), props.getTLevel(), vertexTotalOrderIndex);
 
         // end of the preceding non free interval
         final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
@@ -184,16 +134,8 @@ public class IntervalFinder {
         // Computing the size of the free interval
         final long freeIntervalSize = newInt.getStartTime() - available;
 
-        if (type == FindType.largestFreeInterval) {
-          // Verifying that newInt is in the interval of search
-          if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)
-              && freeIntervalSize > freeInterval.getDuration()) {
-            // The free interval takes the index of its following task v.
-            // Inserting a vertex in this interval means inserting it before v.
-            freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
-          }
-        } else if (type == FindType.earliestBigEnoughInterval && (newInt.getTotalOrderIndex() > minIndex)
-            && (newInt.getTotalOrderIndex() <= maxIndex) && freeIntervalSize >= data) {
+        if ((newInt.getTotalOrderIndex() > minIndex) && (newInt.getTotalOrderIndex() <= maxIndex)
+            && freeIntervalSize >= data) {
           // The free interval takes the index of its following task v.
           // Inserting a vertex in this interval means inserting it before v.
           freeInterval = new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex());
@@ -204,6 +146,121 @@ public class IntervalFinder {
     }
 
     return freeInterval;
+  }
+
+  /**
+   * Finds the largest free interval in a schedule.
+   *
+   * @param component
+   *          the component
+   * @param minVertex
+   *          the min vertex
+   * @param maxVertex
+   *          the max vertex
+   * @return the interval
+   */
+
+  public Interval findLargestFreeInterval(final ComponentInstance component, final MapperDAGVertex minVertex,
+      final MapperDAGVertex maxVertex) {
+
+    final List<MapperDAGVertex> schedule = this.orderManager.getVertexList(component);
+
+    if (schedule == null || schedule.isEmpty()) {
+      return new Interval(-1, -1, 0);
+    }
+
+    final long minIndexVertexEndTime;
+    final int minIndex;
+    int minIterIndex = -1;
+
+    if (minVertex != null) {
+
+      minIndex = this.orderManager.totalIndexOf(minVertex);
+      minIterIndex = schedule.indexOf(minVertex);
+
+      final VertexTiming props = minVertex.getTiming();
+      if (props.getTLevel() >= 0) {
+        minIndexVertexEndTime = props.getTLevel() + props.getCost();
+      } else {
+        minIndexVertexEndTime = -1;
+      }
+    } else {
+      minIndex = -1;
+      minIndexVertexEndTime = -1;
+    }
+
+    if (minIterIndex == -1) {
+      minIterIndex = 0;
+    }
+
+    final int maxIndex;
+    final int maxIterIndex;
+    if (maxVertex != null) {
+      maxIndex = this.orderManager.totalIndexOf(maxVertex);
+      maxIterIndex = schedule.indexOf(maxVertex);
+    } else {
+      maxIndex = this.orderManager.getTotalOrder().size();
+      maxIterIndex = schedule.size();
+    }
+
+    // map to option, filter some, max Interval.getDuration
+    final Stream<Interval> stream = IntStream.range(minIterIndex, maxIterIndex).parallel()
+        .mapToObj(curIndex -> getOptionalInterval(schedule, curIndex, minIndexVertexEndTime, minIndex, maxIndex))
+        .filter(Optional::isPresent).map(Optional::get);
+
+    final Stream<Interval> stream2 = Stream.concat(Stream.of(new Interval(-1, -1, 0)), stream);
+
+    // No need to check Option, we manually added a valid element
+    return stream2.max(Comparator.comparing(Interval::getDuration)).get();
+  }
+
+  Optional<Interval> getOptionalInterval(List<MapperDAGVertex> schedule, int vertexIndex, long minIndexVertexEndTime,
+      int minIndex, int maxIndex) {
+
+    final MapperDAGVertex v = schedule.get(vertexIndex);
+    final VertexTiming props = v.getTiming();
+
+    // If we have the current vertex tLevel
+    if (props.getTLevel() < 0) {
+      return Optional.empty();
+    }
+
+    final int vertexTotalOrderIndex = this.orderManager.totalIndexOf(v);
+
+    // If current vertex is outside of lookup window
+    if (vertexTotalOrderIndex <= minIndex || vertexTotalOrderIndex > maxIndex) {
+      return Optional.empty();
+    }
+
+    final Interval newInt = new Interval(props.getCost(), props.getTLevel(), vertexTotalOrderIndex);
+
+    // get valid prev vertex
+    Interval oldInt = new Interval(-1, -1, 0);
+
+    int i = 1;
+    // Seems like the vertex at vertexIndex-1 always have a valid start time, making loop useless
+    while (oldInt.getStartTime() < 0) {
+
+      if (vertexIndex - i < 0) {
+        oldInt = new Interval(0, 0, -1);
+        break;
+      }
+
+      final MapperDAGVertex prevVertex = schedule.get(vertexIndex - i);
+      // don't care about total order here
+      oldInt = new Interval(prevVertex.getTiming().getCost(), prevVertex.getTiming().getTLevel(), -1);
+
+      i++;
+    }
+
+    // end of the preceding non free interval
+    final long oldEnd = oldInt.getStartTime() + oldInt.getDuration();
+    // latest date between the end of minVertex and the end of oldInt
+    final long available = Math.max(minIndexVertexEndTime, oldEnd);
+    // Computing the size of the free interval
+    final long freeIntervalSize = newInt.getStartTime() - available;
+
+    return Optional.of(new Interval(freeIntervalSize, available, newInt.getTotalOrderIndex()));
 
   }
 

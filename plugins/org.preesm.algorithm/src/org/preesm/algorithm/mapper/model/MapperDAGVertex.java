@@ -43,7 +43,6 @@ package org.preesm.algorithm.mapper.model;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
@@ -114,6 +113,16 @@ public class MapperDAGVertex extends DAGVertex {
     AbstractVertex.public_properties.add(ImplementationPropertyNames.VERTEX_OPERATOR);
   }
 
+  /** Constant REFERENCE_VERTEX. */
+  public static final String REFERENCE_VERTEX = MapperDAG.REFERENCE_DAG;
+
+  /** Constant IMPLEMENTATION_VERTEX. */
+  public static final String IMPLEMENTATION_VERTEX = MapperDAG.IMPLEMENTATION_DAG;
+
+  public String vertexKind = REFERENCE_VERTEX;
+
+  private MapperDAGVertex associatedMDAGVertex = null;
+
   /**
    * Instantiates a new mapper DAG vertex.
    */
@@ -164,22 +173,18 @@ public class MapperDAGVertex extends DAGVertex {
   @Override
   public MapperDAGVertex copy() {
 
-    MapperDAGVertex result = null;
+    final MapperDAGVertex result = switch (this) {
+      case final OverheadVertex ov -> new OverheadVertex(getId(), origVertex);
+      case final SendVertex thisSendVertex -> new SendVertex(getId(), (MapperDAG) getBase(), thisSendVertex.getSource(),
+          thisSendVertex.getTarget(), thisSendVertex.getRouteStepIndex(), thisSendVertex.getNodeIndex(), origVertex);
+      case final ReceiveVertex thisRcvVerex ->
+        new ReceiveVertex(getId(), (MapperDAG) getBase(), thisRcvVerex.getSource(), thisRcvVerex.getTarget(),
+            thisRcvVerex.getRouteStepIndex(), thisRcvVerex.getNodeIndex(), origVertex);
+      case final TransferVertex t -> new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(),
+          t.getRouteStepIndex(), t.getNodeIndex(), origVertex);
+      default -> new MapperDAGVertex(getName(), origVertex);
+    };
 
-    if (this instanceof OverheadVertex) {
-      result = new OverheadVertex(getId(), origVertex);
-    } else if (this instanceof final SendVertex thisSendVertex) {
-      result = new SendVertex(getId(), (MapperDAG) getBase(), thisSendVertex.getSource(), thisSendVertex.getTarget(),
-          thisSendVertex.getRouteStepIndex(), thisSendVertex.getNodeIndex(), origVertex);
-    } else if (this instanceof final ReceiveVertex thisRcvVerex) {
-      result = new ReceiveVertex(getId(), (MapperDAG) getBase(), thisRcvVerex.getSource(), thisRcvVerex.getTarget(),
-          thisRcvVerex.getRouteStepIndex(), thisRcvVerex.getNodeIndex(), origVertex);
-    } else if (this instanceof final TransferVertex t) {
-      result = new TransferVertex(getId(), (MapperDAG) getBase(), t.getSource(), t.getTarget(), t.getRouteStepIndex(),
-          t.getNodeIndex(), origVertex);
-    } else {
-      result = new MapperDAGVertex(getName(), origVertex);
-    }
     final VertexInit copy = getInit().copy();
     copy.setParentVertex(result);
     result.setInit(copy);
@@ -215,17 +220,12 @@ public class MapperDAGVertex extends DAGVertex {
 
   @Override
   public boolean equals(final Object obj) {
-
-    if (obj instanceof final MapperDAGVertex v) {
-      return (getName().compareTo(v.getName()) == 0);
-    }
-
-    return false;
+    return this == obj;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(getName());
+    return super.hashCode();
   }
 
   @Override
@@ -400,5 +400,13 @@ public class MapperDAGVertex extends DAGVertex {
    */
   public boolean hasEffectiveComponent() {
     return getEffectiveComponent() != null;
+  }
+
+  public MapperDAGVertex getAssociatedMDAGVertex() {
+    return associatedMDAGVertex;
+  }
+
+  public void setAssociatedMDAGVertex(MapperDAGVertex associatedMDAGVertex) {
+    this.associatedMDAGVertex = associatedMDAGVertex;
   }
 }

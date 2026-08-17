@@ -400,24 +400,40 @@ public class OrderManager extends Observable {
    */
   public void tagDAG(final MapperDAG dag) {
 
-    for (final MapperDAGVertex internalVertex : this.totalOrder.getList()) {
-      final MapperDAGVertex vertex = dag.getMapperDAGVertex(internalVertex.getName());
+    if (this.totalOrder.getList().isEmpty() || dag.vertexSet().isEmpty()) {
+      return;
+    }
 
-      if (vertex != null) {
-        tagVertex(vertex);
+    final String dagVertexKind = dag.getDagKind();
+    final String totalOrderVertexKind = this.totalOrder.get(0).vertexKind;
+
+    if (totalOrderVertexKind.equals(dagVertexKind)) {
+      for (final MapperDAGVertex internalVertex : this.totalOrder.getList()) {
+        tagVertex(internalVertex, internalVertex);
+      }
+    } else if (totalOrderVertexKind.equals(MapperDAGVertex.IMPLEMENTATION_VERTEX)) {
+      for (final MapperDAGVertex internalVertex : this.totalOrder.getList()) {
+        tagVertex(internalVertex.getAssociatedMDAGVertex(), internalVertex);
+      }
+    } else if (totalOrderVertexKind.equals(MapperDAGVertex.REFERENCE_VERTEX)) {
+      for (final MapperDAGVertex internalVertex : this.totalOrder.getList()) {
+        tagVertex(internalVertex, internalVertex.getAssociatedMDAGVertex());
       }
     }
   }
 
   /**
-   * Sets the total order of vertex implementation property in DAG.
+   * Sets the total order of vertex property in DAG.
    *
    * @param vertex
    *          the vertex
    */
-  private void tagVertex(final MapperDAGVertex vertex) {
+  private void tagVertex(final MapperDAGVertex refVertexToTag, final MapperDAGVertex vertexFromTotalOrder) {
 
-    vertex.setTotalOrder(this.totalOrder.indexOf(vertex));
+    // need to set total order on a Ref vertex. indexOf should be called on an Impl vertex,
+    // works because MapperDAGVertex.equals only checks vertex name
+
+    refVertexToTag.setTotalOrder(this.totalOrder.indexOf(vertexFromTotalOrder));
   }
 
   /**

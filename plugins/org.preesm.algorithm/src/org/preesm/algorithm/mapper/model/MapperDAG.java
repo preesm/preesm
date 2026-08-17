@@ -68,6 +68,10 @@ public class MapperDAG extends DirectedAcyclicGraph {
   /** Properties of scheduled vertices. */
   private static final String TIMING_PROPERTY = "TIMING_PROPERTY";
 
+  public static final String IMPLEMENTATION_DAG = "IMPLEMENTATION_DAG";
+
+  public static final String REFERENCE_DAG = "REFERENCE_DAG";
+
   /** The Constant serialVersionUID. */
   private static final long serialVersionUID = -6757893466692519433L;
 
@@ -79,6 +83,10 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   /** Property clustered hierarchical vertex. */
   public static final String CLUSTERED_VERTEX = "clustered_vertex";
+
+  private String dagKind = REFERENCE_DAG;
+
+  private MapperDAG associatedDag = null;
 
   /**
    *
@@ -158,6 +166,64 @@ public class MapperDAG extends DirectedAcyclicGraph {
     return newDAG;
   }
 
+  public MapperDAG createImplementationCopy() {
+
+    // create clone
+    final MapperDAG implemenationDAG = new MapperDAG(getReferencePiMMGraph());
+    implemenationDAG.setScheduleCost(getScheduleCost());
+
+    this.setAssociatedDag(implemenationDAG);
+    implemenationDAG.setAssociatedDag(this);
+    implemenationDAG.setDagKind(IMPLEMENTATION_DAG);
+
+    // add vertex
+    final Iterator<DAGVertex> iterV = vertexSet().iterator();
+    while (iterV.hasNext()) {
+      final MapperDAGVertex currentRefVertex = (MapperDAGVertex) iterV.next();
+      final MapperDAGVertex currentImplVertex = currentRefVertex.copy();
+
+      currentRefVertex.setAssociatedMDAGVertex(currentImplVertex);
+      currentImplVertex.setAssociatedMDAGVertex(currentRefVertex);
+      currentImplVertex.vertexKind = MapperDAGVertex.IMPLEMENTATION_VERTEX;
+
+      implemenationDAG.addVertex(currentImplVertex);
+    }
+
+    // add edge
+    final Iterator<DAGEdge> iterE = edgeSet().iterator();
+    while (iterE.hasNext()) {
+      final MapperDAGEdge origEdge = (MapperDAGEdge) iterE.next();
+
+      final MapperDAGVertex source = origEdge.getSource();
+      final MapperDAGVertex target = origEdge.getTarget();
+
+      // final String sourceName = source.getName();
+      // final String targetName = target.getName();
+      // final MapperDAGEdge newEdge = (MapperDAGEdge) implemenationDAG.addEdge(implemenationDAG.getVertex(sourceName),
+      // implemenationDAG.getVertex(targetName));
+      final MapperDAGEdge newEdge = (MapperDAGEdge) implemenationDAG.addEdge(source.getAssociatedMDAGVertex(),
+          target.getAssociatedMDAGVertex());
+      newEdge.setInit(origEdge.getInit().copy());
+      newEdge.setTiming(origEdge.getTiming().copy());
+      newEdge.copyProperties(origEdge);
+      // Updating the aggregate list with proper reference
+      newEdge.setAggregate(new EdgeAggregate());
+      for (final AbstractEdge<?, ?> e : origEdge.getAggregate()) {
+        final DAGEdge edge = (DAGEdge) e;
+        final DAGEdge newAggEdge = new DAGEdge();
+        newAggEdge.copyProperties(edge);
+        newAggEdge.setContainingEdge(newEdge);
+        newEdge.getAggregate().add(newAggEdge);
+      }
+    }
+    implemenationDAG.copyProperties(this);
+
+    implemenationDAG.setMappings(getMappings().copy());
+    implemenationDAG.setTimings(getTimings().copy());
+
+    return implemenationDAG;
+  }
+
   public DAGMappings getMappings() {
     return getPropertyBean().getValue(MapperDAG.MAPPING_PROPERTY);
   }
@@ -183,7 +249,7 @@ public class MapperDAG extends DirectedAcyclicGraph {
    */
   public Set<MapperDAGVertex> getVertexSet(final Set<String> nameSet) {
     final Set<MapperDAGVertex> vSet = new LinkedHashSet<>();
-    for (String name : nameSet) {
+    for (final String name : nameSet) {
       final MapperDAGVertex v = (MapperDAGVertex) getVertex(name);
       vSet.add(v);
     }
@@ -207,6 +273,22 @@ public class MapperDAG extends DirectedAcyclicGraph {
 
   public MapperDAGVertex getMapperDAGVertex(final String name) {
     return (MapperDAGVertex) super.getVertex(name);
+  }
+
+  public String getDagKind() {
+    return dagKind;
+  }
+
+  public void setDagKind(String dagKind) {
+    this.dagKind = dagKind;
+  }
+
+  public MapperDAG getAssociatedDag() {
+    return associatedDag;
+  }
+
+  public void setAssociatedDag(MapperDAG associatedDag) {
+    this.associatedDag = associatedDag;
   }
 
 }

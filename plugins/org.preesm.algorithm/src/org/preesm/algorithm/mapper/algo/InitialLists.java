@@ -41,6 +41,7 @@
 package org.preesm.algorithm.mapper.algo;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -171,7 +172,8 @@ public class InitialLists {
   }
 
   /**
-   * ibnChoice: Chooses among the node's predecessors, the vertex necessary to continue the algorithm.
+   * ibnChoice: Chooses among the node's predecessors, the vertex necessary to continue the algorithm. Finds the vertex
+   * from predset, not contained in orderlist, having the biggest BLevel (and the lowest TLevel in case of equality).
    *
    * @param predset
    *          the predset
@@ -184,41 +186,38 @@ public class InitialLists {
   private MapperDAGVertex ibnChoice(final Set<DAGVertex> predset, final List<MapperDAGVertex> orderlist,
       final LatencyAbc archi) {
 
-    final Iterator<DAGVertex> iter = predset.iterator();
-    MapperDAGVertex currentvertex = null;
-    MapperDAGVertex vertexresult = null;
-    long blevelmax = 0;
-    long tlevelmax = Long.MAX_VALUE;
+    final MapperDAGVertexBTComparator comparator = new MapperDAGVertexBTComparator(archi);
 
-    // Check into the predecessor list the one with the biggest b-level or
-    // if they have the same with the smallest t-level
-    while (iter.hasNext()) {
-      currentvertex = (MapperDAGVertex) iter.next();
+    return predset.parallelStream().filter(vertex -> !orderlist.contains(vertex)).map(MapperDAGVertex.class::cast)
+        .max(comparator::compare).orElse(null);
+  }
 
-      if (orderlist.contains(currentvertex)) {
-        continue;
-      }
+  private class MapperDAGVertexBTComparator implements Comparator<MapperDAGVertex> {
 
-      final long bLevel = archi.getBLevel(currentvertex, false);
-      final long tLevel = archi.getTLevel(currentvertex, false);
+    private final LatencyAbc archi;
 
-      if ((bLevel == blevelmax)) {
-        if (tLevel < tlevelmax) {
-          tlevelmax = tLevel;
-          vertexresult = currentvertex;
-        }
-      } else if ((bLevel > blevelmax)) {
-        vertexresult = currentvertex;
-        blevelmax = bLevel;
-        tlevelmax = tLevel;
-      } else if (bLevel == -1) {
-        final String msg = "CPN list construction: b-level can not be computed for vertex " + currentvertex;
+    MapperDAGVertexBTComparator(LatencyAbc archi) {
+      this.archi = archi;
+    }
+
+    @Override
+    public int compare(MapperDAGVertex v0, MapperDAGVertex v1) {
+
+      final long bLevelV0 = archi.getBLevel(v0, false);
+
+      final int bLevelResult = Long.compare(bLevelV0, archi.getBLevel(v1, false));
+
+      if (bLevelV0 == -1) {
+        final String msg = "CPN list construction: b-level can not be computed for vertex " + v0;
         throw new PreesmRuntimeException(msg);
       }
 
-    }
+      if (bLevelResult == 0) {
+        return -Long.compare(archi.getTLevel(v0, false), archi.getTLevel(v1, false));
+      }
 
-    return vertexresult;
+      return bLevelResult;
+    }
 
   }
 

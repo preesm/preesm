@@ -128,7 +128,7 @@ public class AddSendReceiveTransaction implements Transaction {
   @Override
   public void execute(final List<MapperDAGVertex> resultList) {
 
-    final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
+    final MapperDAGVertex currentTarget = this.edge.getTarget();
 
     final MapperDAGVertex currentSource;
     if (this.precedingTransaction instanceof final AddSendReceiveTransaction asrt) {
@@ -136,7 +136,7 @@ public class AddSendReceiveTransaction implements Transaction {
 
       ((MapperDAG) currentSource.getBase()).removeAllEdges(currentSource, currentTarget);
     } else {
-      currentSource = (MapperDAGVertex) this.edge.getSource();
+      currentSource = this.edge.getSource();
     }
 
     // Careful!!! Those names are used in code generation
@@ -154,8 +154,8 @@ public class AddSendReceiveTransaction implements Transaction {
     final ComponentInstance senderOperator = this.step.getSender();
     final ComponentInstance receiverOperator = this.step.getReceiver();
 
-    this.sendVertex = new SendVertex(sendVertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
-        (MapperDAGVertex) this.edge.getTarget(), 0, 0, null);
+    this.sendVertex = new SendVertex(sendVertexID, this.implementation, this.edge.getSource(), this.edge.getTarget(), 0,
+        0, null);
     this.implementation.getTimings().dedicate(this.sendVertex);
     this.implementation.getMappings().dedicate(this.sendVertex);
     this.sendVertex.setRouteStep(this.step);
@@ -172,8 +172,8 @@ public class AddSendReceiveTransaction implements Transaction {
 
     this.orderManager.insertAfter(insertionPosition, this.sendVertex);
 
-    this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation,
-        (MapperDAGVertex) this.edge.getSource(), (MapperDAGVertex) this.edge.getTarget(), 0, 0, null);
+    this.receiveVertex = new ReceiveVertex(receiveVertexID, this.implementation, this.edge.getSource(),
+        this.edge.getTarget(), 0, 0, null);
     this.implementation.getTimings().dedicate(this.receiveVertex);
     this.implementation.getMappings().dedicate(this.receiveVertex);
     this.receiveVertex.setRouteStep(this.step);

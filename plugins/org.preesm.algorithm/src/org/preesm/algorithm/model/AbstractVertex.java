@@ -81,6 +81,8 @@ public abstract class AbstractVertex<G> extends Observable
   /** Property kind for property name. */
   public static final String KIND_LITERAL = "kind";
 
+  private int cachedHashcode = -1;
+
   /** The public properties. */
   protected static final List<
       String> public_properties = new ArrayList<>(Arrays.asList(AbstractVertex.ARGUMENTS_LITERAL,
@@ -265,6 +267,7 @@ public abstract class AbstractVertex<G> extends Observable
    */
   public void setName(final String name) {
     this.properties.setValue(AbstractVertex.NAME_LITERAL, this.properties.getValue(AbstractVertex.NAME_LITERAL), name);
+    cachedHashcode = Objects.hashCode(name);
   }
 
   /**
@@ -404,7 +407,7 @@ public abstract class AbstractVertex<G> extends Observable
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.getName());
+    return cachedHashcode;
   }
 
   /**

@@ -124,7 +124,7 @@ public class InfiniteHomogeneousAbc extends LatencyAbc {
     updateFinalCosts();
 
     this.orderManager.resetTotalOrder();
-    final TLevelIterator iterator = new TLevelIterator(this.implementation, true);
+    final TLevelIterator iterator = new TLevelIterator(this.getImplementation(), true);
 
     while (iterator.hasNext()) {
       final MapperDAGVertex v = iterator.next();

@@ -74,12 +74,11 @@ public class WorkspaceUtils {
    * @return Project absolute path.
    */
   public static String getAbsolutePath(final String relative, final String projectName) {
-    final String absolute;
 
     if (relative.startsWith("/" + projectName)) {
       return relative;
     }
-    absolute = "/" + projectName + "/" + relative;
+    final String absolute = "/" + projectName + "/" + relative;
 
     return absolute.replace("//", "/").strip();
   }
