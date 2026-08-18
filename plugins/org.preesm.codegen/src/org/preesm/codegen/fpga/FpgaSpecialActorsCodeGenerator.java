@@ -42,6 +42,8 @@ import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 
 /**
  * This class generates the code for PiSDF special actors.
@@ -66,13 +68,14 @@ public class FpgaSpecialActorsCodeGenerator {
   public static String generateSpecialActorDefinitions(final PiGraph flatGraph,
       final Map<AbstractActor, String> actorCalls) {
     final StringBuilder sb = new StringBuilder("\n");
+    final var brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     // only broadcast are supported for now
     for (final AbstractActor aa : flatGraph.getActors()) {
       if (aa instanceof BroadcastActor) {
         // generate the definition
         sb.append(generateBroadcastDefinition(aa));
         // map the call
-        actorCalls.put(aa, generateBroadcastCall(aa));
+        actorCalls.put(aa, generateBroadcastCall(aa, brv.get(aa)));
       }
     }
 
@@ -102,16 +105,25 @@ public class FpgaSpecialActorsCodeGenerator {
     return def.toString();
   }
 
-  protected static String generateBroadcastCall(final AbstractActor aa) {
+  protected static String generateBroadcastCall(final AbstractActor aa, long rc) {
     final String name = aa.getName();
     final Fifo inputFifo = aa.getDataInputPorts().get(0).getFifo();
-    final StringBuilder call = new StringBuilder(
-        "hls_thread_local hls::task " + name + "_task(" + name + "," + FpgaCodeGenerator.getFifoStreamName(inputFifo));
+
+    final StringBuilder wrapperOutArgs = new StringBuilder();
     for (final DataPort dp : aa.getDataOutputPorts()) {
-      call.append(", " + FpgaCodeGenerator.getFifoStreamName(dp.getFifo()));
+      // call.append(", " + FpgaCodeGenerator.getFifoStreamName(dp.getFifo()));
+      wrapperOutArgs.append(", " + FpgaCodeGenerator.getFifoStreamName(dp.getFifo()));
     }
-    call.append(");\n");
-    return call.toString();
+
+    final String taskCall = "hls_thread_local hls::task " + name + "_task(" + name + ", "
+        + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");";
+
+    final String forLoopCall = "  for(int i = 0; i < " + rc + "; i++) {\n    " + name + "("
+        + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");" + "  \n}\n";
+
+    final String call = "#ifdef LIGHTNINGSIM\n " + forLoopCall + "#else\n " + taskCall + "\n#endif\n\n";
+
+    return call;
   }
 
 }

@@ -45,6 +45,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Stream;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -86,6 +87,7 @@ import org.preesm.codegen.model.util.CodegenSwitch;
 import org.preesm.codegen.xtend.task.CodegenEngine;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -469,7 +471,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // find all the fpga clusters and declare a variable for them
     final List<AcceleratorCall> accelerators = new LinkedList<>();
     final List<String> acceleratorNames = new LinkedList<>();
-    final List<String> memKernels = new LinkedList<>();
+    // final List<String> memKernels = new LinkedList<>();
 
     // For accelerator calls :
     // C array name : getName()
@@ -480,8 +482,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
         .filter(AcceleratorCall.class::isInstance).map(AcceleratorCall.class::cast).toList()) {
       accelerators.add(elt);
       acceleratorNames.add(elt.getName());
-      memKernels.add(elt.getName() + "_read");
-      memKernels.add(elt.getName() + "_write");
+      // memKernels.add(elt.getName() + "_read");
+      // memKernels.add(elt.getName() + "_write");
     }
 
     if (accelerators.isEmpty()) {
@@ -506,84 +508,126 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     result.append(String.join(",", acceleratorNames) + ";\n");
 
     // the mem read and write kernel associated to each accelerator kernel
-    result.append("   cl::Kernel " + String.join(",", memKernels) + ";\n");
+    // result.append(" cl::Kernel " + String.join(",", memKernels) + ";\n");
 
-    result.append("// Create Program and Kernel\n" + "    auto fileBuf = xcl::read_binary_file(binaryFile);\n"
-        + "    cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};\n" + "\n"
-        + "    auto devices = xcl::get_xil_devices();\n" + "    bool valid_device = false;\n"
-        + "    for (unsigned int i = 0; i < devices.size(); i++) {\n" + "        auto device = devices[i];\n"
-        + "        // Creating Context and Command Queue for selected Device\n"
-        + "        OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));\n"
-        + "        OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE | "
-        + "CL_QUEUE_PROFILING_ENABLE, &err));\n\n"
-        + "        std::cout << \"Trying to program device[\" << i << \"]: \" << "
-        + "device.getInfo<CL_DEVICE_NAME>() << std::endl;\n"
-        + "        cl::Program program(context, {device}, bins, nullptr, &err);\n"
-        + "        if (err != CL_SUCCESS) {\n"
-        + "            std::cout << \"Failed to program device[\" << i << \"] with xclbin file!\\n\";\n"
-        + "        } else {\n" + "            std::cout << \"Device[\" << i << \"]: program successful!\\n\";\n");
+    result.append("""
+        // Create Program and Kernel
+        auto fileBuf = xcl::read_binary_file(binaryFile);
+            cl::Program::Binaries bins{{fileBuf.data(), fileBuf.size()}};
+
+            auto devices = xcl::get_xil_devices();
+            bool valid_device = false;
+            for (unsigned int i = 0; i < devices.size(); i++) {
+                auto device = devices[i];
+                // Creating Context and Command Queue for selected Device
+                OCL_CHECK(err, context = cl::Context(device, nullptr, nullptr, nullptr, &err));
+                OCL_CHECK(err, q = cl::CommandQueue(context, device, CL_QUEUE_OUT_OF_ORDER_EXEC_MODE_ENABLE |
+        CL_QUEUE_PROFILING_ENABLE, &err));
+
+                std::cout << "Trying to program device[" << i << "]: " <<
+                    device.getInfo<CL_DEVICE_NAME>() << std::endl;
+                cl::Program program(context, {device}, bins, nullptr, &err);
+                if (err != CL_SUCCESS) {
+                    std::cout << "Failed to program device[" << i << "] with xclbin file!\\n";
+                } else {
+                    std::cout << "Device[" << i << "]: program successful!\\n ";
+                    """);
 
     for (final AcceleratorCall acc : accelerators) {
       final String kernelName = PreesmCopyTracker.getOriginalSource(acc.getOriActor()).getName();
 
-      result.append("            OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read_"
-          + kernelName + "\", &err));\n");
-      result.append("            OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \""
-          + "mem_write_" + kernelName + "\", &err));\n");
+      // result.append(" OCL_CHECK(err, " + acc.getName() + "_read" + " = cl::Kernel(program, \"" + "mem_read_"
+      // + kernelName + "\", &err));\n");
+      // result.append(" OCL_CHECK(err, " + acc.getName() + "_write" + " = cl::Kernel(program, \""
+      // + "mem_write_" + kernelName + "\", &err));\n");
+      result.append(
+          "            OCL_CHECK(err, " + acc.getName() + " = cl::Kernel(program, \"" + kernelName + "\", &err));\n");
     }
 
-    result.append("            valid_device = true;\n"
-        + "            break; // we break because we found a valid device\n" + "        }\n" + "    }\n" + "\n"
-        + "    if (!valid_device) {\n" + "        std::cout << \"Failed to program any device found, exit!\\n\";\n"
-        + "        exit(EXIT_FAILURE);\n" + "    }");
+    result.append("""
+        valid_device = true;
+            break; // we break because we found a valid device
+          }
+        }
+        if (!valid_device) {
+            std::cout << "Failed to program any device found, exit!";
+            exit(EXIT_FAILURE);
+         }
+         """);
     result.append("\n\n");
 
     // declare and initialize all input and output buffers
     result.append("// Vectors containing interface elements, and buffers referencing them\n");
     result.append("// We also link the buffers to the memory read/write kernels \n");
     for (final AcceleratorCall accelerator : accelerators) {
-      final int nbTemplateParameters = (int) (accelerator.getParameters().stream().filter(b -> !(b instanceof Buffer))
-          .count());
+      // final int nbTemplateParameters = (int) (accelerator.getParameters().stream().filter(b -> !(b instanceof
+      // Buffer))
+      // .count());
 
-      final var CpuBuffers = accelerator.getParameters().stream().filter(b -> b instanceof final Buffer buf)
+      final Stream<Buffer> CpuBuffers = accelerator.getParameters().stream().filter(b -> b instanceof final Buffer buf)
           .map(b -> (Buffer) b).filter(b -> ((CoreBlock) b.getCreator()).archIsCpu());
-      final List<Buffer> readBuffers = new LinkedList<>();
-      final List<Buffer> writeBuffers = new LinkedList<>();
-      CpuBuffers.forEach(p -> {
-        final String name = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(p)).getName()
-            .toLowerCase();
-        if (name.equals("input")) {
-          readBuffers.add(p);
-        } else {
-          writeBuffers.add(p);
-        }
+      CpuBuffers.forEach(b -> {
+        final String arrayName = b.getName();
+        final String type = b.getType();
+        final String direction = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(b))
+            .getName().toLowerCase();
+
+        final String accessType = switch (direction) {
+          case "input" -> "CL_MEM_READ_ONLY";
+          case "output" -> "CL_MEM_WRITE_ONLY";
+          case "inputOutput" -> "CL_MEM_READ_WRITE";
+          default -> "";
+        };
+
+        final String bufferName = arrayName + (direction.equals("input") ? "_buff_input" : "_buff_output");
+        final int nbConfigParams = (int) accelerator.getParameters().stream().filter(ConfigInputPort.class::isInstance)
+            .count();
+        final int argPosition = accelerator.getParameters().indexOf(b) - nbConfigParams; // relative position
+        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | " + accessType + ", "
+            + "/*sizeof(" + type + ")*/" + b.getTokenTypeSizeInByte() + " * " + b.getNbToken() + "/*nb of tokens*/"
+            + ", " + arrayName + ", &err));\n");
+
+        result.append(
+            "OCL_CHECK(err, err = " + accelerator.getName() + ".setArg(" + argPosition + ", " + bufferName + "));\n\n");
       });
 
-      int position = 0;
-      for (final Buffer inputBuffer : readBuffers) {
-        final String arrayName = inputBuffer.getName();
-        final String type = inputBuffer.getType();
-        final String bufferName = arrayName + "_buff_input";
-        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY"
-            + ", sizeof(" + type + ")*" + inputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
-
-        result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_read" + ".setArg(" + position + ", "
-            + bufferName + "));\n\n");
-        position += 2;
-      }
-
-      position = 0;
-      for (final Buffer outputBuffer : writeBuffers) {
-        final String arrayName = outputBuffer.getName();
-        final String type = outputBuffer.getType();
-        final String bufferName = arrayName + "_buff_output";
-        result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY"
-            + ", sizeof(" + type + ")*" + outputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
-
-        result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_write" + ".setArg(" + position + ", "
-            + bufferName + "));\n\n");
-        position += 2;
-      }
+      // final List<Buffer> readBuffers = new LinkedList<>();
+      // final List<Buffer> writeBuffers = new LinkedList<>();
+      // CpuBuffers.forEach(p -> {
+      // final String name = accelerator.getParameterDirections().get(accelerator.getParameters().indexOf(p)).getName()
+      // .toLowerCase();
+      // if (name.equals("input")) {
+      // readBuffers.add(p);
+      // } else {
+      // writeBuffers.add(p);
+      // }
+      // });
+      //
+      // int position = 0;
+      // for (final Buffer inputBuffer : readBuffers) {
+      // final String arrayName = inputBuffer.getName();
+      // final String type = inputBuffer.getType();
+      // final String bufferName = arrayName + "_buff_input";
+      // result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_READ_ONLY"
+      // + ", sizeof(" + type + ")*" + inputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
+      //
+      // result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_read" + ".setArg(" + position + ", "
+      // + bufferName + "));\n\n");
+      // position += 2;
+      // }
+      //
+      // position = 0;
+      // for (final Buffer outputBuffer : writeBuffers) {
+      // final String arrayName = outputBuffer.getName();
+      // final String type = outputBuffer.getType();
+      // final String bufferName = arrayName + "_buff_output";
+      // result.append("OCL_CHECK(err, cl::Buffer " + bufferName + "(context, CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY"
+      // + ", sizeof(" + type + ")*" + outputBuffer.getNbToken() + ", " + arrayName + ", &err));\n");
+      //
+      // result.append("OCL_CHECK(err, err = " + accelerator.getName() + "_write" + ".setArg(" + position + ", "
+      // + bufferName + "));\n\n");
+      // position += 2;
+      // }
       /*
        * for (final Buffer param : accelerator.getParameters().stream().filter(Buffer.class::isInstance) .map(p ->
        * (Buffer) p).toList()) { final String arrayName = param.getName(); final String type = param.getType(); final
@@ -856,24 +900,27 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     for (final Buffer inputBuffer : inputBuffers) {
       // CL_TRUE for blocking read, at least for now
       // 0 for 0 offset to the read, at least for now
-      result.append("q.enqueueWriteBuffer(" + inputBuffer.getName() + "_buff_input, CL_TRUE, 0, sizeof("
-          + inputBuffer.getType() + ")*" + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
+      result.append("q.enqueueWriteBuffer(" + inputBuffer.getName()
+          + "_buff_input, CL_TRUE/*blocking read*/, 0 /*offset*/, sizeof(" + inputBuffer.getType() + ")*"
+          + inputBuffer.getNbToken() + ", " + inputBuffer.getName() + ");");
     }
     // for (final Buffer inputBuffer : inputBuffers) {
     // CL_TRUE for blocking read, at least for now
-    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
+    // result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_read));");
     // }
 
-    // accelerators are free-running, therefore we don't need to call them
+    // launch accelerator
+    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "));");
 
     // Retrieve output data from device
     // for (final var outputBuffer : outputBuffers) {
-    result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
+    // result.append("OCL_CHECK(err, err = q.enqueueTask(" + call.getName() + "_write));");
     // }
     result.append("OCL_CHECK(err, err = q.finish());\n");
     for (final var outputBuffer : outputBuffers) {
-      result.append("q.enqueueReadBuffer(" + outputBuffer.getName() + "_buff_output, CL_TRUE, 0, sizeof("
-          + outputBuffer.getType() + ")*" + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
+      result.append("q.enqueueReadBuffer(" + outputBuffer.getName()
+          + "_buff_output, CL_TRUE/*blocking read*/, 0/*offset*/, sizeof(" + outputBuffer.getType() + ")*"
+          + outputBuffer.getNbToken() + ", " + outputBuffer.getName() + ");");
     }
     result.append("OCL_CHECK(err, err = q.finish());\n");
 
