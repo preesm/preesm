@@ -92,15 +92,16 @@ def extract_metrics(folder_path, xml_path, cluster_name):
         
         if top_module is not None:
             kpn_instance = None
-            # Search for the KPN submodule specifically #[cite: 4]
+            # Search for the KPN submodule specifically
             for instance in top_module.findall(".//Instance"):
-                if instance.findtext("ModuleName") == "KPN": #[cite: 4]
+                mod_name = instance.findtext("ModuleName")
+                if mod_name and "KPN" in mod_name: 
                     kpn_instance = instance
                     break
             
             if kpn_instance is not None:
-                # Extract sub-actors located inside the KPN module #[cite: 4]
-                for instance in kpn_instance.findall("InstancesList/Instance"): #[cite: 3, 4]
+                # Extract sub-actors located inside the KPN module
+                for instance in kpn_instance.findall("InstancesList/Instance"): 
                     first_level_instances.append(instance)
             else:
                 # Fallback to direct instances of TopModule if KPN is missing
@@ -247,7 +248,7 @@ if __name__ == "__main__":
         f"syn.top={kernel}",
         f"syn.file={generated_folder}/{kernel}.cpp",
         f"syn.cflags=-I{code_folder}/include -I{generated_folder}/ -DTIMINGS_EXTRACTION",
-        "clock=5ns",
+        "clock=5ns"
         ]
         cfg_obj.add_lines('hls', liste_hls_usercmake)
 
