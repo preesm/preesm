@@ -8,7 +8,6 @@ Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Require-Bundle: org.junit;bundle-version="4.13.2",
  org.apache.commons.lang3;bundle-version="3.12.0",
- wrapped.org.choco-solver.choco-solver;bundle-version="4.0.9",
  org.preesm.codegen.xtend,
  wrapped.org.apache-extras.beanshell.bsh,
  org.preesm.model.tests,
