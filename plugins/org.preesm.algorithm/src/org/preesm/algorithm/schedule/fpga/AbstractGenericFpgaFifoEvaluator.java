@@ -106,7 +106,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     public final PiGraph flatGraph;
     // given repetition vector of the flat graph
     public final Map<AbstractVertex, Long> flatBrv;
-    // given interface rates (repetition factor + rate)
+    // given interface rates (rate + repetition factor)
     public final Map<InterfaceActor, Pair<Long, Long>> interfaceRates;
     // computed graphII, i.e. slowest actor normalized II
     public Long graphII = null;
@@ -268,19 +268,24 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
         // check timings
         ii = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(), TimingType.INITIATION_INTERVAL);
         et = scenario.getTimings().evaluateTimingOrDefault(ori, fpga.getComponent(), TimingType.EXECUTION_TIME);
+
+        if (maxRate > ii) {
+          // TODO : dirty fix !!!! CHANGE !!!!!
+          ii = maxRate;
+          // throw new PreesmRuntimeException(String.format(
+          // "Actor %s has its maximal production/consumption (%d) strictly greater than its initiation interval (%d).",
+          // ori.getVertexPath(), maxRate, ii));
+        }
+
         if (et < ii) {
-          throw new PreesmRuntimeException(
-              String.format("Actor %s has its execution time (%d) strictly lower than its initiation interval (%d).",
-                  ori.getVertexPath(), et, ii));
+          // TODO : dirty fix !!!! CHANGE !!!!!
+          et = ii;
+          // throw new PreesmRuntimeException(
+          // String.format("Actor %s has its execution time (%d) strictly lower than its initiation interval (%d).",
+          // ori.getVertexPath(), et, ii));
         }
       }
 
-      if (maxRate > ii) {
-        throw new PreesmRuntimeException(String.format(
-            "Actor %s has its maximal production/consumption (%d) strictly greater than its initiation interval (%d).",
-            ori.getVertexPath(), maxRate, ii));
-
-      }
       // store infos
       final long rv = brv.get(aa);
       final ActorNormalizedInfos ani = new ActorNormalizedInfos(aa, ori, et, ii, rv);

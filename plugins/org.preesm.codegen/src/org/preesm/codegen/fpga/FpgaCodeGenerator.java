@@ -656,6 +656,11 @@ public class FpgaCodeGenerator {
 
       final String funcCall = generateWrappedActorCall(actorRefinement, template, false);
 
+      // generate the surrounding for loop that handles the repetition count. Only when we cant use tasks, hence when
+      // LIGHTNINGSIM is defined.
+      final String content = "\n#ifdef LIGHTNINGSIM\nloop_" + actor.getName() + ": for(int i=0 ; i<" + brv.get(actor)
+          + " ; i++)\n#endif\n" + funcCall + "\n";
+
       // write wrapper declaration
       String declaration = "void " + generateWrapperName(actor) + "(";
 
@@ -699,7 +704,7 @@ public class FpgaCodeGenerator {
       result.append(declaration);
 
       // write call to actual refinement
-      result.append("\t" + funcCall);
+      result.append("\t" + content);
       result.append("} \n");
 
     }
@@ -1017,6 +1022,37 @@ public class FpgaCodeGenerator {
     // 2.1- first we add the definitions of special actors
     defs.append(
         FpgaSpecialActorsCodeGenerator.generateSpecialActorDefinitions(analysisResult.flatGraph, loopActorsCalls));
+
+    // they include the read and write functions for each fifo
+    for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
+      final StringBuilder def = new StringBuilder();
+      final InterfaceActor ia = e.getKey();
+      if (ia instanceof DataInputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+
+        def.append("void read_" + getFifoArrayName(f) + "(hls::stream<" + f.getType() + ">& stream, const "
+            + f.getType() + "* __restrict__ mem) {\n");
+
+        final String body = "// No flp style pipeline here : "
+            + "the read/write kernels are our synchronizers, they can't run freely\n" + "\tstream.write(mem[i]); \n";
+        final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
+        final String loopName = "read_" + ia.getName();
+        def.append(loopName + ":\n" + forLoop + "}");
+      } else if (ia instanceof DataOutputInterface) {
+        final Fifo f = ia.getDataPort().getFifo();
+
+        def.append("void write_" + getFifoArrayName(f) + "(hls::stream<" + f.getType() + ">& stream, " + f.getType()
+            + "* __restrict__ mem) {\n");
+
+        final String body = "// No flp style pipeline here : "
+            + "the read/write kernels are our synchronizers, they can't run freely\n" + "\tmem[i] = stream.read(); \n";
+        final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
+        final String loopName = "write_" + ia.getName();
+        def.append(loopName + ":\n" + forLoop + "}");
+      }
+      defs.append(def + "\n");
+    }
+
     context.put("PREESM_SPECIAL_ACTORS", defs.toString());
 
     final long nbIaR = analysisResult.interfaceRates.keySet().stream().filter(DataInputInterface.class::isInstance)
@@ -1058,23 +1094,28 @@ public class FpgaCodeGenerator {
       nb++;
     }
     topK.append(PRAGMA_AXILITE_CTRL + "\n");
-    topK.append("#pragma HLS dataflow \n\n");
+    // topK.append("#pragma HLS dataflow disable_start_propagation \n\n");
+    topK.append("""
+        #pragma HLS dataflow
+        """);
 
     // add fifo defs
     topK.append(generateAllFifoDefinitions(allFifoDepths));
 
-    // add memory -> stream reading kernels
+    // add memory -> stream reading calls
     topK.append("\n   // Read input data \n");
+    defs.append("// No hls::task for the read tasks since we synchronize with them : they're not running freely.\n");
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataInputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
 
-        final String body = "\t" + getFifoStreamName(f) + ".write(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
-            + "[i]); \n";
-        final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
-        final String loopName = "read_" + ia.getName();
-        topK.append(loopName + ":\n" + forLoop);
+        // final String body = "\t" + getFifoStreamName(f) + ".write(" + ia.getName() + SUFFIX_INTERFACE_ARRAY
+        // + "[i]); \n";
+        // final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
+        // final String loopName = "read_" + ia.getName();
+        // topK.append(loopName + ":\n" + forLoop);
+        topK.append("read_" + getFifoArrayName(f) + "(" + getFifoStreamName(f) + ", " + getFifoArrayName(f) + ");\n");
       }
     }
 
@@ -1105,15 +1146,17 @@ public class FpgaCodeGenerator {
 
     // add stream -> memory writing kernels
     topK.append("\n   // Write back output data \n");
+    defs.append("// No hls::task for the write tasks since we synchronize with them : they're not running freely.\n");
     for (final Entry<InterfaceActor, Pair<Long, Long>> e : analysisResult.interfaceRates.entrySet()) {
       final InterfaceActor ia = e.getKey();
       if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
 
-        final String body = ia.getName() + SUFFIX_INTERFACE_ARRAY + "[i] = " + getFifoStreamName(f) + ".read(); \n";
-        final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
-        final String loopName = "write_" + ia.getName();
-        topK.append(loopName + ":\n" + forLoop);
+        // final String body = ia.getName() + SUFFIX_INTERFACE_ARRAY + "[i] = " + getFifoStreamName(f) + ".read(); \n";
+        // final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
+        // final String loopName = "write_" + ia.getName();
+        // topK.append(loopName + ":\n" + forLoop);
+        topK.append("write_" + getFifoArrayName(f) + "(" + getFifoStreamName(f) + ", " + getFifoArrayName(f) + ");\n");
       }
     }
 
@@ -1245,13 +1288,20 @@ public class FpgaCodeGenerator {
     }
     // and otherwise we merge everything
     final String wrapperArgs = listArgNames.stream().collect(Collectors.joining(","));
-    final String forLoopCall = (brv.get(containerActor) > 1) ? generateForLoop(
-        generateWrapperName(containerActor) + "(" + wrapperArgs + ");", brv.get(containerActor).toString())
-        : generateWrapperName(containerActor) + "(" + wrapperArgs + ");";
+
+    // final String forLoopCall = (brv.get(containerActor) > 1)
+    // ? "loop_" + originalActorName + ":"
+    // + generateForLoop(generateWrapperName(containerActor) + "(" + wrapperArgs + ");",
+    // brv.get(containerActor).toString())
+    // : generateWrapperName(containerActor) + "(" + wrapperArgs + ");";
+
+    final String functionCall = generateWrapperName(containerActor) + "(" + wrapperArgs + ");";
+
     final String taskCall = "hls_thread_local hls::task " + originalActorName + "("
         + generateWrapperName(containerActor) + ", " + wrapperArgs + ");";
-    final String call = "#ifdef LIGHTNINGSIM\n" + forLoopCall + "\n#else\n " + taskCall + "\n#endif\n\n";
-    return call;
+
+    // return "#ifdef LIGHTNINGSIM\n" + forLoopCall + "\n#else\n " + taskCall + "\n#endif\n\n";
+    return "#ifdef LIGHTNINGSIM\n" + functionCall + "\n#else\n " + taskCall + "\n#endif\n\n";
   }
 
   protected String generateRegularActorCall(final CHeaderRefinement cref, final Pair<String, String> templates,
@@ -1560,7 +1610,8 @@ public class FpgaCodeGenerator {
     }
     sb.append(args.stream().collect(Collectors.joining(",\n  ")));
     sb.append(") {\n");
-    sb.append("#pragma HLS dataflow \n");
+    // sb.append("#pragma HLS dataflow \n");
+    sb.append("#pragma HLS dataflow");
 
     // add interface protocols
     int idxIa = 0;
