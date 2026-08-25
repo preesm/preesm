@@ -69,7 +69,7 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    */
   @Override
   public String getName() {
-    return "Scenario Node";
+    return "scenario";
   }
 
   @Override

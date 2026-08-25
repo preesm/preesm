@@ -36,6 +36,7 @@
 
 package org.preesm.model.pisdf.check;
 
+import java.util.List;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.FifoCycleDetector;
 
@@ -61,15 +62,21 @@ public class PiGraphSRDAGChecker {
   public static boolean isPiGraphSRADG(final PiGraph piGraph) {
 
     // check hierarchy
-    if (!piGraph.getChildrenGraphs().isEmpty()) {
-      return false;
+    final List<PiGraph> childrenGraphList = piGraph.getChildrenGraphs();
+    if (!childrenGraphList.isEmpty()) {
+      final long nbClusters = childrenGraphList.stream().filter(g -> g.isCluster()).toList().size();
+      if (nbClusters != childrenGraphList.size()) {
+        // it means that there is subgraphs that are not clusters
+        return false;
+      }
     }
     // check single-rate and delays
-    final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
-      final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
-      final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
-      return (rateOut == rateIn) && f.getDelay() == null;
-    });
+    final boolean isSingleRate = piGraph.getAllFifos().stream().filter(f -> f.getContainingPiGraph() == piGraph)
+        .allMatch(f -> {
+          final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
+          final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
+          return (rateOut == rateIn) && f.getDelay() == null;
+        });
     if (!isSingleRate) {
       return false;
     }

@@ -38,6 +38,8 @@ package org.preesm.workflow;
 
 import java.io.IOException;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import javax.xml.XMLConstants;
@@ -47,6 +49,9 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Path;
+import org.preesm.commons.PreesmPlugin;
+import org.preesm.commons.doc.annotations.Parameter;
+import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmFrameworkException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.workflow.elements.AbstractWorkflowNode;
@@ -77,6 +82,8 @@ public class WorkflowParser extends DefaultHandler2 {
 
   /** The workflow. */
   private Workflow workflow = null;
+
+  private final List<String> parameterRefList = new LinkedList<>();
 
   /**
    * Instantiates a new workflow parser.
@@ -125,8 +132,8 @@ public class WorkflowParser extends DefaultHandler2 {
   public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) {
 
     switch (qName) {
-      case "dftools:workflow" -> {
-        final String eow = attributes.getValue("errorOnWarning");
+      case WorkflowConstants.DF_WORKFLOW -> {
+        final String eow = attributes.getValue(WorkflowConstants.ERROR_ON_WARNING);
         boolean valueOfeow = true;
         if (eow != null) {
           try {
@@ -137,7 +144,7 @@ public class WorkflowParser extends DefaultHandler2 {
             valueOfeow = true;
           }
         }
-        final String verboseLevel = attributes.getValue("verboseLevel");
+        final String verboseLevel = attributes.getValue(WorkflowConstants.VERBOSE_LEVEL);
         Level valueOfvl = Level.INFO;
         if (verboseLevel != null) {
           try {
@@ -151,37 +158,72 @@ public class WorkflowParser extends DefaultHandler2 {
         this.workflow.setErrorOnWarning(valueOfeow);
         this.workflow.setOutputLevel(valueOfvl);
       }
-      case "dftools:scenario" -> {
-        final String pluginId = attributes.getValue("pluginId");
+      case WorkflowConstants.DF_SCENARIO -> {
+        final String pluginId = attributes.getValue(WorkflowConstants.PLUGIN_ID);
         final ScenarioNode node = new ScenarioNode(pluginId);
         this.workflow.addVertex(node);
-        this.nodes.put("scenario", node);
+        this.nodes.put(node.getName(), node);
       }
-      case "dftools:task" -> {
-        final String taskId = attributes.getValue("taskId");
-        final String pluginId = attributes.getValue("pluginId");
+      case WorkflowConstants.DF_TASK -> {
+        final String taskId = attributes.getValue(WorkflowConstants.TASK_ID);
+        final String pluginId = attributes.getValue(WorkflowConstants.PLUGIN_ID);
         this.lastTransformationNode = new TaskNode(pluginId, taskId);
         final AbstractWorkflowNode<?> node = this.lastTransformationNode;
         this.workflow.addVertex(node);
         this.nodes.put(taskId, node);
       }
-      case "dftools:dataTransfer" -> {
-        final AbstractWorkflowNode<?> source = this.nodes.get(attributes.getValue("from"));
-        final AbstractWorkflowNode<?> target = this.nodes.get(attributes.getValue("to"));
-        final String sourcePort = attributes.getValue("sourceport");
-        final String targetPort = attributes.getValue("targetport");
+      case WorkflowConstants.DF_DATA_TRANSFER -> {
+        final AbstractWorkflowNode<?> source = this.nodes.get(attributes.getValue(WorkflowConstants.FROM));
+        final AbstractWorkflowNode<?> target = this.nodes.get(attributes.getValue(WorkflowConstants.TO));
+        final String sourcePort = attributes.getValue(WorkflowConstants.SOURCEPORT);
+        final String targetPort = attributes.getValue(WorkflowConstants.TARGETPORT);
         final WorkflowEdge edge = this.workflow.addEdge(source, target);
         edge.setSourcePort(sourcePort);
         edge.setTargetPort(targetPort);
       }
-      case "dftools:variable" -> {
-        if (this.lastTransformationNode != null) {
-          this.lastTransformationNode.addParameter(attributes.getValue("name"), attributes.getValue("value"));
+      case WorkflowConstants.DF_DATA -> {
+        // Get annotation info from @PreesmTask annotation
+        final Class<?> task = PreesmPlugin.getInstance().getTask(this.lastTransformationNode.getID());
+
+        if (task != null) {
+          final Parameter[] parameters = task.getAnnotation(PreesmTask.class).parameters();
+
+          for (final Parameter param : parameters) {
+            parameterRefList.add(param.name());
+          }
         }
+      }
+      case WorkflowConstants.DF_VARIABLE -> {
+        // Check if parameter is in parameterRefList
+        // If present, remove it from parameterRefList
+        // If absent, warning
+        final String paramName = attributes.getValue(WorkflowConstants.NAME);
+
+        if (!parameterRefList.remove(paramName)) {
+          // TODO Change to warning after cleaning integration/preesm-apps tests
+          PreesmLogger.getLogger()
+              .info(() -> "Task parameter \"" + paramName + "\" is not a known parameter for task \""
+                  + this.lastTransformationNode.getID() + "\". Remove if unintentional.");
+        }
+        this.lastTransformationNode.addParameter(paramName, attributes.getValue(WorkflowConstants.VALUE));
       }
       default -> {
         // empty
       }
+    }
+  }
+
+  @Override
+  public void endElement(final String uri, final String localName, final String qName) {
+    if (qName.equals(WorkflowConstants.DF_DATA)) {
+      // Check for remaining entry in refMap
+      if (!parameterRefList.isEmpty()) {
+        // TODO Change to warning after cleaning integration/preesm-apps tests
+        PreesmLogger.getLogger().info(() -> "The following parameters of task \"" + this.lastTransformationNode.getID()
+            + "\" have not been provided: " + parameterRefList);
+      }
+
+      parameterRefList.clear();
     }
   }
 

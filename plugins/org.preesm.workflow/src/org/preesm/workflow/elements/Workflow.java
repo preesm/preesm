@@ -147,4 +147,8 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
     }
     return nbScenarios == 1;
   }
+
+  public AbstractWorkflowNode<?> findVertex(String taskId) {
+    return this.vertexSet().stream().filter(v -> v.getName().equals(taskId)).findAny().orElse(null);
+  }
 }

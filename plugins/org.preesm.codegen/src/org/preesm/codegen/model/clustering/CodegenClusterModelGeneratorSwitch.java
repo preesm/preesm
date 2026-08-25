@@ -46,7 +46,7 @@ import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.emf.common.util.EList;
-import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.algorithm.clustering.ClusterHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -493,7 +493,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void generateExternalClusterBuffers(final PiGraph cluster, final CodeElt block) {
     // Get the list of external Fifo in the current cluster
     final List<Fifo> externalFifo = new LinkedList<>(cluster.getFifos());
-    externalFifo.removeAll(ClusteringHelper.getInternalClusterFifo(cluster));
+    externalFifo.removeAll(ClusterHelper.getInternalClusterFifo(cluster));
 
     // For all external Fifo
     for (final Fifo fifo : externalFifo) {
@@ -502,11 +502,11 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
       DataPort insidePort = null;
       // Determine Fifo direction
       if (fifo.getSource() instanceof DataInputInterface) {
-        outsideFifo = ClusteringHelper.getOutsideIncomingFifo(fifo);
+        outsideFifo = ClusterHelper.getOutsideIncomingFifo(fifo);
         outsidePort = outsideFifo.getTargetPort();
         insidePort = fifo.getTargetPort();
       } else {
-        outsideFifo = ClusteringHelper.getOutsideOutgoingFifo(fifo);
+        outsideFifo = ClusterHelper.getOutsideOutgoingFifo(fifo);
         outsidePort = outsideFifo.getSourcePort();
         insidePort = fifo.getSourcePort();
       }
@@ -567,7 +567,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
     final List<Buffer> localInternalBuffer = new LinkedList<>();
 
     int i = 0;
-    for (final Fifo fifo : ClusteringHelper.getInternalClusterFifo(cluster)) {
+    for (final Fifo fifo : ClusterHelper.getInternalClusterFifo(cluster)) {
       // Build different buffer regarding of delay on the fifo
       final Buffer buffer = generateBuffer(fifo, i);
       localInternalBuffer.add(buffer);
@@ -646,7 +646,7 @@ public class CodegenClusterModelGeneratorSwitch extends ScheduleSwitch<CodeElt> 
   private final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
       final FunctionArgument arg) {
     // Search for origin parameter
-    final Parameter parameter = ClusteringHelper.getSetterParameter(port);
+    final Parameter parameter = ClusterHelper.getSetterParameter(port);
 
     // Build a constant
     final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();

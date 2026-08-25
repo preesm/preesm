@@ -69,7 +69,7 @@ public class AgnosticTimer extends AbstractTimer {
   @Override
   protected long computeActorTiming(final Actor actor) {
     return scenario.getPossibleMappings(actor).stream().map(x -> x.getComponent())
-        .mapToLong(cmp -> scenario.getTimings().evaluateExecutionTimeOrDefault(actor, cmp)).max().orElse(1L);
+        .mapToLong(cmp -> scenario.getTimings().evaluateExecutionTimeOrDefault(actor, cmp)).max().orElse(defaultTime);
   }
 
   @Override

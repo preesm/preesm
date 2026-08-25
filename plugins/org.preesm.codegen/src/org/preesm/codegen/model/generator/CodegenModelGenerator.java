@@ -69,7 +69,7 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.algorithm.clustering.ClusterHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -604,7 +604,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     final Object refinement = dagVertex.getRefinement();
 
     // If the actor is hierarchical
-    if (dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_ACTOR_IS_CLUSTER) != null) {
+    if (dagVertex.getPropertyBean().getValue(ClusterHelper.PISDF_ACTOR_IS_CLUSTER) != null) {
       // try to generate for loop on a hierarchical actor
       PreesmLogger.getLogger().fine(() -> "tryGenerateRepeatActorFiring " + dagVertex.getName());
 
@@ -616,7 +616,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
 
       // Retrieve original cluster actor
-      final AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusteringHelper.PISDF_REFERENCE_ACTOR);
+      final AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusterHelper.PISDF_REFERENCE_ACTOR);
       final AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(actor);
       if (!this.scheduleMapping.containsKey(originalActor)) {
         throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");

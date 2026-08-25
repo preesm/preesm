@@ -74,6 +74,9 @@ import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
+import org.preesm.codegen.model.CallFunctionBlock
+import org.preesm.codegen.model.LoopFunctionBlock
+import org.preesm.codegen.model.FunctionCoreBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -237,5 +240,21 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printPreFunctionCall(FunctionCall functionCall) ''''''
 	// nothing on post by default
 	override printPostFunctionCall(FunctionCall functionCall) ''''''
+	
+	override printInitFunctionBlockFooter(CallFunctionBlock loopFuncBlock) '''<Init_Function_Block_Foot>'''
+	
+	override printInitFunctionBlockHeader(CallFunctionBlock callFuncBlock)'''<Init_Function_Block_Head>'''
+	
+	override printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock) '''<Loop_Function_Block_Foot>'''
+	
+	override printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock)'''<Loop_Function_Block_Head>'''
+	
+	override printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
 
 }

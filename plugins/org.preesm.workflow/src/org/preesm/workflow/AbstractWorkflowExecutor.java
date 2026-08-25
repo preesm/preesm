@@ -196,8 +196,7 @@ public abstract class AbstractWorkflowExecutor {
       }
     }
 
-    // There may be several output edges with same data type (sharing same
-    // port)
+    // There may be several output edges with same data type (sharing same port)
     for (final WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
       if (!outputs.contains(edge.getSourcePort())
           && !edge.getSourcePort().equals(AbstractWorkflowExecutor.IGNORE_PORT_NAME)) {
@@ -482,6 +481,26 @@ public abstract class AbstractWorkflowExecutor {
 
       check = false;
     }
+
+    if (check) {
+      // Remove parameters with null/empty values
+      workflow.vertexSet().stream().filter(TaskNode.class::isInstance).map(TaskNode.class::cast).forEach(taskNode -> {
+
+        final Map<String, String> paramToKeep = new LinkedHashMap<>();
+        for (final Entry<String, String> param : taskNode.getParameters().entrySet()) {
+          if (param.getValue() != null && !param.getValue().isEmpty()) {
+            paramToKeep.put(param.getKey(), param.getValue());
+          } else {
+            getLogger().fine(
+                () -> taskNode.getName() + ": Parameter \"" + param.getKey() + "\" has no/empty value. Ignoring.");
+          }
+        }
+
+        taskNode.getParameters().clear();
+        taskNode.getParameters().putAll(paramToKeep);
+      });
+    }
+
     return check;
   }
 

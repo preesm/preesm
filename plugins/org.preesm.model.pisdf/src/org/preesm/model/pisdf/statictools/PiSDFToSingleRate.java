@@ -286,6 +286,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
+      instantiateParameters(piGraph, copyGraph);
     } else {
       doSwitch(actor);
     }
