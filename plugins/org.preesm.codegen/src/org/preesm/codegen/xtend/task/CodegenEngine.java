@@ -274,9 +274,20 @@ public class CodegenEngine {
   }
 
   /**
-   * Prints the.
+   * Prints all files
    */
   public void print() {
+    print(true);
+  }
+
+  /**
+   * Prints desired files
+   *
+   * @param generateAuxiliaryFiles
+   *          if false, only the CoreBlock files are generated (no secondary files like main.c, no standard library
+   *          files like communication.c, mac_barrier.c, preesm_md5.c, etc.)
+   */
+  public void print(final boolean generateAuxiliaryFiles) {
 
     for (final Entry<IConfigurationElement, List<Block>> printerAndBlocks : this.registeredPrintersAndBlocks
         .entrySet()) {
@@ -295,9 +306,16 @@ public class CodegenEngine {
       final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
           this.codeBlocks);
       for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
+        if (!generateAuxiliaryFiles && entry.getKey() == "main.c") {
+          continue;
+        }
         final String fileName = entry.getKey();
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
         CodeFormatterAndPrinter.format(iFile);
+      }
+
+      if (!generateAuxiliaryFiles) {
+        continue;
       }
 
       // Add standard files for this printer

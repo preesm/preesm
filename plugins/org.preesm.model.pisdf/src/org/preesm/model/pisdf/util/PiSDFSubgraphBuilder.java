@@ -69,6 +69,7 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  *
  * @author dgageot
  */
+@Deprecated
 public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
 
   /**

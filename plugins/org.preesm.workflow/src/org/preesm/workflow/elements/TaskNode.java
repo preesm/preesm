@@ -37,6 +37,8 @@ package org.preesm.workflow.elements;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.preesm.commons.PreesmPlugin;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.workflow.WorkflowParser;
@@ -79,6 +81,18 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
     this.taskId = taskId;
 
     this.parameters = new LinkedHashMap<>();
+
+    // Get declared parameters from PreesmTask annotation
+
+    final Class<?> task = PreesmPlugin.getInstance().getTask(this.pluginId);
+
+    if (task != null) {
+      final Parameter[] pluginParameters = task.getAnnotation(PreesmTask.class).parameters();
+
+      for (final Parameter param : pluginParameters) {
+        this.parameters.put(param.name(), null);
+      }
+    }
   }
 
   /**

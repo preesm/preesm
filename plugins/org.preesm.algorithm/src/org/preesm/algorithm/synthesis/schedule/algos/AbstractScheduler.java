@@ -39,6 +39,7 @@ package org.preesm.algorithm.synthesis.schedule.algos;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.PreesmSynthesisException;
@@ -60,9 +61,10 @@ import org.preesm.model.slam.Design;
 public abstract class AbstractScheduler implements IScheduler {
 
   @Override
-  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
+  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+      final Map<String, String> parameters) {
     verifyInputs(piGraph, slamDesign, scenario);
-    final SynthesisResult res = exec(piGraph, slamDesign, scenario);
+    final SynthesisResult res = exec(piGraph, slamDesign, scenario, parameters);
     if (res.alloc != null) {
       throw new PreesmSynthesisException("Simple scheduling API should not allocate memory");
     }
@@ -74,7 +76,8 @@ public abstract class AbstractScheduler implements IScheduler {
    * Defines how the actors of the PiGraph are scheduled between them and mapped onto the slamDesign, respecting
    * constraints from the scenario.
    */
-  protected abstract SynthesisResult exec(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
+  protected abstract SynthesisResult exec(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+      Map<String, String> parameters);
 
   /**
    * Verifies the consistency of the inputs.
@@ -84,11 +87,11 @@ public abstract class AbstractScheduler implements IScheduler {
      * Check graph
      */
     final PiGraph originalPiGraph = PreesmCopyTracker.getOriginalSource(piGraph);
-    if (originalPiGraph != scenario.getAlgorithm()) {
+    if (!originalPiGraph.isCluster() && originalPiGraph != scenario.getAlgorithm()) {
       throw new PreesmSynthesisException("Input PiSDF graph is not derived from the scenario algorithm.");
     }
     // check that graph is an SRDAG
-    if (!PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
+    if (!piGraph.isCluster() && !PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
       throw new PreesmSynthesisException(
           "Synthesis can be applied only on SRADG graphs (no hierarchy, single-rate, no cycles, no delays). Please "
               + "consider using the output of the pisdf-srdag workflow task as an output of  "
@@ -112,29 +115,32 @@ public abstract class AbstractScheduler implements IScheduler {
       final Schedule schedule, final Mapping mapping) {
 
     // make sure all actors have been scheduled and schedule contains only actors from the input graph
-    final List<AbstractActor> piGraphAllActors = new ArrayList<>(piGraph.getAllActors());
+    final List<AbstractActor> piGraphAllActors = new ArrayList<>(piGraph.getActors());
 
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
     final List<AbstractActor> scheduledActors = new ArrayList<>(actors);
-    if (!piGraphAllActors.containsAll(scheduledActors)) {
-      throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
-    }
-    if (!scheduledActors.containsAll(piGraphAllActors)) {
-      throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
-    }
 
-    if (!mapping.getMappings().keySet().containsAll(scheduledActors)) {
-      throw new PreesmSynthesisException("Mapping is missing actors of the input PiSDF.");
-    }
+    if (!piGraph.isCluster()) {
+      if (!piGraphAllActors.containsAll(scheduledActors)) {
+        throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
+      }
+      if (!scheduledActors.containsAll(piGraphAllActors)) {
+        throw new PreesmSynthesisException("Schedule is missing order for some actors of the input PiSDF.");
+      }
 
-    final List<ComponentInstance> slamCmpInstances = new ArrayList<>(slamDesign.getComponentInstances());
-    final List<ComponentInstance> usedCmpInstances = new ArrayList<>(mapping.getAllInvolvedComponentInstances());
-    if (!slamCmpInstances.containsAll(usedCmpInstances)) {
-      throw new PreesmSynthesisException("Mapping is using unknown component instances.");
-    }
+      if (!mapping.getMappings().keySet().containsAll(scheduledActors)) {
+        throw new PreesmSynthesisException("Mapping is missing actors of the input PiSDF.");
+      }
 
-    for (final AbstractActor actor : piGraphAllActors) {
-      verifyActor(scenario, mapping, actor);
+      final List<ComponentInstance> slamCmpInstances = new ArrayList<>(slamDesign.getComponentInstances());
+      final List<ComponentInstance> usedCmpInstances = new ArrayList<>(mapping.getAllInvolvedComponentInstances());
+      if (!slamCmpInstances.containsAll(usedCmpInstances)) {
+        throw new PreesmSynthesisException("Mapping is using unknown component instances.");
+      }
+
+      for (final AbstractActor actor : piGraphAllActors) {
+        verifyActor(scenario, mapping, actor);
+      }
     }
   }
 

@@ -267,7 +267,7 @@ abstract class AbstractActor extends Configurable {
 	}
 }
 
-class PiGraph extends AbstractActor, Graph, PeriodicElement {
+class PiGraph extends AbstractActor, Graph, RefinementContainer, PeriodicElement {
 	// URL to the file where this graph is saved
 	String url
 	boolean clusterValue = "false"

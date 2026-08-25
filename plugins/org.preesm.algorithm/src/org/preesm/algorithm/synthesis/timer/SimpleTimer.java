@@ -40,9 +40,12 @@ package org.preesm.algorithm.synthesis.timer;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.UserSpecialActor;
 import org.preesm.model.scenario.MemoryCopySpeedValue;
@@ -126,4 +129,15 @@ public class SimpleTimer extends AgnosticTimer {
     return computeSpecialActorTiming(roundbufferActor);
   }
 
+  @Override
+  protected long computePiGraphTiming(final PiGraph graph) {
+    long res = 0;
+    for (final AbstractActor child : graph.getActors()) {
+      if (child instanceof InterfaceActor) {
+        continue;
+      }
+      res += doSwitch(child);
+    }
+    return res;
+  }
 }

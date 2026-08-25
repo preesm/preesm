@@ -67,7 +67,7 @@ public class LegacyListScheduler extends AbstractScheduler {
 
   @Override
   protected SynthesisResult exec(final PiGraph algorithm /* SRDAG */, final Design architecture,
-      final Scenario scenario) {
+      final Scenario scenario, Map<String, String> parameters) {
 
     // build task input
     final Map<String, Object> inputs = new LinkedHashMap<>();
@@ -77,7 +77,8 @@ public class LegacyListScheduler extends AbstractScheduler {
 
     // call legacy scheduler
     final ListSchedulingMappingFromPiMM legacySched = new ListSchedulingMappingFromPiMM();
-    final Map<String, Object> outputs = legacySched.execute(inputs, legacySched.getDefaultParameters(), null, "", null);
+    final Map<String, String> schedParams = parameters == null ? legacySched.getDefaultParameters() : parameters;
+    final Map<String, Object> outputs = legacySched.execute(inputs, schedParams, null, "", null);
 
     // get scheduled MapperDAG
     final MapperDAG dag = (MapperDAG) outputs.get(AbstractWorkflowNodeImplementation.KEY_SDF_DAG);
@@ -90,12 +91,11 @@ public class LegacyListScheduler extends AbstractScheduler {
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(dag);
     scheduledDAGIterator.forEachRemaining(vert -> {
       final AbstractActor orderedActor = vert.getReferencePiVertex();
+
       if (orderedActor == null) {
         final String vertexType = vert.getPropertyBean().getValue(ImplementationPropertyNames.VERTEX_VERTEX_TYPE)
             .toString();
-        if (VertexType.TYPE_SEND.equals(vertexType) || VertexType.TYPE_RECEIVE.equals(vertexType)) {
-          // skip
-        } else {
+        if (!VertexType.TYPE_SEND.equals(vertexType) && !VertexType.TYPE_RECEIVE.equals(vertexType)) {
           throw new PreesmRuntimeException(
               "MapperDag vertex '" + vert + "' of type [" + vertexType + "] has no PiSDF reference");
         }
@@ -110,11 +110,23 @@ public class LegacyListScheduler extends AbstractScheduler {
           cmpSchedules.put(targetCmpIntance, createActorSchedule);
           topParallelSchedule.getScheduleTree().add(createActorSchedule);
         }
+        if (orderedActor instanceof final PiGraph graph) {
+          caseCluster(graph, vert.getEffectiveComponent(), createMapping);
+        }
         cmpSchedules.get(targetCmpIntance).getActorList().add(orderedActor);
       }
     });
 
     return new SynthesisResult(createMapping, topParallelSchedule, null);
+  }
+
+  private void caseCluster(PiGraph graph, ComponentInstance cmpInstance, Mapping mapping) {
+    for (final AbstractActor child : graph.getActors()) {
+      mapping.getMappings().put(child, ECollections.singletonEList(cmpInstance));
+      if (child instanceof final PiGraph childGraph) {
+        caseCluster(childGraph, cmpInstance, mapping);
+      }
+    }
   }
 
 }

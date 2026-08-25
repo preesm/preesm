@@ -69,6 +69,9 @@
 package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
+import org.preesm.commons.exceptions.PreesmRuntimeException
+
+import org.eclipse.emf.common.util.ECollections
 import org.preesm.model.pisdf.AbstractActor
 
 class Block extends CodeElt {
@@ -210,6 +213,63 @@ enum Direction {
 enum Delimiter {
 	START
 	END = 1
+}
+
+class FunctionCoreBlock extends CoreBlock {
+	
+	op void setLoopBlock(LoopBlock lb) {
+		if (!(lb instanceof LoopFunctionBlock)) {
+			throw new PreesmRuntimeException("FunctionCoreBlock accepts only LoopFunctionBlock");
+		}
+		super.setLoopBlock(lb)
+	}
+	
+	op LoopFunctionBlock getLoopBlock() {
+		return super.getLoopBlock() as LoopFunctionBlock
+	}
+	
+	
+	op void setInitBlock(CallBlock cb) {
+		if (!(cb instanceof CallFunctionBlock)) {
+			throw new PreesmRuntimeException("FunctionCoreBlock accepts only CallFunctionBlock");
+		}
+		super.setInitBlock(cb)
+	}
+	
+	op CallFunctionBlock getInitBlock() {
+		return super.getInitBlock() as CallFunctionBlock
+	}
+}
+
+
+class CallFunctionBlock extends FunctionBlock, CallBlock {
+	
+	// Init functions have no inputs/outputs buffers, only parameters
+	op Buffer[] getInputArgs() {
+		return ECollections.emptyEList
+	}
+	op Buffer[] getOutputArgs() {
+		return ECollections.emptyEList
+	}
+	
+}
+
+class LoopFunctionBlock extends FunctionBlock, LoopBlock {
+
+}
+
+// It will create a function, with arguments stored in inputParams, inputArgs and outputArgs.
+// It is used for bottom-up clustering allocation and codegen.
+// For instance, let say we identified cluster C in graph G.
+// We will first map, schedule and allocate cluster C, and generate a (c) function in a generated (c) file.
+// Then, we will map, schedule and allocate G in the classic way, just like C was a normal actor.
+// This method allows to not modify the existing workflow, and just add a first pass of clustering before.	
+class FunctionBlock extends Block {
+	contains IntVar[] inputParams
+	contains Buffer[] inputArgs
+	contains Buffer[] outputArgs
+	
+	String funcName
 }
 
 class CoreBlock extends Block {

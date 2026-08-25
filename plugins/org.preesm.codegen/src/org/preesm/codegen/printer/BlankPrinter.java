@@ -46,6 +46,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
@@ -58,10 +59,12 @@ import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.FunctionCoreBlock;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
@@ -350,6 +353,39 @@ public class BlankPrinter extends CodegenAbstractPrinter {
 
   @Override
   public CharSequence printPostFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printInitFunctionBlockHeader(CallFunctionBlock callFuncBlock) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printInitFunctionBlockFooter(CallFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) {
     return "";
   }
 }

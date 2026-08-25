@@ -121,7 +121,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final IMemoryAllocation alloc = selectAllocation(allocationName);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario, null);
 
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 

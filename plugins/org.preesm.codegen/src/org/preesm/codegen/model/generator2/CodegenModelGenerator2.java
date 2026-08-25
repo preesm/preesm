@@ -94,6 +94,7 @@ import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.Refinement;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.SrdagActor;
@@ -265,6 +266,7 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
+        case final PiGraph cluster -> generateActorFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
         default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
@@ -516,8 +518,10 @@ public class CodegenModelGenerator2 {
     }
   }
 
-  private void generateActorFiring(final Actor actor, final Map<Port, Variable> portToVariable,
+  private void generateActorFiring(final RefinementContainer rcontainer, final Map<Port, Variable> portToVariable,
       final CoreBlock coreBlock) {
+
+    final AbstractActor actor = CodegenModelUserFactory.eINSTANCE.castRefinementContainerToAbstractActor(rcontainer);
 
     // store buffers on which MD5 can be computed to check validity of transformations
     if (actor.getDataOutputPorts().isEmpty()) {
@@ -528,17 +532,17 @@ public class CodegenModelGenerator2 {
       }
     }
 
-    final Refinement refinement = actor.getRefinement();
+    final Refinement refinement = rcontainer.getRefinement();
     if (refinement instanceof final CHeaderRefinement cHeaderRef) {
       final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {
-        final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, initPrototype,
-            portToVariable);
+        final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(rcontainer,
+            initPrototype, portToVariable);
         coreBlock.getInitBlock().getCodeElts().add(init);
       }
       final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
-      final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
-          portToVariable);
+      final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(rcontainer,
+          loopPrototype, portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
       registerCallVariableToCoreBlock(coreBlock, loop);
     }

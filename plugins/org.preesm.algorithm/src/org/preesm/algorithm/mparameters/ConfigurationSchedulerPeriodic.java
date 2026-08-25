@@ -61,7 +61,7 @@ import org.preesm.model.slam.Design;
 
 /**
  * Class to run the periodic scheduler on a DSE configuration.
- * 
+ *
  * @author ahonorat
  */
 public class ConfigurationSchedulerPeriodic extends AbstractConfigurationScheduler {
@@ -77,7 +77,7 @@ public class ConfigurationSchedulerPeriodic extends AbstractConfigurationSchedul
 
   /**
    * Constructor offering memory estimation choice.
-   * 
+   *
    * @param shouldEstimateMemory
    *          Whether or not the memory will be estimated. If not supported by the scheduler, memory will be set to 0 in
    *          any case.
@@ -111,15 +111,15 @@ public class ConfigurationSchedulerPeriodic extends AbstractConfigurationSchedul
 
     SynthesisResult scheduleAndMap = null;
     try {
-      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
-    } catch (PreesmSchedulingException e) {
+      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario, null);
+    } catch (final PreesmSchedulingException e) {
       // put back all messages
       PreesmLogger.getLogger().setLevel(backupLevel);
       PreesmLogger.getLogger().log(Level.WARNING, "Scheduling was impossible.", e);
       return new DSEpointIR(Long.MAX_VALUE, iterationDelay, Long.MAX_VALUE, Long.MAX_VALUE, 0, 0, null, false);
     }
 
-    long period = scheduler.getGraphPeriod();
+    final long period = scheduler.getGraphPeriod();
     // original graph period has not been resolved, so we use the flat graph copy instead
     lastEndTime = period > 0 ? period : scheduler.getLastEndTime();
     final long maxSingleLoad = scheduler.getMaximalFiringLoad();
