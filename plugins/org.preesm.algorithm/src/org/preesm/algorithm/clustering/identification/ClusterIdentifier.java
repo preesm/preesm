@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
 import org.preesm.algorithm.clustering.ClusterCreator;
 import org.preesm.algorithm.clustering.ClusterHelper;
@@ -17,15 +18,16 @@ import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.algorithm.clustering.heuristics.MappingHeuristic;
 import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic;
-import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic.FlatteningOrder;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
@@ -33,11 +35,13 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
@@ -66,13 +70,12 @@ public class ClusterIdentifier {
    *          the S-LAM {@link Design architecture} graph.
    * @param parameters
    *          the parameters of the {@link AbstractTaskImplementation task} calling this method.
-   * @return a map containing the clusters (that are {@link PiGraph sub-graphs} of the top graph} and a {@link Component
-   *         component} type for each cluster. There are also indirect outputs that are the algorithm that has been
-   *         modified and will contain the clusters, and the scenario that has been updated with the
-   *         clusters'constraints.
+   * @return A pair that contains (1)the modified algorithm, and (2) a map containing the clusters (that are
+   *         {@link PiGraph sub-graphs} of the top graph} and a {@link Component component} type for each cluster. There
+   *         is also the scenario as indirect output that has been updated with the clusters'constraints.
    */
-  public static Map<PiGraph, Component> identify(PiGraph algorithm, Scenario scenario, Design architecture,
-      Map<String, String> parameters) {
+  public static Pair<PiGraph, Map<PiGraph, Component>> identify(PiGraph algorithm, Scenario scenario,
+      Design architecture, Map<String, String> parameters, Workflow workflow) {
 
     // Getting parameters
     final boolean verbose = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
@@ -83,35 +86,50 @@ public class ClusterIdentifier {
     final String mapperName = parameters.getOrDefault(ClusterCreationTask.PARAM_MAPPING_HEURISTIC, "").toLowerCase();
     final String balancerName = parameters.getOrDefault(ClusterCreationTask.PARAM_BALANCING_HEURISTIC, "")
         .toLowerCase();
+    final boolean debug = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
 
     final boolean verticalEnabled = !"".equals(vertiIdentifierName);
-    VerticalHeuristic vertiIdentifier = null;
-    if (verticalEnabled) {
-      vertiIdentifier = (VerticalHeuristic) HeuristicGetter.getHeuristic(vertiIdentifierName);
-    }
+
+    // Retrieving heuristics
     final HorizontalHeuristic horizIdentifier = (HorizontalHeuristic) HeuristicGetter.getHeuristic(horizIdentifierName);
     final MappingHeuristic clusterMapper = (MappingHeuristic) HeuristicGetter.getHeuristic(mapperName);
     final BalancingHeuristic clusterBalancer = (BalancingHeuristic) HeuristicGetter.getHeuristic(balancerName);
 
-    if (verticalEnabled) {
-      vertiIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-    }
-    horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-    clusterMapper.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-
     // ---------------------------------------------------------------------------------------------- //
     // Vertical clusters
     // ---------------------------------------------------------------------------------------------- //
-    buildVerticalClusters(null, algorithm /* will be modified */, vertiIdentifier);
+    VerticalHeuristic vertiIdentifier = null;
+    if (verticalEnabled) {
+      vertiIdentifier = (VerticalHeuristic) HeuristicGetter.getHeuristic(vertiIdentifierName);
+      vertiIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
+    }
+
+    algorithm = buildVerticalClusters(algorithm, vertiIdentifier);
 
     if (verbose) {
       PreesmLogger.getLogger().info("Clustering Id: building vertical clusters done.");
+    }
+
+    // Debug
+    if (debug) {
+      Map<String, Object> exportInputs = null;
+      Map<String, String> exportParameters;
+      exportInputs = new HashMap<>();
+      exportInputs.put("PiMM", algorithm);
+      exportParameters = new HashMap<>();
+      exportParameters.put("path", "/Algo/generated/clustering/debug/vertical/");
+      exportParameters.put("hierarchical", "true");
+
+      new PiSDFExporterTask().execute(exportInputs, exportParameters, null, null, workflow);
     }
 
     // ---------------------------------------------------------------------------------------------- //
     // Horizontal clusters
     // ---------------------------------------------------------------------------------------------- //
     // It will modify the algorithm graph & return the created subgraphs list
+
+    horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
+    clusterMapper.initHeuristicParameters(algorithm, scenario, architecture, parameters);
 
     final List<PiGraph> clustersList = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
         horizIdentifier, verbose);
@@ -170,14 +188,32 @@ public class ClusterIdentifier {
       PreesmLogger.getLogger().info("Clustering Id: partitioning clusters done");
     }
 
-    return result;
+    return new Pair<>(algorithm, result);
 
   }
 
   /**
    * This function will regroup (or extend ?) vertically the algorithm, following a given heuristic. For each sub-graph,
-   * it will execute the {@link VerticalHeuristic vertical heuristic} function named assessFlattening. If the vertical
-   * clustering heuristic is set to null, the current graph will just be flattened.
+   * it will execute the {@link VerticalHeuristic vertical heuristic} function. If the vertical clustering heuristic is
+   * set to null, the current graph will just be flattened.
+   *
+   * @param graph
+   *          the whole application.
+   * @param heuristic
+   *          the vertical clustering heuristic, used to merge different graphs.
+   */
+  public static PiGraph buildVerticalClusters(PiGraph graph, VerticalHeuristic heuristic) {
+    if (heuristic == null) {
+      return PiSDFFlattener.flatten(graph, true);
+    }
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+    buildVerticalClustersRec(null, graphCopy, heuristic);
+    return graphCopy;
+
+  }
+
+  /**
+   * Recursive function that will process every hierarchical level of the graph.
    *
    * @param parentGraph
    *          the parent graph containing the current graph. If set to null, it means that the current graph is the top
@@ -187,23 +223,14 @@ public class ClusterIdentifier {
    * @param heuristic
    *          the vertical clustering heuristic, used to merge different graphs.
    */
-  public static void buildVerticalClusters(PiGraph parentGraph, PiGraph graph, VerticalHeuristic heuristic) {
-    if (heuristic == null) {
-      PiSDFFlattener.flatten(graph, true);
-      return;
-    }
-
-    if (heuristic.getFlatteningOrder() == FlatteningOrder.TOP_DOWN) {
-      heuristic.assessFlattening(parentGraph, graph);
-    }
+  private static void buildVerticalClustersRec(PiGraph parentGraph, PiGraph graph, VerticalHeuristic heuristic) {
+    heuristic.assessFlatteningBefore(parentGraph, graph);
 
     for (final PiGraph subgraph : graph.getChildrenGraphs()) {
-      buildVerticalClusters(graph, subgraph, heuristic);
+      buildVerticalClustersRec(graph, subgraph, heuristic);
     }
 
-    if (heuristic.getFlatteningOrder() == FlatteningOrder.BOTTOM_UP) {
-      heuristic.assessFlattening(parentGraph, graph);
-    }
+    heuristic.assessFlatteningAfter(parentGraph, graph);
   }
 
   /***
@@ -245,7 +272,8 @@ public class ClusterIdentifier {
     // The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
 
     // Actors of the graph
-    final List<AbstractActor> actors = graph.getActors();
+    final List<AbstractActor> actors = graph.getActors().stream()
+        .filter(a -> !(a instanceof DataInterface || a instanceof DelayActor)).toList();
 
     // This map keeps track of all identified seeds and merged actors, so we don't iterate over them twice.
     final Set<AbstractActor> identifiedActors = new HashSet<>();
@@ -270,7 +298,7 @@ public class ClusterIdentifier {
         potentialSeed = actors.get(i++);
 
         // The graph is fully searched, we can't find more clusters
-        if (i == actors.size() - 1) {
+        if (i == actors.size()) {
           graphIsFullySearched = true;
         }
 

@@ -81,12 +81,16 @@ public class URCHeuristic extends HorizontalHeuristic {
 
   @Override
   public boolean validateCluster(Set<AbstractActor> cluster) {
-    final boolean result = cluster.size() != 1;
+    boolean result = cluster.size() != 1;
+
     if (!result) {
       return false;
     }
 
-    return true;
+    result &= !ClusterHelper.clusterHasGetterAndSetterActors(cluster);
+
+    return result;
+
   }
 
   @Override

@@ -7,6 +7,7 @@ import org.preesm.algorithm.clustering.heuristics.MappingHeuristic;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInterface;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -17,8 +18,8 @@ public class ClassicMappingHeuristic extends MappingHeuristic {
   public Component selectComponent(PiGraph cluster) {
     final Set<Component> tmp = new HashSet<>();
 
-    final List<
-        AbstractActor> clusterActors = cluster.getActors().stream().filter(a -> !(a instanceof DataInterface)).toList();
+    final List<AbstractActor> clusterActors = cluster.getActors().stream()
+        .filter(a -> !(a instanceof DataInterface || a instanceof DelayActor)).toList();
     for (final AbstractActor a : clusterActors) {
       final List<ComponentInstance> cis = scenario.getPossibleMappings(a);
 

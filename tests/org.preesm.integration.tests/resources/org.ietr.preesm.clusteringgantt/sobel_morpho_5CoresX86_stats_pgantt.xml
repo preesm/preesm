@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<data>
+    <event color="#c896fa" end="100" mapping="Core0" start="0" title="Read_YUV_0">Step_Read_YUV_0.</event>
+    <event color="#c896fa" end="200" mapping="Core0" start="100" title="Split_0">Step_Split_0.</event>
+    <event color="#ffa54f" end="1428" mapping="Core0" start="200" title="fork_0_urc_Sobel_0">Step_fork_0_urc_Sobel_0.</event>
+    <event color="#c896fa" end="1728" mapping="Core0" start="1428" title="urc_Sobel_1_0">Step_urc_Sobel_1_0.</event>
+    <event color="#cd853f" end="1933" mapping="Core0" start="1728" title="join_0_urc_Sobel_0">Step_join_0_urc_Sobel_0.</event>
+    <event color="#c896fa" end="2033" mapping="Core0" start="1933" title="display_0">Step_display_0.</event>
+    <event color="#c896fa" end="1728" mapping="Core1" start="1428" title="urc_Sobel_1_1">Step_urc_Sobel_1_1.</event>
+    <event color="#c896fa" end="1728" mapping="Core2" start="1428" title="urc_Sobel_1_2">Step_urc_Sobel_1_2.</event>
+    <event color="#c896fa" end="1728" mapping="Core3" start="1428" title="urc_Sobel_1_3">Step_urc_Sobel_1_3.</event>
+    <event color="#c896fa" end="1728" mapping="Core4" start="1428" title="urc_Sobel_2_0">Step_urc_Sobel_2_0.</event>
+    <perfs impl_length="2033" impl_nbCores="5" impl_nbUsedCores="5" span="0" work="0">
+        <core id="Core0" load="2033" used_mem="16204928">Core_Core0.</core>
+        <core id="Core1" load="300" used_mem="16204928">Core_Core1.</core>
+        <core id="Core2" load="300" used_mem="16204928">Core_Core2.</core>
+        <core id="Core3" load="300" used_mem="16204928">Core_Core3.</core>
+        <core id="Core4" load="300" used_mem="16204928">Core_Core4.</core>
+    </perfs>
+</data>
