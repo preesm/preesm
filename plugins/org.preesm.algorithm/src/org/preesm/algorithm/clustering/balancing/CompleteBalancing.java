@@ -200,11 +200,11 @@ public class CompleteBalancing extends BalancingHeuristic {
       final long innerRep = perfectInnerRep + 1;
 
       // Number of time cluster2 will be repeated in top graph
-      final long outerRep = rest;
+      final long outerRep2 = rest;
 
       // Log
       if (verbose) {
-        log = "[Partitioning] > scale 2 = " + outerRep + ", ratio2 = " + innerRep;
+        log = "[Partitioning] > scale 2 = " + outerRep2 + ", ratio2 = " + innerRep;
         PreesmLogger.getLogger().info(log);
       }
 
@@ -253,7 +253,7 @@ public class CompleteBalancing extends BalancingHeuristic {
           final String brdPortsName = brdOutPort1.getName();
           brdOutPort1.setName(brdPortsName + "_1");
           brdOutPort2.setName(brdPortsName + "_2");
-          brdOutPort2.setExpression(tokensOneExec * (double) outerRep);
+          brdOutPort2.setExpression(tokensOneExec * (double) outerRep2);
 
           final Fifo brd2cluster2Fifo = PiMMUserFactory.instance.createFifo(brdOutPort2, inputInterface2.getGraphPort(),
               brdOutPort1.getFifo().getType());
@@ -312,9 +312,9 @@ public class CompleteBalancing extends BalancingHeuristic {
           inputInterface2.getGraphPort().setExpression(expr2);
           inputInterface2.getDataPort().setExpression(expr2);
 
-          forkInPort.setExpression(inFifo.getSourcePort().getExpression().evaluateAsDouble());
+          forkInPort.setExpression(expr1 * (double) outerRep1 + expr2 * (double) outerRep2);
           forkOutPort1.setExpression(expr1 * (double) outerRep1);
-          forkOutPort2.setExpression(expr2 * (double) outerRep);
+          forkOutPort2.setExpression(expr2 * (double) outerRep2);
 
           // Log -> track forkActor creation
           if (verbose) {
@@ -378,9 +378,9 @@ public class CompleteBalancing extends BalancingHeuristic {
         outputInterface2.getGraphPort().setExpression(expr2);
         outputInterface2.getDataPort().setExpression(expr2);
 
-        joinOutPort.setExpression(outFifo.getTargetPort().getExpression().evaluateAsDouble());
+        joinOutPort.setExpression(expr1 * (double) outerRep1 + expr2 * (double) outerRep2);
         joinInPort1.setExpression(expr1 * (double) outerRep1);
-        joinInPort2.setExpression(expr2 * (double) outerRep);
+        joinInPort2.setExpression(expr2 * (double) outerRep2);
 
         // Log -> track joinActor creation
         if (verbose) {

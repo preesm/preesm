@@ -158,7 +158,8 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   public Void casePiGraph(final PiGraph graph) {
 
     // Visit AbstractActor until they are all visited
-    final ArrayList<AbstractActor> actors = new ArrayList<>(graph.getActors());
+    final ArrayList<
+        AbstractActor> actors = new ArrayList<>(graph.getActors().stream().filter(a -> !a.isCluster()).toList());
     while (!actors.isEmpty()) {
       doSwitch(actors.get(0));
 

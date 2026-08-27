@@ -63,6 +63,7 @@ import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
@@ -433,6 +434,34 @@ public class ClusterHelper {
       newClusterName = clusterName + "_" + i++;
     }
     return LOOP_PREFIX + newClusterName;
+  }
+
+  /**
+   * APGAN Scheduler can't work if there is getter and setter actors for a delay in a cluster. This helper method can be
+   * used while validating detected clusters in different identification heuristics.
+   *
+   * @param cluster
+   *          Set of actors in cluster
+   * @return true if there is getter / setter actors in cluster
+   */
+  public static boolean clusterHasGetterAndSetterActors(Set<AbstractActor> cluster) {
+    return !cluster.stream().allMatch(a -> {
+      boolean sub = true;
+
+      for (final DataPort dp : a.getAllDataPorts()) {
+        if (dp.getFifo().getDelay() != null) {
+          final Delay delay = dp.getFifo().getDelay();
+
+          // If delay has getter/setter,
+          if (delay.getDelayActor().getDataInputPort().getIncomingFifo() != null
+              || delay.getDelayActor().getDataOutputPort().getOutgoingFifo() != null) {
+            sub = false;
+            break;
+          }
+        }
+      }
+      return sub;
+    });
   }
 
 }

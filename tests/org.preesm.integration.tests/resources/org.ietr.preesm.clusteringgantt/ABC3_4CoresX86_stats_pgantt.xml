@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<data>
+    <event color="#c896fa" end="100" mapping="Core0" start="0" title="A_0">Step_A_0.</event>
+    <event color="#c896fa" end="200" mapping="Core0" start="100" title="B_0">Step_B_0.</event>
+    <event color="#ffa54f" end="201" mapping="Core0" start="200" title="explode_B_0_o">Step_explode_B_0_o.</event>
+    <event color="#c896fa" end="301" mapping="Core0" start="201" title="srv_C_0">Step_srv_C_0.</event>
+    <event color="#ffa54f" end="302" mapping="Core0" start="301" title="explode_srv_C_0_o">Step_explode_srv_C_0_o.</event>
+    <event color="#c896fa" end="402" mapping="Core0" start="302" title="D_00">Step_D_00.</event>
+    <event color="#c896fa" end="502" mapping="Core0" start="402" title="E_00">Step_E_00.</event>
+    <event color="#c896fa" end="602" mapping="Core0" start="502" title="D_01">Step_D_01.</event>
+    <event color="#c896fa" end="702" mapping="Core0" start="602" title="E_01">Step_E_01.</event>
+    <event color="#c896fa" end="802" mapping="Core0" start="702" title="D_02">Step_D_02.</event>
+    <event color="#c896fa" end="902" mapping="Core0" start="802" title="E_02">Step_E_02.</event>
+    <event color="#c896fa" end="1002" mapping="Core0" start="902" title="D_03">Step_D_03.</event>
+    <event color="#c896fa" end="1102" mapping="Core0" start="1002" title="E_03">Step_E_03.</event>
+    <event color="#c896fa" end="1202" mapping="Core0" start="1102" title="D_04">Step_D_04.</event>
+    <event color="#c896fa" end="1302" mapping="Core0" start="1202" title="E_04">Step_E_04.</event>
+    <event color="#c896fa" end="1402" mapping="Core0" start="1302" title="D_05">Step_D_05.</event>
+    <event color="#c896fa" end="1502" mapping="Core0" start="1402" title="E_05">Step_E_05.</event>
+    <event color="#c896fa" end="1602" mapping="Core0" start="1502" title="D_06">Step_D_06.</event>
+    <event color="#c896fa" end="1702" mapping="Core0" start="1602" title="E_06">Step_E_06.</event>
+    <event color="#c896fa" end="1802" mapping="Core0" start="1702" title="D_07">Step_D_07.</event>
+    <event color="#c896fa" end="1902" mapping="Core0" start="1802" title="E_07">Step_E_07.</event>
+    <event color="#c896fa" end="2002" mapping="Core0" start="1902" title="D_08">Step_D_08.</event>
+    <event color="#c896fa" end="2102" mapping="Core0" start="2002" title="E_08">Step_E_08.</event>
+    <event color="#c896fa" end="2202" mapping="Core0" start="2102" title="D_09">Step_D_09.</event>
+    <event color="#c896fa" end="2302" mapping="Core0" start="2202" title="E_09">Step_E_09.</event>
+    <event color="#c896fa" end="2402" mapping="Core0" start="2302" title="D_10">Step_D_10.</event>
+    <event color="#c896fa" end="2502" mapping="Core0" start="2402" title="E_10">Step_E_10.</event>
+    <event color="#c896fa" end="2602" mapping="Core0" start="2502" title="D_11">Step_D_11.</event>
+    <event color="#c896fa" end="2702" mapping="Core0" start="2602" title="E_11">Step_E_11.</event>
+    <event color="#c896fa" end="2802" mapping="Core0" start="2702" title="get_0">Step_get_0.</event>
+    <event color="#c896fa" end="100" mapping="Core1" start="0" title="set_0">Step_set_0.</event>
+    <event color="#c896fa" end="301" mapping="Core1" start="201" title="srv_C_1">Step_srv_C_1.</event>
+    <event color="#ffa54f" end="302" mapping="Core1" start="301" title="explode_srv_C_1_o">Step_explode_srv_C_1_o.</event>
+    <event color="#cd853f" end="903" mapping="Core1" start="902" title="implode_F_0_i">Step_implode_F_0_i.</event>
+    <event color="#cd853f" end="1503" mapping="Core1" start="1502" title="implode_F_1_i">Step_implode_F_1_i.</event>
+    <event color="#cd853f" end="2103" mapping="Core1" start="2102" title="implode_F_2_i">Step_implode_F_2_i.</event>
+    <event color="#cd853f" end="2703" mapping="Core1" start="2702" title="implode_F_3_i">Step_implode_F_3_i.</event>
+    <event color="#c896fa" end="2803" mapping="Core1" start="2703" title="F_3">Step_F_3.</event>
+    <event color="#c896fa" end="301" mapping="Core2" start="201" title="srv_C_2">Step_srv_C_2.</event>
+    <event color="#ffa54f" end="302" mapping="Core2" start="301" title="explode_srv_C_2_o">Step_explode_srv_C_2_o.</event>
+    <event color="#c896fa" end="1003" mapping="Core2" start="903" title="F_0">Step_F_0.</event>
+    <event color="#c896fa" end="1603" mapping="Core2" start="1503" title="F_1">Step_F_1.</event>
+    <event color="#c896fa" end="2203" mapping="Core2" start="2103" title="F_2">Step_F_2.</event>
+    <event color="#c896fa" end="301" mapping="Core3" start="201" title="srv_C_3">Step_srv_C_3.</event>
+    <event color="#ffa54f" end="302" mapping="Core3" start="301" title="explode_srv_C_3_o">Step_explode_srv_C_3_o.</event>
+    <perfs impl_length="2803" impl_nbCores="4" impl_nbUsedCores="4" span="0" work="0">
+        <core id="Core0" load="2802" used_mem="1152">Core_Core0.</core>
+        <core id="Core1" load="305" used_mem="1152">Core_Core1.</core>
+        <core id="Core2" load="401" used_mem="1152">Core_Core2.</core>
+        <core id="Core3" load="101" used_mem="1152">Core_Core3.</core>
+    </perfs>
+</data>

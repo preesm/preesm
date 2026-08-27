@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
@@ -78,8 +79,11 @@ public class BigClusteringTask extends AbstractTaskImplementation {
     // GRAPH TRANSFO & CLUSTER ID
     //
     // ========================================================================
-    final Map<PiGraph,
-        Component> clustersWithComponent = ClusterIdentifier.identify(algorithm, scenario, architecture, parameters);
+    final Pair<PiGraph, Map<PiGraph, Component>> result = ClusterIdentifier.identify(algorithm, scenario, architecture,
+        parameters, workflow);
+
+    final PiGraph newAlgo = result.getKey();
+    final Map<PiGraph, Component> clustersWithComponent = result.getValue();
     final List<PiGraph> clusters = new ArrayList<>(clustersWithComponent.keySet());
 
     // Debug
@@ -87,7 +91,7 @@ public class BigClusteringTask extends AbstractTaskImplementation {
     Map<String, String> exportParameters = null;
     if (debug) {
       exportInputs = new HashMap<>();
-      exportInputs.put("PiMM", algorithm);
+      exportInputs.put("PiMM", newAlgo);
       exportParameters = new HashMap<>();
       exportParameters.put("path", "/Algo/generated/clustering/debug/");
       exportParameters.put("hierarchical", "true");
@@ -99,8 +103,8 @@ public class BigClusteringTask extends AbstractTaskImplementation {
     // CLUSTERS SCHEDULING & ALLOCATION
     //
     // ========================================================================
-    final Set<SynthesisResult> clusterSyntheses = ClusterSynthesis.scheduleAndAllocate(algorithm, scenario,
-        architecture, clusters, parameters);
+    final Set<SynthesisResult> clusterSyntheses = ClusterSynthesis.scheduleAndAllocate(newAlgo, scenario, architecture,
+        clusters, parameters);
     final List<Schedule> schedules = clusterSyntheses.stream().map(x -> x.schedule).toList();
     final List<Allocation> allocations = clusterSyntheses.stream().map(x -> x.alloc).toList();
 
@@ -148,7 +152,7 @@ public class BigClusteringTask extends AbstractTaskImplementation {
     final String selectedPrinter = parameters.get(ClusterCodegenTask.PARAM_PRINTER);
     final String codegenPath = scenario.getCodegenDirectory() + File.separator;
 
-    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, algorithm, architecture, scenario);
+    final CodegenEngine engine = new CodegenEngine(codegenPath, codeBlocks, newAlgo, architecture, scenario);
 
     if (CodegenTask2.VALUE_PRINTER_IR.equals(selectedPrinter)) {
       engine.initializePrinterIR(codegenPath);
@@ -162,7 +166,7 @@ public class BigClusteringTask extends AbstractTaskImplementation {
     // OUTPUTS
     //
     // ========================================================================
-    outputs.put("PiMM", algorithm);
+    outputs.put("PiMM", newAlgo);
     outputs.put("scenario", scenario);
     outputs.put("architecture", architecture);
     return outputs;

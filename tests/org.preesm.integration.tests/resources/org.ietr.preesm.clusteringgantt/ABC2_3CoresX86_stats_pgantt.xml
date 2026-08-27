@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<data>
+    <event color="#c896fa" end="200" mapping="Core0" start="0" title="urc_A_0">Step_urc_A_0.</event>
+    <event color="#ffa54f" end="201" mapping="Core0" start="200" title="explode_urc_A_0_o">Step_explode_urc_A_0_o.</event>
+    <event color="#c896fa" end="401" mapping="Core0" start="201" title="urc_C_0">Step_urc_C_0.</event>
+    <event color="#ffa54f" end="402" mapping="Core0" start="401" title="explode_urc_C_0_o">Step_explode_urc_C_0_o.</event>
+    <event color="#c896fa" end="502" mapping="Core0" start="402" title="E_0">Step_E_0.</event>
+    <event color="#c896fa" end="602" mapping="Core0" start="502" title="E_3">Step_E_3.</event>
+    <event color="#c896fa" end="401" mapping="Core1" start="201" title="urc_C_1">Step_urc_C_1.</event>
+    <event color="#ffa54f" end="402" mapping="Core1" start="401" title="explode_urc_C_1_o">Step_explode_urc_C_1_o.</event>
+    <event color="#cd853f" end="403" mapping="Core1" start="402" title="implode_E_1_i">Step_implode_E_1_i.</event>
+    <event color="#c896fa" end="503" mapping="Core1" start="403" title="E_1">Step_E_1.</event>
+    <event color="#c896fa" end="401" mapping="Core2" start="201" title="urc_C_2">Step_urc_C_2.</event>
+    <event color="#ffa54f" end="402" mapping="Core2" start="401" title="explode_urc_C_2_o">Step_explode_urc_C_2_o.</event>
+    <event color="#cd853f" end="403" mapping="Core2" start="402" title="implode_E_2_i">Step_implode_E_2_i.</event>
+    <event color="#c896fa" end="503" mapping="Core2" start="403" title="E_2">Step_E_2.</event>
+    <perfs impl_length="602" impl_nbCores="3" impl_nbUsedCores="3" span="0" work="0">
+        <core id="Core0" load="602" used_mem="1152">Core_Core0.</core>
+        <core id="Core1" load="302" used_mem="1152">Core_Core1.</core>
+        <core id="Core2" load="302" used_mem="1152">Core_Core2.</core>
+    </perfs>
+</data>

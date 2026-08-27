@@ -40,8 +40,10 @@ package org.preesm.algorithm.synthesis.timer;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.BroadcastActor;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
@@ -93,6 +95,9 @@ public class SimpleTimer extends AgnosticTimer {
     if (mapping != null) {
       final ComponentInstance operator = this.mapping.getSimpleMapping(userSpecialActor);
       final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
+      if (memTimings == null) {
+        PreesmLogger.getLogger().info("");
+      }
       wcet = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
     } else {
       final Set<Component> cmps = scenario.getPossibleMappings(userSpecialActor).stream().map(x -> x.getComponent())
@@ -133,7 +138,7 @@ public class SimpleTimer extends AgnosticTimer {
   protected long computePiGraphTiming(final PiGraph graph) {
     long res = 0;
     for (final AbstractActor child : graph.getActors()) {
-      if (child instanceof InterfaceActor) {
+      if (child instanceof InterfaceActor || child instanceof DelayActor) {
         continue;
       }
       res += doSwitch(child);

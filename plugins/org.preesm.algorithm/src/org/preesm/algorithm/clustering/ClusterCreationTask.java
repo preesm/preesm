@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
 import org.preesm.algorithm.clustering.synthesis.ClusterSynthesis;
@@ -147,16 +148,17 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
     // directly the clusters.
     // The scenario parameter will also be modified. The clusters constraints identified with the mapping heuristic will
     // be added to the scenario.
-    final Map<PiGraph,
-        Component> clustersWithComponent = ClusterIdentifier.identify(algorithm, scenario, architecture, parameters);
-    final List<PiGraph> clusters = new ArrayList<>(clustersWithComponent.keySet());
+    final Pair<PiGraph, Map<PiGraph, Component>> result = ClusterIdentifier.identify(algorithm, scenario, architecture,
+        parameters, workflow);
+    final PiGraph newAlgo = result.getKey();
+    final List<PiGraph> clusters = new ArrayList<>(result.getValue().keySet());
 
     // Debug
     if (debug) {
       Map<String, Object> exportInputs = null;
       Map<String, String> exportParameters;
       exportInputs = new HashMap<>();
-      exportInputs.put("PiMM", algorithm);
+      exportInputs.put("PiMM", newAlgo);
       exportParameters = new HashMap<>();
       exportParameters.put("path", "/Algo/generated/clustering/debug/");
       exportParameters.put("hierarchical", "true");
@@ -171,8 +173,8 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
 
     // The outputs in the form of a set containing SynthesisResult instances will not have any informations on mapping,
     // the mapping parameter will be kept to null.
-    final Set<SynthesisResult> clusterSyntheses = ClusterSynthesis.scheduleAndAllocate(algorithm, scenario,
-        architecture, clusters, parameters);
+    final Set<SynthesisResult> clusterSyntheses = ClusterSynthesis.scheduleAndAllocate(newAlgo, scenario, architecture,
+        clusters, parameters);
 
     // Separating schedules and allocations
     final List<Schedule> schedules = clusterSyntheses.stream().map(x -> x.schedule).toList();
@@ -189,7 +191,7 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
     // OUTPUTS
     //
     // ========================================================================
-    outputs.put("PiMM", algorithm);
+    outputs.put("PiMM", newAlgo);
     outputs.put("scenario", scenario);
     outputs.put("clusters", clusters);
     outputs.put("schedules", schedules);
