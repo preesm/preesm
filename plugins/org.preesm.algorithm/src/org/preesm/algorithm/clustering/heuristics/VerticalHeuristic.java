@@ -9,6 +9,8 @@ import org.preesm.model.slam.Design;
  * graph has too many or not enough hierarchical levels for the given {@link Design architecture} or the given
  * {@link Scenario scenario}, it can adapts the hierarchy of the graph. The implementation classes are stored in the
  * package clustering.identification
+ *
+ * @author rcazoulat
  */
 public abstract class VerticalHeuristic extends IdentificationHeuristic {
 

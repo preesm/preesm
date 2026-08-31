@@ -18,6 +18,8 @@ import org.preesm.model.slam.Design;
 
 /**
  * This class has one static main method: {@link ScheduleAndAllocate}
+ *
+ * @author rcazoulat
  */
 public class ClusterSynthesis {
 
@@ -59,7 +61,7 @@ public class ClusterSynthesis {
     final Set<SynthesisResult> results = new HashSet<>();
 
     for (final PiGraph cluster : clusters) {
-      final String log = "[synthesis] cluster " + cluster.getName() + "is being synthesised";
+      final String log = "[synthesis] cluster " + cluster.getName() + " is being synthesised";
       PreesmLogger.getLogger().info(log);
       final Schedule schedule = schedulerHeuristic.schedule(cluster);
       final Allocation alloc = allocHeuristic.allocate(cluster, schedule);

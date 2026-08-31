@@ -49,7 +49,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
-import org.preesm.algorithm.clustering.identification.URCHeuristic;
+import org.preesm.algorithm.clustering.identification.SRVHeuristic;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
@@ -63,10 +63,10 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * @author dgageot
+ * @author rcazoulat
  *
  */
-public class URCIdentificationTest {
+public class SRVIdentificationTest {
 
   private PiGraph                   topGraph;
   private AbstractActor             actorA;
@@ -77,7 +77,7 @@ public class URCIdentificationTest {
   private AbstractActor             actorF;
   private AbstractActor             actorG;
   private List<PiGraph>             identificationResults;
-  private List<List<AbstractActor>> existingChain;
+  private List<List<AbstractActor>> actorsInClusters;
 
   /**
    * Set-up the test environnement
@@ -87,24 +87,23 @@ public class URCIdentificationTest {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
 
-    final URCHeuristic heuristic = (URCHeuristic) HeuristicGetter.getHeuristic(HeuristicGetter.URC_IDENTIFIER);
+    final SRVHeuristic heuristic = (SRVHeuristic) HeuristicGetter.getHeuristic(HeuristicGetter.SRV_IDENTIFIER);
     heuristic.initHeuristicParameters(topGraph, null, null, null);
 
     identificationResults = ClusterIdentifier.buildHorizontalClusters(topGraph, null, null, heuristic, false);
 
-    existingChain = new ArrayList<>();
+    actorsInClusters = new ArrayList<>();
 
     for (final PiGraph cluster : identificationResults) {
       final List<AbstractActor> clusterActorList = new ArrayList<>(
           cluster.getActors().stream().filter(a -> !(a instanceof DataInterface)).toList());
-      reorganizeList(clusterActorList);
-      existingChain.add(clusterActorList);
+      actorsInClusters.add(clusterActorList);
 
     }
 
     // Debug
     String log = "[";
-    for (final List<AbstractActor> chain : existingChain) {
+    for (final List<AbstractActor> chain : actorsInClusters) {
       log += "[";
       for (final AbstractActor a : chain) {
         log += a.getName() + ", ";
@@ -131,31 +130,48 @@ public class URCIdentificationTest {
     this.actorF = null;
     this.actorG = null;
     identificationResults = null;
-    existingChain = null;
+    actorsInClusters = null;
   }
 
   @Test
-  public void testExpectToFoundTwoURCs() {
-    assertEquals(2, this.identificationResults.size());
+  public void testExpectToFoundSRVs() {
+    assertEquals(4, this.identificationResults.size());
   }
 
   @Test
-  public void testExpectToFoundChainBCD() {
-    final List<AbstractActor> expectedChain = Arrays.asList(this.actorB, this.actorC, this.actorD);
-
-    assertTrue(existingChain.contains(expectedChain));
+  public void testExpectToFoundB() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorB);
+    assertTrue(actorsInClusters.contains(expectedChain));
   }
 
   @Test
-  public void testExpectToFoundChainEFG() {
-    final List<AbstractActor> expectedChain = Arrays.asList(this.actorE, this.actorF, this.actorG);
-    assertTrue(existingChain.contains(expectedChain));
+  public void testExpectToFoundC() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorC);
+    assertTrue(actorsInClusters.contains(expectedChain));
   }
 
   @Test
-  public void testDoesntExpectToFoundChainDE() {
-    final List<AbstractActor> expectedChain = Arrays.asList(this.actorD, this.actorE);
-    assertFalse(existingChain.contains(expectedChain));
+  public void testExpectToFoundF() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorF);
+    assertTrue(actorsInClusters.contains(expectedChain));
+  }
+
+  @Test
+  public void testExpectToFoundG() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorG);
+    assertTrue(actorsInClusters.contains(expectedChain));
+  }
+
+  @Test
+  public void testDoesntExpectToFoundD() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorD);
+    assertFalse(actorsInClusters.contains(expectedChain));
+  }
+
+  @Test
+  public void testDoesntExpectToFoundE() {
+    final List<AbstractActor> expectedChain = Arrays.asList(this.actorE);
+    assertFalse(actorsInClusters.contains(expectedChain));
   }
 
   private void createChainedActorsPiGraph() {
@@ -255,28 +271,4 @@ public class URCIdentificationTest {
     pgcc.check(this.topGraph);
 
   }
-
-  private void reorganizeList(List<AbstractActor> list) {
-    list.sort((x, y) -> {
-      if (isSuccessor(x, y)) {
-        return -1;
-      }
-      if (isSuccessor(y, x)) {
-        return 1;
-      }
-      return 0;
-    });
-  }
-
-  private boolean isSuccessor(AbstractActor x, AbstractActor y) {
-    if (x.getDirectSuccessors().isEmpty()) {
-      return false;
-    }
-    if (x.getDirectSuccessors().contains(y)) {
-      return true;
-    }
-    return x.getDirectSuccessors().stream().filter(AbstractActor.class::isInstance)
-        .anyMatch(s -> isSuccessor((AbstractActor) s, y));
-  }
-
 }

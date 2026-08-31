@@ -29,26 +29,31 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 @PreesmTask(id = "clustering.creation", name = "Clustering task", category = "Clustering",
 
-    parameters = { @Parameter(name = ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, description = """
-        Name of which heuristic will be used to vertically clusterize the graph.
-        If there is not enough or too many hierarchical level following the heuristic,
-        it will create or regroup hierarchical levels. This parameter is optional,
-        and can not be set at all. If so, the input graph will just be flatten.
-        For now, there is no vertical heuristic.
-        """, values = {}),
+    parameters = {
+
+      @Parameter(name = ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, description = """
+          Name of which heuristic will be used to vertically clusterize the graph.
+          If there is not enough or too many hierarchical level following the heuristic,
+          it will create or regroup hierarchical levels. This parameter is optional. If not present
+          , the input graph will just be flatten. For now, there is no vertical heuristic.
+          """, values = {}),
+
       @Parameter(name = ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, description = """
-          Name of which heuristic will be used to horizontaly clusterize the graph.Every hierachical
+          Name of which heuristic will be used to horizontaly clusterize the graph. Every hierachical
           level of the graph will be explored.
-          There is two available horizontal heuristic:
+          There is three available horizontal heuristic:
           - The Unique Repetition Count (URC) that will regroup together the actors that are adjacent
           and have the same repetition count in the graph
           - The Single Repetition Vector (SRV) that will create clusters that contain only one actor,
           with a repetition count higher than the number of processing elements. Even if the cluster
           contains one actor, the DAG will be smaller since the cluster in the top level will have a
           lower repetition count than the actor contained in it.
-          - The heteregeneous architecture separator that will create clusters only composed of actor mapped on FPGA""",
+          - [WARNING : WORK IN PROGRESS] The heteregeneous architecture separator that will create
+          clusters only composed of actor mapped on FPGA. This heuristic works with a special scheduling method,
+          not yet implemented for clustering.""",
           values = { @Value(name = HeuristicGetter.URC_IDENTIFIER), @Value(name = HeuristicGetter.URC_IDENTIFIER),
-            @Value(name = HeuristicGetter.SIMPLE_HETERO_ARCH_IDENTIFIER) }),
+            @Value(name = HeuristicGetter.SIMPLE_FPGA_IDENTIFIER) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_MAPPING_HEURISTIC, description = """
           Name of which heuristic will assign a component type on which the cluster could be executed on:
           - The Simple mapper will select the same component type for every cluster than the main operator one.
@@ -56,28 +61,36 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           If none, throws an error.
               """,
           values = { @Value(name = HeuristicGetter.CLASSIC_MAPPER), @Value(name = HeuristicGetter.SIMPLE_MAPPER) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_BALANCING_HEURISTIC, description = """
           Name of which heuristic will balance the clusters in the graph. By default, clusters are set to its
           maximal repetition, but the balancer can modify that. There is two available balancers :
           - Complete balancer : will handle balancing even if repetition count of cluster is not divisible
           by number of available processing elements, by duplicating the cluster and asdding fork/join actors.
           - Basic balancer : will handle balancing only if repetition count of cluster is a divisor of number of
-          available processing elements.
+          available processing elements. It is better to use the complete balancer, as it is robust to a larger
+          variety of graphs.
           """,
           values = { @Value(name = HeuristicGetter.COMPLETE_BALANCING),
             @Value(name = HeuristicGetter.BASIC_BALANCING) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_SCHEDULING_HEURISTIC, description = """
           Name of which heuristic will schedule the clusters in the graph. For now, the only available scheduling
           algorithm is the APGAN algorithm. We can't reuse existing scheduling algorithm as they depend on a DAG.
           However, DAG creation must be avoided in the cluster synthesis process.
+          [WORK IN PROGRESS]: the FPGA shceduler will soon be implemented for FPGA clusters identified with the FPGA
+          heuristic.
           """, values = { @Value(name = HeuristicGetter.APGAN_SCHEDULING) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_ALLOCATION_HEURISTIC, description = """
           Name of which heuristic will allocate the clusters memory. Work with a cluster scheduler only
           (see scheduling heuristic parameters for all available schedulers that can work with cluster
           allocation).
           """, values = { @Value(name = HeuristicGetter.SIMPLE_ALLOCATION) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_VERBOSE, description = "More or less logs",
           values = { @Value(name = "True"), @Value(name = "False") }),
+
       @Parameter(name = ClusterCreationTask.PARAM_DEBUG,
           description = "Enable intermediate graph creation, to check if everything is ok between substeps.",
           values = { @Value(name = "True"), @Value(name = "False") }) },
@@ -98,7 +111,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         The goal is to reduce the complexity of the graph without loosing parallelism,
         according to the given heuristics. The available heuristics are described in the parameters section.
         If the user wants to create an heuristic, he will have to create them in the source code of PREESM,
-        in the package org.preesm.algorithm.clustering.
+        in the package org.preesm.algorithm.clustering. The created heuristic will have to inherit of an heuristic class
+        (that are located in the package org.preesm.algorithm.clustering.heuristics).
+        Each heuristic type has an abstract class here. Then, This heuristic has to be added in the static method
+        getHeuristic of the HeursiticGetter class. This way, the heuristic will be retrieved by the workflow.
+        For more infos, go check the source code.
         """,
 
     shortDescription = """

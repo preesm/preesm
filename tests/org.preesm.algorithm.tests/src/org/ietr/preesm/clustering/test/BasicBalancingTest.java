@@ -49,7 +49,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ClusterCreator;
-import org.preesm.algorithm.clustering.balancing.CompleteBalancing;
+import org.preesm.algorithm.clustering.balancing.BasicBalancing;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -64,10 +64,10 @@ import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * @author dgageot
+ * @author rcazoulat
  *
  */
-public class CompleteBalancingTest {
+public class BasicBalancingTest {
 
   private PiGraph       topGraph;
   private PiGraph       subGraph;
@@ -76,7 +76,7 @@ public class CompleteBalancingTest {
   private AbstractActor actorC;
   private AbstractActor actorD;
 
-  private final CompleteBalancing balancer = new CompleteBalancing();
+  private final BasicBalancing balancer = new BasicBalancing();
 
   /**
    * Set-up the test environnement
@@ -138,25 +138,11 @@ public class CompleteBalancingTest {
   }
 
   @Test
-  public void testFactor15() {
-    final List<PiGraph> clusters = balancer.balanceFirings(topGraph, subGraph, 15);
-
-    assertEquals(2, clusters.size());
-
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
-
-    assertEquals(Long.valueOf(14), brv.get(clusters.get(0)));
-    assertEquals(Long.valueOf(1), brv.get(clusters.get(1)));
-
-    assertEquals(Long.valueOf(17), brv.get(this.actorB));
-    assertEquals(Long.valueOf(17), brv.get(this.actorC));
-
-  }
-
-  @Test
   public void testExceptionGraph() {
     Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(null, subGraph, 15));
     Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, null, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, subGraph, 15));
+
   }
 
   private void createTestEnvironment() {

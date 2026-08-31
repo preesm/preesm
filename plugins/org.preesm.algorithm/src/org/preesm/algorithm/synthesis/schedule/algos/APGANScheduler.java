@@ -11,7 +11,6 @@ import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.preesm.algorithm.clustering.ClusterCreator;
-import org.preesm.algorithm.clustering.balancing.BasicBalancing;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -48,7 +47,6 @@ import org.preesm.model.slam.Design;
  * attached to a sub-schedule
  *
  * @author dgageot
- * @author rcazoulat
  */
 public class APGANScheduler extends AbstractScheduler {
 
@@ -154,17 +152,8 @@ public class APGANScheduler extends AbstractScheduler {
     final String temporaryClusterName = "cluster" + clusterId;
     final long nClusterRep = MathFunctionsHelper.gcd(rv.get(actors.get(0)), rv.get(actors.get(1)));
 
-    final BasicBalancing balancer = new BasicBalancing();
-    if (nClusterRep > 1) {
-      balancer.initHeuristicParameters(cluster, null, null, null);
-    }
-
     final PiGraph clusteredPair = ClusterCreator.create(cluster, temporarySet, temporaryClusterName);
     setClusterConstraints(clusteredPair, scenario);
-
-    if (nClusterRep > 1) {
-      balancer.balanceFirings(cluster, clusteredPair, nClusterRep);
-    }
 
     // Build corresponding hierarchical schedule
     final HierarchicalSchedule schedule = buildHierarchicalSchedule(actors, rv, scheduleMap, nClusterRep);

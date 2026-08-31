@@ -20,11 +20,26 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.scenario.Scenario;
 
+/**
+ * This class is an extension of the {@link PiCodegenModelGenerator} class. The new feature here is that it takes an
+ * {@link Allocation} as an input to make the buffer memory allocation, as the {@link PiCodegenModelGenerator} makes the
+ * buffer memory allocation directly from the {@link Fifo fifos} of the cluster. This class allows a more complex and a
+ * smarter memory allocation, without modifying its behavior. In any case, the interfaces fifos will be processed in a
+ * top down way. In other words, if a fifo is linked to a {@link DataInterface} actor, it is supposed that it is already
+ * allocated, and the external fifo will be retrieved.
+ *
+ * @author rcazoulat
+ */
 public class PiCodegenModelGenerator2 extends PiCodegenModelGenerator {
 
+  /**
+   * The allocation, to make the buffer memory allocation
+   */
   Allocation alloc = null;
 
-  // Alloc buffer to Codegen buffer
+  /**
+   * Alloc buffer to Codegen buffer
+   */
   Map<org.preesm.algorithm.memalloc.model.Buffer, Buffer> b2b;
 
   PiGraph originalCluster;
@@ -98,6 +113,14 @@ public class PiCodegenModelGenerator2 extends PiCodegenModelGenerator {
     }
   }
 
+  /**
+   * This method will create a {@link Buffer codegen buffer} from an {@link org.preesm.algorithm.memalloc.model.Buffer
+   * allocation buffer}, by retrieving the alloc buffer linked to the input fifo. The result will be stored in the
+   * {@link #b2b} attribute
+   *
+   * @param fifo
+   *          input fifo
+   */
   protected void createBufferFromAlloc(final Fifo fifo) {
     final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = alloc.getFifoAllocations().get(fifo)
         .getSourceBuffer();

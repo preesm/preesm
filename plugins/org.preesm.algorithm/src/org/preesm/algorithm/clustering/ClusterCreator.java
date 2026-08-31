@@ -21,6 +21,8 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
+ * Main method of this class is the {@link #create(PiGraph, Set, String) create} method.
+ *
  * @author jamorin
  * @author rcazoulat
  *
@@ -41,9 +43,12 @@ public class ClusterCreator {
    *          the new hierarchical actor's name
    * @param actorsToMerge
    *          the set of actors that have to be merged
+   * @param isCluster
+   *          if set to true, output graph will be set as a cluster. If set to false, it won't.
+   *
    * @returns the cluster, added and connected in parent graph
    */
-  public static PiGraph create(PiGraph parentGraph, Set<AbstractActor> actorsToMerge, String name) {
+  public static PiGraph create(PiGraph parentGraph, Set<AbstractActor> actorsToMerge, String name, boolean isCluster) {
 
     final Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(parentGraph, BRVMethod.LCM);
 
@@ -51,7 +56,9 @@ public class ClusterCreator {
 
     // creating the subgraph / the cluster
     final PiGraph cluster = PiMMUserFactory.instance.createPiGraph();
-    cluster.setClusterValue(true);
+    if (isCluster) {
+      cluster.setClusterValue(true);
+    }
     cluster.setName(name);
     cluster.setExpression(PiMMUserFactory.instance.createExpression()); // why ?
     cluster.setUrl("");
@@ -182,5 +189,26 @@ public class ClusterCreator {
     cluster.setFifoWithDelayIndex(cluster.getFifosWithDelay().size());
 
     return cluster;
+  }
+
+  /**
+   * This method will create a {@link PiGraph cluster} containing {@link AbstractActor actors} in the actorsToMerge set
+   * and remove them from the parent graph, and will put this new cluster in the parent graph. It will also create the
+   * {@link Fifo fifos} linking actors in parentGraph with the cluster, and will also add the parameter dependencies
+   * between parameters and the cluster. The output PiGraph is marked by default as a cluster. Call the following
+   * {@link #create(PiGraph, Set, String, boolean) method} to not make it a cluster.
+   *
+   * @param parentGraph
+   *          the input graph
+   * @param name
+   *          the new hierarchical actor's name
+   * @param actorsToMerge
+   *          the set of actors that have to be merged
+   *
+   * @returns the cluster, added and connected in parent graph
+   */
+  public static PiGraph create(PiGraph parentGraph, Set<AbstractActor> actorsToMerge, String name) {
+    return create(parentGraph, actorsToMerge, name, true);
+
   }
 }

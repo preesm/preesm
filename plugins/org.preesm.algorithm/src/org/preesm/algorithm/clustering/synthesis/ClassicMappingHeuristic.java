@@ -12,6 +12,12 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 
+/**
+ * This mapping heuristic will retrieve a component type that every actors of the cluster have in common. If there is
+ * not, an error will be thrown.
+ *
+ * @author rcazoulat
+ */
 public class ClassicMappingHeuristic extends MappingHeuristic {
 
   @Override

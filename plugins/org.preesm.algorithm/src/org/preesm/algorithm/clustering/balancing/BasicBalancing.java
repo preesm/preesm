@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
 import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
-import org.preesm.algorithm.synthesis.schedule.algos.APGANScheduler;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -19,16 +18,13 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
-/***
- * @author rcazoulat
- */
-
 /**
  * This {@link BalancingHeuristic heuristic} is made to balance weights of a cluster, in the most simple way possible.
  * To keep this code simple, there are assumptions made when calling it. Firstly, the balancing has to work without
  * duplicating the cluster. Secondly, there will be no {@link SpecialActor special actors} added to unlock potential
- * memory reuse around and in the cluster. This class is used mainly in the {@link APGANScheduler APGAN Scheduling}, to
- * schedule clusters.
+ * memory reuse around and in the cluster.
+ *
+ * @author rcazoulat
  */
 public class BasicBalancing extends BalancingHeuristic {
 
@@ -50,6 +46,14 @@ public class BasicBalancing extends BalancingHeuristic {
   @Override
   public List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster, long nPEs) {
 
+    if (topgraph == null) {
+      throw new PreesmRuntimeException("top graph is null");
+    }
+
+    if (cluster == null) {
+      throw new PreesmRuntimeException("cluster1 is null");
+    }
+
     // Logs helper
     final List<Long> clusterOldExprs = cluster.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong())
         .toList();
@@ -60,14 +64,13 @@ public class BasicBalancing extends BalancingHeuristic {
 
     // Computing how much execution of the subgraph there is in the cluster
     // For example, if actor A is repeating 8 times and actor B 16 times, then clusterRepetition will be equal to 8.
-    final long clusterRepetition = MathFunctionsHelper
-        .gcd(cluster.getActors().stream().filter(a -> brv.get(a) != null).map(a -> brv.get(a)).toList());
+    final long clusterRepetition = brv.get(cluster);
 
     // if nPEs is not a divisor of clusterRepetition, rest != 0
     final long rest = clusterRepetition % nPEs;
     if (rest != 0) {
       throw new PreesmRuntimeException(
-          "cluster repetition is not divisible by nPEs. Consider using Simple Balancing Heuristic instead");
+          "cluster repetition is not divisible by nPEs. Consider using Complete Balancing Heuristic instead");
     }
 
     // clusterRepetition, without the rest. Used to compute scale and scale1

@@ -9,9 +9,9 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 
 /**
- * @author rcazoulat
+ * Helper class for balancing weights of clusters only.
  *
- *         Helper class for balancing weights of clusters only.
+ * @author rcazoulat
  */
 public class BalancingHelper {
   private BalancingHelper() {

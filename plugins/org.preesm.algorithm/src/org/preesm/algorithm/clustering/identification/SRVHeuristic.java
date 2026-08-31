@@ -6,6 +6,7 @@ import org.preesm.algorithm.clustering.ClusterHelper;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -18,6 +19,8 @@ import org.preesm.model.slam.Design;
  * is superior or equal to the number of processing elements contained in the current node of the {@link Design
  * architecture}. This heuristic only create clusters of one executable actor, so it is better to execute it after the
  * URC heuristic if multiple heuristics are executed to identify clusters.
+ *
+ * @author rcazoulat
  */
 public class SRVHeuristic extends HorizontalHeuristic {
 
@@ -29,10 +32,9 @@ public class SRVHeuristic extends HorizontalHeuristic {
 
     boolean condition = true;
     condition &= !(actor instanceof SpecialActor);
-    if (brv.get(actor) == null) {
-      final int i = 0;
-    }
+    condition &= !(actor instanceof DataInterface);
     condition &= this.brv.get(actor) > this.nPEs;
+    condition &= actor.getAllDataPorts().stream().map(p -> p.getFifo()).allMatch(f -> !f.isDelayPresent());
 
     return condition;
   }
@@ -51,7 +53,7 @@ public class SRVHeuristic extends HorizontalHeuristic {
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     // Adding nCore (from scenario)
-    this.nPEs = ClusterHelper.computeSingleNodeCoreEquivalent(scenario);
+    this.nPEs = scenario == null ? 1 : ClusterHelper.computeSingleNodeCoreEquivalent(scenario);
 
   }
 
