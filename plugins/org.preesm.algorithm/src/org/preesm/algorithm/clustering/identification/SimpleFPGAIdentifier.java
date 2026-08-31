@@ -13,11 +13,12 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
 /**
+ * This {@link HorizontalHeuristic heuristic} will regroup actors mapped on FPGA together to form a cluster.
  *
  * @author jamorin
  *
  */
-public class SimpleHeteroArchClusteringHeuristic extends HorizontalHeuristic {
+public class SimpleFPGAIdentifier extends HorizontalHeuristic {
 
   public static final int SUCCESSOR   = 0;
   public static final int PREDECESSOR = 1;

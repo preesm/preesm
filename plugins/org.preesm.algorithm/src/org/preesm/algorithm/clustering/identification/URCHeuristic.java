@@ -26,6 +26,8 @@ import org.preesm.model.slam.Design;
  * {@link AbstractActor actors} linked one to each other have the same repetition count and are not linked to any other
  * actors, then they can be regrouped together by the URC definition. If there is a delay between 2 of them, we can't
  * regroup them.
+ *
+ * @author rcazoulat
  */
 public class URCHeuristic extends HorizontalHeuristic {
 

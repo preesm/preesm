@@ -49,6 +49,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusterHelper;
+import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
 import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -77,6 +78,7 @@ import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -107,7 +109,13 @@ import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 import org.preesm.model.scenario.Scenario;
 
 /**
- * @author dgageot
+ * This class is inspired by the {@link CodegenClusterModelGeneratorSwitch} class, that creates a intermediate codegen
+ * model, that is used by the printer to create the final code. This class differs in the way that, for each cluster, a
+ * new file is created, with in it the init function and the loop function of the cluster, as if it was a
+ * non-hierarchical actor with a C refinement. It allows this class to be called in any order regarding the global
+ * codegen, as the URL for the created files are defined during the {@link ClusterIdentifier cluster identification}
+ * process.
+ *
  * @author rcazoulat
  *
  */
@@ -174,6 +182,9 @@ public class PiCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    */
   protected Map<AbstractVertex, Long> repVector;
 
+  /**
+   * Top cluster, of the cluster modified by scheduling.
+   */
   protected PiGraph topCluster;
 
   /**

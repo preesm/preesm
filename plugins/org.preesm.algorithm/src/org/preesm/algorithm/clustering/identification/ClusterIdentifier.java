@@ -45,7 +45,8 @@ import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 /**
- * The main method of this class is {@link identify}. Check its description for more information.
+ * The main method of this class is {@link #identify(PiGraph, Scenario, Design, Map, Workflow) identify}. Check its
+ * description for more information.
  *
  * @author rcazoulat
  */

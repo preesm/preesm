@@ -32,12 +32,14 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /***
- * @author rcazoulat This {@link BalancingHeuristic heuristic} will balance weights of a cluster, and might create a
- *         copy of it if needed. For example, if the subgraph is repeating itself 9 times but there is only 4 CPU cores,
- *         There will be a first cluster repeated 3 times enclosing 2 subgraph repetitions, and a second cluster
- *         repeated 2 times enclosing 3 subgraph repetitions. It also creates {@link ForkActor fork} and
- *         {@link JoinActor join} actors if a second cluster is created. Additionally, it will add {@link SpecialActor
- *         special actors} in the cluster to unlock memory reuse around and inside the cluster.
+ * This {@link BalancingHeuristic heuristic} will balance weights of a cluster, and might create a copy of it if needed.
+ * For example, if the subgraph is repeating itself 9 times but there is only 4 CPU cores, There will be a first cluster
+ * repeated 3 times enclosing 2 subgraph repetitions, and a second cluster repeated 2 times enclosing 3 subgraph
+ * repetitions. It also creates {@link ForkActor fork} and {@link JoinActor join} actors if a second cluster is created.
+ * Additionally, it will add {@link SpecialActor special actors} in the cluster to unlock memory reuse around and inside
+ * the cluster.
+ *
+ * @author rcazoulat
  */
 public class CompleteBalancing extends BalancingHeuristic {
 

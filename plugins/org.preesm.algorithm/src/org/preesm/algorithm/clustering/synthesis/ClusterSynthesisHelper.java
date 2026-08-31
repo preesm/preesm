@@ -3,11 +3,7 @@ package org.preesm.algorithm.clustering.synthesis;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.emf.common.util.EMap;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.memalloc.model.Buffer;
-import org.preesm.algorithm.memalloc.model.FifoAllocation;
-import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
@@ -16,18 +12,19 @@ import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
-import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
- * Helper class for cluster synthesis (=scheduling & allocation)
+ * Helper class for cluster synthesis (scheduling & allocation)
  */
 public class ClusterSynthesisHelper {
 
@@ -47,6 +44,7 @@ public class ClusterSynthesisHelper {
   public static void addSpecialActors(PiGraph cluster) {
     // I think adding Fork and Join actors is useless to improve memory reuse in cluster
     addBroadcastActors(cluster);
+    addRoundBufferActors(cluster);
   }
 
   /**
@@ -93,7 +91,7 @@ public class ClusterSynthesisHelper {
       // Setting expression of ports
       aOut.setExpression(aExpr); // otherwise it bugs...
       brdIn.setExpression(aExpr);
-      brdOut.setExpression(brv.get(b) * bInExpr / aExpr);
+      brdOut.setExpression(brv.get(b) * bInExpr);
 
       // Linking broadcast with a and b
       final String dataType = a2b.getType();
@@ -101,33 +99,64 @@ public class ClusterSynthesisHelper {
       a2brd.setTargetPort(brdIn);
       final Fifo brd2b = PiMMUserFactory.instance.createFifo(brdOut, bIn, dataType);
       cluster.addActor(brd);
-      cluster.addFifo(a2brd);
       cluster.addFifo(brd2b);
     }
   }
 
-  /***
-   * Method that fuses 2 {@link Allocation allocations}, alloc and dst. It consists of merging all the arrays of the two
-   * {@link Allocation allocations}.
+  /**
+   * For every {@link DataOutputInterface data input interface}, it checks if a {@link RoundBufferActor round buffer
+   * actor} needs to be generated. The condition is : if a is linked to b, b being the data input interface, and brv
+   * value of a is strictly higher than 1, then we can add a {@link RoundBufferActor round buffer actor} to allow a
+   * smart cluster memory allocation in a future step of the {@link ClusterSynthesisTask cluster synthesis task}.
    *
-   * @param dst
-   *          The first {@link Allocation allocation}, that is where the result will be stored
-   * @param alloc
-   *          The second {@link Allocation allocation}, that will be merged in dst
+   * @param cluster
+   *          the input cluster
    */
-  public static void fuseAllocations(final Allocation dst, final Allocation alloc) {
+  private static void addRoundBufferActors(PiGraph cluster) {
 
-    final List<PhysicalBuffer> dstBuffers = dst.getPhysicalBuffers();
-    final List<PhysicalBuffer> allocBuffers = alloc.getPhysicalBuffers();
-    dstBuffers.addAll(allocBuffers);
+    long nameCounter = 0;
 
-    final EMap<Fifo, FifoAllocation> dstFifosAlloc = dst.getFifoAllocations();
-    final EMap<Fifo, FifoAllocation> allocFifosAlloc = alloc.getFifoAllocations();
-    dstFifosAlloc.addAll(allocFifosAlloc);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
 
-    final EMap<InitActor, Buffer> dstDelaysAlloc = dst.getDelayAllocations();
-    final EMap<InitActor, Buffer> allocDelaysAlloc = alloc.getDelayAllocations();
-    dstDelaysAlloc.addAll(allocDelaysAlloc);
+    for (final DataOutputInterface b : cluster.getDataOutputInterfaces()) {
+      final DataInputPort bIn = b.getDataPort();
+      final Fifo a2b = bIn.getFifo();
+      final AbstractActor a = a2b.getSource();
+      final DataOutputPort aOut = a2b.getSourcePort();
+      final long aOutExpr = aOut.getExpression().evaluateAsLong();
+      final long bExpr = b.getGraphPort().getExpression().evaluateAsLong();
+
+      // If a is executed only once or next actor is already a round buffer actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(a) * aOutExpr == bExpr || b instanceof RoundBufferActor) {
+        continue;
+      }
+
+      // Creating round buffer actor
+      final RoundBufferActor rdb = PiMMUserFactory.instance.createRoundBufferActor();
+      rdb.setName("rdb_" + nameCounter++);
+
+      // Creating in/out broadcast ports
+      final DataInputPort rdbIn = PiMMUserFactory.instance.createDataInputPort();
+      rdbIn.setName("rdb_in");
+      final DataOutputPort rdbOut = PiMMUserFactory.instance.createDataOutputPort();
+      rdbOut.setName("rdb_out");
+      rdb.getDataInputPorts().add(rdbIn);
+      rdb.getDataOutputPorts().add(rdbOut);
+
+      // Setting expression of ports
+      bIn.setExpression(bExpr); // otherwise it bugs...
+      rdbIn.setExpression(brv.get(a) * aOutExpr);
+      rdbOut.setExpression(bExpr);
+
+      // Linking broadcast with a and b
+      final String dataType = a2b.getType();
+      final Fifo a2rdb = a2b;
+      a2rdb.setTargetPort(rdbIn);
+      final Fifo brd2b = PiMMUserFactory.instance.createFifo(rdbOut, bIn, dataType);
+      cluster.addActor(rdb);
+      cluster.addFifo(brd2b);
+    }
   }
 
   /**

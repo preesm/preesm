@@ -8,6 +8,8 @@ import org.preesm.model.pisdf.PiGraph;
 /**
  * This {@link SchedulingHeuristic} will schedule a cluster according to the APGAN scheduling method. The main code is
  * in the {@link APGANScheduler} class.
+ *
+ * @author rcazoulat
  */
 public class APGANSchedulingHeuristic extends SchedulingHeuristic {
 
