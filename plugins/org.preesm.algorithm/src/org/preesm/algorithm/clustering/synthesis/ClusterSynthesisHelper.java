@@ -47,6 +47,13 @@ public class ClusterSynthesisHelper {
     addRoundBufferActors(cluster);
   }
 
+  public static void addAllSpecialActors(PiGraph graph) {
+    addSpecialActors(graph);
+    for (final PiGraph child : graph.getChildrenGraphs()) {
+      addAllSpecialActors(child);
+    }
+  }
+
   /**
    * For every {@link DataInputInterface data input interface}, it checks if a {@link BroadcastActor broadcast actor}
    * needs to be generated. The condition is : if a is linked to b, a being the data input interface, and brv value of b

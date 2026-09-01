@@ -18,6 +18,7 @@ import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.algorithm.clustering.heuristics.MappingHeuristic;
 import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic;
+import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
@@ -106,6 +107,10 @@ public class ClusterIdentifier {
     }
 
     algorithm = buildVerticalClusters(algorithm, vertiIdentifier);
+
+    // Adding special actors for every hierarchical level of algorithm.
+    // Can be useful to unlock memory reuse without passing by a SrDAG
+    ClusterSynthesisHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
       PreesmLogger.getLogger().info("Clustering Id: building vertical clusters done.");

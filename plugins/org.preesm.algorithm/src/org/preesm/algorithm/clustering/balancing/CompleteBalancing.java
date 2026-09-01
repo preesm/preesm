@@ -85,8 +85,6 @@ public class CompleteBalancing extends BalancingHeuristic {
 
     // Computing The number of time the subgraph will be repeated.
     // For example, if actor A is repeating 8 times and actor B 16 times, then clusterRepetition will be equal to 8.
-    // final long subgraphRep = MathFunctionsHelper
-    // .gcd(cluster1.getActors().stream().filter(a -> brv.get(a) != null).map(a -> brv.get(a)).toList());
     final long clusterRep = brv.get(cluster1);
 
     // if nPEs is not a divisor of clusterRepetition, rest != 0
@@ -138,19 +136,16 @@ public class CompleteBalancing extends BalancingHeuristic {
         final long tokensOneExec = dataInterface.getDataPort().getFifo().getTargetPort().getExpression()
             .evaluateAsLong();
         final AbstractActor previousActor = dataInterface.getGraphPort().getFifo().getSource();
-        // If there is a broadcast actor just before the cluster, it is mandatory to
-        // create a new one in the cluster, so that the memory optimizations of the
-        // broadcast actor are made in the cluster too, and to don't fool the
-        // broadcast actor in the subgraph, that will duplicate more data to the cluster.
-        if (previousActor instanceof BroadcastActor) {
+
+        if (previousActor instanceof final BroadcastActor brdActor) {
 
           // Log utils
-          oldExprs = previousActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
+          oldExprs = brdActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
 
           // 1. Modify output port of broadcast actor
-          final DataOutputPort prevActorOutPort = dataInterface.getGraphPort().getFifo().getSourcePort();
+          final DataOutputPort brdOutPort = dataInterface.getGraphPort().getFifo().getSourcePort();
           final long newExpr = tokensOneExec * outerRep1;
-          prevActorOutPort.setExpression(newExpr);
+          brdOutPort.setExpression(newExpr);
 
           // Log -> track broadcast modification
           if (verbose) {
@@ -242,15 +237,15 @@ public class CompleteBalancing extends BalancingHeuristic {
         final AbstractActor previousActor = inputInterface1.getGraphPort().getFifo().getSource();
 
         // If previous actor is a broadcast actor we add one output port for cluster2, in the outer broadcast
-        if (previousActor instanceof BroadcastActor) {
+        if (previousActor instanceof final BroadcastActor brdActor) {
 
           // Log util
-          oldExprs = previousActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
+          oldExprs = brdActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
 
           // Modyfing out port 1 + creating out port 2
           final DataOutputPort brdOutPort1 = inputInterface1.getGraphPort().getFifo().getSourcePort();
           final DataOutputPort brdOutPort2 = PiMMUserFactory.instance.createDataOutputPort();
-          previousActor.getDataOutputPorts().add(brdOutPort2);
+          brdActor.getDataOutputPorts().add(brdOutPort2);
 
           final String brdPortsName = brdOutPort1.getName();
           brdOutPort1.setName(brdPortsName + "_1");
@@ -264,7 +259,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track broadcast modification
           if (verbose) {
-            log = BalancingHelper.makeCompareLog(previousActor, topgraph, oldExprs);
+            log = BalancingHelper.makeCompareLog(brdActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
 
