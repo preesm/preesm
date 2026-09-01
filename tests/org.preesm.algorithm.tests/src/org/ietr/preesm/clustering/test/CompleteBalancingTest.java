@@ -38,6 +38,7 @@
 package org.ietr.preesm.clustering.test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -53,6 +54,7 @@ import org.preesm.algorithm.clustering.balancing.CompleteBalancing;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
@@ -69,12 +71,14 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
  */
 public class CompleteBalancingTest {
 
-  private PiGraph       topGraph;
-  private PiGraph       subGraph;
-  private AbstractActor actorA;
-  private AbstractActor actorB;
-  private AbstractActor actorC;
-  private AbstractActor actorD;
+  private PiGraph        topGraph;
+  private PiGraph        subGraph;
+  private AbstractActor  actorA;
+  private AbstractActor  actorB;
+  private AbstractActor  actorC;
+  private AbstractActor  actorD;
+  private BroadcastActor brdActor;
+  private AbstractActor  brdProducer;
 
   private final CompleteBalancing balancer = new CompleteBalancing();
 
@@ -154,6 +158,29 @@ public class CompleteBalancingTest {
   }
 
   @Test
+  public void testBrd() {
+    final List<PiGraph> clusters = balancer.balanceFirings(topGraph, subGraph, 4);
+    assertEquals(1, clusters.size());
+
+    final PiGraph cluster = clusters.getFirst();
+
+    assertEquals(1, brdActor.getDataInputPorts().getFirst().getExpression().evaluateAsLong());
+    assertEquals(4, brdActor.getDataOutputPorts().getFirst().getExpression().evaluateAsLong());
+    assertEquals(1, brdActor.getDataOutputPorts().getFirst().getOppositePort().getExpression().evaluateAsLong());
+
+    final boolean isBrdPresentInCluster = cluster.getActors().stream().anyMatch(BroadcastActor.class::isInstance);
+    assertTrue(isBrdPresentInCluster);
+
+    final BroadcastActor brdInCluster = (BroadcastActor) cluster.getActors().stream()
+        .filter(a -> a instanceof BroadcastActor).toList().getFirst();
+
+    assertEquals(1, brdInCluster.getDataInputPorts().getFirst().getExpression().evaluateAsLong());
+    assertEquals(256 / 4, brdInCluster.getDataOutputPorts().getFirst().getExpression().evaluateAsLong());
+    assertEquals(1, brdInCluster.getDataOutputPorts().getFirst().getOppositePort().getExpression().evaluateAsLong());
+
+  }
+
+  @Test
   public void testExceptionGraph() {
     Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(null, subGraph, 15));
     Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, null, 15));
@@ -170,9 +197,12 @@ public class CompleteBalancingTest {
     this.actorB = PiMMUserFactory.instance.createActor("B");
     this.actorC = PiMMUserFactory.instance.createActor("C");
     this.actorD = PiMMUserFactory.instance.createActor("D");
+    this.brdActor = PiMMUserFactory.instance.createBroadcastActor("brd");
+    this.brdProducer = PiMMUserFactory.instance.createActor("prod");
 
     // Create a list for the actors to easily add them to the top graph
-    final List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD);
+    final List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD,
+        this.brdActor, this.brdProducer);
 
     // Add actors to the top graph
     actorsList.stream().forEach(x -> this.topGraph.addActor(x));
@@ -181,36 +211,51 @@ public class CompleteBalancingTest {
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
     final DataOutputPort outputB = PiMMUserFactory.instance.createDataOutputPort("out");
     final DataOutputPort outputC = PiMMUserFactory.instance.createDataOutputPort("out");
-    final DataInputPort inputB = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataOutputPort outputBrd = PiMMUserFactory.instance.createDataOutputPort("out");
+    final DataOutputPort outputProd = PiMMUserFactory.instance.createDataOutputPort("out");
+
+    final DataInputPort inputB1 = PiMMUserFactory.instance.createDataInputPort("in1");
+    final DataInputPort inputB2 = PiMMUserFactory.instance.createDataInputPort("in2");
     final DataInputPort inputC = PiMMUserFactory.instance.createDataInputPort("in");
     final DataInputPort inputD = PiMMUserFactory.instance.createDataInputPort("in");
+    final DataInputPort inputBrd = PiMMUserFactory.instance.createDataInputPort("in");
 
     // Attach them to actors
     this.actorA.getDataOutputPorts().add(outputA);
-    this.actorB.getDataInputPorts().add(inputB);
+    this.actorB.getDataInputPorts().add(inputB1);
+    this.actorB.getDataInputPorts().add(inputB2);
     this.actorB.getDataOutputPorts().add(outputB);
     this.actorC.getDataInputPorts().add(inputC);
     this.actorC.getDataOutputPorts().add(outputC);
     this.actorD.getDataInputPorts().add(inputD);
+    this.brdActor.getDataInputPorts().add(inputBrd);
+    this.brdActor.getDataOutputPorts().add(outputBrd);
+    this.brdProducer.getDataOutputPorts().add(outputProd);
 
     // Create fifos and form a chain such as A -> B -> C -> D
-    final Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB, "void");
+    final Fifo fifoAB = PiMMUserFactory.instance.createFifo(outputA, inputB1, "void");
+    final Fifo fifoBrdB = PiMMUserFactory.instance.createFifo(outputBrd, inputB2, "void");
+    final Fifo fifoProdBrd = PiMMUserFactory.instance.createFifo(outputProd, inputBrd, "void");
     final Fifo fifoBC = PiMMUserFactory.instance.createFifo(outputB, inputC, "void");
     final Fifo fifoCD = PiMMUserFactory.instance.createFifo(outputC, inputD, "void");
 
     // Create a list for the fifos to easily add them to the top graph
-    final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
+    final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD, fifoBrdB, fifoProdBrd);
 
     // Add fifos to the top graph
     fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(256);
-    inputB.setExpression(1);
+    inputB1.setExpression(1);
+    inputB2.setExpression(1);
     outputB.setExpression(1);
     inputC.setExpression(1);
     outputC.setExpression(1);
     inputD.setExpression(256);
+    inputBrd.setExpression(1);
+    outputBrd.setExpression(256);
+    outputProd.setExpression(1);
 
     // Regroup under the same hierarchy actors B and C
     final Set<AbstractActor> set = new HashSet<>();
