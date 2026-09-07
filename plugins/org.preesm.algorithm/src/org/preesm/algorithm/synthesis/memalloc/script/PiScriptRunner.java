@@ -1,3 +1,4 @@
+
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
@@ -68,8 +69,6 @@ import org.preesm.algorithm.memory.script.MatchType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -315,11 +314,10 @@ public class PiScriptRunner {
   }
 
   /**
-   * This method finds the memory scripts associated to the {@link DAGVertex vertices} of the input
-   * {@link DirectedAcyclicGraph}. When a script path is set in the property of the {@link SDFVertex} associated to a
-   * {@link DAGVertex} of the graph, scripts are either found in a path relative to the original {@link SDFGraph} file,
-   * or in the plugin project "scripts" directory. If an invalid script path is set, a warning message will be written
-   * in the log.
+   * This method finds the memory scripts associated to the {@link DAGVertex vertices} of the input {@link PiGraph dag}.
+   * When a script path is set in the property of theactor instance associated to an {@link AbstractActor} of the graph,
+   * scripts are either found in a path relative to the original {@link PiGraph} file, or in the plugin project
+   * "scripts" directory. If an invalid script path is set, a warning message will be written in the log.
    *
    * @param dag
    *          the {@link DirectedAcyclicGraph} whose vertices memory scripts are retrieved.
@@ -1639,7 +1637,7 @@ public class PiScriptRunner {
   private void runScript(final AbstractActor dagVertex, final URL script) throws EvalError {
     final Interpreter interpreter = new Interpreter();
 
-    // TODO : isolate Interpreter initializatino
+    // TODO : isolate Interpreter initialization
     final BshClassManager classManager = interpreter.getClassManager();
     classManager.cacheClassInfo("Buffer", Buffer.class);
 

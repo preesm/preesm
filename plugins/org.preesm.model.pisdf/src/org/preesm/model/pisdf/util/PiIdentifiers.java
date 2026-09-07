@@ -111,6 +111,8 @@ public class PiIdentifiers {
   // ACTORS
   public static final String ACTOR = "actor";
 
+  public static final String PASSIVE = "passive";
+
   /** The Constant ACTOR_NAME. */
   public static final String ACTOR_NAME = PiIdentifiers.ID;
 
@@ -148,7 +150,7 @@ public class PiIdentifiers {
   public static final String PARAMETER_NAME = PiIdentifiers.ID;
 
   /** The Constant PARAMETER_EXPRESSION. */
-  public static final String PARAMETER_EXPRESSION           = PiIdentifiers.EXPR;
+  public static final String PARAMETER_EXPRESSION          = PiIdentifiers.EXPR;
   public static final String MOLDABLE_PARAMETER_EXPRESSION = "moldable_" + PiIdentifiers.EXPR;
 
   /** The Constant CONFIGURATION_INPUT_INTERFACE_NAME. */
@@ -212,6 +214,15 @@ public class PiIdentifiers {
 
   /** The Constant PORT_EXPRESSION. */
   public static final String PORT_EXPRESSION = PiIdentifiers.EXPR;
+
+  /** The Constant PORT_BUFFER. */
+  public static final String PORT_BUFFER = "buffer";
+
+  /** The Constant PORT_OFFSET. */
+  public static final String PORT_OFFSET = "offset";
+
+  /** The Constant PORT_OFFSET. */
+  public static final String PORT_SCRIPT = "script";
 
   /** The Constant PORT_MEMORY_ANNOTATION. */
   public static final String PORT_MEMORY_ANNOTATION = "annotation";

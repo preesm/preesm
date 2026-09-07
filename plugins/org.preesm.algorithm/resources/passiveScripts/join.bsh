@@ -1,0 +1,30 @@
+// ============================================================
+//
+// Join write passive script
+//
+// ============================================================
+// in: 
+// List<DataInputPort> inputs,
+// List<DataOutputPort> outputs,
+// int intputIdx,
+// int inputInstanceIdx,
+// List<String, int> parameters,
+// out:
+// wbeginji
+// wendji
+
+int wbeginj = 0;
+for(int j = 0; j < inputIdx - 1; j ++) {
+	int rateOppositePort = outputs.get(j).getOppositePort().getExpression().evaluateAsLong();
+	int ratePort = inputs.get(j).getExpression().evaluateAsLong();
+	int repOppositeActor = ratePort / rateOppositePort;
+	wbeginj += rateOppositePort * repOppositeActor;	
+}
+
+int ratej = inputs.get(inputIdx).getOppositePort().getExpression().evaluateAsLong();
+wbeginji = wbeginj + ratej * inputInstanceIdx;
+wendji = wbeginji + ratej;
+
+if(wendji > outputs.getFirst().getExpression().evaluateAsLong()) {
+	throw new RuntimeException("Port weights are not respecting the join rule. The sum of all input ports weights must be equal to the output port weight");  
+}

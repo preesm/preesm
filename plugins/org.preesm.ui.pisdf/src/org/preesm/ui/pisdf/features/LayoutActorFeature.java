@@ -74,7 +74,7 @@ import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PiMMPackage;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.ui.pisdf.features.helper.LayoutActorBendpoints;
@@ -166,7 +166,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     }
 
     // RETRIEVE THE ANCHOR HEIGHT
-    int anchorMaxHeight;
+    final int anchorMaxHeight;
 
     int inputsHeight = 0;
     int outputsHeight = 0;
@@ -194,14 +194,16 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
             AbstractAddActorPortFeature.portFontHeight = size.getHeight();
             final EObject obj = (EObject) getBusinessObjectForPictogramElement(anchor);
 
-            switch (obj.eClass().getClassifierID()) {
-              case PiMMPackage.CONFIG_INPUT_PORT -> cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-              case PiMMPackage.CONFIG_OUTPUT_PORT -> cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-              case PiMMPackage.DATA_INPUT_PORT -> inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-              case PiMMPackage.DATA_OUTPUT_PORT -> outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
-              default -> { // nothing
-              }
+            if (obj instanceof ConfigInputPort) {
+              cfgInputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+            } else if (obj instanceof ConfigOutputPort) {
+              cfgOutputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+            } else if (obj instanceof DataInputPort) {
+              inputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
+            } else if (obj instanceof DataOutputPort) {
+              outputsHeight += size.getHeight() + LayoutActorFeature.PORT_GAP;
             }
+
           }
         }
       }
@@ -209,6 +211,7 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     anchorMaxHeight = Math.max(cfgInputsHeight, cfgOutputsHeight) + Math.max(inputsHeight, outputsHeight);
 
     return anchorMaxHeight + nameHeight + LayoutActorFeature.INITIAL_GAP + LayoutActorFeature.BOTTOM_GAP;
+
   }
 
   /**
@@ -336,10 +339,11 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     final EObject bo = containerShape.getLink().getBusinessObjects().get(0);
     if (bo instanceof final Actor actor) {
       layoutActor(actor, childrenShapes, containerGa);
+    } else if (bo instanceof PassiveActor) {
+      layoutPassiveActor(childrenShapes, containerGa);
     } else if (bo instanceof ExecutableActor) {
       layoutSpecialActor((AbstractActor) bo, childrenShapes, containerGa);
     }
-
     // If Anything changed, call the move feature to layout connections
     if (anythingChanged) {
       layoutShapeConnectedToBendpoints(containerShape, this, new ArrayList<>());
@@ -384,6 +388,36 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
       backgroundColor = IColorConstant.WHITE;
       foregroundColor = IColorConstant.BLACK;
     }
+    for (final Shape shape : childrenShapes) {
+      final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
+      final IGaService gaService = Graphiti.getGaService();
+      if (child instanceof final Text text) {
+        text.setFont(gaService.manageDefaultFont(getDiagram(), false, true));
+      }
+    }
+    final RoundedRectangle roundedRectangle = (RoundedRectangle) containerGa;
+    roundedRectangle.setBackground(manageColor(backgroundColor));
+    roundedRectangle.setForeground(manageColor(foregroundColor));
+    roundedRectangle.setLineWidth(2);
+  }
+
+  /**
+   * Layout special actor.
+   *
+   * @param ea
+   *          the ea
+   * @param childrenShapes
+   *          the children shapes
+   * @param containerGa
+   *          the container ga
+   */
+  private void layoutPassiveActor(final EList<Shape> childrenShapes, final GraphicsAlgorithm containerGa) {
+    final IColorConstant backgroundColor;
+    final IColorConstant foregroundColor;
+
+    backgroundColor = AddPassiveActorFeature.PASSIVE_ACTOR_BACKGROUND;
+    foregroundColor = AddPassiveActorFeature.PASSIVE_ACTOR_FOREGROUND;
+
     for (final Shape shape : childrenShapes) {
       final GraphicsAlgorithm child = shape.getGraphicsAlgorithm();
       final IGaService gaService = Graphiti.getGaService();
@@ -453,6 +487,8 @@ public class LayoutActorFeature extends AbstractLayoutFeature implements LayoutA
     int nbConfigInput = 0;
     int nbConfigOutput = 0;
     for (final Anchor anchor : anchorShapes) {
+
+      final Object bo = getBusinessObjectForPictogramElement(anchor);
 
       if (getBusinessObjectForPictogramElement(anchor) instanceof ConfigInputPort) {
         inputs.add(nbConfigInput, (BoxRelativeAnchor) anchor);

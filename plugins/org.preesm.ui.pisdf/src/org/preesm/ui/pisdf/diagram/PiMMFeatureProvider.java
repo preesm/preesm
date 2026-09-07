@@ -107,6 +107,8 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PassiveActor;
+import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.RoundBufferActor;
@@ -131,10 +133,13 @@ import org.preesm.ui.pisdf.features.AddInitActorFeature;
 import org.preesm.ui.pisdf.features.AddJoinActorFeature;
 import org.preesm.ui.pisdf.features.AddMoldableParameterFeature;
 import org.preesm.ui.pisdf.features.AddParameterFeature;
+import org.preesm.ui.pisdf.features.AddPassiveActorFeature;
 import org.preesm.ui.pisdf.features.AddRefinementFeature;
 import org.preesm.ui.pisdf.features.AddRoundBufferActorFeature;
 import org.preesm.ui.pisdf.features.ClearActorMemoryScriptFeature;
 import org.preesm.ui.pisdf.features.ClearActorRefinementFeature;
+import org.preesm.ui.pisdf.features.ClearReadPassiveScriptFeature;
+import org.preesm.ui.pisdf.features.ClearWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.CopyFeature;
 import org.preesm.ui.pisdf.features.CreateActorFeature;
 import org.preesm.ui.pisdf.features.CreateBroadcastActorFeature;
@@ -170,14 +175,18 @@ import org.preesm.ui.pisdf.features.MoveDownActorPortFeature;
 import org.preesm.ui.pisdf.features.MoveUpActorPortFeature;
 import org.preesm.ui.pisdf.features.MovesIfOnlyOneFeature;
 import org.preesm.ui.pisdf.features.OpenMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.OpenReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.OpenRefinementFeature;
+import org.preesm.ui.pisdf.features.OpenWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.PasteFeature;
 import org.preesm.ui.pisdf.features.ReconnectionDependencyFeature;
 import org.preesm.ui.pisdf.features.ReconnectionFifoFeature;
 import org.preesm.ui.pisdf.features.RenameAbstractVertexFeature;
 import org.preesm.ui.pisdf.features.RenameActorPortFeature;
 import org.preesm.ui.pisdf.features.SetActorMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.SetActorReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.SetActorRefinementFeature;
+import org.preesm.ui.pisdf.features.SetActorWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.SetPersistenceLevelFeature;
 import org.preesm.ui.pisdf.features.SetPortMemoryAnnotationFeature;
 import org.preesm.ui.pisdf.features.SetVisibleAllDependenciesFeature;
@@ -228,6 +237,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     @Override
     public IAddFeature caseActor(final Actor object) {
       return new AddActorFeature(PiMMFeatureProvider.this);
+    }
+
+    @Override
+    public IAddFeature casePassiveActor(final PassiveActor object) {
+      return new AddPassiveActorFeature(PiMMFeatureProvider.this);
     }
 
     @Override
@@ -427,13 +441,17 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       }
       if (obj instanceof InitActor) { // AbstractActor, AbstractVertex
         features.add(new SetActorRefinementFeature(this));
+
         features.add(new ClearActorRefinementFeature(this));
         features.add(new OpenRefinementFeature(this));
       }
       if (obj instanceof Actor) { // ExecutableActor, AbstractActor, AbstractVertex
         final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
           new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
-          new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
+          new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this),
+          new SetActorWritePassiveScriptFeature(this), new SetActorReadPassiveScriptFeature(this),
+          new ClearWritePassiveScriptFeature(this), new ClearReadPassiveScriptFeature(this),
+          new OpenWritePassiveScriptFeature(this), new OpenReadPassiveScriptFeature(this) };
         features.addAll(Arrays.asList(actorFeatures));
       }
 
@@ -449,6 +467,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       }
 
       if (obj instanceof DataPort) { // Port
+        features.add(new SetPortMemoryAnnotationFeature(this));
+      }
+
+      if (obj instanceof PassivePort) { // Port
         features.add(new SetPortMemoryAnnotationFeature(this));
       }
 

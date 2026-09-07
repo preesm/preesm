@@ -1,0 +1,19 @@
+// ============================================================
+//
+// Roundbuffer wirte passive script
+//
+// ============================================================
+// in: 
+// List<DataInputPort> inputs,
+// List<DataOutputPort> outputs,
+// int intputIdx,
+// int inputInstanceIdx,
+// List<String, int> parameters,
+// out:
+// wbeginji
+// wendji
+
+
+wbeginji =
+wendji = 
+

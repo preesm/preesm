@@ -88,6 +88,9 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.InterfaceKind;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PassiveActor;
+import org.preesm.model.pisdf.PassiveInputPort;
+import org.preesm.model.pisdf.PassiveOutputPort;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
@@ -789,6 +792,9 @@ public class PiParser {
         case PiIdentifiers.ACTOR:
           vertex = parseActor(nodeElt, graph);
           break;
+        case PiIdentifiers.PASSIVE:
+          vertex = parsePassiveActor(nodeElt, graph);
+          break;
         case PiIdentifiers.BROADCAST, PiIdentifiers.FORK, PiIdentifiers.JOIN, PiIdentifiers.ROUND_BUFFER,
             PiIdentifiers.END, PiIdentifiers.INIT:
           vertex = parseSpecialActor(nodeElt, graph);
@@ -926,8 +932,19 @@ public class PiParser {
         // Do not create data ports for InterfaceActor since the unique port
         // is automatically created when the vertex is instantiated same for delays
         if (!(vertex instanceof InterfaceActor)) {
-          iPort = PiMMUserFactory.instance.createDataInputPort();
-          ((AbstractActor) vertex).getDataInputPorts().add(iPort);
+
+          if (vertex instanceof final PassiveActor passiveActor) {
+            iPort = PiMMUserFactory.instance.createPassiveInputPort();
+            ((PassiveInputPort) iPort).setSubBufferSize(Integer.parseInt(elt.getAttribute(PiIdentifiers.PORT_BUFFER)));
+            ((PassiveInputPort) iPort).setOffset(Integer.parseInt(elt.getAttribute(PiIdentifiers.PORT_OFFSET)));
+            ((PassiveInputPort) iPort).setWritePassiveScriptPath(elt.getAttribute(PiIdentifiers.PORT_SCRIPT));
+
+            passiveActor.getPassiveInputPorts().add((PassiveInputPort) iPort);
+          } else {
+            iPort = PiMMUserFactory.instance.createDataInputPort();
+            ((AbstractActor) vertex).getDataInputPorts().add(iPort);
+
+          }
           iPort.setName(portName);
         } else {
           iPort = ((AbstractActor) vertex).getDataInputPorts().get(0);
@@ -948,8 +965,19 @@ public class PiParser {
         // is automatically created when the vertex is instantiated
         // same for delays
         if (!(vertex instanceof InterfaceActor)) {
-          oPort = PiMMUserFactory.instance.createDataOutputPort();
-          ((AbstractActor) vertex).getDataOutputPorts().add(oPort);
+          if (vertex instanceof final PassiveActor passiveActor) {
+
+            oPort = PiMMUserFactory.instance.createPassiveOutputPort();
+            ((PassiveOutputPort) oPort).setSubBufferSize(Integer.parseInt(elt.getAttribute(PiIdentifiers.PORT_BUFFER)));
+            ((PassiveOutputPort) oPort).setOffset(Integer.parseInt(elt.getAttribute(PiIdentifiers.PORT_OFFSET)));
+            ((PassiveOutputPort) oPort).setReadPassiveScriptPath(elt.getAttribute(PiIdentifiers.PORT_SCRIPT));
+
+            passiveActor.getPassiveOutputPorts().add((PassiveOutputPort) oPort);
+          } else {
+            oPort = PiMMUserFactory.instance.createDataOutputPort();
+            ((AbstractActor) vertex).getDataOutputPorts().add(oPort);
+
+          }
           oPort.setName(portName);
         } else {
           oPort = ((AbstractActor) vertex).getDataOutputPorts().get(0);
@@ -1119,5 +1147,21 @@ public class PiParser {
     graph.addActor(actor);
 
     return actor;
+  }
+
+  private AbstractActor parsePassiveActor(final Element nodeElt, final PiGraph graph) {
+    // Instantiate the new actor
+    final PassiveActor passiveActor = PiMMUserFactory.instance.createPassiveActor();
+
+    // Get the actor properties
+    final String name = nodeElt.getAttribute(PiIdentifiers.ACTOR_NAME);
+
+    NameCheckerC.checkValidName(Actor.class.getName(), name);
+    passiveActor.setName(name);
+
+    // Add the actor to the parsed graph
+    graph.addActor(passiveActor);
+
+    return passiveActor;
   }
 }
