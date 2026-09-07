@@ -80,6 +80,8 @@ import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.Parameterizable;
+import org.preesm.model.pisdf.PassiveActor;
+import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.PiSDFRefinement;
 import org.preesm.model.pisdf.Port;
@@ -234,6 +236,7 @@ public class PiWriter {
     switch (abstractActor) {
       case final PiGraph piGraph -> writePiGraphAsHActor(vertexElt, piGraph);
       case final Actor actor -> writeActor(vertexElt, actor);
+      case final PassiveActor actor -> writePassiveActor(vertexElt, actor);
       case final SpecialActor specialActor -> writeSpecialActor(vertexElt, specialActor);
       case final InterfaceActor iActor -> writeInterfaceVertex(vertexElt, iActor);
       default -> {
@@ -292,6 +295,26 @@ public class PiWriter {
     if (memoryScriptPath != null) {
       writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
     }
+    // Write ports of the actor
+    writePorts(vertexElt, actor.getConfigInputPorts());
+    writePorts(vertexElt, actor.getConfigOutputPorts());
+    writePorts(vertexElt, actor.getDataInputPorts());
+    writePorts(vertexElt, actor.getDataOutputPorts());
+
+  }
+
+  /**
+   * Write information of the {@link Actor} in the given {@link Element}.
+   *
+   * @param vertexElt
+   *          The {@link Element} to write
+   * @param actor
+   *          The {@link Actor} to serialize
+   */
+  protected void writePassiveActor(final Element vertexElt, final PassiveActor actor) {
+    // Set the kind of the Actor
+    vertexElt.setAttribute(PiIdentifiers.NODE_KIND, PiIdentifiers.PASSIVE);
+
     // Write ports of the actor
     writePorts(vertexElt, actor.getConfigInputPorts());
     writePorts(vertexElt, actor.getConfigOutputPorts());
@@ -408,6 +431,10 @@ public class PiWriter {
       dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET, vertex.getName());
 
       if (target instanceof ExecutableActor) {
+        dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, getter.getName());
+      }
+
+      if (target instanceof PassiveActor) {
         dependencyElt.setAttribute(PiIdentifiers.DEPENDENCY_TARGET_PORT, getter.getName());
       }
 
@@ -590,6 +617,11 @@ public class PiWriter {
           final Expression portRateExpression = ((DataPort) port).getPortRateExpression();
           final String expressionAsString = portRateExpression.getExpressionAsString();
           portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, expressionAsString);
+          if (port instanceof final PassivePort pp) {
+            portElt.setAttribute(PiIdentifiers.PORT_BUFFER, Integer.toString(pp.getSubBufferSize()));
+            portElt.setAttribute(PiIdentifiers.PORT_OFFSET, Integer.toString(pp.getOffset()));
+            portElt.setAttribute(PiIdentifiers.PORT_SCRIPT, pp.getScript());
+          }
           break;
         case CFG_INPUT, CFG_OUTPUT:
         default:

@@ -765,6 +765,9 @@ interface RefinementContainer {
 class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 	long firingInstance
 	String memoryScriptPath
+	String writePassiveScriptPath
+	String readPassiveScriptPath
+	
 	op boolean isConfigurationActor() {
 		return configOutputPorts.map[outgoingDependencies].filter[!it.isEmpty].map[it.get(0)].map[getter].exists[true]
 	}
@@ -1341,4 +1344,52 @@ enum InterfaceKind {
 	DATA_OUTPUT as "snk" = 1
 	CFG_OUTPUT as "cfg_out_iface" = 2
 	CFG_INPUT as "cfg_in_iface" = 3
+}
+
+class PassiveActor extends ExecutableActor {
+	contains PassiveInputPort[] passiveInputPorts 
+	contains PassiveOutputPort[] passiveOutputPorts
+	int bufferSize
+	
+	
+	op DataInputPort[] getDataInputPorts() {
+		return passiveInputPorts.map[it as DataInputPort].toEList.unmodifiableView
+	}
+	
+	op DataOutputPort[] getDataOutputPorts() {
+		return passiveOutputPorts.map[it as DataOutputPort].toEList.unmodifiableView
+	}
+	
+	op DataPort[] getAllDataPorts() {
+		return allPassivePorts.map[it as DataPort].toEList.unmodifiableView
+	}
+	
+	op PassivePort[] getAllPassivePorts() {
+		return (passiveInputPorts + passiveOutputPorts).toEList.unmodifiableView
+	}
+}
+
+abstract class PassivePort extends DataPort {
+	int subBufferSize
+	int offset
+	
+	op String getScript()
+	
+}
+
+class PassiveInputPort extends PassivePort, DataInputPort {
+	String writePassiveScriptPath
+	
+	op String getScript() {
+		return writePassiveScriptPath
+	}
+}
+
+class PassiveOutputPort extends PassivePort, DataOutputPort {
+	String readPassiveScriptPath
+	
+	op String getScript() {
+		return readPassiveScriptPath
+	}
+	
 }

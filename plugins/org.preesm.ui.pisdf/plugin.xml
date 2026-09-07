@@ -152,6 +152,12 @@
                id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.initDelay"
                tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.initDelay">
          </propertySection>
+		<propertySection
+		    class="org.preesm.ui.pisdf.properties.PassivePortPropertiesSection"
+		    filter="org.preesm.ui.pisdf.properties.PiMMPassivePortFilter"
+		    id="org.ietr.preesm.experiment.model.transformation.properties.section.graph.passivePort"
+		    tab="org.ietr.preesm.experiment.model.transformation.properties.tab.graph.basicPort">
+		</propertySection>
          <propertySection
                class="org.preesm.ui.pisdf.properties.DataPortPropertiesSection"
                filter="org.preesm.ui.pisdf.properties.PiMMDataPortFilter"

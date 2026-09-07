@@ -1,0 +1,17 @@
+// ============================================================
+//
+// Default read passive script
+//
+// ============================================================
+// in: 
+// List<DataInputPort> inputs,
+// List<DataOutputPort> outputs,
+// int outputIdx,
+// int outputInstanceIdx,
+// List<String, int> parameters,
+// out:
+// rbeginji
+// rendji
+
+rbeginji = 0;
+rendji = outputs.get(outputIdx).getExpression().evaluateAsLong();

@@ -96,10 +96,14 @@
    <xs:complexType name="Port">
       <xs:simpleContent>
          <xs:extension base="xs:string">
-            <xs:attribute type="xs:string" name="annotation" use="optional" />
+            <xs:attribute type="xs:string" name="annotation" use="optional" ></xs:attribute>
             <xs:attribute type="xs:string" name="expr" use="optional" />
             <xs:attribute type="xs:string" name="kind" use="optional" />
-            <xs:attribute type="xs:string" name="name" use="optional" />
+            <xs:attribute type="xs:string" name="name" use="optional" /><xs:attribute
+            	type="xs:string" name="buffer" use="optional">
+</xs:attribute>
+         	<xs:attribute type="xs:string" name="offset" use="optional"></xs:attribute>
+         	<xs:attribute type="xs:string" name="script" use="optional"></xs:attribute>
          </xs:extension>
       </xs:simpleContent>
    </xs:complexType>
