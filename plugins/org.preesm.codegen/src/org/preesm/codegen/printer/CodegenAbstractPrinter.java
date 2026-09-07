@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -51,6 +52,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.CodegenPackage;
@@ -64,11 +66,14 @@ import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
+import org.preesm.codegen.model.FunctionBlock;
 import org.preesm.codegen.model.FunctionCall;
+import org.preesm.codegen.model.FunctionCoreBlock;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
@@ -294,8 +299,10 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public void preProcessing(final List<Block> printerBlocks, final Collection<Block> allBlocks) {
     // by default, check that all Operators have a unique hardware ID
     // this can be overriden.
+    // If blocks are instance of FunctionCoreBlock, there is no need to check if hardware ID is unique,
+    // because result will be a file containing a function, that could be called on any core by real coreBlocks.
     final List<CoreBlock> operatorBlocks = allBlocks.stream().filter(CoreBlock.class::isInstance)
-        .map(CoreBlock.class::cast).toList();
+        .filter(Predicate.not(FunctionCoreBlock.class::isInstance)).map(CoreBlock.class::cast).toList();
     final long operatorBlockCount = operatorBlocks.size();
     for (int i = 0; i < operatorBlockCount; i++) {
       final CoreBlock coreBlocki = operatorBlocks.get(i);
@@ -404,13 +411,18 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setPrintedCoreBlock(coreBlock);
 
     StringConcatenation result = new StringConcatenation();
-    final CharSequence coreBlockHeader = printCoreBlockHeader(coreBlock);
+    CharSequence coreBlockHeader = null;
+    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
+      coreBlockHeader = printFunctionCoreBlockHeader(funcCoreBlock);
+    } else {
+      coreBlockHeader = printCoreBlockHeader(coreBlock);
+    }
     result.append(coreBlockHeader);
-    final String indentationCoreBlock = (coreBlockHeader.length() > 0)
+    final String indentationCoreBlock = (!coreBlockHeader.isEmpty())
         ? CodegenAbstractPrinter.getLastLineIndentation(result)
         : "";
     boolean coreBlockHasNewLine;
-    if (coreBlockHeader.length() > 0) {
+    if (!coreBlockHeader.isEmpty()) {
       result = CodegenAbstractPrinter.trimLastEOL(result);
       coreBlockHasNewLine = CodegenAbstractPrinter.endWithEOL(result);
     } else {
@@ -418,21 +430,33 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
     final EList<Variable> definitions = coreBlock.getDefinitions();
     // Visit Declarations
-    result = printDeclarations(coreBlock, result, indentationCoreBlock, definitions);
 
+    if (!(coreBlock instanceof FunctionCoreBlock)) {
+      result = printDeclarations(coreBlock, result, indentationCoreBlock, definitions);
+    }
     // Visit Definitions
     result = printDefinitions(result, indentationCoreBlock, definitions);
 
-    // Visit init block
-    result = printInitBlock(coreBlock, result, indentationCoreBlock);
-
-    // Visit loop block
-    result = printLoopBlock(coreBlock, result, indentationCoreBlock);
+    // Visit init block & loop block
+    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
+      result = printInitFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
+      result = printLoopFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
+    } else {
+      result = printInitBlock(coreBlock, result, indentationCoreBlock);
+      result = printLoopBlock(coreBlock, result, indentationCoreBlock);
+    }
 
     if (coreBlockHasNewLine) {
       result.newLineIfNotEmpty();
     }
-    result.append(printCoreBlockFooter(coreBlock));
+
+    CharSequence coreBlockFooter = null;
+    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
+      coreBlockFooter = printFunctionCoreBlockFooter(funcCoreBlock);
+    } else {
+      coreBlockFooter = printCoreBlockFooter(coreBlock);
+    }
+    result.append(coreBlockFooter);
 
     setPrintedCoreBlock(null);
 
@@ -455,7 +479,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence declarationsHeader = printDeclarationsHeader(declsNotDefs);
 
     result.append(declarationsHeader, indentationCoreBlock);
-    if (declarationsHeader.length() > 0) {
+    if (!declarationsHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -485,7 +509,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_LOOP_BLOCK);
     final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
     result.append(coreLoopHeader, indentationCoreBlock);
-    if (coreLoopHeader.length() > 0) {
+    if (!coreLoopHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -510,7 +534,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_INIT_BLOCK);
     final CharSequence coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
     result.append(coreInitHeader, indentationCoreBlock);
-    if (coreInitHeader.length() > 0) {
+    if (!coreInitHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -535,7 +559,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_DEFINITIONS);
     final CharSequence definitionsHeader = printDefinitionsHeader(definitions);
     result.append(definitionsHeader, indentationCoreBlock);
-    if (definitionsHeader.length() > 0) {
+    if (!definitionsHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -661,6 +685,71 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return result;
   }
 
+  private StringConcatenation printInitFunctionBlock(final FunctionCoreBlock clusterFileBlock,
+      StringConcatenation result, final String indentationCoreBlock) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_INIT_BLOCK);
+    final CharSequence coreInitHeader = printInitFunctionBlockHeader(clusterFileBlock.getInitBlock());
+    result.append(coreInitHeader, indentationCoreBlock);
+    if (!coreInitHeader.isEmpty()) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+    result.append(doSwitch(clusterFileBlock.getInitBlock()), indentation);
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printInitFunctionBlockFooter(clusterFileBlock.getInitBlock()), indentationCoreBlock);
+    setState(PrinterState.IDLE);
+    return result;
+  }
+
+  public abstract CharSequence printInitFunctionBlockHeader(CallFunctionBlock callBlock);
+
+  public abstract CharSequence printInitFunctionBlockFooter(CallFunctionBlock callBlock);
+
+  private StringConcatenation printLoopFunctionBlock(final FunctionCoreBlock clusterFileBlock,
+      StringConcatenation result, final String indentationCoreBlock) {
+    String indentation;
+    boolean hasNewLine;
+    setState(PrinterState.PRINTING_LOOP_BLOCK);
+    final CharSequence coreLoopHeader = printLoopFunctionBlockHeader(clusterFileBlock.getLoopBlock());
+    result.append(coreLoopHeader, indentationCoreBlock);
+    if (!coreLoopHeader.isEmpty()) {
+      indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
+      result = CodegenAbstractPrinter.trimLastEOL(result);
+      hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
+    } else {
+      indentation = indentationCoreBlock;
+      hasNewLine = false;
+    }
+    result.append(doSwitch(clusterFileBlock.getLoopBlock()), indentation);
+    if (hasNewLine) {
+      result.newLineIfNotEmpty();
+      result.append(indentationCoreBlock);
+    }
+    result.append(printLoopFunctionBlockFooter(clusterFileBlock.getLoopBlock()), indentationCoreBlock);
+    setState(PrinterState.IDLE);
+    return result;
+
+  }
+
+  public abstract CharSequence printLoopFunctionBlockHeader(LoopFunctionBlock loopBlock);
+
+  public abstract CharSequence printLoopFunctionBlockFooter(LoopFunctionBlock loopBlock);
+
+  @Override
+  public CharSequence caseFunctionBlock(final FunctionBlock callFuncBlock) {
+
+    return null;
+  }
+
   @Override
   public CharSequence caseFiniteLoopBlock(final FiniteLoopBlock loopBlock) {
     StringConcatenation result = new StringConcatenation();
@@ -670,7 +759,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence finiteLoopBlockheader = printFiniteLoopBlockHeader(loopBlock);
     result.append(finiteLoopBlockheader, indentation);
 
-    if (finiteLoopBlockheader.length() > 0) {
+    if (!finiteLoopBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -703,7 +792,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence clusterBlockheader = printClusterBlockHeader(clusterBlock);
     result.append(clusterBlockheader, indentation);
 
-    if (clusterBlockheader.length() > 0) {
+    if (!clusterBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -744,7 +833,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence sectionBlockheader = printSectionBlockHeader(sectionBlock);
     result.append(sectionBlockheader, indentation);
 
-    if (sectionBlockheader.length() > 0) {
+    if (!sectionBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -1443,4 +1532,9 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
+
+  public abstract CharSequence printFunctionCoreBlockHeader(final FunctionCoreBlock funcCoreBlock);
+
+  public abstract CharSequence printFunctionCoreBlockFooter(final FunctionCoreBlock funcCoreBlock);
+
 }

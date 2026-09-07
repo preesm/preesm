@@ -242,12 +242,8 @@ public class PiSDFMergeabilty {
     final List<Pair<AbstractActor, AbstractActor>> listCouple = new LinkedList<>();
 
     // Retrieve actors that are not interface nor delay
-    final List<AbstractActor> graphActors = new LinkedList<>();
-    for (final AbstractActor actor : graph.getActors()) {
-      if (!(actor instanceof InterfaceActor) && !(actor instanceof DelayActor)) {
-        graphActors.add(actor);
-      }
-    }
+    final List<AbstractActor> graphActors = graph.getActors().stream()
+        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof DelayActor)).toList();
 
     // Get every mergeable connected-couple
     for (final AbstractActor a : graphActors) {

@@ -44,7 +44,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.DualHashBidiMap;
 import org.eclipse.emf.common.util.EList;
@@ -60,6 +59,7 @@ import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -113,7 +113,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
     // link variables for Fifos and set names
     for (final AbstractActor actor : totallyOrderedActors) {
-      final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).collect(Collectors.toList());
+      final List<Fifo> fifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).toList();
       for (final Fifo fifo : fifos) {
         final FifoAllocation fifoAllocation = this.memAlloc.getFifoAllocations().get(fifo);
 
@@ -162,7 +162,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           if (!(tgtCodegenBuffer instanceof org.preesm.codegen.model.NullBuffer)) {
             // XXX old style naming
             tgtCodegenBuffer.setName(
-                generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
+                generateUniqueBufferName(fifo.getSourcePort().getName() + "_to_" + fifo.getTargetPort().getName()));
           }
 
           this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
@@ -202,7 +202,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       } else {
         codegenBuffer.setComment(comment);
 
-        final String name = source + "__" + sink;
+        final String name = source + "_to_" + sink;
         final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
         codegenBuffer.setName(uniqueName);
       }
@@ -214,9 +214,14 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       codegenBuffer.setTokenTypeSizeInBit(typeSize);
     }
 
-    final EList<AbstractActor> allActors = this.algo.getAllActors();
+    final EList<AbstractActor> allActors = this.algo.getActors();
     for (final AbstractActor actor : allActors) {
       for (final ConfigInputPort cip : actor.getConfigInputPorts()) {
+        if (cip.getIncomingDependency() == null) {
+          PreesmLogger.getLogger()
+              .info("PORT SANS DEPENDANCE: actor=" + actor.getVertexPath() + " port=" + cip.getName());
+          throw new PreesmRuntimeException("wtf");
+        }
         final ISetter setter = cip.getIncomingDependency().getSetter();
         if (!(setter instanceof final Parameter parameter)) {
           throw new PreesmRuntimeException();
@@ -305,6 +310,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     return true;
   }
 
+  private int bufferNameID = 0;
+
   @Override
   public Boolean casePhysicalBuffer(final PhysicalBuffer phys) {
     final Buffer mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
@@ -317,7 +324,13 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     mainBuffer.setNbToken(
         (phys.getSizeInBit() + mainBuffer.getTokenTypeSizeInBit() - 1) / mainBuffer.getTokenTypeSizeInBit());
 
-    mainBuffer.setName(phys.getMemoryBank().getInstanceName());
+    String bufferName;
+    if (phys.getMemoryBank() == null) {
+      bufferName = "virtual_phys_buffer_" + bufferNameID++;
+    } else {
+      bufferName = phys.getMemoryBank().getInstanceName();
+    }
+    mainBuffer.setName(bufferName);
 
     this.btb.put(phys, mainBuffer);
     this.codegenBufferStack.push(mainBuffer);

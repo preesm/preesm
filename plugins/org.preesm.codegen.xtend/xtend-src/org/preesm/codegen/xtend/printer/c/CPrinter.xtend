@@ -100,6 +100,10 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
+import org.preesm.codegen.model.CallFunctionBlock
+import org.preesm.codegen.model.LoopFunctionBlock
+import org.preesm.codegen.model.FunctionBlock
+import org.preesm.codegen.model.FunctionCoreBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -139,7 +143,7 @@ class CPrinter extends BlankPrinter {
 	new(boolean generateMainFile) {
 		this.generateMainFile = generateMainFile;
 	}
-
+	
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
@@ -420,14 +424,10 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 	'''
 
-	//#pragma omp parallel for private(«block2.iter.name»)
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
 		// Begin the for loop
 		{
 			int «block2.iter.name»;
-			«IF block2.parallel.equals(true)»
-			#pragma omp parallel for private(«block2.iter.name»)
-			«ENDIF»
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
 
 				'''
@@ -440,9 +440,6 @@ class CPrinter extends BlankPrinter {
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
-		«IF block.parallel.equals(true)»
-		#pragma omp parallel sections
-		«ENDIF»
 		{
 
 			'''
@@ -452,7 +449,6 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printSectionBlockHeader(SectionBlock block) '''
-		#pragma omp section
 		{
 
 			'''
@@ -597,7 +593,13 @@ class CPrinter extends BlankPrinter {
 										" in order to avoid this situation.")
 	}»
 	// this secures the next branch since there is a number division by input.size, which is 0 in case of a NullBuffer
+	
 	«ELSE»
+	«IF input.getNbToken == 0 »		
+		«{
+			PreesmLogger.getLogger.warning("Broadcast " + call.name + " has a 0 tokens length input buffer. This is not normal at all! ")
+		}»
+	«ENDIF»
 	«FOR output : call.outputBuffers»«var outputIdx = 0L»
 		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
 		FOR nbIter : 0..(output.getNbToken/input.getNbToken+1) as int/*Worst case is output.size exec of the loop */»
@@ -809,7 +811,8 @@ class CPrinter extends BlankPrinter {
 				 " for the " + this.class.name + " printer")
 		}
 	}
-
+	
+	  
 	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
@@ -826,6 +829,8 @@ class CPrinter extends BlankPrinter {
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
+	    
+	    findAllCHeaderFileNamesUsed.forEach[PreesmLogger.getLogger.info("HEADER = " + it)]
 
 	    context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
 
@@ -890,8 +895,17 @@ class CPrinter extends BlankPrinter {
 		if (generateMainFile()) {
 			result.put("main.c", printMain(printerBlocks))
 		}
+		for (Block block: printerBlocks) {
+			if(block instanceof FunctionCoreBlock) {
+				result.put(block.getName() + ".h", printFunctionBlockHeaderFile(block))
+			}
+		}
+		
+		
 		return result
 	}
+	
+	
 
 	def String printMain(List<Block> printerBlocks) '''
 		/**
@@ -1210,5 +1224,63 @@ class CPrinter extends BlankPrinter {
 			}
 		}
 	}
+	
+	override printInitFunctionBlockHeader(CallFunctionBlock initFuncBlock) '''
+	«printFunctionBlockHeader(initFuncBlock)» {
+	'''
+	
+	override printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock)  '''
+	«printFunctionBlockHeader(loopFuncBlock)»{
+	'''
+	
+	def CharSequence printFunctionBlockHeader(FunctionBlock funcBlock) '''
+	void «funcBlock.getName()»(
+	«FOR param: funcBlock.getInputParams() SEPARATOR ','»
+		const «param.getType()» «param.getName()»
+	«ENDFOR»
+	«IF funcBlock.getInputArgs().size() > 0»
+	, 
+	«ENDIF»
+	«FOR inputBuffer: funcBlock.getInputArgs() SEPARATOR ','»
+		«inputBuffer.getType()»* «inputBuffer.getName()»
+	«ENDFOR»
+	«IF funcBlock.getOutputArgs().size() > 0»
+		, 
+	«ENDIF»
+	«FOR outputBuffer: funcBlock.getOutputArgs() SEPARATOR ','»
+		«outputBuffer.getType()»* «outputBuffer.getName()»
+	«ENDFOR»
+	)
+	'''
+	
+	override printInitFunctionBlockFooter(CallFunctionBlock callFuncBlock)  '''
+	«printFunctionBlockFooter(callFuncBlock)»
+	'''
+	
+	override printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock)  '''
+	«printFunctionBlockFooter(loopFuncBlock)»
+	'''
+	
+	def CharSequence printFunctionBlockFooter(FunctionBlock funcBlock) '''
+	}
+	'''
+	
+	def CharSequence printFunctionBlockHeaderFile(FunctionCoreBlock funcBlock)'''
+	#include "preesm_gen.h"
+	
+	«printFunctionBlockHeader(funcBlock.getInitBlock())»;
+	
+	«printFunctionBlockHeader(funcBlock.getLoopBlock())»;
+	'''
+	
+	  
+  override CharSequence printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) '''
+  #include "«funcCoreBlock.getName()».h"
+  '''
+
+  
+  override CharSequence printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) '''
+  '''
+
 
 }

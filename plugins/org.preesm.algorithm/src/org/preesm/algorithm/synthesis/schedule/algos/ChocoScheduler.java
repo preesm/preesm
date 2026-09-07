@@ -76,14 +76,23 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  */
 public class ChocoScheduler extends PeriodicScheduler {
 
-  private static final long    MAX_SOLUTION = 100L;
-  private static final boolean VERBOSE      = true;
+  public static final String PARAM_MAX_SOLUTION = "Max Solution";
+  public static final String PARAM_VERBOSE      = "Verbose";
+
+  private long    maxSolution = 100L;
+  private boolean verbose     = true;
 
   @Override
-  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
+  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
+      Map<String, String> parameters) {
 
     if (!SlamDesignPEtypeChecker.isHomogeneousCPU(slamDesign)) {
       throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");
+    }
+
+    if (parameters != null) {
+      maxSolution = Integer.parseInt(parameters.get(PARAM_MAX_SOLUTION));
+      this.verbose = parameters.get(PARAM_VERBOSE).equalsIgnoreCase("true");
     }
 
     final int nbCores = slamDesign.getProcessingElements().get(0).getInstances().size();
@@ -166,7 +175,7 @@ public class ChocoScheduler extends PeriodicScheduler {
     // use ParallelPortfolio?
     final Solver solver = schedModel.getSolver();
     // solver.limitTime(maxSolveTime);
-    solver.limitSolution(MAX_SOLUTION);
+    solver.limitSolution(maxSolution);
     long time = System.nanoTime();
 
     final Solution s = new Solution(schedModel);
@@ -178,7 +187,7 @@ public class ChocoScheduler extends PeriodicScheduler {
       }
     }
 
-    if (VERBOSE) {
+    if (verbose) {
       solver.printStatistics();
     }
 

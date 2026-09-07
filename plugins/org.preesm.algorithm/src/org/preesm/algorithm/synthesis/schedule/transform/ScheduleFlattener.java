@@ -41,6 +41,16 @@ import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PiGraph;
 
 /**
  * @author dgageot
@@ -52,26 +62,40 @@ public class ScheduleFlattener implements IScheduleTransform {
 
   @Override
   public Schedule performTransform(final Schedule schedule) {
+
     // If it is an hierarchical schedule, explore and cluster actors
-    if (schedule instanceof HierarchicalSchedule && schedule.hasAttachedActor()) {
-      final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      // Retrieve childrens schedule and actors
-      final List<Schedule> childSchedules = new LinkedList<>();
-      childSchedules.addAll(hierSchedule.getChildren());
+    if (schedule instanceof final HierarchicalSchedule hierSchedule && schedule.hasAttachedActor()) {
+
+      // Retrieve children schedule and actors
+      final List<Schedule> childSchedules = new LinkedList<>(hierSchedule.getChildren());
+
       // Clear list of children schedule
       hierSchedule.getChildren().clear();
+
       for (final Schedule child : childSchedules) {
-        final Schedule processesChild = performTransform(child);
+
+        final Schedule processedChild = performTransform(child);
+
         // Sequential flattening
         if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
             && (child.getRepetition() == 1)) {
-          hierSchedule.getChildren().addAll(processesChild.getChildren());
+          hierSchedule.getChildren().addAll(processedChild.getChildren());
+
+          final PiGraph flattenedActor = (PiGraph) hierSchedule.getAttachedActor();
+          if (processedChild instanceof final HierarchicalSchedule childHierSched
+              && flattenedActor == childHierSched.getAttachedActor().getContainingGraph()) {
+            moveUp(flattenedActor, (PiGraph) childHierSched.getAttachedActor());
+
+          }
+          hierSchedule.setAttachedActor(flattenedActor);
+
           // Parallel flattening
         } else if ((hierSchedule instanceof ParallelHiearchicalSchedule)
             && (child instanceof ParallelHiearchicalSchedule) && (child.getRepetition() == 1)) {
-          hierSchedule.getChildren().addAll(processesChild.getChildren());
+          hierSchedule.getChildren().addAll(processedChild.getChildren());
+
         } else {
-          hierSchedule.getChildren().add(processesChild);
+          hierSchedule.getChildren().add(processedChild);
         }
       }
     }
@@ -79,4 +103,28 @@ public class ScheduleFlattener implements IScheduleTransform {
     return schedule;
   }
 
+  private static void moveUp(PiGraph top, PiGraph sub) {
+    for (final AbstractActor a : sub.getActors()) {
+      top.addActor(a);
+    }
+    for (final DataInterface di : sub.getDataInterfaces()) {
+      final Fifo outFifo = di.getGraphPort().getFifo();
+      DataPort inPort = null;
+      if (di instanceof final DataInputInterface dii) {
+        inPort = dii.getDataPort().getFifo().getTargetPort();
+        if (inPort.getContainingActor() instanceof DataInterface) {
+          throw new PreesmRuntimeException("can't handle that for the moment");
+        }
+        outFifo.setTargetPort((DataInputPort) inPort);
+      }
+      if (di instanceof final DataOutputInterface doi) {
+        inPort = doi.getDataPort().getFifo().getSourcePort();
+        if (inPort.getContainingActor() instanceof DataInterface) {
+          throw new PreesmRuntimeException("can't handle that for the moment");
+        }
+        outFifo.setSourcePort((DataOutputPort) inPort);
+      }
+    }
+    top.removeActor(sub);
+  }
 }

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<data>
+    <event color="#c896fa" end="100" mapping="Core0" start="0" title="Read_YUV_0">Step_Read_YUV_0.</event>
+    <event color="#c896fa" end="200" mapping="Core0" start="100" title="Split_0">Step_Split_0.</event>
+    <event color="#ffa54f" end="1428" mapping="Core0" start="200" title="fork_0_srv_Sobel_0">Step_fork_0_srv_Sobel_0.</event>
+    <event color="#c896fa" end="1528" mapping="Core0" start="1428" title="srv_Sobel_1_0">Step_srv_Sobel_1_0.</event>
+    <event color="#cd853f" end="2208" mapping="Core0" start="1528" title="implode_explode_fork_0_srv_Dilation_0_out_1_input">Step_implode_explode_fork_0_srv_Dilation_0_out_1_input.</event>
+    <event color="#ffa54f" end="2888" mapping="Core0" start="2208" title="explode_fork_0_srv_Dilation_0_out_1">Step_explode_fork_0_srv_Dilation_0_out_1.</event>
+    <event color="#c896fa" end="2988" mapping="Core0" start="2888" title="srv_Dilation_1_0">Step_srv_Dilation_1_0.</event>
+    <event color="#cd853f" end="3396" mapping="Core0" start="2988" title="implode_explode_fork_0_srv_Erosion_0_out_1_input">Step_implode_explode_fork_0_srv_Erosion_0_out_1_input.</event>
+    <event color="#ffa54f" end="3804" mapping="Core0" start="3396" title="explode_fork_0_srv_Erosion_0_out_1">Step_explode_fork_0_srv_Erosion_0_out_1.</event>
+    <event color="#c896fa" end="3904" mapping="Core0" start="3804" title="srv_Erosion_1_0">Step_srv_Erosion_1_0.</event>
+    <event color="#cd853f" end="4109" mapping="Core0" start="3904" title="join_0_srv_Erosion_0">Step_join_0_srv_Erosion_0.</event>
+    <event color="#c896fa" end="4209" mapping="Core0" start="4109" title="display_0">Step_display_0.</event>
+    <event color="#c896fa" end="1528" mapping="Core1" start="1428" title="srv_Sobel_1_1">Step_srv_Sobel_1_1.</event>
+    <event color="#c896fa" end="2988" mapping="Core1" start="2888" title="srv_Dilation_1_1">Step_srv_Dilation_1_1.</event>
+    <event color="#c896fa" end="3904" mapping="Core1" start="3804" title="srv_Erosion_1_1">Step_srv_Erosion_1_1.</event>
+    <event color="#c896fa" end="1528" mapping="Core2" start="1428" title="srv_Sobel_2_0">Step_srv_Sobel_2_0.</event>
+    <event color="#c896fa" end="1628" mapping="Core2" start="1528" title="srv_Dilation_2_0">Step_srv_Dilation_2_0.</event>
+    <event color="#c896fa" end="1728" mapping="Core2" start="1628" title="srv_Erosion_2_0">Step_srv_Erosion_2_0.</event>
+    <perfs impl_length="4209" impl_nbCores="3" impl_nbUsedCores="3" span="0" work="0">
+        <core id="Core0" load="4209" used_mem="25939776">Core_Core0.</core>
+        <core id="Core1" load="300" used_mem="25939776">Core_Core1.</core>
+        <core id="Core2" load="300" used_mem="25939776">Core_Core2.</core>
+    </perfs>
+</data>
