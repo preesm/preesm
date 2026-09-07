@@ -1,5 +1,6 @@
 package org.ietr.preesm.test.it.cli;
 
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.equinox.app.IApplication;
@@ -13,8 +14,14 @@ class DocGenCliTest {
 
   @Test
   void start_withArgs_runsCli() throws Exception {
+    final java.nio.file.Path createTempDirectory = Files.createTempDirectory("TEST_DOC_");
+    final java.nio.file.Path filePath = createTempDirectory.resolve("testDoc.md");
+
+    createTempDirectory.toFile().deleteOnExit();
+    filePath.toFile().deleteOnExit();
+
     final DocGenApplication docGenApp = new DocGenApplication();
-    final IApplicationContext context = new FakeApplicationContext(new String[] { "-mdd", "./testDoc.md" });
+    final IApplicationContext context = new FakeApplicationContext(new String[] { "-mdd", filePath.toString() });
 
     final Object result = docGenApp.start(context);
 
