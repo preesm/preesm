@@ -64,12 +64,14 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RefinementContainer;
@@ -94,6 +96,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /** The txt name obj. */
   private Text txtNameObj;
 
+  // Refinement
+
   /** The lbl refinement. */
   private CLabel lblRefinement;
 
@@ -112,6 +116,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   /** The but refinement open. */
   private Button butRefinementOpen;
 
+  // memory script
+
   /** The lbl memory script. */
   private CLabel lblMemoryScript;
 
@@ -126,6 +132,47 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
   /** The but memory script open. */
   private Button butMemoryScriptOpen;
+
+  // write passive script
+
+  /** The lbl write passive script. */
+  private CLabel lblWritePassive;
+
+  /** The lbl write passive script obj. */
+  private CLabel lblWritePassiveObj;
+
+  /** The but write passive script clear. */
+  private Button butWritePassiveClear;
+
+  /** The but write passive script edit. */
+  private Button butWritePassiveBrowse;
+
+  /** The but write passive script open. */
+  private Button butWritePassiveOpen;
+
+  // read passive script
+
+  /** The lbl read passive script. */
+  private CLabel lblReadPassive;
+
+  /** The lbl read passive script obj. */
+  private CLabel lblReadPassiveObj;
+
+  /** The but read passive script clear. */
+  private Button butReadPassiveClear;
+
+  /** The but read passive script edit. */
+  private Button butReadPassiveBrowse;
+
+  /** The but read passive script open. */
+  private Button butReadPassiveOpen;
+
+  // Buffer size for passive actor
+
+  /** The buffer size of a passive actor */
+  private CLabel lblBufferSizeObj;
+
+  // Other
 
   /** The first column width. */
   private static final int FIRST_COLUMN_WIDTH = 150;
@@ -193,6 +240,29 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
      * Memory script
      */
     createMemoryScriptControl(factory, this.composite);
+
+    /**
+     * Passive scripts
+     */
+    createWritePassiveScriptControl(factory, this.composite);
+    createReadPassiveScriptControl(factory, this.composite);
+
+    // buffer size
+    this.lblBufferSizeObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.txtNameObj);
+    this.lblBufferSizeObj.setLayoutData(data);
+
+    final CLabel lblBufferSize;
+    lblBufferSize = factory.createCLabel(composite, "Buffer size:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblBufferSizeObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.txtNameObj);
+    lblBufferSize.setLayoutData(data);
+
   }
 
   /**
@@ -510,6 +580,312 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
   }
 
   /**
+   * Creates the memory script control.
+   *
+   * @param factory
+   *          the factory
+   * @param composite
+   *          the composite
+   */
+  protected void createWritePassiveScriptControl(final TabbedPropertySheetWidgetFactory factory,
+      final Composite composite) {
+    /*** Clear Button ***/
+    this.butWritePassiveClear = factory.createButton(composite, "Clear", SWT.PUSH);
+    FormData data = new FormData();
+    data.left = new FormAttachment(100, -100);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.lblMemoryScript);
+    data.top.offset = 10;
+    this.butWritePassiveClear.setLayoutData(data);
+    this.butWritePassiveClear.setEnabled(true);
+
+    /*** Edit Button ***/
+    this.butWritePassiveBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
+    data = new FormData();
+    data.left = new FormAttachment(100, -205);
+    data.right = new FormAttachment(100, -105);
+    data.top = new FormAttachment(this.lblMemoryScript);
+    data.top.offset = 10;
+    this.butWritePassiveBrowse.setLayoutData(data);
+    this.butWritePassiveBrowse.setEnabled(true);
+
+    /*** Open Button ***/
+    this.butWritePassiveOpen = factory.createButton(composite, "Open", SWT.PUSH);
+    data = new FormData();
+    data.left = new FormAttachment(100, -310);
+    data.right = new FormAttachment(100, -210);
+    data.top = new FormAttachment(this.lblMemoryScript);
+    data.top.offset = 10;
+    this.butWritePassiveOpen.setLayoutData(data);
+    this.butWritePassiveOpen.setEnabled(true);
+
+    /**** Memory Script ****/
+    this.lblWritePassiveObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(this.butWritePassiveBrowse, 0);
+    data.top = new FormAttachment(this.lblMemoryScript);
+    data.top.offset = 10;
+    this.lblWritePassiveObj.setLayoutData(data);
+    this.lblWritePassiveObj.setEnabled(true);
+
+    this.lblWritePassive = factory.createCLabel(composite, "Write passive script:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblWritePassiveObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblMemoryScript);
+    data.top.offset = 10;
+    this.lblWritePassive.setLayoutData(data);
+
+    /*** Clear Button Listener ***/
+    this.butWritePassiveClear.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : clearMemoryScriptFeature) {
+          if (feature instanceof ClearActorMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+    /*** Edit Button Listener ***/
+    this.butWritePassiveBrowse.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : setMemoryScriptFeature) {
+          if (feature instanceof SetActorMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+    /*** Open Button Listener ***/
+    this.butWritePassiveOpen.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : openMemoryScriptFeature) {
+          if (feature instanceof OpenMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+  }
+
+  /**
+   * Creates the memory script control.
+   *
+   * @param factory
+   *          the factory
+   * @param composite
+   *          the composite
+   */
+  protected void createReadPassiveScriptControl(final TabbedPropertySheetWidgetFactory factory,
+      final Composite composite) {
+    /*** Clear Button ***/
+    this.butReadPassiveClear = factory.createButton(composite, "Clear", SWT.PUSH);
+    FormData data = new FormData();
+    data.left = new FormAttachment(100, -100);
+    data.right = new FormAttachment(100, 0);
+    data.top = new FormAttachment(this.lblWritePassive);
+    data.top.offset = 10;
+    this.butReadPassiveClear.setLayoutData(data);
+    this.butReadPassiveClear.setEnabled(true);
+
+    /*** Edit Button ***/
+    this.butReadPassiveBrowse = factory.createButton(composite, "Browse", SWT.PUSH);
+    data = new FormData();
+    data.left = new FormAttachment(100, -205);
+    data.right = new FormAttachment(100, -105);
+    data.top = new FormAttachment(this.lblWritePassive);
+    data.top.offset = 10;
+    this.butReadPassiveBrowse.setLayoutData(data);
+    this.butReadPassiveBrowse.setEnabled(true);
+
+    /*** Open Button ***/
+    this.butReadPassiveOpen = factory.createButton(composite, "Open", SWT.PUSH);
+    data = new FormData();
+    data.left = new FormAttachment(100, -310);
+    data.right = new FormAttachment(100, -210);
+    data.top = new FormAttachment(this.lblWritePassive);
+    data.top.offset = 10;
+    this.butReadPassiveOpen.setLayoutData(data);
+    this.butReadPassiveOpen.setEnabled(true);
+
+    /**** Memory Script ****/
+    this.lblReadPassiveObj = factory.createCLabel(composite, "");
+    data = new FormData();
+    data.left = new FormAttachment(0, FIRST_COLUMN_WIDTH);
+    data.right = new FormAttachment(this.butReadPassiveBrowse, 0);
+    data.top = new FormAttachment(this.lblWritePassive);
+    data.top.offset = 10;
+    this.lblReadPassiveObj.setLayoutData(data);
+    this.lblReadPassiveObj.setEnabled(true);
+
+    this.lblReadPassive = factory.createCLabel(composite, "Read passive script:");
+    data = new FormData();
+    data.left = new FormAttachment(0, 0);
+    data.right = new FormAttachment(this.lblReadPassiveObj, -ITabbedPropertyConstants.HSPACE);
+    data.top = new FormAttachment(this.lblWritePassive);
+    data.top.offset = 10;
+    this.lblReadPassive.setLayoutData(data);
+
+    /*** Clear Button Listener ***/
+    this.butReadPassiveClear.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : clearMemoryScriptFeature) {
+          if (feature instanceof ClearActorMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+    /*** Edit Button Listener ***/
+    this.butReadPassiveBrowse.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : setMemoryScriptFeature) {
+          if (feature instanceof SetActorMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+    /*** Open Button Listener ***/
+    this.butReadPassiveOpen.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(final SelectionEvent e) {
+        final PictogramElement[] pes = new PictogramElement[1];
+        pes[0] = getSelectedPictogramElement();
+
+        final CustomContext context = new CustomContext(pes);
+        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+            .getCustomFeatures(context);
+
+        for (final ICustomFeature feature : openMemoryScriptFeature) {
+          if (feature instanceof OpenMemoryScriptFeature) {
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
+            final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
+            final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
+                .getLayoutFeature(contextLayout);
+            getDiagramTypeProvider().getDiagramBehavior().executeFeature(layoutFeature, contextLayout);
+          }
+        }
+
+        refresh();
+      }
+
+      @Override
+      public void widgetDefaultSelected(final SelectionEvent e) {
+        // nothing by default
+      }
+
+    });
+
+  }
+
+  /**
    * Safely set a new name to the {@link Actor}.
    *
    * @param actor
@@ -560,7 +936,13 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     }
     this.txtNameObj.setEnabled(!(bo instanceof Delay));
 
+    if (bo instanceof final PassiveActor pa) {
+      PreesmLogger.getLogger().info("[DEBUG] " + pa.getName() + " buffer size is " + pa.getBufferSize());
+      this.lblBufferSizeObj.setText(Integer.toString(pa.getBufferSize()));
+    }
+
     if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
+      PreesmLogger.getLogger().info("[DEBUG] going in if");
 
       Refinement refinement = null;
       boolean enabled = true;
@@ -614,6 +996,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       this.butRefinementOpen.setVisible(true);
 
       if (bo instanceof final Actor actor) {
+        // memory script
         if (actor.getMemoryScriptPath() == null) {
           this.lblMemoryScriptObj.setText(NONE);
           this.butMemoryScriptClear.setEnabled(false);
@@ -628,17 +1011,74 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
           this.butMemoryScriptBrowse.setEnabled(true);
           this.butMemoryScriptOpen.setEnabled(true);
         }
+
+        // write passive script
+        if (actor.getWritePassiveScriptPath() == null) {
+          this.lblWritePassiveObj.setText(NONE);
+          this.butWritePassiveClear.setEnabled(false);
+          this.butWritePassiveBrowse.setEnabled(true);
+          this.butWritePassiveOpen.setEnabled(false);
+        } else {
+          final IPath path = new Path(actor.getWritePassiveScriptPath());
+          final String text = path.lastSegment();
+
+          this.lblWritePassiveObj.setText(text);
+          this.butWritePassiveClear.setEnabled(true);
+          this.butWritePassiveBrowse.setEnabled(true);
+          this.butWritePassiveOpen.setEnabled(true);
+        }
+
+        // read passive script
+        if (actor.getReadPassiveScriptPath() == null) {
+          this.lblReadPassiveObj.setText(NONE);
+          this.butReadPassiveClear.setEnabled(false);
+          this.butReadPassiveBrowse.setEnabled(true);
+          this.butReadPassiveOpen.setEnabled(false);
+        } else {
+          final IPath path = new Path(actor.getReadPassiveScriptPath());
+          final String text = path.lastSegment();
+
+          this.lblReadPassiveObj.setText(text);
+          this.butReadPassiveClear.setEnabled(true);
+          this.butReadPassiveBrowse.setEnabled(true);
+          this.butReadPassiveOpen.setEnabled(true);
+        }
         this.lblMemoryScript.setVisible(true);
         this.lblMemoryScriptObj.setVisible(true);
         this.butMemoryScriptClear.setVisible(true);
         this.butMemoryScriptBrowse.setVisible(true);
         this.butMemoryScriptOpen.setVisible(true);
+
+        this.lblWritePassive.setVisible(true);
+        this.lblWritePassiveObj.setVisible(true);
+        this.butWritePassiveClear.setVisible(true);
+        this.butWritePassiveBrowse.setVisible(true);
+        this.butWritePassiveOpen.setVisible(true);
+
+        this.lblReadPassive.setVisible(true);
+        this.lblReadPassiveObj.setVisible(true);
+        this.butReadPassiveClear.setVisible(true);
+        this.butReadPassiveBrowse.setVisible(true);
+        this.butReadPassiveOpen.setVisible(true);
+
       } else {
         this.lblMemoryScript.setVisible(false);
         this.lblMemoryScriptObj.setVisible(false);
         this.butMemoryScriptClear.setVisible(false);
         this.butMemoryScriptBrowse.setVisible(false);
         this.butMemoryScriptOpen.setVisible(false);
+
+        this.lblWritePassive.setVisible(false);
+        this.lblWritePassiveObj.setVisible(false);
+        this.butWritePassiveClear.setVisible(false);
+        this.butWritePassiveBrowse.setVisible(false);
+        this.butWritePassiveOpen.setVisible(false);
+
+        this.lblReadPassive.setVisible(false);
+        this.lblReadPassiveObj.setVisible(false);
+        this.butReadPassiveClear.setVisible(false);
+        this.butReadPassiveBrowse.setVisible(false);
+        this.butReadPassiveOpen.setVisible(false);
       }
 
     } else {
@@ -653,8 +1093,17 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
       this.butMemoryScriptClear.setVisible(false);
       this.butMemoryScriptBrowse.setVisible(false);
       this.butMemoryScriptOpen.setVisible(false);
+      this.lblWritePassive.setVisible(false);
+      this.lblWritePassiveObj.setVisible(false);
+      this.butWritePassiveClear.setVisible(false);
+      this.butWritePassiveBrowse.setVisible(false);
+      this.butWritePassiveOpen.setVisible(false);
+      this.lblReadPassive.setVisible(false);
+      this.lblReadPassiveObj.setVisible(false);
+      this.butReadPassiveClear.setVisible(false);
+      this.butReadPassiveBrowse.setVisible(false);
+      this.butReadPassiveOpen.setVisible(false);
     }
-
   } // end ExecutableActor
 
 }

@@ -46,6 +46,8 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.ExecutableActor;
+import org.preesm.model.pisdf.PassiveInputPort;
+import org.preesm.model.pisdf.PassiveOutputPort;
 
 /**
  * Filter data ports
@@ -64,13 +66,13 @@ public class PiMMDataPortFilter extends AbstractPropertySectionFilter {
 
     // OutputPort contained in the SourceInterface and Actor
     final EObject container = eObject.eContainer();
-    if (eObject instanceof DataOutputPort
+    if (eObject instanceof DataOutputPort && !(eObject instanceof PassiveOutputPort)
         && ((container instanceof DataInputInterface) || (container instanceof ExecutableActor))) {
       return true;
     }
 
     // InputPort contained in the SinkInterface and Actor
-    if (eObject instanceof DataInputPort
+    if (eObject instanceof DataInputPort && !(eObject instanceof PassiveInputPort)
         && ((container instanceof DataOutputInterface) || (container instanceof ExecutableActor))) {
       return true;
     }

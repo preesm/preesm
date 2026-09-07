@@ -1,0 +1,25 @@
+// ============================================================
+//
+// Broadcast read passive script
+//
+// ============================================================
+// in: 
+// List<DataInputPort> inputs,
+// List<DataOutputPort> outputs,
+// int outputIdx,
+// int outputInstanceIdx,
+// List<String, int> parameters,
+// out:
+// rbeginji
+// rendji
+
+int rendjm1 = 0; // rend_(j-1)
+for(int j= 0;j < outputIdx-1; j++) {
+    rendjm1 += (int) outputs.get(j).getExpression().evaluateAsLong();
+}
+int inputRate = (int) inputs.getFirst().getExpression().evaluateAsLong(); // There is only one input in broadcast
+int rbeginj = rendjm1 % inputRate;
+int ratei = (int) outputs.get(outputIdx).getOppositePort().getExpression().evaluateAsLong();
+int rendjim1 = rbeginj + ratei * outputInstanceIdx; // rend_(j,i-1)
+rbeginji = rendjim1 % inputRate;
+rendji = (rbeginji + ratei) % inputRate;

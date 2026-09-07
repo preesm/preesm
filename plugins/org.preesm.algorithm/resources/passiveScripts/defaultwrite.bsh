@@ -1,0 +1,17 @@
+// ============================================================
+//
+// Default write passive script
+//
+// ============================================================
+// in: 
+// List<DataInputPort> inputs,
+// List<DataOutputPort> outputs,
+// int inputIdx,
+// int inputInstanceIdx,
+// List<String, int> parameters,
+// out:
+// wbeginji
+// wendji
+
+wbeginji = 0;
+wendji = inputs.get(inputIdx).getExpression().evaluateAsLong();
