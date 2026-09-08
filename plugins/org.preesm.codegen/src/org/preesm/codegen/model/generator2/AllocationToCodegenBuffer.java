@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 import org.apache.commons.collections4.BidiMap;
-import org.apache.commons.collections4.bidimap.DualHashBidiMap;
+import org.apache.commons.collections4.bidimap.DualLinkedHashBidiMap;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
@@ -86,6 +86,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     final AllocationToCodegenBuffer allocationToCodegenBuffer = new AllocationToCodegenBuffer(memAlloc, scenario, algo,
         totallyOrderedActors);
     allocationToCodegenBuffer.link();
+
     return allocationToCodegenBuffer;
   }
 
@@ -93,6 +94,16 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final PiGraph             algo;
   private final Allocation          memAlloc;
   private final List<AbstractActor> totallyOrderedActors;
+
+  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
+  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
+
+  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer,
+      Buffer>                                                               btb            = new DualLinkedHashBidiMap<>();
+  private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
+
+  // for generating unique names
+  private final Map<String, Long> bufferNames = new LinkedHashMap<>();
 
   /**
    *
@@ -226,15 +237,6 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       }
     }
   }
-
-  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
-  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
-
-  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb            = new DualHashBidiMap<>();
-  private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
-
-  // for generating unique names
-  private final Map<String, Long> bufferNames = new LinkedHashMap<>();
 
   private String generateUniqueBufferName(final String name) {
     final String candidate = name.replace(".", "_").replace("-", "_");
