@@ -339,13 +339,11 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         final DAGVertex sinkVertex = dag.getVertex(sinkName);
 
         // Check that vertices exist
-        final boolean sourceVertexIsNull = sourceVertex == null;
-        final boolean sinkVertexIsNull = sinkVertex == null;
-        if (sourceVertexIsNull) {
+        if (sourceVertex == null) {
           throw new PreesmRuntimeException(
               String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sourceName));
         }
-        if (sinkVertexIsNull) {
+        if (sinkVertex == null) {
           throw new PreesmRuntimeException(
               String.format(CodegenModelGenerator.ERROR_PATTERN_1, memObj.toString(), sinkName));
         }

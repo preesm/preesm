@@ -148,13 +148,11 @@ public class PiBestFitAllocator extends PiOrderedAllocator {
             if (iterFrom.hasNext()) {
               from = iterFrom.next();
               nbExcludeFrom++;
-            } else {
-              if (!lastFromTreated) {
-                lastFromTreated = true;
-                // Add a from to avoid considering the end of
-                // lastTo as a free space
-                nbExcludeFrom++;
-              }
+            } else if (!lastFromTreated) {
+              lastFromTreated = true;
+              // Add a from to avoid considering the end of
+              // lastTo as a free space
+              nbExcludeFrom++;
             }
           }
 

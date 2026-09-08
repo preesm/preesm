@@ -323,12 +323,12 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     /*
      * Declarations & initializations
      */
-    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag); // Iterator on DAG
-    // vertices
+    final TopologicalDAGIterator iterDAGVertices = new TopologicalDAGIterator(dag);
+    // Iterator on DAG vertices
     // Be careful, DAGiterator does not seem to work well if dag is
     // modified throughout the iteration.
     // That's why we use first copy the ordered dag vertex set.
-    final LinkedHashSet<DAGVertex> dagVertices = new LinkedHashSet<>(dag.vertexSet().size());
+    final LinkedHashSet<DAGVertex> dagVertices = LinkedHashSet.newLinkedHashSet(dag.vertexSet().size());
     while (iterDAGVertices.hasNext()) {
       final DAGVertex vert = iterDAGVertices.next();
       dagVertices.add(vert);

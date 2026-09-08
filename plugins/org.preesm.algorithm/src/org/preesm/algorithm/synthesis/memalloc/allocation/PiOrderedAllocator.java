@@ -105,22 +105,11 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
   @Override
   public void allocate() {
     switch (this.order) {
-      case SHUFFLE:
-        allocateShuffledOrder();
-        break;
-      case LARGEST_FIRST:
-        allocateLargestFirst();
-        break;
-      case STABLE_SET:
-        allocateStableSetOrder(false);
-        break;
-      case EXACT_STABLE_SET:
-        allocateStableSetOrder(true);
-        break;
-      case SCHEDULING:
-        allocateSchedulingOrder();
-        break;
-      default:
+      case SHUFFLE -> allocateShuffledOrder();
+      case LARGEST_FIRST -> allocateLargestFirst();
+      case STABLE_SET -> allocateStableSetOrder(false);
+      case EXACT_STABLE_SET -> allocateStableSetOrder(true);
+      case SCHEDULING -> allocateSchedulingOrder();
     }
   }
 
@@ -239,9 +228,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
    * @return The ordered vertices list
    */
   private ArrayList<PiMemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
-    ArrayList<PiMemoryExclusionVertex> orderedList;
-    orderedList = new ArrayList<>();
-
+    final ArrayList<PiMemoryExclusionVertex> orderedList = new ArrayList<>();
     final SimpleGraph<PiMemoryExclusionVertex,
         DefaultEdge> inclusionGraph = this.inputExclusionGraph.getComplementary();
 
@@ -313,8 +300,8 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
 
         case AVERAGE:
           double average = 0;
-          for (int iter = 0; iter < this.listsSize.size(); iter++) {
-            average += (double) this.listsSize.get(iter);
+          for (final Long element : this.listsSize) {
+            average += (double) element;
           }
           average /= this.listsSize.size();
 
