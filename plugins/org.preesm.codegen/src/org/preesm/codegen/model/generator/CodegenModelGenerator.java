@@ -2421,6 +2421,13 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     long aggregateOffset = 0;
     int idx = 0;
     for (final BufferProperties subBufferProperties : buffers) {
+
+      // If an interSubbufferSpace was defined, add it
+      if (interSubbufferSpace != null) {
+        aggregateOffset += interSubbufferSpace.get(idx);
+      }
+      idx++;
+
       Buffer buff = null;
       // If the parent buffer is not null
       final String dataType = subBufferProperties.getDataType();
@@ -2465,12 +2472,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
         // Save the created SubBuffer
         this.srSDFEdgeBuffers.put(subBufferProperties, nullBuff);
       }
-
-      // If an interSubbufferSpace was defined, add it
-      if (interSubbufferSpace != null) {
-        aggregateOffset += interSubbufferSpace.get(idx);
-      }
-      idx++;
 
       // Increment the aggregate offset with the size of the current
       // subBuffer multiplied by the size of the datatype
