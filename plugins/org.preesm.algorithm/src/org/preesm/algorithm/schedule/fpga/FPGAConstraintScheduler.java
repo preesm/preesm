@@ -3,6 +3,7 @@ package org.preesm.algorithm.schedule.fpga;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -24,7 +25,6 @@ import org.chocosolver.solver.exception.ContradictionException;
 import org.chocosolver.solver.propagation.PropagationProfiler;
 import org.chocosolver.solver.search.strategy.BlackBoxConfigurator;
 import org.chocosolver.solver.search.strategy.Search;
-import org.chocosolver.solver.search.strategy.selectors.values.IntValueSelector;
 import org.chocosolver.solver.variables.BoolVar;
 import org.chocosolver.solver.variables.IntVar;
 import org.chocosolver.solver.variables.RealVar;
@@ -33,17 +33,15 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.mapper.ui.stats.StatEditorSynthesisTask;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
@@ -55,6 +53,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.util.FifoCycleDetector;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
@@ -67,14 +66,15 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static int       CYCLE_MAX      = 5_000_000;     // chemin critique et sommer latence*brv de chaque acteur ?
-  static int       TOKENS_MAX     = CYCLE_MAX / 2; // arbitrary
-  static int       MAX_START_TIME = CYCLE_MAX / 2; // abitrary
-  static final int THRESHOLD_RV   = 1_000;         // arbitrary
+  static int       DEFAULT_CYCLE_MAX = 500_000_000;
+  static int       CYCLE_MAX         = DEFAULT_CYCLE_MAX; // default value
+  static int       TOKENS_MAX        = CYCLE_MAX / 2;     // arbitrary
+  static int       MAX_START_TIME    = CYCLE_MAX / 2;     // abitrary
+  static final int THRESHOLD_RV      = 1_000;             // arbitrary
 
-  static final int logLevel     = 2;   // between 0 and 2 included
-  boolean          logsInFile   = true;
-  boolean          computeGantt = true;
+  static final int logLevel = 2; // between 0 and 2 included
+  boolean          logsInFile;
+  boolean          computeGantt;
 
   /**
    * According to {@link org.preesm.model.pisdf.AbstractVertex#getVertexPath}
@@ -88,6 +88,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   public FPGAConstraintScheduler(boolean computeGantt) {
     super();
     this.computeGantt = computeGantt;
+    this.logsInFile = true;
   }
 
   public FPGAConstraintScheduler(boolean computeGantt, boolean logsInFile) {
@@ -108,7 +109,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   }
 
   public static long lcm(long a, long b) {
-    return a * b / gcd(a, b);
+    return a / gcd(a, b) * b; // Weird order to prevent overflow, just in case
   }
 
   public static int lcm(int a, int b) {
@@ -154,6 +155,23 @@ public class FPGAConstraintScheduler implements IScheduler {
 
   private int getConsRate(Fifo fifo) {
     return (int) fifo.getTargetPort().getPortRateExpression().evaluateAsLong();
+  }
+
+  private int getExecutionTime(ExecutableActor a, Scenario scenario, Component c) {
+    if (a instanceof SpecialActor) {
+      // a special actor's latency is estimated to be its max rate of input/output.
+      // TODO est-ce que ça marche tout le temps ? Aucune idée, mais ça marchouille pour le moment
+      return a.getAllDataPorts().stream().map(dp -> (int) dp.getPortRateExpression().evaluateAsLong())
+          .max(Integer::compare).orElse(1);
+    }
+    return (int) scenario.getTimings().evaluateTimingOrDefault(a, c, TimingType.EXECUTION_TIME);
+  }
+
+  private int getInitiationInterval(ExecutableActor a, Scenario scenario, Component c) {
+    if (a instanceof SpecialActor) {
+      return 1;
+    }
+    return (int) scenario.getTimings().evaluateTimingOrDefault(a, c, TimingType.INITIATION_INTERVAL);
   }
 
   /**
@@ -253,7 +271,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       createEnumeratedDomainForPeriod(result, model);
     }
 
-    return result.period_var;
+    return result.basisMultiplier;
   }
 
   private List<IntVar> getEdgeActorsEndDates(Map<ExecutableActor, ActorTimings> schedule) {
@@ -397,23 +415,17 @@ public class FPGAConstraintScheduler implements IScheduler {
    *          the schedule.
    */
   private void setTimingConstraints(List<ExecutableActor> actors, Model model,
-      Map<ExecutableActor, ActorTimings> schedule) {
-
-    // TODO : tous les acteurs sont liés par une égalité de débit : dès qu'on a fixé la période d'un acteur, toutes
-    // les autres en découlent ! On n'a donc besoin de spécifier qu'une variable de période, et tout le reste n'est
-    // qu'à calculer : period_var = other_period * tp/tp.
+      Map<ExecutableActor, ActorTimings> schedule, IntVar graphPeriod) {
 
     for (final var actor : actors) {
 
       final ActorTimings at = schedule.get(actor);
 
-      at.computePeriodBasis(actors, schedule);
-
-      at.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var", 1,
-          at.period_var.getUB() / at.basisOfPeriod);
-
       // CONSTRAINT : the period is proportional to its basis. This basis must have been computed beforehand.
       model.arithm(at.period_var, "=", at.basisMultiplier, "*", at.basisOfPeriod).post();
+
+      // We also know that Ta * rc_a = H_G !
+      model.arithm(graphPeriod, "=", at.period_var, "*", at.repetitionCount).post();
 
       final boolean allPredecessorsDataInterface = actor.getDirectPredecessors().stream()
           .filter(AbstractActor.class::isInstance).allMatch(DataInputInterface.class::isInstance);
@@ -423,7 +435,6 @@ public class FPGAConstraintScheduler implements IScheduler {
         // model.arithm(at.startDate_var, "=", 0).post();
       } else {
         // Start date constraints from predecessors :
-        // int nb = 0;
         for (final Fifo fifo : actor.getDataInputPorts().stream().map(DataPort::getFifo)
             .filter(f -> schedule.containsKey(f.getSource())).toList()) {
           final ExecutableActor producer = (ExecutableActor) fifo.getSource();
@@ -432,38 +443,62 @@ public class FPGAConstraintScheduler implements IScheduler {
           final int prod_rate = getProdRate(fifo);
           final int cons_rate = getConsRate(fifo);
 
-          /* at.startDatesFromInputs[nb] */ final var startDateFromInput = model.intVar(
-              "min_delay_" + actor.getName() + "_" + fifo.getId(), /* at.startDate_var.getLB() */ -CYCLE_MAX,
-              at.startDate_var.getUB());
+          final var startDateFromInput = model.intVar("min_start_date_" + actor.getName() + "_" + fifo.getId(),
+              /* at.startDate_var.getLB() */ -CYCLE_MAX, at.startDate_var.getUB());
           // the -CYCLE_MAX LB will be updated below, but we need this variable to accept negative values as it serves
           // as an intermediate. The actual tasks' start dates are forced to be positive though.
 
           final int k_max = (cons_rate - 1) / prod_rate;
 
-          if (fifo.getDelay() == null) {
+          // Check if both actors are linked in a cycle, ie if a cycle contains them both
+          // final boolean cyclicLink = cycles.stream().anyMatch(c -> c.contains(producer) && c.contains(actor));
+
+          if (!fifo.isDelayPresent()) {
             // if the fifo has no delay, same business as usual.
 
-            // at.startDatesFromInputs[nb]
+            // check if the predecessor is linked to any delay
+            // final boolean anyPredecessorHasDelay =
+            // producer.getIncomingEdges().stream().filter(Fifo.class::isInstance)
+            // .map(e -> (Fifo) e).anyMatch(Fifo::isDelayPresent);
+
+            // if (anyPredecessorHasDelay) {
+            // if so, we have to break the predecession chain
+            // startDateFromInput.eq(0).post();
+            // } else {
             startDateFromInput
                 .eq(pt.startDate_var.add(pt.executionTime).add(pt.period_var.mul(k_max)).sub(prod_rate * (k_max + 1)))
                 .post();
+            // }
 
-            // nb++;
           } else {
             // if the fifo has a delay, it's a bit trickier. It can start earlier than its delayed input, by as many
             // firings as the delays holds cons_rate. To be safe, we add +1 to the number of firings to have a lower
             // bound.
-            final int delay_size = (int) fifo.getDelay().getExpression().evaluateAsLong();
-            final int nbFirings = delay_size / cons_rate;
+            final int delay_size = getFixedDelaySize(fifo);
+            final int nbFirings = delay_size / cons_rate + 1;
             final int supplementaryTokens = delay_size % cons_rate;
 
             startDateFromInput.eq(pt.startDate_var.add(pt.executionTime).add(pt.period_var.mul(k_max))
                 .sub(prod_rate * (k_max + 1)).sub(at.period_var.mul(nbFirings)).sub(supplementaryTokens)).post();
+
+            // The producer's start date must also be early enough that it will be able to feed the current (consumer)
+            // actor.
+            // in other words, you must start before the next next actor's firing that follows finishing the delay's
+            // init tokens. Example :
+            // if 25 delays, Tp = 3 and Tp = 75, rp=1, rc=25 : the consumer can fire once on the delay. You have to have
+            // fired at least once (low estimate on purpose) to feed it. I.e, you start before the second firing :
+            // start_date_consumer * Tc
+            // in general : start_producer <= start_consumer + T_c * ceil(init_tokens / rate_consumer)
+            // TODO : me paraissait une bonne idée mais n'a pas d'impact mesuré. A voir plus tard.
+            // final IntVar upperBound = model.intVar(0, CYCLE_MAX);
+            // upperBound.eq(at.startDate_var.add(at.period_var).mul(Math.ceilDiv(delay_size, cons_rate))).post();
+
+            // model.arithm(pt.startDate_var, "<=", upperBound).post();
+
           }
 
-          model.arithm(at.startDate_var, ">=", startDateFromInput /* at.startDatesFromInputs[nb] */).post();
+          model.arithm(at.startDate_var, ">=", startDateFromInput).post();
         }
-        // model.max(at.startDate_var, at.startDatesFromInputs).post();
 
       }
 
@@ -497,45 +532,71 @@ public class FPGAConstraintScheduler implements IScheduler {
     final int range_end = Math.min(at.period_var.getUB() / at.basisOfPeriod,
         1 + (CYCLE_MAX / at.repetitionCount - at.initiationInterval) / at.basisOfPeriod);
 
-    model.member(at.period_var, IntStream.range(range_start, range_end).map(n -> n * at.basisOfPeriod).toArray())
+    model.member(at.period_var, IntStream.range(range_start, range_end + 1).map(n -> n * at.basisOfPeriod).toArray())
         .post();
   }
 
+  private void computeActorPeriodBasis(List<ExecutableActor> actors, ActorTimings at) {
+    final var inputFifos = at.actor.getIncomingEdges().stream().filter(e -> actors.contains(e.getSource()))
+        .map(f -> (Fifo) f).toList();
+
+    final var outputFifos = at.actor.getOutgoingEdges().stream().filter(e -> actors.contains(e.getTarget()))
+        .map(f -> (Fifo) f).toList();
+
+    for (final Fifo f : inputFifos) {
+      final int prod_rate = getProdRate(f);
+      final int cons_rate = getConsRate(f);
+
+      final int basisOfTc = (int) (cons_rate / gcd(prod_rate, cons_rate));
+
+      at.basisOfPeriod = lcm(at.basisOfPeriod, basisOfTc);
+    }
+
+    for (final Fifo f : outputFifos) {
+      final int prod_rate = getProdRate(f);
+      final int cons_rate = getConsRate(f);
+
+      final int basisOfTp = (int) (prod_rate / gcd(prod_rate, cons_rate));
+
+      at.basisOfPeriod = lcm(at.basisOfPeriod, basisOfTp);
+    }
+  }
+
   private ActorTimings createActorTimings(ExecutableActor actor, List<ExecutableActor> actors, Scenario scenario,
-      Component component, Map<AbstractVertex, Long> brv, Model model) {
+      Component component, Map<org.preesm.model.pisdf.AbstractVertex, Long> brv, Model model, int minGraphPeriod) {
 
     final ActorTimings res = new ActorTimings(actor);
 
     res.repetitionCount = brv.get(actor).intValue();
+    res.executionTime = getExecutionTime(actor, scenario, component);
+    res.initiationInterval = getInitiationInterval(actor, scenario, component);
 
-    // default value for broadcast and round buffer actors
-    if (actor instanceof SpecialActor) {
-      // a special actor's latency is estimated to be its max rate of input/output.
-      // TODO est-ce que ça marche tout le temps ? probablement pas...
-      res.executionTime = actor.getAllDataPorts().stream().map(dp -> (int) dp.getPortRateExpression().evaluateAsLong())
-          .max(Integer::compare).orElse(1);
-      res.initiationInterval = 1;
+    computeActorPeriodBasis(actors, res);
 
-    } else {
-      res.executionTime = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
-          TimingType.EXECUTION_TIME);
-      res.initiationInterval = (int) scenario.getTimings().evaluateTimingOrDefault(actor, component,
-          TimingType.INITIATION_INTERVAL);
-    }
+    // TODO : on peut sûrment améliorer la borne inférieure
+    res.basisMultiplier = model.intVar("basisMultiplier_" + actor.getName() + "_var",
+        Math.floorDiv(res.initiationInterval, res.basisOfPeriod),
+        CYCLE_MAX / (res.repetitionCount * res.basisOfPeriod));
 
     // UB to reduce domain size : CYCLE_MAX is at least one graph period
-    res.period_var = model.intVar("period_" + actor.getName() + "_var", res.initiationInterval,
-        CYCLE_MAX / res.repetitionCount);
+    final int minPeriod = minGraphPeriod / res.repetitionCount;
+    res.period_var = model.intVar("period_" + actor.getName() + "_var", minPeriod, CYCLE_MAX / res.repetitionCount);
+    // res.period_var = model.intView(res.basisOfPeriod, res.basisMultiplier, 0);
 
     // must start early enough to finish all its periods (=rv) before MAX_CYCLE
     // could even be bounded by its followers' latencies sum
     res.startDate_var = model.intVar("start_" + actor.getName() + "_var", 0,
-        CYCLE_MAX - res.executionTime * res.repetitionCount); // affinable
+        CYCLE_MAX - res.initiationInterval * res.repetitionCount);
 
-    // the number of incoming fifos
-    // final int nbPreds = (int) actor.getIncomingEdges().stream().filter(e -> actors.contains(e.getSource())).count();
-    // res.startDatesFromInputs = model.intVarArray("startDatesFromPreds" + actor.getName(), nbPreds, 0,
-    // CYCLE_MAX - res.executionTime * res.repetitionCount);
+    // 1% d'erreur par rapport à la période minimale
+    final int tolerated_error = res.period_var.getLB() / 100;
+    final int divisor = (int) Math.pow(10, Math.floor(Math.log10(tolerated_error)));
+    // TODO virer si inutile
+    // On force start date à être un multiple de divisor
+    // if (divisor >= 10) {
+    // final IntVar multSD = model.intVar(1, res.startDate_var.getUB() / 10);
+    // model.arithm(res.startDate_var, "=", multSD, "*", 10).post();
+    // }
 
     // must have at least executed all its firings by end time
     res.endDate_var = model.intVar("end_" + actor.getName() + "_var",
@@ -544,10 +605,20 @@ public class FPGAConstraintScheduler implements IScheduler {
     // endDate = startDate + T * (repetition_count - 1) + execution_time
     // le dernier token est produit à la fin de l'exécution du dernier acteur, qui est possiblement bien avant la fin
     // de sa période = le début du prochain firing
+
     res.endDate_var.eq(res.startDate_var.add(res.period_var.mul(res.repetitionCount - 1).add(res.executionTime)))
         .post();
 
     return res;
+  }
+
+  /*
+   * TODO : I divide by half for the PRECISE CASE of fixing adfg FOR GAUSSIAN DIFFERENCE ONLY !!!
+   *
+   * REMOVE AFTER PAPER SUBMISSION!!!!
+   */
+  private int getFixedDelaySize(Fifo f) {
+    return (int) f.getDelay().getExpression().evaluateAsLong() / 2;
   }
 
   // -------------------------------------------
@@ -559,8 +630,10 @@ public class FPGAConstraintScheduler implements IScheduler {
    * The method assumes it is scheduling a flat graph. If it encounters a cluster, it will be treated as an actor.
    */
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
+    final long start = System.nanoTime();
+    long end;
 
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(piGraph, BRVMethod.LCM);
+    final var brv = PiBRV.compute(piGraph, BRVMethod.LCM);
     final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = FpgaAnalysis.checkInterfaces(piGraph, brv);
     final AnalysisResultFPGA results = new AnalysisResultFPGA(piGraph, brv, interfaceRates);
 
@@ -578,8 +651,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     final IPath osIPath = root.getFolder(new Path(scenario.getCodegenDirectory())).getLocation();
     final String absolutePathString = osIPath.toOSString();
 
-    final File dir = new File(absolutePathString + "/choco-run__" + piGraph.getName() + "__" + date.getMonth() + "-"
-        + date.getDay() + "-" + date.getHours() + "h" + date.getMinutes() + "/");
+    final File dir = new File(absolutePathString + "/" + PreesmCopyTracker.getOriginalSource(piGraph).getName() + "/");
     dir.mkdirs();
     final String folderPath = dir.getAbsolutePath();
     final String fileName = folderPath + "/choco_solver_logs";
@@ -596,14 +668,17 @@ public class FPGAConstraintScheduler implements IScheduler {
           PreesmResourcesHelper.getInstance().read("resources/scripts/plot_schedule.sh", this.getClass()));
       PreesmIOHelper.getInstance().print(codegen_dir, "collapse_dot_chains.py",
           PreesmResourcesHelper.getInstance().read("resources/scripts/collapse_dot_chains.py", this.getClass()));
+      PreesmIOHelper.getInstance().print(codegen_dir, "choco_log_stats.py",
+          PreesmResourcesHelper.getInstance().read("resources/scripts/choco_log_stats.py", this.getClass()));
     } catch (final IOException e) {
       e.printStackTrace();
     }
 
     if (logsInFile) {
       try {
-        writer = new PrintStream(fileName + ".txt");
-        System.out.printf("Writing logs to file \"%s\" %n", fileName);
+        // writer = new PrintStream(fileName + ".txt");
+        writer = new PrintStream(new FileOutputStream(fileName + ".txt"), true);
+        System.out.printf("%nWriting logs to file \"%s\" %n", fileName);
       } catch (final FileNotFoundException e) {
         System.out.println("Could not create file " + fileName);
         writer = System.out;
@@ -620,18 +695,6 @@ public class FPGAConstraintScheduler implements IScheduler {
       e.printStackTrace();
     }
 
-    // final int[] token_divisors = new int[] { 1, }; // 2, 5, 20, 50, 100, 10
-    // final int[] start_divisors = new int[] { 1, };// 2, 5, 20,50, 100, 10
-    // final int[] nbs_cycles = new int[] { 1_000_000_000 };// 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000,
-    // final Map<String, List<Integer>> parameters = new HashMap<>();
-    // parameters.put("size", Arrays.asList(100)); // 10_000, 100_000, 1_000_000,10_000_000
-
-    final int max_time_seconds = 10;
-    // final int nb_comb = token_divisors.length * start_divisors.length * nbs_cycles.length
-    // * parameters.values().stream().mapToInt(l -> l.size()).sum();
-    // System.out.printf("Total number of combinations : %d %n", nb_comb);
-    System.out.printf("Max duration : %d seconds %n", max_time_seconds);
-
     final Model model = new Model("Period computing");
     final List<IntVar> variablesToInstantiate = new LinkedList<>();
     final List<IntVar> variablesToOptimize = new LinkedList<>();
@@ -643,16 +706,22 @@ public class FPGAConstraintScheduler implements IScheduler {
     // --------
 
     final Solver solver = model.getSolver();
+    final PropagationProfiler profiler;
 
     solver.log().remove(System.out);
     solver.log().add(writer);
 
+    // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
+    Closeable searchTreeFile;
+
     if (logLevel >= 1) {
       writer.printf(" Number of variables : %d %n Number of constraints : %d %n", model.getNbVars(),
           model.getNbCstrs());
+      searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
       // solver.verboseSolving(1000); // marche pas
     }
     if (logLevel >= 2) {
+      profiler = solver.profilePropagation();
       // solver.showStatisticsDuringResolution(1000);
       model.displayPropagatorOccurrences(); // pour vérifier que des propagateurs safe sont utilisés
       solver.showContradiction();
@@ -660,21 +729,15 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     PrintStream gantt_data = null;
-    if (this.computeGantt) {
-      try {
-        gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data.py");
-      } catch (final FileNotFoundException e) {
-        e.printStackTrace();
-      }
+    try {
+      gantt_data = new PrintStream(dir.getAbsolutePath() + "/gantt_data.py");
+    } catch (final FileNotFoundException e) {
+      e.printStackTrace();
     }
 
     // solver.makeCompleteStrategy(true); // Possiblement utile ! Enquêter.
-    solver.observeSolving();
-    // solver.toCSV();
-    solver.limitTime(max_time_seconds + "s");
 
-    // Pour suivre l'arbre d'exploration et en sortir un .dot graphviz
-    final Closeable searchTreeFile = solver.outputSearchTreeToGraphviz(fileName + ".dot");
+    // solver.limitTime(max_time_seconds + "s");
 
     setStrategy(solver, variablesToInstantiate.toArray(new IntVar[0]));
 
@@ -682,13 +745,22 @@ public class FPGAConstraintScheduler implements IScheduler {
 
     Solution solution = new Solution(model, variablesToInstantiate.toArray(new IntVar[0]));
 
-    final PropagationProfiler profiler;
     final var w = writer; // fuck java
+
+    final var start_propag = System.nanoTime();
+    runInitialPropagation(solver, writer);
+    final var duration_propag = System.nanoTime() - start_propag;
+    writer.printf("\nInitial propagation duration : %d ms \n", duration_propag / 1_000_000);
+
     if (logLevel >= 2) {
-      profiler = solver.profilePropagation();
-      writer.println("\nAll vars : \n"
+      try {
+        profiler.writeTo(new File(folderPath + "/choco-profiling.txt"), true);
+      } catch (final IOException e) {
+        System.out.println("Could not create file " + folderPath + "/choco-profiling.txt");
+      }
+      writer.println("\n\nAll vars : \n"
           + String.join("\n", Arrays.asList(model.getVars()).stream().map(Object::toString).toList()));
-      writer.println("\nAll constraints : \n"
+      writer.println("\n\nAll constraints : \n"
           + String.join("\n", Arrays.asList(model.getCstrs()).stream().map(Object::toString).toList()));
       for (final var v : model.getVars()) {
         // if (v.getName().contains("var")) {
@@ -697,31 +769,15 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
     }
 
-    runInitialPropagation(solver, writer);
-
-    writer.println(
-        "All vars : \n" + String.join("\n", Arrays.asList(model.getVars()).stream().map(Object::toString).toList()));
-    //
-    // writer.println("State of variables to instanciate after the initial propagation :");/
-    // writer.println(variablesToInstantiate.stream().map(Object::toString).collect(Collectors.joining("\n")));
-
-    writer.println("\nStarting schedule search\n");
+    writer.println("\n\nStarting schedule search\n");
 
     if (variablesToOptimize.size() == 1) {
-      model.setObjective(Model.MINIMIZE, variablesToOptimize.getFirst());
+      model.setObjective(Model.MINIMIZE, latency);
       while (solver.solve()) {
         solution.record();
       }
     } else {
       solution = solver.findLexOptimalSolution(variablesToInstantiate.toArray(new IntVar[0]), Model.MINIMIZE);
-    }
-
-    if (logLevel >= 2) {
-      try {
-        profiler.writeTo(new File(folderPath + "/choco-profiling.txt"), true);
-      } catch (final IOException e) {
-        System.out.println("Could not create file " + folderPath + "/choco-profiling.txt");
-      }
     }
 
     try {
@@ -744,27 +800,34 @@ public class FPGAConstraintScheduler implements IScheduler {
       e.printStackTrace();
     }
 
-    if (computeGantt) {
-      gantt_data.close();
-    }
+    gantt_data.close();
 
-    try {
-      searchTreeFile.close();
-      resultsCsv.close();
-      if (writer != System.out) {
-        writer.close();
+    resultsCsv.close();
+    if (logLevel >= 1) {
+      try {
+        searchTreeFile.close();
+      } catch (final IOException e) {
+        // TODO Auto-generated catch block
+        e.printStackTrace();
       }
-    } catch (final IOException e) {
-      e.printStackTrace();
     }
 
-    final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
-    final Map<String, Object> inputs = new HashMap<>();
-    inputs.put("scenario", scenario);
-    inputs.put("architecture", scenario.getDesign());
-    inputs.put("algorithm", piGraph);
+    end = System.nanoTime();
 
-    final LatencyCost lc = new LatencyCost(solution.getIntVal(latency), null);
+    final long duration = end - start;
+    writer.println("Solving duration : " + duration);
+
+    if (writer != System.out) {
+      writer.close();
+    }
+
+    // final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
+    // final Map<String, Object> inputs = new HashMap<>();
+    // inputs.put("scenario", scenario);
+    // inputs.put("architecture", scenario.getDesign());
+    // inputs.put("algorithm", piGraph);
+
+    // final LatencyCost lc = new LatencyCost(solution.getIntVal(latency), null);
     return results;
   }
 
@@ -776,7 +839,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       Map<ExecutableActor, ActorTimings> schedule, List<IntVar> variablesToInstantiate, PrintStream writer,
       List<IntVar> variablesToOptimize) {
 
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(piGraph, BRVMethod.LCM);
+    final var brv = PiBRV.compute(piGraph, BRVMethod.LCM);
 
     // TODO récupérer en ordre d'exécution pour forcer startDate du 1er acteur à 0 ?
     final List<ExecutableActor> actors = getNonDataInterfaceActors(piGraph);
@@ -791,27 +854,62 @@ public class FPGAConstraintScheduler implements IScheduler {
     // the graph is supposed to be mapped to a single PE type (FPGA, CPU, DSP...)
     final Component Fpga = scenario.getPossibleMappings(piGraph).getFirst().getComponent();
 
+    final FifoCycleDetector cycleDetector = new FifoCycleDetector(true);
+    cycleDetector.casePiGraph(piGraph);
+
+    final int cycle_max = actors.stream()
+        .mapToInt(
+            a -> (int) (brv.get(a) * scenario.getTimings().evaluateTimingOrDefault(a, Fpga, TimingType.EXECUTION_TIME)))
+        .sum();
+    // Compute an upper bound for CYCLE_MAX : a fully sequential execution
+    // WRONG : since our schedule is periodic, there can be moments where no actors is running !
+    // However, it is useful to reduce the domain size (and avoid overflows). So we add a safety factor and hope it
+    // goes well : at least 0.5% of the time is spent computing.
+    // CYCLE_MAX = (int) Math.min((long) cycle_max * 1000, DEFAULT_CYCLE_MAX);
     // useful later
     final IntVar zero = model.intVar("zero", 0);
 
+    // a lower bound on the graph's period is having all the actors' period be their II
+    // We can take the max of that and see what happens
+    int minGraphPeriod = 1;
+    for (final var a : actors) {
+      final var II = getInitiationInterval(a, scenario, Fpga);
+      // minGraphPeriod = lcm(II, minGraphPeriod);
+      minGraphPeriod = (int) Math.max(minGraphPeriod, II * brv.get(a));
+    }
+
+    // We know that for all actors : T_a * rc_a = k, avec k la période du graphe
+    final IntVar graphPeriod = model.intVar("graphPeriod", minGraphPeriod, CYCLE_MAX);
+
+    final List<IntVar> startDates = new ArrayList<>(actors.size());
+    final List<IntVar> periods = new ArrayList<>(actors.size());
+    final List<IntVar> endDates = new ArrayList<>(actors.size());
+
     for (final ExecutableActor actor : actors) {
-      final ActorTimings at = createActorTimings(actor, actors, scenario, Fpga, brv, model);
+      final ActorTimings at = createActorTimings(actor, actors, scenario, Fpga, brv, model, minGraphPeriod);
       if (computeGantt) {
         // the period and end date are linked to other variables by equations, and thus will be computed during the
         // minimization of the latency. However, the start dates are only constrained with >=, not =, so we need to
         // branch on them. The others are also branched on because ça fait pas de mal.
-        variablesToInstantiate.add(at.startDate_var);
-        variablesToInstantiate.add(at.period_var);
-        variablesToInstantiate.add(at.endDate_var);
+        startDates.add(at.startDate_var);
+        periods.add(at.period_var);
+        endDates.add(at.endDate_var);
       }
       schedule.put(actor, at);
     }
 
-    // Now that all the timings are initialized, we can compute the bases and set the constraints
-    for (final ActorTimings at : schedule.values()) {
-      at.computePeriodBasis(actors, schedule);
+    // IntVar cycle_max_var = model.intVar("cycle_max", 0, CYCLE_MAX);
+    // cycle_max_var.eq(periods)
+
+    // first instantiate periods, then start dates, then finally end dates
+    if (computeGantt) {
+      variablesToInstantiate.addAll(periods);
+      variablesToInstantiate.addAll(startDates);
+      variablesToInstantiate.addAll(endDates);
     }
-    setTimingConstraints(actors, model, schedule);
+
+    // Now that all the timings are initialized, we can compute set the constraints
+    setTimingConstraints(actors, model, schedule, graphPeriod);
 
     // on met en place le modèle pour chaque fifo
     for (final Fifo fifo : fifos) {
@@ -827,20 +925,55 @@ public class FPGAConstraintScheduler implements IScheduler {
       // CONSTRAINT : equal rates : Tc / rc = Tp / rp --> Tc * rp = Tp * rc
       // --> Tc * rp / gcd = Tp * rc / gcd ; with gcd(BasisTc * tp, BasisTp * tc)
 
-      final double rateTimesBasisGcd = gcd((long) prod_rate * consTimings.basisOfPeriod,
+      final long rateTimesBasisGcd = gcd((long) prod_rate * consTimings.basisOfPeriod,
           (long) cons_rate * prodTimings.basisOfPeriod);
 
       final double precision = 1d; // since we work on int multiplication, no need to waste precision on decimal
+
+      // check if the products are small enough that we can afford to use IntVar
+      // final long max_left = (long) ((double) cons_rate * prodTimings.period_var.getUB() / rateTimesBasisGcd);
+      // final long max_right = (long) ((double) prod_rate * consTimings.period_var.getUB() / rateTimesBasisGcd);
+
+      // if (max_left < Integer.MAX_VALUE && max_right < Integer.MAX_VALUE) {
+      // // No risk of overflow ! IntVar are enough
+      // final IntVar left = model.intVar("left__" + fifo.getId() + "_var",
+      // (int) Math.floorDiv((long) cons_rate * prodTimings.period_var.getLB(), rateTimesBasisGcd),
+      // (int) Math.ceilDiv((long) cons_rate * prodTimings.period_var.getUB(), rateTimesBasisGcd));
+      // final IntVar right = model.intVar("right__" + fifo.getId() + "_var",
+      // (int) Math.floorDiv((long) prod_rate * consTimings.period_var.getLB(), rateTimesBasisGcd),
+      // (int) Math.ceilDiv((long) prod_rate * consTimings.period_var.getUB(), rateTimesBasisGcd));
+      //
+      // if (cons_rate % rateTimesBasisGcd == 0) {
+      // left.eq(prodTimings.period_var.mul((int) (cons_rate / rateTimesBasisGcd))).post();
+      // } else {
+      // left.eq(prodTimings.period_var.mul(cons_rate).div((int) rateTimesBasisGcd)).post();
+      // }
+      //
+      // if (prod_rate % rateTimesBasisGcd == 0) {
+      // right.eq(consTimings.period_var.mul((int) (prod_rate / rateTimesBasisGcd))).post();
+      // } else {
+      // right.eq(consTimings.period_var.mul(prod_rate).div((int) rateTimesBasisGcd)).post();
+      // }
+      //
+      // left.eq(right).post();
+      //
+      // } else {
+      // risk of overflow : we have to use the slower RealVar
       final RealVar left = model.realVar("left__" + fifo.getId() + "_var",
-          (double) cons_rate * prodTimings.period_var.getLB() / rateTimesBasisGcd,
-          (double) cons_rate * prodTimings.period_var.getUB() / rateTimesBasisGcd, precision);
+          Math.floorDiv((long) cons_rate * prodTimings.period_var.getLB(), rateTimesBasisGcd),
+          Math.ceilDiv((long) cons_rate * prodTimings.period_var.getUB(), rateTimesBasisGcd), precision);
       final RealVar right = model.realVar("right__" + fifo.getId() + "_var",
-          (double) prod_rate * consTimings.period_var.getLB() / rateTimesBasisGcd,
-          (double) prod_rate * consTimings.period_var.getUB() / rateTimesBasisGcd, precision);
+          Math.floorDiv((long) prod_rate * consTimings.period_var.getLB(), rateTimesBasisGcd),
+          Math.ceilDiv((long) prod_rate * consTimings.period_var.getUB(), rateTimesBasisGcd), precision);
 
       final RealVar prodPeriodReal = model.realVar(prodTimings.period_var.getName() + "_Real",
           prodTimings.period_var.getLB(), prodTimings.period_var.getUB(), precision);
       model.eq(prodPeriodReal, prodTimings.period_var).post();
+
+      final RealVar consPeriodReal = model.realVar(consTimings.period_var.getName() + "_Real",
+          consTimings.period_var.getLB(), consTimings.period_var.getUB(), precision);
+      model.eq(consPeriodReal, consTimings.period_var).post();
+
       // we try and reduce the number of constraints if possible
       if (cons_rate % rateTimesBasisGcd == 0) {
         left.eq(prodPeriodReal.mul(cons_rate / rateTimesBasisGcd)).post();
@@ -848,9 +981,6 @@ public class FPGAConstraintScheduler implements IScheduler {
         left.eq(prodPeriodReal.mul(cons_rate).div(rateTimesBasisGcd)).post();
       }
 
-      final RealVar consPeriodReal = model.realVar(consTimings.period_var.getName() + "_Real",
-          consTimings.period_var.getLB(), consTimings.period_var.getUB(), precision);
-      model.eq(consPeriodReal, consTimings.period_var).post();
       if (prod_rate % rateTimesBasisGcd == 0) {
         right.eq(consPeriodReal.mul(prod_rate / rateTimesBasisGcd)).post();
       } else {
@@ -858,7 +988,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
 
       left.eq(right).post();
-
+      // }
       // -- Computing breakpoints positions --
 
       // nombre de breakpoints de chaque
@@ -943,7 +1073,7 @@ public class FPGAConstraintScheduler implements IScheduler {
         // choco operates on natural numbers so the fraction results are automatically floored
         // we add in the initial tokens if there is a delay
         if (fifo.getDelay() != null) {
-          final int delay = (int) fifo.getDelay().getExpression().evaluateAsLong();
+          final int delay = getFixedDelaySize(fifo);
           prodFromPreviousPeriods.eq((delta_prod.div(prodTimings.period_var)).mul(prod_rate).add(delay)).post();
         } else {
           prodFromPreviousPeriods.eq((delta_prod.div(prodTimings.period_var)).mul(prod_rate)).post();
@@ -1012,7 +1142,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
     }
 
-    final IntVar freePeriod = extractAndEnumerateDomainForMostConstrainedPeriod(schedule, model);
+    final IntVar freePeriodMult = extractAndEnumerateDomainForMostConstrainedPeriod(schedule, model);
 
     // objectif : optimiser la latence = la date de fin du dernier acteur relative à une période
     // on pourrait utiliser le chemin critique, mais pour le moment je vais juste optimiser la fin d'exécution de
@@ -1020,8 +1150,9 @@ public class FPGAConstraintScheduler implements IScheduler {
     // TODO : trouver des contraintes pour réduire l'espace d'état de latency, là on ne fait qu'énumérer comme des cons.
     final IntVar latency = model.max("latency", getEdgeActorsEndDates(schedule).toArray(new IntVar[0]));
 
-    // branch on it even if no gantt, to reduce latency's domain size
-    variablesToInstantiate.add(freePeriod);
+    // branch on freePeriod first then hyperperiod if wanted, even if no gantt, to reduce latency's domain size.
+    // variablesToInstantiate.addFirst(graphPeriod);
+    variablesToInstantiate.addFirst(freePeriodMult);
 
     // Branch on latency in last, because otherwise choco tries all values...
     variablesToInstantiate.add(latency);
@@ -1053,20 +1184,15 @@ public class FPGAConstraintScheduler implements IScheduler {
     // solver.setSearch(Search.lastConflict(Search.inputOrderLBSearch(variablesToAssign)));
     solver.setSearch(Search.lastConflict(Search.domOverWDegSearch(variablesToAssign)));
 
+    // scale mieux grâce à la dichotomie
+    // solver.setSearch(Search.lastConflict(Search.intVarSearch(new DomOverWDeg<>(variablesToAssign, 0L),
+    // new IntDomainMin(), DecisionOperatorFactory.makeIntSplit(), variablesToAssign)));
+
     // solver.setSearch(Search.lastConflict(Search.intVarSearch(// our strategy :
     // new InputOrder<>(solver.getModel()), // We will branch on variables in input order
     // new IntDomainMiddle(true), // and assign them to their domain's middle value
     // variablesToAssign)));
 
-    final IntValueSelector vs = var -> {
-      System.out.println("Selecting value " + var.getLB() + " for " + var);
-      return var.getLB();
-    };
-
-    // solver.setSearch(Search.intVarSearch(// our strategy :
-    // new InputOrder<>(solver.getModel()), // We will branch on variables in input order
-    // new IntDomainMiddle(true), // and assign them to their domain's middle value
-    // variablesToAssign));
   }
 
   /**
@@ -1077,14 +1203,14 @@ public class FPGAConstraintScheduler implements IScheduler {
    */
   private void runInitialPropagation(Solver solver, PrintStream writer) {
     try {
-      writer.println("\nStarting initial propagation (might take some time)");
+      writer.println("\n\nStarting initial propagation (might take some time)");
       solver.propagate();
-      writer.println("Initial propagation finished");
+      writer.println("\nInitial propagation finished");
     } catch (final ContradictionException e) {
       if (logLevel >= 1) {
         writer.println(e);
       }
-      writer.println("Initial propagation caught a contradiction : model might be unsolvable.");
+      writer.println("\nInitial propagation caught a contradiction : model might be unsolvable.");
     }
   }
 
@@ -1113,7 +1239,7 @@ public class FPGAConstraintScheduler implements IScheduler {
       final int prod_rate = getProdRate(f);
       final int cons_rate = getConsRate(f);
 
-      final int initial_tokens = (int) (f.getDelay() != null ? f.getDelay().getExpression().evaluateAsLong() : 0);
+      final int initial_tokens = f.getDelay() != null ? getFixedDelaySize(f) : 0;
 
       // Producers and consumers have the same breakpoint formulas as before, but swapped
       // the consumer now consumes at the end of its execution
@@ -1240,8 +1366,8 @@ public class FPGAConstraintScheduler implements IScheduler {
           // all the delays and initial tokens on that fifo (if present)
           final var delayed_fifos = fifos.stream().filter(Fifo::isDelayPresent);
           delayed_fifos.forEach(df -> {
-            initial_tokens.append("\"").append(s.getName()).append("\":")
-                .append(df.getDelay().getExpression().evaluateAsLong()).append(", ");
+            // df.getDelay().getExpression().evaluateAsLong()
+            initial_tokens.append("\"").append(s.getName()).append("\":").append(getFixedDelaySize(df)).append(", ");
           });
         }
 
@@ -1269,12 +1395,15 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     final long hyperperiod = lcm(schedule.values().stream().map(a -> (long) a.period).toList());
+    // System.out.printf("hyperpériode par recherche : %d \n", solution.);
+    System.out.printf("hyperpériode par calcul après recherche : %d \n", hyperperiod);
 
     if (this.computeGantt) {
       gantt_data.println("\n]");
-      gantt_data.println("hyperperiod = " + hyperperiod);
-      gantt_data.println("latency = " + result.latency);
     }
+    gantt_data.println("hyperperiod = " + hyperperiod);
+    gantt_data.println("latency = " + result.latency);
+    gantt_data.println("solving_duration = " + solver.getTimeCount());
 
     writer.println("\nlatency = " + result.latency);
     writer.println("hyperperiod = " + hyperperiod);
