@@ -98,9 +98,9 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
   private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
 
-  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer,
-      Buffer>                                                               btb            = new DualLinkedHashBidiMap<>();
-  private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
+  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb = new DualLinkedHashBidiMap<>();
+
+  private final Map<Port, Variable> portToVariable = new LinkedHashMap<>();
 
   // for generating unique names
   private final Map<String, Long> bufferNames = new LinkedHashMap<>();

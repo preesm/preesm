@@ -110,6 +110,8 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
       case STABLE_SET -> allocateStableSetOrder(false);
       case EXACT_STABLE_SET -> allocateStableSetOrder(true);
       case SCHEDULING -> allocateSchedulingOrder();
+      default -> { // Nothing
+      }
     }
   }
 
