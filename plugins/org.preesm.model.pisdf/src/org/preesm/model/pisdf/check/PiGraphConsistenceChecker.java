@@ -59,6 +59,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.UserSpecialActor;
@@ -69,7 +70,7 @@ import org.preesm.model.pisdf.util.DependencyCycleDetector;
  * whole graph even if we have already detected some errors. So DO NOT USE {@link Stream#allMatch} here because then we
  * would not check the other faulty elements, but prefer an hand-made reduction ensuring a complete evaluation.
  * Similarly, DO NOT USE lazy boolean evaluation as {@code &&} but prefer force boolean evaluation with {@code &=}.
- * 
+ *
  */
 public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
@@ -78,7 +79,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
   /**
    * Builds the checker without logging messages nor stopping on errors. Then the user has to call the
    * {@link #check(PiGraph)} method.
-   * 
+   *
    */
   public PiGraphConsistenceChecker() {
     this(CheckerErrorLevel.NONE, CheckerErrorLevel.NONE);
@@ -86,7 +87,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Builds the checker, then the user has to call the {@link #check(PiGraph)} method.
-   * 
+   *
    * @param throwExceptionLevel
    *          The maximum level of error throwing exceptions.
    * @param loggerLevel
@@ -99,7 +100,7 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
 
   /**
    * Check the whole graph, throwing exception for every warning but not logging them.
-   * 
+   *
    * @param graph
    *          The PiSDF graph to check.
    * @return Whether or not the PiSDF graph is consistent.
@@ -187,9 +188,8 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
     return actorValid;
   }
 
-  @Override
-  public Boolean caseUserSpecialActor(final UserSpecialActor actor) {
-    boolean actorValid = caseAbstractActor(actor);
+  private Boolean verifyFifoTypeUnicity(final AbstractActor actor) {
+    boolean actorValid = true;
 
     final Set<String> typeSet = new LinkedHashSet<>();
     // for special actor we also have to check that all fifos connected to it have the same type
@@ -203,6 +203,20 @@ public class PiGraphConsistenceChecker extends AbstractPiSDFObjectChecker {
           actor.getVertexPath());
     }
 
+    return actorValid;
+  }
+
+  @Override
+  public Boolean caseUserSpecialActor(final UserSpecialActor actor) {
+    boolean actorValid = caseAbstractActor(actor);
+    actorValid &= verifyFifoTypeUnicity(actor);
+    return actorValid;
+  }
+
+  @Override
+  public Boolean casePassiveActor(final PassiveActor actor) {
+    boolean actorValid = caseAbstractActor(actor);
+    actorValid &= verifyFifoTypeUnicity(actor);
     return actorValid;
   }
 

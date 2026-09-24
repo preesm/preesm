@@ -38,6 +38,7 @@
  */
 package org.preesm.algorithm.clustering;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -45,8 +46,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
+import org.eclipse.emf.common.util.ECollections;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -75,6 +83,7 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
+import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -94,6 +103,156 @@ public class ClusteringHelper {
 
   /**
    * Used to get list of Fifo that interconnect actor included in the graph
+   */
+  public static final List<DataInputPort> getExternalyConnectedPorts(final Schedule cluster) {
+    final List<DataInputPort> res = new ArrayList<>();
+    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(cluster);
+    for (final AbstractActor actor : actors) {
+      final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
+      for (final DataInputPort port : dataInputPorts) {
+        final Fifo fifo = port.getFifo();
+        // filter ports connected within the cluster
+        final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
+        if (ECollections.indexOf(actors, sourceActor, 0) != -1) {
+          // source actor is within the cluster
+          // skip
+        } else {
+          res.add(port);
+        }
+      }
+    }
+
+    return res;
+  }
+
+  /**
+   * @param actor
+   *          actor to check if it is delayed
+   * @return true if actor is delayed, false otherwise
+   */
+  public static final boolean isActorDelayed(AbstractActor actor) {
+    // Retrieve every Fifo with delay connected to actor
+    for (final DataPort dp : actor.getAllDataPorts()) {
+      if (dp.getFifo().getDelay() != null) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to analyze
+   * @param iterator
+   *          iterator to exploration counter on
+   * @return depth of parallelism
+   */
+  public static final long getParallelismDepth(Schedule schedule, long iterator) {
+
+    if (schedule instanceof final HierarchicalSchedule hierSchedule) {
+      long maxDepth = iterator;
+      long tmpIterator;
+      for (final Schedule child : hierSchedule.getChildren()) {
+        tmpIterator = getParallelismDepth(child, iterator);
+        if (tmpIterator > maxDepth) {
+          maxDepth = tmpIterator;
+        }
+      }
+      iterator = maxDepth;
+    }
+
+    // Increment iterator because we found a parallel area
+    if (schedule instanceof ParallelSchedule) {
+      iterator++;
+    }
+
+    return iterator;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to get memory space needed for
+   * @return bits needed for execution of schedule
+   */
+  public static final long getMemorySpaceNeededFor(Schedule schedule) {
+    long result = 0;
+    if (schedule instanceof final HierarchicalSchedule hierSched) {
+      // Add memory space needed for children in result
+      for (final Schedule child : hierSched.getChildren()) {
+        result += getMemorySpaceNeededFor(child);
+      }
+      // If it is a parallel hierarchical schedule with no attached actor, multiply child memory space result by the
+      // repetition of it
+      if (!schedule.hasAttachedActor()) {
+        final long rep = schedule.getRepetition();
+        result *= rep;
+      } else {
+        // Estimate every internal buffer size
+        final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
+        final List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
+        final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+        for (final Fifo fifo : fifos) {
+          result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluateAsLong();
+        }
+      }
+    }
+    return result;
+  }
+
+  /**
+   * @param schedule
+   *          schedule to get execution time from
+   * @return execution time
+   */
+  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario, Component component) {
+    long timing = 0;
+
+    // If schedule is hierarchical
+    if (schedule instanceof HierarchicalSchedule) {
+      timing = getExecutionTimeOfHierarchical(schedule, scenario, component, timing);
+    } else {
+      // Retrieve timing from actors
+      final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
+      final AbstractActor actor = actors.get(0);
+      final long actorTiming = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, component);
+      timing = schedule.getRepetition() * actorTiming;
+    }
+
+    return timing;
+  }
+
+  private static long getExecutionTimeOfHierarchical(Schedule schedule, Scenario scenario, Component component,
+      long timing) {
+    // If schedule is sequential
+    if (schedule instanceof final SequentialHierarchicalSchedule seqHierSched) {
+      // Sum timings of all childrens together
+      for (final Schedule child : seqHierSched.getChildren()) {
+        timing += getExecutionTimeOf(child, scenario, component);
+      }
+    } else if (schedule instanceof final ParallelHierarchicalSchedule parHierSched) {
+      // If schedule is parallel
+      // Search for the maximun time taken by childrens
+      long max = 0;
+      for (final Schedule child : parHierSched.getChildren()) {
+        final long result = getExecutionTimeOf(child, scenario, component);
+        if (result > max) {
+          max = result;
+        }
+      }
+      // Add max execution time to timing
+      timing += max;
+    }
+
+    // If it is repeated, multiply timing by the time of
+    if (schedule.getRepetition() > 1) {
+      timing *= schedule.getRepetition();
+    }
+    return timing;
+  }
+
+  /**
+   * >>>>>>> 43ebc3c8e (minor synthax fixes every where (sorry)) Used to get list of Fifo that interconnect actor
+   * included in the graph >>>>>>> 33234f497 (rebase 2)
    *
    * @param graph
    *          graph to get internal cluster Fifo from
@@ -454,7 +613,6 @@ public class ClusteringHelper {
 
       // Setting input port annotations
       brdIn.setAnnotation(bIn.getAnnotation());
-
       // Linking broadcast with a and b
       final String dataType = a2b.getType();
       final Fifo a2brd = a2b;
@@ -508,7 +666,7 @@ public class ClusteringHelper {
 
       // Setting expression of ports
       bIn.setExpression(bExpr); // otherwise it bugs...
-      rdbIn.setExpression(brv.get(a) * aOutExpr);
+      rdbIn.setExpression(brv.get(a) * (double) aOutExpr);
       rdbOut.setExpression(bExpr);
 
       // Linking broadcast with a and b

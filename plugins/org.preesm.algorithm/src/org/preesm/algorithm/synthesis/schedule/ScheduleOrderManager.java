@@ -62,7 +62,7 @@ import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SendEndActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.commons.CollectionUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -304,7 +304,7 @@ public class ScheduleOrderManager {
     }
 
     @Override
-    public Boolean caseSequentialHiearchicalSchedule(final SequentialHiearchicalSchedule object) {
+    public Boolean caseSequentialHierarchicalSchedule(final SequentialHierarchicalSchedule object) {
       final EList<Schedule> scheduleTree = object.getScheduleTree();
       final int size = scheduleTree.size();
       for (int i = 0; i < size; i++) {

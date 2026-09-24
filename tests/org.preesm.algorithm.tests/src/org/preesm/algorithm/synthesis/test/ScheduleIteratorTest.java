@@ -43,7 +43,7 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
@@ -66,8 +66,8 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test1() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
     final List<AbstractActor> simpleOrderedList = ScheduleUtil.getAllReferencedActors(sched);
     StringBuilder sb = new StringBuilder();
     simpleOrderedList.forEach(a -> sb.append(a.getName()));
@@ -76,9 +76,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test2() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
     final PiGraph graph = createSchedule.getLeft();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
     final List<
         AbstractActor> orderedList = new ScheduleOrderManager(graph, sched).buildScheduleAndTopologicalOrderedList();
     StringBuilder sb = new StringBuilder();
@@ -88,9 +88,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test3() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
     final PiGraph graph = createSchedule.getLeft();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
@@ -106,9 +106,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void test4() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
     final PiGraph graph = createSchedule.getLeft();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
 
     final Actor actorE = PiMMUserFactory.instance.createActor("E");
     final ActorSchedule schedule = (ActorSchedule) sched.getScheduleTree().get(1);
@@ -124,9 +124,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void testPredecessors() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
     final PiGraph graph = createSchedule.getLeft();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
 
     List<AbstractActor> predecessors;
@@ -147,9 +147,9 @@ public class ScheduleIteratorTest {
 
   @Test
   public void testSuccessors() {
-    final Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule = createSchedule();
+    final Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule = createSchedule();
     final PiGraph graph = createSchedule.getLeft();
-    final ParallelHiearchicalSchedule sched = createSchedule.getRight();
+    final ParallelHierarchicalSchedule sched = createSchedule.getRight();
     final ScheduleOrderManager scheduleOrderManager = new ScheduleOrderManager(graph, sched);
 
     List<AbstractActor> predecessors;
@@ -168,7 +168,7 @@ public class ScheduleIteratorTest {
 
   }
 
-  private Pair<PiGraph, ParallelHiearchicalSchedule> createSchedule() {
+  private Pair<PiGraph, ParallelHierarchicalSchedule> createSchedule() {
     final Actor actorA = PiMMUserFactory.instance.createActor("A");
     final DataOutputPort aOut1 = PiMMUserFactory.instance.createDataOutputPort("A.out1");
     final DataOutputPort aOut2 = PiMMUserFactory.instance.createDataOutputPort("A.out2");
@@ -216,7 +216,7 @@ public class ScheduleIteratorTest {
     core1.getActorList().add(actorC);
     core1.getActorList().add(actorB);
 
-    final ParallelHiearchicalSchedule sched = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    final ParallelHierarchicalSchedule sched = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     sched.getChildren().add(core0);
     sched.getChildren().add(core1);
     return Pair.of(graph, sched);

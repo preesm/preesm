@@ -618,8 +618,8 @@ public class PiWriter {
           final String expressionAsString = portRateExpression.getExpressionAsString();
           portElt.setAttribute(PiIdentifiers.PORT_EXPRESSION, expressionAsString);
           if (port instanceof final PassivePort pp) {
-            portElt.setAttribute(PiIdentifiers.PORT_BUFFER, Integer.toString(pp.getSubBufferSize()));
-            portElt.setAttribute(PiIdentifiers.PORT_OFFSET, Integer.toString(pp.getOffset()));
+            portElt.setAttribute(PiIdentifiers.PORT_BUFFER, Long.toString(pp.getSubBufferSize()));
+            portElt.setAttribute(PiIdentifiers.PORT_OFFSET, Long.toString(pp.getOffset()));
             portElt.setAttribute(PiIdentifiers.PORT_SCRIPT, pp.getScript());
           }
           break;

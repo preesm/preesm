@@ -64,7 +64,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.views.properties.tabbed.ITabbedPropertyConstants;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetPage;
 import org.eclipse.ui.views.properties.tabbed.TabbedPropertySheetWidgetFactory;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.CHeaderRefinement;
@@ -937,12 +936,10 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     this.txtNameObj.setEnabled(!(bo instanceof Delay));
 
     if (bo instanceof final PassiveActor pa) {
-      PreesmLogger.getLogger().info("[DEBUG] " + pa.getName() + " buffer size is " + pa.getBufferSize());
-      this.lblBufferSizeObj.setText(Integer.toString(pa.getBufferSize()));
+      this.lblBufferSizeObj.setText(Long.toString(pa.getBufferSize()));
     }
 
     if (bo instanceof Actor || bo instanceof InitActor || bo instanceof Delay) {
-      PreesmLogger.getLogger().info("[DEBUG] going in if");
 
       Refinement refinement = null;
       boolean enabled = true;

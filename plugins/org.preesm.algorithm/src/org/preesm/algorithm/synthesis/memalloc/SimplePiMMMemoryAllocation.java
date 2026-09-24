@@ -46,6 +46,10 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
   @Override
   public WorkingMemory allocateMemory(PiGraph oriCluster, Design slamDesign, Scenario scenario, Schedule schedule,
       Mapping mapping) {
+    // Here the oriCluster argument is not used as it is already present in the scheduled form in the root schedule node
+    // as the attached actor.
+
+    // mapping and slamDesign are not used neither.
 
     this.scenario = scenario;
 
@@ -108,7 +112,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
    *          the internal FIFOs of the sub-cluster. A FIFO is consider internal if neither of its attached actors are
    *          an {@link DataInterface interface actor}.
    */
-  private void generateInternalAllocBuffers(List<Fifo> internalFifos) {
+  void generateInternalAllocBuffers(List<Fifo> internalFifos) {
     for (final Fifo fifo : internalFifos) {
       // "begin" means that the port is attached to actor a
       final DataOutputPort beginPort = fifo.getSourcePort();
@@ -128,7 +132,6 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
 
       // Making the allocation & updating the global size of cluster
       createFifoAllocation(fifo, bufferSizeInBit);
-      allocSize += bufferSizeInBit;
     }
   }
 
@@ -141,7 +144,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
    * @param externalFifos
    *          all the external FIFOs of the sub-cluster
    */
-  private void generateExternalAllocBuffers(HierarchicalSchedule hierSchedule, List<Fifo> externalFifos) {
+  void generateExternalAllocBuffers(HierarchicalSchedule hierSchedule, List<Fifo> externalFifos) {
     if (checkIfTopCluster(hierSchedule)) {
       for (final Fifo fifo : externalFifos) {
         final DataInterface i = fifo.getSource() instanceof final DataInterface dataInterface ? dataInterface
@@ -168,8 +171,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
    *          the mapping of the cluster.
    * @return the final bit size, called offset during intermediate call of {@link recursiveAllocation}
    */
-
-  private void createFifoAllocation(final Fifo fifo, final long bufferSizeInBit) {
+  void createFifoAllocation(final Fifo fifo, final long bufferSizeInBit) {
 
     // Creating the FifoAllocation
     final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
@@ -193,7 +195,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
    *          the current schedule
    * @return true if the schedule is the root one, false otherwise.
    */
-  private boolean checkIfTopCluster(Schedule schedule) {
+  boolean checkIfTopCluster(Schedule schedule) {
     if (schedule.getParent() != null) {
       if (schedule.getParent().hasAttachedActor()) {
         return false;

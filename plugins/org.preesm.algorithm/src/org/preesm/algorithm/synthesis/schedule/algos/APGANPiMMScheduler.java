@@ -10,11 +10,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.ArithmeticUtils;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
 import org.preesm.algorithm.schedule.model.SequentialActorSchedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -179,7 +179,7 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
       Map<AbstractVertex, Long> rv, Map<AbstractActor, Schedule> scheduleMap, long clusterRep) {
 
     // Create parallel or sequential schedule
-    final HierarchicalSchedule schedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
+    final HierarchicalSchedule schedule = ScheduleFactory.eINSTANCE.createSequentialHierarchicalSchedule();
     schedule.setRepetition(clusterRep);
     for (final AbstractActor a : actorList) {
       addActorToHierarchicalSchedule(schedule, a, rv.get(a) / clusterRep, scheduleMap);
@@ -222,7 +222,8 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
 
       // If the actor is parallelizable, create a parallel hierarchical schedule
       if (!isActorDelayed(actor)) {
-        final ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+        final ParallelHierarchicalSchedule parallelNode = ScheduleFactory.eINSTANCE
+            .createParallelHierarchicalSchedule();
         parallelNode.getChildren().add(actorSchedule);
         parallelNode.setRepetition(1);
         parallelNode.setAttachedActor(null);
@@ -280,10 +281,10 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     // Build a new schedule hierarchy for the cluster schedule. Parallel or sequential in function of delay and the type
     // of child schedule
     HierarchicalSchedule clusterSchedule = null;
-    if (isActorDelayed(remainingActor) || (childSchedule instanceof SequentialHiearchicalSchedule)) {
-      clusterSchedule = ScheduleFactory.eINSTANCE.createSequentialHiearchicalSchedule();
+    if (isActorDelayed(remainingActor) || (childSchedule instanceof SequentialHierarchicalSchedule)) {
+      clusterSchedule = ScheduleFactory.eINSTANCE.createSequentialHierarchicalSchedule();
     } else {
-      clusterSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+      clusterSchedule = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     }
 
     // Add child schedule to the cluster schedule and set the attached actor

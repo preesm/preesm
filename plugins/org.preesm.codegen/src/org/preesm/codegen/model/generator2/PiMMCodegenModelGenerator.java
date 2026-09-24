@@ -15,9 +15,9 @@ import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.codegen.model.ActorFunctionCall;
@@ -54,7 +54,6 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
@@ -257,7 +256,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * ============================================================================================================
    */
   @Override
-  public CodeElt caseSequentialHiearchicalSchedule(final SequentialHiearchicalSchedule schedule) {
+  public CodeElt caseSequentialHierarchicalSchedule(final SequentialHierarchicalSchedule schedule) {
 
     // If parent node is a parallel node with one child? If true, repetition can be parallelize
     boolean parallelRepetition = false;
@@ -278,7 +277,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
   }
 
   @Override
-  public CodeElt caseParallelHiearchicalSchedule(final ParallelHiearchicalSchedule schedule) {
+  public CodeElt caseParallelHierarchicalSchedule(final ParallelHierarchicalSchedule schedule) {
 
     // Is it a data parallelism node?
     if (schedule.getChildren().size() == 1 && !schedule.hasAttachedActor()) {
@@ -337,8 +336,8 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     // Build corresponding actor function/special call
     if (actor instanceof final SpecialActor specialActor) {
       actorBlock.getCodeElts().add(generateSpecialActorFiring(specialActor, finiteLoopBlock));
-    } else if (actor instanceof final ExecutableActor executableActor) {
-      actorBlock.getCodeElts().add(generateExecutableActorFiring(executableActor, finiteLoopBlock));
+    } else if (actor instanceof final Actor a) {
+      actorBlock.getCodeElts().add(generateActorFiring(a, finiteLoopBlock));
     }
 
     // Add delay pop if necessary
@@ -441,17 +440,17 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   }
 
-  protected final FunctionCall generateExecutableActorFiring(final ExecutableActor actor, final FiniteLoopBlock flb) {
+  protected final FunctionCall generateActorFiring(final Actor actor, final FiniteLoopBlock flb) {
     // Build FunctionCall
     final ActorFunctionCall functionCall = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     functionCall.setActorName(actor.getName());
     functionCall.setOriActor(actor);
 
     // Retrieve Refinement from actor for loop function
-    fillFunctionCallArguments(functionCall, (Actor) actor, flb);
+    fillFunctionCallArguments(functionCall, actor, flb);
 
     // Retrieve and add init function to operator core block
-    addInitFunctionCall((Actor) actor);
+    addInitFunctionCall(actor);
 
     return functionCall;
   }
