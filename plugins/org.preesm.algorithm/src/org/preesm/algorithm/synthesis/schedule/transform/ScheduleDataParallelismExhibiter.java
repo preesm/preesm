@@ -37,10 +37,10 @@ package org.preesm.algorithm.synthesis.schedule.transform;
 
 import java.util.LinkedList;
 import java.util.List;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -54,14 +54,14 @@ public class ScheduleDataParallelismExhibiter implements IScheduleTransform {
   @Override
   public Schedule performTransform(final Schedule schedule) {
 
-    if (schedule instanceof SequentialHiearchicalSchedule) {
+    if (schedule instanceof SequentialHierarchicalSchedule) {
 
       // if data parallelism can be exhibited
-      final PiGraph graph = (PiGraph) ((SequentialHiearchicalSchedule) schedule).getAttachedActor();
+      final PiGraph graph = (PiGraph) ((SequentialHierarchicalSchedule) schedule).getAttachedActor();
       final boolean sequentialPersistenceInside = !graph.getFifosWithDelay().isEmpty();
       if ((schedule.getRepetition() > 1) && !sequentialPersistenceInside) {
-        final ParallelHiearchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE
-            .createParallelHiearchicalSchedule();
+        final ParallelHierarchicalSchedule parallelSchedule = ScheduleFactory.eINSTANCE
+            .createParallelHierarchicalSchedule();
         parallelSchedule.setRepetition(1);
         parallelSchedule.getChildren().add(schedule);
         return parallelSchedule;

@@ -269,7 +269,7 @@ public class PeriodicScheduler extends AbstractScheduler {
     cores = new ArrayList<>();
     ciTOca = new HashMap<>();
     possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
-    topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
     for (final ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
       final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();

@@ -36,12 +36,28 @@ import org.preesm.model.slam.Design;
  *
  * @author rcazoulat
  */
+<<<<<<<< HEAD:plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SimplePiMMMemoryAllocation.java
 public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implements IMemoryAllocation {
+========
+public class SrDAGLessMemoryAllocationScheduleSwitch extends ScheduleSwitch<Boolean> implements IMemoryAllocation {
+>>>>>>>> 2121a213a (minor synthax fixes every where (sorry)):plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SrDAGLessMemoryAllocationScheduleSwitch.java
 
   Map<AbstractVertex, Long> clusterBrv;
   Scenario                  scenario;
   WorkingMemory             workingMem;
   Long                      allocSize;
+  PhysicalBuffer            mainBuffer;
+
+  public SrDAGLessMemoryAllocationScheduleSwitch() {
+    memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
+    allocSize = 0L;
+
+    // We create main buffer only to pass finalBitSize to the next graph hierarchy level.
+    // For now it is useless, but it will be used to set the working memory of the cluster actor
+    // If getPhysicalBuffer().size() == 1 && getPhysicalBuffer().get(0).getMemoryBank() == null
+    mainBuffer = MemoryAllocationFactory.eINSTANCE.createPhysicalBuffer();
+    memAlloc.getPhysicalBuffers().add(mainBuffer);
+  }
 
   @Override
   public WorkingMemory allocateMemory(PiGraph oriCluster, Design slamDesign, Scenario scenario, Schedule schedule,
@@ -60,6 +76,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
     final PiGraph scheduledCluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
     clusterBrv = PiBRV.compute(scheduledCluster, BRVMethod.LCM);
 
+<<<<<<<< HEAD:plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SimplePiMMMemoryAllocation.java
     // Initializing the allocation and its size
     workingMem = MemoryAllocationFactory.eINSTANCE.createWorkingMemory();
     workingMem.setAttachedActor(oriCluster);
@@ -68,6 +85,8 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
     final LogicalBuffer mainBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
     workingMem.setMainBuffer(mainBuffer);
 
+========
+>>>>>>>> 2121a213a (minor synthax fixes every where (sorry)):plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SrDAGLessMemoryAllocationScheduleSwitch.java
     // The allocation memAlloc is filled by visiting the schedule with the doSwitch method.
     // Fore more information on its effect, go see the method caseHierarchicalSchedule.
     doSwitch(schedule);
@@ -185,7 +204,17 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
     fifoAllocation.setSourceBuffer(fifoBuffer);
     fifoAllocation.setTargetBuffer(fifoBuffer);
 
+<<<<<<<< HEAD:plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SimplePiMMMemoryAllocation.java
     workingMem.getMainBuffer().getChildren().add(fifoBuffer);
+========
+    // We consider that a cluster will only have one physical buffer. A cluster is supposed to be run on one processing
+    // element (PE), and this PE is supposed to have only one memory (a PE can be, at the maximum granularity, a compute
+    // node with one RAM)
+    mainBuffer.getChildren().add(fifoBuffer);
+
+    // Updating the allocSize so that no buffers overlap each other
+    allocSize += bufferSizeInBit;
+>>>>>>>> 2121a213a (minor synthax fixes every where (sorry)):plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/memalloc/SrDAGLessMemoryAllocationScheduleSwitch.java
   }
 
   /**

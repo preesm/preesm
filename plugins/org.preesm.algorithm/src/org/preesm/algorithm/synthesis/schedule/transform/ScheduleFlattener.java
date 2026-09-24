@@ -38,9 +38,9 @@ package org.preesm.algorithm.synthesis.schedule.transform;
 import java.util.LinkedList;
 import java.util.List;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -77,8 +77,8 @@ public class ScheduleFlattener implements IScheduleTransform {
         final Schedule processedChild = performTransform(child);
 
         // Sequential flattening
-        if ((hierSchedule instanceof SequentialHiearchicalSchedule) && (child instanceof SequentialHiearchicalSchedule)
-            && (child.getRepetition() == 1)) {
+        if ((hierSchedule instanceof SequentialHierarchicalSchedule)
+            && (child instanceof SequentialHierarchicalSchedule) && (child.getRepetition() == 1)) {
           hierSchedule.getChildren().addAll(processedChild.getChildren());
 
           final PiGraph flattenedActor = (PiGraph) hierSchedule.getAttachedActor();
@@ -90,8 +90,8 @@ public class ScheduleFlattener implements IScheduleTransform {
           hierSchedule.setAttachedActor(flattenedActor);
 
           // Parallel flattening
-        } else if ((hierSchedule instanceof ParallelHiearchicalSchedule)
-            && (child instanceof ParallelHiearchicalSchedule) && (child.getRepetition() == 1)) {
+        } else if ((hierSchedule instanceof ParallelHierarchicalSchedule)
+            && (child instanceof ParallelHierarchicalSchedule) && (child.getRepetition() == 1)) {
           hierSchedule.getChildren().addAll(processedChild.getChildren());
 
         } else {

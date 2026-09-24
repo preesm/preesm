@@ -73,7 +73,7 @@ public class SimpleScheduler extends AbstractScheduler {
       throw new PreesmSchedulingException("This task must be called with a CPU architecture, abandon.");
     }
 
-    final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     final Mapping resultMapping = MappingFactory.eINSTANCE.createMapping();
 
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();

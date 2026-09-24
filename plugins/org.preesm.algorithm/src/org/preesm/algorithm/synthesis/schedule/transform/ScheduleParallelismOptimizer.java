@@ -38,10 +38,10 @@ package org.preesm.algorithm.synthesis.schedule.transform;
 import java.util.LinkedList;
 import java.util.List;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.ScheduleFactory;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.SequentialSchedule;
 
 /**
@@ -79,7 +79,7 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
           if (processedChild instanceof SequentialSchedule) {
             isComposedOfSequentialSchedule = true;
             // Is child a parallel actor schedule that can be parallelized out of it cluster?
-          } else if ((processedChild instanceof ParallelHiearchicalSchedule) && (processedChild.getRepetition() == 1)
+          } else if ((processedChild instanceof ParallelHierarchicalSchedule) && (processedChild.getRepetition() == 1)
               && (processedChild.getChildren().size() == 1)) {
             // Register it as a parallel schedule in SCHEDULE list of children
             parallelSchedules.add(processedChild);
@@ -102,8 +102,8 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
     // we may pull up parallelizable schedule to the parent hierarchical schedule
     if ((schedule.getRepetition() > 1) && !parallelSchedules.isEmpty() && isComposedOfSequentialSchedule) {
       // This schedule is temporary : we use to carry children that we be insert in the parent hierarchy
-      final SequentialHiearchicalSchedule temporaryHierarchy = ScheduleFactory.eINSTANCE
-          .createSequentialHiearchicalSchedule();
+      final SequentialHierarchicalSchedule temporaryHierarchy = ScheduleFactory.eINSTANCE
+          .createSequentialHierarchicalSchedule();
       temporaryHierarchy.setRepetition(ScheduleParallelismOptimizer.TEMPORARY_HIERARCHY);
 
       // Retrieve parallel schedule that can be pulled up

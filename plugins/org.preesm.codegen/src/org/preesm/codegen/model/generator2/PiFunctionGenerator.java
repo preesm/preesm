@@ -74,7 +74,11 @@ import org.preesm.model.scenario.Scenario;
  * @author dgageot
  *
  */
+<<<<<<<< HEAD:plugins/org.preesm.codegen/src/org/preesm/codegen/model/generator2/PiMMCodegenModelGenerator.java
 public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
+========
+public class PiFunctionGenerator extends ScheduleSwitch<CodeElt> {
+>>>>>>>> 2121a213a (minor synthax fixes every where (sorry)):plugins/org.preesm.codegen/src/org/preesm/codegen/model/generator2/PiFunctionGenerator.java
 
   /**
    * {@link Scenario} to get data size from.
@@ -172,8 +176,12 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * @param scenario
    *          the global scenario
    */
+<<<<<<<< HEAD:plugins/org.preesm.codegen/src/org/preesm/codegen/model/generator2/PiMMCodegenModelGenerator.java
   public PiMMCodegenModelGenerator(final PiGraph originalCluster, final Scenario scenario, final Schedule schedule,
       final WorkingMemory allocation) {
+========
+  public PiFunctionGenerator(final PiGraph originalCluster, final Scenario scenario) {
+>>>>>>>> 2121a213a (minor synthax fixes every where (sorry)):plugins/org.preesm.codegen/src/org/preesm/codegen/model/generator2/PiFunctionGenerator.java
     super();
     this.interfaceBufferMap = new HashMap<>();
     this.parameterBufferMap = new HashMap<>();

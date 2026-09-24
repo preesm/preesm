@@ -50,9 +50,10 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -174,9 +175,9 @@ public class ClusteringHelper {
    */
   public static final long getMemorySpaceNeededFor(Schedule schedule) {
     long result = 0;
-    if (schedule instanceof HierarchicalSchedule) {
+    if (schedule instanceof final HierarchicalSchedule hierSched) {
       // Add memory space needed for children in result
-      for (final Schedule child : schedule.getChildren()) {
+      for (final Schedule child : hierSched.getChildren()) {
         result += getMemorySpaceNeededFor(child);
       }
       // If it is a parallel hierarchical schedule with no attached actor, multiply child memory space result by the
@@ -222,16 +223,16 @@ public class ClusteringHelper {
   private static long getExecutionTimeOfHierarchical(Schedule schedule, Scenario scenario, Component component,
       long timing) {
     // If schedule is sequential
-    if (schedule instanceof SequentialSchedule) {
+    if (schedule instanceof final SequentialHierarchicalSchedule seqHierSched) {
       // Sum timings of all childrens together
-      for (final Schedule child : schedule.getChildren()) {
+      for (final Schedule child : seqHierSched.getChildren()) {
         timing += getExecutionTimeOf(child, scenario, component);
       }
-    } else {
+    } else if (schedule instanceof final ParallelHierarchicalSchedule parHierSched) {
       // If schedule is parallel
       // Search for the maximun time taken by childrens
       long max = 0;
-      for (final Schedule child : schedule.getChildren()) {
+      for (final Schedule child : parHierSched.getChildren()) {
         final long result = getExecutionTimeOf(child, scenario, component);
         if (result > max) {
           max = result;

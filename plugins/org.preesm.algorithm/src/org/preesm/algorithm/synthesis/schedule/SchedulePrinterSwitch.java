@@ -39,9 +39,9 @@ import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
-import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialHiearchicalSchedule;
+import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
 import org.preesm.model.pisdf.AbstractActor;
 
@@ -88,7 +88,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   }
 
   @Override
-  public String caseSequentialHiearchicalSchedule(final SequentialHiearchicalSchedule object) {
+  public String caseSequentialHierarchicalSchedule(final SequentialHierarchicalSchedule object) {
     final StringBuilder toPrint = new StringBuilder();
 
     if (object.getRepetition() > 1) {
@@ -115,7 +115,7 @@ public class SchedulePrinterSwitch extends ScheduleSwitch<String> {
   }
 
   @Override
-  public String caseParallelHiearchicalSchedule(final ParallelHiearchicalSchedule object) {
+  public String caseParallelHierarchicalSchedule(final ParallelHierarchicalSchedule object) {
     final StringBuilder toPrint = new StringBuilder();
 
     if (object.getRepetition() > 1) {

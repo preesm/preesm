@@ -85,7 +85,7 @@ public class LegacyListScheduler extends AbstractScheduler {
 
     // build Schedule and Mapping objects from the result MapperDAG
     final Map<ComponentInstance, ActorSchedule> cmpSchedules = new LinkedHashMap<>();
-    final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    final HierarchicalSchedule topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     final Mapping createMapping = MappingFactory.eINSTANCE.createMapping();
 
     final ScheduledDAGIterator scheduledDAGIterator = new ScheduledDAGIterator(dag);

@@ -115,7 +115,7 @@ public class ChocoScheduler extends PeriodicScheduler {
 
     // the constraints in scenario are actually NOT respected in this scheduler
     possibleMappings = new TreeMap<>(new AbstractActorNameComparator());
-    topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
+    topParallelSchedule = ScheduleFactory.eINSTANCE.createParallelHierarchicalSchedule();
     resultMapping = MappingFactory.eINSTANCE.createMapping();
     for (final ComponentInstance ci : slamDesign.getProcessingElements().get(0).getInstances()) {
       final ActorSchedule createActorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();

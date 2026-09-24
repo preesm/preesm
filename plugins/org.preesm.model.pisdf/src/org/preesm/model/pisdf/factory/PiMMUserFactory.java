@@ -40,6 +40,7 @@ package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -68,9 +69,12 @@ import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.MoldableParameter;
 import org.preesm.model.pisdf.Parameter;
+import org.preesm.model.pisdf.PassiveInputPort;
+import org.preesm.model.pisdf.PassiveOutputPort;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.SimplePassiveActor;
 import org.preesm.model.pisdf.StringExpression;
 import org.preesm.model.pisdf.adapter.GraphObserver;
 import org.preesm.model.pisdf.impl.PiMMFactoryImpl;
@@ -508,6 +512,58 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final ConfigOutputInterface res = createConfigOutputInterface();
     res.setName(name);
     return res;
+  }
+
+  private static final String PASSIVE_SCRIPT_FOLDER = "passiveScripts";
+
+  private static final String JOIN_W_SCRIPT        = "join.bsh";
+  private static final String ROUNDBUFFER_W_SCRIPT = "roundbuffer.bsh";
+  private static final String FORK_R_SCRIPT        = "fork.bsh";
+  private static final String BROADCAST_R_SCRIPT   = "broadcast.bsh";
+
+  // Paths to the special scripts files
+  public static final String WJOIN        = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + JOIN_W_SCRIPT;
+  public static final String RFORK        = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + FORK_R_SCRIPT;
+  public static final String WROUNDBUFFER = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + ROUNDBUFFER_W_SCRIPT;
+  public static final String RBROADCAST   = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + BROADCAST_R_SCRIPT;
+
+  public static final String WDEFAULT = WJOIN;
+  public static final String RDEFAULT = RFORK;
+
+  @Override
+  public SimplePassiveActor createSimplePassiveActor() {
+    final SimplePassiveActor passiveFifo = super.createSimplePassiveActor();
+    final PassiveInputPort pip = super.createPassiveInputPort();
+    pip.setName("in");
+    pip.setWritePassiveScriptPath(WDEFAULT);
+    final PassiveOutputPort pop = super.createPassiveOutputPort();
+    pop.setName("out");
+    pop.setReadPassiveScriptPath(RDEFAULT);
+
+    passiveFifo.getPassiveInputPorts().add(pip);
+    passiveFifo.getPassiveOutputPorts().add(pop);
+
+    return passiveFifo;
+  }
+
+  public SimplePassiveActor createSimplePassiveActor(Fifo fifo) {
+    final SimplePassiveActor passiveFifo = createSimplePassiveActor();
+
+    final Fifo originalFifo = PreesmCopyTracker.getOriginalSource(fifo);
+
+    passiveFifo.setLinkedFifo(originalFifo);
+    passiveFifo.setName(originalFifo.getId());
+
+    final long inputExpr = fifo.getSourcePort().getExpression().evaluateAsLong();
+    final long outputExpr = fifo.getTargetPort().getExpression().evaluateAsLong();
+
+    final Expression expr = inputExpr > outputExpr ? fifo.getSourcePort().getExpression()
+        : fifo.getTargetPort().getExpression();
+
+    passiveFifo.getDataInputPorts().getFirst().setExpression(expr);
+    passiveFifo.getDataOutputPorts().getFirst().setExpression(expr);
+
+    return passiveFifo;
   }
 
 }

@@ -108,8 +108,8 @@ public class PassivePortPropertiesSection extends DataPortPropertiesSection {
     if (!(bo instanceof final PassivePort pa)) {
       return;
     }
-    this.lblBufferSizeObj.setText(Integer.toString(pa.getSubBufferSize()));
-    this.lblOffsetObj.setText(Integer.toString(pa.getOffset()));
+    this.lblBufferSizeObj.setText(Long.toString(pa.getSubBufferSize()));
+    this.lblOffsetObj.setText(Long.toString(pa.getOffset()));
     final String scriptPath = pa instanceof final PassiveInputPort p ? p.getWritePassiveScriptPath()
         : ((PassiveOutputPort) pa).getReadPassiveScriptPath();
     this.lblPassiveScriptObj.setText(scriptPath);
