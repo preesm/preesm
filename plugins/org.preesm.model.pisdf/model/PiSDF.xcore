@@ -65,6 +65,8 @@ import org.preesm.model.pisdf.expression.ExpressionEvaluator
 import org.preesm.model.pisdf.factory.PiMMUserFactory
 import org.preesm.model.pisdf.statictools.PiSDFParameterResolverVisitor
 import org.preesm.model.pisdf.util.RefinementResolver
+import org.eclipse.xtext.xbase.lib.Pair
+
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -79,6 +81,8 @@ type int wraps int
 type long wraps long
 
 type double wraps double
+
+type Pair wraps Pair<Long, Long>
 
 /*************************************
  * 
@@ -527,6 +531,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	}
 	op unique AbstractActor[] getActors() {
 		return vertices.filter(AbstractActor).toEList.unmodifiableView
+	}
+	op unique PassiveActor[] getPassiveActors() {
+		return vertices.filter(PassiveActor).toEList.unmodifiableView
 	}
 	op unique AbstractActor[] getOnlyActors() {
 		return (actors.filter(it|!(it instanceof PiGraph))).toEList.unmodifiableView
@@ -1349,8 +1356,8 @@ enum InterfaceKind {
 class PassiveActor extends ExecutableActor {
 	contains PassiveInputPort[] passiveInputPorts 
 	contains PassiveOutputPort[] passiveOutputPorts
-	int bufferSize
 	
+	long realBufferSize
 	
 	op DataInputPort[] getDataInputPorts() {
 		return passiveInputPorts.map[it as DataInputPort].toEList.unmodifiableView
@@ -1367,11 +1374,55 @@ class PassiveActor extends ExecutableActor {
 	op PassivePort[] getAllPassivePorts() {
 		return (passiveInputPorts + passiveOutputPorts).toEList.unmodifiableView
 	}
+	
+	op long getBufferSize() {
+		return allPassivePorts.map[it.getOffset() + it.getSubBufferSize()].max
+	}
+	
+	op String getType() {
+		val String dataType = getAllDataPorts().getFirst().getFifo().getType()
+		if(!getAllDataPorts().filter[it.getFifo().getType() != dataType].isEmpty() ) {
+			throw new PreesmRuntimeException("Fifos of passive actor " + getName() + " should all have the same data type.")
+		}
+		return dataType
+	}
+	
+	op boolean isSimple() {
+		return false
+	}
+}
+
+class SimplePassiveActor extends PassiveActor {
+	
+	op boolean isSimple() {
+		if(passiveInputPorts.size() > 1 || passiveOutputPorts.size() > 1) {
+			throw new PreesmRuntimeException("Simple passive Actor " + getName() + " is not supposed to have multiple input or output ports.")
+		}
+		return true
+	}
+	
+	op Fifo getLinkedFifo() {
+		val inFifo = passiveInputPorts.getFirst().getLinkedFifo()
+		val outFifo = passiveOutputPorts.getFirst().getLinkedFifo()
+		
+		if( inFifo === null || outFifo === null || inFifo != outFifo ) {
+			throw new PreesmRuntimeException("Simple passive Actor " + getName() + " is supposed to have the same linked fifo for its input and output port. This is not the case: input fifo is " +inFifo.getId() + " and output fifo is " + outFifo.getId())
+		}
+		return inFifo
+	}
+	
+	op void setLinkedFifo(Fifo fifo) {
+		 passiveInputPorts.getFirst().setLinkedFifo(fifo)
+		 passiveOutputPorts.getFirst().setLinkedFifo(fifo)
+	}
 }
 
 abstract class PassivePort extends DataPort {
-	int subBufferSize
-	int offset
+	long subBufferSize
+	long offset
+	Pair beginjEndj
+	Pair[] beginiEndi
+	refers Fifo linkedFifo
 	
 	op String getScript()
 	
@@ -1391,5 +1442,5 @@ class PassiveOutputPort extends PassivePort, DataOutputPort {
 	op String getScript() {
 		return readPassiveScriptPath
 	}
-	
 }
+
