@@ -1,25 +1,34 @@
-// ============================================================
-//
-// Broadcast read passive script
-//
-// ============================================================
-// in: 
-// List<DataInputPort> inputs,
-// List<DataOutputPort> outputs,
-// int outputIdx,
-// int outputInstanceIdx,
-// List<String, int> parameters,
-// out:
-// rbeginji
-// rendji
+/* ============================================================
 
-int rendjm1 = 0; // rend_(j-1)
-for(int j= 0;j < outputIdx-1; j++) {
-    rendjm1 += (int) outputs.get(j).getExpression().evaluateAsLong();
+ Broadcast read passive script
+
+ ============================================================
+ in: 
+ List<DataInputPort> inputs,
+ List<DataOutputPort> outputs,
+ long outputIdx,
+ long outputInstanceIdx,
+ List<String, int> parameters,
+ out:
+ long rbeginji
+ long rendji */
+
+long rendjm1 = 0L; // rend_(j-1)
+for(int j= 0;j < outputIdx ; j++) {
+    rendjm1 += outputs.get(j).getExpression().evaluateAsLong();
 }
-int inputRate = (int) inputs.getFirst().getExpression().evaluateAsLong(); // There is only one input in broadcast
-int rbeginj = rendjm1 % inputRate;
-int ratei = (int) outputs.get(outputIdx).getOppositePort().getExpression().evaluateAsLong();
-int rendjim1 = rbeginj + ratei * outputInstanceIdx; // rend_(j,i-1)
+long inputRate = inputs.getFirst().getExpression().evaluateAsLong(); 
+
+long rbeginj = rendjm1 % inputRate;
+long ratei = outputs.get(outputIdx).getOppositePort().getExpression().evaluateAsLong();
+long rendjim1 = rbeginj + ratei * outputInstanceIdx; // rend_(j,i-1)
 rbeginji = rendjim1 % inputRate;
+
 rendji = (rbeginji + ratei) % inputRate;
+
+/*
+PreesmLogger.getLogger().info("[DEBUG] in brd.bsh: actor " + outputs.get(outputIdx).getContainingActor().getName() + " | port " + outputs.get(outputIdx).getName() + " -> outputIdx = " + outputIdx + 
+", outputInstanceIdx = " + outputInstanceIdx + ", inputRate = " + inputRate + 
+", rendjm1 = " + rendjm1 + ", rbeginj = " + rbeginj + ", ratei = " + ratei + 
+", rendjim1 = "+ rendjim1 + ", rbeginji = " + rbeginji + ", rendji = " + rendji );
+*/

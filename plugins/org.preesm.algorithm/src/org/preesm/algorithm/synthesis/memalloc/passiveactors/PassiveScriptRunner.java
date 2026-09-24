@@ -1,6 +1,5 @@
 package org.preesm.algorithm.synthesis.memalloc.passiveactors;
 
-import bsh.BshClassManager;
 import bsh.EvalError;
 import bsh.Interpreter;
 import bsh.ParseException;
@@ -14,12 +13,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.URLHelper;
 import org.preesm.commons.files.URLResolver;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -34,26 +33,10 @@ public class PassiveScriptRunner {
 
   private static final Logger logger = PreesmLogger.getLogger();
 
-  private static final String JOIN_W_SCRIPT        = "join.bsh";
-  private static final String ROUNDBUFFER_W_SCRIPT = "roundbuffer.bsh";
-  private static final String FORK_R_SCRIPT        = "fork.bsh";
-  private static final String BROADCAST_R_SCRIPT   = "broadcast.bsh";
-
-  // Paths to the special scripts files
-  public static final String WJOIN        = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveScriptRunner.JOIN_W_SCRIPT;
-  public static final String RFORK        = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveScriptRunner.FORK_R_SCRIPT;
-  public static final String WROUNDBUFFER = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveScriptRunner.ROUNDBUFFER_W_SCRIPT;
-  public static final String RBROADCAST   = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveScriptRunner.BROADCAST_R_SCRIPT;
-
-  long                      alignment;
-  Map<AbstractVertex, Long> brv;
-
-  Map<PassivePort, Pair<Integer, Integer>>       portBeginjEndjResults;
-  Map<PassivePort, List<Pair<Integer, Integer>>> portBeginiEndiResults;
+  long                                     alignment;
+  Map<AbstractVertex, Long>                brv;
+  Map<PassivePort, Pair<Long, Long>>       portBeginjEndjResults;
+  Map<PassivePort, List<Pair<Long, Long>>> portBeginiEndiResults;
 
   public PassiveScriptRunner(long alignment, Map<AbstractVertex, Long> brv) {
     this.alignment = alignment;
@@ -68,11 +51,19 @@ public class PassiveScriptRunner {
    *          input data port
    * @return beginj and endj pointer associated to dp. (0,0) if there is no pointers associated to dp
    */
-  public Pair<Integer, Integer> getBeginEnd(DataPort dp) {
+  public Pair<Long, Long> getBeginEnd(DataPort dp) {
     if (!(dp instanceof PassivePort) || !portBeginjEndjResults.containsKey(dp)) {
-      return new Pair<>(0, 0);
+      PreesmLogger.getLogger()
+          .info("[WARNING] port " + dp.getName() + " is not a passive port or is not present in scripts result");
+      return new Pair<>(0L, 0L);
     }
     return portBeginjEndjResults.get(dp);
+  }
+
+  public void setEnd(DataPort dp, long value) {
+    final Pair<Long, Long> oldPair = this.getBeginEnd(dp);
+    final Pair<Long, Long> newPair = new Pair<>(oldPair.getKey(), value);
+    portBeginjEndjResults.put((PassivePort) dp, newPair);
   }
 
   /**
@@ -86,10 +77,13 @@ public class PassiveScriptRunner {
    * @return beginji and endji pointer associated to dp, and to the current instance of actor linked to dp. (0,0) if
    *         there is no pointers associated to dp or if i is too big
    */
-  public Pair<Integer, Integer> getBeginEnd(DataPort dp, int i) {
+  public Pair<Long, Long> getBeginEnd(DataPort dp, int i) {
     if (!(dp instanceof PassivePort) || !portBeginiEndiResults.containsKey(dp)
         || i >= portBeginiEndiResults.get(dp).size()) {
-      return new Pair<>(0, 0);
+      PreesmLogger.getLogger().info(" [WARNING] port " + dp.getName()
+          + " is not a passive port or is not present in scripts result, or instance " + i + " is too high");
+
+      return new Pair<>(0L, 0L);
     }
     return portBeginiEndiResults.get(dp).get(i);
   }
@@ -102,8 +96,10 @@ public class PassiveScriptRunner {
    * @return the list of begin and end pointers associated to dp. If there is no associated list (because dp is not a
    *         passive actor), an empty list will be returned.
    */
-  public List<Pair<Integer, Integer>> getBeginEndAllInstances(DataPort dp) {
+  public List<Pair<Long, Long>> getBeginEndAllInstances(DataPort dp) {
     if (!(dp instanceof PassivePort) || !portBeginiEndiResults.containsKey(dp)) {
+      PreesmLogger.getLogger()
+          .warning("port " + dp.getName() + " is not a passive port or is not present in scripts result");
       return new ArrayList<>();
     }
     return portBeginiEndiResults.get(dp);
@@ -120,6 +116,8 @@ public class PassiveScriptRunner {
    */
   public int getBeginEndCycleSize(DataPort dp) {
     if (!(dp instanceof PassivePort) || !portBeginiEndiResults.containsKey(dp)) {
+      PreesmLogger.getLogger()
+          .warning("port " + dp.getName() + " is not a passive port or is not present in scripts result");
       return 0;
     }
     return portBeginiEndiResults.get(dp).size();
@@ -162,8 +160,6 @@ public class PassiveScriptRunner {
     // TODO make verifs at this level (with rv of parent and oppositeParent)
 
     final Interpreter interpreter = new Interpreter();
-    final BshClassManager classManager = interpreter.getClassManager();
-    classManager.cacheClassInfo("PassivePort", PassivePort.class);
 
     final Map<String, Long> parameters = new LinkedHashMap<>();
 
@@ -176,8 +172,9 @@ public class PassiveScriptRunner {
     parameters.put("alignment", this.alignment);
 
     // Import the necessary libraries
-    interpreter.eval("import " + PassivePort.class.getName() + ";");
-    interpreter.eval("import " + List.class.getName() + ";");
+    interpreter.getNameSpace().importClass(PassivePort.class.getName());
+    interpreter.getNameSpace().importClass(List.class.getName());
+    interpreter.getNameSpace().importClass(PreesmLogger.class.getName());
 
     // Feed the parameters/inputs/outputs to the interpreter
     for (final Entry<String, Long> e : parameters.entrySet()) {
@@ -197,8 +194,8 @@ public class PassiveScriptRunner {
     String portInstanceIdxName = "";
     String beginjiName = "";
     String endjiName = "";
-    int beginji = 0;
-    int endji = 0;
+    long beginji = 0L;
+    long endji = 0L;
     int portIdx = 0;
     if (port instanceof final PassiveInputPort iPort) {
       portIdxName = "inputIdx";
@@ -214,69 +211,60 @@ public class PassiveScriptRunner {
       endjiName = "rendji";
     }
 
-    final int maxi = brv.get(port.getOppositePort().getContainingActor()).intValue() / brv.get(parent).intValue();
-
-    final List<Integer> portInstanceIndices = new ArrayList<>();
-
-    portInstanceIndices.add(0);
-    portInstanceIndices.add(maxi);
+    final int maxi = (brv.get(port.getOppositePort().getContainingActor()).intValue() / brv.get(parent).intValue()) - 1;
 
     interpreter.set(portIdxName, portIdx);
     interpreter.set(beginjiName, beginji);
     interpreter.set(endjiName, endji);
 
-    int beginj = 0;
-    int endj = 0;
-    int firstBeginji = 0;
-    int firstEndji = 0;
+    long beginj = 0L;
+    long endj = 0L;
+    long firstBeginji = 0L;
+    long firstEndji = 0L;
 
-    // First run to set portBeginjEndjResults
-    for (final long portInstanceIdx : portInstanceIndices) {
-      interpreter.set(portInstanceIdxName, portInstanceIdx);
+    interpreter.set(portInstanceIdxName, 0);
 
-      try {
+    try {
 
-        // Run the script
-        interpreter.eval(URLHelper.read(scriptURL));
+      // Run the script
+      interpreter.eval(URLHelper.read(scriptURL));
 
-        // Getting output
-        final Object beginjiObj = interpreter.get(beginjiName);
-        final Object endjiObj = interpreter.get(endjiName);
-        beginji = ((Number) beginjiObj).intValue();
-        endji = ((Number) endjiObj).intValue();
+      // Getting output
+      final Object beginjiObj = interpreter.get(beginjiName);
+      final Object endjiObj = interpreter.get(endjiName);
+      beginji = ((Number) beginjiObj).intValue();
+      endji = ((Number) endjiObj).intValue();
 
-        // Store the result if the execution was successful
-        if (portInstanceIdx == 0) {
-          beginj = beginji;
-          portBeginiEndiResults.put(passivePort, new ArrayList<>());
-          portBeginiEndiResults.get(passivePort).add(new Pair<>(beginji, endji));
-          firstBeginji = beginji;
-          firstEndji = endji;
-        } else if (portInstanceIdx == maxi) {
-          endj = endji;
-        }
-      } catch (final ParseException error) {
+      // Store the result if the execution was successful
 
-        // Logger is used to display messages in the console
-        final String message = error.getMessage() + "\n" + error.getCause();
-        PassiveScriptRunner.logger.log(Level.WARNING, error,
-            () -> "Parse error in " + parent.getName() + " passive script:\n" + message);
-      } catch (final EvalError error) {
+      beginj = beginji;
+      endj = 1; // TODO
+      portBeginiEndiResults.put(passivePort, new ArrayList<>());
+      portBeginiEndiResults.get(passivePort).add(new Pair<>(beginji, endji));
+      firstBeginji = beginji;
+      firstEndji = endji;
 
-        // Logger is used to display messages in the console
-        final String message = error.getMessage() + "\n" + error.getCause();
-        PassiveScriptRunner.logger.log(Level.WARNING, error, () -> "Evaluation error in " + parent.getName()
-            + " memory script:\n[Line " + error.getErrorLineNumber() + "] " + message);
-      } catch (final IOException exception) {
-        PassiveScriptRunner.logger.log(Level.WARNING, exception.getMessage(), exception);
-      }
+    } catch (final ParseException error) {
+
+      // Logger is used to display messages in the console
+      final String message = error.getMessage() + "\n" + error.getCause();
+      PassiveScriptRunner.logger.log(Level.WARNING, error,
+          () -> "Parse error in " + parent.getName() + " passive script:\n" + message);
+    } catch (final EvalError error) {
+
+      // Logger is used to display messages in the console
+      final String message = error.getMessage() + "\n" + error.getCause();
+      PassiveScriptRunner.logger.log(Level.WARNING, error, () -> "Evaluation error in " + parent.getName()
+          + " memory script:\n[Line " + error.getErrorLineNumber() + "] " + message);
+    } catch (final IOException exception) {
+      PassiveScriptRunner.logger.log(Level.WARNING, exception.getMessage(), exception);
     }
     portBeginjEndjResults.put(port, new Pair<>(beginj, endj));
 
     // Second run to set portBeginjEndiResults
-    for (int i = 1; i < maxi; i++) {
+    for (int i = 1; i <= maxi; i++) {
 
-      interpreter.set(portInstanceIdxName, 1);
+      interpreter.set(portInstanceIdxName, i);
 
       try {
 
@@ -318,5 +306,46 @@ public class PassiveScriptRunner {
 
   public void updateBrv(Map<AbstractVertex, Long> newBrv) {
     brv = newBrv;
+  }
+
+  public void populatePortWithResults(PassivePort pp) {
+    if (!this.portBeginjEndjResults.containsKey(pp)) {
+      throw new PreesmRuntimeException("Port " + pp.getName() + " is not in script j results");
+    }
+    pp.setBeginjEndj(this.portBeginjEndjResults.get(pp));
+
+    if (!this.portBeginiEndiResults.containsKey(pp)) {
+      throw new PreesmRuntimeException("Port " + pp.getName() + " is not in script i results");
+    }
+
+    for (final Pair<Long, Long> beginiEndi : this.portBeginiEndiResults.get(pp)) {
+      pp.getBeginiEndi().add(beginiEndi);
+    }
+
+  }
+
+  @Override
+  public String toString() {
+
+    final Map<AbstractActor, List<String>> tmpMap = new HashMap<>();
+
+    for (final Entry<PassivePort, Pair<Long, Long>> portBeginjEndj : this.portBeginjEndjResults.entrySet()) {
+      final AbstractActor parent = portBeginjEndj.getKey().getContainingActor();
+      if (!tmpMap.containsKey(parent)) {
+        tmpMap.put(parent, new ArrayList<>());
+      }
+      final String tmpResult = portBeginjEndj.getKey().getName() + ": (" + portBeginjEndj.getValue().getKey() + ", "
+          + portBeginjEndj.getValue().getValue() + ") ";
+      tmpMap.get(parent).add(tmpResult);
+    }
+
+    String result = "PassiveScriptRunner results : \n";
+    for (final Entry<AbstractActor, List<String>> actorList : tmpMap.entrySet()) {
+      for (final String tmpResult : actorList.getValue()) {
+        result += actorList.getKey().getName() + " -> " + tmpResult;
+
+      }
+    }
+    return result;
   }
 }

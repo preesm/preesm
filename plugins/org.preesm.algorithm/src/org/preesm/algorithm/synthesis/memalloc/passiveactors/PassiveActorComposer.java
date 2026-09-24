@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
@@ -49,8 +48,6 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(PiGraph graph) {
 
-    PreesmLogger.getLogger().info("in casePiGraph with " + graph.getName());
-
     graph.getChildrenGraphs().stream().forEach(c -> doSwitch(c));
 
     currentGraph = graph;
@@ -62,8 +59,6 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
 
   @Override
   public Boolean caseAbstractActor(AbstractActor actor) {
-
-    PreesmLogger.getLogger().info("in caseAbstractActor with " + actor.getName());
 
     explored.add(actor);
 
@@ -79,44 +74,22 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePassiveActor(PassiveActor actor) {
 
-    PreesmLogger.getLogger().info("in casePassiveActor with " + actor.getName());
-
     uniquePortNameId = 0;
     PassiveActor result = actor;
 
-    List<PassiveActor> passiveNeighbors = getPassiveNeighbors(result);
+    List<PassiveActor> passiveNeighbors = PassiveActorHelper.getPassiveNeighbors(result);
 
     while (!passiveNeighbors.isEmpty()) {
       final PassiveActor passiveNeighbor = passiveNeighbors.getFirst();
       result = fuse(result, passiveNeighbor);
-      passiveNeighbors = getPassiveNeighbors(result);
+      passiveNeighbors = PassiveActorHelper.getPassiveNeighbors(result);
     }
 
     return caseAbstractActor(result);
   }
 
-  /**
-   *
-   * @param actor
-   *          currentActor
-   * @return list of neighbors
-   */
-  private List<AbstractActor> getNeighbors(AbstractActor actor) {
-    return actor.getAllDataPorts().stream().map(p -> p.getOppositePort().getContainingActor()).toList();
-  }
-
   private List<AbstractActor> getUnknownNeighbors(AbstractActor actor) {
-    return getNeighbors(actor).stream().filter(a -> !explored.contains(a)).toList();
-  }
-
-  /**
-   *
-   * @param actor
-   *          currentActor
-   * @return list of neighbors
-   */
-  private List<PassiveActor> getPassiveNeighbors(AbstractActor actor) {
-    return getNeighbors(actor).stream().filter(PassiveActor.class::isInstance).map(a -> (PassiveActor) a).toList();
+    return PassiveActorHelper.getNeighbors(actor).stream().filter(a -> !explored.contains(a)).toList();
   }
 
   /**
@@ -153,11 +126,11 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
         : linkingFifo.getTargetPort());
     final PassivePort linkingPortActor2 = (PassivePort) linkingPortActor1.getOppositePort();
 
-    final int offset1 = psr.getBeginEnd(linkingPortActor1).getKey();
-    final int offset2 = psr.getBeginEnd(linkingPortActor2).getKey();
+    final long offset1 = psr.getBeginEnd(linkingPortActor1).getKey();
+    final long offset2 = psr.getBeginEnd(linkingPortActor2).getKey();
 
-    actor1.getAllPassivePorts().stream().forEach(p -> p.setOffset(p.getOffset() + offset2));
-    actor2.getAllPassivePorts().stream().forEach(p -> p.setOffset(p.getOffset() + offset1));
+    actor1.getAllPassivePorts().stream().forEach(p -> p.setOffset((int) (p.getOffset() + offset2)));
+    actor2.getAllPassivePorts().stream().forEach(p -> p.setOffset((int) (p.getOffset() + offset1)));
 
     for (final PassivePort port : actor2.getAllPassivePorts()) {
       if (port == linkingPortActor2) {

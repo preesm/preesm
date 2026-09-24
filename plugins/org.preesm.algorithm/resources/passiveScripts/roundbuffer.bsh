@@ -6,14 +6,21 @@
 // in: 
 // List<DataInputPort> inputs,
 // List<DataOutputPort> outputs,
-// int intputIdx,
+// int inputIdx,
 // int inputInstanceIdx,
 // List<String, int> parameters,
 // out:
 // wbeginji
 // wendji
 
+long nTokensBefore = 0
+for(int i = inputs.size() - 1; i > inputIdx; i --) {
+	nTokensBefore += inputs.get(i).getExpression().evaluateAsLong();
+}
 
-wbeginji =
-wendji = 
+long rateOut = outputs.getFirst().getExpression().evaluateAsLong();
 
+long ratei = inputs.get(inputIdx).getExpression().evaluateAsLong();
+
+wbeginji = (rateOut - nTokensBefore) + ratei * inputInstanceIdx;
+wendji = wbeginji + ratei;
