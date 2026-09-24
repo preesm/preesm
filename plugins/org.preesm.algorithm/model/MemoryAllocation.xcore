@@ -172,6 +172,7 @@ abstract class AbstractAllocation {
 	
 	op WorkingMemory recursivelyGetMemoryAttachedTo(AbstractActor a) {
 		var WorkingMemory[] memoryList = (allWorkingMemories).filter[it.getAttachedActor() === a]
+
 		if(memoryList.size() > 1) {
 			throw new PreesmRuntimeException("There is multiple instances of a working memory for actor " + a.getName() + ". Please consider having only one instance per actor.")
 		}
@@ -223,7 +224,6 @@ class Allocation extends AbstractAllocation {
 }
 
 class WorkingMemory extends AbstractAllocation {
-	
 	refers AbstractAllocation parent opposite workingMemories
 	
 	refers AbstractActor attachedActor
