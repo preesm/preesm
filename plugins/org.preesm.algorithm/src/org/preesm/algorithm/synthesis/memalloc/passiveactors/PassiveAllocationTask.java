@@ -3,16 +3,19 @@ package org.preesm.algorithm.synthesis.memalloc.passiveactors;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
 @PreesmTask(id = "passiveactor", name = "Passive Actor", category = "Memory Optimization",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiGraph algorithm") },
+    inputs = { @Port(name = "PiMM", type = PiGraph.class, description = "Input PiGraph algorithm"),
+      @Port(name = "scenario", type = Scenario.class, description = "Input scenario") },
 
     outputs = { @Port(name = "PiMM", type = PiGraph.class, description = """
         Output PiGraph algorithm, with passive actors instead of special actors and classic actors
@@ -27,22 +30,28 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
     seeAlso = ""
 
 )
-public class PassiveActorReplacementTask extends AbstractTaskImplementation {
+public class PassiveAllocationTask extends AbstractTaskImplementation {
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    final Scenario scenario = (Scenario) inputs.get("scenario");
 
     final long alignment = Long.parseLong(parameters.get("alignment"));
 
-    final PassiveActorEngine engine = new PassiveActorEngine(graph, alignment);
-    engine.findAndComputePassiveActors();
-    // engine.composePassiveActors();
+    final PassiveActorEngine engine = new PassiveActorEngine(graph, scenario, alignment);
+    engine.processPassiveActors();
+    engine.composePassiveActors();
+
+    final PiGraph passiveIR = engine.getPassiveIR();
+
+    final PassiveAllocation allocator = new PassiveAllocation(passiveIR, scenario);
+    final Allocation result = (Allocation) allocator.makeAllocation();
 
     final Map<String, Object> outputs = new HashMap<>();
-    outputs.put("PiMM", graph);
+    outputs.put("Allocation", result);
     return outputs;
   }
 

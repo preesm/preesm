@@ -6,22 +6,19 @@
 // in: 
 // List<DataInputPort> inputs,
 // List<DataOutputPort> outputs,
-// int outputIdx,
-// int outputInstanceIdx,
+// long outputIdx,
+// long outputInstanceIdx,
 // List<String, int> parameters,
 // out:
-// rbeginji
-// rendji
+// long rbeginji
+// long rendji
 
-int rbeginj = 0;
-for(int j = 0; j < outputIdx - 1; j ++) {
-	int rateOppositePort = outputs.get(j).getOppositePort().getExpression().evaluateAsLong();
-	int ratePort = outputs.get(j).getExpression().evaluateAsLong();
-	int repOppositeActor = ratePort / rateOppositePort;
-	rbeginj += rateOppositePort * repOppositeActor;	
+long rbeginj = 0L;
+for(int j = 0; j < outputIdx; j ++) {
+	long ratePort = outputs.get(j).getExpression().evaluateAsLong();
+	rbeginj += ratePort;	
 }
 
-int ratej = outputs.get(outputIdx).getOppositePort().getExpression().evaluateAsLong();
-rbeginji = rbeginj + ratej * outputInstanceIdx;
-rendji = rbeginji + ratej;
-
+long rateOpposite = outputs.get(outputIdx).getOppositePort().getExpression().evaluateAsLong();
+rbeginji = rbeginj + rateOpposite * outputInstanceIdx;
+rendji = rbeginji + rateOpposite;

@@ -1,10 +1,13 @@
 package org.preesm.algorithm.synthesis.memalloc.passiveactors;
 
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.core.runtime.IPath;
+import java.util.Map.Entry;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -28,59 +31,108 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.check.CheckerErrorLevel;
+import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.ComponentInstance;
 
 /**
  * @author rcazoulat
  */
 public class PassiveActorEngine {
 
-  public static final String PASSIVE_SCRIPT_FOLDER = "passiveScripts";
+  PassiveScriptRunner scriptRunner;
 
-  private static final String DEFAULT_WRITE_PASSIVE_SCRIPT = "defaultwrite.bsh";
-
-  private static final String DEFAULT_READ_PASSIVE_SCRIPT = "defaultread.bsh";
-
-  private static final String DEFAULT_WRITE_PATH = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveActorEngine.DEFAULT_WRITE_PASSIVE_SCRIPT;
-
-  private static final String DEFAULT_READ_PATH = PassiveActorEngine.PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR
-      + PassiveActorEngine.DEFAULT_READ_PASSIVE_SCRIPT;
-
-  PassiveScriptRunner psr;
+  PassiveActorVerifier verifier;
 
   List<PassiveActor> passiveActors;
 
   PiGraph graph;
+
+  Scenario scenario;
 
   Map<AbstractVertex, Long> brv;
 
   URL defaultWriteUrl;
   URL defaultReadUrl;
 
-  public PassiveActorEngine(PiGraph graph, long alignment) {
+  public PassiveActorEngine(PiGraph graph, Scenario scenario, long alignment) {
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     passiveActors = new ArrayList<>();
-    psr = new PassiveScriptRunner(alignment, brv);
-    this.graph = graph;
+    scriptRunner = new PassiveScriptRunner(alignment, brv);
 
-    this.defaultWriteUrl = createSpecialUrl(DEFAULT_WRITE_PATH);
-    this.defaultReadUrl = createSpecialUrl(DEFAULT_READ_PATH);
+    this.graph = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
+    this.scenario = scenario;
+
+    this.defaultWriteUrl = createSpecialUrl(PiMMUserFactory.WDEFAULT);
+    this.defaultReadUrl = createSpecialUrl(PiMMUserFactory.RDEFAULT);
 
   }
 
-  public void findAndComputePassiveActors() {
+  // =====================================================================================
+  //
+  // Public methods
+  //
+  // =====================================================================================
+
+  /**
+   *
+   */
+  public void processPassiveActors() {
     findPassiveActors(this.graph);
+
+    try {
+      new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS, CheckerErrorLevel.NONE).check(this.graph);
+    } catch (final Exception e) {
+      throw new PreesmRuntimeException("Problems have occured will replacing Actors and SpecialActors in graph "
+          + graph.getName() + "error is : " + e.getLocalizedMessage());
+    }
 
     // New brv compute, otherwise passive actors won't appear.
     this.brv = PiBRV.compute(this.graph, BRVMethod.LCM);
-    psr.updateBrv(brv);
+    scriptRunner.updateBrv(brv);
 
-    computePassiveActor();
+    runPassiveScripts();
 
+    verifyPassiveActors();
   }
 
+  /**
+   *
+   */
+  public void composePassiveActors() {
+    new PassiveActorComposer(scriptRunner).doFusion(graph);
+  }
+
+  private static URL createSpecialUrl(final String filePath) {
+    final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, PassiveScriptRunner.class);
+    if (url == null) {
+      throw new PreesmRuntimeException("can't resolve following url : " + filePath);
+    }
+    try {
+      return url.toURI().normalize().toURL();
+    } catch (URISyntaxException | MalformedURLException e) {
+      throw new PreesmRuntimeException("can't normalize url : " + filePath, e);
+    }
+  }
+
+  public PiGraph getPassiveIR() {
+    return this.graph;
+  }
+
+  // =====================================================================================
+  //
+  // Private methods
+  //
+  // =====================================================================================
+
+  /**
+   *
+   * @param graph
+   *          the input graph
+   */
   private void findPassiveActors(PiGraph graph) {
 
     // Recursively explore children graphs
@@ -105,23 +157,24 @@ public class PassiveActorEngine {
         if (isActorWithPassiveScript) {
           final Actor actor = (Actor) abstractActor;
           writeScript = actor.getWritePassiveScriptPath() != null ? actor.getWritePassiveScriptPath()
-              : DEFAULT_WRITE_PATH;
-          readScript = actor.getReadPassiveScriptPath() != null ? actor.getReadPassiveScriptPath() : DEFAULT_READ_PATH;
+              : PiMMUserFactory.WDEFAULT;
+          readScript = actor.getReadPassiveScriptPath() != null ? actor.getReadPassiveScriptPath()
+              : PiMMUserFactory.RDEFAULT;
 
         } else if (abstractActor instanceof BroadcastActor) {
           writeScript = defaultWriteUrl.toString();
-          readScript = createSpecialUrl(PassiveScriptRunner.RBROADCAST).toString();
+          readScript = createSpecialUrl(PiMMUserFactory.RBROADCAST).toString();
 
         } else if (abstractActor instanceof JoinActor) {
-          writeScript = createSpecialUrl(PassiveScriptRunner.WJOIN).toString();
+          writeScript = createSpecialUrl(PiMMUserFactory.WJOIN).toString();
           readScript = defaultReadUrl.toString();
 
         } else if (abstractActor instanceof ForkActor) {
           writeScript = defaultWriteUrl.toString();
-          readScript = createSpecialUrl(PassiveScriptRunner.RFORK).toString();
+          readScript = createSpecialUrl(PiMMUserFactory.RFORK).toString();
 
         } else if (abstractActor instanceof RoundBufferActor) {
-          writeScript = createSpecialUrl(PassiveScriptRunner.WROUNDBUFFER).toString();
+          writeScript = createSpecialUrl(PiMMUserFactory.WROUNDBUFFER).toString();
           readScript = defaultReadUrl.toString();
         }
 
@@ -178,53 +231,75 @@ public class PassiveActorEngine {
           pa.getConfigOutputPorts().add(newCop);
         }
 
+        for (final ComponentInstance ci : scenario.getPossibleMappings(abstractActor)) {
+          scenario.getConstraints().addConstraint(ci, pa);
+        }
+
         graph.removeActor(abstractActor);
 
       }
     }
   }
 
-  private void computePassiveActor() {
-    psr.run(passiveActors);
+  /**
+   *
+   */
+  private void runPassiveScripts() {
+    scriptRunner.run(passiveActors);
+
+    PreesmLogger.getLogger().info(scriptRunner.toString());
 
     // Computing the buffer size of all passive actors with the script results
     for (final PassiveActor pa : this.passiveActors) {
-      int size = 0;
+      long size = 0;
 
       // Port level
       for (final PassivePort pp : pa.getAllPassivePorts()) {
 
         // Port instance level (if the actor linked to pp has a rep value of 3, then there is max 3 instances)
-        for (final Pair<Integer, Integer> beginEndInstancePtr : psr.getBeginEndAllInstances(pp)) {
-          final int instanceEnd = beginEndInstancePtr.getValue();
+        for (final Pair<Long, Long> beginEndInstancePtr : scriptRunner.getBeginEndAllInstances(pp)) {
+          final long instanceEnd = beginEndInstancePtr.getValue();
           if (instanceEnd > size) {
             size = instanceEnd;
           }
         }
       }
 
-      pa.setBufferSize(size);
-      PreesmLogger.getLogger().info("[DEBUG] " + pa.getName() + " buffer size is " + pa.getBufferSize());
+      if (size == 0) {
+        throw new PreesmRuntimeException("buffer size of actor " + pa.getName() + " is equal to 0");
+      }
 
       // Before composition of passive actor, every passive ports have subBufferSize = bufferSize, and offset = 0.
-      // We are still (steal.steel ?) in the "standard passive actor" era.
+      // We are still (steal/steel ?) in the "standard passive actor" era.
       for (final PassivePort pp : pa.getAllPassivePorts()) {
         pp.setSubBufferSize(size);
         pp.setOffset(0);
+
+        final long end = (scriptRunner.getBeginEnd(pp).getKey() + pp.getExpression().evaluateAsLong()) % size;
+
+        scriptRunner.setEnd(pp, end);
       }
     }
   }
 
-  public void composePassiveActors() {
-    new PassiveActorComposer(psr).doFusion(graph);
-  }
+  private void verifyPassiveActors() {
 
-  private static URL createSpecialUrl(final String filePath) {
-    final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, PassiveScriptRunner.class);
-    if (url == null) {
-      throw new PreesmRuntimeException("can't resolve following url : " + filePath);
+    for (final PassiveActor pa : this.passiveActors) {
+
+      PassiveActorVerifier.verifyPassiveActorConditions(pa, scriptRunner);
+
+      final Map<PassivePort, Boolean> mask = new HashMap<>();
+      for (final PassivePort pp : pa.getAllPassivePorts()) {
+        mask.put(pp, PassiveActorVerifier.verifyPassivePortConditions(pp, brv));
+      }
+
+      pa.setRealBufferSize(PassiveActorVerifier.getRealBufferSize(pa, scriptRunner, mask));
+
+      for (final Entry<PassivePort, Boolean> entry : mask.entrySet()) {
+        if (Boolean.TRUE.equals(entry.getValue())) {
+          scriptRunner.populatePortWithResults(entry.getKey());
+        }
+      }
     }
-    return url;
   }
-
 }
