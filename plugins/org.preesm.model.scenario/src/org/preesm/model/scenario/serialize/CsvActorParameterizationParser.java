@@ -152,7 +152,7 @@ public class CsvActorParameterizationParser {
     final Map<String, String> actorTimings = new HashMap<>();
     final String[] cells = line.split(";");
     if (cells.length != opNames.length) {
-      final String errMessage = "Timing csv file has incorrect data: all rows have not the same number of columns.";
+      final String errMessage = "Timing csv file has incorrect data: not all rows have the same number of columns.";
       PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
       throw new PreesmRuntimeException(errMessage);
     }
@@ -248,14 +248,34 @@ public class CsvActorParameterizationParser {
           } else if (component instanceof FPGA) {
             final var timing = timings.get(actor);
             final var category = component.getVlnv().getName();
-            final String latencyExpression = timing.get(category + "-latency");
-            final String IIExpression = timing.get(category + "-II");
+            String latencyExpression = timing.get(category + "-latency");
+            String IIExpression = timing.get(category + "-II");
 
             String msg = "Importing: ";
             if (paramType.equals(ParameterizationType.TIMING)) {
               msg = "Importing timing/: ";
               this.scenario.getTimings().setTiming(actor, component, TimingType.EXECUTION_TIME, latencyExpression);
               this.scenario.getTimings().setTiming(actor, component, TimingType.INITIATION_INTERVAL, IIExpression);
+
+              final Double minTiming = actor.getAllDataPorts().stream()
+                  .map(dp -> dp.getPortRateExpression().evaluateAsDouble()).max(Double::compare).orElse(0d);
+
+              final var ET = scenario.getTimings().evaluateTiming(actor, component, TimingType.EXECUTION_TIME);
+              final var II = scenario.getTimings().evaluateTiming(actor, component, TimingType.INITIATION_INTERVAL);
+              if (ET < minTiming) {
+                this.scenario.getTimings().setTiming(actor, component, TimingType.EXECUTION_TIME, minTiming.toString());
+                PreesmLogger.getLogger().log(Level.WARNING, "actor" + actor.getName() + " has invalid ET=" + ET
+                    + ", default value of " + minTiming + " used instead");
+                latencyExpression = minTiming.toString();
+              }
+              if (II < minTiming) {
+                this.scenario.getTimings().setTiming(actor, component, TimingType.INITIATION_INTERVAL,
+                    minTiming.toString());
+                PreesmLogger.getLogger().log(Level.WARNING, "actor" + actor.getName() + " has invalid II=" + II
+                    + ", default value of " + minTiming + " used instead");
+                IIExpression = minTiming.toString();
+              }
+
             } else if (paramType.equals(ParameterizationType.ENERGY)) {
               msg = "Energy import not implemented yet.";
             }
