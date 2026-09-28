@@ -495,10 +495,14 @@ public class ScenarioParser {
             // mapper ce couple refinement-acteur (stocké dans une Pair ?) à un PE
 
             // anyMatch should be fine since no two prototype should have the same name anyway
-            final Refinement ref = getRefinementFromName(actorId, name);
-            if (ref != null) {
-              refinements.add(ref);
+            if (actorId != null) {
+              final Refinement ref = getRefinementFromName(actorId, name);
+
+              if (ref != null) {
+                refinements.add(ref);
+              }
             }
+
           }
         }
         node = node.getNextSibling();
