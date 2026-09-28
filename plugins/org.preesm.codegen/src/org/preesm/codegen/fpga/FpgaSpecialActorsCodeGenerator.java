@@ -38,6 +38,7 @@ package org.preesm.codegen.fpga;
 
 import java.util.Map;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
@@ -73,7 +74,7 @@ public class FpgaSpecialActorsCodeGenerator {
     for (final AbstractActor aa : flatGraph.getActors()) {
       if (aa instanceof BroadcastActor) {
         // generate the definition
-        sb.append(generateBroadcastDefinition(aa));
+        sb.append(generateBroadcastDefinition(aa, brv));
         // map the call
         actorCalls.put(aa, generateBroadcastCall(aa, brv.get(aa)));
       }
@@ -82,7 +83,7 @@ public class FpgaSpecialActorsCodeGenerator {
     return sb.toString();
   }
 
-  protected static String generateBroadcastDefinition(final AbstractActor aa) {
+  protected static String generateBroadcastDefinition(final AbstractActor aa, Map<AbstractVertex, Long> brv) {
     final String name = aa.getName();
     final DataPort dip = aa.getDataInputPorts().get(0);
     final String inputName = dip.getName();
@@ -94,12 +95,14 @@ public class FpgaSpecialActorsCodeGenerator {
       def.append(", " + typeFifo + " &" + dp.getName());
     }
     def.append(") {\n");
+    def.append("#ifdef LIGHTNINGSIM \n for(int i=0 ; i<" + brv.get(aa) + " ; i++) {\n #endif\n");
     def.append("#pragma HLS PIPELINE II=1 style=flp\n");
     // body
     def.append(typeElt + " tmp = " + inputName + ".read();\n");
     for (final DataPort dp : aa.getDataOutputPorts()) {
       def.append(dp.getName() + ".write(tmp);\n");
     }
+    def.append("#ifdef LIGHTNINGSIM \n } \n #endif\n");
     def.append("}\n\n");
 
     return def.toString();
@@ -118,10 +121,12 @@ public class FpgaSpecialActorsCodeGenerator {
     final String taskCall = "hls_thread_local hls::task " + name + "_task(" + name + ", "
         + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");";
 
-    final String forLoopCall = "  for(int i = 0; i < " + rc + "; i++) {\n    " + name + "("
-        + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");" + "  \n}\n";
+    final String funcCall = name + "(" + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");"
+        + "  \n";
+    // final String forLoopCall = " for(int i = 0; i < " + rc + "; i++) {\n " + name + "("
+    // + FpgaCodeGenerator.getFifoStreamName(inputFifo) + wrapperOutArgs + ");" + " \n}\n";
 
-    final String call = "#ifdef LIGHTNINGSIM\n " + forLoopCall + "#else\n " + taskCall + "\n#endif\n\n";
+    final String call = "#ifdef LIGHTNINGSIM\n " + funcCall + "#else\n " + taskCall + "\n#endif\n\n";
 
     return call;
   }

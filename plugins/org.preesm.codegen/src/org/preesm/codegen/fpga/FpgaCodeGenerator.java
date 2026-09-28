@@ -638,6 +638,8 @@ public class FpgaCodeGenerator {
     result.append("#ifndef WRAPPER_" + graphName.toUpperCase() + "_HPP \n");
     result.append("#define WRAPPER_" + graphName.toUpperCase() + "_HPP \n\n");
 
+    result.append("\n");
+
     final List<
         String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
 
@@ -659,7 +661,7 @@ public class FpgaCodeGenerator {
       // generate the surrounding for loop that handles the repetition count. Only when we cant use tasks, hence when
       // LIGHTNINGSIM is defined.
       final String content = "\n#ifdef LIGHTNINGSIM\nloop_" + actor.getName() + ": for(int i=0 ; i<" + brv.get(actor)
-          + " ; i++)\n#endif\n" + funcCall + "\n";
+          + " ; i++) {\n#endif\n" + funcCall + "#ifdef LIGHTNINGSIM\n}\n#endif\n\n";
 
       // write wrapper declaration
       String declaration = "void " + generateWrapperName(actor) + "(";
@@ -1036,7 +1038,7 @@ public class FpgaCodeGenerator {
         final String body = "// No flp style pipeline here : "
             + "the read/write kernels are our synchronizers, they can't run freely\n" + "\tstream.write(mem[i]); \n";
         final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
-        final String loopName = "read_" + ia.getName();
+        final String loopName = "loop_read_" + ia.getName();
         def.append(loopName + ":\n" + forLoop + "}");
       } else if (ia instanceof DataOutputInterface) {
         final Fifo f = ia.getDataPort().getFifo();
@@ -1047,7 +1049,7 @@ public class FpgaCodeGenerator {
         final String body = "// No flp style pipeline here : "
             + "the read/write kernels are our synchronizers, they can't run freely\n" + "\tmem[i] = stream.read(); \n";
         final String forLoop = generatePipelinedForLoop(body, getInterfaceRateNameMacro(ia));
-        final String loopName = "write_" + ia.getName();
+        final String loopName = "loop_write_" + ia.getName();
         def.append(loopName + ":\n" + forLoop + "}");
       }
       defs.append(def + "\n");
