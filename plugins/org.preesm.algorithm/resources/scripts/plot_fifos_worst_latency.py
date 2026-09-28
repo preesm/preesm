@@ -129,7 +129,8 @@ def draw_task_bars(ax, y_pos, event_starts, task, base_color):
     period = task.get("period", task.get("II", 1))
 
     num_lanes = max(1, math.ceil(task_latency / period)) if period > 0 else 1
-    lane_height = 0.6 / num_lanes
+    lane_height = min(0.6 / num_lanes, 0.3)
+
     n_releases = len(event_starts)
     
     # Check if firings exceed the individual release threshold
@@ -192,7 +193,7 @@ def render_fifo(ax_task, ax_fifo, producer, consumer, prod_rate, cons_rate, by_n
     # 1. TOP SUBPLOT: Task Executions
     # -------------------------------------------------------------
     ax_task.set_title(f"FIFO: {producer} \u2192 {consumer}", fontsize=10, fontweight="bold")
-    ax_task.set_ylim(-0.6, 1.6)
+    ax_task.set_ylim(-2, 1.6)
     ax_task.set_yticks([0, 1])
     ax_task.set_yticklabels([f"T={p_cons}\nL={duration_consumer}", f"T={p_prod}\nL={duration_producer}"], fontsize=8)
     ax_task.grid(alpha=0.2, axis="x")
@@ -226,10 +227,10 @@ def render_fifo(ax_task, ax_fifo, producer, consumer, prod_rate, cons_rate, by_n
     prod_label = f"Producer {producer} (Rate: {prod_rate})"
     if initial_tokens:
         prod_label += f" [+{initial_tokens} initial]"
-    ax_fifo.plot(pxs, pys, label=prod_label, color="tab:red", linewidth=1.5)
+    ax_fifo.plot([0] + pxs, [0] + pys, label=prod_label, color="tab:red", linewidth=1.5,  linestyle=(0, (2, 4)))
 
     cxs, cys = cumulative_ramps_streamed(cons_events, t_lo, t_hi)
-    ax_fifo.plot(cxs, cys, label=f"Consumer {consumer} (Rate: {cons_rate})", color="tab:blue", linewidth=1.5)
+    ax_fifo.plot([0] + cxs, [0] + cys, label=f"Consumer {consumer} (Rate: {cons_rate})", color="tab:blue", linewidth=1.5,  linestyle=(3, (2, 4)))
 
     if check_underflow:
         # Guarantee strictly increasing arrays for numpy.interp

@@ -149,14 +149,14 @@ for row, task in enumerate(tasks):
                 color=color, edgecolor="black", align="edge", hatch="||")
         # Exact numbers, once per task (not per lane) so it stays readable
         # regardless of how many lanes or how extreme the repetition is.
-        ax.text(min(lane_lefts), row + 0.32, f" period={period}  (\u00d7{n_releases} firings)",
+        ax.text(min(lane_lefts), row + 0.32, f" (\u00d7{n_releases} firings)",
                 fontsize=7, va="bottom", ha="left", color="black",
                 bbox=dict(facecolor="white", alpha=0.75, edgecolor="none", pad=1))
 # ---------------------------------------------------------
 # Formatting
 # ---------------------------------------------------------
 ax.set_yticks(range(len(tasks)))
-ax.set_yticklabels([t["name"] for t in tasks])
+ax.set_yticklabels([t["name"] + f"\nperiod={t["period"]} " for t in tasks])
 
 ax.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax.set_xlabel("Clock Cycles")
