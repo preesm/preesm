@@ -105,22 +105,13 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
   @Override
   public void allocate() {
     switch (this.order) {
-      case SHUFFLE:
-        allocateShuffledOrder();
-        break;
-      case LARGEST_FIRST:
-        allocateLargestFirst();
-        break;
-      case STABLE_SET:
-        allocateStableSetOrder(false);
-        break;
-      case EXACT_STABLE_SET:
-        allocateStableSetOrder(true);
-        break;
-      case SCHEDULING:
-        allocateSchedulingOrder();
-        break;
-      default:
+      case SHUFFLE -> allocateShuffledOrder();
+      case LARGEST_FIRST -> allocateLargestFirst();
+      case STABLE_SET -> allocateStableSetOrder(false);
+      case EXACT_STABLE_SET -> allocateStableSetOrder(true);
+      case SCHEDULING -> allocateSchedulingOrder();
+      default -> { // Nothing
+      }
     }
   }
 
@@ -239,9 +230,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
    * @return The ordered vertices list
    */
   private ArrayList<PiMemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
-    ArrayList<PiMemoryExclusionVertex> orderedList;
-    orderedList = new ArrayList<>();
-
+    final ArrayList<PiMemoryExclusionVertex> orderedList = new ArrayList<>();
     final SimpleGraph<PiMemoryExclusionVertex,
         DefaultEdge> inclusionGraph = this.inputExclusionGraph.getComplementary();
 
@@ -282,59 +271,56 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
   public void setPolicy(final Policy newPolicy) {
     final Policy oldPolicy = this.policy;
     this.policy = newPolicy;
-    if ((newPolicy != null) && (newPolicy != oldPolicy) && !this.listsSize.isEmpty()) {
 
-      int index = 0; // The index of the solution corresponding to the new
-      // policy
+    // Early exit
+    if (newPolicy == null || newPolicy == oldPolicy || this.listsSize.isEmpty()) {
+      return;
+    }
 
-      switch (this.policy) {
-        case BEST:
-          long min = this.listsSize.get(0);
-          for (int iter = 1; iter < this.listsSize.size(); iter++) {
-            min = (min < this.listsSize.get(iter)) ? min : this.listsSize.get(iter);
-            index = (min == this.listsSize.get(iter)) ? iter : index;
+    int index = 0; // The index of the solution corresponding to the new policy
+
+    switch (this.policy) {
+      case BEST:
+        long min = this.listsSize.get(0);
+        for (int iter = 1; iter < this.listsSize.size(); iter++) {
+          min = (min < this.listsSize.get(iter)) ? min : this.listsSize.get(iter);
+          index = (min == this.listsSize.get(iter)) ? iter : index;
+        }
+        break;
+
+      case WORST:
+        long max = this.listsSize.get(0);
+        for (int iter = 1; iter < this.listsSize.size(); iter++) {
+          max = (max > this.listsSize.get(iter)) ? max : this.listsSize.get(iter);
+          index = (max == this.listsSize.get(iter)) ? iter : index;
+        }
+        break;
+
+      case MEDIANE:
+        final List<Long> listCopy = new ArrayList<>(this.listsSize);
+        Collections.sort(listCopy);
+        final long mediane = listCopy.get(this.listsSize.size() / 2);
+        index = this.listsSize.indexOf(mediane);
+        break;
+
+      case AVERAGE:
+        final double average = this.listsSize.stream().mapToLong(Long::longValue).average().orElse(0);
+
+        double smallestDifference = Math.abs((double) this.listsSize.get(0) - average);
+        for (int iter = 1; iter < this.listsSize.size(); iter++) {
+          if (smallestDifference > Math.abs((double) this.listsSize.get(iter) - average)) {
+            smallestDifference = Math.abs((double) this.listsSize.get(iter) - average);
+            index = iter;
           }
-          break;
+        }
+        break;
 
-        case WORST:
-          long max = this.listsSize.get(0);
-          for (int iter = 1; iter < this.listsSize.size(); iter++) {
-            max = (max > this.listsSize.get(iter)) ? max : this.listsSize.get(iter);
-            index = (max == this.listsSize.get(iter)) ? iter : index;
-          }
-          break;
-
-        case MEDIANE:
-          final List<Long> listCopy = new ArrayList<>(this.listsSize);
-          Collections.sort(listCopy);
-          final long mediane = listCopy.get(this.listsSize.size() / 2);
-          index = this.listsSize.indexOf(mediane);
-          break;
-
-        case AVERAGE:
-          double average = 0;
-          for (int iter = 0; iter < this.listsSize.size(); iter++) {
-            average += (double) this.listsSize.get(iter);
-          }
-          average /= this.listsSize.size();
-
-          double smallestDifference = Math.abs((double) this.listsSize.get(0) - average);
-          for (int iter = 1; iter < this.listsSize.size(); iter++) {
-            if (smallestDifference > Math.abs((double) this.listsSize.get(iter) - average)) {
-              smallestDifference = Math.abs((double) this.listsSize.get(iter) - average);
-              index = iter;
-            }
-          }
-          break;
-
-        default:
-          index = 0;
-          break;
-      }
-      if (index < this.lists.size()) {
-        allocateInOrder(this.lists.get(index));
-      }
+      default:
+        index = 0;
+        break;
+    }
+    if (index < this.lists.size()) {
+      allocateInOrder(this.lists.get(index));
     }
   }
-
 }
