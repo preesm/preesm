@@ -260,6 +260,8 @@ public class CsvActorParameterizationParser {
               final Double minTiming = actor.getAllDataPorts().stream()
                   .map(dp -> dp.getPortRateExpression().evaluateAsDouble()).max(Double::compare).orElse(0d);
 
+              // Sometimes vitis computes timings that makes no sense, for example latency of 0 for a breadcast.
+              // To circumvent that, we will check the timings parsed are legal (i.e II et ET > max(rates)).
               final var ET = scenario.getTimings().evaluateTiming(actor, component, TimingType.EXECUTION_TIME);
               final var II = scenario.getTimings().evaluateTiming(actor, component, TimingType.INITIATION_INTERVAL);
               if (ET < minTiming) {
