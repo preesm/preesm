@@ -1147,7 +1147,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   /**
    * Does basically the same as casePiGraph, except the actors in the clusters must not be added to the top dag, but to
    * the cluster's copy in this dag. Note it will mean that a copy of all the cluster's vertices will be added to the
-   * cluster, basically making a copy of its graph. I think it won't cause problem (therefore it will)
+   * cluster, basically making a copy of its graph. I think it won't cause problem (therefore it will).
    *
    * @param cluster
    *          the cluster
