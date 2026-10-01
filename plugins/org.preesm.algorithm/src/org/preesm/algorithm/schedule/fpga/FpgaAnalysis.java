@@ -98,7 +98,7 @@ public class FpgaAnalysis {
     return resHolder;
   }
 
-  private static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
+  public static Map<InterfaceActor, Pair<Long, Long>> checkInterfaces(final PiGraph flatGraph,
       final Map<AbstractVertex, Long> brv) {
     final Map<InterfaceActor, Pair<Long, Long>> result = new LinkedHashMap<>();
     flatGraph.getActors().stream().filter(InterfaceActor.class::isInstance).forEach(x -> {

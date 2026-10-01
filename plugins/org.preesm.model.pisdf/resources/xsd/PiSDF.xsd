@@ -75,7 +75,7 @@
       <xs:sequence>
          <xs:choice minOccurs="0" maxOccurs="unbounded">
             <xs:element name="data" minOccurs="0" type="pisdf:Key" />
-            <xs:element name="loop" minOccurs="0" type="pisdf:ActorPrototype" />
+            <xs:element name="loop" minOccurs="0" maxOccurs="unbounded" type="pisdf:ActorPrototype" />
             <xs:element name="init" minOccurs="0" type="pisdf:ActorPrototype" />
             <xs:element name="port" maxOccurs="unbounded" minOccurs="0" type="pisdf:Port" />
          </xs:choice>

@@ -339,8 +339,8 @@ public class CodegenEngine {
       // - cluster list
       // - vitis build files (python, tcl and makefile)
       if (het_fpga_project) {
-        final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo, scenario);
-        PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
+        // final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo, scenario);
+        // PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
 
         PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
             .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(comp -> comp.getComponent() instanceof FPGA))
@@ -352,8 +352,8 @@ public class CodegenEngine {
           PreesmIOHelper.getInstance().print(codegenPath, "Makefile", makefile);
 
           final String timings_script = PreesmResourcesHelper.getInstance()
-              .read("stdfiles/xilinxCodegen/extract_syn_results.py", FpgaCodeGenerator.class);
-          PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_results.py", timings_script);
+              .read("stdfiles/xilinxCodegen/extract_syn_timings.py", FpgaCodeGenerator.class);
+          PreesmIOHelper.getInstance().print(codegenPath, "extract_syn_timings.py", timings_script);
 
           final String gui = PreesmResourcesHelper.getInstance().read("stdfiles/xilinxCodegen/gui.py",
               FpgaCodeGenerator.class);

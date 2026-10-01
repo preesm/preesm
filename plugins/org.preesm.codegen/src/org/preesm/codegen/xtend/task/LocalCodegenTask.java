@@ -202,14 +202,24 @@ public class LocalCodegenTask extends AbstractTaskImplementation {
     final Map<ComponentInstance, CoreBlock> coreBlocks = new LinkedHashMap<>();
 
     // 0- init blocks and order
+
     // I wanted to enable support for multi-mapping on cluster actors, but it does not work.
-    // I'm leaving this for the nekt poor soul to need it, but clusterMappings should only contain 1 component.
-    final var clusterMappings = scenario.getPossibleMappings(cluster);
-    for (final ComponentInstance mapping : clusterMappings) {
-      final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(mapping,
-          (CHeaderRefinement) cluster.getRefinement());
-      coreBlocks.put(mapping, cb);
-    }
+    // I'm leaving this for the next poor soul to need it, but clusterMappings should only contain 1 component.
+
+    // final var clusterMappings = scenario.getPossibleMappings(cluster);
+    // for (final ComponentInstance mapping : clusterMappings) {
+    // final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(mapping,
+    // (CHeaderRefinement) cluster.getRefinement());
+    // coreBlocks.put(mapping, cb);
+    // }
+
+    // all actors in a cluster are supposed to be mapped to the same PE (at least for now), so we can get the mapping
+    // from any actor
+    final ComponentInstance clusterMapping = localSynthesis.mapping.getMapping(cluster.getExecutableActors().getFirst())
+        .getFirst();
+    final CoreBlock cb = CodegenModelUserFactory.eINSTANCE.createCoreBlock(clusterMapping,
+        (CHeaderRefinement) cluster.getRefinement());
+    coreBlocks.put(clusterMapping, cb);
 
     final List<Block> res = CodegenModelGenerator2.generateClusterCode(archi, cluster, scenario, localSynthesis, false,
         coreBlocks, totallyOrderedActors);

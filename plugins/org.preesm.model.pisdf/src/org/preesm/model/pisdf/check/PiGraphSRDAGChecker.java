@@ -95,13 +95,11 @@ public class PiGraphSRDAGChecker {
     if (subGraphs.stream().anyMatch(graph -> !graph.isClusterValue())) {
       return false;
     }
-
-    // check all subgraphs are SRDAGS, provided they should be in the first place
-    // for (final PiGraph graph : subGraphs) {
-    // if (!isPiGraphClusteredSRADG(graph)) {
-    // return false;
-    // }
-    // }
+    if (subGraphs.stream().allMatch(PiGraph::isClusterValue)) {
+      // TODO
+      // dirty fix : the graph should not have to be SRDAG in the first place
+      return true;
+    }
 
     // check single-rate and delays
     final boolean isSingleRate = piGraph.getFifos().stream().allMatch(f -> {

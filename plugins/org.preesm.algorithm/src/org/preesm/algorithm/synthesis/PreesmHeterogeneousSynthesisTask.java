@@ -1,5 +1,7 @@
 package org.preesm.algorithm.synthesis;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -9,7 +11,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
-import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
@@ -80,13 +81,16 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String VALUE_ALLOCATORS_SIMPLE = "simple";
   public static final String VALUE_ALLOCATORS_LEGACY = "legacy";
 
-  public static final String VALUE_SCHEDULER_SIMPLE      = "simple";
-  public static final String VALUE_SCHEDULER_LEGACY      = "legacy";
-  public static final String VALUE_SCHEDULER_PERIODIC    = "periodic";
-  public static final String VALUE_SCHEDULER_CHOCO       = "choco";
-  public static final String VALUE_SCHEDULER_FPGA_LINEAR = "adfgfifoevallinear";
-  public static final String VALUE_SCHEDULER_FPGA_EXACT  = "adfgfifoevalexact";
-  public static final String VALUE_FPGA_TEST             = "testscheduler";
+  public static final String       VALUE_SCHEDULER_SIMPLE          = "simple";
+  public static final String       VALUE_SCHEDULER_MR_SIMPLE       = "MRsimple";
+  public static final String       VALUE_SCHEDULER_LEGACY          = "legacy";
+  public static final String       VALUE_SCHEDULER_PERIODIC        = "periodic";
+  public static final String       VALUE_SCHEDULER_CHOCO           = "choco";
+  public static final String       VALUE_SCHEDULER_FPGA_LINEAR     = "adfgfifoevallinear";
+  public static final String       VALUE_SCHEDULER_FPGA_EXACT      = "adfgfifoevalexact";
+  public static final String       VALUE_SCHEDULER_FPGA_CONSTRAINT = "constraintscheduler";
+  public static final List<String> FPGA_SCHEDULERS                 = new ArrayList<>(
+      Arrays.asList(VALUE_SCHEDULER_FPGA_LINEAR, VALUE_SCHEDULER_FPGA_EXACT, VALUE_SCHEDULER_FPGA_CONSTRAINT));
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   final SlamFactory     SLAMFactory = SlamFactory.eINSTANCE;
@@ -103,13 +107,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final Map<PiGraph, SynthesisResult> localSynthesesMap = new HashMap<>();
 
     final boolean CLUSTERIZE = "true".equalsIgnoreCase(parameters.get("clusterize"));
+    final String FpgaSchedulerName = parameters.get("fpgascheduler");
 
     if (CLUSTERIZE) {
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
       for (final PiGraph cluster : algorithm.getClusters()) {
-        recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap);
+        recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap, FpgaSchedulerName);
       }
     }
 
@@ -150,7 +155,6 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     outputs.put("localSyntheses", localSynthesesMap);
 
     return outputs;
-
   }
 
   private IScheduler selectScheduler(final String schedulerName) {
@@ -161,6 +165,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
       case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_LINEAR);
       case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_EXACT);
+      case VALUE_SCHEDULER_FPGA_CONSTRAINT -> new FPGAConstraintScheduler(true);
+
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
   }
@@ -173,17 +179,18 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     };
   }
 
-  private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture) {
-
+  private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture, String schedulerName) {
+    // TODO refaire : le choix du scheduler-mapper et de l'allocateur est catastrophique
     // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
-    final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+    // final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
+    final String localSchedulerMapperName = schedulerName;
 
-    final IScheduler localSchedulerMapper = getSchedulerMapperInstance(localSchedulerMapperName);
+    final IScheduler localSchedulerMapper = selectScheduler(localSchedulerMapperName);
 
     final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
 
     Allocation allocation = null;
-    if (!localSchedulerMapperName.equals(PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR)) {
+    if (!PreesmSynthesisTask.FPGA_SCHEDULERS.contains(localSchedulerMapperName)) {
       // case cpu
       final IMemoryAllocation alloc = new LegacyMemoryAllocation();
 
@@ -196,17 +203,17 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   }
 
   private void recursiveSynthesis(PiGraph cluster, Scenario scenario, Design architecture,
-      Map<PiGraph, SynthesisResult> localSynthesesMap) {
+      Map<PiGraph, SynthesisResult> localSynthesesMap, String schedulerName) {
     // We need to schedule the clusters depth-first, so we first get to the botton of the hierarchy
     final List<PiGraph> subClusters = cluster.getClusters();
     for (final PiGraph subCluster : subClusters) {
-      recursiveSynthesis(subCluster, scenario, architecture, localSynthesesMap);
+      recursiveSynthesis(subCluster, scenario, architecture, localSynthesesMap, schedulerName);
     }
 
-    final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture);
+    final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture, schedulerName);
 
-    final var localSchedule = localSynthesisResult.schedule;
-    final var localMapping = localSynthesisResult.mapping;
+    final Schedule localSchedule = localSynthesisResult.schedule;
+    final Mapping localMapping = localSynthesisResult.mapping;
 
     LatencyCost localLatency = null;
 
@@ -273,39 +280,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final ComponentInstance arch = mappings.getFirst();
 
-    // TODO find a way to have different choices for a type of archi. Ex : for fpga, exact or linear.
+    // TODO find a way to have different choices for a type of archi. Ex : for fpga, exact or linear or constraint.
     return switch (arch.getComponent()) {
       case final CPU cpu -> PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY;
+      // case final FPGA fpga -> PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR;
       case final FPGA fpga -> PreesmSynthesisTask.VALUE_SCHEDULER_FPGA_LINEAR;
       default -> throw new PreesmSynthesisException("No mapper available for component " + arch.getInstanceName());
     };
 
-  }
-
-  /***
-   * Returns the corresponding scheduler-mapper instance based on its name. public or private, I don't care
-   *
-   * @param localSchedulerMapperName
-   *          the scheduler's name
-   * @return the sceduler-mapper instance
-   */
-  private IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
-    // TODO expand switch
-    switch (localSchedulerMapperName.toLowerCase()) {
-      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
-          AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
-        return new FpgaScheduler(localSchedulerMapperName);
-      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE:
-        return new SimpleScheduler();
-      case PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
-        return new LegacyListScheduler();
-      case PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC:
-        return new PeriodicScheduler();
-      default:
-        PreesmLogger.getLogger().log(Level.SEVERE,
-            () -> "This scheduler is not implemented : " + localSchedulerMapperName);
-        return null;
-    }
   }
 
   /***

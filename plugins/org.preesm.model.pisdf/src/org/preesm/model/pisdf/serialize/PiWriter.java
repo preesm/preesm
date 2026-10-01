@@ -44,6 +44,7 @@ package org.preesm.model.pisdf.serialize;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Optional;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -284,10 +285,14 @@ public class PiWriter {
       vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
 
-    final Refinement refinement = actor.getRefinement();
-    if (refinement != null) {
-      writeRefinement(vertexElt, refinement);
+    // final Refinement refinement = actor.getRefinement();
+    final List<Refinement> refinements = actor.getRefinements();
+    for (final Refinement ref : refinements) {
+      if (ref != null) {
+        writeRefinement(vertexElt, ref);
+      }
     }
+
     final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
     if (memoryScriptPath != null) {
       writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));

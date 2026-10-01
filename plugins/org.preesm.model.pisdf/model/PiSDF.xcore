@@ -814,9 +814,7 @@ interface RefinementContainer {
   			refinements.add(ref)
   		}
   	}
-//  	op void addRefinement(Refinement ref) {
-//  		refinements.add(ref)
-//  	}
+
   	op void clearRefinements() {
   		refinement.remove
   	}
@@ -826,14 +824,26 @@ interface RefinementContainer {
 		if(ref instanceof CHeaderRefinement) {
 			var alreadyPresent = refinements.filter(CHeaderRefinement).map[it.loopPrototype].filterNull.exists[it.name.equals(ref.name)]
 			if(!alreadyPresent) {
-				refinements.add(ref)
+				// An empty refinement is added by default to actors when parsing a pigraph.
+				// When adding a first refinement, we also remove this placeholder refinement.
+				if(refinements.size == 1 && refinements.first.filePath === null) {
+					refinements.set(0, ref)
+				} else {
+					refinements.add(ref)
+				}
 			}
 		}
 		
 		else if(ref instanceof org.preesm.model.pisdf.PiSDFRefinement) {
 			var alreadyPresent = refinements.filter(PiSDFRefinement).exists[it.name.equals(ref.name)]
 			if(!alreadyPresent) {
-				refinements.add(ref)
+				// An empty refinement is added by default to actors when parsing a pigraph.
+				// When adding a first refinement, we also remove this placeholder refinement.
+				if(refinements.size == 1 && refinements.first.filePath === null) {
+					refinements.set(0, ref)
+				} else {
+					refinements.add(ref)
+				}
 			}
 		}
 	}

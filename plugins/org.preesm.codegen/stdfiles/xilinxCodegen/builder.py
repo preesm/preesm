@@ -314,8 +314,8 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 	hls_kernels = []
 	for acc in unique_accelerators:
 		hls_kernels.append(acc)
-		hls_kernels.append("mem_read_" + acc) # to each accelerator its read and write kernels
-		hls_kernels.append("mem_write_" + acc)
+		#hls_kernels.append("mem_read_" + acc) # to each accelerator its read and write kernels
+		#hls_kernels.append("mem_write_" + acc)
 
 	hls_kernel_files = [k + ".cpp" for k in hls_kernels]
 	testbench_files = [file for file in os.listdir(codegen_folder) if "testbench" in file]
@@ -341,9 +341,9 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 		instrument_execution(codegen_folder)
 	
 	# insert <complex> inclusion for all read and write kernels
-	for kernel in unique_accelerators:
-		insert_includes(codegen_folder + "/mem_read_" + kernel + ".cpp", ["complex"])
-		insert_includes(codegen_folder + "/mem_write_" + kernel + ".cpp", ["complex"])
+	#for kernel in unique_accelerators:
+		#insert_includes(codegen_folder + "/mem_read_" + kernel + ".cpp", ["complex"])
+		#insert_includes(codegen_folder + "/mem_write_" + kernel + ".cpp", ["complex"])
 
 	# TODO make it generic for several accelerators
 	comp = client.create_app_component(name="app_component", platform = codegen_folder+"/system_project/platform/export/platform/platform.xpfm", domain = "linux_psu_cortexa53")
@@ -420,6 +420,7 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 	cfg_obj = client.get_config_file(connectivity_cfg)
 	connections = []
 
+	"""
 	with open(codegen_folder + "/connectivity.cfg", "r") as file:
 		# create the instances
 		for acc in unique_accelerators:
@@ -432,6 +433,7 @@ def main(comp_name, sys_proj_name, common_image, target, platform_name, target_b
 		for line in file:
 			connections.append(line.rstrip())
 	cfg_obj.add_lines('connectivity', connections)
+	"""
 
 	print("----- Building system project -----")
 	status = platform.build()
