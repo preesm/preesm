@@ -7,7 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -51,7 +51,7 @@ public class AddSpecialActorsTest {
 
   @Test
   public void testAddingActors() {
-    ClusterSynthesisHelper.addSpecialActors(cluster);
+    ClusteringHelper.addSpecialActors(cluster);
 
     assertTrue(clusterIn.getDataPort().getFifo().getTarget() instanceof BroadcastActor);
     assertTrue(clusterOut.getDataPort().getFifo().getSource() instanceof RoundBufferActor);
@@ -72,7 +72,7 @@ public class AddSpecialActorsTest {
     b.getDataInputPorts().getFirst().setExpression(4);
     b.getDataOutputPorts().getFirst().setExpression(4);
 
-    ClusterSynthesisHelper.addSpecialActors(cluster);
+    ClusteringHelper.addSpecialActors(cluster);
 
     assertFalse(clusterIn.getDataPort().getFifo().getTarget() instanceof BroadcastActor);
     assertFalse(clusterOut.getDataPort().getFifo().getSource() instanceof RoundBufferActor);

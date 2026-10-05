@@ -39,16 +39,14 @@ package org.ietr.preesm.clustering.test;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.preesm.algorithm.clustering.ClusterCreator;
 import org.preesm.algorithm.clustering.balancing.BasicBalancing;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -62,6 +60,7 @@ import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 
 /**
  * @author rcazoulat
@@ -199,10 +198,10 @@ public class BasicBalancingTest {
     inputD.setExpression(256);
 
     // Regroup under the same hierarchy actors B and C
-    final Set<AbstractActor> set = new HashSet<>();
-    set.add(actorB);
-    set.add(actorC);
-    this.subGraph = ClusterCreator.create(topGraph, set, "subgraph_0");
+    final List<AbstractActor> list = new ArrayList<>();
+    list.add(actorB);
+    list.add(actorC);
+    this.subGraph = new PiSDFSubgraphBuilder(topGraph, list, "subgraph_0").build();
 
     // Check consistency of the graph (throw exception if recoverable or fatal error)
     final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker(CheckerErrorLevel.FATAL_ANALYSIS,

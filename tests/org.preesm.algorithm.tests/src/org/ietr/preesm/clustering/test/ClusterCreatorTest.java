@@ -37,16 +37,14 @@
  */
 package org.ietr.preesm.clustering.test;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.preesm.algorithm.clustering.ClusterCreator;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -63,6 +61,7 @@ import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 
 /**
  * This class is used to test the PiSDFSubgraphBuilder class.
@@ -96,10 +95,10 @@ public class ClusterCreatorTest {
     this.param = topGraph.lookupParameterGivenGraph("useless", TOP_GRAPH_NAME);
     // Regroup the two reference in a set
 
-    final Set<AbstractActor> subGraphActors = new HashSet<>();
+    final List<AbstractActor> subGraphActors = new ArrayList<>();
     subGraphActors.add(actorB);
     subGraphActors.add(actorC);
-    this.subGraph = ClusterCreator.create(topGraph, subGraphActors, SUB_GRAPH_NAME);
+    this.subGraph = new PiSDFSubgraphBuilder(topGraph, subGraphActors, SUB_GRAPH_NAME).build();
   }
 
   /**
