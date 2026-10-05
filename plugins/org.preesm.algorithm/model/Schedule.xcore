@@ -1,3 +1,5 @@
+
+
 /**
  * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2025) :
  *
@@ -49,6 +51,7 @@ package org.preesm.algorithm.schedule.model
 
 import org.preesm.algorithm.synthesis.schedule.SchedulePrinterSwitch
 import org.preesm.model.pisdf.AbstractActor
+import org.preesm.model.pisdf.PiGraph
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.pisdf.SpecialActor
 import org.preesm.model.slam.ComponentInstance
@@ -69,6 +72,12 @@ type long wraps long
 
 type double wraps double
 
+class InternalScheduleEntry wraps java.util.Map$Entry {
+	refers Schedule parent opposite internalSchedules
+	refers PiGraph key
+	refers Schedule value
+}
+
 /*
  * Represent a schedule, that is an order of execution. Its hierarchy make possible
  * the association with several level of hierarchy in the architecture model.
@@ -76,6 +85,16 @@ type double wraps double
  * TODO - See https://preesm.org/todo for more examples.
  */
 interface Schedule {
+	
+	/*
+	 * This map is used to regroup into one IR a Schedule made by a SrDAG based scheduler, 
+	 * and a Schedule made by a PiMM based scheduler.
+	 * It is a big temporary patch, maybe one day there will be a more elegant solution 
+	 * (2 IRs, one for SrDAG Schedules and one for PiMM Schedules,
+	 *  or 1 ultimate IR that works better than this one) 
+	 */
+	contains InternalScheduleEntry[] internalSchedules opposite parent
+	
 	/*
 	 * TODO - Semantic to be refined
 	 *
@@ -155,15 +174,18 @@ interface SequentialSchedule extends Schedule {
  * There is no hypothesis on the order on the execution of its children.
  */
 interface HierarchicalSchedule extends Schedule {
+	
+	contains Schedule[] scheduleTree opposite parent
+	
 	/*
 	 * This reference may be used when scheduling non flatten/srdag graph.
 	 * For instance, when clustering, it can refer the corresponding subgraph.
 	 */
 	refers AbstractActor attachedActor
+	
 	op boolean hasAttachedActor() {
 		return attachedActor !== null
 	}
-	contains Schedule[] scheduleTree opposite parent
 	op Schedule[] getChildren() {
 		return scheduleTree
 	}

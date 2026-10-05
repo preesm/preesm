@@ -25,30 +25,43 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
       @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
       @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
 
-    outputs = { @Port(name = "Mapping", type = Mapping.class), @Port(name = "Schedule", type = Schedule.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MAPPING, type = Mapping.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCHEDULE, type = Schedule.class) },
 
-    parameters = { @Parameter(name = "edgeSchedType", values = { @Value(name = "Simple") }),
-      @Parameter(name = "simulatorType", values = { @Value(name = "LooselyTimed") }),
-      @Parameter(name = "Check", values = { @Value(name = "True"), @Value(name = "False") }),
-      @Parameter(name = "Optimize synchronization", values = { @Value(name = "True"), @Value(name = "False") }),
-      @Parameter(name = "balanceLoads", values = { @Value(name = "True"), @Value(name = "False") }),
-      @Parameter(name = "EnergyAwareness",
-          values = { @Value(name = "True", effect = "Turns on energy aware mapping/scheduling"),
-            @Value(name = "False") }),
-      @Parameter(name = "EnergyAwarenessFirstConfig",
-          values = { @Value(name = "First", effect = "Takes as starting point the first valid combination of PEs"),
-            @Value(name = "Middle", effect = "Takes as starting point half of the available PEs"),
-            @Value(name = "Max", effect = "Takes as starting point all the available PEs"),
-            @Value(name = "Random", effect = "Takes as starting point a random number of PEs") }),
-      @Parameter(name = "EnergyAwarenessSearchType",
+    parameters = {
+      @Parameter(name = ListSchedulerTask.PARAM_EDGE_SCHED_TYPE,
+          values = { @Value(name = ListSchedulerTask.VALUE_EDGE_SCHED_TYPE_SIMPLE) }),
+      @Parameter(name = ListSchedulerTask.PARAM_SIMULATOR_TYPE,
+          values = { @Value(name = ListSchedulerTask.VALUE_SIMULATOR_TYPE_LOOSELY_TIMED) }),
+      @Parameter(name = ListSchedulerTask.PARAM_CHECK,
+          values = { @Value(name = ListSchedulerTask.VALUE_TRUE), @Value(name = ListSchedulerTask.VALUE_FALSE) }),
+      @Parameter(name = ListSchedulerTask.PARAM_OPTIMIZE_SYNC,
+          values = { @Value(name = ListSchedulerTask.VALUE_TRUE), @Value(name = ListSchedulerTask.VALUE_FALSE) }),
+      @Parameter(name = ListSchedulerTask.PARAM_BALANCE_LOADS,
+          values = { @Value(name = ListSchedulerTask.VALUE_TRUE), @Value(name = ListSchedulerTask.VALUE_FALSE) }),
+      @Parameter(name = ListSchedulerTask.PARAM_ENERGY_AWARNESS,
+          values = { @Value(name = ListSchedulerTask.VALUE_TRUE, effect = "Turns on energy aware mapping/scheduling"),
+            @Value(name = ListSchedulerTask.VALUE_FALSE) }),
+      @Parameter(name = ListSchedulerTask.PARAM_ENERGY_AWARNESS_FIRST_CONFIG,
           values = {
-            @Value(name = "Thorough",
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_FIRST_CONFIG_FIRST,
+                effect = "Takes as starting point the first valid combination of PEs"),
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_FIRST_CONFIG_MIDDLE,
+                effect = "Takes as starting point half of the available PEs"),
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_FIRST_CONFIG_MAX,
+                effect = "Takes as starting point all the available PEs"),
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_FIRST_CONFIG_RANDOM,
+                effect = "Takes as starting point a random number of PEs") }),
+      @Parameter(name = ListSchedulerTask.PARAM_ENERGY_AWARNESS_SEARCH_TYPE,
+          values = {
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_SEARCH_TYPE_THOROUGH,
                 effect = "Analyzes PE combinations one by one until the performance objective is reached"),
-            @Value(name = "Halves", effect = "Divides in halves the remaining available PEs and goes up/down depending"
-                + " if the FPS reached are below/above the objective") })
+            @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_SEARCH_TYPE_HALVES,
+                effect = "Divides in halves the remaining available PEs and goes up/down depending"
+                    + " if the FPS reached are below/above the objective") })
 
     })
-public class LegacyListSchedulerTask extends AbstractTaskImplementation {
+public class ListSchedulerTask extends AbstractTaskImplementation {
 
   public static final String PARAM_EDGE_SCHED_TYPE        = "edgeSchedType";
   public static final String VALUE_EDGE_SCHED_TYPE_SIMPLE = "Simple";

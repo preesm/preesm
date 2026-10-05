@@ -3,14 +3,11 @@ package org.preesm.algorithm.synthesis.schedule.algos;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.util.ArithmeticUtils;
-import org.preesm.algorithm.clustering.ClusterCreator;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -34,6 +31,7 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -48,7 +46,7 @@ import org.preesm.model.slam.Design;
  *
  * @author dgageot
  */
-public class APGANScheduler extends AbstractScheduler {
+public class APGANPiMMScheduler extends AbstractScheduler {
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
@@ -148,11 +146,13 @@ public class APGANScheduler extends AbstractScheduler {
 
     // Build corresponding hierarchical actor
     final List<AbstractActor> actors = Arrays.asList(couple.getLeft(), couple.getRight());
-    final Set<AbstractActor> temporarySet = new HashSet<>(actors);
+    // final Set<AbstractActor> temporarySet = new HashSet<>(actors);
     final String temporaryClusterName = "cluster" + clusterId;
     final long nClusterRep = MathFunctionsHelper.gcd(rv.get(actors.get(0)), rv.get(actors.get(1)));
 
-    final PiGraph clusteredPair = ClusterCreator.create(cluster, temporarySet, temporaryClusterName);
+    // final PiGraph clusteredPair = ClusterCreator.create(cluster, temporarySet, temporaryClusterName);
+    final PiGraph clusteredPair = new PiSDFSubgraphBuilder(cluster, actors, temporaryClusterName).build();
+    clusteredPair.setClusterValue(true);
     setClusterConstraints(clusteredPair, scenario);
 
     // Build corresponding hierarchical schedule
@@ -223,6 +223,8 @@ public class APGANScheduler extends AbstractScheduler {
       Schedule outputSchedule = null;
 
       // If the actor is parallelizable, create a parallel hierarchical schedule
+      // TODO : see if it works to just replace the SeqActorSched by a ParActorSched instead of a ParHierSched ->
+      // SeqActSched
       if (!isActorDelayed(actor)) {
         final ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
         parallelNode.getChildren().add(actorSchedule);
