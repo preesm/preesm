@@ -64,11 +64,22 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
-    parameters = { @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,
-        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })
+    parameters = {
+      @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,
+          values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }),
+      @Parameter(name = PiSDFToSingleRateTask.PARAM_DEPTH, values = {
+        @Value(name = "0", effect = "The whole graph won't be Flattened and SrDAGed"),
+        @Value(name = "1",
+            effect = "Default value The first hierarchy level of the graph will be SrDAGed, but not the other"
+                + " hierarchy levels. The value can be 2, 3, or more, "
+                + "and the hierarchical levels of depth of 2, 3 or more will be Flattened and SrDAGed, respectively."),
+        @Value(name = "all", effect = "Every hierarchy levels of the graph will be flatened and SrDAGed.") }) })
 public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
+
+  public static final String PARAM_DEPTH     = "Depth";
+  public static final String VALUE_DEPTH_ALL = "all";
 
   final Logger logger = PreesmLogger.getLogger();
 
@@ -84,8 +95,16 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("Unsupported method for checking consistency [" + consistencyMethod + "]");
     }
 
+    final String depth = parameters.get(PARAM_DEPTH);
+    long depthThreshold;
+    if (depth.equals(VALUE_DEPTH_ALL)) {
+      depthThreshold = PiSDFFlattener.computeGraphMaxDepth(graph);
+    } else {
+      depthThreshold = Long.parseLong(depth);
+    }
+
     // Flatten the graph
-    final PiGraph result = PiSDFToSingleRate.compute(graph, method);
+    final PiGraph result = PiSDFToSingleRate.compute(graph, method, depthThreshold);
 
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(KEY_PI_GRAPH, result);
@@ -96,6 +115,7 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final LinkedHashMap<String, String> res = new LinkedHashMap<>();
     res.put(CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
+    res.put(PARAM_DEPTH, "1");
     return res;
   }
 

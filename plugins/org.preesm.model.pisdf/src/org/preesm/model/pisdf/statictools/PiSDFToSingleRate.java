@@ -136,11 +136,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   private final Map<Parameter, Parameter> param2param = new LinkedHashMap<>();
 
+  private final long depthThreshold;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
    */
-  private PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv) {
+  private PiSDFToSingleRate(final PiGraph inputGraph, final Map<AbstractVertex, Long> brv, long depthThreshold) {
     this.inputGraph = inputGraph;
     this.result = PiMMUserFactory.instance.createPiGraph();
     PreesmCopyTracker.trackCopy(inputGraph, this.result);
@@ -150,9 +152,15 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     this.graphName = "";
     this.graphPrefix = "";
     this.firingInstance = 0;
+    this.depthThreshold = depthThreshold;
 
     // copy input graph period
     this.result.setExpression(inputGraph.getPeriod().evaluateAsLong());
+  }
+
+  public static final PiGraph compute(final PiGraph graph, final BRVMethod method) {
+    final long threshold = PiSDFFlattener.computeGraphMaxDepth(graph);
+    return compute(graph, method, threshold);
   }
 
   /**
@@ -160,7 +168,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *
    * @return the SDFGraph obtained by visiting graph
    */
-  public static final PiGraph compute(final PiGraph graph, final BRVMethod method) {
+  public static final PiGraph compute(final PiGraph graph, final BRVMethod method, long depthThreshold) {
 
     PreesmLogger.getLogger().log(Level.FINE, " >> Start srdag transfo");
 
@@ -196,7 +204,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // 5. Convert to SR-DAG
     PreesmLogger.getLogger().log(Level.FINE, " >>   - apply single rate transfo");
-    final PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graphCopy, brv);
+    final PiSDFToSingleRate staticPiMM2ASrPiMMVisitor = new PiSDFToSingleRate(graphCopy, brv, depthThreshold);
     staticPiMM2ASrPiMMVisitor.doSwitch(graphCopy);
     final PiGraph acyclicSRPiMM = staticPiMM2ASrPiMMVisitor.getResult();
 
@@ -421,9 +429,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final String graphPrefix2 = this.graphPrefix;
     final String name = actor.getName();
     final String key = graphPrefix2 + name;
-    /*
-     * if (!this.actor2SRActors.containsKey(key)) { populateSingleRatePiMMActor(actor); }
-     */
+
     final List<AbstractVertex> list = this.actor2SRActors.get(key);
     list.add(copyActor);
 
@@ -866,10 +872,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       return;
     }
 
-    if (actor instanceof PiGraph) {
-      final int i = 0;
-    }
-
     // Creates the entry for the current PiMM Actor
     this.actor2SRActors.put(this.graphPrefix + actor.getName(), new ArrayList<>());
 
@@ -907,7 +909,15 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
     // If it is a cluster, do nothing
-    if (graph.isCluster()) {
+
+    long graphDepthLevel = 0;
+    PiGraph tmp = graph;
+    while (tmp.getContainingGraph() != null) {
+      graphDepthLevel += 1;
+      tmp = tmp.getContainingPiGraph();
+    }
+
+    if (graph.isCluster() || graphDepthLevel >= this.depthThreshold) {
       return caseExecOrClusterActor(graph);
     }
 
