@@ -47,7 +47,11 @@ package org.preesm.algorithm.memalloc.model
 
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.pisdf.InitActor
+import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.slam.ComponentInstance
+import org.preesm.commons.exceptions.PreesmRuntimeException
+import org.eclipse.emf.common.util.ECollections
+
 
 // !!! This is needed as of the current versions of xcore/xtext
 // For some reason when using the default String/... (i.e. without the following)
@@ -92,6 +96,9 @@ class LogicalBuffer extends Buffer {
 	long offsetInBit // absolute offset in bits wrt parent address 0
 	refers Buffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
+		if(containingBuffer === null) {
+			return null
+		}
 		return containingBuffer.getBank()
 	}
 }
@@ -130,15 +137,18 @@ class DelayAllocationEntry wraps java.util.Map$Entry {
 	refers Buffer value
 }
 
-class Allocation {
-	// memory banks used by this allocation
-	contains PhysicalBuffer[] physicalBuffers opposite allocation
+abstract class AbstractAllocation {
+	
+	contains WorkingMemory[] workingMemories opposite parent
+	
 	// buffers allocated for the fifos
 	contains FifoAllocationEntry[] fifoAllocations
+	
 	// Buffers allocated for the permanent and local delays. The values are pushed by the
 	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
 	// init reference allocated buffer.
 	contains DelayAllocationEntry[] delayAllocations
+	
 
 	// Query method that returns the Fifos mapped to this buffer
 	// and this buffer children (recursively)
@@ -151,5 +161,73 @@ class Allocation {
 	op InitActor[] getDelayAllocationEntry(Buffer b) {
 		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
 	}
+	
+	op WorkingMemory[] getAllWorkingMemories() {
+		return (workingMemories + workingMemories.map[it.allWorkingMemories].flatten).toEList.unmodifiableEList
+	}
+	
+	op WorkingMemoryEntry[] getWorkMemMap() {
+		 return ECollections.unmodifiableEMap(ECollections.asEMap(allWorkingMemories.toMap[ it.attachedActor ]))
+    }
+	
+	op WorkingMemory recursivelyGetMemoryAttachedTo(AbstractActor a) {
+		var WorkingMemory[] memoryList = (allWorkingMemories).filter[it.getAttachedActor() === a]
+		if(memoryList.size() > 1) {
+			throw new PreesmRuntimeException("There is multiple instances of a working memory for actor " + a.getName() + ". Please consider having only one instance per actor.")
+		}
+		return memoryList.getFirst()
+	}
+	
+	op long recursivelyGetMemorySizeInBitAttachedTo(AbstractActor a) {
+		val WorkingMemory workMem = recursivelyGetMemoryAttachedTo(a)
+		if(workMem === null) {
+			return 0
+		}
+		return workMem.getMainBuffer().getSizeInBit()
+	}
+	
 }
 
+class WorkingMemoryEntry wraps java.util.Map$Entry {
+	refers AbstractActor key
+	refers WorkingMemory value
+}
+
+class Allocation extends AbstractAllocation {
+	
+	// memory banks used by this allocation
+	contains PhysicalBuffer[] physicalBuffers opposite allocation
+	
+	op void mergeAllocations(Allocation alloc) {
+		alloc.getPhysicalBuffers().forEach[{
+			val PhysicalBuffer present = physicalBufferAlreadyExists(it)
+			if(present === null) {
+				physicalBuffers.add(it)
+			}
+			else {
+				var long offset = present.getSizeInBit()
+				for(LogicalBuffer logical: it.getChildren()) {
+					logical.setOffsetInBit(logical.getOffsetInBit() + offset)
+				}
+				present.setSizeInBit(offset + it.getSizeInBit())
+			}
+		}]
+		fifoAllocations.addAll(alloc.getFifoAllocations())
+		delayAllocations.addAll(alloc.getDelayAllocations())
+		workingMemories.addAll(alloc.getWorkingMemories())
+	}
+	
+	op PhysicalBuffer physicalBufferAlreadyExists(PhysicalBuffer phys) {
+		return physicalBuffers.filter[it.getBank() === phys.getBank()].toEList.unmodifiableEList.getFirst();
+	}
+}
+
+class WorkingMemory extends AbstractAllocation {
+	
+	refers AbstractAllocation parent opposite workingMemories
+	
+	refers AbstractActor attachedActor
+	
+	// Main Buffer of the working memory of a sub-graph
+	contains LogicalBuffer mainBuffer
+}

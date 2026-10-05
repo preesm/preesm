@@ -3,18 +3,17 @@ package org.preesm.algorithm.synthesis.memalloc;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.preesm.algorithm.clustering.ClusterHelper;
-import org.preesm.algorithm.clustering.synthesis.SimpleAllocationHeuristic;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
-import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
+import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.algos.APGANScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.APGANPiMMScheduler;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
@@ -28,24 +27,24 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
- * Allocate from a schedule made by the {@link APGANScheduler APGAN scheduler} a {@link PiGraph PiSDF} graph (not in its
- * SrDAG form). This graph might certainly contain hierarchy, because of how the {@link APGANScheduler APGAN scheduler}
- * works. This allocation processes the hierarchy in a top-down approach, which means that the outer {@link Fifo} of an
- * {@link DataInterface interface} is allocated, but not the inner {@link Fifo} of this {@link DataInterface interface}.
- * This has to be taken into account in the Codegen model generation step, which is only made by
- * {@link PiCodegenModelGenerator2 this generator} for now.
+ * Allocate from a schedule made by the {@link APGANPiMMScheduler APGAN scheduler} a {@link PiGraph PiSDF} graph (not in
+ * its SrDAG form). This graph might certainly contain hierarchy, because of how the {@link APGANPiMMScheduler APGAN
+ * scheduler} works. This allocation processes the hierarchy in a top-down approach, which means that the outer
+ * {@link Fifo} of an {@link DataInterface interface} is allocated, but not the inner {@link Fifo} of this
+ * {@link DataInterface interface}. This has to be taken into account in the Codegen model generation step, which is
+ * only made by {@link PiCodegenModelGenerator2 this generator} for now.
  *
  * @author rcazoulat
  */
-public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements IMemoryAllocation {
+public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implements IMemoryAllocation {
 
   Map<AbstractVertex, Long> clusterBrv;
   Scenario                  scenario;
-  Allocation                memAlloc;
+  WorkingMemory             workingMem;
   Long                      allocSize;
 
   @Override
-  public Allocation allocateMemory(PiGraph oriCluster, Design slamDesign, Scenario scenario, Schedule schedule,
+  public WorkingMemory allocateMemory(PiGraph oriCluster, Design slamDesign, Scenario scenario, Schedule schedule,
       Mapping mapping) {
 
     this.scenario = scenario;
@@ -58,14 +57,12 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
     clusterBrv = PiBRV.compute(scheduledCluster, BRVMethod.LCM);
 
     // Initializing the allocation and its size
-    memAlloc = MemoryAllocationFactory.eINSTANCE.createAllocation();
+    workingMem = MemoryAllocationFactory.eINSTANCE.createWorkingMemory();
+    workingMem.setAttachedActor(oriCluster);
     allocSize = 0L;
 
-    // We create main buffer only to pass finalBitSize to the next graph hierarchy level.
-    // For now it is useless, but it will be used to set the working memory of the cluster actor
-    // If getPhysicalBuffer().size() == 1 && getPhysicalBuffer().get(0).getMemoryBank() == null
-    final PhysicalBuffer mainBuffer = MemoryAllocationFactory.eINSTANCE.createPhysicalBuffer();
-    memAlloc.getPhysicalBuffers().add(mainBuffer);
+    final LogicalBuffer mainBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
+    workingMem.setMainBuffer(mainBuffer);
 
     // The allocation memAlloc is filled by visiting the schedule with the doSwitch method.
     // Fore more information on its effect, go see the method caseHierarchicalSchedule.
@@ -75,7 +72,7 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
     mainBuffer.setSizeInBit(allocSize);
 
     // The returned memAlloc was allocated using the top-down approach when manipulating the sub-clusters.
-    return memAlloc;
+    return workingMem;
   }
 
   @Override
@@ -87,9 +84,9 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
     if (hierSchedule.hasAttachedActor()) {
 
       final PiGraph subCluster = (PiGraph) hierSchedule.getAttachedActor();
-      final List<Fifo> internalFifos = ClusterHelper.getInternalClusterFifo(subCluster);
+      final List<Fifo> internalFifos = ClusteringHelper.getInternalClusterFifo(subCluster);
       final List<Fifo> externalFifos = new LinkedList<>(subCluster.getFifos());
-      externalFifos.removeAll(ClusterHelper.getInternalClusterFifo(subCluster));
+      externalFifos.removeAll(ClusteringHelper.getInternalClusterFifo(subCluster));
 
       // Internal FIFOs buffer generation
       generateInternalAllocBuffers(internalFifos);
@@ -105,7 +102,7 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
 
   /**
    * Simple FIFO Allocation creation for all internal {@link Fifo}s of a sub-cluster. A sub-cluster is the result of the
-   * {@link APGANScheduler APGAN algorithm} that creates pairs of sub-cluster to schedule the cluster.
+   * {@link APGANPiMMScheduler APGAN algorithm} that creates pairs of sub-cluster to schedule the cluster.
    *
    * @param internalFifos
    *          the internal FIFOs of the sub-cluster. A FIFO is consider internal if neither of its attached actors are
@@ -177,7 +174,7 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
     // Creating the FifoAllocation
     final FifoAllocation fifoAllocation = MemoryAllocationFactory.eINSTANCE.createFifoAllocation();
     fifoAllocation.setFifo(fifo);
-    memAlloc.getFifoAllocations().put(fifo, fifoAllocation);
+    workingMem.getFifoAllocations().put(fifo, fifoAllocation);
 
     // Creating the LogicalBuffer of the fifo
     final LogicalBuffer fifoBuffer = MemoryAllocationFactory.eINSTANCE.createLogicalBuffer();
@@ -186,11 +183,7 @@ public class SimplePiMemoryAllocation extends ScheduleSwitch<Boolean> implements
     fifoAllocation.setSourceBuffer(fifoBuffer);
     fifoAllocation.setTargetBuffer(fifoBuffer);
 
-    // We consider that a cluster will only have one physical buffer. A cluster is supposed to be run on one processing
-    // element (PE), and this PE is supposed to have only one memory (a PE can be, at the maximum granularity, a compute
-    // node with one RAM)
-    final PhysicalBuffer mainBuffer = memAlloc.getPhysicalBuffers().getFirst();
-    mainBuffer.getChildren().add(fifoBuffer);
+    workingMem.getMainBuffer().getChildren().add(fifoBuffer);
   }
 
   /**

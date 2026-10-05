@@ -38,7 +38,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.memalloc.allocation;
+package org.preesm.algorithm.synthesis.memalloc.meg.allocation;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -61,10 +61,10 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiOrderedAllocator.Order;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiOrderedAllocator.Policy;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Order;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Policy;
 import org.preesm.commons.doc.annotations.DocumentedError;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;

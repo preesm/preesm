@@ -73,23 +73,25 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
         + "overlapping memory range.",
 
     parameters = {
-      @Parameter(name = "Check",
+      @Parameter(name = PiMemoryScriptTask.PARAM_CHECK,
           description = "Verification policy used when checking the applicability of the memory scripts written"
               + " by the developer and associated to the actor.",
           values = {
-            @Value(name = "Thorough",
+            @Value(name = PiMemoryScriptTask.VALUE_CHECK_THOROUGH,
                 effect = "Will generate error messages with a detailed description of the source of the error."
                     + " This policy should be used when writting memory scripts for the first time."),
-            @Value(name = "Fast",
+            @Value(name = PiMemoryScriptTask.VALUE_CHECK_FAST,
                 effect = "All errors in memory script are still detected, but error messages are less verbose. "
                     + "This verification policy is faster than the Thorough policy."),
-            @Value(name = "None",
+            @Value(name = PiMemoryScriptTask.VALUE_CHECK_NONE,
                 effect = "No verification is performed. Use this policy to speed up workflow execution once all"
                     + " memory scripts have been validated..") }),
-      @Parameter(name = "False Sharing Prevention",
+      @Parameter(name = PiMemoryScriptTask.PARAM_FALSE_SHARING,
           description = "Force additional allocation before/after buffer to prevent false sharing issues.",
-          values = { @Value(name = "False", effect = "The false sharing prevention mecanism will not be used."),
-            @Value(name = "True",
+          values = {
+            @Value(name = PiMemoryScriptTask.VALUE_FALSE,
+                effect = "The false sharing prevention mecanism will not be used."),
+            @Value(name = PiMemoryScriptTask.VALUE_TRUE,
                 effect = "The false sharing prevention mecanism will be used."
                     + "Using the Data alignement parameter.") }),
       @Parameter(name = "Data alignment",
@@ -103,7 +105,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "Fixed:=$$n$$",
                 effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                     + " on addresses that are multiples of n bits.") }),
-      @Parameter(name = "Log Path",
+      @Parameter(name = PiMemoryScriptTask.PARAM_LOG,
           description = "Specify whether, and where, a log of the buffer matching optimization should be "
               + "generated. Generated log are in the markdown format, and provide information "
               + "on all matches created by scripts as well as which match could be applied by the "

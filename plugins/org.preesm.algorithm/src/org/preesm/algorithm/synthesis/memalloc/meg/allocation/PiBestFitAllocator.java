@@ -36,7 +36,7 @@
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL license and that you accept its terms.
  */
-package org.preesm.algorithm.synthesis.memalloc.allocation;
+package org.preesm.algorithm.synthesis.memalloc.meg.allocation;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,23 +48,29 @@ import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
- * In this class, an adapted version of the first fit allocator is implemented. As the lifetime of the memory elements
- * is not known (because of the self-timed assumption), adaptation had to be made. In particular, the order in which the
- * memory elements are considered had to be defined, as in the original algorithm, this order is the scheduling order.
- * The order chosen in this implementation is a random order. Several random orders are tested, and only the
- * (best/mediane/average/worst)? is kept. Other orders have been implemented : StableSet and LargestFirst.
+ * In this class, an adapted version of the best fit allocator is implemented. As the lifetime of the memory elements is
+ * not known (because of the self-timed assumption), adaptation had to be made. In particular, the order in which the
+ * memory elements are considered had to be defined. In the original algorithm, this order is the scheduling order. The
+ * order chosen in this implementation is a random order. Several random orders are tested, and only the
+ * (best/mediane/average/worst) is kept. Other orders have been implemented : StableSet and LargestFirst.
  *
  * @author kdesnos
  *
  */
-public class PiFirstFitAllocator extends PiOrderedAllocator {
+public class PiBestFitAllocator extends PiOrderedAllocator {
 
-  public PiFirstFitAllocator(final PiMemoryExclusionGraph memEx) {
+  /**
+   * Constructor of the allocator.
+   *
+   * @param memEx
+   *          The exclusion graph whose vertices are to allocate
+   */
+  public PiBestFitAllocator(final PiMemoryExclusionGraph memEx) {
     super(memEx);
   }
 
   /**
-   * This method allocate the memory elements with the first fit algorithm and return the cost of the allocation.
+   * This method allocate the memory elements with the best fit algorithm and return the cost of the allocation.
    *
    * @param vertexList
    *          the ordered vertex list.
@@ -93,22 +99,22 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
       Collections.sort(excludeFrom);
       Collections.sort(excludeTo);
 
-      long firstFitOffset = -1;
+      long bestFitOffset = -1;
       long freeFrom = 0; // Where the last exclusion ended
 
+      // Alignment constraint
       long align = -1;
       final Long typeSize = vertex.getPropertyBean().getValue(PiMemoryExclusionVertex.TYPE_SIZE);
-      // Alignment constraint
       if (this.alignment == 0) {
         align = typeSize;
       } else if (this.alignment > 0) {
         align = MathFunctionsHelper.lcm(typeSize, this.alignment);
       }
 
-      // Look for first fit only if there are exclusions. Else, simply
+      // Look for best fit only if there are exclusions. Else, simply
       // allocate at 0.
       if (!excludeFrom.isEmpty()) {
-        // Look for the first free spaces between the exclusion ranges.
+        // Look for free spaces between the exclusion ranges.
         final Iterator<Long> iterFrom = excludeFrom.iterator();
         final Iterator<Long> iterTo = excludeTo.iterator();
         long from = iterFrom.next();
@@ -116,34 +122,37 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
         // Number of from encountered minus number of to encountered. If
         // this value is 0, the space between the last "to" and the next
         // "from" is free !
-        long nbExcludeFrom = 0;
+        int nbExcludeFrom = 0;
 
+        // this value is the occupation rate of the best fit occupation
+        // = size_element / size_best_fit_space.
+        // The closest it is from 1, the best it fits !
+        double bestFitOccupation = 0;
         boolean lastFromTreated = false;
         boolean lastToTreated = false;
 
-        // Iterate over the excludeFrom and excludeTo lists
-        while (!lastToTreated && (firstFitOffset == -1)) {
+        while (!lastToTreated) {
           if (from <= to) {
             if (nbExcludeFrom == 0) {
               // This is the end of a free space. check if the
-              // current element fits here ?
+              // current element best fits here ?
               final long freeSpaceSize = from - freeFrom;
-
-              // If the element fits in the space
-              if (vertex.getWeight() <= freeSpaceSize) {
-                firstFitOffset = freeFrom;
+              final double occupation = (double) vertex.getWeight() / (double) freeSpaceSize;
+              // If the element fits in the space AND fits better
+              // than previous best fit
+              if ((occupation <= 1.0) && (occupation > bestFitOccupation)) {
+                bestFitOffset = freeFrom;
+                bestFitOccupation = occupation;
               }
             }
             if (iterFrom.hasNext()) {
               from = iterFrom.next();
               nbExcludeFrom++;
-            } else {
-              if (!lastFromTreated) {
-                lastFromTreated = true;
-                // Add a from to avoid considering the end of
-                // lastTo as a free space
-                nbExcludeFrom++;
-              }
+            } else if (!lastFromTreated) {
+              lastFromTreated = true;
+              // Add a from to avoid considering the end of
+              // lastTo as a free space
+              nbExcludeFrom++;
             }
           }
 
@@ -156,7 +165,6 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
               if (align > -1) {
                 freeFrom += ((freeFrom % align) == 0) ? 0 : align - (freeFrom % align);
               }
-
             }
 
             if (iterTo.hasNext()) {
@@ -169,12 +177,12 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
       }
 
       // If no free space was found between excluding elements
-      if (firstFitOffset <= -1) {
+      if (bestFitOffset <= -1) {
         // Put it right after the last element of the list
-        firstFitOffset = freeFrom;
+        bestFitOffset = freeFrom;
       }
 
-      allocateMemoryObject(vertex, firstFitOffset);
+      allocateMemoryObject(vertex, bestFitOffset);
     }
 
     return getMemorySizeInByte();
