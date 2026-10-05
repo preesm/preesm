@@ -68,18 +68,22 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenTask.
  */
 @PreesmTask(id = "codegen2", name = "Code Generation 2", category = "Code Generation 2",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-      @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCHEDULE, type = Schedule.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_MAPPING, type = Mapping.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ALLOCATION, type = Allocation.class) },
 
     parameters = {
-      @Parameter(name = "Printer",
+      @Parameter(name = CodegenTask2.PARAM_PRINTER,
           description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
               + " code using an extension mechanism that make it possible to define a single printer name for several "
               + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
@@ -94,7 +98,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),
-      @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+      @Parameter(name = CodegenTask2.PARAM_PAPIFY,
+          description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
           values = { @Value(name = "true/false",
               effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
                   + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })

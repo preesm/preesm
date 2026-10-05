@@ -471,6 +471,66 @@ public class ClusteringHelper {
   }
 
   /**
+   * WIP
+   *
+   * @param cluster
+   *          input cluster
+   * @return true if correct
+   */
+  public static boolean smartCheckDelays(Set<AbstractActor> cluster) {
+    return cluster.stream().allMatch(a -> {
+      boolean sub = true;
+      for (final DataPort p : a.getAllDataPorts()) {
+        sub &= smartCheckDelay(p.getFifo(), cluster);
+      }
+      return sub;
+    });
+  }
+
+  public static boolean checkDelays(Set<AbstractActor> cluster) {
+    return cluster.stream().allMatch(a -> {
+      boolean sub = true;
+      for (final DataPort p : a.getAllDataPorts()) {
+        sub &= !(p.getFifo().isDelayPresent());
+      }
+      return sub;
+    });
+  }
+
+  /**
+   * WIP
+   *
+   * @param fifo
+   *          input fifo
+   * @param cluster
+   *          input cluster
+   * @return true if correct
+   */
+  private static boolean smartCheckDelay(Fifo fifo, Set<AbstractActor> cluster) {
+    if (fifo.isDelayPresent()) {
+      final AbstractActor source = fifo.getSource();
+      final AbstractActor target = fifo.getTarget();
+      final boolean sourceIsLast = source.getDataOutputPorts().stream()
+          .anyMatch(p -> !cluster.contains(p.getFifo().getTarget()));
+      final boolean targetIsFirst = target.getDataInputPorts().stream()
+          .anyMatch(p -> !cluster.contains(p.getFifo().getSource()));
+
+      if (sourceIsLast && targetIsFirst) {
+        return true;
+      }
+      if (sourceIsLast) {
+        return target.getDataInputPorts().stream().allMatch(p -> p.getFifo().getSource() == source);
+      }
+
+      if (targetIsFirst) {
+        return source.getDataOutputPorts().stream().allMatch(p -> p.getFifo().getTarget() == target);
+      }
+      return false;
+    }
+    return true;
+  }
+
+  /**
    * This method generates {@link SpecialActor special actors} with one {@link DataInputPort input} and one
    * {@link DataOutputPort output}, to be able to perform smart cluster memory {@link Allocation allocation}. This
    * allocation is made with a {@link PiGraph PiSDF}, not with a SrDAG. That is why we are generating special actors

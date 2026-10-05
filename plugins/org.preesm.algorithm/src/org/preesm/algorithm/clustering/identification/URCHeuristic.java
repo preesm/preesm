@@ -82,20 +82,6 @@ public class URCHeuristic extends HorizontalHeuristic {
   }
 
   @Override
-  public boolean validateCluster(Set<AbstractActor> cluster) {
-    boolean result = cluster.size() != 1;
-
-    if (!result) {
-      return false;
-    }
-
-    result &= !ClusteringHelper.clusterHasGetterAndSetterActors(cluster);
-
-    return result;
-
-  }
-
-  @Override
   public boolean assessMergeable(AbstractActor seed, AbstractActor actor) {
 
     // Check actor type
@@ -105,28 +91,16 @@ public class URCHeuristic extends HorizontalHeuristic {
     // Check if actor has the correct repetition value
     isMergeable &= Objects.equals(brv.get(actor), brv.get(seed));
 
+    // If actor is predecessor of seed
     if (seed.getDirectPredecessors().contains(actor)) {
-      // If actor is predecessor of seed
-
-      // Check if every FIFO of actor are good
       isMergeable &= seed.getDataInputPorts().stream().allMatch(x -> checkFifo(x.getFifo()));
-
-      // Check that the candidate actor as only fifos incoming from the base actor
       isMergeable &= actor.getDataOutputPorts().stream().allMatch(x -> x.getFifo().getTarget().equals(seed));
-
-      // Check that the actually processed actor as only fifos outgoing to the candidate actor
       isMergeable &= seed.getDataInputPorts().stream().allMatch(x -> x.getFifo().getSource().equals(actor));
 
-    } else if (seed.getDirectSuccessors().contains(actor)) {
       // If actor is successor of seed
-
-      // Check if every FIFO of actor are good
+    } else if (seed.getDirectSuccessors().contains(actor)) {
       isMergeable &= seed.getDataOutputPorts().stream().allMatch(x -> checkFifo(x.getFifo()));
-
-      // Check that the actually processed actor as only fifos outgoing to the candidate actor
       isMergeable &= seed.getDataOutputPorts().stream().allMatch(x -> x.getFifo().getTarget().equals(actor));
-
-      // Check that the candidate actor as only fifos incoming from the base actor
       isMergeable &= actor.getDataInputPorts().stream().allMatch(x -> x.getFifo().getSource().equals(seed));
 
     } else {
@@ -141,6 +115,21 @@ public class URCHeuristic extends HorizontalHeuristic {
     /* If all the checks are good, we can add actors in the list and return true */
     alreadyIdentifiedActors.add(actor);
     return true;
+  }
+
+  @Override
+  public boolean validateCluster(Set<AbstractActor> cluster) {
+    boolean result = cluster.size() != 1;
+
+    if (!result) {
+      return false;
+    }
+
+    result &= !ClusteringHelper.clusterHasGetterAndSetterActors(cluster);
+    result &= ClusteringHelper.checkDelays(cluster);
+
+    return result;
+
   }
 
   @Override
