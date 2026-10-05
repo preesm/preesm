@@ -40,7 +40,7 @@ package org.preesm.algorithm.synthesis.timer;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.DelayActor;
@@ -96,7 +96,7 @@ public class SimpleTimer extends AgnosticTimer {
       final ComponentInstance operator = this.mapping.getSimpleMapping(userSpecialActor);
       final MemoryCopySpeedValue memTimings = this.scenario.getTimings().getMemTimings().get(operator.getComponent());
       if (memTimings == null) {
-        PreesmLogger.getLogger().info("");
+        throw new PreesmRuntimeException("memTimings for operator " + operator + " is null");
       }
       wcet = (long) ((maxRate) * memTimings.getTimePerUnit()) + memTimings.getSetupTime();
     } else {
