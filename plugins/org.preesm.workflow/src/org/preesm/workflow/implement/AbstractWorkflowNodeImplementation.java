@@ -70,6 +70,9 @@ public abstract class AbstractWorkflowNodeImplementation {
   public static final String KEY_BOUND_MAX          = "BoundMax";
   public static final String KEY_BOUND_MIN_SET      = "minBounds";
   public static final String KEY_BOUND_MAX_SET      = "maxBounds";
+  public static final String KEY_SCHEDULE           = "Schedule";
+  public static final String KEY_MAPPING            = "Mapping";
+  public static final String KEY_ALLOCATION         = "Allocation";
 
   /**
    * Id and fully qualified names of node output retrieved from the extension.
