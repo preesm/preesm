@@ -322,6 +322,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     private IntVar          basisMultiplier;
     private ExecutableActor actor;
     private int             basisOfPeriod = 1;
+    private int             K_a           = 1;
 
     // Timing variables
     public int repetitionCount;
@@ -338,6 +339,12 @@ public class FPGAConstraintScheduler implements IScheduler {
     ActorTimings(ExecutableActor ea) {
       super();
       this.actor = ea;
+    }
+
+    ActorTimings(ExecutableActor ea, int K) {
+      super();
+      this.actor = ea;
+      this.K_a = K;
     }
 
     public void printSchedule(AbstractActor a, PrintStream writer) {
