@@ -58,9 +58,6 @@ import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
-import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Order;
@@ -81,6 +78,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class MemoryAllocatorTask.
@@ -90,14 +88,19 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 
     description = "Workflow task responsible for allocating the memory objects of the given MEG.",
 
-    inputs = { @Port(type = PiMemoryExclusionGraph.class, name = "MemEx", description = "Input Memory Exclusion Graph"),
-      @Port(type = Mapping.class, name = "Mapping", description = "Input Mapping"),
-      @Port(type = Scenario.class, name = "scenario", description = "Input scenario"),
-      @Port(type = Design.class, name = "architecture", description = "Input architecture"),
-      @Port(type = PiGraph.class, name = "PiMM", description = "Input algorithm (in DAG form)") },
+    inputs = {
+      @Port(type = PiMemoryExclusionGraph.class, name = AbstractWorkflowNodeImplementation.KEY_MEM_EX,
+          description = "Input Memory Exclusion Graph"),
+      @Port(type = Mapping.class, name = AbstractWorkflowNodeImplementation.KEY_MAPPING, description = "Input Mapping"),
+      @Port(type = Scenario.class, name = AbstractWorkflowNodeImplementation.KEY_SCENARIO,
+          description = "Input scenario"),
+      @Port(type = Design.class, name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE,
+          description = "Input architecture"),
+      @Port(type = PiGraph.class, name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH,
+          description = "Input algorithm (in DAG form)") },
 
-    outputs = {
-      @Port(type = Allocation.class, name = "Allocation", description = "Final allocation, built on the input MEG") },
+    outputs = { @Port(type = Allocation.class, name = AbstractWorkflowNodeImplementation.KEY_ALLOCATION,
+        description = "Final allocation, built on the input MEG") },
 
     parameters = {
       @Parameter(name = PiMemoryAllocatorTask.PARAM_VERBOSE, description = "Verbosity of the task.",
@@ -571,9 +574,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
   }
 
   /**
-   * This method creates a {@link Buffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
-   * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all the
-   * {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+   * This method creates a {@link Buffer} for each {@link Fifo fifo} of the {@link #dag}.<br>
    * <br>
    * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
    *

@@ -491,6 +491,9 @@ public class ClusteringHelper {
     return cluster.stream().allMatch(a -> {
       boolean sub = true;
       for (final DataPort p : a.getAllDataPorts()) {
+        if (!cluster.contains(p.getOppositePort().getContainingActor())) {
+          continue;
+        }
         sub &= !(p.getFifo().isDelayPresent());
       }
       return sub;

@@ -60,16 +60,18 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "alloc2.megupdater", name = "MEG Updater", category = "Memory Optimization",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "Schedule", type = Schedule.class),
-      @Port(name = "Mapping", type = Mapping.class), @Port(name = "MemEx", type = PiMemoryExclusionGraph.class) },
-    outputs = { @Port(name = "MemEx", type = PiMemoryExclusionGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCHEDULE, type = Schedule.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_MAPPING, type = Mapping.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
 
     shortDescription = "Relax memory allocation constraints of the MEG using scheduling information.",
 
     description = "The MEG used in Preesm can be updated with scheduling information to remove exclusions between "
         + "memory objects and make better allocations possible.",
 
-    parameters = { @Parameter(name = "Verbose",
+    parameters = { @Parameter(name = PiMEGUpdaterTask.PARAM_VERBOSE,
         description = "How verbose will this task be during its execution. In verbose mode, the task will log "
             + "the start and completion time of the update, as well as characteristics (number of memory objects,"
             + " density of exclusions) of the MEGs both before and after the update.",

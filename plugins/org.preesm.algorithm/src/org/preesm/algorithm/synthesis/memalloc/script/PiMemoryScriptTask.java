@@ -56,15 +56,17 @@ import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class MemoryScriptTask.
  */
 @PreesmTask(id = "alloc2.memoryscript", name = "Memory Scripts", category = "Memory Optimization",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "MemEx", type = PiMemoryExclusionGraph.class),
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class),
       @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "MemEx", type = PiMemoryExclusionGraph.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
 
     shortDescription = "Executes the memory scripts associated to actors and merge buffers.",
 

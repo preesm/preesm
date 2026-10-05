@@ -62,8 +62,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "alloc2.megbuilder", name = "MEG Builder", category = "Memory Optimization",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class) },
-    outputs = { @Port(name = "MemEx", type = PiMemoryExclusionGraph.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
+    outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
 
     shortDescription = "Builds the Memory Exclusion Graph (MEG) modeling the memory allocation constraints.",
 
