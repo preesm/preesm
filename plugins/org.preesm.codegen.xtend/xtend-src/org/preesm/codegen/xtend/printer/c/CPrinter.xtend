@@ -103,7 +103,7 @@ import org.preesm.commons.files.PreesmIOHelper
 import org.preesm.codegen.model.CallFunctionBlock
 import org.preesm.codegen.model.LoopFunctionBlock
 import org.preesm.codegen.model.FunctionBlock
-import org.preesm.codegen.model.FunctionCoreBlock
+import org.preesm.codegen.model.RefinementBlock
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -896,8 +896,8 @@ class CPrinter extends BlankPrinter {
 			result.put("main.c", printMain(printerBlocks))
 		}
 		for (Block block: printerBlocks) {
-			if(block instanceof FunctionCoreBlock) {
-				result.put(block.getName() + ".h", printFunctionBlockHeaderFile(block))
+			if(block instanceof RefinementBlock) {
+				result.put(block.getName() + ".h", printRefinementHeaderFile(block))
 			}
 		}
 		
@@ -1235,10 +1235,11 @@ class CPrinter extends BlankPrinter {
 	
 	def CharSequence printFunctionBlockHeader(FunctionBlock funcBlock) '''
 	void «funcBlock.getName()»(
+	
 	«FOR param: funcBlock.getInputParams() SEPARATOR ','»
 		const «param.getType()» «param.getName()»
 	«ENDFOR»
-	«IF funcBlock.getInputArgs().size() > 0»
+	«IF funcBlock.getInputArgs().size() > 0 && funcBlock.getInputParams().size() > 0»
 	, 
 	«ENDIF»
 	«FOR inputBuffer: funcBlock.getInputArgs() SEPARATOR ','»
@@ -1265,8 +1266,10 @@ class CPrinter extends BlankPrinter {
 	}
 	'''
 	
-	def CharSequence printFunctionBlockHeaderFile(FunctionCoreBlock funcBlock)'''
+	def CharSequence printRefinementHeaderFile(RefinementBlock funcBlock)'''
 	#include "preesm_gen.h"
+	
+	
 	
 	«printFunctionBlockHeader(funcBlock.getInitBlock())»;
 	
@@ -1274,12 +1277,15 @@ class CPrinter extends BlankPrinter {
 	'''
 	
 	  
-  override CharSequence printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) '''
-  #include "«funcCoreBlock.getName()».h"
+  override CharSequence printRefinementBlockHeader(RefinementBlock refinementBlock) '''
+  #include "«refinementBlock.getName()».h"
+  «FOR header: refinementBlock.getHeaders()»
+  	#include "«header»"
+  	«ENDFOR»
   '''
 
   
-  override CharSequence printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) '''
+  override CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) '''
   '''
 
 

@@ -69,7 +69,6 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
-import org.preesm.algorithm.clustering.ClusterHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
 import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
@@ -134,8 +133,6 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.model.clustering.CodegenClusterModelGeneratorSwitch;
-import org.preesm.codegen.model.clustering.SrDAGOutsideFetcher;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -601,177 +598,152 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Check whether the ActorCall is a call to a hierarchical actor or not.
     final Object refinement = dagVertex.getRefinement();
 
-    // If the actor is hierarchical
-    if (dagVertex.getPropertyBean().getValue(ClusterHelper.PISDF_ACTOR_IS_CLUSTER) != null) {
-      // try to generate for loop on a hierarchical actor
-      PreesmLogger.getLogger().fine(() -> "tryGenerateRepeatActorFiring " + dagVertex.getName());
+    // If the actor has an IDL refinement
+    final ActorPrototypes prototypes = switch (refinement) {
+      // Retrieve the prototypes associated to the actor
+      case final CodeRefinement cRef when cRef.getLanguage() == Language.IDL -> getActorPrototypes(dagVertex);
+      // Or if we already extracted prototypes from a .h refinement
+      case final ActorPrototypes actorProto -> actorProto;
+      default ->
+        throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
+            + " Associate a refinement to this actor before generating code.");
+    };
 
-      // prepare option for SrDAGOutsideFetcher
-      final Map<String, Object> outsideFetcherOption = new LinkedHashMap<>();
-      outsideFetcherOption.put("dagVertex", dagVertex);
-      outsideFetcherOption.put("dag", this.algo);
-      outsideFetcherOption.put("coreBlock", operatorBlock);
-      outsideFetcherOption.put("srSDFEdgeBuffers", this.srSDFEdgeBuffers);
-
-      // Retrieve original cluster actor
-      final AbstractActor actor = dagVertex.getPropertyBean().getValue(ClusterHelper.PISDF_REFERENCE_ACTOR);
-      final AbstractActor originalActor = PreesmCopyTracker.getOriginalSource(actor);
-      if (!this.scheduleMapping.containsKey(originalActor)) {
-        throw new PreesmRuntimeException("Codegen for " + dagVertex.getName() + " failed.");
-      }
-      new CodegenClusterModelGeneratorSwitch(this.algo.getReferencePiMMGraph(), operatorBlock, scenario,
-          new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
-
-    } else {
-      // If the actor has an IDL refinement
-      final ActorPrototypes prototypes = switch (refinement) {
-        // Retrieve the prototypes associated to the actor
-        case final CodeRefinement cRef when cRef.getLanguage() == Language.IDL -> getActorPrototypes(dagVertex);
-        // Or if we already extracted prototypes from a .h refinement
-        case final ActorPrototypes actorProto -> actorProto;
-        default ->
-          throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
-              + " Associate a refinement to this actor before generating code.");
-      };
-
-      // Generate the loop functionCall
-      final Prototype loopPrototype = prototypes.getLoopPrototype();
-      if (loopPrototype == null) {
-        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
-      }
-      if (!loopPrototype.getIsStandardC()) {
-        throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
-      }
-      // adding the call to the FPGA load functions only once. The printFpgaLoad will
-      // return a no-null string only with the right printer and nothing for the others
-      // Visit all codeElements already present in the InitBlock
-      final EList<CodeElt> codeElts = operatorBlock.getInitBlock().getCodeElts();
-      if (codeElts.isEmpty()) {
-        final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex, loopPrototype,
-            false);
-        // Add the function call to load the hardware accelerators into the FPGA (when needed)
-        operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
-        // Add also the GlobalBufferDeclaration just after the fpga load, before the loop
-        final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
-            loopPrototype, false);
-        operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
-      }
-      final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
+    // Generate the loop functionCall
+    final Prototype loopPrototype = prototypes.getLoopPrototype();
+    if (loopPrototype == null) {
+      throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
+    }
+    if (!loopPrototype.getIsStandardC()) {
+      throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+    }
+    // adding the call to the FPGA load functions only once. The printFpgaLoad will
+    // return a no-null string only with the right printer and nothing for the others
+    // Visit all codeElements already present in the InitBlock
+    final EList<CodeElt> codeElts = operatorBlock.getInitBlock().getCodeElts();
+    if (codeElts.isEmpty()) {
+      final FpgaLoadAction fpgaLoadActionFunctionCalls = generateFpgaLoadFunctionCalls(dagVertex, loopPrototype, false);
+      // Add the function call to load the hardware accelerators into the FPGA (when needed)
+      operatorBlock.getInitBlock().getCodeElts().add(fpgaLoadActionFunctionCalls);
+      // Add also the GlobalBufferDeclaration just after the fpga load, before the loop
+      final GlobalBufferDeclaration globalBufferDeclarationCall = generateGlobalBufferDeclaration(dagVertex,
           loopPrototype, false);
-      final FreeDataTransferBuffer freeDataTransferBufferFunctionCall = generateFreeDataTransferBuffer(dagVertex,
-          loopPrototype, false);
-      final DataTransferAction dataTransferActionFunctionCall = generateDataTransferFunctionCall(dagVertex,
-          loopPrototype, false);
-      final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
-          loopPrototype, false);
-      final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
+      operatorBlock.getInitBlock().getCodeElts().add(globalBufferDeclarationCall);
+    }
+    final RegisterSetUpAction registerSetUpActionFunctionCall = generateRegisterSetUpFunctionCall(dagVertex,
+        loopPrototype, false);
+    final FreeDataTransferBuffer freeDataTransferBufferFunctionCall = generateFreeDataTransferBuffer(dagVertex,
+        loopPrototype, false);
+    final DataTransferAction dataTransferActionFunctionCall = generateDataTransferFunctionCall(dagVertex, loopPrototype,
+        false);
+    final OutputDataTransfer outputDataTransferFunctionCall = generateOutputDataTransferFunctionCall(dagVertex,
+        loopPrototype, false);
+    final ActorFunctionCall functionCall = generateFunctionCall(dagVertex, loopPrototype, false);
 
-      boolean monitoringTiming = false;
-      boolean monitoringEvents = false;
-      final PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
-      final Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
-      // Check if this actor has a monitoring configuration
-      final PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
-      final AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
-      if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
-        // Add the papify action variable
-        papifyActionS.setName("papify_actions_".concat(dagVertex.getName()));
-        papifyActionS.setType("papify_action_s");
-        papifyActionS.setComment("papify configuration variable");
-        operatorBlock.getDefinitions().add(papifyActionS);
+    boolean monitoringTiming = false;
+    boolean monitoringEvents = false;
+    final PapifyAction papifyActionS = CodegenModelUserFactory.eINSTANCE.createPapifyAction();
+    final Constant papifyPEId = CodegenModelUserFactory.eINSTANCE.createConstant();
+    // Check if this actor has a monitoring configuration
+    final PapifyConfig papifyConfig = this.scenario.getPapifyConfig();
+    final AbstractActor referencePiVertex = dagVertex.getReferencePiVertex();
+    if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
+      // Add the papify action variable
+      papifyActionS.setName("papify_actions_".concat(dagVertex.getName()));
+      papifyActionS.setType("papify_action_s");
+      papifyActionS.setComment("papify configuration variable");
+      operatorBlock.getDefinitions().add(papifyActionS);
 
-        // Add the function to configure the monitoring in this PE (operatorBlock)
-        papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
+      // Add the function to configure the monitoring in this PE (operatorBlock)
+      papifyPEId.setName(PAPIFY_PE_ID_CONSTANT_NAME);
 
-        // Add the function to configure the monitoring in this PE (operatorBlock)
-        if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
-          this.papifiedPEs.add(operatorBlock.getName());
-          // Create the variable associated to the PE id
-          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-          final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
-              papifyConfig, papifyPEId);
-          operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
-        } else {
-          // Create the variable associated to the PE id
-          papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
-        }
-
-        // Add the function to configure the monitoring of this actor (dagVertex)
-        final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(dagVertex,
-            papifyConfig, papifyActionS);
-        operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
-
-        // What are we monitoring?
-        monitoringEvents = papifyConfig.isMonitoringEvents(referencePiVertex);
-        monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
-        if (monitoringEvents) {
-          // Generate Papify start function for events
-          final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
-              papifyActionS);
-          // Add the Papify start function for events to the loop
-          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
-        }
-
-        if (monitoringTiming) {
-          // Generate Papify start timing function
-          final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
-              papifyPEId, papifyActionS);
-          // Add the Papify start timing function to the loop
-          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
-        }
+      // Add the function to configure the monitoring in this PE (operatorBlock)
+      if (!(this.papifiedPEs.contains(operatorBlock.getName()))) {
+        this.papifiedPEs.add(operatorBlock.getName());
+        // Create the variable associated to the PE id
+        papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
+        final FunctionCall functionCallPapifyConfigurePE = generatePapifyConfigurePEFunctionCall(operatorBlock,
+            papifyConfig, papifyPEId);
+        operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigurePE);
+      } else {
+        // Create the variable associated to the PE id
+        papifyPEId.setValue(this.papifiedPEs.indexOf(operatorBlock.getName()));
       }
-      // Add the function call for RegisterSetUp to the loopBlock just before the function call
-      operatorBlock.getLoopBlock().getCodeElts().add(registerSetUpActionFunctionCall);
-      // Add the function call for DataTransfer to the loopBlock just before the function call
-      operatorBlock.getLoopBlock().getCodeElts().add(dataTransferActionFunctionCall);
 
-      registerCallVariableToCoreBlock(operatorBlock, functionCall);
-      // Add the function call to the operatorBlock
-      operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
-      // Free buffer data transfer that may be used freeDataTransferBufferFunctionCall
-      operatorBlock.getLoopBlock().getCodeElts().add(freeDataTransferBufferFunctionCall);
-      // Add the function call for OutputDataTransfer to the loopBlock just after the function call
-      operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
+      // Add the function to configure the monitoring of this actor (dagVertex)
+      final PapifyFunctionCall functionCallPapifyConfigureActor = generatePapifyConfigureActorFunctionCall(dagVertex,
+          papifyConfig, papifyActionS);
+      operatorBlock.getInitBlock().getCodeElts().add(functionCallPapifyConfigureActor);
 
-      if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
-        if (monitoringTiming) {
-          // Generate Papify stop timing function
-          final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
-              papifyPEId, papifyActionS);
-          // Add the Papify stop timing function to the loop
-          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
-        }
-        if (monitoringEvents) {
-          // Generate Papify stop function for events
-          final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
-              papifyActionS);
-          // Add the Papify stop function for events to the loop
-          operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
-        }
-        // Generate Papify writing function
-        final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, papifyPEId,
+      // What are we monitoring?
+      monitoringEvents = papifyConfig.isMonitoringEvents(referencePiVertex);
+      monitoringTiming = papifyConfig.isMonitoringTiming(referencePiVertex);
+      if (monitoringEvents) {
+        // Generate Papify start function for events
+        final PapifyFunctionCall functionCallPapifyStart = generatePapifyStartFunctionCall(dagVertex, papifyPEId,
             papifyActionS);
-        // Add the Papify writing function to the loop
-        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
+        // Add the Papify start function for events to the loop
+        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStart);
       }
-      // Save the functionCall in the dagvertexFunctionCall Map
-      this.dagVertexCalls.put(dagVertex, functionCall);
 
-      // Generate the init FunctionCall (if any)
-      final Prototype initPrototype = prototypes.getInitPrototype();
-      if (initPrototype != null) {
-        if (!initPrototype.getIsStandardC()) {
-          throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
-        }
-
-        final FunctionCall functionCall2 = generateFunctionCall(dagVertex, initPrototype, true);
-
-        registerCallVariableToCoreBlock(operatorBlock, functionCall2);
-        // Add the function call to the operatorBlock
-        operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
+      if (monitoringTiming) {
+        // Generate Papify start timing function
+        final PapifyFunctionCall functionCallPapifyTimingStart = generatePapifyStartTimingFunctionCall(dagVertex,
+            papifyPEId, papifyActionS);
+        // Add the Papify start timing function to the loop
+        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStart);
       }
     }
+    // Add the function call for RegisterSetUp to the loopBlock just before the function call
+    operatorBlock.getLoopBlock().getCodeElts().add(registerSetUpActionFunctionCall);
+    // Add the function call for DataTransfer to the loopBlock just before the function call
+    operatorBlock.getLoopBlock().getCodeElts().add(dataTransferActionFunctionCall);
 
+    registerCallVariableToCoreBlock(operatorBlock, functionCall);
+    // Add the function call to the operatorBlock
+    operatorBlock.getLoopBlock().getCodeElts().add(functionCall);
+    // Free buffer data transfer that may be used freeDataTransferBufferFunctionCall
+    operatorBlock.getLoopBlock().getCodeElts().add(freeDataTransferBufferFunctionCall);
+    // Add the function call for OutputDataTransfer to the loopBlock just after the function call
+    operatorBlock.getLoopBlock().getCodeElts().add(outputDataTransferFunctionCall);
+
+    if (this.papifyActive && papifyConfig.hasPapifyConfig(referencePiVertex)) {
+      if (monitoringTiming) {
+        // Generate Papify stop timing function
+        final PapifyFunctionCall functionCallPapifyTimingStop = generatePapifyStopTimingFunctionCall(dagVertex,
+            papifyPEId, papifyActionS);
+        // Add the Papify stop timing function to the loop
+        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyTimingStop);
+      }
+      if (monitoringEvents) {
+        // Generate Papify stop function for events
+        final PapifyFunctionCall functionCallPapifyStop = generatePapifyStopFunctionCall(dagVertex, papifyPEId,
+            papifyActionS);
+        // Add the Papify stop function for events to the loop
+        operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyStop);
+      }
+      // Generate Papify writing function
+      final PapifyFunctionCall functionCallPapifyWriting = generatePapifyWritingFunctionCall(dagVertex, papifyPEId,
+          papifyActionS);
+      // Add the Papify writing function to the loop
+      operatorBlock.getLoopBlock().getCodeElts().add(functionCallPapifyWriting);
+    }
+    // Save the functionCall in the dagvertexFunctionCall Map
+    this.dagVertexCalls.put(dagVertex, functionCall);
+
+    // Generate the init FunctionCall (if any)
+    final Prototype initPrototype = prototypes.getInitPrototype();
+    if (initPrototype != null) {
+      if (!initPrototype.getIsStandardC()) {
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
+      }
+
+      final FunctionCall functionCall2 = generateFunctionCall(dagVertex, initPrototype, true);
+
+      registerCallVariableToCoreBlock(operatorBlock, functionCall2);
+      // Add the function call to the operatorBlock
+      operatorBlock.getInitBlock().getCodeElts().add(functionCall2);
+    }
   }
 
   /**

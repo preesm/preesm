@@ -68,7 +68,6 @@ import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionBlock;
 import org.preesm.codegen.model.FunctionCall;
-import org.preesm.codegen.model.FunctionCoreBlock;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
@@ -78,6 +77,7 @@ import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.RefinementBlock;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
@@ -302,7 +302,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // If blocks are instance of FunctionCoreBlock, there is no need to check if hardware ID is unique,
     // because result will be a file containing a function, that could be called on any core by real coreBlocks.
     final List<CoreBlock> operatorBlocks = allBlocks.stream().filter(CoreBlock.class::isInstance)
-        .filter(Predicate.not(FunctionCoreBlock.class::isInstance)).map(CoreBlock.class::cast).toList();
+        .filter(Predicate.not(RefinementBlock.class::isInstance)).map(CoreBlock.class::cast).toList();
     final long operatorBlockCount = operatorBlocks.size();
     for (int i = 0; i < operatorBlockCount; i++) {
       final CoreBlock coreBlocki = operatorBlocks.get(i);
@@ -412,8 +412,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
     StringConcatenation result = new StringConcatenation();
     CharSequence coreBlockHeader = null;
-    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
-      coreBlockHeader = printFunctionCoreBlockHeader(funcCoreBlock);
+    if (coreBlock instanceof final RefinementBlock funcCoreBlock) {
+      coreBlockHeader = printRefinementBlockHeader(funcCoreBlock);
     } else {
       coreBlockHeader = printCoreBlockHeader(coreBlock);
     }
@@ -431,14 +431,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final EList<Variable> definitions = coreBlock.getDefinitions();
     // Visit Declarations
 
-    if (!(coreBlock instanceof FunctionCoreBlock)) {
+    if (!(coreBlock instanceof RefinementBlock)) {
       result = printDeclarations(coreBlock, result, indentationCoreBlock, definitions);
     }
     // Visit Definitions
     result = printDefinitions(result, indentationCoreBlock, definitions);
 
     // Visit init block & loop block
-    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
+    if (coreBlock instanceof final RefinementBlock funcCoreBlock) {
       result = printInitFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
       result = printLoopFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
     } else {
@@ -451,8 +451,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     }
 
     CharSequence coreBlockFooter = null;
-    if (coreBlock instanceof final FunctionCoreBlock funcCoreBlock) {
-      coreBlockFooter = printFunctionCoreBlockFooter(funcCoreBlock);
+    if (coreBlock instanceof final RefinementBlock funcCoreBlock) {
+      coreBlockFooter = printRefinementBlockFooter(funcCoreBlock);
     } else {
       coreBlockFooter = printCoreBlockFooter(coreBlock);
     }
@@ -685,8 +685,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return result;
   }
 
-  private StringConcatenation printInitFunctionBlock(final FunctionCoreBlock clusterFileBlock,
-      StringConcatenation result, final String indentationCoreBlock) {
+  private StringConcatenation printInitFunctionBlock(final RefinementBlock clusterFileBlock, StringConcatenation result,
+      final String indentationCoreBlock) {
     String indentation;
     boolean hasNewLine;
     setState(PrinterState.PRINTING_INIT_BLOCK);
@@ -714,8 +714,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   public abstract CharSequence printInitFunctionBlockFooter(CallFunctionBlock callBlock);
 
-  private StringConcatenation printLoopFunctionBlock(final FunctionCoreBlock clusterFileBlock,
-      StringConcatenation result, final String indentationCoreBlock) {
+  private StringConcatenation printLoopFunctionBlock(final RefinementBlock clusterFileBlock, StringConcatenation result,
+      final String indentationCoreBlock) {
     String indentation;
     boolean hasNewLine;
     setState(PrinterState.PRINTING_LOOP_BLOCK);
@@ -1533,8 +1533,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    */
   public abstract CharSequence printGlobalBufferDeclaration(final GlobalBufferDeclaration action);
 
-  public abstract CharSequence printFunctionCoreBlockHeader(final FunctionCoreBlock funcCoreBlock);
+  public abstract CharSequence printRefinementBlockHeader(final RefinementBlock funcCoreBlock);
 
-  public abstract CharSequence printFunctionCoreBlockFooter(final FunctionCoreBlock funcCoreBlock);
+  public abstract CharSequence printRefinementBlockFooter(final RefinementBlock funcCoreBlock);
 
 }

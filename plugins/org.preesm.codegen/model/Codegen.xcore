@@ -215,7 +215,9 @@ enum Delimiter {
 	END = 1
 }
 
-class FunctionCoreBlock extends CoreBlock {
+/* This class has been made to create a new file containing a refinement composed of its init and loop blocks */
+class RefinementBlock extends CoreBlock {
+	String[] headers
 	
 	op void setLoopBlock(LoopBlock lb) {
 		if (!(lb instanceof LoopFunctionBlock)) {

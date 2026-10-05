@@ -59,7 +59,6 @@ import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FpgaLoadAction;
 import org.preesm.codegen.model.FreeDataTransferBuffer;
 import org.preesm.codegen.model.FunctionCall;
-import org.preesm.codegen.model.FunctionCoreBlock;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
@@ -69,6 +68,7 @@ import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.RefinementBlock;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
@@ -380,12 +380,12 @@ public class BlankPrinter extends CodegenAbstractPrinter {
   }
 
   @Override
-  public CharSequence printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) {
+  public CharSequence printRefinementBlockHeader(RefinementBlock funcCoreBlock) {
     return "";
   }
 
   @Override
-  public CharSequence printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) {
+  public CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
     return "";
   }
 }

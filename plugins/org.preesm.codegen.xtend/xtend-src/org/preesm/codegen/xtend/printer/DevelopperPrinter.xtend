@@ -76,7 +76,7 @@ import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.CallFunctionBlock
 import org.preesm.codegen.model.LoopFunctionBlock
-import org.preesm.codegen.model.FunctionCoreBlock
+import org.preesm.codegen.model.RefinementBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -249,11 +249,11 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	
 	override printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock)'''<Loop_Function_Block_Head>'''
 	
-	override printFunctionCoreBlockHeader(FunctionCoreBlock funcCoreBlock) {
+	override printRefinementBlockHeader(RefinementBlock funcCoreBlock) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 	
-	override printFunctionCoreBlockFooter(FunctionCoreBlock funcCoreBlock) {
+	override printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 
