@@ -1,43 +1,28 @@
 package org.preesm.algorithm.clustering.identification;
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.logging.Level;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
-import org.preesm.algorithm.clustering.ClusterCreator;
-import org.preesm.algorithm.clustering.ClusterHelper;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
-import org.preesm.algorithm.clustering.heuristics.MappingHeuristic;
 import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic;
-import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
-import org.preesm.model.pisdf.CHeaderRefinement;
-import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
-import org.preesm.model.pisdf.DataOutputPort;
-import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
-import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionArgument;
-import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.pisdf.statictools.PiSDFFlattener;
+import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -72,29 +57,27 @@ public class ClusterIdentifier {
    *          the S-LAM {@link Design architecture} graph.
    * @param parameters
    *          the parameters of the {@link AbstractTaskImplementation task} calling this method.
-   * @return A pair that contains (1)the modified algorithm, and (2) a map containing the clusters (that are
-   *         {@link PiGraph sub-graphs} of the top graph} and a {@link Component component} type for each cluster. There
-   *         is also the scenario as indirect output that has been updated with the clusters'constraints.
+   * @return The modified {@link PiGraph algorithm} containing the clusters. There is also the {@link Scenario scenario}
+   *         that has been updated with the clusters'constraints as indirect output.
    */
-  public static Pair<PiGraph, Map<PiGraph, Component>> identify(PiGraph algorithm, Scenario scenario,
-      Design architecture, Map<String, String> parameters, Workflow workflow) {
+  public static PiGraph identify(PiGraph algorithm, Scenario scenario, Design architecture,
+      Map<String, String> parameters) {
 
     // Getting parameters
     final boolean verbose = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
-    final String vertiIdentifierName = parameters.getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, "")
+    final String vertiIdentifierName = parameters
+        .getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE)
         .toLowerCase();
     final String horizIdentifierName = parameters.getOrDefault(ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, "")
         .toLowerCase();
-    final String mapperName = parameters.getOrDefault(ClusterCreationTask.PARAM_MAPPING_HEURISTIC, "").toLowerCase();
     final String balancerName = parameters.getOrDefault(ClusterCreationTask.PARAM_BALANCING_HEURISTIC, "")
         .toLowerCase();
-    final boolean debug = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
 
-    final boolean verticalEnabled = !"".equals(vertiIdentifierName);
+    final boolean verticalEnabled = !ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE.toLowerCase()
+        .equals(vertiIdentifierName);
 
     // Retrieving heuristics
     final HorizontalHeuristic horizIdentifier = (HorizontalHeuristic) HeuristicGetter.getHeuristic(horizIdentifierName);
-    final MappingHeuristic clusterMapper = (MappingHeuristic) HeuristicGetter.getHeuristic(mapperName);
     final BalancingHeuristic clusterBalancer = (BalancingHeuristic) HeuristicGetter.getHeuristic(balancerName);
 
     // ---------------------------------------------------------------------------------------------- //
@@ -110,23 +93,10 @@ public class ClusterIdentifier {
 
     // Adding special actors for every hierarchical level of algorithm.
     // Can be useful to unlock memory reuse without passing by a SrDAG
-    ClusterSynthesisHelper.addAllSpecialActors(algorithm);
+    ClusteringHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
       PreesmLogger.getLogger().info("Clustering Id: building vertical clusters done.");
-    }
-
-    // Debug
-    if (debug) {
-      Map<String, Object> exportInputs = null;
-      Map<String, String> exportParameters;
-      exportInputs = new HashMap<>();
-      exportInputs.put("PiMM", algorithm);
-      exportParameters = new HashMap<>();
-      exportParameters.put("path", "/Algo/generated/clustering/debug/vertical/");
-      exportParameters.put("hierarchical", "true");
-
-      new PiSDFExporterTask().execute(exportInputs, exportParameters, null, null, workflow);
     }
 
     // ---------------------------------------------------------------------------------------------- //
@@ -135,9 +105,8 @@ public class ClusterIdentifier {
     // It will modify the algorithm graph & return the created subgraphs list
 
     horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-    clusterMapper.initHeuristicParameters(algorithm, scenario, architecture, parameters);
 
-    final List<PiGraph> clustersList = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
+    List<PiGraph> clustersList = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
         horizIdentifier, verbose);
 
     if (verbose) {
@@ -146,25 +115,39 @@ public class ClusterIdentifier {
     }
 
     // ---------------------------------------------------------------------------------------------- //
+    // Balancing
+    // ---------------------------------------------------------------------------------------------- //
+    // It will modify cluster lists and clusters' input and output weights
+    final List<PiGraph> newClustersList = new ArrayList<>();
+    final long nPEs = ClusteringHelper.computeSingleNodeCoreEquivalent(scenario);
+
+    clusterBalancer.initHeuristicParameters(algorithm, scenario, architecture, parameters);
+
+    for (final PiGraph cluster : clustersList) {
+
+      clusterBalancer.balanceFirings(algorithm /* will be modified */, cluster, nPEs).stream().forEach(c -> {
+        newClustersList.add(c);
+      });
+    }
+
+    clustersList = newClustersList;
+
+    if (verbose) {
+      PreesmLogger.getLogger().info("Clustering Id: partitioning clusters done");
+    }
+
+    // ---------------------------------------------------------------------------------------------- //
     // Clusters constraints
     // ---------------------------------------------------------------------------------------------- //
     // It will modify the scenario by adding constraints.
 
-    // Create Refinement link in advance
-    clustersList.parallelStream().forEach(cluster -> buildClusterRefinement(cluster, scenario));
-
-    // Init cluster balancer after the identification (once the algorithm is updated with clusters)
-    clusterBalancer.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-
-    Map<PiGraph, Component> result = new HashMap<>();
     for (final PiGraph cluster : clustersList) {
 
-      // Picking the component type of cluster thanks to the mapping heuristic
-      final Component clusterComponent = clusterMapper.selectComponent(cluster);
-      result.put(cluster, clusterComponent);
-
-      // Adding the constraints of all the component instances for the given cluster (works in a mono-node only)
-      for (final ComponentInstance ci : architecture.getComponentInstancesOfType(clusterComponent)) {
+      // Updating the constraints of the cluster
+      final List<AbstractActor> filtered = cluster.getActors().stream()
+          .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof SpecialActor)).toList();
+      final List<ComponentInstance> possibleInstances = ClusteringHelper.getListOfCommonComponent(filtered, scenario);
+      for (final ComponentInstance ci : possibleInstances) {
         scenario.getConstraints().addConstraint(ci, cluster);
       }
     }
@@ -173,29 +156,7 @@ public class ClusterIdentifier {
       PreesmLogger.getLogger().info("Clustering Id: clusters constraints Id done");
     }
 
-    // ---------------------------------------------------------------------------------------------- //
-    // Balancing
-    // ---------------------------------------------------------------------------------------------- //
-    // It will modify cluster lists and clusters' input and output weights
-    final Map<PiGraph, Component> newResult = new HashMap<>();
-    final long nPEs = ClusterHelper.computeSingleNodeCoreEquivalent(scenario);
-
-    for (final Entry<PiGraph, Component> entry : result.entrySet()) {
-      final PiGraph cluster = entry.getKey();
-      final Component clusterComponent = entry.getValue();
-      clusterBalancer.balanceFirings(algorithm /* will be modified */, cluster, nPEs).stream().forEach(c -> {
-        newResult.put(c, clusterComponent);
-      });
-    }
-
-    result = newResult;
-
-    if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: partitioning clusters done");
-    }
-
-    return new Pair<>(algorithm, result);
-
+    return algorithm;
   }
 
   /**
@@ -244,8 +205,7 @@ public class ClusterIdentifier {
    * heuristic}.
    *
    * @param graph
-   *          the current graph where to seek horizontal clusters. It can be the top graph, or a sub-graph. It is
-   *          supposed to be impactless.
+   *          the current graph where to seek horizontal clusters. It can be the top graph, or a sub-graph.
    * @param arch
    *          the S-LAM {@link Design architecture} graph
    * @param heuristic
@@ -361,15 +321,16 @@ public class ClusterIdentifier {
       }
 
       // Creating the cluster
-      final PiGraph cluster = ClusterCreator.create(graph, actorsToMerge, clusterName);
-
-      // Checking modified graph (with the new cluster) consistency
-      final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
-      pgcc.check(graph);
-
+      // final PiGraph cluster = ClusterCreator.create(graph, actorsToMerge, clusterName);
+      final PiGraph cluster = new PiSDFSubgraphBuilder(graph, new ArrayList<>(actorsToMerge), clusterName).build();
+      cluster.setClusterValue(true);
       listClusters.add(cluster);
 
     }
+
+    // Checking modified graph (with the new clusters) consistency
+    final PiGraphConsistenceChecker pgcc = new PiGraphConsistenceChecker();
+    pgcc.check(graph);
 
     return listClusters;
   }
@@ -421,71 +382,4 @@ public class ClusterIdentifier {
     }
     return actorsToMerge;
   }
-
-  /**
-   * A loop and an init function will be generated for each cluster. A cluster need a refinement so that the top graph
-   * that is scheduled in a more conventional way can consider the cluster as a classic actor. For now, the cluster can
-   * only have a {@link CHeaderRefinement}. It has to be changed if multiple languages (Other than C and its derivatives
-   * like C++, OpenMP, or CUDA) are supported by PREESM.
-   *
-   * @param cluster
-   *          The given cluster. A refinement will be added to it.
-   * @param scenario
-   *          The given scenario
-   */
-  public static void buildClusterRefinement(PiGraph cluster, Scenario scenario) {
-
-    // extract function's arguments
-    final CHeaderRefinement clusterHeader = PiMMUserFactory.instance.createCHeaderRefinement();
-    clusterHeader.setFilePath(scenario.getCodegenDirectory() + File.separator + cluster.getName() + ".h");
-
-    final FunctionPrototype initPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-    initPrototype.setName(ClusterHelper.getInitPrototypeName(cluster));
-    final FunctionPrototype loopPrototype = PiMMUserFactory.instance.createFunctionPrototype();
-    loopPrototype.setName(ClusterHelper.getLoopPrototypeName(cluster));
-    clusterHeader.setLoopPrototype(loopPrototype);
-    clusterHeader.setInitPrototype(initPrototype);
-
-    final List<Port> clusterInputsOutputs = new ArrayList<>();
-    clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
-    clusterInputsOutputs.addAll(cluster.getAllDataPorts());
-
-    final List<FunctionArgument> initArgs = new ArrayList<>();
-    final List<FunctionArgument> loopArgs = new ArrayList<>();
-
-    for (int i = 0; i < clusterInputsOutputs.size(); i++) {
-      final Port port = clusterInputsOutputs.get(i);
-      final FunctionArgument loopArg = PiMMUserFactory.instance.createFunctionArgument();
-      loopArg.setDirection(port instanceof DataOutputPort ? Direction.OUT : Direction.IN);
-      loopArg.setIsConfigurationParameter(port instanceof ConfigInputPort);
-      loopArg.setIsPassedByReference(port instanceof DataPort);
-      loopArg.setName(clusterInputsOutputs.get(i).getName());
-
-      if (port instanceof ConfigInputPort) {
-        loopArg.setType("int");
-
-        // We have to recreate a function argument for init, otherwise it can't be in two lists at a time
-        final FunctionArgument initArg = PiMMUserFactory.instance.createFunctionArgument();
-        initArg.setDirection(loopArg.getDirection());
-        initArg.setIsConfigurationParameter(true);
-        initArg.setIsPassedByReference(false);
-        initArg.setName(port.getName());
-        initArg.setType("int");
-        initArgs.add(initArg);
-
-      } else if (port instanceof final DataInputPort dip) {
-        loopArg.setType(dip.getFifo().getType());
-      } else if (port instanceof final DataOutputPort dop) {
-        loopArg.setType(dop.getFifo().getType());
-      } else {
-        throw new PreesmRuntimeException("Port" + port.getName() + " is neither config nor data input/output.");
-      }
-      loopArgs.add(loopArg);
-    }
-    loopPrototype.getArguments().addAll(loopArgs);
-    initPrototype.getArguments().addAll(initArgs);
-
-    cluster.setRefinement(clusterHeader);
-  }
-
 }

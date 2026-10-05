@@ -48,6 +48,7 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -57,11 +58,13 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
@@ -70,8 +73,11 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
@@ -84,9 +90,9 @@ import org.preesm.model.slam.Design;
  * @author anmorvan
  *
  */
-public class ClusterHelper {
+public class ClusteringHelper {
 
-  private ClusterHelper() {
+  private ClusteringHelper() {
     // forbid instantiation
   }
 
@@ -181,7 +187,7 @@ public class ClusterHelper {
       } else {
         // Estimate every internal buffer size
         final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
-        final List<Fifo> fifos = ClusterHelper.getInternalClusterFifo(graph);
+        final List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
         final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
         for (final Fifo fifo : fifos) {
           result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluateAsLong();
@@ -325,7 +331,7 @@ public class ClusterHelper {
       final Map<AbstractVertex, Long> brv, Scenario scenario) {
     final List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
     // Remove couples of actors that are not in the same constraints
-    ClusterHelper.removeConstrainedCouples(couples, scenario);
+    ClusteringHelper.removeConstrainedCouples(couples, scenario);
     return couples;
   }
 
@@ -464,4 +470,159 @@ public class ClusterHelper {
     });
   }
 
+  /**
+   * This method generates {@link SpecialActor special actors} with one {@link DataInputPort input} and one
+   * {@link DataOutputPort output}, to be able to perform smart cluster memory {@link Allocation allocation}. This
+   * allocation is made with a {@link PiGraph PiSDF}, not with a SrDAG. That is why we are generating special actors
+   * that would have been generated in the SrDAG.
+   *
+   * @param cluster
+   *          the input cluster (PiSDF graph)
+   */
+  public static void addSpecialActors(PiGraph cluster) {
+    // I think adding Fork and Join actors is useless to improve memory reuse in cluster
+    addBroadcastActors(cluster);
+    addRoundBufferActors(cluster);
+  }
+
+  public static void addAllSpecialActors(PiGraph graph) {
+    addSpecialActors(graph);
+    for (final PiGraph child : graph.getChildrenGraphs()) {
+      addAllSpecialActors(child);
+    }
+  }
+
+  /**
+   * For every {@link DataInputInterface data input interface}, it checks if a {@link BroadcastActor broadcast actor}
+   * needs to be generated. The condition is : if a is linked to b, a being the data input interface, and brv value of b
+   * is strictly higher than 1, then we can add a {@link BroadcastActor broadcast actor} to make a smart cluster memory
+   * allocation in a future step of the {@link ClusterSynthesisTask cluster synthesis task}.
+   *
+   * @param cluster
+   *          the input cluster
+   */
+  private static void addBroadcastActors(PiGraph cluster) {
+
+    long nameCounter = 0;
+
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+    for (final DataInputInterface a : cluster.getDataInputInterfaces()) {
+      final DataOutputPort aOut = a.getDataPort();
+      final Fifo a2b = aOut.getFifo();
+      final AbstractActor b = a2b.getTarget();
+      final DataInputPort bIn = a2b.getTargetPort();
+      final long aExpr = a.getGraphPort().getExpression().evaluateAsLong();
+      final long bInExpr = bIn.getExpression().evaluateAsLong();
+
+      // If b is executed only once or next actor is already a broadcast actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(b) * bInExpr == aExpr || b instanceof BroadcastActor) {
+        continue;
+      }
+
+      // Creating broadcast actor
+      final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
+      brd.setName("brd_" + nameCounter++);
+
+      // Creating in/out broadcast ports
+      final DataInputPort brdIn = PiMMUserFactory.instance.createDataInputPort();
+      brdIn.setName("brd_in");
+      final DataOutputPort brdOut = PiMMUserFactory.instance.createDataOutputPort();
+      brdOut.setName("brd_out");
+      brd.getDataInputPorts().add(brdIn);
+      brd.getDataOutputPorts().add(brdOut);
+
+      // Setting expression of ports
+      aOut.setExpression(aExpr); // otherwise it bugs...
+      brdIn.setExpression(aExpr);
+      brdOut.setExpression(brv.get(b) * bInExpr);
+
+      // Linking broadcast with a and b
+      final String dataType = a2b.getType();
+      final Fifo a2brd = a2b;
+      a2brd.setTargetPort(brdIn);
+      final Fifo brd2b = PiMMUserFactory.instance.createFifo(brdOut, bIn, dataType);
+      cluster.addActor(brd);
+      cluster.addFifo(brd2b);
+    }
+  }
+
+  /**
+   * For every {@link DataOutputInterface data input interface}, it checks if a {@link RoundBufferActor round buffer
+   * actor} needs to be generated. The condition is : if a is linked to b, b being the data input interface, and brv
+   * value of a is strictly higher than 1, then we can add a {@link RoundBufferActor round buffer actor} to allow a
+   * smart cluster memory allocation in a future step of the {@link ClusterSynthesisTask cluster synthesis task}.
+   *
+   * @param cluster
+   *          the input cluster
+   */
+  private static void addRoundBufferActors(PiGraph cluster) {
+
+    long nameCounter = 0;
+
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+    for (final DataOutputInterface b : cluster.getDataOutputInterfaces()) {
+      final DataInputPort bIn = b.getDataPort();
+      final Fifo a2b = bIn.getFifo();
+      final AbstractActor a = a2b.getSource();
+      final DataOutputPort aOut = a2b.getSourcePort();
+      final long aOutExpr = aOut.getExpression().evaluateAsLong();
+      final long bExpr = b.getGraphPort().getExpression().evaluateAsLong();
+
+      // If a is executed only once or next actor is already a round buffer actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(a) * aOutExpr == bExpr || b instanceof RoundBufferActor) {
+        continue;
+      }
+
+      // Creating round buffer actor
+      final RoundBufferActor rdb = PiMMUserFactory.instance.createRoundBufferActor();
+      rdb.setName("rdb_" + nameCounter++);
+
+      // Creating in/out broadcast ports
+      final DataInputPort rdbIn = PiMMUserFactory.instance.createDataInputPort();
+      rdbIn.setName("rdb_in");
+      final DataOutputPort rdbOut = PiMMUserFactory.instance.createDataOutputPort();
+      rdbOut.setName("rdb_out");
+      rdb.getDataInputPorts().add(rdbIn);
+      rdb.getDataOutputPorts().add(rdbOut);
+
+      // Setting expression of ports
+      bIn.setExpression(bExpr); // otherwise it bugs...
+      rdbIn.setExpression(brv.get(a) * aOutExpr);
+      rdbOut.setExpression(bExpr);
+
+      // Linking broadcast with a and b
+      final String dataType = a2b.getType();
+      final Fifo a2rdb = a2b;
+      a2rdb.setTargetPort(rdbIn);
+      final Fifo brd2b = PiMMUserFactory.instance.createFifo(rdbOut, bIn, dataType);
+      cluster.addActor(rdb);
+      cluster.addFifo(brd2b);
+    }
+  }
+
+  /**
+   * Computes the scope repetition of current schedule. For example, if s.getRoot = a2(b3(c2d)), computeScopeRepetition
+   * of b3(c2d) will be equal to 2, and computeScopeRepetition of c2d will be equal to 2 * 3 = 6.
+   *
+   * @param s
+   *          current schedule
+   * @return the scope repetition of s
+   */
+  public static long computeScopeRepetition(final Schedule s) {
+    long scopeRepetition = s.getRepetition();
+    if (scopeRepetition == 0) {
+      scopeRepetition = 1;
+    }
+    Schedule parent = s.getParent();
+    while (parent != null) {
+      final long parentRep = parent.getRepetition();
+      scopeRepetition *= (parentRep == 0) ? 1 : parentRep;
+      parent = parent.getParent();
+    }
+    return scopeRepetition;
+  }
 }

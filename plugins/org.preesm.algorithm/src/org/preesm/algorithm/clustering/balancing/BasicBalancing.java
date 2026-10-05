@@ -109,7 +109,7 @@ public class BasicBalancing extends BalancingHeuristic {
 
     // Log -> track cluster1 modification
     if (verbose) {
-      log = BalancingHelper.makeCompareLog(cluster, topgraph, clusterOldExprs);
+      log = makeCompareLog(cluster, topgraph, clusterOldExprs);
       PreesmLogger.getLogger().info(log);
     }
 

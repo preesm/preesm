@@ -2,7 +2,7 @@ package org.preesm.algorithm.clustering.identification;
 
 import java.util.Map;
 import java.util.Set;
-import org.preesm.algorithm.clustering.ClusterHelper;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -53,13 +53,13 @@ public class SRVHeuristic extends HorizontalHeuristic {
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     // Adding nCore (from scenario)
-    this.nPEs = scenario == null ? 1 : ClusterHelper.computeSingleNodeCoreEquivalent(scenario);
+    this.nPEs = scenario == null ? 1 : ClusteringHelper.computeSingleNodeCoreEquivalent(scenario);
 
   }
 
   @Override
   public boolean validateCluster(Set<AbstractActor> cluster) {
-    return !ClusterHelper.clusterHasGetterAndSetterActors(cluster);
+    return !ClusteringHelper.clusterHasGetterAndSetterActors(cluster);
   }
 
   @Override

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import org.preesm.algorithm.clustering.ClusterHelper;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.Heuristic;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -63,7 +63,7 @@ public class URCHeuristic extends HorizontalHeuristic {
     brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     // Computing number of equivalent cores
-    nPEs = scenario == null ? 1 : ClusterHelper.computeSingleNodeCoreEquivalent(scenario);
+    nPEs = scenario == null ? 1 : ClusteringHelper.computeSingleNodeCoreEquivalent(scenario);
   }
 
   @Override
@@ -89,7 +89,7 @@ public class URCHeuristic extends HorizontalHeuristic {
       return false;
     }
 
-    result &= !ClusterHelper.clusterHasGetterAndSetterActors(cluster);
+    result &= !ClusteringHelper.clusterHasGetterAndSetterActors(cluster);
 
     return result;
 

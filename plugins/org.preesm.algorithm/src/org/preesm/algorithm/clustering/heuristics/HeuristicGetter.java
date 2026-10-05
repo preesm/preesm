@@ -5,10 +5,6 @@ import org.preesm.algorithm.clustering.balancing.CompleteBalancing;
 import org.preesm.algorithm.clustering.identification.SRVHeuristic;
 import org.preesm.algorithm.clustering.identification.SimpleFPGAIdentifier;
 import org.preesm.algorithm.clustering.identification.URCHeuristic;
-import org.preesm.algorithm.clustering.synthesis.APGANSchedulingHeuristic;
-import org.preesm.algorithm.clustering.synthesis.ClassicMappingHeuristic;
-import org.preesm.algorithm.clustering.synthesis.SimpleAllocationHeuristic;
-import org.preesm.algorithm.clustering.synthesis.SimpleMappingHeuristic;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -48,12 +44,8 @@ public class HeuristicGetter {
       case SRV_IDENTIFIER -> new SRVHeuristic();
       case URC_IDENTIFIER -> new URCHeuristic();
       case SIMPLE_FPGA_IDENTIFIER -> new SimpleFPGAIdentifier();
-      case CLASSIC_MAPPER -> new ClassicMappingHeuristic();
-      case SIMPLE_MAPPER -> new SimpleMappingHeuristic();
-      case SIMPLE_ALLOCATION -> new SimpleAllocationHeuristic();
       case COMPLETE_BALANCING -> new CompleteBalancing();
       case BASIC_BALANCING -> new BasicBalancing();
-      case APGAN_SCHEDULING -> new APGANSchedulingHeuristic();
       default -> throw new PreesmRuntimeException(
           "heuristicName <" + heuristicName + "> is unkown, can't retrieve the wanted heuristic.");
     };

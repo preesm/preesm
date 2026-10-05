@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
-import org.preesm.algorithm.clustering.synthesis.ClusterSynthesisHelper;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
@@ -149,7 +149,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track broadcast modification
           if (verbose) {
-            log = BalancingHelper.makeCompareLog(previousActor, topgraph, oldExprs);
+            log = makeCompareLog(previousActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
           expr = tokensOneExec;
@@ -169,7 +169,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
     // Log -> track cluster1 modification
     if (verbose) {
-      log = BalancingHelper.makeCompareLog(cluster1, topgraph, cluster1OldExprs);
+      log = makeCompareLog(cluster1, topgraph, cluster1OldExprs);
       PreesmLogger.getLogger().info(log);
     }
 
@@ -259,7 +259,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track broadcast modification
           if (verbose) {
-            log = BalancingHelper.makeCompareLog(brdActor, topgraph, oldExprs);
+            log = makeCompareLog(brdActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
 
@@ -315,7 +315,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track forkActor creation
           if (verbose) {
-            log = BalancingHelper.makeCompareLog(forkActor, topgraph, null);
+            log = makeCompareLog(forkActor, topgraph, null);
             PreesmLogger.getLogger().info(log);
           }
         }
@@ -381,14 +381,14 @@ public class CompleteBalancing extends BalancingHeuristic {
 
         // Log -> track joinActor creation
         if (verbose) {
-          log = BalancingHelper.makeCompareLog(joinActor, topgraph, null);
+          log = makeCompareLog(joinActor, topgraph, null);
           PreesmLogger.getLogger().info(log);
         }
       }
     }
 
     // Facilitate the memory reuse in cluster
-    clusters.stream().forEach(ClusterSynthesisHelper::addSpecialActors);
+    clusters.stream().forEach(ClusteringHelper::addSpecialActors);
 
     return clusters;
 

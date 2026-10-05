@@ -1,33 +1,22 @@
 package org.preesm.algorithm.clustering;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
-import org.preesm.algorithm.clustering.synthesis.ClusterSynthesis;
-import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
-@PreesmTask(id = "clustering.creation", name = "Clustering task", category = "Clustering",
+@PreesmTask(id = "clustering.creation", name = "Clustering task", category = "Graph Transformation",
 
     parameters = {
 
@@ -36,7 +25,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           If there is not enough or too many hierarchical level following the heuristic,
           it will create or regroup hierarchical levels. This parameter is optional. If not present
           , the input graph will just be flatten. For now, there is no vertical heuristic.
-          """, values = {}),
+          """,
+          values = { @Value(name = ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE,
+              effect = "The input graph will be flatten.") }),
 
       @Parameter(name = ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, description = """
           Name of which heuristic will be used to horizontaly clusterize the graph. Every hierachical
@@ -54,14 +45,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           values = { @Value(name = HeuristicGetter.URC_IDENTIFIER), @Value(name = HeuristicGetter.URC_IDENTIFIER),
             @Value(name = HeuristicGetter.SIMPLE_FPGA_IDENTIFIER) }),
 
-      @Parameter(name = ClusterCreationTask.PARAM_MAPPING_HEURISTIC, description = """
-          Name of which heuristic will assign a component type on which the cluster could be executed on:
-          - The Simple mapper will select the same component type for every cluster than the main operator one.
-          - The Classic mapper will select a component that is at least shared by every actors in the cluster.
-          If none, throws an error.
-              """,
-          values = { @Value(name = HeuristicGetter.CLASSIC_MAPPER), @Value(name = HeuristicGetter.SIMPLE_MAPPER) }),
-
       @Parameter(name = ClusterCreationTask.PARAM_BALANCING_HEURISTIC, description = """
           Name of which heuristic will balance the clusters in the graph. By default, clusters are set to its
           maximal repetition, but the balancer can modify that. There is two available balancers :
@@ -74,40 +57,25 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           values = { @Value(name = HeuristicGetter.COMPLETE_BALANCING),
             @Value(name = HeuristicGetter.BASIC_BALANCING) }),
 
-      @Parameter(name = ClusterCreationTask.PARAM_SCHEDULING_HEURISTIC, description = """
-          Name of which heuristic will schedule the clusters in the graph. For now, the only available scheduling
-          algorithm is the APGAN algorithm. We can't reuse existing scheduling algorithm as they depend on a DAG.
-          However, DAG creation must be avoided in the cluster synthesis process.
-          [WORK IN PROGRESS]: the FPGA shceduler will soon be implemented for FPGA clusters identified with the FPGA
-          heuristic.
-          """, values = { @Value(name = HeuristicGetter.APGAN_SCHEDULING) }),
-
-      @Parameter(name = ClusterCreationTask.PARAM_ALLOCATION_HEURISTIC, description = """
-          Name of which heuristic will allocate the clusters memory. Work with a cluster scheduler only
-          (see scheduling heuristic parameters for all available schedulers that can work with cluster
-          allocation).
-          """, values = { @Value(name = HeuristicGetter.SIMPLE_ALLOCATION) }),
-
       @Parameter(name = ClusterCreationTask.PARAM_VERBOSE, description = "More or less logs",
-          values = { @Value(name = "True"), @Value(name = "False") }),
-
-      @Parameter(name = ClusterCreationTask.PARAM_DEBUG,
-          description = "Enable intermediate graph creation, to check if everything is ok between substeps.",
           values = { @Value(name = "True"), @Value(name = "False") }) },
 
-    inputs = { @Port(name = "scenario", type = Scenario.class, description = "Input scenario"),
-      @Port(name = "PiMM", type = PiGraph.class, description = "Input PiGraph algorithm"),
-      @Port(name = "architecture", type = Design.class, description = "Input S-LAM architecture graph") },
+    inputs = {
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+          description = "Input scenario"),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+          description = "Input PiGraph algorithm"),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class,
+          description = "Input S-LAM architecture graph") },
 
     outputs = {
-      @Port(name = "PiMM", type = PiGraph.class, description = "Output PiGraph algorithm, modified by heuristics"),
-      @Port(name = "scenario", type = Scenario.class, description = "Modified scenario, with the clusters constraints"),
-      @Port(name = "clusters", type = List.class, description = "List containing the created clusters"),
-      @Port(name = "schedules", type = List.class, description = "List containing the clusters schedule"),
-      @Port(name = "allocations", type = List.class, description = "List containing the clusters allocation") },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
+          description = "Output PiGraph algorithm, modified by heuristics"),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
+          description = "Modified scenario, with the clusters constraints") },
 
     description = """
-        Workflow task responsible for identifying, creating, schedule, map and allocate clusters.
+        Workflow task responsible for identifying, creating and balancing clusters.
         The goal is to reduce the complexity of the graph without loosing parallelism,
         according to the given heuristics. The available heuristics are described in the parameters section.
         If the user wants to create an heuristic, he will have to create them in the source code of PREESM,
@@ -119,7 +87,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         """,
 
     shortDescription = """
-        Workflow task responsible for identifying, creating, schedule, map and allocate clusters.
+        Workflow task responsible for identifying, creating, and balancing clusters.
         The goal is to reduce the complexity of the graph without loosing parallelism,
         according to the given heuristics.
         """,
@@ -136,25 +104,24 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 )
 public class ClusterCreationTask extends AbstractTaskImplementation {
 
-  public static final String PARAM_VERTICAL_HEURISTIC   = "Vertical heuristic";
-  public static final String PARAM_HORIZONTAL_HEURISTIC = "Horizontal heuristic";
-  public static final String PARAM_MAPPING_HEURISTIC    = "Mapping heuristic";
-  public static final String PARAM_BALANCING_HEURISTIC  = "Balancing heuristic";
-  public static final String PARAM_SCHEDULING_HEURISTIC = "Scheduling heuristic";
-  public static final String PARAM_ALLOCATION_HEURISTIC = "Allocation heuristic";
-  public static final String PARAM_VERBOSE              = "Verbose";
-  public static final String PARAM_DEBUG                = "Debug";
+  public static final String PARAM_VERTICAL_HEURISTIC      = "Vertical heuristic";
+  public static final String VALUE_VERTICAL_HEURISTIC_NONE = "None";
+  public static final String PARAM_HORIZONTAL_HEURISTIC    = "Horizontal heuristic";
+  public static final String PARAM_MAPPING_HEURISTIC       = "Mapping heuristic";
+  public static final String PARAM_BALANCING_HEURISTIC     = "Balancing heuristic";
+  public static final String PARAM_SCHEDULING_HEURISTIC    = "Scheduling heuristic";
+  public static final String PARAM_ALLOCATION_HEURISTIC    = "Allocation heuristic";
+  public static final String PARAM_VERBOSE                 = "Verbose";
+  public static final String PARAM_DEBUG                   = "Debug";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     // Getting inputs
-    final PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    final boolean debug = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
-
     // ========================================================================
     //
     // GRAPH TRANSFO & CLUSTER ID
@@ -162,76 +129,35 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
     // ========================================================================
 
     // Here, the algorithm parameter will be modified. It will no longer contain actors in clusters, but will contain
-    // directly the clusters.
-    // The scenario parameter will also be modified. The clusters constraints identified with the mapping heuristic will
-    // be added to the scenario.
-    final Pair<PiGraph, Map<PiGraph, Component>> result = ClusterIdentifier.identify(algorithm, scenario, architecture,
-        parameters, workflow);
-    final PiGraph newAlgo = result.getKey();
-    final List<PiGraph> clusters = new ArrayList<>(result.getValue().keySet());
-
-    // Debug
-    if (debug) {
-      Map<String, Object> exportInputs = null;
-      Map<String, String> exportParameters;
-      exportInputs = new HashMap<>();
-      exportInputs.put("PiMM", newAlgo);
-      exportParameters = new HashMap<>();
-      exportParameters.put("path", "/Algo/generated/clustering/debug/");
-      exportParameters.put("hierarchical", "true");
-      new PiSDFExporterTask().execute(exportInputs, exportParameters, monitor, nodeName, workflow);
-    }
-
-    // ========================================================================
-    //
-    // CLUSTERS SCHEDULING & ALLOCATION
-    //
-    // ========================================================================
-
-    // The outputs in the form of a set containing SynthesisResult instances will not have any informations on mapping,
-    // the mapping parameter will be kept to null.
-    final Set<SynthesisResult> clusterSyntheses = ClusterSynthesis.scheduleAndAllocate(newAlgo, scenario, architecture,
-        clusters, parameters);
-
-    // Separating schedules and allocations
-    final List<Schedule> schedules = clusterSyntheses.stream().map(x -> x.schedule).toList();
-    final List<Allocation> allocations = clusterSyntheses.stream().map(x -> x.alloc).toList();
-
-    final Map<String, Object> outputs = new HashMap<>();
-
-    if (clusters.size() != clusterSyntheses.size()) {
-      throw new PreesmRuntimeException("at least one cluster can't be synthesized.");
-    }
+    // directly the clusters.The scenario parameter will also be modified. The clusters constraints identified with the
+    // mapping heuristic will be added to the scenario.
+    algorithm = ClusterIdentifier.identify(algorithm, scenario, architecture, parameters);
 
     // ========================================================================
     //
     // OUTPUTS
     //
     // ========================================================================
-    outputs.put("PiMM", newAlgo);
-    outputs.put("scenario", scenario);
-    outputs.put("clusters", clusters);
-    outputs.put("schedules", schedules);
-    outputs.put("allocations", allocations);
+    final Map<String, Object> outputs = new HashMap<>();
+
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SCENARIO, scenario);
     return outputs;
   }
 
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> result = new HashMap<>();
-    result.put(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, "");
+    result.put(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE);
     result.put(ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, HeuristicGetter.URC_IDENTIFIER);
-    result.put(ClusterCreationTask.PARAM_MAPPING_HEURISTIC, HeuristicGetter.CLASSIC_MAPPER);
     result.put(ClusterCreationTask.PARAM_BALANCING_HEURISTIC, HeuristicGetter.COMPLETE_BALANCING);
-    result.put(ClusterCreationTask.PARAM_SCHEDULING_HEURISTIC, HeuristicGetter.APGAN_SCHEDULING);
     result.put(ClusterCreationTask.PARAM_VERBOSE, "true");
-    result.put(ClusterCreationTask.PARAM_DEBUG, "true");
     return result;
   }
 
   @Override
   public String monitorMessage() {
-    return "Identifies, creates, maps, schedules, allocates, and generates code for clusters";
+    return "Identifies and balances clusters in graph";
   }
 
 }
