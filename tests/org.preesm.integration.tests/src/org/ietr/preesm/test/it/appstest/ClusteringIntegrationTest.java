@@ -89,7 +89,7 @@ public class ClusteringIntegrationTest {
     final String testProjectName = "org.ietr.preesm.clustering";
     final String[] testScenarios = new String[] { ABC_3C, ABC_5C, ABC2_3C, ABC2_5C, ABC3_3C, ABC3_5C, top_3C, top_5C,
       sobel_3C, sobel_5C };
-    final String[] testWorkflows = new String[] { "URC.workflow", "SRV.workflow" };
+    final String[] testWorkflows = new String[] { "urcComplete.workflow", "srvComplete.workflow" };
     for (final String testWorkflow : testWorkflows) {
       for (final String element : testScenarios) {
         params.add(new Object[] { testWorkflow, element, testProjectName });

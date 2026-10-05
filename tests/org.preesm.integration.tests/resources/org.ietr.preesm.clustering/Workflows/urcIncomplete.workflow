@@ -4,6 +4,7 @@
     <dftools:task pluginId="pisdf-srdag" taskId="PiMM2SrDAG">
         <dftools:data key="variables">
             <dftools:variable name="Consistency_Method" value="LCM"/>
+            <dftools:variable name="Depth" value="1"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="pisdf-export" taskId="export dag">
@@ -14,14 +15,10 @@
     </dftools:task>
     <dftools:task pluginId="clustering.creation" taskId="Clustering">
         <dftools:data key="variables">
-            <dftools:variable name="Allocation heuristic" value="simple allocation"/>
             <dftools:variable name="Balancing heuristic" value="complete balancing"/>
-            <dftools:variable name="Debug" value="false"/>
             <dftools:variable name="Horizontal heuristic" value="urc"/>
-            <dftools:variable name="Mapping heuristic" value="classic mapper"/>
-            <dftools:variable name="Scheduling heuristic" value="apgan scheduling"/>
             <dftools:variable name="Verbose" value="true"/>
-            <dftools:variable name="Vertical heuristic" value=""/>
+            <dftools:variable name="Vertical heuristic" value="None"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="pisdf-export" taskId="export clustered graph">
