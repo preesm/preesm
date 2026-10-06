@@ -151,7 +151,7 @@ public class PassiveAllocation {
       createAllocationFromPassiveIR(childGraph, childMemory);
 
       // Linking the child memory's main buffer with parent memory's main buffer
-      currentAlloc.getActorsWorkingMemory().add(childMemory);
+      currentAlloc.getWorkingMemories().add(childMemory);
       final LogicalBuffer childMainBuffer = childMemory.getMainBuffer();
       childMainBuffer.setContainingBuffer(parentBuffer);
       childMainBuffer.setOffsetInBit(currentOffset);

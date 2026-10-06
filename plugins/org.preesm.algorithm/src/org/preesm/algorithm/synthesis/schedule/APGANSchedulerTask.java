@@ -8,7 +8,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.mapping.model.MappingFactory;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.algos.APGANScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.APGANPiMMScheduler;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -46,7 +46,7 @@ public class APGANSchedulerTask extends AbstractTaskImplementation {
 
     graph.setClusterValue(true);
 
-    final SynthesisResult result = new APGANScheduler().scheduleAndMap(graph, arch, scenario, parameters);
+    final SynthesisResult result = new APGANPiMMScheduler().scheduleAndMap(graph, arch, scenario, parameters);
 
     // Result doesn't contain a mapping. It has to be set by hand
     final Mapping mapping = MappingFactory.eINSTANCE.createMapping();
