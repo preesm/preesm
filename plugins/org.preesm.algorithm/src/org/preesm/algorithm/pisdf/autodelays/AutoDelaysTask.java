@@ -539,7 +539,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final IScheduler scheduler = new PeriodicScheduler();
     SynthesisResult scheduleAndMap = null;
     try {
-      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario);
+      scheduleAndMap = scheduler.scheduleAndMap(dag, architecture, scenario, null);
     } catch (final PreesmSchedulingException e) {
       PreesmLogger.getLogger().log(Level.WARNING, "Scheudling was impossible.", e);
       return Long.MAX_VALUE;

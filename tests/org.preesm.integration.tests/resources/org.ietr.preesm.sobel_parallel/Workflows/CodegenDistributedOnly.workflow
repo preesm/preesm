@@ -81,9 +81,6 @@
             <dftools:variable name="path" value="/Code/generated"/>
         </dftools:data>
     </dftools:task>
-    <dftools:task pluginId="org.ietr.preesm.Clustering" taskId="Clustering">
-        <dftools:data key="variables"/>
-    </dftools:task>
     <dftools:dataTransfer from="scenario" sourceport="scenario" targetport="scenario" to="Display Gantt"/>
     <dftools:dataTransfer from="Scheduling" sourceport="ABC" targetport="ABC" to="Display Gantt"/>
     <dftools:dataTransfer from="scenario" sourceport="architecture" targetport="architecture" to="Scheduling"/>
@@ -107,8 +104,5 @@
     <dftools:dataTransfer from="Scheduling" sourceport="DAG" targetport="DAG" to="Memory Scripts"/>
     <dftools:dataTransfer from="Scheduling" sourceport="ABC" targetport="ABC" to="Gantt Exporter"/>
     <dftools:dataTransfer from="scenario" sourceport="scenario" targetport="scenario" to="Gantt Exporter"/>
-    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Clustering"/>
-    <dftools:dataTransfer from="scenario" sourceport="scenario" targetport="scenario" to="Clustering"/>
-    <dftools:dataTransfer from="Clustering" sourceport="SDF" targetport="SDF" to="Single-rate Transformation"/>
-    <dftools:dataTransfer from="scenario" sourceport="architecture" targetport="architecture" to="Clustering"/>
+    <dftools:dataTransfer from="HierarchyFlattening" sourceport="SDF" targetport="SDF" to="Single-rate Transformation"/>
 </dftools:workflow>

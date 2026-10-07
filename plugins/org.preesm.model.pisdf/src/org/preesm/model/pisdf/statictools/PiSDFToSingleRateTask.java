@@ -65,7 +65,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,
-        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })
+        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }), })
 public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph edgedefault="directed">
+        <data key="name">top</data>
+        <node id="h" kind="actor">
+            <data key="graph_desc">Algo/sub.pi</data>
+            <port annotation="NONE" expr="1" kind="input" name="inD"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+            <port annotation="NONE" expr="1" kind="output" name="outD"/>
+        </node>
+        <node id="I" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="3" kind="input" name="in"/>
+        </node>
+        <node expr="1" getter="" id="h_outD__h_inD" kind="delay" level="permanent" setter="">
+            <port annotation="NONE" expr="1" kind="input" name="set"/>
+            <port annotation="NONE" expr="1" kind="output" name="get"/>
+        </node>
+        <edge expr="1" kind="fifo" source="h" sourceport="outD" target="h" targetport="inD" type="char">
+            <data key="delay">h_outD__h_inD</data>
+        </edge>
+        <edge kind="fifo" source="h" sourceport="out" target="I" targetport="in" type="char"/>
+    </graph>
+</graphml>

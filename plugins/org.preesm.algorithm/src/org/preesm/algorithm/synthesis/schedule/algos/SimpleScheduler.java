@@ -66,7 +66,8 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
 public class SimpleScheduler extends AbstractScheduler {
 
   @Override
-  protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario) {
+  protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario,
+      Map<String, String> parameters) {
 
     if (!SlamDesignPEtypeChecker.isOnlyCPU(slamDesign)) {
       throw new PreesmSchedulingException("This task must be called with a CPU architecture, abandon.");

@@ -36,6 +36,8 @@
 
 package org.preesm.model.pisdf.check;
 
+import java.util.List;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.FifoCycleDetector;
 
@@ -61,22 +63,32 @@ public class PiGraphSRDAGChecker {
   public static boolean isPiGraphSRADG(final PiGraph piGraph) {
 
     // check hierarchy
-    if (!piGraph.getChildrenGraphs().isEmpty()) {
+    final List<PiGraph> childrenGraphList = piGraph.getChildrenGraphs().stream().filter(g -> !g.isCluster()).toList();
+    if (!childrenGraphList.isEmpty()) {
+      PreesmLogger.getLogger().info("There is still hierarchy in the SrDAG !");
       return false;
     }
+
     // check single-rate and delays
-    final boolean isSingleRate = piGraph.getAllFifos().stream().allMatch(f -> {
+    final boolean isSingleRate = piGraph.getFifos().stream().allMatch(f -> {
       final long rateOut = f.getSourcePort().getExpression().evaluateAsLong();
       final long rateIn = f.getTargetPort().getExpression().evaluateAsLong();
       return (rateOut == rateIn) && f.getDelay() == null;
     });
     if (!isSingleRate) {
+      PreesmLogger.getLogger().info("There are still actors that are not single rate in the SrDAG !");
       return false;
     }
     // check cycles (stop on first one)
     final FifoCycleDetector fcd = new FifoCycleDetector(true);
     fcd.doSwitch(piGraph);
-    return !fcd.cyclesDetected();
+
+    if (fcd.cyclesDetected()) {
+      PreesmLogger.getLogger().info("There are still cycles in the SrDAG !");
+      return false;
+    }
+
+    return true;
   }
 
 }

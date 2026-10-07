@@ -40,12 +40,15 @@ package org.preesm.algorithm.clustering;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -54,6 +57,8 @@ import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
@@ -61,16 +66,24 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
+import org.preesm.model.pisdf.Delay;
+import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Dependency;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.RoundBufferActor;
+import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
+import org.preesm.model.slam.CPU;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
+import org.preesm.model.slam.Design;
 
 /**
  *
@@ -262,9 +275,9 @@ public class ClusteringHelper {
    * @return outside incoming fifo
    */
   public static Fifo getOutsideIncomingFifo(final Fifo inFifo) {
-    final AbstractActor sourceActor = (AbstractActor) inFifo.getSource();
-    if (sourceActor instanceof DataInputInterface) {
-      return ((DataInputPort) ((DataInputInterface) sourceActor).getGraphPort()).getIncomingFifo();
+    final AbstractActor sourceActor = inFifo.getSource();
+    if (sourceActor instanceof final DataInputInterface inputInterface) {
+      return inputInterface.getGraphPort().getIncomingFifo();
     }
     throw new PreesmRuntimeException(
         "ClusteringHelper: cannot find outside-cluster incoming fifo from " + inFifo.getTarget());
@@ -278,9 +291,9 @@ public class ClusteringHelper {
    * @return outside outgoing fifo
    */
   public static Fifo getOutsideOutgoingFifo(final Fifo inFifo) {
-    final AbstractActor targetActor = (AbstractActor) inFifo.getTarget();
-    if (targetActor instanceof DataOutputInterface) {
-      return ((DataOutputPort) ((DataOutputInterface) targetActor).getGraphPort()).getOutgoingFifo();
+    final AbstractActor targetActor = inFifo.getTarget();
+    if (targetActor instanceof final DataOutputInterface outputInterface) {
+      return (outputInterface.getGraphPort()).getOutgoingFifo();
     }
     throw new PreesmRuntimeException(
         "ClusteringHelper: cannot find outside-cluster outgoing fifo from " + inFifo.getSource());
@@ -294,7 +307,11 @@ public class ClusteringHelper {
    * @return parameter
    */
   public static Parameter getSetterParameter(final ConfigInputPort port) {
-    final ISetter setter = port.getIncomingDependency().getSetter();
+    final Dependency dep = port.getIncomingDependency();
+    if (dep == null) {
+      return null;
+    }
+    final ISetter setter = dep.getSetter();
     if (setter instanceof ConfigInputInterface) {
       return getSetterParameter(((ConfigInputInterface) port.getIncomingDependency().getSetter()).getGraphPort());
     }
@@ -337,6 +354,53 @@ public class ClusteringHelper {
   }
 
   /**
+   * This method will compute the number of core for the current node. For now, multi-node in PREESM doesn't exist, and
+   * this function works only for CPUs. It will only balance the number of cores if they are heterogeneous.
+   *
+   * @param inputScenario
+   *          the input scenario needed to make the compute.
+   * @return the equivalent node
+   */
+  public static Long computeSingleNodeCoreEquivalent(Scenario inputScenario) {
+    final PiGraph inputGraph = inputScenario.getAlgorithm();
+    final Design inputArchi = inputScenario.getDesign();
+    // filter CPU component
+    final List<ComponentInstance> cpuInstances = inputArchi.getOperatorComponentInstances().stream()
+        .filter(opId -> opId.getComponent() instanceof CPU).toList();
+    Long coreEq = 0L;
+    int actorNumber = 0;
+    for (final AbstractActor actor : inputGraph.getExecutableActors()) {
+      // sink and source actor replace interface for SimSDP
+      if (actor instanceof Actor && !actor.getName().contains("src_") && !actor.getName().contains("snk_")
+          && !(actor instanceof DelayActor)) {
+
+        Long sumTiming = 0L;
+        Long slow = Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor,
+            inputArchi.getOperatorComponentInstances().stream().map(ComponentInstance::getComponent)
+                .filter(CPU.class::isInstance).findFirst().orElseThrow()));
+
+        for (final ComponentInstance cpu : cpuInstances) {
+          sumTiming += Long.valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, cpu.getComponent()));
+          final Long timeSeek = Long
+              .valueOf(inputScenario.getTimings().getExecutionTimeOrDefault(actor, cpu.getComponent()));
+
+          slow = timeSeek < slow ? timeSeek : slow;
+
+        }
+        coreEq += (sumTiming / slow);
+        actorNumber++;
+      }
+    }
+    coreEq = actorNumber > 0 ? coreEq / actorNumber
+        : inputArchi.getOperatorComponentInstances().stream().filter(opId -> opId.getComponent() instanceof CPU)
+            .count();
+
+    return coreEq;
+  }
+
+  /**
+   * This method will return a list of component that are a possible mapping for every actor in the actor list.
+   *
    * @param actorList
    *          list of actor
    * @param scenario
@@ -352,4 +416,276 @@ public class ClusteringHelper {
     return globalList;
   }
 
+  public static final String         INIT_PREFIX         = "init_";
+  public static final String         LOOP_PREFIX         = "loop_";
+  protected static final Set<String> existingClusterName = new HashSet<>();
+
+  public static String getInitPrototypeName(PiGraph cluster) {
+    final String clusterName = cluster.getName();
+
+    int i = 0;
+    String newClusterName = clusterName;
+    while (existingClusterName.contains(newClusterName)) {
+      newClusterName = clusterName + "_" + i++;
+    }
+    return INIT_PREFIX + newClusterName;
+  }
+
+  public static String getLoopPrototypeName(PiGraph cluster) {
+    final String clusterName = cluster.getName();
+
+    int i = 0;
+    String newClusterName = clusterName;
+    while (existingClusterName.contains(newClusterName)) {
+      newClusterName = clusterName + "_" + i++;
+    }
+    return LOOP_PREFIX + newClusterName;
+  }
+
+  /**
+   * APGAN Scheduler can't work if there is getter and setter actors for a delay in a cluster. This helper method can be
+   * used while validating detected clusters in different identification heuristics.
+   *
+   * @param cluster
+   *          Set of actors in cluster
+   * @return true if there is getter / setter actors in cluster
+   */
+  public static boolean clusterHasGetterAndSetterActors(Set<AbstractActor> cluster) {
+    return !cluster.stream().allMatch(a -> {
+      boolean sub = true;
+
+      for (final DataPort dp : a.getAllDataPorts()) {
+        if (dp.getFifo().getDelay() != null) {
+          final Delay delay = dp.getFifo().getDelay();
+
+          // If delay has getter/setter,
+          if (delay.getDelayActor().getDataInputPort().getIncomingFifo() != null
+              || delay.getDelayActor().getDataOutputPort().getOutgoingFifo() != null) {
+            sub = false;
+            break;
+          }
+        }
+      }
+      return sub;
+    });
+  }
+
+  /**
+   * WIP
+   *
+   * @param cluster
+   *          input cluster
+   * @return true if correct
+   */
+  public static boolean smartCheckDelays(Set<AbstractActor> cluster) {
+    return cluster.stream().allMatch(a -> {
+      boolean sub = true;
+      for (final DataPort p : a.getAllDataPorts()) {
+        sub &= smartCheckDelay(p.getFifo(), cluster);
+      }
+      return sub;
+    });
+  }
+
+  public static boolean checkDelays(Set<AbstractActor> cluster) {
+    return cluster.stream().allMatch(a -> {
+      boolean sub = true;
+      for (final DataPort p : a.getAllDataPorts()) {
+        if (!cluster.contains(p.getOppositePort().getContainingActor())) {
+          continue;
+        }
+        sub &= !(p.getFifo().isDelayPresent());
+      }
+      return sub;
+    });
+  }
+
+  /**
+   * WIP
+   *
+   * @param fifo
+   *          input fifo
+   * @param cluster
+   *          input cluster
+   * @return true if correct
+   */
+  private static boolean smartCheckDelay(Fifo fifo, Set<AbstractActor> cluster) {
+    if (fifo.isDelayPresent()) {
+      final AbstractActor source = fifo.getSource();
+      final AbstractActor target = fifo.getTarget();
+      final boolean sourceIsLast = source.getDataOutputPorts().stream()
+          .anyMatch(p -> !cluster.contains(p.getFifo().getTarget()));
+      final boolean targetIsFirst = target.getDataInputPorts().stream()
+          .anyMatch(p -> !cluster.contains(p.getFifo().getSource()));
+
+      if (sourceIsLast && targetIsFirst) {
+        return true;
+      }
+      if (sourceIsLast) {
+        return target.getDataInputPorts().stream().allMatch(p -> p.getFifo().getSource() == source);
+      }
+
+      if (targetIsFirst) {
+        return source.getDataOutputPorts().stream().allMatch(p -> p.getFifo().getTarget() == target);
+      }
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * This method generates {@link SpecialActor special actors} with one {@link DataInputPort input} and one
+   * {@link DataOutputPort output}, to be able to perform smart cluster memory {@link Allocation allocation}. This
+   * allocation is made with a {@link PiGraph PiSDF}, not with a SrDAG. That is why we are generating special actors
+   * that would have been generated in the SrDAG.
+   *
+   * @param cluster
+   *          the input cluster (PiSDF graph)
+   */
+  public static void addSpecialActors(PiGraph cluster) {
+    // I think adding Fork and Join actors is useless to improve memory reuse in cluster
+    addBroadcastActors(cluster);
+    addRoundBufferActors(cluster);
+  }
+
+  public static void addAllSpecialActors(PiGraph graph) {
+    addSpecialActors(graph);
+    for (final PiGraph child : graph.getChildrenGraphs()) {
+      addAllSpecialActors(child);
+    }
+  }
+
+  /**
+   * For every {@link DataInputInterface data input interface}, it checks if a {@link BroadcastActor broadcast actor}
+   * needs to be generated. The condition is : if a is linked to b, a being the data input interface, and brv value of b
+   * is strictly higher than 1, then we can add a {@link BroadcastActor broadcast actor} to make a smart cluster memory
+   * allocation in a future step of the {@link ClusterSynthesisTask cluster synthesis task}.
+   *
+   * @param cluster
+   *          the input cluster
+   */
+  private static void addBroadcastActors(PiGraph cluster) {
+
+    long nameCounter = 0;
+
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+    for (final DataInputInterface a : cluster.getDataInputInterfaces()) {
+      final DataOutputPort aOut = a.getDataPort();
+      final Fifo a2b = aOut.getFifo();
+      final AbstractActor b = a2b.getTarget();
+      final DataInputPort bIn = a2b.getTargetPort();
+      final long aExpr = a.getGraphPort().getExpression().evaluateAsLong();
+      final long bInExpr = bIn.getExpression().evaluateAsLong();
+
+      // If b is executed only once or next actor is already a broadcast actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(b) * bInExpr == aExpr || b instanceof BroadcastActor) {
+        continue;
+      }
+
+      // Creating broadcast actor
+      final BroadcastActor brd = PiMMUserFactory.instance.createBroadcastActor();
+      brd.setName("brd_" + nameCounter++);
+
+      // Creating in/out broadcast ports
+      final DataInputPort brdIn = PiMMUserFactory.instance.createDataInputPort();
+      brdIn.setName("brd_in");
+      final DataOutputPort brdOut = PiMMUserFactory.instance.createDataOutputPort();
+      brdOut.setName("brd_out");
+      brd.getDataInputPorts().add(brdIn);
+      brd.getDataOutputPorts().add(brdOut);
+
+      // Setting expression of ports
+      aOut.setExpression(aExpr); // otherwise it bugs...
+      brdIn.setExpression(aExpr);
+      brdOut.setExpression(brv.get(b) * bInExpr);
+
+      // Linking broadcast with a and b
+      final String dataType = a2b.getType();
+      final Fifo a2brd = a2b;
+      a2brd.setTargetPort(brdIn);
+      final Fifo brd2b = PiMMUserFactory.instance.createFifo(brdOut, bIn, dataType);
+      cluster.addActor(brd);
+      cluster.addFifo(brd2b);
+    }
+  }
+
+  /**
+   * For every {@link DataOutputInterface data input interface}, it checks if a {@link RoundBufferActor round buffer
+   * actor} needs to be generated. The condition is : if a is linked to b, b being the data input interface, and brv
+   * value of a is strictly higher than 1, then we can add a {@link RoundBufferActor round buffer actor} to allow a
+   * smart cluster memory allocation in a future step of the {@link ClusterSynthesisTask cluster synthesis task}.
+   *
+   * @param cluster
+   *          the input cluster
+   */
+  private static void addRoundBufferActors(PiGraph cluster) {
+
+    long nameCounter = 0;
+
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+    for (final DataOutputInterface b : cluster.getDataOutputInterfaces()) {
+      final DataInputPort bIn = b.getDataPort();
+      final Fifo a2b = bIn.getFifo();
+      final AbstractActor a = a2b.getSource();
+      final DataOutputPort aOut = a2b.getSourcePort();
+      final long aOutExpr = aOut.getExpression().evaluateAsLong();
+      final long bExpr = b.getGraphPort().getExpression().evaluateAsLong();
+
+      // If a is executed only once or next actor is already a round buffer actor, it means adding a broadcast is not
+      // necessary
+      if (brv.get(a) * aOutExpr == bExpr || b instanceof RoundBufferActor) {
+        continue;
+      }
+
+      // Creating round buffer actor
+      final RoundBufferActor rdb = PiMMUserFactory.instance.createRoundBufferActor();
+      rdb.setName("rdb_" + nameCounter++);
+
+      // Creating in/out broadcast ports
+      final DataInputPort rdbIn = PiMMUserFactory.instance.createDataInputPort();
+      rdbIn.setName("rdb_in");
+      final DataOutputPort rdbOut = PiMMUserFactory.instance.createDataOutputPort();
+      rdbOut.setName("rdb_out");
+      rdb.getDataInputPorts().add(rdbIn);
+      rdb.getDataOutputPorts().add(rdbOut);
+
+      // Setting expression of ports
+      bIn.setExpression(bExpr); // otherwise it bugs...
+      rdbIn.setExpression(brv.get(a) * aOutExpr);
+      rdbOut.setExpression(bExpr);
+
+      // Linking broadcast with a and b
+      final String dataType = a2b.getType();
+      final Fifo a2rdb = a2b;
+      a2rdb.setTargetPort(rdbIn);
+      final Fifo brd2b = PiMMUserFactory.instance.createFifo(rdbOut, bIn, dataType);
+      cluster.addActor(rdb);
+      cluster.addFifo(brd2b);
+    }
+  }
+
+  /**
+   * Computes the scope repetition of current schedule. For example, if s.getRoot = a2(b3(c2d)), computeScopeRepetition
+   * of b3(c2d) will be equal to 2, and computeScopeRepetition of c2d will be equal to 2 * 3 = 6.
+   *
+   * @param s
+   *          current schedule
+   * @return the scope repetition of s
+   */
+  public static long computeScopeRepetition(final Schedule s) {
+    long scopeRepetition = s.getRepetition();
+    if (scopeRepetition == 0) {
+      scopeRepetition = 1;
+    }
+    Schedule parent = s.getParent();
+    while (parent != null) {
+      final long parentRep = parent.getRepetition();
+      scopeRepetition *= (parentRep == 0) ? 1 : parentRep;
+      parent = parent.getParent();
+    }
+    return scopeRepetition;
+  }
 }
