@@ -160,7 +160,7 @@ public class BasicBalancingTest {
     final List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -187,7 +187,7 @@ public class BasicBalancingTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(256);

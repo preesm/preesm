@@ -171,7 +171,7 @@ public class CompleteBalancingTest {
     assertTrue(isBrdPresentInCluster);
 
     final BroadcastActor brdInCluster = (BroadcastActor) cluster.getActors().stream()
-        .filter(a -> a instanceof BroadcastActor).toList().getFirst();
+        .filter(BroadcastActor.class::isInstance).toList().getFirst();
 
     assertEquals(1, brdInCluster.getDataInputPorts().getFirst().getExpression().evaluateAsLong());
     assertEquals(256 / 4, brdInCluster.getDataOutputPorts().getFirst().getExpression().evaluateAsLong());
@@ -204,7 +204,7 @@ public class CompleteBalancingTest {
         this.brdActor, this.brdProducer);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -242,7 +242,7 @@ public class CompleteBalancingTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD, fifoBrdB, fifoProdBrd);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(256);
