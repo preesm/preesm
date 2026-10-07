@@ -540,18 +540,19 @@ public class FPGAConstraintScheduler implements IScheduler {
     // On tolère 10% d'erreur par rapport à la période minimale
     final int tolerated_error = res.period_var.getLB() / 10;
     final int divisor = (int) Math.pow(10, Math.floor(Math.log10(tolerated_error)));
-    // if (divisor >= 10) {
-    // On force start date à être un multiple de divisor
-    // final IntVar[] multSD = model.intVarArray("multSD_" + actor.getName(), res.K_a, 0,
-    // Math.ceilDiv(startDateUB, divisor));
-    // for (int x = 0; x < res.K_a; x++) {
-    // res.startDate_var[x] = model.intView(divisor, multSD[x], 0);
-    // }
-    // } else {
-    // must start early enough to finish all its periods (=rv) before MAX_CYCLE
-    // could even be bounded by its followers' latencies sum
-    res.startDate_var = model.intVarArray("start_" + actor.getName() + "_var", res.K_a, 0, startDateUB);
-    // }
+    if (divisor >= 10) {
+      // On force start date à être un multiple de divisor
+      final IntVar[] multSD = model.intVarArray("multSD_" + actor.getName(), res.K_a, 0,
+          Math.ceilDiv(startDateUB, divisor));
+      // model.arithm(res.startDate_var, "=", multSD, "*", 10).post();
+      for (int x = 0; x < res.K_a; x++) {
+        res.startDate_var[x] = model.intView(divisor, multSD[x], 0);
+      }
+    } else {
+      // must start early enough to finish all its periods (=rv) before MAX_CYCLE
+      // could even be bounded by its followers' latencies sum
+      res.startDate_var = model.intVarArray("start_" + actor.getName() + "_var", res.K_a, 0, startDateUB);
+    }
 
     // must have at least executed all its firings by end time
     // TODO revoir, c'est foiré pour le cas général K-periodic
