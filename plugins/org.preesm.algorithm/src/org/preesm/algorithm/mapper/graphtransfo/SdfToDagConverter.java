@@ -49,14 +49,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.mapper.abc.SpecialVertexManager;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGEdge;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.mapper.model.MapperVertexFactory;
 import org.preesm.algorithm.mapper.model.property.EdgeInit;
 import org.preesm.algorithm.mapper.model.property.Timing;
 import org.preesm.algorithm.mapper.model.property.VertexInit;
@@ -64,15 +62,8 @@ import org.preesm.algorithm.mapper.model.special.TransferVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.iterators.TopologicalDAGIterator;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.visitors.DAGTransformation;
-import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.Timings;
@@ -90,52 +81,6 @@ public class SdfToDagConverter {
 
   private SdfToDagConverter() {
     // forbid instantiation
-  }
-
-  /**
-   * Converts a SDF in a DAG and retrieves the interesting properties from the SDF.
-   *
-   * @author mpelcat
-   * @param sdfIn
-   *          the sdf in
-   * @param architecture
-   *          the architecture
-   * @param scenario
-   *          the scenario
-   * @return the mapper DAG
-   */
-  public static MapperDAG convert(final SDFGraph sdfIn, final Design architecture, final Scenario scenario) {
-
-    PreesmLogger.getLogger().log(Level.INFO, "Converting from SDF to DAG.");
-
-    final SDFGraph sdf = sdfIn.copy();
-    SdfToDagConverter.setDataSizeForSDF(sdf, scenario);
-
-    final PiGraph pisdGraph = sdf.getPropertyBean().getValue(PiGraph.class.getCanonicalName());
-
-    // Generates a dag
-    final MapperDAG dag = new MapperDAG(pisdGraph);
-
-    // Creates a visitor parameterized with the DAG
-    final DAGTransformation<MapperDAG> visitor = new DAGTransformation<>(dag, MapperVertexFactory.getInstance());
-
-    // visits the SDF to generate the DAG
-    sdf.accept(visitor);
-
-    // Adds the necessary properties to vertices and edges
-    SdfToDagConverter.addInitialProperties(dag, architecture, scenario);
-
-    if (dag.vertexSet().isEmpty()) {
-      final String msg = "Can not map a DAG with no vertex.";
-      throw new PreesmRuntimeException(msg);
-    } else {
-      PreesmLogger.getLogger().log(Level.INFO, "Conversion finished.");
-      final String msg = "mapping a DAG with " + dag.vertexSet().size() + " vertices and " + dag.edgeSet().size()
-          + " edges.";
-      PreesmLogger.getLogger().log(Level.INFO, msg);
-    }
-
-    return dag;
   }
 
   /**
@@ -160,22 +105,6 @@ public class SdfToDagConverter {
     }
 
     SdfToDagConverter.addInitialTimingProperties(dag);
-  }
-
-  /**
-   * Sets the data size property of every edge of the HSDF graph
-   *
-   * @param graph
-   *          the graph
-   * @param scenario
-   *          the scenario
-   */
-  private static void setDataSizeForSDF(final SDFGraph graph, final Scenario scenario) {
-    for (final SDFEdge edge : graph.edgeSet()) {
-      final String type = edge.getDataType().toString();
-      final long size = scenario.getSimulationInfo().getDataTypeSizeInBit(type);
-      edge.setDataSize(new LongEdgePropertyType(size));
-    }
   }
 
   /**
@@ -248,7 +177,7 @@ public class SdfToDagConverter {
     /**
      * Importing default timings
      */
-    Timings tm = scenario.getTimings();
+    final Timings tm = scenario.getTimings();
 
     // Iterating over dag vertices
     final TopologicalDAGIterator dagiterator = new TopologicalDAGIterator(dag);
@@ -258,7 +187,7 @@ public class SdfToDagConverter {
       final VertexInit currentVertexInit = currentVertex.getInit();
 
       // Setting repetition number
-      final long nbRepeat = currentVertex.getNbRepeat().longValue();
+      final long nbRepeat = currentVertex.getNbRepeat();
       currentVertexInit.setNbRepeat(nbRepeat);
 
       // Special vertices time computation is delayed until edge sizes are initialized
@@ -268,8 +197,7 @@ public class SdfToDagConverter {
         for (final ComponentInstance op : architecture.getOperatorComponentInstances()) {
           final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
-          if (referencePiVertex instanceof AbstractActor) {
-            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+          if (referencePiVertex instanceof final AbstractActor actor) {
             // info is set to the vertexPath of AbstractVertex
             final long originalTiming = tm.evaluateExecutionTimeOrDefault(actor, op.getComponent());
             final Timing copyTiming;
@@ -309,8 +237,7 @@ public class SdfToDagConverter {
         final AbstractVertex referencePiVertex = currentVertex.getReferencePiVertex();
 
         for (final Component opDef : scenario.getTimings().getMemTimings().keySet()) {
-          if (referencePiVertex instanceof AbstractActor) {
-            final AbstractActor actor = ((AbstractActor) referencePiVertex);
+          if (referencePiVertex instanceof final AbstractActor actor) {
             final long sut = scenario.getTimings().getMemTimings().get(opDef).getSetupTime();
             final double tpu = scenario.getTimings().getMemTimings().get(opDef).getTimePerUnit();
             final Timing timing = new Timing(opDef, actor);
@@ -388,8 +315,7 @@ public class SdfToDagConverter {
 
               // Initializes a default timing that may be erased
               // when timings are imported
-              if (referencePiVertex instanceof AbstractActor) {
-                final AbstractActor actor = ((AbstractActor) referencePiVertex);
+              if (referencePiVertex instanceof final AbstractActor actor) {
                 final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
                 mv.getInit().addTiming(newTiming);
               } else {

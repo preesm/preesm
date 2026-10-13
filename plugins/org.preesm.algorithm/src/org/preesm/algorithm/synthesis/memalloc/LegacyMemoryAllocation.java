@@ -56,8 +56,6 @@ import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBasicAllocator;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBestFitAllocator;

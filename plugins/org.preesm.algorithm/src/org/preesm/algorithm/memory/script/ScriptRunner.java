@@ -69,9 +69,6 @@ import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.dag.EdgeAggregate;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.files.URLHelper;
@@ -176,7 +173,7 @@ public class ScriptRunner {
       });
 
       // Remove invalid results
-      invalidVertices.stream().forEach(this.scriptedVertices::remove);
+      invalidVertices.forEach(this.scriptedVertices::remove);
     }
   }
 
@@ -216,7 +213,7 @@ public class ScriptRunner {
           + " Please set matches only by using Buffer.matchWith() methods.";
       ScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res1 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
-      allBuffers.stream().forEach(localBuffer -> {
+      allBuffers.forEach(localBuffer -> {
         // for all matcheSet
         final boolean res = localBuffer.isReciprocal();
         if (!res && (this.checkPolicy == CheckPolicy.THOROUGH)) {
@@ -253,10 +250,10 @@ public class ScriptRunner {
       ScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res2 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
 
-      result.getKey().stream().forEach(buffer -> {
+      result.getKey().forEach(buffer -> {
         final List<Match> flatten = new ArrayList<>();
         buffer.matchTable.values().forEach(flatten::addAll);
-        flatten.stream().forEach(match -> {
+        flatten.forEach(match -> {
           if (!result.getValue().contains(match.getRemoteBuffer())) {
             ScriptRunner.logger.log(Level.WARNING, () -> "Error in " + script + ":\nMatch " + match
                 + " links an input to another." + "\nPlease set matches only between inputs and outputs.");
@@ -264,10 +261,10 @@ public class ScriptRunner {
         });
       });
 
-      result.getValue().stream().forEach(buffer -> {
+      result.getValue().forEach(buffer -> {
         final List<Match> flatten = new ArrayList<>();
         buffer.matchTable.values().forEach(flatten::addAll);
-        flatten.stream().forEach(match -> {
+        flatten.forEach(match -> {
           if (!result.getKey().contains(match.getRemoteBuffer())) {
             ScriptRunner.logger.log(Level.WARNING, () -> "Error in " + script + ":\nMatch " + match
                 + " links an output to another." + "\nPlease set matches only between inputs and outputs.");
@@ -289,7 +286,7 @@ public class ScriptRunner {
           + ":\nMatching multiple times a range of an output buffer is not allowed.";
       ScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res3 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
-      multipleRanges.stream().forEach(p -> {
+      multipleRanges.forEach(p -> {
         if (!(result.getKey().contains(p.getKey()) || (p.getValue().isEmpty()))) {
           final String message = "Error in " + script + ":\nMatching multiple times output buffer " + p.getKey()
               + " is not allowed." + "\nRange matched multiple times:" + p.getValue();
@@ -338,7 +335,7 @@ public class ScriptRunner {
 
       switch (dagVertex.getKind()) {
         case DAGVertex.DAG_VERTEX -> {
-          final String pathString = dagVertex.getPropertyBean().getValue(SDFVertex.MEMORY_SCRIPT);
+          final String pathString = dagVertex.getPropertyBean().getValue(DAGVertex.MEMORY_SCRIPT);
           if (pathString != null) {
 
             // Retrieve the script path as a relative path to the graphml
@@ -409,22 +406,22 @@ public class ScriptRunner {
   public void process() {
 
     // Simplify results
-    this.scriptResults.entrySet().stream()
+    this.scriptResults.entrySet()
         .forEach(e -> ScriptRunner.simplifyResult(e.getValue().getKey(), e.getValue().getValue()));
 
     // Identify divisible buffers
-    this.scriptResults.entrySet().stream().forEach(e -> ScriptRunner.identifyDivisibleBuffers(e.getValue()));
+    this.scriptResults.entrySet().forEach(e -> ScriptRunner.identifyDivisibleBuffers(e.getValue()));
 
     // Update output buffers for alignment
     if (this.falseSharingPreventionFlag && this.alignment > 0) {
-      this.scriptResults.entrySet().stream().forEach(e -> e.getValue().getValue().stream().filter(it -> {
+      this.scriptResults.entrySet().forEach(e -> e.getValue().getValue().stream().filter(it -> {
         // All outputs except the mergeable one linked only to read_only
         // inputs within their actor must be enlarged.
         // In other terms, only buffers that will never be written by their
         // producer actor or consumer actor are not enlarged since these
         // buffer will only be used to divide data written by other actors.
         final List<Match> flatten = new ArrayList<>();
-        it.matchTable.values().stream().forEach(flatten::addAll);
+        it.matchTable.values().forEach(flatten::addAll);
         return !(it.originallyMergeable && flatten.stream().allMatch(m -> m.getRemoteBuffer().originallyMergeable));
         // Enlarge the buffer
         // New range mergeability is automatically handled by
@@ -434,12 +431,12 @@ public class ScriptRunner {
     }
 
     // Identify matches types
-    this.scriptResults.entrySet().stream().forEach(e -> ScriptRunner.identifyMatchesType(e.getValue()));
+    this.scriptResults.entrySet().forEach(e -> ScriptRunner.identifyMatchesType(e.getValue()));
 
     // Identify match that may cause a inter-output merge (not inter-input since
     // at this point, multiple matches of output range is forbidden)
 
-    this.scriptResults.entrySet().stream()
+    this.scriptResults.entrySet()
         .forEach(e -> ScriptRunner.identifyConflictingMatchCandidates(e.getValue().getKey(), e.getValue().getValue()));
 
     // Identify groups of chained buffers from the scripts and dag
@@ -449,22 +446,21 @@ public class ScriptRunner {
     if (this.falseSharingPreventionFlag && this.alignment > 0) {
 
       // For each group
-      groups.stream()
-          .forEach(group -> group.stream().forEach(dagVertex -> dagVertex.incomingEdges().stream().forEach(edge -> {
-            // If the edge producer is not part of the group
-            if (!group.contains(edge.getSource())) {
-              // Retrieve the corresponding buffer.
-              this.scriptResults.get(dagVertex).getKey().stream()
-                  .filter(buffer -> buffer.getLoggingEdgeName().getContainingEdge().getSource().getName()
-                      .equals(edge.getSource().getName()))
-                  .forEach(it -> ScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
-            }
-          })));
+      groups.forEach(group -> group.forEach(dagVertex -> dagVertex.incomingEdges().forEach(edge -> {
+        // If the edge producer is not part of the group
+        if (!group.contains(edge.getSource())) {
+          // Retrieve the corresponding buffer.
+          this.scriptResults.get(dagVertex).getKey().stream()
+              .filter(buffer -> buffer.getLoggingEdgeName().getContainingEdge().getSource().getName()
+                  .equals(edge.getSource().getName()))
+              .forEach(it -> ScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
+        }
+      })));
     }
 
     // Process the groups one by one
     this.sizeBefore = this.sizeAfter = this.nbBuffersBefore = this.nbBuffersAfter = 0L;
-    groups.stream().forEach(this::processGroup);
+    groups.forEach(this::processGroup);
 
     if (isGenerateLog()) {
       this.log = "# Memory scripts summary" + '\n' + "- Independent match trees : *" + groups.size() + "*" + '\n'
@@ -533,10 +529,10 @@ public class ScriptRunner {
    */
   private static void identifyMatchesType(final Pair<List<Buffer>, List<Buffer>> result) {
 
-    result.getKey().stream().forEach(it -> {
+    result.getKey().forEach(it -> {
       final List<Match> flatten = new ArrayList<>();
       it.matchTable.values().forEach(flatten::addAll);
-      flatten.stream().forEach(match -> {
+      flatten.forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
         }
@@ -544,10 +540,10 @@ public class ScriptRunner {
       });
     });
 
-    result.getValue().stream().forEach(it -> {
+    result.getValue().forEach(it -> {
       final List<Match> flatten = new ArrayList<>();
       it.matchTable.values().forEach(flatten::addAll);
-      flatten.stream().forEach(match -> {
+      flatten.forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
         }
@@ -586,15 +582,15 @@ public class ScriptRunner {
     final List<Buffer> divisibleCandidates = allBuffers.stream()
         .filter(buffer -> (buffer.matchTable.size() > 1) && buffer.isCompletelyMatched()).toList();
 
-    divisibleCandidates.stream().forEach(buffer -> {
+    divisibleCandidates.forEach(buffer -> {
       // All are divisible BUT it will not be possible to match divided
       // buffers together (checked later)
       final List<Match> drMatches = new ArrayList<>();
       buffer.divisibilityRequiredMatches.add(drMatches);
 
       final List<Match> flatten = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(flatten::addAll);
-      flatten.stream().forEach(it -> {
+      buffer.matchTable.values().forEach(flatten::addAll);
+      flatten.forEach(it -> {
         final Range r = it.getLocalRange();
         Range.lazyUnion(buffer.indivisibleRanges, r);
         drMatches.add(it);
@@ -603,7 +599,7 @@ public class ScriptRunner {
 
     // All other buffers are not divisible
     allBuffers.removeAll(divisibleCandidates);
-    allBuffers.stream().forEach(it -> it.indivisibleRanges.add(new Range(it.minIndex, it.maxIndex)));
+    allBuffers.forEach(it -> it.indivisibleRanges.add(new Range(it.minIndex, it.maxIndex)));
   }
 
   /**
@@ -629,13 +625,13 @@ public class ScriptRunner {
     // For each Buffer
     for (final Buffer buffer : allBuffers) {
       final List<Match> flatten = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(flatten::addAll);
+      buffer.matchTable.values().forEach(flatten::addAll);
 
       // Get the matches
       final List<Match> matches = new ArrayList<>(flatten);
 
       // Update the potential conflict list of all matches
-      matches.stream().forEach(match -> match.getReciprocate().getConflictCandidates()
+      matches.forEach(match -> match.getReciprocate().getConflictCandidates()
           .addAll(matches.stream().filter(it -> it != match).map(Match::getReciprocate).toList()));
 
     }
@@ -644,7 +640,7 @@ public class ScriptRunner {
     for (final Buffer buffer : allBuffers) {
       // for Each match
       final List<Match> matchList = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(matchList::addAll);
+      buffer.matchTable.values().forEach(matchList::addAll);
       Buffer.updateConflictingMatches(matchList);
     }
   }
@@ -658,7 +654,7 @@ public class ScriptRunner {
 
     // Get all the buffers
     final List<Buffer> buffers = new ArrayList<>();
-    vertices.stream().forEach(it -> {
+    vertices.forEach(it -> {
       final Pair<List<Buffer>, List<Buffer>> pair = this.scriptResults.get(it);
       // Buffer that were already merged are not processed
       buffers.addAll(pair.getKey().stream().filter(buf -> buf.appliedMatches.size() == 0).toList());
@@ -732,7 +728,7 @@ public class ScriptRunner {
 
       bufferList.forEach(buffer -> {
         final List<Match> flatten = new ArrayList<>();
-        buffer.matchTable.values().stream().forEach(flatten::addAll);
+        buffer.matchTable.values().forEach(flatten::addAll);
 
         flatten.stream().filter(it -> !it.isApplied()).toList().stream()
             .filter(match -> !logged.contains(match.getReciprocate())).forEach(match -> {
@@ -843,7 +839,7 @@ public class ScriptRunner {
       test = test && candidate.isDivisible();
 
       final List<Match> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       test = test && flatten.stream().allMatch(it ->
       // Is not involved in any conflicting range
@@ -868,14 +864,14 @@ public class ScriptRunner {
 
       final int fold = candidates.stream().map(buf -> {
         final List<Match> flatten = new ArrayList<>();
-        buf.matchTable.values().stream().forEach(flatten::addAll);
+        buf.matchTable.values().forEach(flatten::addAll);
         return flatten.size();
       }).reduce((i1, i2) -> i1 + i2).orElse(0);
       this.log = this.log + "- __Step 1 - " + fold + " matches__ " + "\n>";
     }
     for (final Buffer candidate : candidates) {
       final List<Match> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().map(Object::toString).collect(Collectors.joining(", "));
@@ -917,7 +913,7 @@ public class ScriptRunner {
       while (iterType.hasNext() && !test) {
         final MatchType currentType = iterType.next();
         final List<Match> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
 
         final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
@@ -956,7 +952,7 @@ public class ScriptRunner {
     }
     for (final Entry<Buffer, MatchType> candidate : candidates.entrySet()) {
       final List<Match> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + ""
@@ -1001,7 +997,7 @@ public class ScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<Match> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
 
         final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
@@ -1035,7 +1031,7 @@ public class ScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.entrySet().stream().map(e -> {
         final List<Match> flatten = new ArrayList<>();
-        e.getKey().matchTable.values().stream().forEach(flatten::addAll);
+        e.getKey().matchTable.values().forEach(flatten::addAll);
         return flatten.stream().filter(it -> it.getType() == e.getValue()).count();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
@@ -1044,7 +1040,7 @@ public class ScriptRunner {
     for (final Entry<Buffer, MatchType> candidate : candidates.entrySet()) {
 
       final List<Match> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).map(Object::toString)
@@ -1163,7 +1159,7 @@ public class ScriptRunner {
 
     for (final Buffer candidate : buffers) {
       final List<Match> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
       final List<Match> matches = flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD).toList();
 
       // Returns true if:
@@ -1205,14 +1201,14 @@ public class ScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.stream().map(c -> {
         final List<Match> flatten = new ArrayList<>();
-        c.matchTable.values().stream().forEach(flatten::addAll);
+        c.matchTable.values().forEach(flatten::addAll);
         return (long) flatten.size();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
       this.log = this.log + "- __Step 5 - " + fold + " matches__" + "\n>";
     }
     for (final Buffer candidate : candidates) {
       final List<Match> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().map(Object::toString).collect(Collectors.joining(", "));
@@ -1268,7 +1264,7 @@ public class ScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<Match> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
         final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
@@ -1314,7 +1310,7 @@ public class ScriptRunner {
     for (final Entry<Buffer, MatchType> candidate : candidates.entrySet()) {
 
       final List<Match> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).findFirst()
@@ -1361,7 +1357,7 @@ public class ScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<Match> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
         final List<Match> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
@@ -1409,7 +1405,7 @@ public class ScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.entrySet().stream().map(e -> {
         final List<Match> flatten = new ArrayList<>();
-        e.getKey().matchTable.values().stream().forEach(flatten::addAll);
+        e.getKey().matchTable.values().forEach(flatten::addAll);
         return flatten.stream().filter(it -> it.getType() == e.getValue()).count();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
@@ -1417,7 +1413,7 @@ public class ScriptRunner {
     }
     for (final Entry<Buffer, MatchType> candidate : candidates.entrySet()) {
       final List<Match> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).map(Object::toString)
@@ -1461,7 +1457,7 @@ public class ScriptRunner {
     // . For a simpler version, simply remove those other matches.
     // The match table will be modified by the applyMatch method, so we need a copy of it to iterate !
     // Remove the matches from each other conflict candidates
-    matches.stream().forEach(it -> {
+    matches.forEach(it -> {
       it.getConflictCandidates().removeAll(matches);
       it.getReciprocate().getConflictCandidates().removeAll(matches.stream().map(Match::getReciprocate).toList());
       it.getConflictingMatches().removeAll(matches);
@@ -1480,8 +1476,8 @@ public class ScriptRunner {
    * </ul>
    * The {@link #scriptResults} attribute of the calling {@link ScriptRunner} are updated by this method. In particular,
    * a {@link Buffer#matchWith(long,Buffer,long,long) match} is added between buffers of different actors that
-   * correspond to the same SDFEdges. This method must be called after {@link ScriptRunner#identifyDivisibleBuffer()} as
-   * it set to indivisible the buffers that are on the border of groups.
+   * correspond to the same edges. This method must be called after {@link ScriptRunner#identifyDivisibleBuffer()} as it
+   * set to indivisible the buffers that are on the border of groups.
    *
    * @return a {@link List} of groups. Each group is itself a {@link List} of {@link DAGVertex}.
    */
@@ -1513,8 +1509,8 @@ public class ScriptRunner {
         // check if a successors/predecessor can be added to the group
         for (final DAGVertex dagVertex : newVertices) {
           final List<DAGVertex> candidates = new ArrayList<>();
-          dagVertex.incomingEdges().stream().forEach(it -> candidates.add(it.getSource()));
-          dagVertex.outgoingEdges().stream().forEach(it -> candidates.add(it.getTarget()));
+          dagVertex.incomingEdges().forEach(it -> candidates.add(it.getSource()));
+          dagVertex.outgoingEdges().forEach(it -> candidates.add(it.getTarget()));
 
           List<DAGVertex> addedVertices = group.subList(groupSize, group.size());
           for (final DAGVertex candidate : candidates) {
@@ -1598,7 +1594,7 @@ public class ScriptRunner {
       }
 
       // Set as indivisible all buffers that are on the edge of the group.
-      group.stream().forEach(it -> {
+      group.forEach(it -> {
         final Pair<List<Buffer>, List<Buffer>> results = this.scriptResults.get(it);
         final List<Buffer> flatten = new ArrayList<>(results.getKey());
         flatten.addAll(results.getValue());
@@ -1651,7 +1647,7 @@ public class ScriptRunner {
     final Map<String, Long> parameters = new LinkedHashMap<>();
     final Map<String, Argument> arguments = dagVertex.getArguments();
     if (arguments != null) {
-      arguments.entrySet().stream().forEach(it -> parameters.put(it.getKey(), it.getValue().longValue()));
+      arguments.entrySet().forEach(it -> parameters.put(it.getKey(), it.getValue().longValue()));
     }
 
     parameters.put("alignment", this.alignment);
@@ -1664,22 +1660,22 @@ public class ScriptRunner {
 
     // use LinkedHashSet for unicity and determinism (order kept)
     final Set<DAGEdge> incomingEdges = new LinkedHashSet<>();
-    edgeListToFlatten.stream().forEach(incomingEdges::addAll);
+    edgeListToFlatten.forEach(incomingEdges::addAll);
 
     final List<Buffer> inputs = incomingEdges.stream().map(it -> {
-      final Object dataType = it.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final String dataType = it.getDataType();
       // An input buffer is backward mergeable if it is read_only OR if it is unused
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
-      final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
-          || portModiferString.contains(SDFEdge.MODIFIER_UNUSED);
-      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType.toString());
+      final boolean isMergeable = portModiferString.contains(DAGEdge.MODIFIER_READ_ONLY)
+          || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
         return new Buffer(it, dagVertex.getName(), it.getTargetLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new PreesmRuntimeException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
-            + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
+        throw new PreesmRuntimeException("Edge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+            + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType
             + ". Add the corresponding data type to the scenario.", exc);
       }
       // This List needs to be mutable.
@@ -1692,22 +1688,22 @@ public class ScriptRunner {
 
     // use LinkedHashSet for unicity and determinism (order kept)
     final Set<DAGEdge> outgoingEdges = new LinkedHashSet<>();
-    edgeListToFlatten.stream().forEach(outgoingEdges::addAll);
+    edgeListToFlatten.forEach(outgoingEdges::addAll);
 
     final List<Buffer> outputs = outgoingEdges.stream().map(it -> {
-      final Object dataType = it.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final String dataType = it.getDataType();
       // An output buffer is forward mergeable if its target port is unused OR if its target port is read_only
       final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
-      final boolean isMergeable = portModiferString.contains(SDFEdge.MODIFIER_READ_ONLY)
-          || portModiferString.contains(SDFEdge.MODIFIER_UNUSED);
-      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType.toString());
+      final boolean isMergeable = portModiferString.contains(DAGEdge.MODIFIER_READ_ONLY)
+          || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
+      final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
       final long nbTokens = it.getWeight().longValue(); // / dataSize
       try {
         return new Buffer(it, dagVertex.getName(), it.getSourceLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
-        throw new PreesmRuntimeException("SDFEdge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
-            + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType.toString()
+        throw new PreesmRuntimeException("Edge " + it.getSource().getName() + "_" + it.getSourceLabel() + "->"
+            + it.getTarget().getName() + "_" + it.getTargetLabel() + " has unknows type " + dataType
             + ". Add the corresponding data type to the scenario.", exc);
       }
       // This List needs to be mutable.
@@ -1892,7 +1888,7 @@ public class ScriptRunner {
 
         // For each subrange of real tokens, save the corresponding remote buffer
         // and range.
-        rootBuffers.entrySet().stream().forEach(entry -> {
+        rootBuffers.entrySet().forEach(entry -> {
           final MemoryExclusionVertex rootMObj = bufferAndMObjectMap.get(entry.getValue().getKey());
           final Range localRange = entry.getKey().intersection(realTokenRange);
           final Range translatedLocalRange = localRange.copy();
@@ -1946,18 +1942,18 @@ public class ScriptRunner {
       // Find unused write_only edges
       final EdgeAggregate aggregate = mObj.getEdge().getAggregate();
       return aggregate.stream().allMatch(dagEdge -> {
-        Object o = dagEdge.getPropertyStringValue(SDFEdge.SOURCE_PORT_MODIFIER);
+        Object o = dagEdge.getSourcePortModifier();
         String str = o != null ? o.toString() : "";
-        final boolean b1 = str.contains(SDFEdge.MODIFIER_WRITE_ONLY);
+        final boolean b1 = str.contains(DAGEdge.MODIFIER_WRITE_ONLY);
 
-        o = dagEdge.getPropertyStringValue(SDFEdge.TARGET_PORT_MODIFIER);
+        o = dagEdge.getTargetPortModifier();
         str = o != null ? o.toString() : "";
-        final boolean b2 = str.contains(SDFEdge.MODIFIER_UNUSED);
+        final boolean b2 = str.contains(DAGEdge.MODIFIER_UNUSED);
         return b1 && b2;
       });
     }).filter(mObj -> {
       final List<Buffer> flatten = new ArrayList<>();
-      getBufferGroups().stream().forEach(flatten::addAll);
+      getBufferGroups().forEach(flatten::addAll);
 
       // keep only those that are not host. (matched ones have already been removed from the MEG)
       final Buffer correspondingBuffer = flatten.stream()
@@ -1969,10 +1965,10 @@ public class ScriptRunner {
     }).toList());
 
     // Remove all exclusions between unused buffers
-    unusedMObjects.stream().forEach(mObj -> {
+    unusedMObjects.forEach(mObj -> {
       final List<MemoryExclusionVertex> unusedNeighbors = meg.getAdjacentVertexOf(mObj).stream()
           .filter(unusedMObjects::contains).toList();
-      unusedNeighbors.stream().forEach(it -> meg.removeEdge(mObj, it));
+      unusedNeighbors.forEach(it -> meg.removeEdge(mObj, it));
     });
   }
 
@@ -1990,7 +1986,7 @@ public class ScriptRunner {
     final List<Match> processedMatch = new ArrayList<>();
 
     // Iterate over all buffers
-    allBuffers.stream().forEach(it -> it.simplifyMatches(processedMatch));
+    allBuffers.forEach(it -> it.simplifyMatches(processedMatch));
 
     // If a buffer has an empty matchTable, remove it from its list
     final List<Buffer> unmatchedBuffer = allBuffers.stream().filter(it -> it.matchTable.isEmpty()).toList();

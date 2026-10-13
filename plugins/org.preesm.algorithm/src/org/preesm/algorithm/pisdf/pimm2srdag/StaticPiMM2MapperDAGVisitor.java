@@ -64,11 +64,7 @@ import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.model.types.LongEdgePropertyType;
-import org.preesm.algorithm.model.types.LongVertexPropertyType;
-import org.preesm.algorithm.model.types.StringEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -164,11 +160,11 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     vertex.setId(actor.getName());
     vertex.setName(actor.getName());
     vertex.setInfo(actor.getVertexPath());
-    vertex.setNbRepeat(new LongVertexPropertyType(1));
+    vertex.setNbRepeat(1);
     vertex.setPropertyValue(ClusteringHelper.PISDF_REFERENCE_ACTOR, actor);
 
     // Set default time property
-    vertex.setTime(new LongVertexPropertyType(0));
+    vertex.setTime(0);
     // Adds the list of source ports
     for (final DataInputPort port : actor.getDataInputPorts()) {
       vertex.addSourceName(port.getName());
@@ -212,7 +208,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     setDAGVertexPropertiesFromPiMM(actor, vertex);
     // Handle path to memory script of the vertex
     if (actor.getMemoryScriptPath() != null) {
-      vertex.setPropertyValue(SDFVertex.MEMORY_SCRIPT, new Path(actor.getMemoryScriptPath()).toOSString());
+      vertex.setPropertyValue(DAGVertex.MEMORY_SCRIPT, new Path(actor.getMemoryScriptPath()).toOSString());
     }
     // Handle vertex's refinement (description of the vertex's behavior:
     // function prototypes or subgraphs)
@@ -436,23 +432,22 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     final String sourceModifier = getAnnotationFromPort(fifo.getSourcePort());
     final String targetModifier = getAnnotationFromPort(fifo.getTargetPort());
     if (!sourceModifier.isEmpty()) {
-      newEdge.setSourcePortModifier(new StringEdgePropertyType(sourceModifier));
+      newEdge.setSourcePortModifier(sourceModifier);
     }
     if (!targetModifier.isEmpty()) {
-      newEdge.setTargetPortModifier(new StringEdgePropertyType(targetModifier));
+      newEdge.setTargetPortModifier(targetModifier);
     }
     // 1.4 Set the different properties of the Edge
     final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
-    newEdge.setPropertyValue(SDFEdge.DATA_TYPE, fifo.getType());
-    newEdge.setPropertyValue(SDFEdge.DATA_SIZE, dataSize);
     newEdge.setWeight(new LongEdgePropertyType(weight));
+    newEdge.setDataSize(dataSize);
+    newEdge.setDataType(fifo.getType());
     newEdge.setSourceLabel(fifo.getSourcePort().getName());
     newEdge.setTargetLabel(fifo.getTargetPort().getName());
     newEdge.setPropertyValue(AbstractEdge.BASE, this.result);
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
-    // edge.setWeight(new LongEdgePropertyType(weight * dataSize));
     edge.setWeight(
         new LongEdgePropertyType(this.scenario.getSimulationInfo().getBufferSizeInBit(fifo.getType(), weight)));
 
@@ -471,9 +466,9 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
    */
   private String getAnnotationFromPort(final DataPort piPort) {
     return switch (piPort.getAnnotation()) {
-      case READ_ONLY -> SDFEdge.MODIFIER_READ_ONLY;
-      case WRITE_ONLY -> SDFEdge.MODIFIER_WRITE_ONLY;
-      case UNUSED -> SDFEdge.MODIFIER_UNUSED;
+      case READ_ONLY -> DAGEdge.MODIFIER_READ_ONLY;
+      case WRITE_ONLY -> DAGEdge.MODIFIER_WRITE_ONLY;
+      case UNUSED -> DAGEdge.MODIFIER_UNUSED;
       default -> "";
     };
   }

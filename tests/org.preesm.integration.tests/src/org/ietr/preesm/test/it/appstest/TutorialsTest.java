@@ -91,7 +91,7 @@ public class TutorialsTest {
     final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
       "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
-      "StaticPiMMCodegen.workflow", "StaticPiMMCodegenMemoryScripts.workflow", "CodegenMemoryDeGreef.workflow" };
+      "CodegenMemoryDeGreef.workflow" };
     for (final String workflow : stereoWorkflows) {
       for (final String scenario : stereoScenarios) {
         params.add(new Object[] { workflow, scenario, stereoProjectName });

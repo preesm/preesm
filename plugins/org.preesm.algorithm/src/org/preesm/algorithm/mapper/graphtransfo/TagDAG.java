@@ -58,7 +58,6 @@ import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
-import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -274,7 +273,7 @@ public class TagDAG {
     final BufferAggregate agg = new BufferAggregate();
     for (final AbstractEdge<?, ?> aggMember : edge.getAggregate()) {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
-      final String dataTypename = dagEdge.getPropertyBean().getValue(SDFEdge.DATA_TYPE);
+      final String dataTypename = dagEdge.getDataType();
       final BufferProperties props = new BufferProperties(dataTypename, dagEdge.getSourceLabel(),
           dagEdge.getTargetLabel(), dagEdge.getWeight().longValue());
       agg.add(props);

@@ -93,10 +93,6 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
@@ -208,8 +204,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   private final Map<Pair<DAGVertex, DAGVertex>, Pair<Buffer, Buffer>> dagFifoBuffers;
 
   /**
-   * This {@link Map} associates a {@link SDFInitVertex} to its corresponding {@link FifoOperation#POP Pop}
-   * {@link FifoCall}.
+   * This {@link Map} associates an init vertex to its corresponding {@link FifoOperation#POP Pop} {@link FifoCall}.
    */
   private final Map<DAGVertex, FifoCall> popFifoCalls;
 
@@ -844,7 +839,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   /**
    * This method creates a {@link Buffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
    * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all the
-   * {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+   * edges of the single-rate graph from which the {@link #dag} is derived.<br>
    * <br>
    * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
    *
@@ -1584,7 +1579,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Retrieve the internal buffer
     DAGVertex dagEndVertex;
     DAGVertex dagInitVertex;
-    final String endReferenceName = dagVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+    final String endReferenceName = dagVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
       dagInitVertex = dagVertex;
       dagEndVertex = (DAGVertex) dagInitVertex.getBase().getVertex(endReferenceName);
@@ -2586,10 +2581,10 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   /**
    * Retrieve the {@link ActorPrototypes prototypes} defined in the IDL {@link CodeRefinement refinement} of the
-   * {@link SDFVertex} passed as a parameter.
+   * {@link DAGVertex} passed as a parameter.
    *
    * @param dagVertex
-   *          the {@link SDFVertex} whose IDL refinement is parsed to retrieve the corresponding {@link ActorPrototypes}
+   *          the {@link DAGVertex} whose IDL refinement is parsed to retrieve the corresponding {@link ActorPrototypes}
    * @return the parsed {@link ActorPrototypes}.
    */
   protected ActorPrototypes getActorPrototypes(final DAGVertex dagVertex) {

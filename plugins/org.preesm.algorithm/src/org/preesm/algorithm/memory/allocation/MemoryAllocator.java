@@ -57,8 +57,6 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.MathFunctionsHelper;
 
@@ -73,14 +71,13 @@ public abstract class MemoryAllocator {
    * This method scan the {@link MemoryExclusionVertex memory objects} of an input {@link MemoryExclusionGraph} in order
    * to align its internal subbuffers.<br>
    * <br>
-   * Since a {@link DAGEdge} might be the result of an aggregation of several {@link SDFEdge} from the original
-   * {@link SDFGraph}, a {@link MemoryExclusionVertex memory object} might "contain" several subbuffer, each
-   * corresponding to one of these aggregated edges. The purpose of this method is to ensure that all subbuffers are
-   * correctly aligned in memory when allocating the {@link MemoryExclusionGraph}. To do so, each
-   * {@link MemoryExclusionVertex} is processed so that each subbuffer is given an "internal" offset in the memory
-   * object that fulfill its alignment constraint. The size of the {@link MemoryExclusionVertex} might be modified by
-   * this method. Note that we do not try here to optimize the space taken by each memory object by reordering the
-   * subbuffers.
+   * Since a {@link DAGEdge} might be the result of an aggregation of several edges from the original graph, a
+   * {@link MemoryExclusionVertex memory object} might "contain" several subbuffer, each corresponding to one of these
+   * aggregated edges. The purpose of this method is to ensure that all subbuffers are correctly aligned in memory when
+   * allocating the {@link MemoryExclusionGraph}. To do so, each {@link MemoryExclusionVertex} is processed so that each
+   * subbuffer is given an "internal" offset in the memory object that fulfill its alignment constraint. The size of the
+   * {@link MemoryExclusionVertex} might be modified by this method. Note that we do not try here to optimize the space
+   * taken by each memory object by reordering the subbuffers.
    *
    * @param meg
    *          The {@link MemoryExclusionGraph} whose {@link MemoryExclusionVertex} must be aligned. The size of the
@@ -112,7 +109,7 @@ public abstract class MemoryAllocator {
         .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
 
     if (hostMap != null) {
-      hostMap.values().stream().forEach(allMObjects::addAll);
+      hostMap.values().forEach(allMObjects::addAll);
     }
 
     // Scan the vertices of the graph

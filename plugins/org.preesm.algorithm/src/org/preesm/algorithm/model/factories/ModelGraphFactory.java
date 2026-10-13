@@ -43,7 +43,6 @@ import java.util.Map;
 import org.preesm.algorithm.model.AbstractGraph;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.generic.GenericGraph;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 
 /**
@@ -59,7 +58,6 @@ public class ModelGraphFactory {
   private static Map<String, Class<?>> models = new LinkedHashMap<>();
 
   static {
-    ModelGraphFactory.models.put("sdf", SDFGraph.class);
     ModelGraphFactory.models.put("dag", DirectedAcyclicGraph.class);
   }
 

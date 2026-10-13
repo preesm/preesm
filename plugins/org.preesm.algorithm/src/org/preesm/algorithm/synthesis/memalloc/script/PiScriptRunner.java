@@ -68,8 +68,6 @@ import org.preesm.algorithm.memory.script.MatchType;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
