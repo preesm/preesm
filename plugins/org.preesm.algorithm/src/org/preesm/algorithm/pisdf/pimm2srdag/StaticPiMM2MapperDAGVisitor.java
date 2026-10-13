@@ -64,7 +64,6 @@ import org.preesm.algorithm.model.IRefinement;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.types.LongEdgePropertyType;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
@@ -439,7 +438,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     }
     // 1.4 Set the different properties of the Edge
     final long dataSize = this.scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
-    newEdge.setWeight(new LongEdgePropertyType(weight));
+    newEdge.setWeight(weight);
     newEdge.setDataSize(dataSize);
     newEdge.setDataType(fifo.getType());
     newEdge.setSourceLabel(fifo.getSourcePort().getName());
@@ -448,8 +447,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
     newEdge.setContainingEdge(edge);
 
     edge.getAggregate().add(newEdge);
-    edge.setWeight(
-        new LongEdgePropertyType(this.scenario.getSimulationInfo().getBufferSizeInBit(fifo.getType(), weight)));
+    edge.setWeight(this.scenario.getSimulationInfo().getBufferSizeInBit(fifo.getType(), weight));
 
     return true;
   }
@@ -694,8 +692,7 @@ public class StaticPiMM2MapperDAGVisitor extends PiMMSwitch<Boolean> {
         final DAGEdge firstEdge = allEdges.remove(0);
         for (final DAGEdge extraEdge : allEdges) {
           // Update the weight
-          firstEdge.setWeight(
-              new LongEdgePropertyType(firstEdge.getWeight().longValue() + extraEdge.getWeight().longValue()));
+          firstEdge.setWeight(firstEdge.getWeight() + extraEdge.getWeight());
           // Add the aggregate edge
           firstEdge.getAggregate().add(extraEdge.getAggregate().get(0));
           toRemove.add(extraEdge);

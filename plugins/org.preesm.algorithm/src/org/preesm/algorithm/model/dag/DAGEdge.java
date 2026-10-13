@@ -36,7 +36,6 @@
 package org.preesm.algorithm.model.dag;
 
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.PropertyFactory;
 
 /**
@@ -93,11 +92,8 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
    *
    * @return This DAGEdge weight
    */
-  public AbstractEdgePropertyType<?> getWeight() {
-    if (getPropertyBean().getValue(DAGEdge.WEIGHT) != null) {
-      return getPropertyBean().getValue(DAGEdge.WEIGHT);
-    }
-    return null;
+  public long getWeight() {
+    return getPropertyBean().getValue(DAGEdge.WEIGHT);
   }
 
   /**
@@ -106,7 +102,7 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
    * @param w
    *          The weight to set for this DAGEdge
    */
-  public void setWeight(final AbstractEdgePropertyType<?> w) {
+  public void setWeight(final long w) {
     getPropertyBean().setValue(DAGEdge.WEIGHT, w);
   }
 

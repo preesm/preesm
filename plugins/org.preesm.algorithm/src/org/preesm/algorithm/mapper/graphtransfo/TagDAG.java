@@ -275,7 +275,7 @@ public class TagDAG {
       final DAGEdge dagEdge = (DAGEdge) aggMember;
       final String dataTypename = dagEdge.getDataType();
       final BufferProperties props = new BufferProperties(dataTypename, dagEdge.getSourceLabel(),
-          dagEdge.getTargetLabel(), dagEdge.getWeight().longValue());
+          dagEdge.getTargetLabel(), dagEdge.getWeight());
       agg.add(props);
     }
     edge.getPropertyBean().setValue(BufferAggregate.PROPERTY_BEAN_NAME, agg);

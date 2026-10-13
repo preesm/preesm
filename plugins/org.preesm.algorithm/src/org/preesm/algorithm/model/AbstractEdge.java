@@ -62,8 +62,8 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
   /** Property name for property target_port. */
   private static final String TARGET_PORT = "target_port";
 
-  private String source_port_modifier;
-  private String target_port_modifier;
+  private String sourcePortModifier;
+  private String targetPortModifier;
 
   /**
    * Creates a new AbstractEdge.
@@ -187,7 +187,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    *          the new source port modifier
    */
   public void setSourcePortModifier(final String modifier) {
-    source_port_modifier = modifier;
+    sourcePortModifier = modifier;
   }
 
   /**
@@ -196,7 +196,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    * @return the source port modifier
    */
   public String getSourcePortModifier() {
-    return source_port_modifier;
+    return sourcePortModifier;
   }
 
   /**
@@ -206,7 +206,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    *          the new source port modifier
    */
   public void setTargetPortModifier(final String modifier) {
-    target_port_modifier = modifier;
+    targetPortModifier = modifier;
   }
 
   /**
@@ -215,7 +215,7 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    * @return the source port modifier
    */
   public String getTargetPortModifier() {
-    return target_port_modifier;
+    return targetPortModifier;
   }
 
   /*

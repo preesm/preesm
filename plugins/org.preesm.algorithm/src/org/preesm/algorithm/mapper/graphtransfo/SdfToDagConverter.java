@@ -273,7 +273,7 @@ public class SdfToDagConverter {
     while (edgeiterator.hasNext()) {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) edgeiterator.next();
       final EdgeInit currentEdgeInit = currentEdge.getInit();
-      currentEdgeInit.setDataSize(currentEdge.getWeight().longValue());
+      currentEdgeInit.setDataSize(currentEdge.getWeight());
 
     }
   }

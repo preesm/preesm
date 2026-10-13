@@ -771,8 +771,8 @@ public abstract class MemoryAllocator {
       for (final Entry<DAGEdge, Long> entry : this.edgeAllocation.entrySet()) {
         final DAGEdge edge = entry.getKey();
         final Long value = entry.getValue();
-        if ((value + edge.getWeight().longValue()) > memorySize) {
-          memorySize = value + edge.getWeight().longValue();
+        if ((value + edge.getWeight()) > memorySize) {
+          memorySize = value + edge.getWeight();
         }
       }
       return (memorySize + 7L) / 8L;

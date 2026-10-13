@@ -1670,7 +1670,7 @@ public class ScriptRunner {
           || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
-      final long nbTokens = it.getWeight().longValue(); // / dataSize
+      final long nbTokens = it.getWeight(); // / dataSize
       try {
         return new Buffer(it, dagVertex.getName(), it.getTargetLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
@@ -1698,7 +1698,7 @@ public class ScriptRunner {
           || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
       // Weight is already dataSize * (Cons || prod)
-      final long nbTokens = it.getWeight().longValue(); // / dataSize
+      final long nbTokens = it.getWeight(); // / dataSize
       try {
         return new Buffer(it, dagVertex.getName(), it.getSourceLabel(), nbTokens, dataSize, isMergeable);
       } catch (final NullPointerException exc) {
