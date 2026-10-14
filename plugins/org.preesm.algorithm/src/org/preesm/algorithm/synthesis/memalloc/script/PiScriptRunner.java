@@ -187,7 +187,7 @@ public class PiScriptRunner {
       });
 
       // Remove invalid results
-      invalidVertices.stream().forEach(this.scriptedVertices::remove);
+      invalidVertices.forEach(this.scriptedVertices::remove);
     }
   }
 
@@ -227,7 +227,7 @@ public class PiScriptRunner {
           + " Please set matches only by using Buffer.matchWith() methods.";
       PiScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res1 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
-      allBuffers.stream().forEach(localBuffer -> {
+      allBuffers.forEach(localBuffer -> {
         // for all matcheSet
         final boolean res = localBuffer.isReciprocal();
         if (!res && (this.checkPolicy == CheckPolicy.THOROUGH)) {
@@ -264,10 +264,10 @@ public class PiScriptRunner {
       PiScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res2 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
 
-      result.getKey().stream().forEach(buffer -> {
+      result.getKey().forEach(buffer -> {
         final List<PiMatch> flatten = new ArrayList<>();
         buffer.matchTable.values().forEach(flatten::addAll);
-        flatten.stream().forEach(match -> {
+        flatten.forEach(match -> {
           if (!result.getValue().contains(match.getRemoteBuffer())) {
             PiScriptRunner.logger.warning(() -> "Error in " + script + ":\nMatch " + match
                 + " links an input to another." + "\nPlease set matches only between inputs and outputs.");
@@ -275,10 +275,10 @@ public class PiScriptRunner {
         });
       });
 
-      result.getValue().stream().forEach(buffer -> {
+      result.getValue().forEach(buffer -> {
         final List<PiMatch> flatten = new ArrayList<>();
         buffer.matchTable.values().forEach(flatten::addAll);
-        flatten.stream().forEach(match -> {
+        flatten.forEach(match -> {
           if (!result.getKey().contains(match.getRemoteBuffer())) {
             PiScriptRunner.logger.warning(() -> "Error in " + script + ":\nMatch " + match
                 + " links an output to another." + "\nPlease set matches only between inputs and outputs.");
@@ -300,7 +300,7 @@ public class PiScriptRunner {
           + ":\nMatching multiple times a range of an output buffer is not allowed.";
       PiScriptRunner.logger.log(Level.WARNING, message);
     } else if (!res3 && (this.checkPolicy == CheckPolicy.THOROUGH)) {
-      multipleRanges.stream().forEach(p -> {
+      multipleRanges.forEach(p -> {
         if (!(result.getKey().contains(p.getKey()) || (p.getValue().isEmpty()))) {
           final String message = "Error in " + script + ":\nMatching multiple times output buffer " + p.getKey()
               + " is not allowed." + "\nRange matched multiple times:" + p.getValue();
@@ -406,22 +406,22 @@ public class PiScriptRunner {
   public void process() {
 
     // Simplify results
-    this.scriptResults.entrySet().stream()
+    this.scriptResults.entrySet()
         .forEach(e -> PiScriptRunner.simplifyResult(e.getValue().getKey(), e.getValue().getValue()));
 
     // Identify divisible buffers
-    this.scriptResults.entrySet().stream().forEach(e -> PiScriptRunner.identifyDivisibleBuffers(e.getValue()));
+    this.scriptResults.entrySet().forEach(e -> PiScriptRunner.identifyDivisibleBuffers(e.getValue()));
 
     // Update output buffers for alignment
     if (this.falseSharingPreventionFlag && this.alignment > 0) {
-      this.scriptResults.entrySet().stream().forEach(e -> e.getValue().getValue().stream().filter(it -> {
+      this.scriptResults.entrySet().forEach(e -> e.getValue().getValue().stream().filter(it -> {
         // All outputs except the mergeable one linked only to read_only
         // inputs within their actor must be enlarged.
         // In other terms, only buffers that will never be written by their
         // producer actor or consumer actor are not enlarged since these
         // buffer will only be used to divide data written by other actors.
         final List<PiMatch> flatten = new ArrayList<>();
-        it.matchTable.values().stream().forEach(flatten::addAll);
+        it.matchTable.values().forEach(flatten::addAll);
         return !(it.originallyMergeable && flatten.stream().allMatch(m -> m.getRemoteBuffer().originallyMergeable));
         // Enlarge the buffer
         // New range mergeability is automatically handled by
@@ -431,12 +431,12 @@ public class PiScriptRunner {
     }
 
     // Identify matches types
-    this.scriptResults.entrySet().stream().forEach(e -> PiScriptRunner.identifyMatchesType(e.getValue()));
+    this.scriptResults.entrySet().forEach(e -> PiScriptRunner.identifyMatchesType(e.getValue()));
 
     // Identify match that may cause a inter-output merge (not inter-input since
     // at this point, multiple matches of output range is forbidden)
 
-    this.scriptResults.entrySet().stream().forEach(
+    this.scriptResults.entrySet().forEach(
         e -> PiScriptRunner.identifyConflictingMatchCandidates(e.getValue().getKey(), e.getValue().getValue()));
 
     // Identify groups of chained buffers from the scripts and dag
@@ -446,23 +446,22 @@ public class PiScriptRunner {
     if (this.falseSharingPreventionFlag && this.alignment > 0) {
 
       // For each group
-      groups.stream()
-          .forEach(group -> group.stream().forEach(dagVertex -> dagVertex.getDataInputPorts().stream().forEach(port -> {
-            final Fifo edge = port.getFifo();
-            // If the edge producer is not part of the group
-            if (!group.contains(edge.getSource())) {
-              // Retrieve the corresponding buffer.
-              this.scriptResults.get(dagVertex).getKey().stream()
-                  .filter(buffer -> buffer.getLoggingEdgeName().getSourcePort().getContainingActor().getName()
-                      .equals(edge.getSourcePort().getContainingActor().getName()))
-                  .forEach(it -> PiScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
-            }
-          })));
+      groups.forEach(group -> group.forEach(dagVertex -> dagVertex.getDataInputPorts().forEach(port -> {
+        final Fifo edge = port.getFifo();
+        // If the edge producer is not part of the group
+        if (!group.contains(edge.getSource())) {
+          // Retrieve the corresponding buffer.
+          this.scriptResults.get(dagVertex).getKey().stream()
+              .filter(buffer -> buffer.getLoggingEdgeName().getSourcePort().getContainingActor().getName()
+                  .equals(edge.getSourcePort().getContainingActor().getName()))
+              .forEach(it -> PiScriptRunner.enlargeForAlignment(it, this.alignment, this.printTodo));
+        }
+      })));
     }
 
     // Process the groups one by one
     this.sizeBefore = this.sizeAfter = this.nbBuffersBefore = this.nbBuffersAfter = 0L;
-    groups.stream().forEach(this::processGroup);
+    groups.forEach(this::processGroup);
 
     if (isGenerateLog()) {
       this.log = "# Memory scripts summary" + '\n' + "- Independent match trees : *" + groups.size() + "*" + '\n'
@@ -531,10 +530,10 @@ public class PiScriptRunner {
    */
   private static void identifyMatchesType(final Pair<List<PiBuffer>, List<PiBuffer>> result) {
 
-    result.getKey().stream().forEach(it -> {
+    result.getKey().forEach(it -> {
       final List<PiMatch> flatten = new ArrayList<>();
       it.matchTable.values().forEach(flatten::addAll);
-      flatten.stream().forEach(match -> {
+      flatten.forEach(match -> {
         if (result.getKey().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
         }
@@ -542,10 +541,10 @@ public class PiScriptRunner {
       });
     });
 
-    result.getValue().stream().forEach(it -> {
+    result.getValue().forEach(it -> {
       final List<PiMatch> flatten = new ArrayList<>();
       it.matchTable.values().forEach(flatten::addAll);
-      flatten.stream().forEach(match -> {
+      flatten.forEach(match -> {
         if (result.getValue().contains(match.getRemoteBuffer())) {
           throw new PreesmRuntimeException("Inter-sibling matches are no longer allowed.");
         }
@@ -584,15 +583,15 @@ public class PiScriptRunner {
     final List<PiBuffer> divisibleCandidates = allBuffers.stream()
         .filter(buffer -> (buffer.matchTable.size() > 1) && buffer.isCompletelyMatched()).toList();
 
-    divisibleCandidates.stream().forEach(buffer -> {
+    divisibleCandidates.forEach(buffer -> {
       // All are divisible BUT it will not be possible to match divided
       // buffers together (checked later)
       final List<PiMatch> drMatches = new ArrayList<>();
       buffer.divisibilityRequiredMatches.add(drMatches);
 
       final List<PiMatch> flatten = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(flatten::addAll);
-      flatten.stream().forEach(it -> {
+      buffer.matchTable.values().forEach(flatten::addAll);
+      flatten.forEach(it -> {
         final PiRange r = it.getLocalRange();
         PiRange.lazyUnion(buffer.indivisibleRanges, r);
         drMatches.add(it);
@@ -601,7 +600,7 @@ public class PiScriptRunner {
 
     // All other buffers are not divisible
     allBuffers.removeAll(divisibleCandidates);
-    allBuffers.stream().forEach(it -> it.indivisibleRanges.add(new PiRange(it.minIndex, it.maxIndex)));
+    allBuffers.forEach(it -> it.indivisibleRanges.add(new PiRange(it.minIndex, it.maxIndex)));
   }
 
   /**
@@ -627,13 +626,13 @@ public class PiScriptRunner {
     // For each Buffer
     for (final PiBuffer buffer : allBuffers) {
       final List<PiMatch> flatten = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(flatten::addAll);
+      buffer.matchTable.values().forEach(flatten::addAll);
 
       // Get the matches
       final List<PiMatch> matches = new ArrayList<>(flatten);
 
       // Update the potential conflict list of all matches
-      matches.stream().forEach(match -> match.getReciprocate().getConflictCandidates()
+      matches.forEach(match -> match.getReciprocate().getConflictCandidates()
           .addAll(matches.stream().filter(it -> it != match).map(PiMatch::getReciprocate).toList()));
 
     }
@@ -642,7 +641,7 @@ public class PiScriptRunner {
     for (final PiBuffer buffer : allBuffers) {
       // for Each match
       final List<PiMatch> matchList = new ArrayList<>();
-      buffer.matchTable.values().stream().forEach(matchList::addAll);
+      buffer.matchTable.values().forEach(matchList::addAll);
       PiBuffer.updateConflictingMatches(matchList);
     }
   }
@@ -656,7 +655,7 @@ public class PiScriptRunner {
 
     // Get all the buffers
     final List<PiBuffer> buffers = new ArrayList<>();
-    vertices.stream().forEach(it -> {
+    vertices.forEach(it -> {
       final Pair<List<PiBuffer>, List<PiBuffer>> pair = this.scriptResults.get(it);
       // Buffer that were already merged are not processed
       buffers.addAll(pair.getKey().stream().filter(buf -> buf.appliedMatches.size() == 0).toList());
@@ -731,7 +730,7 @@ public class PiScriptRunner {
       final List<PiMatch> logged = new ArrayList<>();
       for (final PiBuffer buffer : bufferList) {
         final List<PiMatch> flatten = new ArrayList<>();
-        buffer.matchTable.values().stream().forEach(flatten::addAll);
+        buffer.matchTable.values().forEach(flatten::addAll);
 
         for (final PiMatch match : flatten.stream().filter(it -> !it.isApplied()).toList()) {
           if (!logged.contains(match.getReciprocate())) {
@@ -841,7 +840,7 @@ public class PiScriptRunner {
       test = test && candidate.isDivisible();
 
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       test = test && flatten.stream().allMatch(it ->
       // Is not involved in any conflicting range
@@ -866,14 +865,14 @@ public class PiScriptRunner {
 
       final int fold = candidates.stream().map(buf -> {
         final List<PiMatch> flatten = new ArrayList<>();
-        buf.matchTable.values().stream().forEach(flatten::addAll);
+        buf.matchTable.values().forEach(flatten::addAll);
         return flatten.size();
       }).reduce((i1, i2) -> i1 + i2).orElse(0);
       this.log = this.log + "- __Step 1 - " + fold + " matches__ " + "\n>";
     }
     for (final PiBuffer candidate : candidates) {
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().map(Object::toString).collect(Collectors.joining(", "));
@@ -915,7 +914,7 @@ public class PiScriptRunner {
       while (iterType.hasNext() && !test) {
         final MatchType currentType = iterType.next();
         final List<PiMatch> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
 
         final List<PiMatch> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
@@ -953,7 +952,7 @@ public class PiScriptRunner {
     }
     for (final Entry<PiBuffer, MatchType> candidate : candidates.entrySet()) {
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + ""
@@ -998,7 +997,7 @@ public class PiScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<PiMatch> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
 
         final List<PiMatch> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
@@ -1032,7 +1031,7 @@ public class PiScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.entrySet().stream().map(e -> {
         final List<PiMatch> flatten = new ArrayList<>();
-        e.getKey().matchTable.values().stream().forEach(flatten::addAll);
+        e.getKey().matchTable.values().forEach(flatten::addAll);
         return flatten.stream().filter(it -> it.getType() == e.getValue()).count();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
@@ -1041,7 +1040,7 @@ public class PiScriptRunner {
     for (final Entry<PiBuffer, MatchType> candidate : candidates.entrySet()) {
 
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).map(Object::toString)
@@ -1159,7 +1158,7 @@ public class PiScriptRunner {
 
     for (final PiBuffer candidate : buffers) {
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
       final List<PiMatch> matches = flatten.stream().filter(it -> it.getType() == MatchType.BACKWARD).toList();
 
       // Returns true if:
@@ -1201,14 +1200,14 @@ public class PiScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.stream().map(c -> {
         final List<PiMatch> flatten = new ArrayList<>();
-        c.matchTable.values().stream().forEach(flatten::addAll);
+        c.matchTable.values().forEach(flatten::addAll);
         return (long) flatten.size();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
       this.log = this.log + "- __Step 5 - " + fold + " matches__" + "\n>";
     }
     for (final PiBuffer candidate : candidates) {
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.matchTable.values().stream().forEach(flatten::addAll);
+      candidate.matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().map(Object::toString).collect(Collectors.joining(", "));
@@ -1264,7 +1263,7 @@ public class PiScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<PiMatch> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
         final List<PiMatch> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
@@ -1309,7 +1308,7 @@ public class PiScriptRunner {
     for (final Entry<PiBuffer, MatchType> candidate : candidates.entrySet()) {
 
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).findFirst()
@@ -1356,7 +1355,7 @@ public class PiScriptRunner {
         final MatchType currentType = iterType.next();
 
         final List<PiMatch> flatten = new ArrayList<>();
-        candidate.matchTable.values().stream().forEach(flatten::addAll);
+        candidate.matchTable.values().forEach(flatten::addAll);
         final List<PiMatch> matches = flatten.stream().filter(it -> it.getType() == currentType).toList();
 
         // Returns true if:
@@ -1404,7 +1403,7 @@ public class PiScriptRunner {
     if (isGenerateLog() && !candidates.isEmpty()) {
       final long fold = candidates.entrySet().stream().map(e -> {
         final List<PiMatch> flatten = new ArrayList<>();
-        e.getKey().matchTable.values().stream().forEach(flatten::addAll);
+        e.getKey().matchTable.values().forEach(flatten::addAll);
         return flatten.stream().filter(it -> it.getType() == e.getValue()).count();
       }).reduce((l1, l2) -> l1 + l2).orElse(0L);
 
@@ -1412,7 +1411,7 @@ public class PiScriptRunner {
     }
     for (final Entry<PiBuffer, MatchType> candidate : candidates.entrySet()) {
       final List<PiMatch> flatten = new ArrayList<>();
-      candidate.getKey().matchTable.values().stream().forEach(flatten::addAll);
+      candidate.getKey().matchTable.values().forEach(flatten::addAll);
 
       if (isGenerateLog()) {
         this.log = this.log + flatten.stream().filter(it -> it.getType() == candidate.getValue()).map(Object::toString)
@@ -1456,7 +1455,7 @@ public class PiScriptRunner {
     // . For a simpler version, simply remove those other matches.
     // The match table will be modified by the applyMatch method, so we need a copy of it to iterate !
     // Remove the matches from each other conflict candidates
-    matches.stream().forEach(it -> {
+    matches.forEach(it -> {
       it.getConflictCandidates().removeAll(matches);
       it.getReciprocate().getConflictCandidates().removeAll(matches.stream().map(PiMatch::getReciprocate).toList());
       it.getConflictingMatches().removeAll(matches);
@@ -1512,8 +1511,8 @@ public class PiScriptRunner {
           final List<Fifo> inEdges = dagVertex.getDataInputPorts().stream().map(DataPort::getFifo).toList();
           final List<Fifo> outEdges = dagVertex.getDataOutputPorts().stream().map(DataPort::getFifo).toList();
 
-          inEdges.stream().forEach(it -> candidates.add(it.getSourcePort().getContainingActor()));
-          outEdges.stream().forEach(it -> candidates.add(it.getTargetPort().getContainingActor()));
+          inEdges.forEach(it -> candidates.add(it.getSourcePort().getContainingActor()));
+          outEdges.forEach(it -> candidates.add(it.getTargetPort().getContainingActor()));
 
           List<AbstractActor> addedVertices = group.subList(groupSize, group.size());
           for (final AbstractActor candidate : candidates) {
@@ -1595,7 +1594,7 @@ public class PiScriptRunner {
       }
 
       // Set as indivisible all buffers that are on the edge of the group.
-      group.stream().forEach(it -> {
+      group.forEach(it -> {
         final Pair<List<PiBuffer>, List<PiBuffer>> results = this.scriptResults.get(it);
         final List<PiBuffer> flatten = new ArrayList<>(results.getKey());
         flatten.addAll(results.getValue());
@@ -1880,7 +1879,7 @@ public class PiScriptRunner {
 
         // For each subrange of real tokens, save the corresponding remote buffer
         // and range.
-        rootBuffers.entrySet().stream().forEach(entry -> {
+        rootBuffers.entrySet().forEach(entry -> {
           final PiMemoryExclusionVertex rootMObj = bufferAndMObjectMap.get(entry.getValue().getKey());
           final PiRange localRange = entry.getKey().intersection(realTokenRange);
           final PiRange translatedLocalRange = localRange.copy();
@@ -1937,7 +1936,7 @@ public class PiScriptRunner {
       return false;
     }).filter(mObj -> {
       final List<PiBuffer> flatten = new ArrayList<>();
-      getBufferGroups().stream().forEach(flatten::addAll);
+      getBufferGroups().forEach(flatten::addAll);
 
       // keep only those that are not host. (matched ones have already been removed from the MEG)
       final PiBuffer correspondingBuffer = flatten.stream()
@@ -1949,10 +1948,10 @@ public class PiScriptRunner {
     }).toList());
 
     // Remove all exclusions between unused buffers
-    unusedMObjects.stream().forEach(mObj -> {
+    unusedMObjects.forEach(mObj -> {
       final List<PiMemoryExclusionVertex> unusedNeighbors = meg.getAdjacentVertexOf(mObj).stream()
           .filter(unusedMObjects::contains).toList();
-      unusedNeighbors.stream().forEach(it -> meg.removeEdge(mObj, it));
+      unusedNeighbors.forEach(it -> meg.removeEdge(mObj, it));
     });
   }
 
@@ -1970,7 +1969,7 @@ public class PiScriptRunner {
     final List<PiMatch> processedMatch = new ArrayList<>();
 
     // Iterate over all buffers
-    allBuffers.stream().forEach(it -> it.simplifyMatches(processedMatch));
+    allBuffers.forEach(it -> it.simplifyMatches(processedMatch));
 
     // If a buffer has an empty matchTable, remove it from its list
     final List<PiBuffer> unmatchedBuffer = allBuffers.stream().filter(it -> it.matchTable.isEmpty()).toList();
