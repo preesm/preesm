@@ -166,7 +166,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
    * Returns true if there is a long path from potentialSucc to target. A long path is defined as a path that encounters
    * more than one Fifo.
    */
-  public final boolean isThereIsALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
+  public final boolean isThereALongPath(final AbstractActor potentialSucc, final AbstractActor target) {
     try {
       new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;

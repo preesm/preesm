@@ -40,13 +40,16 @@ package org.preesm.model.pisdf.factory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.commons.model.PreesmUserFactory;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -55,6 +58,7 @@ import org.preesm.model.pisdf.ConfigOutputInterface;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Delay;
@@ -533,35 +537,51 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
   @Override
   public SimplePassiveActor createSimplePassiveActor() {
     final SimplePassiveActor passiveFifo = super.createSimplePassiveActor();
-    final PassiveInputPort pip = super.createPassiveInputPort();
-    pip.setName("in");
-    pip.setWritePassiveScriptPath(WDEFAULT);
-    final PassiveOutputPort pop = super.createPassiveOutputPort();
-    pop.setName("out");
-    pop.setReadPassiveScriptPath(RDEFAULT);
-
+    final PassiveInputPort pip = createPassiveInputPort();
+    final PassiveOutputPort pop = createPassiveOutputPort();
     passiveFifo.getPassiveInputPorts().add(pip);
     passiveFifo.getPassiveOutputPorts().add(pop);
+
+    pip.setName("in");
+    pip.setWritePassiveScriptPath(WDEFAULT);
+    pop.setName("out");
+    pop.setReadPassiveScriptPath(RDEFAULT);
 
     return passiveFifo;
   }
 
-  public SimplePassiveActor createSimplePassiveActor(Fifo fifo) {
+  public SimplePassiveActor createSimplePassiveActor(Fifo fifo, Map<AbstractVertex, Long> brv) {
     final SimplePassiveActor passiveFifo = createSimplePassiveActor();
 
     final Fifo originalFifo = PreesmCopyTracker.getOriginalSource(fifo);
 
     passiveFifo.setLinkedFifo(originalFifo);
-    passiveFifo.setName(originalFifo.getId());
+    passiveFifo.setName(originalFifo.getTarget().getName() + "_" + originalFifo.getSource().getName());
+
+    final AbstractActor sourceActor = fifo.getSource();
+    final AbstractActor targetActor = fifo.getTarget();
+
+    final Long sourceRV = sourceActor instanceof DataInterface ? 1 : brv.get(sourceActor);
+    final Long targetRV = sourceActor instanceof DataInterface ? 1 : brv.get(targetActor);
+
+    if (brv.get(sourceActor) == null) {
+      throw new PreesmRuntimeException("actor" + sourceActor.getName() + " is not contained in brv");
+    }
+
+    if (brv.get(targetActor) == null) {
+      throw new PreesmRuntimeException("actor" + targetActor.getName() + " is not contained in brv");
+    }
+
+    final long gcd = MathFunctionsHelper.gcd(sourceRV, targetRV);
 
     final long inputExpr = fifo.getSourcePort().getExpression().evaluateAsLong();
     final long outputExpr = fifo.getTargetPort().getExpression().evaluateAsLong();
 
-    final Expression expr = inputExpr > outputExpr ? fifo.getSourcePort().getExpression()
-        : fifo.getTargetPort().getExpression();
+    final long rate = Math.max(inputExpr, outputExpr) * brv.get(sourceActor) / gcd;
+    passiveFifo.getInputPort().setExpression(Long.toString(rate));
+    passiveFifo.getOutputPort().setExpression(Long.toString(rate));
 
-    passiveFifo.getDataInputPorts().getFirst().setExpression(expr);
-    passiveFifo.getDataOutputPorts().getFirst().setExpression(expr);
+    passiveFifo.setBufferSize(rate);
 
     return passiveFifo;
   }

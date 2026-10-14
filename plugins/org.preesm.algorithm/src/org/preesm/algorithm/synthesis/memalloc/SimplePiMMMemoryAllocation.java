@@ -47,9 +47,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
   public WorkingMemory allocateMemory(PiGraph oriCluster, Design slamDesign, Scenario scenario, Schedule schedule,
       Mapping mapping) {
     // Here the oriCluster argument is not used as it is already present in the scheduled form in the root schedule node
-    // as the attached actor.
-
-    // mapping and slamDesign are not used neither.
+    // as the attached actor. Mapping and slamDesign are not used neither.
 
     this.scenario = scenario;
 
@@ -186,6 +184,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
     fifoAllocation.setTargetBuffer(fifoBuffer);
 
     workingMem.getMainBuffer().getChildren().add(fifoBuffer);
+    allocSize += bufferSizeInBit;
   }
 
   /**

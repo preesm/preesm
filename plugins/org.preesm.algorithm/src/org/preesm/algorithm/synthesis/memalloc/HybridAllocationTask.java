@@ -219,9 +219,9 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
     if (!graph.isCluster()) {
       allocator = new LegacyMemoryAllocation(parameters);
     } else {
+      schedule = schedule.getInternalSchedules().get(graph);
       allocator = switch (botAllocatorValue) {
         case VALUE_BOT_ALLOCATOR_SIMPLE:
-          schedule = schedule.getInternalSchedules().get(graph);
           yield new SimplePiMMMemoryAllocation();
         default:
           throw new PreesmRuntimeException(PARAM_BOT_ALLOCATOR + " " + botAllocatorValue
@@ -253,11 +253,8 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
 
         default -> throw new PreesmRuntimeException(
             "This type of allocation merging is not supported yet. Please contact Preesm developers.");
-
       }
-
     }
-
     return parentAbstractAlloc;
   }
 
@@ -286,5 +283,4 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   public String monitorMessage() {
     return "allocating the graph and its sub graphs";
   }
-
 }

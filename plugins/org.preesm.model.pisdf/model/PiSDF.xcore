@@ -1363,7 +1363,12 @@ enum InterfaceKind {
 	CFG_INPUT as "cfg_in_iface" = 3
 }
 
-class PassiveActor extends ExecutableActor {
+interface PassiveElt {
+	op String getName()
+	
+}
+
+class PassiveActor extends ExecutableActor, PassiveElt {
 	contains PassiveInputPort[] passiveInputPorts 
 	contains PassiveOutputPort[] passiveOutputPorts
 	
@@ -1400,6 +1405,14 @@ class PassiveActor extends ExecutableActor {
 	op boolean isSimple() {
 		return false
 	}
+	
+	op boolean isDelayed() {
+		return allPassivePorts.filter[!it.isDelayed()].size > 0
+	}
+	
+	op Fifo[] getAttachedDelayedFifos() {
+		return allPassivePorts.filter[it.isDelayed()].map[it.getFifo()].toEList.unmodifiableView
+	}
 }
 
 class SimplePassiveActor extends PassiveActor {
@@ -1412,8 +1425,8 @@ class SimplePassiveActor extends PassiveActor {
 	}
 	
 	op Fifo getLinkedFifo() {
-		val inFifo = passiveInputPorts.getFirst().getLinkedFifo()
-		val outFifo = passiveOutputPorts.getFirst().getLinkedFifo()
+		val inFifo = inputPort.getLinkedFifo()
+		val outFifo = outputPort.getLinkedFifo()
 		
 		if( inFifo === null || outFifo === null || inFifo != outFifo ) {
 			throw new PreesmRuntimeException("Simple passive Actor " + getName() + " is supposed to have the same linked fifo for its input and output port. This is not the case: input fifo is " +inFifo.getId() + " and output fifo is " + outFifo.getId())
@@ -1422,12 +1435,34 @@ class SimplePassiveActor extends PassiveActor {
 	}
 	
 	op void setLinkedFifo(Fifo fifo) {
-		 passiveInputPorts.getFirst().setLinkedFifo(fifo)
-		 passiveOutputPorts.getFirst().setLinkedFifo(fifo)
+		inputPort.setLinkedFifo(fifo)
+		outputPort.setLinkedFifo(fifo)
+	}
+	
+	op void setBufferSize(long size) {
+		inputPort.setSubBufferSize(size)
+		outputPort.setSubBufferSize(size)
+	}
+	
+	op void setInputPort(PassiveInputPort pip) {
+		passiveInputPorts.clear()
+		passiveInputPorts.add(pip)
+	}
+	
+	op void setOutputPort(PassiveOutputPort pop) {
+		passiveOutputPorts.clear()
+		passiveOutputPorts.add(pop)
+	}
+	op PassiveInputPort getInputPort() {
+		return passiveInputPorts.getFirst()
+	}
+	
+	op PassiveOutputPort getOutputPort() {
+		return passiveOutputPorts.getFirst()
 	}
 }
 
-abstract class PassivePort extends DataPort {
+abstract class PassivePort extends DataPort, PassiveElt {
 	long subBufferSize
 	long offset
 	Pair beginjEndj
@@ -1436,6 +1471,13 @@ abstract class PassivePort extends DataPort {
 	
 	op String getScript()
 	
+	op boolean isDelayed() 
+ 	{
+ 		return fifo.getDelay() !== null
+ 	}	
+ 	op Delay getDelay() {
+ 		return fifo.getDelay()
+ 	}
 }
 
 class PassiveInputPort extends PassivePort, DataInputPort {
@@ -1454,3 +1496,4 @@ class PassiveOutputPort extends PassivePort, DataOutputPort {
 	}
 }
 
+	

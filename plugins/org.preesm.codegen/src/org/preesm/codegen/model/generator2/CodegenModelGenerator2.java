@@ -45,6 +45,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
@@ -103,6 +104,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -150,6 +152,12 @@ public class CodegenModelGenerator2 {
 
   private final boolean papify;
 
+  private final String clusterGenType;
+
+  public static final String CLUSTER_TYPE_PIMM = "pimm";
+
+  public static final String CLUSTER_TYPE_PASSIVE = "passive";
+
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
       final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
     this.archi = archi;
@@ -161,6 +169,18 @@ public class CodegenModelGenerator2 {
     this.papify = papify;
     this.alreadyVisitedClusters = new HashMap<>();
     this.refinementBlocks = new ArrayList<>();
+    this.clusterGenType = findClusterGenType(algo);
+  }
+
+  private static String findClusterGenType(PiGraph top) {
+    for (final PiGraph graph : top.getChildrenGraphs().stream().filter(g -> g.isCluster()).toList()) {
+      for (final AbstractActor a : graph.getActors()) {
+        if (a instanceof PassiveActor) {
+          return CLUSTER_TYPE_PASSIVE;
+        }
+      }
+    }
+    return CLUSTER_TYPE_PIMM;
   }
 
   private List<Block> generate() {
@@ -585,10 +605,19 @@ public class CodegenModelGenerator2 {
       clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
     } else {
 
-      /** if not, Create refinement block for cluster */
-      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
-      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
-          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
+      IClusterCodegenModelGenerator clusterGenerator;
+      if (Objects.equals(this.clusterGenType, CLUSTER_TYPE_PIMM)) {
+        /** if not, Create refinement block for cluster */
+        final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
+        clusterGenerator = new PiMMCodegenModelGeneratorSwitch(sourceCluster, scenario,
+            schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
+      } else if (Objects.equals(this.clusterGenType, CLUSTER_TYPE_PASSIVE)) {
+        clusterGenerator = new PassiveCodegenModelGeneratorSwitch(sourceCluster, scenario, schedule);
+      } else {
+        throw new PreesmRuntimeException("the cluster generator type " + this.clusterGenType
+            + " is not known. Choose between the following values : " + CLUSTER_TYPE_PIMM + ", "
+            + CLUSTER_TYPE_PASSIVE);
+      }
 
       clusterGenerator.generate();
 

@@ -12,6 +12,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
@@ -42,6 +43,7 @@ import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -77,79 +79,79 @@ import org.preesm.model.scenario.Scenario;
  * @author dgageot
  *
  */
-public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
+public class PiMMCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt> implements IClusterCodegenModelGenerator {
 
   /**
    * {@link Scenario} to get data size from.
    */
-  protected final Scenario scenario;
+  private final Scenario scenario;
 
   /**
    * {@link FunctionBlock} to add generate init code element to.
    */
-  protected final CallFunctionBlock callFuncBlock;
+  private final CallFunctionBlock callFuncBlock;
 
   /**
    * {@link FunctionBlock} to add generate loop code element to.
    */
-  protected final LoopFunctionBlock loopFuncBlock;
+  private final LoopFunctionBlock loopFuncBlock;
 
   /**
    * Will be added in the coreBlock welcoming the call(s) of the cluster
    */
-  protected final List<Buffer> sinkFifoBuffers;
+  private final List<Buffer> sinkFifoBuffers;
 
   /**
    * {@link Map} that registers every cluster-internal {@link Buffer} with it's {@link Fifo}.
    */
-  protected final Map<Fifo, Buffer> bufferMap;
+  private final Map<Fifo, Buffer> bufferMap;
 
   /**
    * {@link Map} that registers every {@link Buffer} that is between 2 sub-clusters, with it's {@link Fifo}.
    */
-  protected final Map<Fifo, Buffer> interfaceBufferMap;
+  private final Map<Fifo, Buffer> interfaceBufferMap;
 
   /**
    * {@link Map} that registers every cluster-external {@link Buffer} (parameter of the generated function) with it's
    * {@link Fifo}.
    */
-  protected final Map<Fifo, Buffer> parameterBufferMap;
+  private final Map<Fifo, Buffer> parameterBufferMap;
 
   /**
    * {@link Map} that registers every cluster-external {@link Buffer} with it's {@link Fifo}.
    */
-  protected final Set<IntVar> externalIntVars;
+  private final Set<IntVar> externalIntVars;
 
   /**
    * {@link Map} that registers every delay {@link Buffer} with it's {@link Fifo}.
    */
-  protected final List<Buffer> delayBufferList;
+  private final List<Buffer> delayBufferList;
 
   /**
    * {@link Map} that registers every delay {@link Buffer} with it's {@link Fifo}.
    */
-  protected final Map<Fifo, Triple<SubBuffer, SubBuffer, SubBuffer>> delaySubBufferMap;
+  private final Map<Fifo, Triple<SubBuffer, SubBuffer, SubBuffer>> delaySubBufferMap;
 
   /**
    * {@link Map} that registers every {@link AbstractActor} repetition with it's {@link IntVar}.
    */
-  protected final Map<AbstractActor, IntVar> iterMap;
+  private final Map<AbstractActor, IntVar> iterMap;
 
   /**
    * Repetition vector to get actors repetition from.
    */
-  protected Map<AbstractVertex, Long> repVector;
+  private Map<AbstractVertex, Long> repVector;
 
   /**
    * Top cluster, of the cluster modified by scheduling.
    */
-  protected PiGraph topCluster;
+  private PiGraph topCluster;
 
   /**
    * If the cluster to generate the model from contains parallelism information, it is specified in the
    * containParallelism variable.
    */
-  protected boolean parallelFiringsInside;
+  private boolean parallelFiringsInside;
 
   /**
    * The allocation, to make the buffer memory allocation
@@ -168,6 +170,8 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   Buffer mainBuffer;
 
+  private final Map<AbstractActor, Long> actorFiringsMap;
+
   /**
    *
    * @param originalCluster
@@ -175,8 +179,8 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * @param scenario
    *          the global scenario
    */
-  public PiMMCodegenModelGenerator(final PiGraph originalCluster, final Scenario scenario, final Schedule schedule,
-      final WorkingMemory allocation) {
+  public PiMMCodegenModelGeneratorSwitch(final PiGraph originalCluster, final Scenario scenario,
+      final Schedule schedule, final WorkingMemory allocation) {
     super();
     this.interfaceBufferMap = new HashMap<>();
     this.parameterBufferMap = new HashMap<>();
@@ -204,6 +208,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     this.mainBuffer.setType("char");
     this.mainBuffer.setTokenTypeSizeInBit(typeSizeInBit);
     this.mainBuffer.setNbToken(this.workMem.getMainBuffer().getSizeInBit() / typeSizeInBit);
+    this.actorFiringsMap = new HashMap<>();
   }
 
   /*
@@ -217,6 +222,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * Main function and class entry point. Generate and set code element for the corresponding cluster inside of
    * callFuncBlock and loopFuncBlock.
    */
+  @Override
   public void generate() {
 
     // Get PiGraph
@@ -316,6 +322,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     // It may work only with APGAN algorithm -> change this in the future if we use CHOCO solver to schedule clusters ?
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
     final AbstractActor actor = actors.get(0);
+    updateActorFiringsMap(PreesmCopyTracker.getOriginalSource(actor), schedule.getRepetition());
 
     // Generate a LoopBlock to put function call element into
     final LoopBlock loopBlock = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
@@ -361,7 +368,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    *
    * ============================================================================================================
    */
-  protected void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
+  private void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(topCluster);
 
@@ -402,7 +409,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     }
   }
 
-  protected Pair<CodeElt, ClusterBlock> generateClusterBlock(final HierarchicalSchedule schedule,
+  private Pair<CodeElt, ClusterBlock> generateClusterBlock(final HierarchicalSchedule schedule,
       final boolean parallelRepetition) {
 
     // Build and fill ClusterBlock attributes
@@ -440,7 +447,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   }
 
-  protected final FunctionCall generateActorFiring(final Actor actor, final FiniteLoopBlock flb) {
+  private final FunctionCall generateActorFiring(final Actor actor, final FiniteLoopBlock flb) {
     // Build FunctionCall
     final ActorFunctionCall functionCall = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall();
     functionCall.setActorName(actor.getName());
@@ -455,7 +462,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     return functionCall;
   }
 
-  protected final SpecialCall generateSpecialActorFiring(final SpecialActor actor, final FiniteLoopBlock flb) {
+  private final SpecialCall generateSpecialActorFiring(final SpecialActor actor, final FiniteLoopBlock flb) {
     // Instantiate special call object
     final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
 
@@ -490,7 +497,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     return specialCall;
   }
 
-  protected void generateExternalClusterBuffers(final PiGraph cluster, final long clusterRep, final CodeElt block) {
+  private void generateExternalClusterBuffers(final PiGraph cluster, final long clusterRep, final CodeElt block) {
     // Get the list of external Fifo in the current cluster
     final List<Fifo> externalFifo = new LinkedList<>(cluster.getFifos());
     externalFifo.removeAll(ClusteringHelper.getInternalClusterFifo(cluster));
@@ -541,14 +548,64 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     }
   }
 
-  protected void generateClusterConfigParameters(PiGraph graph) {
+  private final Buffer generateDelayBuffer(final Fifo fifo, final Buffer delayBuffer, final int iterator) {
+
+    // Fill delay buffer information
+    final long workingBufferSize = delayBuffer.getNbToken();
+    final long delayCapacity = fifo.getDelay().getExpression().evaluateAsLong();
+    delayBuffer.setName("delay_" + fifo.getSource().getName() + "_to_" + fifo.getTarget().getName() + "_" + iterator);
+    delayBuffer.setNbToken(delayCapacity + workingBufferSize);
+    delayBufferList.add(delayBuffer);
+
+    // Initialize SubBuffer for reading into delay's fifo
+    final SubBuffer readBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    readBuffer.setContainer(delayBuffer);
+    readBuffer.setOffsetInBit(0);
+    readBuffer.setName("read_to_" + delayBuffer.getName());
+    readBuffer.setType(delayBuffer.getType());
+    readBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluateAsLong());
+
+    // Initialize SubBuffer for writting into delay's fifo
+    final SubBuffer writeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    writeBuffer.setContainer(delayBuffer);
+    writeBuffer.setOffsetInBit(delayCapacity);
+    writeBuffer.setName("write_to_" + delayBuffer.getName());
+    writeBuffer.setType(delayBuffer.getType());
+    writeBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    writeBuffer.setNbToken(workingBufferSize);
+
+    // Initialize SubBuffer for shifting remaining value in delay's fifo
+    final SubBuffer remainingTokensBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    remainingTokensBuffer.setContainer(delayBuffer);
+    remainingTokensBuffer.setOffsetInBit(workingBufferSize);
+    remainingTokensBuffer.setName("remaining_tokens_of_" + delayBuffer.getName());
+    remainingTokensBuffer.setType(delayBuffer.getType());
+    remainingTokensBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    remainingTokensBuffer.setNbToken(delayCapacity);
+
+    // Add buffers to delay buffer map
+    delaySubBufferMap.put(fifo, new ImmutableTriple<>(readBuffer, writeBuffer, remainingTokensBuffer));
+
+    // Build call for fifo initialization
+    final FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+    fifoInit.setHeadBuffer(delayBuffer);
+    fifoInit.setOperation(FifoOperation.INIT);
+
+    // Add delay buffer initialization to the init block of operator block
+    callFuncBlock.getCodeElts().add(fifoInit);
+
+    return delayBuffer;
+  }
+
+  private void generateClusterConfigParameters(PiGraph graph) {
     for (final ConfigInputInterface i : graph.getConfigInputInterfaces()) {
       addParamToFunctionBlock(i, callFuncBlock);
       addParamToFunctionBlock(i, loopFuncBlock);
     }
   }
 
-  protected void addParamToFunctionBlock(ConfigInputInterface i, FunctionBlock container) {
+  private void addParamToFunctionBlock(ConfigInputInterface i, FunctionBlock container) {
     final IntVar param = CodegenModelUserFactory.eINSTANCE.createIntVar();
     param.setName(i.getName());
     param.setCreator(container);
@@ -565,7 +622,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * @param i
    *          the data interface (it can be a input or output interface)
    */
-  protected void generateParameterClusterBuffers(PiGraph graph) {
+  private void generateParameterClusterBuffers(PiGraph graph) {
     for (final DataInterface i : graph.getDataInterfaces()) {
       final Fifo fifo = i.getDataPort().getFifo();
       final Buffer codegenBuffer = retrieveAssociatedBuffer(fifo, i.getDataPort().getKind());
@@ -584,7 +641,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     }
   }
 
-  protected final FiniteLoopBlock generateFiniteLoopBlock(final CodeElt toInclude, final int repetition,
+  private final FiniteLoopBlock generateFiniteLoopBlock(final CodeElt toInclude, final int repetition,
       final AbstractActor actor, final boolean parallel) {
     final FiniteLoopBlock flb = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
     final IntVar iterator = CodegenModelUserFactory.eINSTANCE.createIntVar();
@@ -603,21 +660,26 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     return flb;
   }
 
-  protected final List<Buffer> generateInternalClusterBuffers(final PiGraph cluster) {
+  private void updateActorFiringsMap(final AbstractActor actor, final long repetition) {
+    // TODO update from a CodeElt ?
+    final Long existingRep = this.actorFiringsMap.containsKey(actor) ? this.actorFiringsMap.get(actor) : 0;
+    this.actorFiringsMap.put(actor, existingRep + repetition);
+
+  }
+
+  private final List<Buffer> generateInternalClusterBuffers(final PiGraph cluster) {
 
     // List of local internal buffer that will be defined in cluster scope
     final List<Buffer> localInternalBuffer = new LinkedList<>();
     for (final Fifo fifo : ClusteringHelper.getInternalClusterFifo(cluster)) {
       final Buffer buffer = retrieveAssociatedBuffer(fifo, null);
-      bufferMap.put(fifo, buffer);
       localInternalBuffer.add(buffer);
 
     }
     return localInternalBuffer;
   }
 
-  protected final Buffer generateIteratedBuffer(final Buffer buffer, final AbstractActor actor,
-      final DataPort dataPort) {
+  final Buffer generateIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort) {
     if (!iterMap.containsKey(actor)) {
       return buffer;
     }
@@ -660,7 +722,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     }
   }
 
-  protected final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
+  private final void addConfigInputPortArgument(final FunctionCall functionCall, final ConfigInputPort port,
       final FunctionArgument arg) {
     // Search for origin parameter
     final ConfigInputInterface parameter = (ConfigInputInterface) port.getIncomingDependency().getSetter();
@@ -675,7 +737,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     functionCall.addParameter(constant, PortDirection.INPUT);
   }
 
-  protected final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
+  private final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
       final FunctionArgument arg, final FiniteLoopBlock flb) {
     // Retrieve associated Fifo
     final Fifo associatedFifo = port.getFifo();
@@ -700,7 +762,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   }
 
-  protected final void addInitFunctionCall(final Actor actor) {
+  private final void addInitFunctionCall(final Actor actor) {
     // Retrieve Refinement from actor
     if (actor.getRefinement() instanceof final CHeaderRefinement cheader) {
 
@@ -733,7 +795,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     }
   }
 
-  protected Buffer retrieveExistingBuffer(final Fifo fifo, final PortKind dir) {
+  private Buffer retrieveExistingBuffer(final Fifo fifo, final PortKind dir) {
     if (bufferMap.containsKey(fifo)) {
       return bufferMap.get(fifo);
     }
@@ -757,14 +819,24 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
         "CodegenClusterModelGenerator: cannot associate actors FIFO [" + fifo + "] with buffer");
   }
 
-  protected final Buffer retrieveAssociatedBuffer(final Fifo fifo, final PortKind dir) {
+  private final Buffer retrieveAssociatedBuffer(Fifo fifo, final PortKind dir) {
     try {
       // Trying to get the buffer in the maps
       return retrieveExistingBuffer(fifo, dir);
     } catch (final Exception e) {
       // If it doesn't work, trying to get it in b2b map
-      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = workMem.getFifoAllocations().get(fifo)
-          .getSourceBuffer();
+      FifoAllocation fifoAlloc = workMem.getFifoAllocations().get(fifo);
+      if (fifoAlloc == null) {
+        fifo = PreesmCopyTracker.getOriginalSource(fifo);
+        if (fifo == null) {
+          throw new PreesmRuntimeException("Can't retrieve a fifo");
+        }
+        fifoAlloc = workMem.getFifoAllocations().get(fifo);
+      }
+      if (fifoAlloc == null) {
+        throw new PreesmRuntimeException("There is no fifoAllocation linked to the current fifo");
+      }
+      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAlloc.getSourceBuffer();
 
       if (allocBuffer == null) {
         throw new PreesmRuntimeException("The fifo" + fifo.getId() + "is not link to any allocation buffer");
@@ -774,7 +846,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
       if (!b2b.containsKey(allocBuffer)) {
         createBufferFromAlloc(fifo);
       }
-
       return b2b.get(allocBuffer);
     }
   }
@@ -787,17 +858,23 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
    * @param fifo
    *          input fifo
    */
-  protected void createBufferFromAlloc(final Fifo fifo) {
+  private void createBufferFromAlloc(final Fifo fifo) {
     final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = workMem.getFifoAllocations().get(fifo)
         .getSourceBuffer();
+    final String name = "mem_" + fifo.getSource().getName() + "__" + fifo.getTarget().getName();
+    final String type = fifo.getType();
+    createBufferFromAlloc(allocBuffer, name, type);
+  }
+
+  private void createBufferFromAlloc(final org.preesm.algorithm.memalloc.model.Buffer allocBuffer, final String name,
+      final String type) {
 
     final SubBuffer codegenBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
     final long offset = codegenBuffer.getOffsetInBit();
     codegenBuffer.setOffsetInBit(offset);
-    final long typeSizeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
-    final String name = "mem_" + fifo.getSource().getName() + "__" + fifo.getTarget().getName();
+    final long typeSizeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit(type);
     codegenBuffer.setName(name);
-    codegenBuffer.setType(fifo.getType());
+    codegenBuffer.setType(type);
     codegenBuffer.setTokenTypeSizeInBit(typeSizeInBit);
     codegenBuffer.setNbToken(allocBuffer.getSizeInBit() / typeSizeInBit);
 
@@ -811,10 +888,12 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   }
 
+  @Override
   public CallFunctionBlock getCallFunctionBlock() {
     return callFuncBlock;
   }
 
+  @Override
   public LoopFunctionBlock getLoopFunctionBlock() {
     return loopFuncBlock;
   }

@@ -397,6 +397,7 @@ class FiniteLoopBlock extends LoopBlock {
 class IntVar extends Variable {
 }
 
+// What is this ?
 class BufferIterator extends SubBuffer {
 	long iterSize
 	refers IntVar iter
@@ -405,6 +406,10 @@ class BufferIterator extends SubBuffer {
 class IteratedBuffer extends Buffer {
 	refers Buffer buffer
 	refers IntVar iter
+}
+
+class IteratedPassiveBuffer extends IteratedBuffer {
+	long[] possibleBeginValues
 }
 
 class PapifyAction extends Variable {

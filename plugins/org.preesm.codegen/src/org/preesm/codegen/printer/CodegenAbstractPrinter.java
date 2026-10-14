@@ -71,6 +71,7 @@ import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
+import org.preesm.codegen.model.IteratedPassiveBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.NullBuffer;
@@ -901,6 +902,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
+  public CharSequence caseIteratedPassiveBuffer(final IteratedPassiveBuffer iteratedPassiveBuffer) {
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printIteratedPassiveBufferDefinition(iteratedPassiveBuffer);
+      case PRINTING_DECLARATIONS -> printIteratedPassiveBufferDeclaration(iteratedPassiveBuffer);
+      default -> printIteratedPassiveBuffer(iteratedPassiveBuffer);
+    };
+  }
+
+  @Override
   public CharSequence caseDataTransferAction(DataTransferAction object) {
     return printDataTansfer(object);
   }
@@ -1536,5 +1546,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printRefinementBlockHeader(final RefinementBlock funcCoreBlock);
 
   public abstract CharSequence printRefinementBlockFooter(final RefinementBlock funcCoreBlock);
+
+  public abstract CharSequence printIteratedPassiveBuffer(final IteratedPassiveBuffer ipb);
+
+  public abstract CharSequence printIteratedPassiveBufferDefinition(final IteratedPassiveBuffer ipb);
+
+  public abstract CharSequence printIteratedPassiveBufferDeclaration(final IteratedPassiveBuffer ipb);
 
 }

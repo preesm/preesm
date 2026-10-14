@@ -62,6 +62,7 @@ import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
+import org.preesm.codegen.model.IteratedPassiveBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.NullBuffer;
@@ -386,6 +387,21 @@ public class BlankPrinter extends CodegenAbstractPrinter {
 
   @Override
   public CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printIteratedPassiveBuffer(IteratedPassiveBuffer ipb) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printIteratedPassiveBufferDefinition(IteratedPassiveBuffer ipb) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb) {
     return "";
   }
 }

@@ -31,7 +31,6 @@ import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
-import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -149,7 +148,7 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     final String temporaryClusterName = "cluster" + clusterId;
     final long nClusterRep = MathFunctionsHelper.gcd(rv.get(actors.get(0)), rv.get(actors.get(1)));
 
-    final PiGraph clusteredPair = new PiSDFSubgraphBuilder(cluster, actors, temporaryClusterName).build();
+    final PiGraph clusteredPair = new PassiveFreeSubgraphBuilder(cluster, actors, temporaryClusterName).build();
     clusteredPair.setClusterValue(true);
     setClusterConstraints(clusteredPair, scenario);
 
@@ -310,6 +309,7 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     List<Pair<AbstractActor, AbstractActor>> couples = PiSDFMergeabilty.getConnectedCouple(graph, brv);
 
     // Removing the pair if they don't share at least one common component
+    // Normally it won't be the case but another check cannot hurt
     couples = couples.stream().filter(pair -> {
       final AbstractActor a = pair.getLeft();
       final AbstractActor b = pair.getRight();
@@ -372,6 +372,7 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     long maxGcdRv = 0;
     Pair<AbstractActor, AbstractActor> maxCouple = null;
     for (final Pair<AbstractActor, AbstractActor> l : couples) {
+
       // Compute RV gcd
       final long tmpGcdRv = ArithmeticUtils.gcd(brv.get(l.getLeft()), brv.get(l.getRight()));
       if (tmpGcdRv > maxGcdRv) {

@@ -53,6 +53,7 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.topology.PiSDFTopologyHelper;
 
@@ -148,9 +149,20 @@ public class PiSDFMergeabilty {
     final List<Fifo> incomingFifos = new LinkedList<>();
 
     for (final DataInputPort dip : x.getDataInputPorts()) {
+
       // Add all incoming fifo that are not contained in the future cluster
       if (dip.getIncomingFifo().getSource() != y) {
-        incomingFifos.add(dip.getIncomingFifo());
+
+        // Case if previous actor is a passive one (passive actors don't count)
+        if (dip.getIncomingFifo().getSource() instanceof final PassiveActor pa) {
+          for (final DataInputPort passiveDip : pa.getDataInputPorts()) {
+            if (passiveDip.getIncomingFifo().getSource() != y) {
+              incomingFifos.add(passiveDip.getIncomingFifo());
+            }
+          }
+        } else {
+          incomingFifos.add(dip.getIncomingFifo());
+        }
       }
     }
     return incomingFifos;
@@ -159,9 +171,20 @@ public class PiSDFMergeabilty {
   private static List<Fifo> findOutFifos(final AbstractActor x, final AbstractActor y) {
     final List<Fifo> outgoingFifos = new LinkedList<>();
     for (final DataOutputPort dop : x.getDataOutputPorts()) {
+
       // Add all outgoing fifo that are not contained in the future cluster
       if (dop.getOutgoingFifo().getTarget() != y) {
-        outgoingFifos.add(dop.getOutgoingFifo());
+
+        // Case if next actor is a passive one (passive actors don't count)
+        if (dop.getOutgoingFifo().getTarget() instanceof final PassiveActor pa) {
+          for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
+            if (passiveDop.getOutgoingFifo().getTarget() != y) {
+              outgoingFifos.add(passiveDop.getOutgoingFifo());
+            }
+          }
+        } else {
+          outgoingFifos.add(dop.getOutgoingFifo());
+        }
       }
     }
     return outgoingFifos;
@@ -178,7 +201,7 @@ public class PiSDFMergeabilty {
    */
   public static boolean isCycleIntroductionConditionValid(final PiGraph graph, final AbstractActor x,
       final AbstractActor y) {
-    return !(new PiSDFTopologyHelper(graph).isThereIsALongPath(x, y));
+    return !(new PiSDFTopologyHelper(graph).isThereALongPath(x, y));
   }
 
   /**
@@ -195,8 +218,19 @@ public class PiSDFMergeabilty {
     final List<Fifo> outgoingFifos = new LinkedList<>();
 
     for (final DataOutputPort dop : x.getDataOutputPorts()) {
-      // Add all outgoing fifo that are not contained in the future cluster
-      if (dop.getOutgoingFifo().getDelay() == null && dop.getOutgoingFifo().getTarget() == y) {
+
+      // Case if succ is a passive Actor -> we visit all its output Fifos
+      if (dop.getOutgoingFifo().getTarget() instanceof final PassiveActor pa) {
+        for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
+
+          // Add all outgoing fifo that are not contained in the future cluster
+          if (dop.getOutgoingFifo().getDelay() == null && passiveDop.getOutgoingFifo().getTarget() != y) {
+            outgoingFifos.add(passiveDop.getOutgoingFifo());
+          }
+        }
+
+        // Add all outgoing fifo that are not contained in the future cluster
+      } else if (dop.getOutgoingFifo().getDelay() == null && dop.getOutgoingFifo().getTarget() == y) {
         outgoingFifos.add(dop.getOutgoingFifo());
       }
     }
@@ -219,7 +253,8 @@ public class PiSDFMergeabilty {
       final Map<AbstractVertex, Long> brv) {
     // Verify that actors are contained into BRV
     if (!brv.containsKey(x) || !brv.containsKey(y)) {
-      throw new PreesmRuntimeException("PiSDFMergeability: Actors not contained into repetition vector");
+      throw new PreesmRuntimeException(
+          "PiSDFMergeability: Actor " + x.getName() + "or " + y.getName() + " not contained into repetition vector");
     }
     // Verify theses fourth conditions
     final boolean precedenceShiftA = PiSDFMergeabilty.isPrecedenceShiftConditionValid(x, y, x, brv);
@@ -243,17 +278,26 @@ public class PiSDFMergeabilty {
 
     // Retrieve actors that are not interface nor delay
     final List<AbstractActor> graphActors = graph.getActors().stream()
-        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof DelayActor)).toList();
+        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof DelayActor) && !(a instanceof PassiveActor))
+        .toList();
 
     // Get every mergeable connected-couple
     for (final AbstractActor a : graphActors) {
       for (final DataOutputPort dop : a.getDataOutputPorts()) {
-        final AbstractActor b = dop.getOutgoingFifo().getTargetPort().getContainingActor();
-        // Verify that actor are connected together and mergeable
-        if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(graph, a, b, brv)) {
-          final Pair<AbstractActor, AbstractActor> couple = new ImmutablePair<>(a, b);
-          listCouple.add(couple);
+        AbstractActor b = dop.getOutgoingFifo().getTarget();
+
+        // Processing the case if b is a PassiveActor (a "router" actor: it can't be scheduled)
+        if (b instanceof final PassiveActor pb) {
+          for (final DataOutputPort passiveOutPort : pb.getDataOutputPorts()) {
+            b = passiveOutPort.getOutgoingFifo().getTarget();
+
+            // Verify that actor are connected together and mergeable
+            if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(graph, a, b, brv)) {
+              listCouple.add(new ImmutablePair<>(a, b));
+            }
+          }
         }
+
       }
     }
 

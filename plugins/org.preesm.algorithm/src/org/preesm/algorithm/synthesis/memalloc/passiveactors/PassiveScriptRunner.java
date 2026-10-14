@@ -21,6 +21,7 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
@@ -60,10 +61,11 @@ public class PassiveScriptRunner {
     return portBeginjEndjResults.get(dp);
   }
 
-  public void setEnd(DataPort dp, long value) {
-    final Pair<Long, Long> oldPair = this.getBeginEnd(dp);
+  public void setEnd(PassivePort pp, long value) {
+    final Pair<Long, Long> oldPair = this.getBeginEnd(pp);
     final Pair<Long, Long> newPair = new Pair<>(oldPair.getKey(), value);
-    portBeginjEndjResults.put((PassivePort) dp, newPair);
+    portBeginjEndjResults.put(pp, newPair);
+
   }
 
   /**
@@ -144,6 +146,13 @@ public class PassiveScriptRunner {
     }
   }
 
+  /**
+   *
+   * @param port
+   *          the passive port to run
+   * @throws EvalError
+   *           the error of the script execution
+   */
   private void runScript(PassivePort port) throws EvalError {
 
     final PassivePort passivePort = port;
@@ -211,7 +220,9 @@ public class PassiveScriptRunner {
       endjiName = "rendji";
     }
 
-    final int maxi = (brv.get(port.getOppositePort().getContainingActor()).intValue() / brv.get(parent).intValue()) - 1;
+    final AbstractActor opposite = port.getOppositePort().getContainingActor();
+    final long oppositeRV = opposite instanceof DataInterface ? 1 : brv.get(opposite);
+    final long maxi = (oppositeRV / brv.get(parent)) - 1;
 
     interpreter.set(portIdxName, portIdx);
     interpreter.set(beginjiName, beginji);
@@ -238,7 +249,7 @@ public class PassiveScriptRunner {
       // Store the result if the execution was successful
 
       beginj = beginji;
-      endj = 1; // TODO
+      endj = beginj + port.getExpression().evaluateAsLong();
       portBeginiEndiResults.put(passivePort, new ArrayList<>());
       portBeginiEndiResults.get(passivePort).add(new Pair<>(beginji, endji));
       firstBeginji = beginji;
@@ -317,11 +328,7 @@ public class PassiveScriptRunner {
     if (!this.portBeginiEndiResults.containsKey(pp)) {
       throw new PreesmRuntimeException("Port " + pp.getName() + " is not in script i results");
     }
-
-    for (final Pair<Long, Long> beginiEndi : this.portBeginiEndiResults.get(pp)) {
-      pp.getBeginiEndi().add(beginiEndi);
-    }
-
+    pp.getBeginiEndi().addAll(this.portBeginiEndiResults.get(pp));
   }
 
   @Override
@@ -331,21 +338,19 @@ public class PassiveScriptRunner {
 
     for (final Entry<PassivePort, Pair<Long, Long>> portBeginjEndj : this.portBeginjEndjResults.entrySet()) {
       final AbstractActor parent = portBeginjEndj.getKey().getContainingActor();
-      if (!tmpMap.containsKey(parent)) {
-        tmpMap.put(parent, new ArrayList<>());
-      }
+      tmpMap.computeIfAbsent(parent, k -> new ArrayList<>());
       final String tmpResult = portBeginjEndj.getKey().getName() + ": (" + portBeginjEndj.getValue().getKey() + ", "
           + portBeginjEndj.getValue().getValue() + ") ";
       tmpMap.get(parent).add(tmpResult);
     }
 
-    String result = "PassiveScriptRunner results : \n";
+    final StringBuilder result = new StringBuilder("PassiveScriptRunner results: \n");
     for (final Entry<AbstractActor, List<String>> actorList : tmpMap.entrySet()) {
       for (final String tmpResult : actorList.getValue()) {
-        result += actorList.getKey().getName() + " -> " + tmpResult;
+        result.append(actorList.getKey().getName()).append(" -> ").append(tmpResult).append("\n");
 
       }
     }
-    return result;
+    return result.toString();
   }
 }

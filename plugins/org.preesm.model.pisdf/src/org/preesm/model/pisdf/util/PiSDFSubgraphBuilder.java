@@ -297,19 +297,19 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   }
 
   @Override
-  public Boolean caseFifo(Fifo object) {
+  public Boolean caseFifo(Fifo fifo) {
 
     // Is the fifo connecting two actors of the desired subgraph?
-    final boolean betweenActorsOfSubGraph = this.subGraphActors.contains(object.getTarget())
-        && this.subGraphActors.contains(object.getSource());
+    final boolean betweenActorsOfSubGraph = this.subGraphActors.contains(fifo.getTarget())
+        && this.subGraphActors.contains(fifo.getSource());
 
     // If fifo should be contained in the subgraph, add it.
-    if (betweenActorsOfSubGraph && !this.visitedFifo.contains(object)) {
-      this.visitedFifo.add(object);
-      this.subGraph.addFifo(object);
+    if (betweenActorsOfSubGraph && !this.visitedFifo.contains(fifo)) {
+      this.visitedFifo.add(fifo);
+      this.subGraph.addFifo(fifo);
 
       // If there is a delay, add it into the subgraph
-      final Delay delay = object.getDelay();
+      final Delay delay = fifo.getDelay();
       if (delay != null) {
         this.subGraph.addDelay(delay);
         if (delay.getLevel().equals(PersistenceLevel.NONE) && delay.hasGetterActor()) {

@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
-import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PassiveInputPort;
 import org.preesm.model.pisdf.PassiveOutputPort;
@@ -32,32 +33,6 @@ public class PassiveActorVerifier {
 
     actorCondition1(pa, psr);
 
-  }
-
-  public static long getRealBufferSize(PassiveActor pa, PassiveScriptRunner psr, Map<PassivePort, Boolean> portMask) {
-
-    long realBufferSize = 0;
-
-    final long bufferSize = pa.getBufferSize();
-
-    for (final PassivePort pp : pa.getAllPassivePorts()) {
-      if (!portMask.containsKey(pp)) {
-        throw new PreesmRuntimeException(
-            "port mask doesn't contain passive port " + pp.getName() + " of actor " + pa.getName());
-      }
-      if (Boolean.FALSE.equals(portMask.get(pp))) {
-        continue;
-      }
-      final long ratei = pp.getOppositePort().getExpression().evaluateAsLong();
-
-      for (final Pair<Long, Long> beginjiEndji : psr.getBeginEndAllInstances(pp)) {
-        final long beginji = beginjiEndji.getKey();
-        realBufferSize = Math.max(realBufferSize, Math.max(beginji + ratei, bufferSize));
-      }
-    }
-    PreesmLogger.getLogger().info("[PASSIVE ACTOR] actor + " + pa.getName() + " has a buffer size = "
-        + pa.getBufferSize() + " and will have a real size = " + realBufferSize);
-    return realBufferSize;
   }
 
   /**
@@ -130,7 +105,8 @@ public class PassiveActorVerifier {
 
     final long paRepValue = brv.get(pp.getContainingActor());
 
-    final long neighborRepValue = brv.get(pp.getOppositePort().getContainingActor());
+    final AbstractActor opposite = pp.getOppositePort().getContainingActor();
+    final long neighborRepValue = opposite instanceof DataInterface ? 1 : brv.get(opposite);
     return neighborRepValue >= paRepValue && neighborRepValue % paRepValue == 0;
 
   }

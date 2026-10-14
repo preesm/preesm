@@ -46,7 +46,7 @@ import org.preesm.model.pisdf.PiGraph;
  *         Package visible helper switch that throws a {@link ThereIsALongPathException} when an actor equals to the
  *         local attribute 'potentialSucc' is encountered while visiting the successors of the subject of the switch and
  *         the path is strictly longer than 1. See
- *         {@link PiSDFTopologyHelper#isThereIsALongPath(AbstractActor, AbstractActor)} for usage.
+ *         {@link PiSDFTopologyHelper#isThereALongPath(AbstractActor, AbstractActor)} for usage.
  *
  *         A long path is defined as a path that encounters more than one Fifo.
  *

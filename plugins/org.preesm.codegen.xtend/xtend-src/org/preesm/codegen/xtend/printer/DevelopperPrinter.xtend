@@ -77,6 +77,7 @@ import org.preesm.codegen.model.SectionBlock
 import org.preesm.codegen.model.CallFunctionBlock
 import org.preesm.codegen.model.LoopFunctionBlock
 import org.preesm.codegen.model.RefinementBlock
+import org.preesm.codegen.model.IteratedPassiveBuffer
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -254,6 +255,18 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	}
 	
 	override printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printIteratedPassiveBuffer(IteratedPassiveBuffer ipb) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printIteratedPassiveBufferDefinition(IteratedPassiveBuffer ipb) {
 		throw new UnsupportedOperationException("TODO: auto-generated method stub")
 	}
 

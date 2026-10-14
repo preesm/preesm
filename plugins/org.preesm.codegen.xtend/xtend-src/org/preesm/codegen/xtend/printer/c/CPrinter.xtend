@@ -104,6 +104,7 @@ import org.preesm.codegen.model.CallFunctionBlock
 import org.preesm.codegen.model.LoopFunctionBlock
 import org.preesm.codegen.model.FunctionBlock
 import org.preesm.codegen.model.RefinementBlock
+import org.preesm.codegen.model.IteratedPassiveBuffer
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -113,6 +114,8 @@ import org.preesm.codegen.model.RefinementBlock
  * @author mpelcat
  */
 class CPrinter extends BlankPrinter {
+	
+	public static final String ITERATED_PASSIVE_SUFFIX = "possible_begins"
 
 	boolean monitorAllFifoMD5 = false;
 
@@ -1269,6 +1272,24 @@ class CPrinter extends BlankPrinter {
   
   override CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) '''
   '''
+		
+  override printIteratedPassiveBuffer(IteratedPassiveBuffer ipb)  '''
+  «doSwitch(ipb.buffer)» + «buildIteratedPassiveBeginsValues(ipb.buffer.name)»[«printIntVar(ipb.iter)» % «ipb.possibleBeginValues.size()»]
+  '''
+		
+  override printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb)  '''
+  «printBufferDeclaration(ipb.buffer)»
+  const long* «buildIteratedPassiveBeginsValues(ipb.buffer.name)» = [«FOR i : ipb.getPossibleBeginValues() SEPARATOR ','»
+  «i»
+  «ENDFOR»];
+  '''
 
+  override printIteratedPassiveBufferDefinition(IteratedPassiveBuffer ipb) '''
+  «printIteratedPassiveBufferDeclaration(ipb)»
+  '''
+  
+  def String buildIteratedPassiveBeginsValues(String bufferName) {
+	return (bufferName +"_" + ITERATED_PASSIVE_SUFFIX)
+  }
 
 }
