@@ -581,15 +581,15 @@ public class CodegenModelGenerator2 {
     CHeaderRefinement clusterRefinement;
 
     /** Verify if the original cluster has not been generated yet */
-    final PiGraph oriCluster = PreesmCopyTracker.getOriginalSource(cluster);
-    if (this.alreadyVisitedClusters.containsKey(oriCluster)) {
-      clusterRefinement = this.alreadyVisitedClusters.get(oriCluster);
+    final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
+    if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
+      clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
     } else {
 
       /** if not, Create refinement block for cluster */
-      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(oriCluster);
-      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(oriCluster, scenario,
-          schedule.getInternalSchedules().get(oriCluster), clusterWorkMem);
+      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
+      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
+          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
 
       clusterGenerator.generate();
 
@@ -600,14 +600,14 @@ public class CodegenModelGenerator2 {
       refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
       refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
       refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
-      refinementBlock.setName(oriCluster.getName());
-      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(oriCluster).forEach(h -> refinementBlock.getHeaders().add(h));
+      refinementBlock.setName(sourceCluster.getName());
+      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
 
       this.refinementBlocks.add(refinementBlock);
 
-      clusterRefinement = buildClusterRefinement(oriCluster, scenario);
+      clusterRefinement = buildClusterRefinement(sourceCluster, scenario);
 
-      this.alreadyVisitedClusters.put(oriCluster, clusterRefinement);
+      this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
     }
     /** Transform cluster in a normal actor, with a c refinement */
     final Actor actorCluster = PiMMUserFactory.instance.createActor();

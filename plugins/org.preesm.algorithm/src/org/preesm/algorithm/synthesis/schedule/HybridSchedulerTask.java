@@ -170,19 +170,19 @@ public class HybridSchedulerTask extends ListSchedulerTask {
     for (final PiGraph child : graph.getChildrenGraphs()) {
 
       // We get the original subgraph in PiSDF to avoid scheduling multiple times the same subgraph.
-      final PiGraph oriChild = PreesmCopyTracker.getOriginalSource(child);
+      final PiGraph sourceChild = PreesmCopyTracker.getSource(child);
       final EMap<PiGraph, Schedule> internalSchedules = currentSchedule.getInternalSchedules();
-      if (internalSchedules.containsKey(oriChild)) {
+      if (internalSchedules.containsKey(sourceChild)) {
         continue;
       }
-      final SynthesisResult childResult = executeRecursively(oriChild, scenario, arch, threshold, currentDepth + 1,
+      final SynthesisResult childResult = executeRecursively(sourceChild, scenario, arch, threshold, currentDepth + 1,
           parameters, monitor, nodeName, workflow);
 
       final Schedule childSchedule = childResult.schedule;
       final Mapping childMapping = childResult.mapping;
 
       /** Merging result in parent Schedule */
-      internalSchedules.put(oriChild, childSchedule);
+      internalSchedules.put(sourceChild, childSchedule);
 
       /** Merging result in parent Mapping */
       if (currentMapping == null) {

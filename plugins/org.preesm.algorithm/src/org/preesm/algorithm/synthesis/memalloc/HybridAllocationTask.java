@@ -263,15 +263,15 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
 
     /** Making the allocation for every child graphs */
     for (final PiGraph child : graph.getChildrenGraphs()) {
-      final PiGraph oriGraph = PreesmCopyTracker.getOriginalSource(child);
+      final PiGraph sourceGraph = PreesmCopyTracker.getSource(child);
 
-      if (internalAllocationTracker.containsKey(oriGraph)) {
+      if (internalAllocationTracker.containsKey(sourceGraph)) {
         continue;
       }
 
-      final AbstractAllocation childAbstractAlloc = this.executeRecursively(oriGraph, scenario, arch, schedule, mapping,
-          threshold, currentDepth + 1, parameters, monitor, nodeName, workflow);
-      this.internalAllocationTracker.put(oriGraph, childAbstractAlloc);
+      final AbstractAllocation childAbstractAlloc = this.executeRecursively(sourceGraph, scenario, arch, schedule,
+          mapping, threshold, currentDepth + 1, parameters, monitor, nodeName, workflow);
+      this.internalAllocationTracker.put(sourceGraph, childAbstractAlloc);
 
       /** Merging child allocation in parent allocation */
       switch (childAbstractAlloc) {
