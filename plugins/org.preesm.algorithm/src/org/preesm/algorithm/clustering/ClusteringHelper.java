@@ -52,7 +52,6 @@ import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.schedule.model.SequentialSchedule;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -81,7 +80,6 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.util.PiSDFMergeabilty;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.CPU;
-import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 
@@ -195,57 +193,6 @@ public class ClusteringHelper {
       }
     }
     return result;
-  }
-
-  /**
-   * @param schedule
-   *          schedule to get execution time from
-   * @return execution time
-   */
-  public static final long getExecutionTimeOf(Schedule schedule, Scenario scenario, Component component) {
-    long timing = 0;
-
-    // If schedule is hierarchical
-    if (schedule instanceof HierarchicalSchedule) {
-      timing = getExecutionTimeOfHierarchical(schedule, scenario, component, timing);
-    } else {
-      // Retrieve timing from actors
-      final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
-      final AbstractActor actor = actors.get(0);
-      final long actorTiming = scenario.getTimings().evaluateExecutionTimeOrDefault(actor, component);
-      timing = schedule.getRepetition() * actorTiming;
-    }
-
-    return timing;
-  }
-
-  private static long getExecutionTimeOfHierarchical(Schedule schedule, Scenario scenario, Component component,
-      long timing) {
-    // If schedule is sequential
-    if (schedule instanceof SequentialSchedule) {
-      // Sum timings of all childrens together
-      for (final Schedule child : schedule.getChildren()) {
-        timing += getExecutionTimeOf(child, scenario, component);
-      }
-    } else {
-      // If schedule is parallel
-      // Search for the maximun time taken by childrens
-      long max = 0;
-      for (final Schedule child : schedule.getChildren()) {
-        final long result = getExecutionTimeOf(child, scenario, component);
-        if (result > max) {
-          max = result;
-        }
-      }
-      // Add max execution time to timing
-      timing += max;
-    }
-
-    // If it is repeated, multiply timing by the time of
-    if (schedule.getRepetition() > 1) {
-      timing *= schedule.getRepetition();
-    }
-    return timing;
   }
 
   /**

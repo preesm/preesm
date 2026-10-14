@@ -232,8 +232,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     // Print block from input schedule into callFuncBlock and loopFuncBlock
     final CodeElt cluster = doSwitch(schedule);
 
-    // .add(this.mainBuffer);
-
     if (cluster instanceof final ClusterBlock clusterBlock) {
       clusterBlock.setContainParallelism(parallelFiringsInside);
     }
@@ -819,10 +817,11 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
         throw new PreesmRuntimeException("The fifo" + fifo.getId() + "is not link to any allocation buffer");
       }
 
-      // If here, it meeans that it the first time that the FIFO is seen
+      // If here, it means that it the first time that the FIFO is seen
       if (!b2b.containsKey(allocBuffer)) {
         createBufferFromAlloc(fifo);
       }
+
       return b2b.get(allocBuffer);
     }
   }

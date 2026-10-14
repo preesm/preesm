@@ -208,14 +208,14 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    // Getting the inputs
+    /** Getting the inputs */
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design arch = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
     final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
 
-    // Computing the threshold
+    /** Computing the threshold */
     final String thresholdValue = parameters.get(PARAM_TOP_THRESHOLD);
     long depthThreshold;
     if (thresholdValue.equals(VALUE_TOP_THRESHOLD_ALL)) {
@@ -224,9 +224,9 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
       depthThreshold = Long.parseLong(thresholdValue);
     }
 
-    // Making the allocation for every hierarchical level of the graph.
+    /** Making the allocation for every hierarchical level of the graph. */
     final AbstractAllocation tmpResult = executeRecursively(graph, scenario, arch, schedule, mapping, depthThreshold, 0,
-        parameters, monitor, nodeName, workflow);
+        parameters, workflow);
 
     if (!(tmpResult instanceof final Allocation result)) {
       throw new PreesmRuntimeException("The chosen allocators must give back an Allocation, not just a Working Memory");
@@ -238,8 +238,7 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   }
 
   private AbstractAllocation executeRecursively(PiGraph graph, Scenario scenario, Design arch, Schedule schedule,
-      Mapping mapping, long threshold, int currentDepth, Map<String, String> parameters, IProgressMonitor monitor,
-      String nodeName, Workflow workflow) {
+      Mapping mapping, long threshold, int currentDepth, Map<String, String> parameters, Workflow workflow) {
 
     /** Choosing witch scheduler to use */
     final String botAllocatorValue = parameters.get(PARAM_BOT_ALLOCATOR);
@@ -270,7 +269,7 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
       }
 
       final AbstractAllocation childAbstractAlloc = this.executeRecursively(sourceGraph, scenario, arch, schedule,
-          mapping, threshold, currentDepth + 1, parameters, monitor, nodeName, workflow);
+          mapping, threshold, currentDepth + 1, parameters, workflow);
       this.internalAllocationTracker.put(sourceGraph, childAbstractAlloc);
 
       /** Merging child allocation in parent allocation */

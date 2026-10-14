@@ -42,11 +42,13 @@ public class ClusterIdentifier {
   }
 
   /**
-   * This method will (1) identify and create different clusters in {@link PiGraph algorithm} (in a
-   * {@link VerticalHeuristic vertical} and in an {@link HorizontalHeuristic horizontal} way), (2) select a
-   * {@link Component component} for each identified clusters and will update the constraints in the {@link Scenario
-   * scenario}, and then (3) balance weights to adapt the the repetition value of the clusters according to a
-   * {@link BalancingHeuristic balancing heuristic}.
+   * This method will :<br>
+   * -1. identify and create different clusters in {@link PiGraph algorithm} (in a {@link VerticalHeuristic vertical}
+   * and in an {@link HorizontalHeuristic horizontal} way). <br>
+   * -2. select a {@link Component component} for each identified clusters and will update the constraints in the
+   * {@link Scenario scenario}.<br>
+   * -3. balance weights to adapt the the repetition value of the clusters according to a {@link BalancingHeuristic
+   * balancing heuristic}.
    *
    * @param algorithm
    *          the top {@link PiGraph graph} that describes the algorithm.
