@@ -224,7 +224,7 @@ public class PiSDFMergeabilty {
         for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
 
           // Add all outgoing fifo that are not contained in the future cluster
-          if (dop.getOutgoingFifo().getDelay() == null && passiveDop.getOutgoingFifo().getTarget() != y) {
+          if (passiveDop.getOutgoingFifo().getDelay() == null && passiveDop.getOutgoingFifo().getTarget() == y) {
             outgoingFifos.add(passiveDop.getOutgoingFifo());
           }
         }

@@ -612,7 +612,8 @@ public class CodegenModelGenerator2 {
         clusterGenerator = new PiMMCodegenModelGeneratorSwitch(sourceCluster, scenario,
             schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
       } else if (Objects.equals(this.clusterGenType, CLUSTER_TYPE_PASSIVE)) {
-        clusterGenerator = new PassiveCodegenModelGeneratorSwitch(sourceCluster, scenario, schedule);
+        clusterGenerator = new PassiveCodegenModelGeneratorSwitch(sourceCluster, scenario,
+            schedule.getInternalSchedules().get(sourceCluster));
       } else {
         throw new PreesmRuntimeException("the cluster generator type " + this.clusterGenType
             + " is not known. Choose between the following values : " + CLUSTER_TYPE_PIMM + ", "

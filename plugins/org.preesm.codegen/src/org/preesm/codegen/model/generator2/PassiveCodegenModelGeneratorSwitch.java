@@ -54,7 +54,6 @@ import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
-import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PassiveElt;
@@ -179,8 +178,8 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   public void generate() {
 
     // Compute the cluster function arguments
-    generateClusterConfigParameters(topScheduledCluster);
-    generateParameterClusterBuffers(topScheduledCluster);
+    generateClusterConfigParameters(originalCluster);
+    generateParameterClusterBuffers(originalCluster);
 
     // Create memory buffers
     generateBuffers();
@@ -284,16 +283,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     // clustering process does list actors in actor schedule, we only care about the first one here
     // It may work only with APGAN algorithm -> change this in the future if we use CHOCO solver to schedule clusters ?
     final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
-    final AbstractActor tmp = PreesmCopyTracker.getOriginalSource(actors.get(0));
-
-    // Retrieving the actor in the original cluster: the one that is connected to passive actors
-    final AbstractActor actor = this.originalCluster.getActors().stream()
-        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof PassiveActor))
-        .filter(a -> PreesmCopyTracker.getOriginalSource(a) == tmp).toList().getFirst();
-    if (actor == null) {
-      throw new PreesmRuntimeException(
-          "Can't retrieve the actor " + tmp.getName() + " in the original cluster" + originalCluster.getName());
-    }
+    final AbstractActor actor = PreesmCopyTracker.getSource(actors.get(0));
 
     // Generate a LoopBlock to put function call element into
     final LoopBlock loopBlock = CodegenModelUserFactory.eINSTANCE.createLoopBlock();
@@ -349,7 +339,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
 
     this.mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
     final long typeSizeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit("char");
-    final String name = "workingMem_" + topScheduledCluster.getName();
+    final String name = "workingMem_" + originalCluster.getName();
     this.mainBuffer.setName(name);
     this.mainBuffer.setType("char");
     this.mainBuffer.setTokenTypeSizeInBit(typeSizeInBit);

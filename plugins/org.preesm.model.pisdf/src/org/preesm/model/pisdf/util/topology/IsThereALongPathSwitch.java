@@ -38,6 +38,7 @@ package org.preesm.model.pisdf.util.topology;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.Fifo;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
@@ -80,8 +81,8 @@ class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
 
     if (!this.visitedElements.contains(actor)) {
       this.visitedElements.add(actor);
-      long tempFifoCount = this.fifoCount;
-      for (DataOutputPort dop : actor.getDataOutputPorts()) {
+      final long tempFifoCount = this.fifoCount;
+      for (final DataOutputPort dop : actor.getDataOutputPorts()) {
         this.fifoCount = tempFifoCount;
         doSwitch(dop);
       }
@@ -90,12 +91,18 @@ class IsThereALongPathSwitch extends PiSDFSuccessorSwitch {
   }
 
   @Override
+  public Boolean casePassiveActor(final PassiveActor pa) {
+    this.fifoCount -= 1;
+    return caseAbstractActor(pa);
+  }
+
+  @Override
   public Boolean caseFifo(final Fifo fifo) {
     // If there is a delay on fifo, stop here
     if (fifo.getDelay() != null) {
       return true;
     }
-    this.fifoCount = this.fifoCount + 1;
+    this.fifoCount += 1;
     return super.caseFifo(fifo);
   }
 

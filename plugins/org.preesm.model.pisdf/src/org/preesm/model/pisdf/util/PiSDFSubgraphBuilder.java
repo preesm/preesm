@@ -77,17 +77,17 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   /**
    * Actors that compose the subgraph.
    */
-  private final List<AbstractActor> subGraphActors;
+  protected final List<AbstractActor> subGraphActors;
 
   /**
    * Parent graph of the subgraph.
    */
-  private final PiGraph parentGraph;
+  protected final PiGraph parentGraph;
 
   /**
    * Subgraph builded with this class.
    */
-  private final PiGraph subGraph;
+  protected final PiGraph subGraph;
 
   /**
    * List of visited Fifo in order to explore the PiGraph.

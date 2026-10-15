@@ -36,4 +36,29 @@ public class PassiveFreeSubgraphBuilder extends PiSDFSubgraphBuilder {
     return super.caseDataInputPort(dip);
   }
 
+  /**
+   * Performs subgraph actors extraction from parent graph.
+   *
+   * @return The resulting subgraph.
+   */
+  @Override
+  public PiGraph build() {
+    // Add subgraph to parent graph
+    parentGraph.addActor(subGraph);
+
+    // Add actors to the new subgraph
+    for (final AbstractActor actor : this.subGraphActors) {
+      doSwitch(actor);
+    }
+
+    // This line is here because of a bug occurring when creating a cluster in a cluster.
+    // In details, it seems that the actorIndex (existing just to keep track of the number of actors in a graph) of
+    // cluster is not updated when adding an existing actor (of parentGraph) in cluster. So we update by hand.
+    this.subGraph.setActorIndex(this.subGraph.getActors().size());
+    this.subGraph.setFifoWithoutDelayIndex(this.subGraph.getFifosWithoutDelay().size());
+    this.subGraph.setFifoWithDelayIndex(this.subGraph.getFifosWithDelay().size());
+
+    return this.subGraph;
+  }
+
 }

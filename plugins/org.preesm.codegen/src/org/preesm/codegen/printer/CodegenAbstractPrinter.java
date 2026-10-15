@@ -385,7 +385,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // The coreBlock is composed of Blocks
     // Each block is printed in the following way
     // <BlockHeader><BlockContent><BlockFooter>
-    // The the BlockContent may itself contain Block(s)
+    // The BlockContent may itself contain Block(s)
     //
     // The Coreblock is structured as follow:
     // CoreBlock
