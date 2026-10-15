@@ -167,7 +167,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "No special care is taken to align the buffers in memory."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
                 effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
-                    + "bites integer is aligned on 32 bits address."),
+                    + "bits integer is aligned on 32 bits address."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
                 effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                     + " on addresses that are multiples of n bits.") }),
@@ -211,7 +211,6 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
   public static final String VALUE_ALLOCATORS_BASIC     = "Basic";
   public static final String VALUE_ALLOCATORS_BEST_FIT  = "BestFit";
   public static final String VALUE_ALLOCATORS_FIRST_FIT = "FirstFit";
-  public static final String VALUE_ALLOCATORS_DE_GREEF  = "DeGreef";
 
   public static final String PARAM_XFIT_ORDER                   = "Best/First Fit order";
   public static final String VALUE_XFIT_ORDER_DEFAULT           = "LargestFirst";
@@ -339,18 +338,17 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
         alloc.setOrder(this.ordering);
         yield alloc;
       }
-      default -> throw new IllegalArgumentException(allocatorNameErrorMessage());
+      default -> throw new IllegalArgumentException(allocatorNameErrorMessage(valueAllocator));
     };
 
     this.allocator.setAlignment(this.alignment);
   }
 
-  private String allocatorNameErrorMessage() {
+  private String allocatorNameErrorMessage(String wrongAllocator) {
     final StringBuilder errorStringBuilder = new StringBuilder();
-    errorStringBuilder.append("Unrecognized Allocator name. Supported parameters are:\n");
+    errorStringBuilder.append("Unrecognized Allocator name: " + wrongAllocator + ". Supported parameters are:\n");
     errorStringBuilder.append(VALUE_ALLOCATORS_BASIC + "\n");
     errorStringBuilder.append(VALUE_ALLOCATORS_BEST_FIT + "\n");
-    errorStringBuilder.append(VALUE_ALLOCATORS_DE_GREEF + "\n");
     errorStringBuilder.append(VALUE_ALLOCATORS_DEFAULT + "\n");
     errorStringBuilder.append(VALUE_ALLOCATORS_FIRST_FIT);
     return errorStringBuilder.toString();

@@ -147,7 +147,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "No special care is taken to align the buffers in memory."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
                 effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
-                    + "bites integer is aligned on 32 bits address."),
+                    + "bits integer is aligned on 32 bits address."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
                 effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                     + " on addresses that are multiples of n bits.") }),
