@@ -65,7 +65,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
       @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class),
-      @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
 
     shortDescription = "Executes the memory scripts associated to actors and merge buffers.",
@@ -178,17 +178,18 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
     // Retrieve the input graph
-    final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Get the data types from the scenario
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
     final SimulationInfo simulationInfo = scenario.getSimulationInfo();
 
     // Get check policy
     final String checkString = parameters.get(PiMemoryScriptTask.PARAM_CHECK);
 
-    final PiMemoryExclusionGraph meg = (PiMemoryExclusionGraph) inputs.get("MemEx");
+    final PiMemoryExclusionGraph meg = (PiMemoryExclusionGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
 
     // execute
     final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, verbose);
@@ -205,7 +206,7 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
 
     // Outputs
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    outputs.put("MemEx", meg);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, meg);
     return outputs;
   }
 }

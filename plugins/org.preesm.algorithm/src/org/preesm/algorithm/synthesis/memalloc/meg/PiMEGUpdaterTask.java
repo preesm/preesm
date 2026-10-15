@@ -80,6 +80,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     seeAlso = { "**MEG update**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Pre-and post-scheduling memory"
         + " allocation strategies on MPSoCs. In Electronic System Level Synthesis Conference (ESLsyn), 2013." })
+
 public class PiMEGUpdaterTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE            = "Verbose";
@@ -93,10 +94,11 @@ public class PiMEGUpdaterTask extends AbstractTaskImplementation {
     final boolean verbose = "true".equalsIgnoreCase(parameters.get(PiMEGUpdaterTask.PARAM_VERBOSE));
 
     // Retrieve inputs
-    final PiGraph graph = (PiGraph) inputs.get("PiMM");
-    final PiMemoryExclusionGraph memEx = (PiMemoryExclusionGraph) inputs.get("MemEx");
-    final Schedule schedule = (Schedule) inputs.get("Schedule");
-    final Mapping mapping = (Mapping) inputs.get("Mapping");
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final PiMemoryExclusionGraph memEx = (PiMemoryExclusionGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
+    final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
+    final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
 
     // Update MEG
     final MemExUpdaterEngine engine = new MemExUpdaterEngine(graph, memEx, schedule, mapping, verbose);

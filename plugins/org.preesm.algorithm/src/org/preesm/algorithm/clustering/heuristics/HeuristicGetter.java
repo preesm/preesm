@@ -47,7 +47,7 @@ public class HeuristicGetter {
       case COMPLETE_BALANCING -> new CompleteBalancing();
       case BASIC_BALANCING -> new BasicBalancing();
       default -> throw new PreesmRuntimeException(
-          "heuristicName <" + heuristicName + "> is unkown, can't retrieve the wanted heuristic.");
+          "heuristicName <" + heuristicName + "> is unknown, can't retrieve the wanted heuristic.");
     };
   }
 }

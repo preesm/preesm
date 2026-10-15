@@ -39,6 +39,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class ClusterIdentifier {
 
   private ClusterIdentifier() {
+    // Forbid instantiation
   }
 
   /**
@@ -113,7 +114,7 @@ public class ClusterIdentifier {
 
     if (verbose) {
       PreesmLogger.getLogger()
-          .info("Clustering Id: building horizontal clusters with " + horizIdentifier + " heuristic done.");
+          .info(() -> "Clustering Id: building horizontal clusters with " + horizIdentifier + " heuristic done.");
     }
 
     // ---------------------------------------------------------------------------------------------- //
@@ -127,9 +128,7 @@ public class ClusterIdentifier {
 
     for (final PiGraph cluster : clustersList) {
 
-      clusterBalancer.balanceFirings(algorithm /* will be modified */, cluster, nPEs).stream().forEach(c -> {
-        newClustersList.add(c);
-      });
+      clusterBalancer.balanceFirings(algorithm /* will be modified */, cluster, nPEs).forEach(newClustersList::add);
     }
 
     clustersList = newClustersList;
@@ -178,7 +177,6 @@ public class ClusterIdentifier {
     final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
     buildVerticalClustersRec(null, graphCopy, heuristic);
     return graphCopy;
-
   }
 
   /**
@@ -323,7 +321,6 @@ public class ClusterIdentifier {
       }
 
       // Creating the cluster
-      // final PiGraph cluster = ClusterCreator.create(graph, actorsToMerge, clusterName);
       final PiGraph cluster = new PiSDFSubgraphBuilder(graph, new ArrayList<>(actorsToMerge), clusterName).build();
       cluster.setClusterValue(true);
       listClusters.add(cluster);

@@ -86,6 +86,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     seeAlso = { "**MEG**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. Memory bounds for the distributed "
         + "execution of a hierarchical synchronous data-flow graph. In Embedded Computer Systems: "
         + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
+
 public class PiMEGBuilderTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE            = "Verbose";
@@ -101,8 +102,8 @@ public class PiMEGBuilderTask extends AbstractTaskImplementation {
         .equalsIgnoreCase(parameters.get(PiMEGBuilderTask.PARAM_VERBOSE));
     final Level logLevel = verbose ? Level.INFO : Level.FINEST;
 
-    final Scenario scenario = (Scenario) inputs.get("scenario");
-    final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Build the exclusion graph
     PreesmLogger.getLogger().log(logLevel, "Memory exclusion graph : start building");

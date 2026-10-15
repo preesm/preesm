@@ -106,7 +106,6 @@ public class BasicBalancing extends BalancingHeuristic {
     }
 
     return clusters;
-
   }
 
 }

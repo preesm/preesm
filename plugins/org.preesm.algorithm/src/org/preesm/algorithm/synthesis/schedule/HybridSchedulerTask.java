@@ -82,15 +82,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             effect = "This value garanties that the bottom scheduler will never be used, and that the top scheduler"
                 + " will be called for every graphs, no matter their depth") },
           description = """
-
               """),
-
       @Parameter(name = HybridSchedulerTask.PARAM_BOT_SCHEDULER,
-          values = { @Value(name = HybridSchedulerTask.VALUE_BOT_SCHEDULER_APGAN, effect = "") }, description = """
+          values = { @Value(name = HybridSchedulerTask.VALUE_BOT_SCHEDULER_APGAN, effect = "") }, description = ""), })
 
-              """),
-
-    })
 public class HybridSchedulerTask extends ListSchedulerTask {
 
   public static final String PARAM_TOP_THRESHOLD     = "Top Threshold";
@@ -204,7 +199,7 @@ public class HybridSchedulerTask extends ListSchedulerTask {
           log.append(a.getName());
           log.append(". Choosing the child Mapping.");
 
-          logger.log(Level.WARNING, log.toString());
+          logger.warning(log::toString);
 
           currentMapping.getMappings().removeKey(a);
           currentMapping.getMappings().put(a, childMapping.getMapping(a));

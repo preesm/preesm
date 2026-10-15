@@ -202,7 +202,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     this.mainBuffer.setType("char");
     this.mainBuffer.setTokenTypeSizeInBit(typeSizeInBit);
     this.mainBuffer.setNbToken(this.workMem.getMainBuffer().getSizeInBit() / typeSizeInBit);
-
   }
 
   /*
@@ -452,17 +451,13 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     final SpecialCall specialCall = CodegenModelUserFactory.eINSTANCE.createSpecialCall();
 
     // Set type of special call
-    if (actor instanceof ForkActor) {
-      specialCall.setType(SpecialType.FORK);
-    } else if (actor instanceof JoinActor) {
-      specialCall.setType(SpecialType.JOIN);
-    } else if (actor instanceof BroadcastActor) {
-      specialCall.setType(SpecialType.BROADCAST);
-    } else if (actor instanceof RoundBufferActor) {
-      specialCall.setType(SpecialType.ROUND_BUFFER);
-    } else {
-      throw new PreesmRuntimeException(
-          "CodegenClusterModelGenerator: can't retrieve type of special actor [" + actor.getName() + "]");
+    switch (actor) {
+      case final ForkActor fa -> specialCall.setType(SpecialType.FORK);
+      case final JoinActor ja -> specialCall.setType(SpecialType.FORK);
+      case final BroadcastActor ba -> specialCall.setType(SpecialType.FORK);
+      case final RoundBufferActor rba -> specialCall.setType(SpecialType.FORK);
+      default -> throw new PreesmRuntimeException(
+          "PiMMCodegenModelGenerator: can't retrieve type of special actor [" + actor.getName() + "]");
     }
 
     // Retrieve associated fifo/buffer
@@ -625,7 +620,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     iteratedBuffer.setType(buffer.getType());
     iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
     return iteratedBuffer;
-
   }
 
   protected final void fillFunctionCallArguments(final FunctionCall functionCall, final Actor actor,
@@ -635,7 +629,7 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
       // Retrieve C header refinement
       if (cheader.getLoopPrototype() == null) {
         throw new PreesmRuntimeException(
-            "CodegenClusterModelGenerator: cannot find C loop function prototype for actor " + actor.getName());
+            "PiMMCodegenModelGenerator: cannot find C loop function prototype for actor " + actor.getName());
       }
 
       // Retrieve function argument

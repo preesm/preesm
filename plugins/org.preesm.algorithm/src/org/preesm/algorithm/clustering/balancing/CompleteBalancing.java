@@ -388,7 +388,7 @@ public class CompleteBalancing extends BalancingHeuristic {
     }
 
     // Facilitate the memory reuse in cluster
-    clusters.stream().forEach(ClusteringHelper::addSpecialActors);
+    clusters.forEach(ClusteringHelper::addSpecialActors);
 
     return clusters;
 

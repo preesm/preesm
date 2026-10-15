@@ -58,9 +58,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "Analyzes PE combinations one by one until the performance objective is reached"),
             @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_SEARCH_TYPE_HALVES,
                 effect = "Divides in halves the remaining available PEs and goes up/down depending"
-                    + " if the FPS reached are below/above the objective") })
+                    + " if the FPS reached are below/above the objective") }) })
 
-    })
 public class ListSchedulerTask extends AbstractTaskImplementation {
 
   public static final String PARAM_EDGE_SCHED_TYPE        = "edgeSchedType";
@@ -92,15 +91,15 @@ public class ListSchedulerTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
-    final PiGraph graph = (PiGraph) inputs.get("PiMM");
-    final Scenario scenario = (Scenario) inputs.get("scenario");
-    final Design arch = (Design) inputs.get("architecture");
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Design arch = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
     final SynthesisResult result = new LegacyListScheduler().scheduleAndMap(graph, arch, scenario, parameters);
 
     final Map<String, Object> outputs = new HashMap<>();
-    outputs.put("Mapping", result.mapping);
-    outputs.put("Schedule", result.schedule);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_MAPPING, result.mapping);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_SCHEDULE, result.schedule);
 
     return outputs;
   }

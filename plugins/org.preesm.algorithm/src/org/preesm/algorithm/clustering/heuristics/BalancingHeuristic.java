@@ -43,40 +43,40 @@ public abstract class BalancingHeuristic extends Heuristic {
    */
   public static String makeCompareLog(final AbstractActor actor, final PiGraph containingGraph,
       final List<Long> oldExprs) {
-    String log;
+    final StringBuilder log = new StringBuilder();
     final List<String> portsName = actor.getAllDataPorts().stream().map(Port::getName).toList();
     final List<
         Long> newExprs = actor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
     if (oldExprs == null) {
-      log = "[Partitioning] >  Creating " + actor.getName() + " in " + containingGraph.getName() + " : ";
+      log.append("[Partitioning] >  Creating " + actor.getName() + " in " + containingGraph.getName() + " : ");
       for (int i = 0; i < portsName.size(); i++) {
-        log += "\n       Port \"" + portsName.get(i) + "\", val = " + newExprs.get(i);
-        log += defineProdConsLog(actor, portsName.get(i));
+        log.append("\n       Port \"").append(portsName.get(i)).append("\", val = ").append(newExprs.get(i));
+        log.append(defineProdConsLog(actor, portsName.get(i)));
       }
     } else {
       final int nIter = Math.min(newExprs.size(), oldExprs.size());
-      log = "[Partitioning] >  Modifying " + actor.getName() + " in " + containingGraph.getName() + " : ";
+      log.append("[Partitioning] >  Modifying " + actor.getName() + " in " + containingGraph.getName() + " : ");
       for (int i = 0; i < nIter; i++) {
-        log += "\n       Port \"" + portsName.get(i) + "\", old val = " + oldExprs.get(i) + ", new val = "
-            + newExprs.get(i);
-        log += defineProdConsLog(actor, portsName.get(i));
+        log.append("\n       Port \"").append(portsName.get(i)).append("\", old val = ").append(oldExprs.get(i))
+            .append(", new val = ").append(newExprs.get(i));
+        log.append(defineProdConsLog(actor, portsName.get(i)));
 
       }
 
       if (newExprs.size() < oldExprs.size()) {
         for (int i = nIter; i < oldExprs.size(); i++) {
-          log += "\n       Unknown port removed. Old val = " + oldExprs.get(i);
+          log.append("\n       Unknown port removed. Old val = ").append(oldExprs.get(i));
 
         }
       } else {
         for (int i = nIter; i < newExprs.size(); i++) {
-          log += "\n       Port \"" + portsName.get(i) + "\" added. Val = " + newExprs.get(i);
-          log += defineProdConsLog(actor, portsName.get(i));
+          log.append("\n       Port \"").append(portsName.get(i)).append("\" added. Val = ").append(newExprs.get(i));
+          log.append(defineProdConsLog(actor, portsName.get(i)));
 
         }
       }
     }
-    return log;
+    return log.toString();
   }
 
   /**

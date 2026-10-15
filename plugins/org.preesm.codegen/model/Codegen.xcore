@@ -69,9 +69,8 @@
 package org.preesm.codegen.model
 
 import org.eclipse.emf.ecore.EEList
-import org.preesm.commons.exceptions.PreesmRuntimeException
-
 import org.eclipse.emf.common.util.ECollections
+import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.model.pisdf.AbstractActor
 
 class Block extends CodeElt {

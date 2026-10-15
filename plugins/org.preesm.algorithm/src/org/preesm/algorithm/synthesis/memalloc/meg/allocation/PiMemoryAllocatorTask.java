@@ -200,6 +200,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
       "**Broadcast Merging**: K. Desnos, M. Pelcat, J.-F. Nezan, and S. Aridhi. "
           + "Memory analysis and optimized allocation of dataflow applications on shared-memory "
           + "MPSoCs. Journal of Signal Processing Systems, Springer, 2014." })
+
 public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERBOSE            = "Verbose";
@@ -519,7 +520,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
         this.logger.log(Level.INFO, msg);
       }
 
-      meg.vertexSet().stream().forEach(meg::getAdjacentVertexOf);
+      meg.vertexSet().forEach(meg::getAdjacentVertexOf);
 
       allocateWith(this.allocator);
     }
