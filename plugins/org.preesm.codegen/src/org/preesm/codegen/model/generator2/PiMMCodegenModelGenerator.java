@@ -536,42 +536,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
       interfaceBufferMap.put(fifo, buffer);
     }
   }
-  /*
-   * protected final Buffer generateDelayBuffer(final Fifo fifo, final Buffer delayBuffer, final int iterator) {
-   *
-   * // Fill delay buffer information final long workingBufferSize = delayBuffer.getNbToken(); final long delayCapacity
-   * = fifo.getDelay().getExpression().evaluateAsLong(); delayBuffer.setName("delay_" + fifo.getSource().getName() +
-   * "_to_" + fifo.getTarget().getName() + "_" + iterator); delayBuffer.setNbToken(delayCapacity + workingBufferSize);
-   * delayBufferList.add(delayBuffer);
-   *
-   * // Initialize SubBuffer for reading into delay's fifo final SubBuffer readBuffer =
-   * CodegenModelUserFactory.eINSTANCE.createSubBuffer(); readBuffer.setContainer(delayBuffer);
-   * readBuffer.setOffsetInBit(0); readBuffer.setName("read_to_" + delayBuffer.getName());
-   * readBuffer.setType(delayBuffer.getType()); readBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
-   * readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluateAsLong());
-   *
-   * // Initialize SubBuffer for writting into delay's fifo final SubBuffer writeBuffer =
-   * CodegenModelUserFactory.eINSTANCE.createSubBuffer(); writeBuffer.setContainer(delayBuffer);
-   * writeBuffer.setOffsetInBit(delayCapacity); writeBuffer.setName("write_to_" + delayBuffer.getName());
-   * writeBuffer.setType(delayBuffer.getType()); writeBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
-   * writeBuffer.setNbToken(workingBufferSize);
-   *
-   * // Initialize SubBuffer for shifting remaining value in delay's fifo final SubBuffer remainingTokensBuffer =
-   * CodegenModelUserFactory.eINSTANCE.createSubBuffer(); remainingTokensBuffer.setContainer(delayBuffer);
-   * remainingTokensBuffer.setOffsetInBit(workingBufferSize); remainingTokensBuffer.setName("remaining_tokens_of_" +
-   * delayBuffer.getName()); remainingTokensBuffer.setType(delayBuffer.getType());
-   * remainingTokensBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
-   * remainingTokensBuffer.setNbToken(delayCapacity);
-   *
-   * // Add buffers to delay buffer map delaySubBufferMap.put(fifo, new ImmutableTriple<>(readBuffer, writeBuffer,
-   * remainingTokensBuffer));
-   *
-   * // Build call for fifo initialization final FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
-   * fifoInit.setHeadBuffer(delayBuffer); fifoInit.setOperation(FifoOperation.INIT); // Add delay buffer initialization
-   * to the init block of operator block callFuncBlock.getCodeElts().add(fifoInit);
-   *
-   * return delayBuffer; }
-   */
 
   protected void generateClusterConfigParameters(PiGraph graph) {
     for (final ConfigInputInterface i : graph.getConfigInputInterfaces()) {
@@ -664,20 +628,6 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   }
 
-  /*
-   * protected final Buffer generateBuffer(final Fifo fifo, final int iterator, long scopeRep) { // Allocate a buffer
-   * for each internalFifo final Buffer buffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-   *
-   * // Fill buffer information by looking at the Fifo buffer.setName("mem_" + fifo.getSource().getName() + "__" +
-   * fifo.getTarget().getName() + "_" + iterator); buffer.setType(fifo.getType());
-   * buffer.setTokenTypeSizeInBit(scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType())); buffer
-   * .setNbToken(fifo.getTargetPort().getExpression().evaluateAsLong() * repVector.get(fifo.getTarget()) / scopeRep);
-   *
-   * if (fifo.getDelay() != null) { // Is the fifo delayed? generateDelayBuffer(fifo, buffer, iterator); } else { //
-   * Register the buffer to the corresponding Fifo bufferMap.put(fifo, buffer); }
-   *
-   * return buffer; }
-   */
   protected final void fillFunctionCallArguments(final FunctionCall functionCall, final Actor actor,
       final FiniteLoopBlock flb) {
     // Retrieve Refinement from actor
