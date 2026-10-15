@@ -9,7 +9,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
@@ -93,14 +92,7 @@ public class BasicBalancing extends BalancingHeuristic {
     // ------------------------------------------------------------------------------------------- //
     for (final DataInterface dataInterface : cluster.getDataInterfaces()) {
 
-      long expr;
-
-      // Case if dataInterface is an input interface
-      if (dataInterface instanceof DataInputInterface) {
-        expr = dataInterface.getDataPort().getFifo().getTargetPort().getExpression().evaluateAsLong() * ratio;
-      } else {
-        expr = dataInterface.getDataPort().getFifo().getSourcePort().getExpression().evaluateAsLong() * ratio;
-      }
+      final long expr = dataInterface.getDataPort().getFifo().getTargetPort().getExpression().evaluateAsLong() * ratio;
 
       // Top graph & subgraph ports values modifications
       dataInterface.getGraphPort().setExpression(expr);
