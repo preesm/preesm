@@ -1,4 +1,4 @@
-package org.preesm.codegen.model.generator2;
+package org.preesm.codegen.model.generator2.clustering;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -102,11 +102,6 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   private final Map<AbstractActor, IntVar> iterMap;
 
   /**
-   * Top cluster, of the cluster modified by scheduling.
-   */
-  private final PiGraph topScheduledCluster;
-
-  /**
    *
    */
   private final PiGraph originalCluster;
@@ -148,7 +143,6 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
       final Schedule schedule) {
     super();
     this.originalCluster = originalCluster;
-    this.topScheduledCluster = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
     this.scenario = scenario;
     this.sinkFifoBuffers = new LinkedList<>();
     this.iterMap = new HashMap<>();
@@ -347,6 +341,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     long finalSizeInBit = 0;
 
     this.p2b = new PassiveBufferGeneratorSwitch(scenario).doSwitch(originalCluster);
+
     for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
       final Buffer buffer = entry.getValue();
 
@@ -364,6 +359,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
         }
       }
     }
+
     this.mainBuffer.setNbToken(finalSizeInBit / typeSizeInBit);
   }
 

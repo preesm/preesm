@@ -213,7 +213,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       } else {
         codegenBuffer.setComment(comment);
 
-        final String name = source + "_to_" + sink;
+        final String name = source + "__" + sink;
         final String uniqueName = generateUniqueBufferName(MemoryExclusionGraph.FIFO_HEAD_PREFIX + name);
         codegenBuffer.setName(uniqueName);
       }

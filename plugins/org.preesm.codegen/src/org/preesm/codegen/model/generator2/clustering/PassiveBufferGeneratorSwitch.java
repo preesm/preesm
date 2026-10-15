@@ -1,4 +1,4 @@
-package org.preesm.codegen.model.generator2;
+package org.preesm.codegen.model.generator2.clustering;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -14,6 +14,7 @@ import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PassiveElt;
 import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 import org.preesm.model.scenario.Scenario;
 
@@ -79,7 +80,9 @@ public class PassiveBufferGeneratorSwitch extends PiMMSwitch<Map<PassiveElt, Buf
     for (final PassivePort pp : pa.getAllPassivePorts()) {
       final SubBuffer portBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
       portBuffer.setContainer(actorBuffer);
-      portBuffer.setName(pa.getName() + "__" + pp.getOppositePort().getContainingActor().getName());
+      String name = pa.getName() + "_" + pp.getName();
+      name += pp.getKind() == PortKind.DATA_INPUT ? "_write" : "_read";
+      portBuffer.setName(name);
       portBuffer.setNbToken(pp.getSubBufferSize());
       portBuffer.setOffsetInBit(pp.getOffset());
       portBuffer.setTokenTypeSizeInBit(typeSize);

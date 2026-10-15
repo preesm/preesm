@@ -1,4 +1,4 @@
-package org.preesm.codegen.model.generator2;
+package org.preesm.codegen.model.generator2.clustering;
 
 import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.LoopFunctionBlock;

@@ -556,7 +556,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     final Fifo originalFifo = PreesmCopyTracker.getOriginalSource(fifo);
 
     passiveFifo.setLinkedFifo(originalFifo);
-    passiveFifo.setName(originalFifo.getTarget().getName() + "_" + originalFifo.getSource().getName());
+    passiveFifo.setName(originalFifo.getSource().getName() + "_" + originalFifo.getTarget().getName());
 
     final AbstractActor sourceActor = fifo.getSource();
     final AbstractActor targetActor = fifo.getTarget();
@@ -582,6 +582,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     passiveFifo.getOutputPort().setExpression(Long.toString(rate));
 
     passiveFifo.setBufferSize(rate);
+    passiveFifo.setRealBufferSize(rate);
 
     return passiveFifo;
   }

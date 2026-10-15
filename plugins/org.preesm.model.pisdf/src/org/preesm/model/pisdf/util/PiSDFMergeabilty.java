@@ -296,6 +296,8 @@ public class PiSDFMergeabilty {
               listCouple.add(new ImmutablePair<>(a, b));
             }
           }
+        } else if (!(b instanceof InterfaceActor) && (b != a) && PiSDFMergeabilty.isMergeable(graph, a, b, brv)) {
+          listCouple.add(new ImmutablePair<>(a, b));
         }
 
       }

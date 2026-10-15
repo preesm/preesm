@@ -1,4 +1,4 @@
-package org.preesm.codegen.model.generator2;
+package org.preesm.codegen.model.generator2.clustering;
 
 import java.util.HashMap;
 import java.util.HashSet;

@@ -430,8 +430,8 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       coreBlockHasNewLine = false;
     }
     final EList<Variable> definitions = coreBlock.getDefinitions();
-    // Visit Declarations
 
+    // Visit Declarations
     if (!(coreBlock instanceof RefinementBlock)) {
       result = printDeclarations(coreBlock, result, indentationCoreBlock, definitions);
     }
@@ -669,9 +669,15 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
 
   @Override
   public CharSequence caseLoopBlock(final LoopBlock loopBlock) {
-    final StringConcatenation result = new StringConcatenation();
+    StringConcatenation result = new StringConcatenation();
 
     result.append(printLoopBlockHeader(loopBlock));
+
+    if (loopBlock instanceof final LoopFunctionBlock lfb) {
+      final EList<Variable> definitions = lfb.getDefinitions();
+      result = printDefinitions(result, "", definitions);
+
+    }
 
     // Visit all codeElements
     final EList<CodeElt> codeElts = loopBlock.getCodeElts();
