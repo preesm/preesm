@@ -97,32 +97,24 @@ public class PiMEGBuilderTask extends AbstractTaskImplementation {
   @Override
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    // Check Workflow element parameters
-    final boolean verbose = PiMEGBuilderTask.VALUE_TRUE
-        .equalsIgnoreCase(parameters.get(PiMEGBuilderTask.PARAM_VERBOSE));
-    final Level logLevel = verbose ? Level.INFO : Level.FINEST;
 
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Build the exclusion graph
-    PreesmLogger.getLogger().log(logLevel, "Memory exclusion graph : start building");
     final PiMemoryExclusionGraph memEx = new PiMemoryExclusionGraph(scenario, graph);
+    PreesmLogger.getLogger().log(Level.INFO, () -> "building memex graph");
     memEx.buildGraph(graph);
-    logStats(logLevel, memEx);
+    final int edgeCount = memEx.edgeSet().size();
+    final int vertexCount = memEx.vertexSet().size();
+    final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
+    PreesmLogger.getLogger().log(Level.INFO, () -> "Memory exclusion graph built with " + vertexCount
+        + " vertices and density = " + density + " (" + edgeCount + " edges)");
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();
     output.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, memEx);
     return output;
-  }
-
-  private void logStats(final Level logLevel, final PiMemoryExclusionGraph memEx) {
-    final int edgeCount = memEx.edgeSet().size();
-    final int vertexCount = memEx.vertexSet().size();
-    final double density = edgeCount / ((vertexCount * (vertexCount - 1)) / 2.0);
-    PreesmLogger.getLogger().log(logLevel,
-        () -> "Memory exclusion graph built with " + vertexCount + " vertices and density = " + density);
   }
 
   @Override

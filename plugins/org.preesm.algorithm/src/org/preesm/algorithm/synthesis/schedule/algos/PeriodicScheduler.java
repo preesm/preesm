@@ -81,7 +81,7 @@ import org.preesm.model.slam.check.SlamDesignPEtypeChecker;
  *
  * @author ahonorat
  */
-public class PeriodicScheduler extends AbstractScheduler {
+public class PeriodicScheduler extends AbstractDAGScheduler {
 
   /**
    *

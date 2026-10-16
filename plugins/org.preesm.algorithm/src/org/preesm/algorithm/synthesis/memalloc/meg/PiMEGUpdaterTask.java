@@ -90,9 +90,6 @@ public class PiMEGUpdaterTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    // Check Workflow element parameters
-    final boolean verbose = "true".equalsIgnoreCase(parameters.get(PiMEGUpdaterTask.PARAM_VERBOSE));
-
     // Retrieve inputs
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final PiMemoryExclusionGraph memEx = (PiMemoryExclusionGraph) inputs
@@ -101,8 +98,8 @@ public class PiMEGUpdaterTask extends AbstractTaskImplementation {
     final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
 
     // Update MEG
-    final MemExUpdaterEngine engine = new MemExUpdaterEngine(graph, memEx, schedule, mapping, verbose);
-    engine.update();
+    final MemExUpdaterEngine memExUpdaterEngine = new MemExUpdaterEngine(graph, memEx, schedule, mapping, true);
+    memExUpdaterEngine.update();
 
     // Generate output
     final Map<String, Object> output = new LinkedHashMap<>();

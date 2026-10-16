@@ -52,7 +52,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -163,9 +162,6 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    // Get verbose parameter
-    final boolean verbose = parameters.get(PiMemoryScriptTask.PARAM_VERBOSE).equals(PiMemoryScriptTask.VALUE_TRUE);
-
     // Get the log parameter
     final String log = parameters.get(PiMemoryScriptTask.PARAM_LOG);
 
@@ -183,7 +179,6 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
     // Get the data types from the scenario
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
-    final SimulationInfo simulationInfo = scenario.getSimulationInfo();
 
     // Get check policy
     final String checkString = parameters.get(PiMemoryScriptTask.PARAM_CHECK);
@@ -192,16 +187,18 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
         .get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
 
     // execute
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, verbose);
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
     try {
-      engine.runScripts(graph, simulationInfo, checkString);
+      engine.runScripts(graph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       throw new PreesmRuntimeException(message, e);
     }
     engine.updateMemEx(meg);
     if (!log.equals("")) {
+      // generate
       engine.generateLog(scenario, log);
+
     }
 
     // Outputs

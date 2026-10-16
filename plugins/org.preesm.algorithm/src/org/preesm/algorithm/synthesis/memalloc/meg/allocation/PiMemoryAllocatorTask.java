@@ -58,6 +58,7 @@ import org.preesm.algorithm.memory.allocation.MemoryAllocator;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
+import org.preesm.algorithm.synthesis.memalloc.IMemoryAllocation;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
 import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Order;
@@ -70,6 +71,7 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.PiGraph;
@@ -243,115 +245,160 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
       + VALUE_DISTRIBUTION_MIXED + ", " + VALUE_DISTRIBUTION_DISTRIBUTED_ONLY + ", " + VALUE_DISTRIBUTION_MIXED_MERGED
       + "}";
 
-  protected Logger            logger = PreesmLogger.getLogger();
-  private String              valueAllocator;
-  protected String            valueDistribution;
-  protected boolean           verbose;
-  protected long              alignment;
-  private int                 nbShuffle;
-  private Order               ordering;
-  protected PiMemoryAllocator allocator;
+  protected Logger logger = PreesmLogger.getLogger();
 
-  /**
-   * This method retrieves the value of task parameters from the workflow and stores them in local protected attributes.
-   * Some parameter {@link String} are also interpreted by this method (eg. {@link #verbose}, {@link #allocator}).
-   *
-   * @param parameters
-   *          the parameter {@link Map} given to the {@link #execute(Map, Map, IProgressMonitor, Workflow) execute()}
-   *          method.
-   */
-  protected void init(final Map<String, String> parameters) {
-    // Retrieve parameters from workflow
-    final String valueVerbose = parameters.get(PARAM_VERBOSE);
-    final String valueXFitOrder = parameters.get(PARAM_XFIT_ORDER);
-    final String valueNbShuffle = parameters.get(PARAM_NB_SHUFFLE);
-    this.valueAllocator = parameters.get(PARAM_ALLOCATORS);
-    this.valueDistribution = parameters.get(PARAM_DISTRIBUTION_POLICY);
-
-    this.verbose = valueVerbose.equals(VALUE_TRUE);
-
-    // Correct default distribution policy
-    if (this.valueDistribution.equals(VALUE_DISTRIBUTION_DEFAULT)) {
-      this.valueDistribution = VALUE_DISTRIBUTION_SHARED_ONLY;
-    }
-
-    // Retrieve the alignment param
-    final String valueAlignment = parameters.get(PARAM_ALIGNMENT);
-
-    this.alignment = switch (valueAlignment.substring(0, Math.min(valueAlignment.length(), 7))) {
-      case VALUE_ALIGNEMENT_NONE -> -1;
-      case VALUE_ALIGNEMENT_DATA -> 0;
-      case VALUE_ALIGNEMENT_FIXED -> Long.parseLong(valueAlignment.substring(7));
-      default -> -1;
-    };
-
-    if (this.verbose) {
-      this.logger.log(Level.INFO, () -> "Allocation with alignment:=" + this.alignment + " bits.");
-    }
-
-    // Retrieve the ordering policies to test
-    this.nbShuffle = 0;
-    this.ordering = switch (valueXFitOrder) {
-      case VALUE_XFIT_ORDER_SHUFFLE -> {
-        this.nbShuffle = Integer.decode(valueNbShuffle);
-        yield Order.SHUFFLE;
-      }
-      case VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
-      case VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
-      case VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
-      // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING; // Not supported anymore
-      default -> throw new IllegalArgumentException(fitOrderNameErrorMessage());
-    };
+  @Override
+  public Map<String, String> getDefaultParameters() {
+    final Map<String, String> parameters = new LinkedHashMap<>();
+    parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
+    parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
+    parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
+    parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
+    parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
+    parameters.put(PARAM_DISTRIBUTION_POLICY, VALUE_DISTRIBUTION_DEFAULT);
+    return parameters;
   }
 
-  private String fitOrderNameErrorMessage() {
-    final StringBuilder errorStringBuilder = new StringBuilder();
-    errorStringBuilder.append("Unrecognized " + PARAM_XFIT_ORDER + " parameter. Supported parameters are:\n");
-    errorStringBuilder.append(VALUE_XFIT_ORDER_SHUFFLE + "\n");
-    errorStringBuilder.append(VALUE_XFIT_ORDER_LARGEST_FIRST + "\n");
-    errorStringBuilder.append(VALUE_XFIT_ORDER_APPROX_STABLE_SET + "\n");
-    errorStringBuilder.append(VALUE_XFIT_ORDER_EXACT_STABLE_SET + "\n");
-    // errorStringBuilder.append(MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING); // Not supported anymore
-    return errorStringBuilder.toString();
+  @Override
+  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
+      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
+
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
+    final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
+    final PiMemoryExclusionGraph memEx = (PiMemoryExclusionGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
+
+    final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
+    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+    final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
+
+    // Prepare the MEG with the alignment
+    PiMemoryAllocator.alignSubBuffers(memEx, alignment);
+
+    // Get vertices before distribution
+    final Set<PiMemoryExclusionVertex> verticesBeforeDistribution = memEx.getTotalSetOfVertices();
+
+    // Create several MEGs according to the selected distribution policy
+    // Each created MEG corresponds to a single memory bank
+    // Log the distribution policy used
+    final String valueDistribution = parameters.get(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY);
+    if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
+      final String msg = "Split MEG with " + valueDistribution + " policy";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
+    }
+
+    // Do the distribution
+    final Map<String,
+        PiMemoryExclusionGraph> megs = PiDistributor.distributeMeg(valueDistribution, memEx, alignment, mapping);
+
+    // Log results
+    if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)) {
+      final String msg = "Created " + megs.keySet().size() + " MemExes";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
+      for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
+        final double density2 = entry.getValue().edgeSet().size()
+            / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
+        final String msg2 = "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
+            + " vertices, density=" + density2 + ":: " + entry.getValue().getTotalSetOfVertices();
+        PreesmLogger.getLogger().log(Level.INFO, msg2);
+      }
+    }
+
+    // Get total set of vertices after distribution
+    final Set<PiMemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
+    final Set<PiMemoryExclusionVertex> verticesInMegs = new LinkedHashSet<>();
+    megs.forEach((bank, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
+
+    // Check that the total number of vertices is unchanged
+    if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)
+        && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size())
+            || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
+      // Compute the list of missing vertices
+      verticesBeforeDistribution.removeAll(verticesInMegs);
+      final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
+          + verticesBeforeDistribution + "\nContact Preesm developers to solve this issue.";
+      throw new PreesmRuntimeException(msg);
+    }
+
+    final String valueNbShuffle = parameters.get(MemoryAllocatorTask.PARAM_NB_SHUFFLE);
+    final String valueXFitOrder = parameters.get(MemoryAllocatorTask.PARAM_XFIT_ORDER);
+
+    int nbShuffle = 0;
+    final Order ordering = switch (valueXFitOrder) {
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_SHUFFLE -> {
+        nbShuffle = Integer.decode(valueNbShuffle);
+        yield Order.SHUFFLE;
+      }
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
+      case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
+      default -> throw new IllegalArgumentException("unknown order " + valueXFitOrder);
+    };
+
+    for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
+
+      final String memoryBank = entry.getKey();
+      final PiMemoryExclusionGraph meg = entry.getValue();
+
+      final PiMemoryAllocator allocator = createAllocator(valueAllocators, alignment, ordering, nbShuffle, meg);
+
+      final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
+      PreesmLogger.getLogger().log(Level.INFO, msg);
+      for (final PiMemoryExclusionVertex vertex : meg.vertexSet()) {
+        meg.getAdjacentVertexOf(vertex);
+      }
+
+      allocateWith(allocator);
+    }
+
+    restoreHostedVertices(megs);
+
+    final Allocation alloc = generateBuffers(megs, scenario, architecture, graph, alignment);
+
+    final Map<String, Object> output = new LinkedHashMap<>();
+    output.put(AbstractWorkflowNodeImplementation.KEY_ALLOCATION, alloc);
+    return output;
   }
 
   /**
    * Based on allocators specified in the task parameters, and stored in the {@link #allocator} attribute, this method
-   * instantiate the {@link MemoryAllocator} that is to be executed on the given {@link MemoryExclusionGraph MEG}.
+   * instantiate the {@link MemoryAllocator} that are to be executed on the given {@link MemoryExclusionGraph MEG}.
    *
    * @param memEx
    *          the {@link MemoryExclusionGraph MEG} to allocate.
    */
-  protected void createAllocator(final PiMemoryExclusionGraph memEx) {
-    // Create all allocators
+  protected PiMemoryAllocator createAllocator(final String value, final long alignment, final Order o,
+      final int nbShuffle, final PiMemoryExclusionGraph memEx) {
 
-    this.allocator = switch (valueAllocator) {
-      case VALUE_ALLOCATORS_BASIC -> new PiBasicAllocator(memEx);
-      case VALUE_ALLOCATORS_FIRST_FIT -> {
-        final PiOrderedAllocator alloc = new PiFirstFitAllocator(memEx);
-        alloc.setNbShuffle(this.nbShuffle);
-        alloc.setOrder(this.ordering);
-        yield alloc;
+    final PiMemoryAllocator alloc = switch (value) {
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC -> new PiBasicAllocator(memEx);
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT -> {
+        final PiOrderedAllocator orderedAlloc = new PiFirstFitAllocator(memEx);
+        orderedAlloc.setNbShuffle(nbShuffle);
+        orderedAlloc.setOrder(o);
+        yield orderedAlloc;
       }
-      case VALUE_ALLOCATORS_BEST_FIT -> {
-        final PiOrderedAllocator alloc = new PiBestFitAllocator(memEx);
-        alloc.setNbShuffle(this.nbShuffle);
-        alloc.setOrder(this.ordering);
-        yield alloc;
+      case MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT -> {
+        final PiOrderedAllocator orderedAlloc = new PiBestFitAllocator(memEx);
+        orderedAlloc.setNbShuffle(nbShuffle);
+        orderedAlloc.setOrder(o);
+        yield orderedAlloc;
       }
-      default -> throw new IllegalArgumentException(allocatorNameErrorMessage(valueAllocator));
+      default -> throw new IllegalArgumentException(allocatorNameErrorMessage());
     };
 
-    this.allocator.setAlignment(this.alignment);
+    alloc.setAlignment(alignment);
+    return alloc;
   }
 
-  private String allocatorNameErrorMessage(String wrongAllocator) {
+  private String allocatorNameErrorMessage() {
     final StringBuilder errorStringBuilder = new StringBuilder();
-    errorStringBuilder.append("Unrecognized Allocator name: " + wrongAllocator + ". Supported parameters are:\n");
-    errorStringBuilder.append(VALUE_ALLOCATORS_BASIC + "\n");
-    errorStringBuilder.append(VALUE_ALLOCATORS_BEST_FIT + "\n");
-    errorStringBuilder.append(VALUE_ALLOCATORS_DEFAULT + "\n");
-    errorStringBuilder.append(VALUE_ALLOCATORS_FIRST_FIT);
+    errorStringBuilder.append("Unrecognized Allocator name. Supported parameters are:\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BASIC + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_BEST_FIT + "\n");
+    errorStringBuilder.append(MemoryAllocatorTask.VALUE_ALLOCATORS_FIRST_FIT);
     return errorStringBuilder.toString();
   }
 
@@ -375,9 +422,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
       sb.append(")");
     }
     final String sAllocator = sb.toString();
-    if (this.verbose) {
-      this.logger.log(Level.INFO, () -> "Starting allocation with " + sAllocator);
-    }
+    PreesmLogger.getLogger().log(Level.INFO, () -> "Starting allocation with " + sAllocator);
 
     tStart = System.currentTimeMillis();
     allocator.allocate();
@@ -385,18 +430,20 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
 
     // Check the correct allocation
     try {
-      if (!allocator.checkAllocation().isEmpty()) {
+      final Map<PiMemoryExclusionVertex, Long> checkAllocation = allocator.checkAllocation();
+      if (!checkAllocation.isEmpty()) {
         throw new PreesmRuntimeException("The obtained allocation was not valid because mutually"
             + " exclusive memory objects have overlapping address ranges." + " The allocator is not working.\n"
-            + allocator.checkAllocation());
+            + checkAllocation);
       }
     } catch (final RuntimeException e) {
       throw new PreesmRuntimeException(e.getMessage());
     }
 
-    if (!allocator.checkAlignment().isEmpty()) {
+    final Map<PiMemoryExclusionVertex, Long> checkAlignment = allocator.checkAlignment();
+    if (!checkAlignment.isEmpty()) {
       throw new PreesmRuntimeException("The obtained allocation was not valid because there were"
-          + " unaligned memory objects. The allocator is not working.\n" + allocator.checkAlignment());
+          + " unaligned memory objects. The allocator is not working.\n" + checkAlignment);
     }
 
     String log = computeLog(allocator, tStart, sAllocator, tFinish);
@@ -415,7 +462,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
       piOrderedAllocator.setPolicy(Policy.BEST);
     }
 
-    this.logger.log(Level.INFO, log);
+    PreesmLogger.getLogger().log(Level.INFO, log);
   }
 
   private String computeLog(final PiMemoryAllocator allocator, final long tStart, final String sAllocator,
@@ -435,103 +482,6 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
       }
     }
     return sAllocator + " allocates " + size + " " + unit + " in " + (tFinish - tStart) + " ms.";
-  }
-
-  @Override
-  public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    parameters.put(PARAM_VERBOSE, VALUE_TRUE_FALSE_DEFAULT);
-    parameters.put(PARAM_ALLOCATORS, VALUE_ALLOCATORS_DEFAULT);
-    parameters.put(PARAM_XFIT_ORDER, VALUE_XFIT_ORDER_DEFAULT);
-    parameters.put(PARAM_NB_SHUFFLE, VALUE_NB_SHUFFLE_DEFAULT);
-    parameters.put(PARAM_ALIGNMENT, VALUE_ALIGNEMENT_DEFAULT);
-    parameters.put(PARAM_DISTRIBUTION_POLICY, VALUE_DISTRIBUTION_DEFAULT);
-    return parameters;
-  }
-
-  @Override
-  public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
-      final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
-    init(parameters);
-
-    // Retrieve the input of the task
-    final PiMemoryExclusionGraph memEx = (PiMemoryExclusionGraph) inputs.get("MemEx");
-    final Mapping mapping = (Mapping) inputs.get("Mapping");
-    final Scenario scenario = (Scenario) inputs.get("scenario");
-    final Design slamDesign = (Design) inputs.get("architecture");
-    final PiGraph piGraph = (PiGraph) inputs.get("PiMM");
-
-    // Prepare the MEG with the alignment
-    PiMemoryAllocator.alignSubBuffers(memEx, this.alignment);
-
-    // Get vertices before distribution
-    final Set<PiMemoryExclusionVertex> verticesBeforeDistribution = memEx.getTotalSetOfVertices();
-
-    // Create several MEGs according to the selected distribution policy
-    // Each created MEG corresponds to a single memory bank
-    // Log the distribution policy used
-    if (this.verbose && !this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
-      final String msg = "Split MEG with " + this.valueDistribution + " policy";
-      this.logger.log(Level.INFO, msg);
-    }
-
-    // Do the distribution
-    final Map<String, PiMemoryExclusionGraph> megs = PiDistributor.distributeMeg(this.valueDistribution, memEx,
-        this.alignment, mapping);
-
-    // Log results
-    if (this.verbose && !this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)) {
-      final String msg = "Created " + megs.keySet().size() + " MemExes";
-      this.logger.log(Level.INFO, msg);
-      for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
-        final double density = entry.getValue().edgeSet().size()
-            / ((entry.getValue().vertexSet().size() * (entry.getValue().vertexSet().size() - 1)) / 2.0);
-        final String msg2 = "Memex(" + entry.getKey() + "): " + entry.getValue().vertexSet().size()
-            + " vertices, density=" + density + ":: " + entry.getValue().getTotalSetOfVertices();
-        this.logger.log(Level.INFO, msg2);
-      }
-    }
-
-    // Get total set of vertices after distribution
-    final Set<PiMemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
-    final Set<PiMemoryExclusionVertex> verticesInMegs = new LinkedHashSet<>();
-    megs.forEach((bank, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
-
-    // Check that the total number of vertices is unchanged
-    if (!this.valueDistribution.equals(VALUE_DISTRIBUTION_SHARED_ONLY)
-        && ((verticesBeforeDistribution.size() != verticesAfterDistribution.size())
-            || (verticesBeforeDistribution.size() != verticesInMegs.size()))) {
-      // Compute the list of missing vertices
-      verticesBeforeDistribution.removeAll(verticesInMegs);
-      final String msg = "Problem in the MEG distribution, some memory objects were lost during the distribution.\n"
-          + verticesBeforeDistribution + "\nContact Preesm developers to solve this issue.";
-      throw new PreesmRuntimeException(msg);
-    }
-
-    for (final Entry<String, PiMemoryExclusionGraph> entry : megs.entrySet()) {
-
-      final String memoryBank = entry.getKey();
-      final PiMemoryExclusionGraph meg = entry.getValue();
-
-      createAllocator(meg);
-
-      if (this.verbose) {
-        final String msg = "Heat up MemEx for " + memoryBank + " memory bank.";
-        this.logger.log(Level.INFO, msg);
-      }
-
-      meg.vertexSet().forEach(meg::getAdjacentVertexOf);
-
-      allocateWith(this.allocator);
-    }
-
-    restoreHostedVertices(megs);
-
-    final Allocation alloc = generateBuffers(megs, scenario, slamDesign, piGraph, alignment);
-
-    final Map<String, Object> output = new LinkedHashMap<>();
-    output.put("Allocation", alloc);
-    return output;
   }
 
   /**
@@ -573,11 +523,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
   }
 
   /**
-   * This method creates a {@link Buffer} for each {@link Fifo fifo} of the {@link #dag}.<br>
-   * <br>
-   * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
-   *
-   *
+   * This method creates a {@link Buffer} for each {@link AbstractActor edge} of the {@link #dag}.
    */
   protected Allocation generateBuffers(final Map<String, PiMemoryExclusionGraph> megs, final Scenario scenario,
       final Design slamDesign, final PiGraph pigraph, final long align) {
