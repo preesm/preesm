@@ -173,7 +173,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           if (!(tgtCodegenBuffer instanceof org.preesm.codegen.model.NullBuffer)) {
             // XXX old style naming
             tgtCodegenBuffer.setName(
-                generateUniqueBufferName(fifo.getSourcePort().getName() + "_to_" + fifo.getTargetPort().getName()));
+                generateUniqueBufferName(fifo.getSourcePort().getName() + "__" + fifo.getTargetPort().getName()));
           }
 
           this.portToVariable.put(fifo.getSourcePort(), tgtCodegenBuffer);
