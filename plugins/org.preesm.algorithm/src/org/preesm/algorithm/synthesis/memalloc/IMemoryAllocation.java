@@ -36,7 +36,7 @@
 package org.preesm.algorithm.synthesis.memalloc;
 
 import org.preesm.algorithm.mapping.model.Mapping;
-import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.model.pisdf.PiGraph;
@@ -48,7 +48,7 @@ import org.preesm.model.slam.Design;
  */
 public interface IMemoryAllocation {
 
-  public Allocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+  public AbstractAllocation allocateMemory(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
       final Schedule schedule, final Mapping mapping);
 
   /**

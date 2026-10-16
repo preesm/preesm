@@ -90,9 +90,8 @@ public class ScheduleUtil {
       final int indexOfSched2Parent = parentsOfSched2.indexOf(parent);
       return Pair.of(parentsOfSched1.get(Math.max(indexOfSched1Parent - 1, 0)),
           parentsOfSched2.get(Math.max(indexOfSched2Parent - 1, 0)));
-    } else {
-      throw new PreesmRuntimeException("guru meditation");
     }
+    throw new PreesmRuntimeException("guru meditation");
   }
 
   /**
@@ -115,5 +114,27 @@ public class ScheduleUtil {
     }.doSwitch(schedule);
     return res;
 
+  }
+
+  public static final void replaceActor(final AbstractActor oldActor, final AbstractActor newActor,
+      final Schedule schedule) {
+    new ScheduleSwitch<Boolean>() {
+      @Override
+      public Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
+        object.getScheduleTree().forEach(this::doSwitch);
+        return true;
+      }
+
+      @Override
+      public Boolean caseActorSchedule(final ActorSchedule object) {
+        final List<AbstractActor> actors = object.getActorList();
+        for (int i = 0; i < actors.size(); i++) {
+          if (actors.get(i) == oldActor) {
+            actors.set(i, newActor);
+          }
+        }
+        return true;
+      }
+    }.doSwitch(schedule);
   }
 }

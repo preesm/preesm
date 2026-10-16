@@ -243,7 +243,8 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   @Override
-  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
+  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
+      Map<String, String> parameters) {
 
     if (!SlamDesignPEtypeChecker.isHomogeneousCPU(slamDesign)) {
       throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");

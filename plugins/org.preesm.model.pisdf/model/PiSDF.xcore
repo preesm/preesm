@@ -230,6 +230,16 @@ abstract class AbstractActor extends Configurable {
 	op boolean isCluster() {
 		return false
 	}
+
+	op boolean addPort(Port p) {
+		switch p.getKind {
+			case CFG_INPUT: return configInputPorts.add(p as ConfigInputPort)
+			case CFG_OUTPUT: return configOutputPorts.add(p as ConfigOutputPort)
+			case DATA_INPUT: return dataInputPorts.add(p as DataInputPort)
+			case DATA_OUTPUT: return  dataOutputPorts.add(p as DataOutputPort)
+		}
+	}
+
 	/*
 	 * Check if an AbstractActor is contained in a top-level graph.
 	 * 

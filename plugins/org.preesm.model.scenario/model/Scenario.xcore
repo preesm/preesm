@@ -160,7 +160,7 @@ class Scenario {
 			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, actor, 0) != -1].map[it.key]
 		}
 		if (mapping.isEmpty) {
-			val source = PreesmCopyTracker.getSource(actor)
+			val source = PreesmCopyTracker.getOriginalSource(actor)
 			if (source != actor) {
 				mapping = getPossibleMappings(source)
 			} else {
