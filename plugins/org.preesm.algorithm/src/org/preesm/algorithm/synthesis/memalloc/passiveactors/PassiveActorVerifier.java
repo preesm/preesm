@@ -90,7 +90,10 @@ public class PassiveActorVerifier {
   }
 
   public static boolean verifyPassivePortConditions(PassivePort pp, Map<AbstractVertex, Long> brv) {
-    return portCondition1(pp, brv) && portCondition2(pp);
+    final boolean condition1 = portCondition1(pp, brv);
+    final boolean condition2 = portCondition2(pp);
+    return condition1 && condition2;
+
   }
 
   /**
@@ -112,9 +115,10 @@ public class PassiveActorVerifier {
   }
 
   /**
-   * 2 conditions in 1 : (1) "The input ports are either marked with a write only or unused annotation, or are not
-   * writing the same tokens" (2) "All output ports are marked with a read only annotation, or are not reading the same
-   * tokens"
+   * 2 conditions in 1 : <br>
+   * 1. The input ports are either marked with a write only or unused annotation, or are not writing the same
+   * tokens.<br>
+   * 2. All output ports are marked with a read only annotation, or are not reading the same tokens.
    *
    * @param pp
    *          the passive port

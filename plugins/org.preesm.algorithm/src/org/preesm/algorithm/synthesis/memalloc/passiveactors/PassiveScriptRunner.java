@@ -140,7 +140,8 @@ public class PassiveScriptRunner {
         try {
           runScript(pp);
         } catch (final Exception e) {
-          throw new PreesmRuntimeException("Error for port " + pp.getName() + " of actor " + pa.getName() + " : " + e);
+          throw new PreesmRuntimeException(
+              "Error for port <" + pp.getName() + "> of actor <" + pa.getName() + "> : " + e);
         }
       }
     }

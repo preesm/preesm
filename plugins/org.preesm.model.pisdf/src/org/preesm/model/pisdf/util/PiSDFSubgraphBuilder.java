@@ -92,27 +92,27 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
   /**
    * List of visited Fifo in order to explore the PiGraph.
    */
-  private final List<Fifo> visitedFifo;
+  protected final List<Fifo> visitedFifo;
 
   /**
    * Number of input interface of builded subgraph.
    */
-  private int nbInputInterface = 0;
+  protected int nbInputInterface = 0;
 
   /**
    * Number of output interface of builded subgraph.
    */
-  private int nbOutputInterface = 0;
+  protected int nbOutputInterface = 0;
 
   /**
    * Repetition vector of input graph.
    */
-  private final Map<AbstractVertex, Long> repetitionVector;
+  protected final Map<AbstractVertex, Long> repetitionVector;
 
   /**
    * Repetition count of the subgraph.
    */
-  private final long subGraphRepetition;
+  protected final long subGraphRepetition;
 
   /**
    * Builds a PiSDFSubgraphBuilder object.

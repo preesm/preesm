@@ -148,7 +148,7 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     final String temporaryClusterName = "cluster" + clusterId;
     final long nClusterRep = MathFunctionsHelper.gcd(rv.get(actors.get(0)), rv.get(actors.get(1)));
 
-    final PiGraph clusteredPair = new PassiveFreeSubgraphBuilder(cluster, actors, temporaryClusterName).build();
+    final PiGraph clusteredPair = new PassiveAwareSubgraphBuilder(cluster, actors, temporaryClusterName).build();
     clusteredPair.setClusterValue(true);
     setClusterConstraints(clusteredPair, scenario);
 

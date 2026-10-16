@@ -41,7 +41,6 @@ package org.preesm.model.pisdf.factory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -518,22 +517,6 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     return res;
   }
 
-  private static final String PASSIVE_SCRIPT_FOLDER = "passiveScripts";
-
-  private static final String JOIN_W_SCRIPT        = "join.bsh";
-  private static final String ROUNDBUFFER_W_SCRIPT = "roundbuffer.bsh";
-  private static final String FORK_R_SCRIPT        = "fork.bsh";
-  private static final String BROADCAST_R_SCRIPT   = "broadcast.bsh";
-
-  // Paths to the special scripts files
-  public static final String WJOIN        = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + JOIN_W_SCRIPT;
-  public static final String RFORK        = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + FORK_R_SCRIPT;
-  public static final String WROUNDBUFFER = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + ROUNDBUFFER_W_SCRIPT;
-  public static final String RBROADCAST   = PASSIVE_SCRIPT_FOLDER + IPath.SEPARATOR + BROADCAST_R_SCRIPT;
-
-  public static final String WDEFAULT = WJOIN;
-  public static final String RDEFAULT = RFORK;
-
   @Override
   public SimplePassiveActor createSimplePassiveActor() {
     final SimplePassiveActor passiveFifo = super.createSimplePassiveActor();
@@ -543,9 +526,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
     passiveFifo.getPassiveOutputPorts().add(pop);
 
     pip.setName("in");
-    pip.setWritePassiveScriptPath(WDEFAULT);
     pop.setName("out");
-    pop.setReadPassiveScriptPath(RDEFAULT);
 
     return passiveFifo;
   }

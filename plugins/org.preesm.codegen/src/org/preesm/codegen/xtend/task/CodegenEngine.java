@@ -296,6 +296,9 @@ public class CodegenEngine {
       final String extension = printerAndBlocks.getKey().getAttribute("extension");
       final CodegenAbstractPrinter printer = this.realPrinters.get(printerAndBlocks.getKey());
 
+      final String log = "With printer " + printer.toString();
+      PreesmLogger.getLogger().info(log);
+
       for (final Block b : printerAndBlocks.getValue()) {
         final String fileContentString = printer.postProcessing(printer.doSwitch(b)).toString();
         final String fileName = b.getName() + extension;

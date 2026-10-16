@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.emf.common.util.EList;
@@ -99,7 +100,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   /**
    * {@link Map} that registers every {@link AbstractActor} repetition with it's {@link IntVar}.
    */
-  private final Map<AbstractActor, IntVar> iterMap;
+  private final Map<Buffer, IntVar> iterMap;
 
   /**
    *
@@ -286,7 +287,8 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     // If actors has to be repeated few times, build a FiniteLoopBlock
     FiniteLoopBlock finiteLoopBlock = null;
     if (schedule.getRepetition() > 1) {
-      finiteLoopBlock = generateFiniteLoopBlock(actorBlock, (int) schedule.getRepetition(), actor, parallelRepetition);
+      finiteLoopBlock = generateFiniteLoopBlock(actorBlock, (int) schedule.getRepetition(), schedule,
+          parallelRepetition);
       loopBlock.getCodeElts().add(finiteLoopBlock);
       if (parallelRepetition) {
         parallelFiringsInside = true;
@@ -400,7 +402,6 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
       final boolean parallelRepetition) {
 
     // Build and fill ClusterBlock attributes
-    final PiGraph clusterGraph = (PiGraph) schedule.getAttachedActor();
     final ClusterBlock clusterBlock = CodegenModelUserFactory.eINSTANCE.createClusterBlock();
     clusterBlock.setName(schedule.shortPrint());
     clusterBlock.setSchedule(schedule.shortPrint());
@@ -412,8 +413,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     // If the cluster has to be repeated few times, build a FiniteLoopBlock
     CodeElt outputBlock = null;
     if (schedule.getRepetition() > 1) {
-      outputBlock = generateFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), clusterGraph,
-          parallelRepetition);
+      outputBlock = generateFiniteLoopBlock(clusterBlock, (int) schedule.getRepetition(), schedule, parallelRepetition);
       if (parallelRepetition) {
         parallelFiringsInside = true;
       }
@@ -486,7 +486,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
         passiveElt = null;
       }
       Buffer associatedBuffer = retrieveAssociatedBuffer(dp);
-      associatedBuffer = generateIteratedBuffer(associatedBuffer, actor, dp, passiveElt);
+      associatedBuffer = generateIteratedBuffer(associatedBuffer, dp, passiveElt);
 
       if (dp instanceof DataInputPort) {
         specialCall.addInputBuffer(associatedBuffer);
@@ -577,13 +577,42 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @return the finite loop block
    */
   private final FiniteLoopBlock generateFiniteLoopBlock(final CodeElt toInclude, final int repetition,
-      final AbstractActor actor, final boolean parallel) {
+      final Schedule schedule, final boolean parallel) {
     final FiniteLoopBlock flb = CodegenModelUserFactory.eINSTANCE.createFiniteLoopBlock();
     final IntVar iterator = CodegenModelUserFactory.eINSTANCE.createIntVar();
-    iterator.setName("index_" + actor.getName());
 
-    // Register the iteration var for that specific actor/cluster
-    iterMap.put(actor, iterator);
+    switch (schedule) {
+      case final HierarchicalSchedule hierSched when hierSched.getAttachedActor() != null -> {
+        final PiGraph subCluster = (PiGraph) hierSched.getAttachedActor();
+        iterator.setName("index_" + subCluster.getName());
+
+        for (final DataInterface di : subCluster.getDataInterfaces()) {
+          DataPort innerPort = di.getDataPort().getOppositePort();
+          while (innerPort.getContainingActor() instanceof final PiGraph tmp) {
+            final DataPort tmpInnerPort = innerPort;
+            innerPort = tmp.getDataInterfaces().stream().filter(i -> i.getGraphPort() == tmpInnerPort).toList()
+                .getFirst().getDataPort().getOppositePort();
+          }
+          final AbstractActor sourceContainer = PreesmCopyTracker.getSource(innerPort.getContainingActor());
+          final DataPort tmpInnerPort = innerPort;
+          final List<DataPort> sourcePorts = sourceContainer.getAllDataPorts().stream()
+              .filter(dp -> Objects.equals(dp.getName(), tmpInnerPort.getName())).toList();
+          final DataPort sourcePort = sourcePorts.getFirst();
+          iterMap.put(retrieveAssociatedBuffer(sourcePort), iterator);
+        }
+      }
+      case final ActorSchedule actSched -> {
+        final AbstractActor actor = PreesmCopyTracker.getSource(actSched.getActorList().getFirst());
+        iterator.setName("index_" + actor.getName());
+        for (final DataPort dp : actor.getAllDataPorts()) {
+          iterMap.put(retrieveAssociatedBuffer(dp), iterator);
+        }
+      }
+      default -> throw new PreesmRuntimeException(
+          "Can't build a finite loop block with a hierarchical schedule that has no attached actor. "
+              + "Please contact PREESM developers.");
+    }
+
     flb.setIter(iterator);
     flb.setNbIter(repetition);
 
@@ -612,9 +641,8 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    *          cluster)
    * @return the iterated Buffer
    */
-  final Buffer generateIteratedBuffer(final Buffer buffer, final AbstractActor actor, final DataPort dataPort,
-      final PassiveElt passiveElt) {
-    if (!iterMap.containsKey(actor)) {
+  final Buffer generateIteratedBuffer(final Buffer buffer, final DataPort dataPort, final PassiveElt passiveElt) {
+    if (!iterMap.containsKey(buffer)) {
       return buffer;
     }
 
@@ -634,7 +662,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
       iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedPassiveBuffer();
     }
     iteratedBuffer.setBuffer(buffer);
-    iteratedBuffer.setIter(iterMap.get(actor));
+    iteratedBuffer.setIter(iterMap.get(buffer));
     iteratedBuffer.setNbToken(dataPort.getExpression().evaluateAsLong());
     iteratedBuffer.setType(buffer.getType());
     iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
@@ -678,7 +706,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
 
         // Add argument into function call
         if (associatedPort instanceof final DataPort associatedDataPort) {
-          addDataPortArgument(functionCall, actor, associatedDataPort, a, flb);
+          addDataPortArgument(functionCall, associatedDataPort, a, flb);
         } else if (associatedPort instanceof final ConfigInputPort associatedCip) {
           addConfigInputPortArgument(functionCall, associatedCip, a);
         }
@@ -727,7 +755,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @param flb
    *          the finite loop block containing the call
    */
-  private final void addDataPortArgument(final FunctionCall functionCall, final Actor actor, final DataPort port,
+  private final void addDataPortArgument(final FunctionCall functionCall, final DataPort port,
       final FunctionArgument arg, final FiniteLoopBlock flb) {
 
     // Retrieve associated Buffer
@@ -741,7 +769,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     }
 
     // If there is a repetition over the actor, iterate the buffer
-    associatedBuffer = generateIteratedBuffer(associatedBuffer, actor, port, passiveElt);
+    associatedBuffer = generateIteratedBuffer(associatedBuffer, port, passiveElt);
 
     // Add parameter to functionCall
     functionCall.addParameter(associatedBuffer,
