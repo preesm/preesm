@@ -67,7 +67,10 @@ public class ClusterIdentifier {
       Map<String, String> parameters) {
 
     // Getting parameters
-    final boolean verbose = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
+    final boolean verbose = ClusterCreationTask.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
+    final boolean debug = ClusterCreationTask.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
     final String vertiIdentifierName = parameters
         .getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE)
         .toLowerCase();
@@ -99,7 +102,11 @@ public class ClusterIdentifier {
     ClusteringHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: building vertical clusters done.");
+      PreesmLogger.getLogger().info(" -- Clustering Id: building vertical clusters done. --");
+    }
+
+    if (debug) {
+
     }
 
     // ---------------------------------------------------------------------------------------------- //

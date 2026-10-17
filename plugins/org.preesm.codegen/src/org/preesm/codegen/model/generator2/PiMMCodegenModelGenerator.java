@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;
 import org.eclipse.emf.common.util.EList;
@@ -25,6 +26,8 @@ import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.Constant;
+import org.preesm.codegen.model.FifoCall;
+import org.preesm.codegen.model.FifoOperation;
 import org.preesm.codegen.model.FiniteLoopBlock;
 import org.preesm.codegen.model.FunctionBlock;
 import org.preesm.codegen.model.FunctionCall;
@@ -362,30 +365,37 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
   protected void generateDelayPop(final AbstractActor actor, final LoopBlock loopBlock) {
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(topCluster);
+
     // Explore data port for delay
     for (final DataPort dp : actor.getAllDataPorts()) {
       final Fifo associatedFifo = dp.getFifo();
+
       // If fifo is delayed
       if (delaySubBufferMap.containsKey(associatedFifo)) {
+
         // If the fifo goes to an actor that already has been executed, it means that we should generate a pop after
         // a write, otherwise we print a pop only if it's in input
         final boolean precedence = helper.isPredecessor(associatedFifo.getTarget(), associatedFifo.getSource());
-
         if (((dp.getKind() == PortKind.DATA_INPUT) && !precedence)
             || ((dp.getKind() == PortKind.DATA_OUTPUT) && precedence)) {
+
           // Retrieve buffer and sub-buffer for corresponding delay
           final Triple<SubBuffer, SubBuffer, SubBuffer> delayBufferTriple = delaySubBufferMap.get(associatedFifo);
+
           // Generate a memcpy function call
           final FunctionCall memcpyCall = CodegenModelUserFactory.eINSTANCE.createFunctionCall();
           memcpyCall.setName("memcpy");
+
           // remaining_tokens transfered at the top of delay buffer
           memcpyCall.addParameter(delayBufferTriple.getLeft(), PortDirection.INPUT); // delay buffer
           memcpyCall.addParameter(delayBufferTriple.getRight(), PortDirection.INPUT); // remaining subbuffer
+
           // Compute size of transfer
           final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
           constant.setValue(
               delayBufferTriple.getRight().getNbToken() * delayBufferTriple.getRight().getTokenTypeSizeInBit());
           memcpyCall.addParameter(constant, PortDirection.INPUT);
+
           // Add pop to the loop block
           loopBlock.getCodeElts().add(memcpyCall);
         }
@@ -791,8 +801,15 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     codegenBuffer.setType(fifo.getType());
     codegenBuffer.setTokenTypeSizeInBit(typeSizeInBit);
     codegenBuffer.setNbToken(allocBuffer.getSizeInBit() / typeSizeInBit);
+
     this.mainBuffer.getChildrens().add(codegenBuffer);
-    b2b.put(allocBuffer, codegenBuffer);
+
+    if (fifo.getDelay() != null) {
+      generateDelayBuffer(fifo, codegenBuffer);
+    } else {
+      b2b.put(allocBuffer, codegenBuffer);
+    }
+
   }
 
   public CallFunctionBlock getCallFunctionBlock() {
@@ -801,6 +818,55 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
 
   public LoopFunctionBlock getLoopFunctionBlock() {
     return loopFuncBlock;
+  }
+
+  private final Buffer generateDelayBuffer(final Fifo fifo, final Buffer delayBuffer) {
+
+    // Fill delay buffer information
+    final long workingBufferSize = delayBuffer.getNbToken();
+    final long delayCapacity = fifo.getDelay().getExpression().evaluateAsLong();
+    delayBuffer.setName("delay_" + fifo.getSource().getName() + "_to_" + fifo.getTarget().getName());
+    delayBuffer.setNbToken(delayCapacity + workingBufferSize);
+    this.delayBufferList.add(delayBuffer);
+
+    // Initialize SubBuffer for reading into delay's fifo
+    final SubBuffer readBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    readBuffer.setContainer(delayBuffer);
+    readBuffer.setOffsetInBit(0);
+    readBuffer.setName("read_to_" + delayBuffer.getName());
+    readBuffer.setType(delayBuffer.getType());
+    readBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    readBuffer.setNbToken(fifo.getTargetPort().getExpression().evaluateAsLong());
+
+    // Initialize SubBuffer for writting into delay's fifo
+    final SubBuffer writeBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    writeBuffer.setContainer(delayBuffer);
+    writeBuffer.setOffsetInBit(delayCapacity);
+    writeBuffer.setName("write_to_" + delayBuffer.getName());
+    writeBuffer.setType(delayBuffer.getType());
+    writeBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    writeBuffer.setNbToken(workingBufferSize);
+
+    // Initialize SubBuffer for shifting remaining value in delay's fifo
+    final SubBuffer remainingTokensBuffer = CodegenModelUserFactory.eINSTANCE.createSubBuffer();
+    remainingTokensBuffer.setContainer(delayBuffer);
+    remainingTokensBuffer.setOffsetInBit(workingBufferSize);
+    remainingTokensBuffer.setName("remaining_tokens_of_" + delayBuffer.getName());
+    remainingTokensBuffer.setType(delayBuffer.getType());
+    remainingTokensBuffer.setTokenTypeSizeInBit(delayBuffer.getTokenTypeSizeInBit());
+    remainingTokensBuffer.setNbToken(delayCapacity);
+
+    // Add buffers to delay buffer map
+    this.delaySubBufferMap.put(fifo, new ImmutableTriple<>(readBuffer, writeBuffer, remainingTokensBuffer));
+
+    // Build call for fifo initialization
+    final FifoCall fifoInit = CodegenModelUserFactory.eINSTANCE.createFifoCall();
+    fifoInit.setHeadBuffer(delayBuffer);
+    fifoInit.setOperation(FifoOperation.INIT);
+    // Add delay buffer initialization to the init block of operator block
+    this.getCallFunctionBlock().getCodeElts().add(fifoInit);
+
+    return delayBuffer;
   }
 
 }

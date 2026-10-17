@@ -27,7 +27,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           , the input graph will just be flatten. For now, there is no vertical heuristic.
           """,
           values = { @Value(name = ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE,
-              effect = "The input graph will be flatten.") }),
+              effect = "The input graph will just be flatten.") }),
 
       @Parameter(name = ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, description = """
           Name of which heuristic will be used to horizontaly clusterize the graph. Every hierachical
@@ -58,7 +58,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             @Value(name = HeuristicGetter.BASIC_BALANCING) }),
 
       @Parameter(name = ClusterCreationTask.PARAM_VERBOSE, description = "More or less logs",
-          values = { @Value(name = "True"), @Value(name = "False") }) },
+          values = { @Value(name = ClusterCreationTask.VALUE_TRUE), @Value(name = ClusterCreationTask.VALUE_FALSE) }),
+
+      @Parameter(name = ClusterCreationTask.PARAM_DEBUG,
+          description = "Enable debug mode (will export the intermediate graphs"
+              + " in the file Algo/generated/clustering-debug)",
+          values = { @Value(name = ClusterCreationTask.VALUE_FALSE), @Value(name = ClusterCreationTask.VALUE_TRUE) }) },
 
     inputs = {
       @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
@@ -106,13 +111,22 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
 
   public static final String PARAM_VERTICAL_HEURISTIC      = "Vertical heuristic";
   public static final String VALUE_VERTICAL_HEURISTIC_NONE = "None";
-  public static final String PARAM_HORIZONTAL_HEURISTIC    = "Horizontal heuristic";
-  public static final String PARAM_MAPPING_HEURISTIC       = "Mapping heuristic";
-  public static final String PARAM_BALANCING_HEURISTIC     = "Balancing heuristic";
-  public static final String PARAM_SCHEDULING_HEURISTIC    = "Scheduling heuristic";
-  public static final String PARAM_ALLOCATION_HEURISTIC    = "Allocation heuristic";
-  public static final String PARAM_VERBOSE                 = "Verbose";
-  public static final String PARAM_DEBUG                   = "Debug";
+
+  public static final String PARAM_HORIZONTAL_HEURISTIC = "Horizontal heuristic";
+
+  public static final String PARAM_MAPPING_HEURISTIC = "Mapping heuristic";
+
+  public static final String PARAM_BALANCING_HEURISTIC = "Balancing heuristic";
+
+  public static final String PARAM_SCHEDULING_HEURISTIC = "Scheduling heuristic";
+
+  public static final String PARAM_ALLOCATION_HEURISTIC = "Allocation heuristic";
+
+  public static final String PARAM_VERBOSE = "Verbose";
+
+  public static final String PARAM_DEBUG = "Debug";
+  public static final String VALUE_TRUE  = "True";
+  public static final String VALUE_FALSE = "False";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
