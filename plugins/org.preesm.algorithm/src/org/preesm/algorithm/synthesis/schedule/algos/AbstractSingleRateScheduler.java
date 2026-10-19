@@ -63,7 +63,7 @@ import org.preesm.model.slam.Design;
 /**
  * Abstract class for all schedulers based on a SrDAG graph
  */
-public abstract class AbstractDAGScheduler implements IScheduler {
+public abstract class AbstractSingleRateScheduler implements IScheduler {
 
   @Override
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,

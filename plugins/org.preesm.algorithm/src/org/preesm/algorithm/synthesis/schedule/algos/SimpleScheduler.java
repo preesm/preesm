@@ -63,7 +63,7 @@ import org.preesm.model.slam.utils.LexicographicComponentInstanceComparator;
  *
  * @author anmorvan
  */
-public class SimpleScheduler extends AbstractDAGScheduler {
+public class SimpleScheduler extends AbstractSingleRateScheduler {
 
   @Override
   protected SynthesisResult exec(final PiGraph piGraph /* SRDAG */, final Design slamDesign, final Scenario scenario,
