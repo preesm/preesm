@@ -125,17 +125,17 @@ public class CodegenTask2 extends AbstractTaskImplementation {
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
     // Retrieve inputs
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
 
-    final Design archi = (Design) inputs.get("architecture");
-    final PiGraph algo = (PiGraph) inputs.get("PiMM");
+    final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PiGraph algo = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    final Schedule schedule = (Schedule) inputs.get("Schedule");
-    final Mapping mapping = (Mapping) inputs.get("Mapping");
-    final Allocation memAlloc = (Allocation) inputs.get("Allocation");
+    final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
+    final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
+    final Allocation memAlloc = (Allocation) inputs.get(AbstractWorkflowNodeImplementation.KEY_ALLOCATION);
 
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_PAPIFY));

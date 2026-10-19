@@ -463,9 +463,9 @@ public class PiMMCodegenModelGenerator extends ScheduleSwitch<CodeElt> {
     // Set type of special call
     switch (actor) {
       case final ForkActor fa -> specialCall.setType(SpecialType.FORK);
-      case final JoinActor ja -> specialCall.setType(SpecialType.FORK);
-      case final BroadcastActor ba -> specialCall.setType(SpecialType.FORK);
-      case final RoundBufferActor rba -> specialCall.setType(SpecialType.FORK);
+      case final JoinActor ja -> specialCall.setType(SpecialType.JOIN);
+      case final BroadcastActor ba -> specialCall.setType(SpecialType.BROADCAST);
+      case final RoundBufferActor rba -> specialCall.setType(SpecialType.ROUND_BUFFER);
       default -> throw new PreesmRuntimeException(
           "PiMMCodegenModelGenerator: can't retrieve type of special actor [" + actor.getName() + "]");
     }
