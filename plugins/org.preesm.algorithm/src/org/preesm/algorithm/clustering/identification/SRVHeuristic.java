@@ -22,7 +22,7 @@ import org.preesm.model.slam.Design;
  *
  * @author rcazoulat
  */
-public class SRVHeuristic extends HorizontalHeuristic {
+public class SRVHeuristic implements HorizontalHeuristic {
 
   Map<AbstractVertex, Long> brv;
   long                      nPEs;
@@ -47,7 +47,6 @@ public class SRVHeuristic extends HorizontalHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
 
     // Computing the basic repetition vector of the graph
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);

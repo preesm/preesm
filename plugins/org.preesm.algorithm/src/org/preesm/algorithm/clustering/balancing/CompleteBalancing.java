@@ -53,13 +53,12 @@ public class CompleteBalancing extends BalancingHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
     brv = PiBRV.compute(graph, BRVMethod.LCM);
     verbose = taskParameters == null || "true".equalsIgnoreCase(taskParameters.get(ClusterCreationTask.PARAM_VERBOSE));
   }
 
   @Override
-  public List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster1, long nPEs) {
+  public List<PiGraph> balanceCluster(PiGraph topgraph, PiGraph cluster1, long nPEs) {
 
     if (topgraph == null) {
       throw new PreesmRuntimeException("top graph is null");
@@ -120,9 +119,11 @@ public class CompleteBalancing extends BalancingHeuristic {
       PreesmLogger.getLogger().info(log);
     }
 
-    // ------------------------------------------------------------------------------------------- //
-    // Modifying the expressions of the ports of interfaces for cluster1
-    // ------------------------------------------------------------------------------------------- //
+    // ===========================================================================================================
+    //
+    // CLUSTER1'S INTERFACES'S PORTS EXPRESSION MODIFICATION
+    //
+    // ===========================================================================================================
     for (final DataInterface dataInterface : cluster1.getDataInterfaces()) {
 
       long expr;
@@ -173,9 +174,11 @@ public class CompleteBalancing extends BalancingHeuristic {
       PreesmLogger.getLogger().info(log);
     }
 
-    // ------------------------------------------------------------------------------------------- //
-    // Building cluster2, if needed
-    // ------------------------------------------------------------------------------------------- //
+    // ===========================================================================================================
+    //
+    // BUILDING CLUSTER2 (IF NEEDED)
+    //
+    // ===========================================================================================================
     // If the rest of division of the cluster repetition and the number of PEs is not equal to 0,
     // Then we have to duplicate the cluster in two, with two different repetitions, and two different scales.
     // For example, if a cluster is repeating itself 9 times (clusterRepetition = 9),
@@ -189,8 +192,8 @@ public class CompleteBalancing extends BalancingHeuristic {
       final PiGraph cluster2 = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster1);
       topgraph.addActor(cluster2);
       final String cluster1Name = cluster1.getName();
-      cluster2.setName(cluster1Name + "_2");
-      cluster1.setName(cluster1Name + "_1");
+      cluster2.setName(cluster1Name + "_1");
+      cluster1.setName(cluster1Name + "_0");
       clusters.add(cluster2);
 
       // Number of repetition of subgraph in cluster2
@@ -205,9 +208,11 @@ public class CompleteBalancing extends BalancingHeuristic {
         PreesmLogger.getLogger().info(log);
       }
 
-      // ------------------------------------------------------------------------------------------- //
-      // Creating Dependencies
-      // ------------------------------------------------------------------------------------------- //
+      // ===========================================================================================================
+      //
+      // DEPENDENCIES CREATION
+      //
+      // ===========================================================================================================
       for (final ConfigInputInterface param : cluster2.getConfigInputInterfaces()) {
         final ConfigInputInterface oriParam = PreesmCopyTracker.getSource(param);
         final Dependency oriDep = oriParam.getGraphPort().getIncomingDependency();
@@ -218,9 +223,11 @@ public class CompleteBalancing extends BalancingHeuristic {
         topgraph.addDependency(newDep);
       }
 
-      // ------------------------------------------------------------------------------------------- //
-      // Creating fork actors / Modifying broadcast actor
-      // ------------------------------------------------------------------------------------------- //
+      // ===========================================================================================================
+      //
+      // FORK/BROADCAST ACTOR CREATION/MODIFICATION
+      //
+      // ===========================================================================================================
       long forkCounter = 0;
       int interfaceIdx = 0;
       final int nbrInputInterfaces = cluster1.getDataInputInterfaces().size();
@@ -248,8 +255,8 @@ public class CompleteBalancing extends BalancingHeuristic {
           brdActor.getDataOutputPorts().add(brdOutPort2);
 
           final String brdPortsName = brdOutPort1.getName();
-          brdOutPort1.setName(brdPortsName + "_1");
-          brdOutPort2.setName(brdPortsName + "_2");
+          brdOutPort1.setName(brdPortsName + "_0");
+          brdOutPort2.setName(brdPortsName + "_1");
           brdOutPort2.setExpression(tokensOneExec * (double) outerRep2);
 
           final Fifo brd2cluster2Fifo = PiMMUserFactory.instance.createFifo(brdOutPort2, inputInterface2.getGraphPort(),
@@ -278,11 +285,14 @@ public class CompleteBalancing extends BalancingHeuristic {
           final DataOutputPort forkOutPort1 = PiMMUserFactory.instance.createDataOutputPort();
           final DataOutputPort forkOutPort2 = PiMMUserFactory.instance.createDataOutputPort();
           forkInPort.setName("in");
-          forkOutPort1.setName("out_1");
-          forkOutPort2.setName("out_2");
+          forkOutPort1.setName("out_0");
+          forkOutPort2.setName("out_1");
           forkActor.getDataInputPorts().add(forkInPort);
           forkActor.getDataOutputPorts().add(forkOutPort1);
           forkActor.getDataOutputPorts().add(forkOutPort2);
+
+          // input port annotation
+          forkInPort.setAnnotation(inputInterface1.getGraphPort().getAnnotation());
 
           // Getting input port of data input interfaces
           final DataInputPort cluster1InPort = inputInterface1.getGraphPort();
@@ -321,9 +331,11 @@ public class CompleteBalancing extends BalancingHeuristic {
         }
       }
 
-      // ------------------------------------------------------------------------------------------- //
-      // Creating join actors
-      // ------------------------------------------------------------------------------------------- //
+      // ===========================================================================================================
+      //
+      // JOIN ACTOR CREATION
+      //
+      // ===========================================================================================================
       long joinCounter = 0;
       interfaceIdx = 0;
       final int nbrOutputInterfaces = cluster1.getDataOutputInterfaces().size();
@@ -341,8 +353,8 @@ public class CompleteBalancing extends BalancingHeuristic {
         final DataInputPort joinInPort1 = PiMMUserFactory.instance.createDataInputPort();
         final DataInputPort joinInPort2 = PiMMUserFactory.instance.createDataInputPort();
         final DataOutputPort joinOutPort = PiMMUserFactory.instance.createDataOutputPort();
-        joinInPort1.setName("in_1");
-        joinInPort2.setName("in_2");
+        joinInPort1.setName("in_0");
+        joinInPort2.setName("in_1");
         joinOutPort.setName("out");
         joinActor.getDataInputPorts().add(joinInPort1);
         joinActor.getDataInputPorts().add(joinInPort2);

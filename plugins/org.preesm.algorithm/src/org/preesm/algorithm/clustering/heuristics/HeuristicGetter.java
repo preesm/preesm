@@ -2,6 +2,7 @@ package org.preesm.algorithm.clustering.heuristics;
 
 import org.preesm.algorithm.clustering.balancing.BasicBalancing;
 import org.preesm.algorithm.clustering.balancing.CompleteBalancing;
+import org.preesm.algorithm.clustering.identification.DownardWeightPropagation;
 import org.preesm.algorithm.clustering.identification.SRVHeuristic;
 import org.preesm.algorithm.clustering.identification.SimpleFPGAIdentifier;
 import org.preesm.algorithm.clustering.identification.URCHeuristic;
@@ -21,15 +22,13 @@ public class HeuristicGetter {
   }
 
   // Default heuristic names
-  public static final String CLASSIC_MAPPER         = "classic mapper";
-  public static final String SIMPLE_MAPPER          = "simple mapper";
-  public static final String COMPLETE_BALANCING     = "complete balancing";
-  public static final String BASIC_BALANCING        = "basic balancing";
-  public static final String SIMPLE_ALLOCATION      = "simple allocation";
-  public static final String APGAN_SCHEDULING       = "apgan scheduling";
-  public static final String URC_IDENTIFIER         = "urc";
-  public static final String SRV_IDENTIFIER         = "srv";
-  public static final String SIMPLE_FPGA_IDENTIFIER = "simple FPGA arch";
+  public static final String COMPLETE_BALANCING            = "complete balancing";
+  public static final String BASIC_BALANCING               = "basic balancing";
+  public static final String URC_IDENTIFIER                = "urc";
+  public static final String SRV_IDENTIFIER                = "srv";
+  public static final String SIMPLE_FPGA_IDENTIFIER        = "simple FPGA arch";
+  public static final String DOWNARD_WEIGHT_PROPAGATION    = "downward weight propagation";
+  public static final String VALUE_VERTICAL_HEURISTIC_NONE = "None";
 
   /**
    * Method used to retrieve any heuristic of any kind.
@@ -46,6 +45,7 @@ public class HeuristicGetter {
       case SIMPLE_FPGA_IDENTIFIER -> new SimpleFPGAIdentifier();
       case COMPLETE_BALANCING -> new CompleteBalancing();
       case BASIC_BALANCING -> new BasicBalancing();
+      case DOWNARD_WEIGHT_PROPAGATION -> new DownardWeightPropagation();
       default -> throw new PreesmRuntimeException(
           "heuristicName <" + heuristicName + "> is unknown, can't retrieve the wanted heuristic.");
     };

@@ -10,11 +10,26 @@ import org.preesm.model.pisdf.Port;
 
 /**
  * This abstract class is made to create {@link Heuristic heuristics} that will balance a {@link PiGraph
- * cluster/subgraph} in its topg-raph, according to the number of available processing elements.
+ * cluster/subgraph} in its topg-raph, according to the number of available processing elements. The implementation
+ * classes are stored in the package clustering.balancing
+ *
  *
  * @author rcazoulat
  */
-public abstract class BalancingHeuristic extends Heuristic {
+public abstract class BalancingHeuristic implements Heuristic {
+
+  public void balance(PiGraph topGraph, long nPEs) {
+
+    /** Explore sub-graphs (cluster included) */
+    for (final PiGraph child : topGraph.getChildrenGraphs()) {
+      balance(child, nPEs);
+    }
+
+    /** Balance clusters */
+    for (final PiGraph cluster : topGraph.getChildrenGraphs().stream().filter(g -> g.isCluster()).toList()) {
+      balanceCluster(topGraph, cluster, nPEs);
+    }
+  }
 
   /**
    * This method will modify ports rates between the {@link AbstractActor actors} of the top-graph, and the graph ports'
@@ -28,7 +43,7 @@ public abstract class BalancingHeuristic extends Heuristic {
    *          The number of available processing elements
    * @return The list containing at least the modified cluster, and potential newly created clusters
    */
-  public abstract List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster, long nPEs);
+  protected abstract List<PiGraph> balanceCluster(PiGraph topgraph, PiGraph cluster, long nPEs);
 
   /**
    * Useful method to make logs if balancing is in verbose mode.

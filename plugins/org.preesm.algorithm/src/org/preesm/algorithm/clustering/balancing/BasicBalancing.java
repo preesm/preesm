@@ -37,13 +37,12 @@ public class BasicBalancing extends BalancingHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
     brv = PiBRV.compute(graph, BRVMethod.LCM);
     verbose = taskParameters == null || "true".equalsIgnoreCase(taskParameters.get(ClusterCreationTask.PARAM_VERBOSE));
   }
 
   @Override
-  public List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster, long nPEs) {
+  public List<PiGraph> balanceCluster(PiGraph topgraph, PiGraph cluster, long nPEs) {
 
     if (topgraph == null) {
       throw new PreesmRuntimeException("top graph is null");

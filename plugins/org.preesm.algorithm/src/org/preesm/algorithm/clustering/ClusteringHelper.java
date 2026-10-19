@@ -546,7 +546,10 @@ public class ClusteringHelper {
       // Setting expression of ports
       aOut.setExpression(aExpr); // otherwise it bugs...
       brdIn.setExpression(aExpr);
-      brdOut.setExpression(brv.get(b) * bInExpr);
+      brdOut.setExpression(brv.get(b) * (double) bInExpr);
+
+      // Setting input port annotations
+      brdIn.setAnnotation(bIn.getAnnotation());
 
       // Linking broadcast with a and b
       final String dataType = a2b.getType();
@@ -634,5 +637,16 @@ public class ClusteringHelper {
       parent = parent.getParent();
     }
     return scopeRepetition;
+  }
+
+  /**
+   * Get all clusters of a graph (also those who are in lower hierarchical levels)
+   *
+   * @param topGraph
+   *          the top graph
+   * @return the list containing all clusters
+   */
+  public static List<PiGraph> getClusters(PiGraph topGraph) {
+    return topGraph.getAllChildrenGraphs().stream().filter(g -> g.isCluster()).toList();
   }
 }
