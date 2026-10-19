@@ -102,7 +102,7 @@ public class BasicBalancingTest {
 
   @Test
   public void testFactor2() {
-    balancer.balanceFirings(topGraph, subGraph, 2);
+    balancer.balanceCluster(topGraph, subGraph, 2);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(2), brv.get(this.subGraph));
     assertEquals(Long.valueOf(128), brv.get(this.actorB));
@@ -111,7 +111,7 @@ public class BasicBalancingTest {
 
   @Test
   public void testFactor4() {
-    balancer.balanceFirings(topGraph, subGraph, 4);
+    balancer.balanceCluster(topGraph, subGraph, 4);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(4), brv.get(this.subGraph));
     assertEquals(Long.valueOf(64), brv.get(this.actorB));
@@ -120,7 +120,7 @@ public class BasicBalancingTest {
 
   @Test
   public void testFactor8() {
-    balancer.balanceFirings(topGraph, subGraph, 8);
+    balancer.balanceCluster(topGraph, subGraph, 8);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(8), brv.get(this.subGraph));
     assertEquals(Long.valueOf(32), brv.get(this.actorB));
@@ -129,7 +129,7 @@ public class BasicBalancingTest {
 
   @Test
   public void testFactor16() {
-    balancer.balanceFirings(topGraph, subGraph, 16);
+    balancer.balanceCluster(topGraph, subGraph, 16);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(16), brv.get(this.subGraph));
     assertEquals(Long.valueOf(16), brv.get(this.actorB));
@@ -138,9 +138,9 @@ public class BasicBalancingTest {
 
   @Test
   public void testExceptionGraph() {
-    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(null, subGraph, 15));
-    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, null, 15));
-    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, subGraph, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceCluster(null, subGraph, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceCluster(topGraph, null, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceCluster(topGraph, subGraph, 15));
 
   }
 
