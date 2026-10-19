@@ -252,9 +252,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    *
    */
   private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
-
-    // // Copy parameters
-
+    // Copy parameters
     for (final ConfigInputPort port : copyActor.getConfigInputPorts()) {
       final Port lookupPort = actor.lookupPort(port.getName());
       if (!(lookupPort instanceof ConfigInputPort)) {
@@ -556,7 +554,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         if (inFifo != null) {
           final DataOutputPort sourcePort = inFifo.getSourcePort();
           final AbstractActor containingActor = sourcePort.getContainingActor();
-          if (containingActor instanceof final PiGraph piGraph) {
+          if (containingActor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
             return lookForSourcePort(piGraph, source, sourcePort.getName());
           }
           return (DataOutputPort) source.lookupPort(sourcePort.getName());
@@ -689,7 +687,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         final Fifo outFifo = dii.getDataPort().getFifo();
         final DataInputPort targetPort = outFifo.getTargetPort();
         final AbstractActor containingActor = targetPort.getContainingActor();
-        if (containingActor instanceof final PiGraph piGraph) {
+        if (containingActor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
           return lookForTargetPort(piGraph, target, targetPort.getName());
         }
         return (DataInputPort) target.lookupPort(targetPort.getName());
@@ -729,7 +727,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       this.outPort2SRActors.get(correspondingPort).add(interfaceRB);
       return Collections.singletonList(interfaceRB);
     }
-    if (sourceActor instanceof PiGraph) {
+    if (sourceActor instanceof final PiGraph pi && !pi.isCluster()) {
       // 2.3 If sourceActor is a PiGraph then we forward the mapped actors to the next level of hierarchy
       this.outPort2SRActors.get(correspondingPort).addAll(sourceSet);
       return Collections.emptyList();

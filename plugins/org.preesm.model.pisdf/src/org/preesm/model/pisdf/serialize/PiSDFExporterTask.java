@@ -44,6 +44,7 @@
 package org.preesm.model.pisdf.serialize;
 
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -130,7 +131,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String pathParameter = parameters.get(PARAM_PATH);
 
     // create a copy of the input graph so that subgraph disconnector does not impact other tasks
-    final PiGraph graphCopy = PiMMUserFactory.instance.copyWithHistory(graph);
+    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
 
     // Creates the output file now
     final String sXmlPath = WorkspaceUtils.getAbsolutePath(pathParameter, workflow.getProjectName());
@@ -170,13 +171,21 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
     final String platformString = uri.toPlatformString(true);
     final IFile documentFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(platformString));
     final String osString = documentFile.getLocation().toOSString();
+
+    // added by rcazoula
+    final File outFile = new File(osString);
+    final File parent = outFile.getParentFile();
+    if (parent != null && !parent.exists() && !parent.mkdirs()) {
+      throw new PreesmRuntimeException("Could not create directory " + parent);
+    }
+
     try (final OutputStream outStream = new BufferedOutputStream(new FileOutputStream(osString))) {
       // Write the Graph to the OutputStream using the Pi format
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
       // the reconnection is useless since we copied the graph first
     } catch (final IOException e) {
-      throw new PreesmRuntimeException("Could not open outputstream file " + string);
+      throw new PreesmRuntimeException("Could not open outputstream file " + string, e);
     }
   }
 
