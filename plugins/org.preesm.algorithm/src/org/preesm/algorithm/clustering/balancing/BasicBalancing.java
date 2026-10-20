@@ -79,16 +79,7 @@ public class BasicBalancing extends BalancingHeuristic {
     // Number of repetition of subgraph in cluster,
     final long ratio = clusterRepetition / scale;
 
-    // Log
-    if (verbose) {
-      log = "[Partitioning] > rest = " + rest + ", scale = " + scale + ", repetition = " + clusterRepetition
-          + ", ratio = " + ratio;
-      PreesmLogger.getLogger().info(log);
-    }
-
-    // ------------------------------------------------------------------------------------------- //
     // Modifying the expressions of the ports of interfaces
-    // ------------------------------------------------------------------------------------------- //
     for (final DataInterface dataInterface : cluster.getDataInterfaces()) {
 
       final long expr = dataInterface.getDataPort().getFifo().getTargetPort().getExpression().evaluateAsLong() * ratio;
@@ -100,7 +91,7 @@ public class BasicBalancing extends BalancingHeuristic {
 
     // Log -> track cluster1 modification
     if (verbose) {
-      log = makeCompareLog(cluster, topgraph, clusterOldExprs);
+      log = makeBalancingLog(cluster, topgraph, clusterOldExprs);
       PreesmLogger.getLogger().info(log);
     }
 

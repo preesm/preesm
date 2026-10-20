@@ -112,13 +112,6 @@ public class CompleteBalancing extends BalancingHeuristic {
     // Number of repetition of subgraph in cluster1
     final long innerRep1 = subgraphRep1 / outerRep1;
 
-    // Log
-    if (verbose) {
-      log = "[Partitioning] > subgraph rep = " + clusterRep + ", rest = " + rest + ", outerRep 1 = " + outerRep1
-          + ", innerRep = " + innerRep1;
-      PreesmLogger.getLogger().info(log);
-    }
-
     // ===========================================================================================================
     //
     // CLUSTER1'S INTERFACES'S PORTS EXPRESSION MODIFICATION
@@ -150,7 +143,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track broadcast modification
           if (verbose) {
-            log = makeCompareLog(previousActor, topgraph, oldExprs);
+            log = makeBalancingLog(previousActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
           expr = tokensOneExec;
@@ -170,7 +163,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
     // Log -> track cluster1 modification
     if (verbose) {
-      log = makeCompareLog(cluster1, topgraph, cluster1OldExprs);
+      log = makeBalancingLog(cluster1, topgraph, cluster1OldExprs);
       PreesmLogger.getLogger().info(log);
     }
 
@@ -202,12 +195,6 @@ public class CompleteBalancing extends BalancingHeuristic {
       // Number of time cluster2 will be repeated in top graph
       final long outerRep2 = rest;
 
-      // Log
-      if (verbose) {
-        log = "[Partitioning] > scale 2 = " + outerRep2 + ", ratio2 = " + innerRep;
-        PreesmLogger.getLogger().info(log);
-      }
-
       // ===========================================================================================================
       //
       // DEPENDENCIES CREATION
@@ -222,7 +209,6 @@ public class CompleteBalancing extends BalancingHeuristic {
         param.getGraphPort().setIncomingDependency(newDep);
         topgraph.addDependency(newDep);
       }
-
       // ===========================================================================================================
       //
       // FORK/BROADCAST ACTOR CREATION/MODIFICATION
@@ -243,9 +229,9 @@ public class CompleteBalancing extends BalancingHeuristic {
 
         final AbstractActor previousActor = inputInterface1.getGraphPort().getFifo().getSource();
 
+        // BROADCAST MODIFICATION ================================================================================
         // If previous actor is a broadcast actor we add one output port for cluster2, in the outer broadcast
         if (previousActor instanceof final BroadcastActor brdActor) {
-
           // Log util
           oldExprs = brdActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
 
@@ -266,7 +252,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track broadcast modification
           if (verbose) {
-            log = makeCompareLog(brdActor, topgraph, oldExprs);
+            log = makeBalancingLog(brdActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
 
@@ -274,8 +260,8 @@ public class CompleteBalancing extends BalancingHeuristic {
           inputInterface2.getGraphPort().setExpression(tokensOneExec);
           inputInterface2.getDataPort().setExpression(tokensOneExec);
 
+          // FORK CREATION ================================================================================
         } else {
-
           // Creating fork actor
           final ForkActor forkActor = PiMMUserFactory.instance.createForkActor();
           forkActor.setName("fork_" + forkCounter++ + "_" + cluster1Name);
@@ -325,12 +311,11 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Log -> track forkActor creation
           if (verbose) {
-            log = makeCompareLog(forkActor, topgraph, null);
+            log = makeBalancingLog(forkActor, topgraph, null);
             PreesmLogger.getLogger().info(log);
           }
         }
       }
-
       // ===========================================================================================================
       //
       // JOIN ACTOR CREATION
@@ -393,15 +378,13 @@ public class CompleteBalancing extends BalancingHeuristic {
 
         // Log -> track joinActor creation
         if (verbose) {
-          log = makeCompareLog(joinActor, topgraph, null);
+          log = makeBalancingLog(joinActor, topgraph, null);
           PreesmLogger.getLogger().info(log);
         }
       }
     }
-
     // Facilitate the memory reuse in cluster
     clusters.forEach(ClusteringHelper::addSpecialActors);
-
     return clusters;
 
   }

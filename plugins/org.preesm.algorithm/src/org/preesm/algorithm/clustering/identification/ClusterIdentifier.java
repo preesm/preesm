@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
@@ -105,7 +104,7 @@ public class ClusterIdentifier {
     ClusteringHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
-      PreesmLogger.getLogger().info(" -- Clustering Id: building vertical clusters done. --");
+      PreesmLogger.getLogger().info("Cluster creation: building vertical clusters done.");
     }
 
     if (debug) {
@@ -120,15 +119,18 @@ public class ClusterIdentifier {
     // It will modify the algorithm graph & return the created subgraphs list
 
     horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-    buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario, horizIdentifier, verbose);
+    final List<PiGraph> clusters1 = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
+        horizIdentifier, verbose);
 
     // Adding special actors for every hierarchical level of algorithm.
     // Can be useful to unlock memory reuse without passing by a SrDAG
     ClusteringHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
-      PreesmLogger.getLogger()
-          .info(() -> "Clustering Id: building horizontal clusters with " + horizIdentifier + " heuristic done.");
+      PreesmLogger.getLogger().info(
+          () -> "Cluster creation: building horizontal clusters with " + horizIdentifierName + " heuristic done.");
+      PreesmLogger.getLogger().info(() -> "Cluster creation: " + clusters1.size() + " created clusters with names "
+          + clusters1.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
     }
 
     if (debug) {
@@ -145,10 +147,16 @@ public class ClusterIdentifier {
 
     clusterBalancer.initHeuristicParameters(algorithm, scenario, architecture, parameters);
     clusterBalancer.balance(algorithm /* will be modified */, nPEs);
-    final List<PiGraph> clustersList = ClusteringHelper.getClusters(algorithm);
+    final List<PiGraph> clusters2 = ClusteringHelper.getClusters(algorithm);
 
     if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: partitioning clusters done");
+      PreesmLogger.getLogger().info("Cluster creation: partitioning clusters done");
+      if (clusters1.size() < clusters2.size()) {
+        PreesmLogger.getLogger()
+            .info(() -> "Cluster creation: The list of clusters has been updated. " + clusters2.size()
+                + " created clusters with names "
+                + clusters1.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
+      }
     }
 
     if (debug) {
@@ -162,7 +170,7 @@ public class ClusterIdentifier {
     // ===========================================================================================================
     // It will modify the scenario by adding constraints.
 
-    for (final PiGraph cluster : clustersList) {
+    for (final PiGraph cluster : clusters2) {
 
       // Updating the constraints of the cluster
       final List<AbstractActor> filtered = cluster.getActors().stream()
@@ -174,7 +182,7 @@ public class ClusterIdentifier {
     }
 
     if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: clusters constraints Id done");
+      PreesmLogger.getLogger().info("Cluster creation: clusters constraints done");
     }
 
     return algorithm;
@@ -247,23 +255,16 @@ public class ClusterIdentifier {
     // The list that will be returned
     final List<PiGraph> listClusters = new ArrayList<>();
 
-    /*---------------------------------------
-     * STEP 1
-     *---------------------------------------
-     * Exploring the children graphs, in a recursive way
-     */
-
+    /** 1. Exploring the children graphs, in a recursive way */
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
       final var subClusterList = buildHorizontalClusters(subGraph, arch, scenario, heuristic, verbose);
       listClusters.addAll(subClusterList);
     }
 
-    // ---------------------------------------
-    // STEP 2
-    // ---------------------------------------
-
-    // Seek for clusters within the graph. The first step is to choose an actor to start the cluster from : the "seed".
-    // The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
+    /**
+     * 2. Seek for clusters within the graph. The first step is to choose an actor to start the cluster from : the
+     * "seed". The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
+     */
 
     // Actors of the graph
     final List<AbstractActor> actors = graph.getActors().stream()
@@ -281,9 +282,7 @@ public class ClusterIdentifier {
       boolean seedFound = false;
       AbstractActor potentialSeed = null;
 
-      // ---------------------------------------
-      // SUB-STEP 1 : identify a seed
-      // ---------------------------------------
+      /** 2.1. Identify a seed */
 
       // **Nested while loop** : Try to find a valid seed
       while (!seedFound && !graphIsFullySearched) {
@@ -311,13 +310,11 @@ public class ClusterIdentifier {
       // If the nested while loop has ended, but no seed has been found,
       // it means that the graph is fully searched. End of the First while loop.
       if (!seedFound) {
-        PreesmLogger.getLogger().info("No seed has been found, end of cluster search");
         continue;
       }
 
-      /* ----- SUB-STEP 2 : identify mergeable actors according to the seed. */
+      /** 2.1. identify mergeable actors according to the seed. */
 
-      // Now we have a seed, let's build a list of all the actors we want to merge.
       // They will all be (un)direct neighbors of the seed.
       final Set<AbstractActor> visited = new HashSet<>();
       final Set<AbstractActor> actorsToMerge = buildMergeList(potentialSeed, visited, identifiedActors, heuristic);
@@ -328,10 +325,7 @@ public class ClusterIdentifier {
         continue;
       }
 
-      // ---------------------------------------
-      // STEP 4
-      // ---------------------------------------
-      // Merging of identified actors
+      /** 3. Merging of identified actors */
 
       // Mark the seed and the merged actors as identified
       identifiedActors.addAll(actorsToMerge);
@@ -342,10 +336,8 @@ public class ClusterIdentifier {
 
       // Log
       if (verbose) {
-        final String info = "> Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-            + " into cluster " + clusterName;
-        PreesmLogger.getLogger().log(Level.INFO, info);
-
+        PreesmLogger.getLogger().info(() -> "Creating cluster " + clusterName + ", inner actors: "
+            + actorsToMerge.stream().map(a -> a.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
       }
 
       // Creating the cluster
