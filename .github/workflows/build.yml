@@ -131,6 +131,7 @@ jobs:
             scenario_name: 4core.scenario,
             workflow_name: Codegen.workflow,
             iteration: 300,
+            additional_param: ,
             name_pretty: Sobel Morpho
           }
           - {
@@ -138,6 +139,7 @@ jobs:
             scenario_name: 4core.scenario,
             workflow_name: NEWSynthesisAPI_legacy.workflow,
             iteration: 1,
+            additional_param: ,
             name_pretty: Stereo Matching
           }
           - {
@@ -145,6 +147,7 @@ jobs:
             scenario_name: HextractSIFT4Corex86_64.scenario,
             workflow_name: Codegen.workflow,
             iteration: 1,
+            additional_param: ,
             name_pretty: SIFT
           }
           - {
@@ -152,6 +155,7 @@ jobs:
             scenario_name: 4coreX86.scenario,
             workflow_name: Codegen.workflow,
             iteration: 375,
+            additional_param: -c,
             name_pretty: Video Stabilisation
           }
     runs-on: ${{ matrix.config.os_name }}
@@ -182,7 +186,7 @@ jobs:
 
       - name: Compile, run and test ${{ matrix.app_parameter.name_pretty }}
         shell: bash
-        run: bash .run_ci.sh -p preesm/ -a ${{ matrix.app_parameter.app_name }} -w ${{ matrix.app_parameter.workflow_name }} -s ${{ matrix.app_parameter.scenario_name }} -i ${{ matrix.app_parameter.iteration }}
+        run: bash .run_ci.sh -p preesm/ -a ${{ matrix.app_parameter.app_name }} -w ${{ matrix.app_parameter.workflow_name }} -s ${{ matrix.app_parameter.scenario_name }} -i ${{ matrix.app_parameter.iteration }} ${{ matrix.app_parameter.additional_param }}
 
   deploy:
     # `if` required because a workflow run is triggered regardless of
