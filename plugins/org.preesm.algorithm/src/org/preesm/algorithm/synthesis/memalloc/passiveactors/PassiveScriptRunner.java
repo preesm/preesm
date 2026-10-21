@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.xtext.xbase.lib.Pair;
@@ -348,8 +349,10 @@ public class PassiveScriptRunner {
     final StringBuilder result = new StringBuilder("PassiveScriptRunner results: \n");
     for (final Entry<AbstractActor, List<String>> actorList : tmpMap.entrySet()) {
       for (final String tmpResult : actorList.getValue()) {
-        result.append(actorList.getKey().getName()).append(" -> ").append(tmpResult).append("\n");
-
+        result.append(actorList.getKey().getName()).append(" -> ").append(tmpResult);
+        if (!Objects.equals(tmpResult, actorList.getValue().getLast())) {
+          result.append("\n");
+        }
       }
     }
     return result.toString();

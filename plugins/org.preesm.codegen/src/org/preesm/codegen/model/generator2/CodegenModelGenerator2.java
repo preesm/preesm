@@ -632,6 +632,7 @@ public class CodegenModelGenerator2 {
       refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
       refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
       refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
+      clusterGenerator.getSinkFifoBuffers().forEach(sf -> refinementBlock.getSinkFifoBuffers().add(sf));
       refinementBlock.setName(sourceCluster.getName());
       CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
 

@@ -11,11 +11,14 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInterface;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PassiveInputPort;
 import org.preesm.model.pisdf.PassiveOutputPort;
 import org.preesm.model.pisdf.PassivePort;
+import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.PortMemoryAnnotation;
+import org.preesm.model.pisdf.SimplePassiveActor;
 
 public class PassiveActorVerifier {
 
@@ -89,11 +92,35 @@ public class PassiveActorVerifier {
     }
   }
 
+  /**
+   * verify the passive port conditions
+   *
+   * @param pp
+   *          the passive port of a complex passive actor
+   * @param brv
+   *          the basic repetition vector of the parent graph of the current graph, because if pp is linked to an
+   *          interface, the method will go look seek actors in the parent graph.
+   * @return true if the conditions are valid, false otherwise.
+   */
   public static boolean verifyPassivePortConditions(PassivePort pp, Map<AbstractVertex, Long> brv) {
     final boolean condition1 = portCondition1(pp, brv);
     final boolean condition2 = portCondition2(pp);
     return condition1 && condition2;
 
+  }
+
+  private static DataPort getNextPort(DataPort pp) {
+    DataPort nextPort = pp.getOppositePort();
+    final AbstractActor nextActor = nextPort.getContainingActor();
+    if (nextActor instanceof final DataInterface dataInterface) {
+      nextPort = dataInterface.getGraphPort();
+      return getNextPort(nextPort);
+    }
+    if (nextActor instanceof final SimplePassiveActor spa) {
+      nextPort = nextPort.getKind() == PortKind.DATA_INPUT ? spa.getOutputPort() : spa.getInputPort();
+      return getNextPort(nextPort);
+    }
+    return nextPort;
   }
 
   /**
@@ -108,17 +135,30 @@ public class PassiveActorVerifier {
 
     final long paRepValue = brv.get(pp.getContainingActor());
 
-    final AbstractActor opposite = pp.getOppositePort().getContainingActor();
+    final DataPort oppositePort = getNextPort(pp);
+    final AbstractActor opposite = oppositePort.getContainingActor();
+    if (brv.get(opposite) == null) {
+      throw new PreesmRuntimeException(
+          "Actor " + opposite.getName() + " in graph " + opposite.getContainingPiGraph().getName()
+              + " is not present in brv. If you are a developer, be sure to pass the brv of the parent graph, "
+              + "and not of the current graph. Otherwise, please contact PREESM developers.");
+    }
+
+    // Computing the repetition value of the opposite actor
     final long neighborRepValue = opposite instanceof DataInterface ? 1 : brv.get(opposite);
+
+    // Even if pp.getContainingActor() and opposite are not in the same graph and the the cluster is repeated more than
+    // one time, It will be taken into account in the brv.
     return neighborRepValue >= paRepValue && neighborRepValue % paRepValue == 0;
 
   }
 
   /**
    * 2 conditions in 1 : <br>
-   * 1. The input ports are either marked with a write only or unused annotation, or are not writing the same
-   * tokens.<br>
-   * 2. All output ports are marked with a read only annotation, or are not reading the same tokens.
+   * 1. The ports linked to input ports are either marked with a write only or unused annotation, or are not writing the
+   * same tokens.<br>
+   * 2. The ports linked to output ports are either marked with a read only annotation, or are not reading the same
+   * tokens
    *
    * @param pp
    *          the passive port

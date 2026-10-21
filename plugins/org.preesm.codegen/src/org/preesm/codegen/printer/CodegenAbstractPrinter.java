@@ -41,9 +41,11 @@ package org.preesm.codegen.printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Predicate;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
@@ -907,13 +909,16 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     return printIteratedBuffer(iteratedBuffer);
   }
 
+  Set<IteratedPassiveBuffer> registeredIteratedPassiveBuffers = new HashSet<>();
+
   @Override
   public CharSequence caseIteratedPassiveBuffer(final IteratedPassiveBuffer iteratedPassiveBuffer) {
-    return switch (this.state) {
-      case PRINTING_DEFINITIONS -> printIteratedPassiveBufferDefinition(iteratedPassiveBuffer);
-      case PRINTING_DECLARATIONS -> printIteratedPassiveBufferDeclaration(iteratedPassiveBuffer);
-      default -> printIteratedPassiveBuffer(iteratedPassiveBuffer);
-    };
+
+    if (!this.registeredIteratedPassiveBuffers.contains(iteratedPassiveBuffer)) {
+      this.registeredIteratedPassiveBuffers.add(iteratedPassiveBuffer);
+      return printIteratedPassiveBufferDeclaration(iteratedPassiveBuffer);
+    }
+    return printIteratedPassiveBuffer(iteratedPassiveBuffer);
   }
 
   @Override

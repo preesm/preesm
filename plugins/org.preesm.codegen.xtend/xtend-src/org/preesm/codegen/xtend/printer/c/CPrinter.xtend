@@ -1279,6 +1279,9 @@ class CPrinter extends BlankPrinter {
 		
   override printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb)  '''
   «printBufferDeclaration(ipb.buffer)»
+  «{
+  		PreesmLogger.getLogger.warning("[DEBUG] PASSING IN PASSIVE BUFFER DECLARATION")
+  	}»
   const long* «buildIteratedPassiveBeginsValues(ipb.buffer.name)» = [«FOR i : ipb.getPossibleBeginValues() SEPARATOR ','»
   «i»
   «ENDFOR»];

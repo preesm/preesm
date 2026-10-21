@@ -396,7 +396,6 @@ public class PassiveActorEngine {
     final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
 
     for (final PassiveActor complexPa : graph.getPassiveActors().stream().filter(a -> !a.isSimple()).toList()) {
-      PreesmLogger.getLogger().info("Pruning: " + complexPa.getName());
 
       for (final PassivePort pp : complexPa.getAllPassivePorts()) {
         if (pp.getOppositePort().getContainingActor() instanceof final SimplePassiveActor passiveFifo) {
@@ -472,7 +471,7 @@ public class PassiveActorEngine {
         realBufferSize = Math.max(realBufferSize, Math.max(beginji + ratei, bufferSize));
       }
     }
-    final String log = "[PASSIVE ACTOR] actor + " + pa.getName() + " has a buffer size = " + pa.getBufferSize()
+    final String log = "[PASSIVE] actor " + pa.getName() + " has a buffer size = " + pa.getBufferSize()
         + " and a real buffer size = " + realBufferSize;
     PreesmLogger.getLogger().info(log);
     return realBufferSize;

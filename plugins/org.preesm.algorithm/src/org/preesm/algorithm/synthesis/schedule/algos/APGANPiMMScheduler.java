@@ -26,6 +26,7 @@ import org.preesm.model.pisdf.Delay;
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
@@ -255,8 +256,8 @@ public class APGANPiMMScheduler extends AbstractPiMMScheduler {
     if (childSchedule == null) {
 
       // Retrieve all actors that are not interface
-      final List<
-          AbstractActor> actors = clusterCopy.getActors().stream().filter(x -> !(x instanceof InterfaceActor)).toList();
+      final List<AbstractActor> actors = clusterCopy.getActors().stream()
+          .filter(x -> !(x instanceof InterfaceActor) && !(x instanceof PassiveActor)).toList();
 
       // Throw an exception if there are more than one actor or if there is zero actor
       if (actors.isEmpty() || actors.size() > 1) {

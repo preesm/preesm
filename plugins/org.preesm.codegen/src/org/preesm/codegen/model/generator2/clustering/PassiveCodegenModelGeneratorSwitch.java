@@ -200,7 +200,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    */
   @Override
   public CallFunctionBlock getCallFunctionBlock() {
-    return callFuncBlock;
+    return this.callFuncBlock;
   }
 
   /**
@@ -209,7 +209,12 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    */
   @Override
   public LoopFunctionBlock getLoopFunctionBlock() {
-    return loopFuncBlock;
+    return this.loopFuncBlock;
+  }
+
+  @Override
+  public List<Buffer> getSinkFifoBuffers() {
+    return this.sinkFifoBuffers;
   }
 
   /*
