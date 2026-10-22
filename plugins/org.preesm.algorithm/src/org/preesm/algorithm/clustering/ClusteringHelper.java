@@ -38,7 +38,6 @@
  */
 package org.preesm.algorithm.clustering;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -46,13 +45,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.common.util.ECollections;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.memalloc.model.Allocation;
-import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
-import org.preesm.algorithm.schedule.model.ParallelSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -62,6 +56,7 @@ import org.preesm.model.pisdf.ConfigInputInterface;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -96,104 +91,6 @@ public class ClusteringHelper {
 
   public static final String PISDF_REFERENCE_ACTOR  = "PiSDFActor";
   public static final String PISDF_ACTOR_IS_CLUSTER = "isCluster";
-
-  /**
-   *
-   */
-  public static final List<DataInputPort> getExternalyConnectedPorts(final Schedule cluster) {
-    final List<DataInputPort> res = new ArrayList<>();
-    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(cluster);
-    for (final AbstractActor actor : actors) {
-      final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
-      for (final DataInputPort port : dataInputPorts) {
-        final Fifo fifo = port.getFifo();
-        // filter ports connected within the cluster
-        final AbstractActor sourceActor = fifo.getSourcePort().getContainingActor();
-        if (ECollections.indexOf(actors, sourceActor, 0) != -1) {
-          // source actor is within the cluster
-          // skip
-        } else {
-          res.add(port);
-        }
-      }
-    }
-
-    return res;
-  }
-
-  /**
-   * @param actor
-   *          actor to check if it is delayed
-   * @return true if actor is delayed, false otherwise
-   */
-  public static final boolean isActorDelayed(AbstractActor actor) {
-    // Retrieve every Fifo with delay connected to actor
-    for (final DataPort dp : actor.getAllDataPorts()) {
-      if (dp.getFifo().getDelay() != null) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  /**
-   * @param schedule
-   *          schedule to analyze
-   * @param iterator
-   *          iterator to exploration counter on
-   * @return depth of parallelism
-   */
-  public static final long getParallelismDepth(Schedule schedule, long iterator) {
-
-    if (schedule instanceof final HierarchicalSchedule hierSchedule) {
-      long maxDepth = iterator;
-      long tmpIterator;
-      for (final Schedule child : hierSchedule.getChildren()) {
-        tmpIterator = getParallelismDepth(child, iterator);
-        if (tmpIterator > maxDepth) {
-          maxDepth = tmpIterator;
-        }
-      }
-      iterator = maxDepth;
-    }
-
-    // Increment iterator because we found a parallel area
-    if (schedule instanceof ParallelSchedule) {
-      iterator++;
-    }
-
-    return iterator;
-  }
-
-  /**
-   * @param schedule
-   *          schedule to get memory space needed for
-   * @return bits needed for execution of schedule
-   */
-  public static final long getMemorySpaceNeededFor(Schedule schedule) {
-    long result = 0;
-    if (schedule instanceof HierarchicalSchedule) {
-      // Add memory space needed for children in result
-      for (final Schedule child : schedule.getChildren()) {
-        result += getMemorySpaceNeededFor(child);
-      }
-      // If it is a parallel hierarchical schedule with no attached actor, multiply child memory space result by the
-      // repetition of it
-      if (!schedule.hasAttachedActor()) {
-        final long rep = schedule.getRepetition();
-        result *= rep;
-      } else {
-        // Estimate every internal buffer size
-        final PiGraph graph = (PiGraph) ((HierarchicalSchedule) schedule).getAttachedActor();
-        final List<Fifo> fifos = ClusteringHelper.getInternalClusterFifo(graph);
-        final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
-        for (final Fifo fifo : fifos) {
-          result += brv.get(fifo.getSource()) * fifo.getSourcePort().getExpression().evaluateAsLong();
-        }
-      }
-    }
-    return result;
-  }
 
   /**
    * Used to get list of Fifo that interconnect actor included in the graph
@@ -312,8 +209,15 @@ public class ClusteringHelper {
     final PiGraph inputGraph = inputScenario.getAlgorithm();
     final Design inputArchi = inputScenario.getDesign();
     // filter CPU component
-    final List<ComponentInstance> cpuInstances = inputArchi.getOperatorComponentInstances().stream()
+    List<ComponentInstance> cpuInstances = inputArchi.getOperatorComponentInstances().stream()
         .filter(opId -> opId.getComponent() instanceof CPU).toList();
+
+    // filter instances that don't have any mapped actors
+    cpuInstances = cpuInstances.stream().filter(i -> {
+      final var iConstraints = inputScenario.getConstraints().getGroupConstraints().get(i);
+      return iConstraints != null && !iConstraints.isEmpty();
+    }).toList();
+
     Long coreEq = 0L;
     int actorNumber = 0;
     for (final AbstractActor actor : inputGraph.getExecutableActors()) {
@@ -648,5 +552,59 @@ public class ClusteringHelper {
    */
   public static List<PiGraph> getClusters(PiGraph topGraph) {
     return topGraph.getAllChildrenGraphs().stream().filter(g -> g.isCluster()).toList();
+  }
+
+  enum Dir {
+    FORWARD, BACKWARD
+  }
+
+  public static boolean actorIsInLoop(AbstractActor a) {
+
+    final Set<DataPort> seenPorts = new HashSet<>();
+    final boolean backward = actorIsNotInLoop(a, Dir.BACKWARD, null, seenPorts);
+    seenPorts.clear();
+    final boolean forward = actorIsNotInLoop(a, Dir.FORWARD, null, seenPorts);
+
+    return backward || forward;
+  }
+
+  private static boolean actorIsNotInLoop(AbstractActor a, Dir dir, AbstractActor startActor, Set<DataPort> seenPorts) {
+    boolean result = true;
+
+    if (startActor != null && a == startActor) {
+      return false;
+    }
+    if (startActor == null) {
+      startActor = a;
+    }
+
+    if (dir == Dir.BACKWARD) {
+      for (final DataInputPort dip : a.getDataInputPorts()) {
+        final AbstractActor opposite = dip.getOppositePort().getContainingActor();
+        if (opposite instanceof DataInterface || seenPorts.contains(dip)) {
+          continue;
+        }
+        seenPorts.add(dip);
+        result &= actorIsNotInLoop(opposite, dir, startActor, seenPorts);
+        if (!result) {
+          break;
+        }
+      }
+    }
+
+    if (dir == Dir.FORWARD) {
+      for (final DataOutputPort dop : a.getDataOutputPorts()) {
+        final AbstractActor opposite = dop.getOppositePort().getContainingActor();
+        if (opposite instanceof DataInterface || seenPorts.contains(dop)) {
+          continue;
+        }
+        seenPorts.add(dop);
+        result &= actorIsNotInLoop(opposite, dir, startActor, seenPorts);
+        if (!result) {
+          break;
+        }
+      }
+    }
+    return result;
   }
 }

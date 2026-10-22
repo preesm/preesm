@@ -126,11 +126,13 @@ public class ClusterIdentifier {
     // Can be useful to unlock memory reuse without passing by a SrDAG
     ClusteringHelper.addAllSpecialActors(algorithm);
 
-    if (verbose) {
+    if (verbose && !clusters1.isEmpty()) {
       PreesmLogger.getLogger().info(
           () -> "Cluster creation: building horizontal clusters with " + horizIdentifierName + " heuristic done.");
       PreesmLogger.getLogger().info(() -> "Cluster creation: " + clusters1.size() + " created clusters with names "
           + clusters1.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
+    } else if (verbose) {
+      PreesmLogger.getLogger().info(() -> "No clusters have been found with heuristic " + horizIdentifierName);
     }
 
     if (debug) {
@@ -149,13 +151,13 @@ public class ClusterIdentifier {
     clusterBalancer.balance(algorithm /* will be modified */, nPEs);
     final List<PiGraph> clusters2 = ClusteringHelper.getClusters(algorithm);
 
-    if (verbose) {
+    if (verbose && !clusters2.isEmpty()) {
       PreesmLogger.getLogger().info("Cluster creation: partitioning clusters done");
       if (clusters1.size() < clusters2.size()) {
         PreesmLogger.getLogger()
             .info(() -> "Cluster creation: The list of clusters has been updated. " + clusters2.size()
                 + " created clusters with names "
-                + clusters1.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
+                + clusters2.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
       }
     }
 

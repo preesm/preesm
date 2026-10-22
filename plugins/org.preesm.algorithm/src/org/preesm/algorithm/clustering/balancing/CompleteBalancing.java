@@ -86,6 +86,8 @@ public class CompleteBalancing extends BalancingHeuristic {
     // For example, if actor A is repeating 8 times and actor B 16 times, then clusterRepetition will be equal to 8.
     final long clusterRep = brv.get(cluster1);
 
+    // final long test = computeScalingFactor(cluster1, brv.get(cluster1), nPEs);
+
     // if nPEs is not a divisor of clusterRepetition, rest != 0
     // if cluster repetition < nPEs, we manually set rest to 0
     final long rest = clusterRep >= nPEs ? clusterRep % nPEs : 0;
@@ -119,7 +121,7 @@ public class CompleteBalancing extends BalancingHeuristic {
     // ===========================================================================================================
     for (final DataInterface dataInterface : cluster1.getDataInterfaces()) {
 
-      long expr;
+      long interfaceExpr;
 
       // Case if dataInterface is an input interface
       if (dataInterface instanceof DataInputInterface) {
@@ -138,27 +140,40 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // 1. Modify output port of broadcast actor
           final DataOutputPort brdOutPort = dataInterface.getGraphPort().getFifo().getSourcePort();
-          final long newExpr = tokensOneExec * outerRep1;
-          brdOutPort.setExpression(newExpr);
+
+          final long brdInPortExpr = brdActor.getDataInputPorts().getFirst().getExpression().evaluateAsLong();
+          final long brdActorRep = brv.get(brdActor);
+
+          long brdOutPortExpr;
+
+          if (brdInPortExpr * brdActorRep >= outerRep1 * innerRep1 * tokensOneExec) {
+            brdOutPortExpr = outerRep1 * innerRep1 * tokensOneExec;
+            interfaceExpr = innerRep1 * tokensOneExec;
+          } else {
+            brdOutPortExpr = outerRep1 * tokensOneExec;
+            interfaceExpr = tokensOneExec;
+          }
+
+          brdOutPort.setExpression(brdOutPortExpr);
 
           // Log -> track broadcast modification
           if (verbose) {
             log = makeBalancingLog(previousActor, topgraph, oldExprs);
             PreesmLogger.getLogger().info(log);
           }
-          expr = tokensOneExec;
         } else {
-          expr = tokensOneExec * innerRep1;
+          interfaceExpr = tokensOneExec * innerRep1;
         }
 
         // Case if dataInterface is an output interface
       } else {
-        expr = dataInterface.getDataPort().getFifo().getSourcePort().getExpression().evaluateAsLong() * innerRep1;
+        interfaceExpr = dataInterface.getDataPort().getFifo().getSourcePort().getExpression().evaluateAsLong()
+            * innerRep1;
       }
 
       // Top graph & subgraph ports values modifications
-      dataInterface.getGraphPort().setExpression(expr);
-      dataInterface.getDataPort().setExpression(expr);
+      dataInterface.getGraphPort().setExpression(interfaceExpr);
+      dataInterface.getDataPort().setExpression(interfaceExpr);
     }
 
     // Log -> track cluster1 modification
@@ -190,7 +205,7 @@ public class CompleteBalancing extends BalancingHeuristic {
       clusters.add(cluster2);
 
       // Number of repetition of subgraph in cluster2
-      final long innerRep = perfectInnerRep + 1;
+      final long innerRep2 = perfectInnerRep + 1;
 
       // Number of time cluster2 will be repeated in top graph
       final long outerRep2 = rest;
@@ -236,14 +251,40 @@ public class CompleteBalancing extends BalancingHeuristic {
           oldExprs = brdActor.getAllDataPorts().stream().map(dp -> dp.getExpression().evaluateAsLong()).toList();
 
           // Modyfing out port 1 + creating out port 2
-          final DataOutputPort brdOutPort1 = inputInterface1.getGraphPort().getFifo().getSourcePort();
+          final DataOutputPort brdOutPort1 = inputInterface1.getGraphPort().getOppositePort();
           final DataOutputPort brdOutPort2 = PiMMUserFactory.instance.createDataOutputPort();
+
+          // Complex adding of brdOutPort2 to make sure it is added just after brdOutPort1 to respect tokens order.
+          final List<DataOutputPort> brdOutPorts = new ArrayList<>(brdActor.getDataOutputPorts());
+          brdActor.getDataOutputPorts().clear();
+          for (final DataOutputPort dop : brdOutPorts) {
+            brdActor.getDataOutputPorts().add(dop);
+            if (dop == brdOutPort1) {
+              brdActor.getDataOutputPorts().add(brdOutPort2);
+            }
+          }
+
           brdActor.getDataOutputPorts().add(brdOutPort2);
 
           final String brdPortsName = brdOutPort1.getName();
           brdOutPort1.setName(brdPortsName + "_0");
           brdOutPort2.setName(brdPortsName + "_1");
-          brdOutPort2.setExpression(tokensOneExec * (double) outerRep2);
+
+          long brdOutPortExpr;
+          final long brdInPortExpr = brdActor.getDataInputPorts().getFirst().getExpression().evaluateAsLong();
+          final long brdActorRep = brv.get(brdActor);
+          final long interfaceExpr;
+
+          if (brdInPortExpr * brdActorRep >= outerRep2 * innerRep2 * tokensOneExec) {
+            brdOutPortExpr = outerRep2 * innerRep2 * tokensOneExec;
+            interfaceExpr = innerRep2 * tokensOneExec;
+
+          } else {
+            interfaceExpr = tokensOneExec;
+            brdOutPortExpr = outerRep2 * tokensOneExec;
+
+          }
+          brdOutPort2.setExpression(brdOutPortExpr);
 
           final Fifo brd2cluster2Fifo = PiMMUserFactory.instance.createFifo(brdOutPort2, inputInterface2.getGraphPort(),
               brdOutPort1.getFifo().getType());
@@ -257,8 +298,8 @@ public class CompleteBalancing extends BalancingHeuristic {
           }
 
           // Setting expression of input interface 2
-          inputInterface2.getGraphPort().setExpression(tokensOneExec);
-          inputInterface2.getDataPort().setExpression(tokensOneExec);
+          inputInterface2.getDataPort().setExpression(interfaceExpr);
+          inputInterface2.getGraphPort().setExpression(interfaceExpr);
 
           // FORK CREATION ================================================================================
         } else {
@@ -300,7 +341,7 @@ public class CompleteBalancing extends BalancingHeuristic {
 
           // Retrieving tokens needed for one execution of subgraph in cluster
           final long expr1 = tokensOneExec * innerRep1;
-          final long expr2 = tokensOneExec * innerRep;
+          final long expr2 = tokensOneExec * innerRep2;
 
           inputInterface2.getGraphPort().setExpression(expr2);
           inputInterface2.getDataPort().setExpression(expr2);
@@ -367,7 +408,7 @@ public class CompleteBalancing extends BalancingHeuristic {
         final Long tokensOneExec = outputInterface2.getDataPort().getFifo().getSourcePort().getExpression()
             .evaluateAsLong();
         final long expr1 = tokensOneExec * innerRep1;
-        final long expr2 = tokensOneExec * innerRep;
+        final long expr2 = tokensOneExec * innerRep2;
 
         outputInterface2.getGraphPort().setExpression(expr2);
         outputInterface2.getDataPort().setExpression(expr2);

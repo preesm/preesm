@@ -88,6 +88,9 @@ public class URCHeuristic implements HorizontalHeuristic {
     /** Check if actor has the correct repetition value */
     isMergeable &= Objects.equals(brv.get(actor), brv.get(seed));
 
+    /** check if actor is in a loop */
+    isMergeable &= ClusteringHelper.actorIsInLoop(actor);
+
     /** If actor is predecessor of seed */
     if (seed.getDirectPredecessors().contains(actor)) {
       isMergeable &= seed.getDataInputPorts().stream().allMatch(x -> checkFifo(x.getFifo()));

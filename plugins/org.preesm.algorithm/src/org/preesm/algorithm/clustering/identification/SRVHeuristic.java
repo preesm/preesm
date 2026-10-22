@@ -35,7 +35,9 @@ public class SRVHeuristic implements HorizontalHeuristic {
     condition &= !(actor instanceof DataInterface);
     condition &= this.brv.get(actor) > this.nPEs;
     condition &= actor.getAllDataPorts().stream().map(p -> p.getFifo()).allMatch(f -> !f.isDelayPresent());
-
+    if (condition) {
+      condition &= ClusteringHelper.actorIsInLoop(actor);
+    }
     return condition;
   }
 
