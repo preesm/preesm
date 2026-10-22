@@ -42,6 +42,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Set;
 import java.util.logging.Level;
 import org.preesm.algorithm.mapping.model.Mapping;
@@ -59,17 +60,17 @@ import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.sdf.SDFEdge;
 import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiBasicAllocator;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiBestFitAllocator;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiDistributor;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiFirstFitAllocator;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiMemoryAllocator;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiOrderedAllocator;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiOrderedAllocator.Order;
-import org.preesm.algorithm.synthesis.memalloc.allocation.PiOrderedAllocator.Policy;
 import org.preesm.algorithm.synthesis.memalloc.meg.MemExUpdaterEngine;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionGraph;
 import org.preesm.algorithm.synthesis.memalloc.meg.PiMemoryExclusionVertex;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiBasicAllocator;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiBestFitAllocator;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiDistributor;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiFirstFitAllocator;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiMemoryAllocator;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Order;
+import org.preesm.algorithm.synthesis.memalloc.meg.allocation.PiOrderedAllocator.Policy;
 import org.preesm.algorithm.synthesis.memalloc.script.PiMemoryScriptEngine;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -131,6 +132,8 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     parameters.put(MemoryAllocatorTask.PARAM_NB_SHUFFLE, MemoryAllocatorTask.VALUE_NB_SHUFFLE_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_ALIGNMENT, MemoryAllocatorTask.VALUE_ALIGNEMENT_DEFAULT);
     parameters.put(MemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY, MemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED);
+    parameters.put(HybridAllocationTask.PARAM_UPDATE, HybridAllocationTask.VALUE_TRUE);
+    parameters.put(HybridAllocationTask.PARAM_SCRIPTS, HybridAllocationTask.VALUE_TRUE);
     return parameters;
   }
 
@@ -142,6 +145,10 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       throw new PreesmRuntimeException("This task must be called with a CPU architecture, abandon.");
     }
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
+
+    final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
+    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
+    final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
     // *************
     // INITIAL MEG BUILD
@@ -158,35 +165,38 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     // *************
     // MEG UPDATE
     // *************
-    final MemExUpdaterEngine memExUpdaterEngine = new MemExUpdaterEngine(piGraph, memEx, schedule, mapping, true);
-    memExUpdaterEngine.update();
-
+    final boolean update = Objects.equals(parameters.get(HybridAllocationTask.PARAM_UPDATE),
+        HybridAllocationTask.VALUE_TRUE);
+    if (update) {
+      final MemExUpdaterEngine memExUpdaterEngine = new MemExUpdaterEngine(piGraph, memEx, schedule, mapping, true);
+      memExUpdaterEngine.update();
+    }
     // *************
     // SCRIPTS
     // *************
-    final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
-    final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
-    final String valueAlignment = parameters.get(MemoryAllocatorTask.PARAM_ALIGNMENT);
-    final String valueAllocators = parameters.get(MemoryAllocatorTask.PARAM_ALLOCATORS);
-    final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
+    final boolean scripts = Objects.equals(parameters.get(HybridAllocationTask.PARAM_SCRIPTS),
+        HybridAllocationTask.VALUE_TRUE);
+    if (scripts) {
+      final String log = parameters.get(MemoryScriptTask.PARAM_LOG);
+      final String checkString = parameters.get(MemoryScriptTask.PARAM_CHECK);
 
-    // False by default
-    final boolean falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
-        .equals(MemoryScriptTask.VALUE_TRUE);
+      // False by default
+      final boolean falseSharingPreventionFlag = parameters.get(MemoryScriptTask.PARAM_FALSE_SHARING)
+          .equals(MemoryScriptTask.VALUE_TRUE);
 
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
-    try {
-      engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
-    } catch (final EvalError e) {
-      final String message = "An error occurred during memory scripts execution";
-      throw new PreesmRuntimeException(message, e);
+      final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
+      try {
+        engine.runScripts(piGraph, scenario.getSimulationInfo(), checkString);
+      } catch (final EvalError e) {
+        final String message = "An error occurred during memory scripts execution";
+        throw new PreesmRuntimeException(message, e);
+      }
+      engine.updateMemEx(memEx);
+      if (!log.equals("")) {
+        // generate
+        engine.generateLog(scenario, log);
+      }
     }
-    engine.updateMemEx(memEx);
-    if (!log.equals("")) {
-      // generate
-      engine.generateLog(scenario, log);
-    }
-
     // *************
     // ALLOCATION
     // *************
@@ -251,7 +261,6 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_LARGEST_FIRST -> Order.LARGEST_FIRST;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_APPROX_STABLE_SET -> Order.STABLE_SET;
       case MemoryAllocatorTask.VALUE_XFIT_ORDER_EXACT_STABLE_SET -> Order.EXACT_STABLE_SET;
-      // case MemoryAllocatorTask.VALUE_XFIT_ORDER_SCHEDULING -> Order.SCHEDULING;
       default -> throw new IllegalArgumentException("unknown order " + valueXFitOrder);
     };
 

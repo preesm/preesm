@@ -68,12 +68,17 @@ import org.preesm.codegen.model.impl.CodegenFactoryImpl;
 import org.preesm.commons.ecore.EObjectResolvingNonUniqueEList;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
+import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
+import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.slam.ComponentInstance;
 
 /**
@@ -172,12 +177,14 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
   /**
    *
    */
-  public final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
-      final Map<Port, Variable> portValues) {
+  public final ActorFunctionCall createActorFunctionCall(final RefinementContainer rcontainer,
+      final FunctionPrototype prototype, final Map<Port, Variable> portValues) {
     if (prototype.isCPP()) {
       throw new PreesmRuntimeException(
           "The codegen is not compatible with CPP function call as for: " + prototype.getName());
     }
+
+    final AbstractActor actor = castRefinementContainerToAbstractActor(rcontainer);
 
     final ActorFunctionCall afc = createActorFunctionCall();
     afc.setActorName(actor.getName());
@@ -196,6 +203,25 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
       afc.addParameter(variable, createPortDirection(portKind));
     }
     return afc;
+  }
+
+  /**
+   * This method is used to safely cast a refinement container to an abstract actor. We can make the assumption that a
+   * refinement container will always be an Actor instance, a PiGraph instance, an InitActor instance, or a DelayActor
+   * instance.
+   *
+   * @param rcontainer
+   *          the input refinement container
+   * @return the refinement container casted in AbstractActor, after verifications.
+   */
+  public final AbstractActor castRefinementContainerToAbstractActor(final RefinementContainer rcontainer) {
+
+    if (!(rcontainer instanceof Actor || rcontainer instanceof PiGraph || rcontainer instanceof InitActor
+        || rcontainer instanceof DelayActor)) {
+      throw new PreesmRuntimeException("wtf");
+    }
+
+    return (AbstractActor) rcontainer;
   }
 
   @Override

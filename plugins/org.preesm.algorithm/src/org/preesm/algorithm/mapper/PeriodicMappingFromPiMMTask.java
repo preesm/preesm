@@ -114,7 +114,8 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
       Scenario scenario, AbcParameters abcParams, MapperDAG dag, Design architecture, AbstractTaskSched taskSched) {
 
     final IScheduler scheduler = new PeriodicScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(inputPiGraphSRDAG, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(inputPiGraphSRDAG, architecture, scenario,
+        parameters);
 
     final Map<AbstractActor, DAGVertex> newTOold = new HashMap<>();
     final Set<DAGVertex> sourceActors = new HashSet<>();

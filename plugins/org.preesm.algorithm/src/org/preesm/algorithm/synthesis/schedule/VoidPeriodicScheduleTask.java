@@ -100,7 +100,7 @@ public class VoidPeriodicScheduleTask extends AbstractTaskImplementation {
       throw new PreesmRuntimeException("Unknown solver.");
     }
 
-    scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    scheduler.scheduleAndMap(algorithm, architecture, scenario, null);
     // we do not care about result, if it fails, it will throw an exception
 
     return new HashMap<>();

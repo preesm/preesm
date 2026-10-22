@@ -121,7 +121,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final IMemoryAllocation alloc = selectAllocation(allocationName);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario, null);
 
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 
@@ -136,8 +136,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
       throw new PreesmSynthesisException(
           "Cannot perform the memory allocation since not all fifo types have a defined size.", e);
     }
-    final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
-        scheduleAndMap.mapping);
+    final Allocation memalloc = (Allocation) alloc.allocateMemory(algorithm, architecture, scenario,
+        scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("Schedule", scheduleAndMap.schedule);

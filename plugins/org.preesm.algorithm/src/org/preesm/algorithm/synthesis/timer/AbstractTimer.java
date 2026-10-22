@@ -57,6 +57,7 @@ import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PeriodicElement;
+import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
@@ -150,6 +151,11 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
   }
 
   @Override
+  public Long casePiGraph(final PiGraph graph) {
+    return computePiGraphTiming(graph);
+  }
+
+  @Override
   public Long caseActor(final Actor actor) {
     return computeActorTiming(actor);
   }
@@ -182,6 +188,10 @@ public abstract class AbstractTimer extends PiMMSwitch<Long> {
   @Override
   public Long caseRoundBufferActor(final RoundBufferActor roundbufferActor) {
     return computeRoundBufferActorTiming(roundbufferActor);
+  }
+
+  protected long computePiGraphTiming(final PiGraph graph) {
+    return defaultTime();
   }
 
   protected long computeActorTiming(final Actor actor) {

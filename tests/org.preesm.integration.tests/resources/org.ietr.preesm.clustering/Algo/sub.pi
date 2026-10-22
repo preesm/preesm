@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph edgedefault="directed">
+        <data key="name">sub</data>
+        <node id="Z" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+                <param direction="OUT" isConfig="false" name="out" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="Y" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="test">
+                <param direction="IN" isConfig="false" name="in" type="char"/>
+                <param direction="OUT" isConfig="false" name="out" type="char"/>
+                <param direction="OUT" isConfig="false" name="outD" type="char"/>
+            </loop>
+            <port annotation="NONE" expr="1" kind="input" name="in"/>
+            <port annotation="NONE" expr="1" kind="output" name="outD"/>
+            <port annotation="NONE" expr="1" kind="output" name="out"/>
+        </node>
+        <node id="inD" kind="src">
+            <port annotation="NONE" expr="1" kind="output" name="inD"/>
+        </node>
+        <node id="outD" kind="snk">
+            <port annotation="NONE" expr="1" kind="input" name="outD"/>
+        </node>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="1" kind="input" name="out"/>
+        </node>
+        <edge kind="fifo" source="inD" sourceport="inD" target="Z" targetport="in" type="char"/>
+        <edge kind="fifo" source="Z" sourceport="out" target="Y" targetport="in" type="char"/>
+        <edge kind="fifo" source="Y" sourceport="outD" target="outD" targetport="outD" type="char"/>
+        <edge kind="fifo" source="Y" sourceport="out" target="out" targetport="out" type="char"/>
+    </graph>
+</graphml>

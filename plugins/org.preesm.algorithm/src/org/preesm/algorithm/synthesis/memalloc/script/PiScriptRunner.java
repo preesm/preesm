@@ -342,7 +342,7 @@ public class PiScriptRunner {
     PiScriptRunner.putSpecialScriptFile(specialScriptFiles, PiScriptRunner.ROUNDBUFFER);
     PiScriptRunner.putSpecialScriptFile(specialScriptFiles, PiScriptRunner.BROADCAST);
 
-    for (final AbstractActor dagVertex : dag.getAllActors()) {
+    for (final AbstractActor dagVertex : dag.getActors()) {
 
       if (dagVertex instanceof ForkActor) {
         associateScriptToSpecialVertex(dagVertex, "fork", specialScriptFiles.get(PiScriptRunner.FORK));
