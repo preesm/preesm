@@ -1424,21 +1424,6 @@ class SimplePassiveActor extends PassiveActor {
 		return true
 	}
 	
-	op Fifo getLinkedFifo() {
-		val inFifo = inputPort.getLinkedFifo()
-		val outFifo = outputPort.getLinkedFifo()
-		
-		if( inFifo === null || outFifo === null || inFifo != outFifo ) {
-			throw new PreesmRuntimeException("Simple passive Actor " + getName() + " is supposed to have the same linked fifo for its input and output port. This is not the case: input fifo is " +inFifo.getId() + " and output fifo is " + outFifo.getId())
-		}
-		return inFifo
-	}
-	
-	op void setLinkedFifo(Fifo fifo) {
-		inputPort.setLinkedFifo(fifo)
-		outputPort.setLinkedFifo(fifo)
-	}
-	
 	op void setBufferSize(long size) {
 		inputPort.setSubBufferSize(size)
 		outputPort.setSubBufferSize(size)
@@ -1467,7 +1452,7 @@ abstract class PassivePort extends DataPort, PassiveElt {
 	long offset
 	Pair beginjEndj
 	Pair[] beginiEndi
-	refers Fifo linkedFifo
+	
 	
 	op String getScript()
 	
@@ -1478,6 +1463,13 @@ abstract class PassivePort extends DataPort, PassiveElt {
  	op Delay getDelay() {
  		return fifo.getDelay()
  	}
+ 	
+ 	op PassiveActor getContainingPassiveActor() {
+		if (eContainer() instanceof PassiveActor) {
+			return eContainer() as PassiveActor;
+		}
+		return null;
+	}
 }
 
 class PassiveInputPort extends PassivePort, DataInputPort {

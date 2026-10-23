@@ -25,10 +25,3 @@ long rendjim1 = rbeginj + ratei * outputInstanceIdx; // rend_(j,i-1)
 rbeginji = rendjim1 % inputRate;
 
 rendji = (rbeginji + ratei) % inputRate;
-
-/*
-PreesmLogger.getLogger().info("[DEBUG] in brd.bsh: actor " + outputs.get(outputIdx).getContainingActor().getName() + " | port " + outputs.get(outputIdx).getName() + " -> outputIdx = " + outputIdx + 
-", outputInstanceIdx = " + outputInstanceIdx + ", inputRate = " + inputRate + 
-", rendjm1 = " + rendjm1 + ", rbeginj = " + rbeginj + ", ratei = " + ratei + 
-", rendjim1 = "+ rendjim1 + ", rbeginji = " + rbeginji + ", rendji = " + rendji );
-*/

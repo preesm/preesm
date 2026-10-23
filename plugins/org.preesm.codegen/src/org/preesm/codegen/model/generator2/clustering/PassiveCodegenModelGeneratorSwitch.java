@@ -30,6 +30,7 @@ import org.preesm.codegen.model.FunctionBlock;
 import org.preesm.codegen.model.FunctionCall;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
+import org.preesm.codegen.model.IteratedPassiveBuffer;
 import org.preesm.codegen.model.LoopBlock;
 import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.PortDirection;
@@ -98,7 +99,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   private final List<Buffer> sinkFifoBuffers;
 
   /**
-   * {@link Map} that registers every {@link AbstractActor} repetition with it's {@link IntVar}.
+   * {@link Map} that registers every {@link Buffer} repetition with it's {@link IntVar}.
    */
   private final Map<Buffer, IntVar> iterMap;
 
@@ -188,7 +189,17 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     }
 
     // Generate buffer definitions
-    recursiveSetBufferCreator(this.mainBuffer, this.loopFuncBlock, false);
+    if (this.mainBuffer.getSizeInBit() != 0) {
+      this.mainBuffer.reaffectCreator(this.loopFuncBlock);
+    }
+    for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
+      final PassiveElt pelt = entry.getKey();
+      if (pelt instanceof PassiveActor) {
+        continue;
+      }
+      final Buffer buffer = entry.getValue();
+      recursiveSetBufferCreator(buffer, this.loopFuncBlock, true);
+    }
 
     // Add code
     loopFuncBlock.getCodeElts().add(cluster);
@@ -347,20 +358,20 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
 
     long finalSizeInBit = 0;
 
-    this.p2b = new PassiveBufferGeneratorSwitch(scenario).doSwitch(originalCluster);
+    this.p2b = new PassiveBufferGeneratorSwitch(scenario, this.i2b).doSwitch(originalCluster);
 
     for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
       final Buffer buffer = entry.getValue();
 
       if (entry.getKey() instanceof final PassiveActor pa) {
 
-        if (buffer instanceof final SubBuffer subBuffer) {
+        if (buffer instanceof final SubBuffer subBuffer && subBuffer.getContainer() == null) {
 
           subBuffer.setOffsetInBit(finalSizeInBit);
           subBuffer.setContainer(this.mainBuffer);
           finalSizeInBit += subBuffer.getSizeInBit();
 
-        } else {
+        } else if (!(buffer instanceof final SubBuffer)) {
           PreesmLogger.getLogger().warning(
               "The buffer " + buffer.getName() + " attached to actor " + pa.getName() + " should be a SubBuffer");
         }
@@ -651,28 +662,58 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
       return buffer;
     }
 
-    PassiveActor pa = null;
-    if (passiveElt != null) {
-      if (passiveElt instanceof final PassivePort passivePort) {
-        pa = (PassiveActor) passivePort.getContainingActor();
-      } else {
-        pa = (PassiveActor) passiveElt;
-      }
-    }
     // If iteration map contain actor, it means that buffer has to be iterated
     final IteratedBuffer iteratedBuffer;
-    if (pa == null || pa.isSimple()) {
-      iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
+    if (passiveElt != null && passiveElt instanceof final PassivePort passivePort
+        && !passivePort.getContainingPassiveActor().isSimple()) {
+      final IteratedPassiveBuffer ipb = CodegenModelUserFactory.eINSTANCE.createIteratedPassiveBuffer();
+      passivePort.getBeginiEndi().forEach(pair -> ipb.getPossibleBeginValues().add(pair.getKey()));
+      iteratedBuffer = ipb;
     } else {
-      iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedPassiveBuffer();
+      iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
+
     }
     iteratedBuffer.setBuffer(buffer);
     iteratedBuffer.setIter(iterMap.get(buffer));
     iteratedBuffer.setNbToken(dataPort.getExpression().evaluateAsLong());
     iteratedBuffer.setType(buffer.getType());
     iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
-    return iteratedBuffer;
 
+    boolean i2bChanged = false;
+    if (i2b.containsValue(buffer)) {
+      DataInterface di = null;
+      for (final Entry<DataInterface, Buffer> entry : this.i2b.entrySet()) {
+        if (entry.getValue() == buffer) {
+          if (di != null) {
+            throw new PreesmRuntimeException(
+                "The following buffer " + buffer.getName() + " should be attached to only one Interface");
+          }
+          di = entry.getKey();
+        }
+      }
+      this.i2b.put(di, iteratedBuffer);
+      i2bChanged = true;
+    }
+
+    if (p2b.containsValue(buffer)) {
+      if (i2bChanged) {
+        throw new PreesmRuntimeException("The following buffer " + buffer.getName()
+            + " is attached to an Interface and a Passive Element. It should not be the case");
+      }
+
+      PassiveElt pe = null;
+      for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
+        if (entry.getValue() == buffer) {
+          if (pe != null) {
+            throw new PreesmRuntimeException(
+                "The following buffer " + buffer.getName() + " should be attached to only one Passive Element");
+          }
+          pe = entry.getKey();
+        }
+      }
+      this.p2b.put(pe, iteratedBuffer);
+    }
+    return iteratedBuffer;
   }
 
   /**

@@ -13,7 +13,7 @@ import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
-import org.preesm.algorithm.synthesis.schedule.algos.APGANPiMMScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.APGANScheduler;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.DataInputPort;
@@ -27,8 +27,8 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
- * Allocate from a schedule made by the {@link APGANPiMMScheduler APGAN scheduler} a {@link PiGraph PiSDF} graph (not in
- * its SrDAG form). This graph might certainly contain hierarchy, because of how the {@link APGANPiMMScheduler APGAN
+ * Allocate from a schedule made by the {@link APGANScheduler APGAN scheduler} a {@link PiGraph PiSDF} graph (not in
+ * its SrDAG form). This graph might certainly contain hierarchy, because of how the {@link APGANScheduler APGAN
  * scheduler} works. This allocation processes the hierarchy in a top-down approach, which means that the outer
  * {@link Fifo} of an {@link DataInterface interface} is allocated, but not the inner {@link Fifo} of this
  * {@link DataInterface interface}. This has to be taken into account in the Codegen model generation step, which is
@@ -104,7 +104,7 @@ public class SimplePiMMMemoryAllocation extends ScheduleSwitch<Boolean> implemen
 
   /**
    * Simple FIFO Allocation creation for all internal {@link Fifo}s of a sub-cluster. A sub-cluster is the result of the
-   * {@link APGANPiMMScheduler APGAN algorithm} that creates pairs of sub-cluster to schedule the cluster.
+   * {@link APGANScheduler APGAN algorithm} that creates pairs of sub-cluster to schedule the cluster.
    *
    * @param internalFifos
    *          the internal FIFOs of the sub-cluster. A FIFO is consider internal if neither of its attached actors are

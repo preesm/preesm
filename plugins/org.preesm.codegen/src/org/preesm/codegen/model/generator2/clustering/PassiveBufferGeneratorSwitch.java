@@ -2,12 +2,17 @@ package org.preesm.codegen.model.generator2.clustering;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.CodegenFactory;
 import org.preesm.codegen.model.SubBuffer;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PassiveActor;
@@ -20,11 +25,13 @@ import org.preesm.model.scenario.Scenario;
 
 public class PassiveBufferGeneratorSwitch extends PiMMSwitch<Map<PassiveElt, Buffer>> {
 
-  List<AbstractActor> alreadyVisited = new ArrayList<>();
-  Scenario            scenario;
+  List<AbstractActor>        alreadyVisited = new ArrayList<>();
+  Scenario                   scenario;
+  Map<DataInterface, Buffer> i2b;
 
-  public PassiveBufferGeneratorSwitch(Scenario scenario) {
+  public PassiveBufferGeneratorSwitch(Scenario scenario, Map<DataInterface, Buffer> i2b) {
     this.scenario = scenario;
+    this.i2b = i2b;
   }
 
   @Override
@@ -62,11 +69,9 @@ public class PassiveBufferGeneratorSwitch extends PiMMSwitch<Map<PassiveElt, Buf
 
   @Override
   public Map<PassiveElt, Buffer> casePassiveActor(PassiveActor pa) {
-    if (this.alreadyVisited.contains(pa)) {
-      return new HashMap<>();
-    }
 
-    final Map<PassiveElt, Buffer> result = new HashMap<>();
+    final Map<PassiveElt, Buffer> result = caseAbstractActor(pa);
+
     final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(pa.getType());
 
     final SubBuffer actorBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
@@ -75,9 +80,34 @@ public class PassiveBufferGeneratorSwitch extends PiMMSwitch<Map<PassiveElt, Buf
     actorBuffer.setTokenTypeSizeInBit(typeSize);
     actorBuffer.setType(pa.getType());
 
+    final Set<PassivePort> connectedToInterface = new HashSet<>();
+
+    for (final PassivePort pp : pa.getAllPassivePorts()) {
+      final AbstractActor opposite = pp.getOppositePort().getContainingActor();
+      if (opposite instanceof final DataInterface dataInterface) {
+        if (!this.i2b.containsKey(dataInterface)) {
+          PreesmLogger.getLogger()
+              .warning(() -> "The following interface " + dataInterface.getName() + " should be in i2b");
+          continue;
+        }
+        final Buffer interfaceBuffer = this.i2b.get(dataInterface);
+        actorBuffer.setContainer(interfaceBuffer);
+        actorBuffer.setOffsetInBit(0);
+        connectedToInterface.add(pp);
+      }
+    }
+
+    if (connectedToInterface.size() > 1) {
+      throw new PreesmRuntimeException("Passive Actor " + pa.getName()
+          + " is connected to more than 1 Data Interface. It is not supported in the current version of PREESM.");
+    }
+
     result.put(pa, actorBuffer);
 
     for (final PassivePort pp : pa.getAllPassivePorts()) {
+      if (connectedToInterface.contains(pp)) {
+        continue;
+      }
       final SubBuffer portBuffer = CodegenFactory.eINSTANCE.createSubBuffer();
       portBuffer.setContainer(actorBuffer);
       String name = pa.getName() + "_" + pp.getName();
@@ -90,9 +120,6 @@ public class PassiveBufferGeneratorSwitch extends PiMMSwitch<Map<PassiveElt, Buf
       result.put(pp, portBuffer);
 
     }
-
-    result.putAll(caseAbstractActor(pa));
-
     return result;
   }
 }

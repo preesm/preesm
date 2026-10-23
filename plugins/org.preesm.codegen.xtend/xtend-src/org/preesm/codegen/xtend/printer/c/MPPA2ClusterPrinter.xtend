@@ -81,7 +81,6 @@ import org.preesm.codegen.model.SpecialCall
 import org.preesm.codegen.model.SubBuffer
 import org.preesm.codegen.model.Variable
 import org.preesm.codegen.model.PapifyAction
-import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.IntVar
 import org.preesm.codegen.model.DataTransferAction
 import org.preesm.codegen.model.RegisterSetUpAction
@@ -736,11 +735,6 @@ class MPPA2ClusterPrinter extends BlankPrinter {
 	override printSubBuffer(SubBuffer buffer) {
 		return printBuffer(buffer)
 	}
-	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
-
-	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
-
-	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
 
 	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.getSizeInByte»'''
 

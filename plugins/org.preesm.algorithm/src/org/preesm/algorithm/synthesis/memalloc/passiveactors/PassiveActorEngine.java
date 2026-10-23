@@ -393,7 +393,11 @@ public class PassiveActorEngine {
       prunePassiveFifos(child);
     }
 
-    final Map<AbstractVertex, Long> brv = PiBRV.compute(graph, BRVMethod.LCM);
+    PiGraph parentGraph = graph.getContainingPiGraph();
+    if (parentGraph == null) {
+      parentGraph = graph;
+    }
+    final Map<AbstractVertex, Long> localBrv = PiBRV.compute(parentGraph, BRVMethod.LCM);
 
     for (final PassiveActor complexPa : graph.getPassiveActors().stream().filter(a -> !a.isSimple()).toList()) {
 
@@ -402,8 +406,7 @@ public class PassiveActorEngine {
 
           final PassivePort spp = pp instanceof DataInputPort ? passiveFifo.getInputPort()
               : passiveFifo.getOutputPort();
-          if (PassiveActorVerifier.verifyPassivePortConditions(spp, brv)) {
-            pp.setLinkedFifo(passiveFifo.getLinkedFifo());
+          if (PassiveActorVerifier.verifyPassivePortConditions(spp, localBrv)) {
             final Fifo oppositeFifo = pp instanceof PassiveInputPort ? passiveFifo.getInputPort().getFifo()
                 : passiveFifo.getOutputPort().getFifo();
             graph.removeFifo(pp.getFifo());
@@ -431,7 +434,21 @@ public class PassiveActorEngine {
     for (final PassiveActor pa : graph.getPassiveActors()) {
       for (final PassiveOutputPort pop : pa.getPassiveOutputPorts()) {
         final AbstractActor oppositeActor = pop.getOppositePort().getContainingActor();
-        if (oppositeActor instanceof PassiveActor) {
+        if (oppositeActor instanceof PassiveActor || oppositeActor instanceof DataInterface) {
+
+          if (oppositeActor instanceof DataInterface) {
+
+            PiGraph parentGraph = graph.getContainingPiGraph();
+            if (parentGraph == null) {
+              parentGraph = graph;
+            }
+            final Map<AbstractVertex, Long> localBrv = PiBRV.compute(parentGraph, BRVMethod.LCM);
+
+            if (PassiveActorVerifier.verifyPassivePortConditions(pop, localBrv)) {
+              continue;
+            }
+          }
+
           final Fifo fifo = pop.getFifo();
           final DataInputPort oldTarget = fifo.getTargetPort();
           final BroadcastActor memcpy = PiMMUserFactory.instance.createBroadcastActor("passive_brd_" + id++);

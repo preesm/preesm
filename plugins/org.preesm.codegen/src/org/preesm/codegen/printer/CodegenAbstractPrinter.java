@@ -41,18 +41,15 @@ package org.preesm.codegen.printer;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.function.Predicate;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
-import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
@@ -896,29 +893,17 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   }
 
   @Override
-  public CharSequence caseBufferIterator(final BufferIterator bufferIterator) {
-    return switch (this.state) {
-      case PRINTING_DEFINITIONS -> printBufferIteratorDefinition(bufferIterator);
-      case PRINTING_DECLARATIONS -> printBufferIteratorDeclaration(bufferIterator);
-      default -> printBufferIterator(bufferIterator);
-    };
-  }
-
-  @Override
   public CharSequence caseIteratedBuffer(final IteratedBuffer iteratedBuffer) {
     return printIteratedBuffer(iteratedBuffer);
   }
 
-  Set<IteratedPassiveBuffer> registeredIteratedPassiveBuffers = new HashSet<>();
-
   @Override
   public CharSequence caseIteratedPassiveBuffer(final IteratedPassiveBuffer iteratedPassiveBuffer) {
-
-    if (!this.registeredIteratedPassiveBuffers.contains(iteratedPassiveBuffer)) {
-      this.registeredIteratedPassiveBuffers.add(iteratedPassiveBuffer);
-      return printIteratedPassiveBufferDeclaration(iteratedPassiveBuffer);
-    }
-    return printIteratedPassiveBuffer(iteratedPassiveBuffer);
+    return switch (this.state) {
+      case PRINTING_DEFINITIONS -> printIteratedPassiveBufferDefinition(iteratedPassiveBuffer);
+      case PRINTING_DECLARATIONS -> printIteratedPassiveBufferDeclaration(iteratedPassiveBuffer);
+      default -> printIteratedPassiveBuffer(iteratedPassiveBuffer);
+    };
   }
 
   @Override
@@ -1456,16 +1441,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   public abstract CharSequence printSubBufferDefinition(SubBuffer subBuffer);
 
   /**
-   * Method called to print a {@link BufferIterator} outside the {@link CoreBlock#getDefinitions() definition} or the
-   * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
-   *
-   * @param bufferIterator
-   *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}.
-   */
-  public abstract CharSequence printBufferIterator(BufferIterator bufferIterator);
-
-  /**
    * Method called to print a {@link IteratedBuffer} outside the {@link CoreBlock#getDefinitions() definition} or the
    * {@link CoreBlock#getDeclarations() declaration} of a {@link CoreBlock}.
    *
@@ -1474,26 +1449,6 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
    * @return the printed {@link CharSequence}.
    */
   public abstract CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer);
-
-  /**
-   * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDeclarations() declaration}
-   * {@link CallBlock} of a {@link CoreBlock}.
-   *
-   * @param bufferIterator
-   *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}.
-   */
-  public abstract CharSequence printBufferIteratorDeclaration(BufferIterator bufferIterator);
-
-  /**
-   * Method called to print a {@link BufferIterator} within the {@link CoreBlock#getDefinitions() definition}
-   * {@link CallBlock} of a {@link CoreBlock}.
-   *
-   * @param bufferIterator
-   *          the {@link BufferIterator} to print.
-   * @return the printed {@link CharSequence}.
-   */
-  public abstract CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator);
 
   /**
    * Method called to print a {@link DataTransferAction} within the {@link CoreBlock#getDefinitions() definition}

@@ -78,31 +78,31 @@ public class PassiveActorExposerTask extends AbstractTaskImplementation {
     /** Step 1: Transforms special actors into passive ones */
     engine.processPassiveActors();
     if (Boolean.TRUE.equals(debug)) {
-      exportGraph(engine.getPassiveIR(), "/Algo/generated/alloc/1.passive/", workflow);
+      exportGraph(engine.getPassiveIR(), "/Algo/generated/passive-debug/1.passive/", workflow);
     }
 
     /** Step 2: Fuses adjacent passive actors to gain more reduction */
     engine.composePassiveActors();
     if (Boolean.TRUE.equals(debug)) {
-      exportGraph(engine.getPassiveIR(), "/Algo/generated/alloc/2.passive-composed/", workflow);
+      exportGraph(engine.getPassiveIR(), "/Algo/generated/passive-debug/2.passive-composed/", workflow);
     }
 
     /** Step 3: Transforms FIFOs into (simple) passive actors */
     engine.transformFifosIntoPassiveActors();
     if (Boolean.TRUE.equals(debug)) {
-      exportGraph(engine.getPassiveIR(), "/Algo/generated/alloc/3.passive-fifos/", workflow);
+      exportGraph(engine.getPassiveIR(), "/Algo/generated/passive-debug/3.passive-fifos/", workflow);
     }
 
     /** Step 4: Removes passive FIFOs actors adjacent to other passive actors, if it is possible */
     engine.prunePassiveFifos();
     if (Boolean.TRUE.equals(debug)) {
-      exportGraph(engine.getPassiveIR(), "/Algo/generated/alloc/4.passive-fifos-pruned/", workflow);
+      exportGraph(engine.getPassiveIR(), "/Algo/generated/passive-debug/4.passive-fifos-pruned/", workflow);
     }
 
     /** Step 5: Creates a BroadcastActor between two adjacent passive actors */
     engine.generateBroadcasts();
     if (Boolean.TRUE.equals(debug)) {
-      exportGraph(engine.getPassiveIR(), "/Algo/generated/alloc/5.passive-broadcasts/", workflow);
+      exportGraph(engine.getPassiveIR(), "/Algo/generated/passive-debug/5.passive-broadcasts/", workflow);
     }
   }
 

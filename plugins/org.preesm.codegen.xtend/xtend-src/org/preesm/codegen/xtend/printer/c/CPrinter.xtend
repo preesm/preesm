@@ -64,7 +64,6 @@ import org.apache.velocity.app.VelocityEngine
 import org.preesm.codegen.model.ActorFunctionCall
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.Call
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.ClusterBlock
@@ -1172,11 +1171,7 @@ class CPrinter extends BlankPrinter {
 
 	override printSubBuffer(SubBuffer buffer) {return printBuffer(buffer)}
 
-	override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
-
-	override printBufferIteratorDeclaration(BufferIterator bufferIterator) ''''''
-
-	override printBufferIteratorDefinition(BufferIterator bufferIterator) ''''''
+	//override printBufferIterator(BufferIterator bufferIterator) '''«bufferIterator.name» + «printIntVar(bufferIterator.iter)» * «bufferIterator.iterSize»'''
 
 	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''«doSwitch(iteratedBuffer.buffer)» + «printIntVar(iteratedBuffer.iter)» * «iteratedBuffer.getNbToken»'''
 
@@ -1278,13 +1273,8 @@ class CPrinter extends BlankPrinter {
   '''
 		
   override printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb)  '''
-  «printBufferDeclaration(ipb.buffer)»
-  «{
-  		PreesmLogger.getLogger.warning("[DEBUG] PASSING IN PASSIVE BUFFER DECLARATION")
-  	}»
-  const long* «buildIteratedPassiveBeginsValues(ipb.buffer.name)» = [«FOR i : ipb.getPossibleBeginValues() SEPARATOR ','»
-  «i»
-  «ENDFOR»];
+  «doSwitch(ipb.buffer)»
+  const long «buildIteratedPassiveBeginsValues(ipb.buffer.name)»[] = {«FOR i : ipb.getPossibleBeginValues() SEPARATOR ','»«i»«ENDFOR»};
   '''
 
   override printIteratedPassiveBufferDefinition(IteratedPassiveBuffer ipb) '''

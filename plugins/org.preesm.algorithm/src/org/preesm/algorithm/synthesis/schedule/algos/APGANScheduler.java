@@ -46,7 +46,7 @@ import org.preesm.model.slam.Design;
  *
  * @author dgageot
  */
-public class APGANPiMMScheduler extends AbstractPiMMScheduler {
+public class APGANScheduler extends AbstractPiMMScheduler {
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,

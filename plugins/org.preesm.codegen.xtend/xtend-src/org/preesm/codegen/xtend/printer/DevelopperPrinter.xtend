@@ -45,7 +45,6 @@ import java.util.LinkedHashMap
 import java.util.List
 import org.preesm.codegen.model.Block
 import org.preesm.codegen.model.Buffer
-import org.preesm.codegen.model.BufferIterator
 import org.preesm.codegen.model.CallBlock
 import org.preesm.codegen.model.Communication
 import org.preesm.codegen.model.Constant
@@ -212,12 +211,6 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printIntVarDeclaration(IntVar intVar) '''<IntVar_Declaration>'''
 
 	override printIntVarDefinition(IntVar intVar) '''<IntVar_Definition>'''
-
-	override printBufferIterator(BufferIterator bufferIterator) '''<BufferIterator>'''
-
-	override printBufferIteratorDeclaration(BufferIterator bufferIterator) '''<BufferIterator_Declaration>'''
-
-	override printBufferIteratorDefinition(BufferIterator bufferIterator) '''<BufferIterator_Definition>'''
 
 	override printIteratedBuffer(IteratedBuffer iteratedBuffer) '''<IteratedBuffer>'''
 

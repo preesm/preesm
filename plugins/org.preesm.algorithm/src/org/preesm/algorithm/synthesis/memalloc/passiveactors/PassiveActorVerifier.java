@@ -39,7 +39,7 @@ public class PassiveActorVerifier {
   }
 
   /**
-   * Verify the write spacing between begin and end pointers of all port of an actor. If one is not good, it will raise
+   * Verify the right spacing between begin and end pointers of all port of an actor. If one is not good, it will raise
    * an exception, saying the passive script must be reworked.
    *
    * @param pa
@@ -167,21 +167,21 @@ public class PassiveActorVerifier {
   private static boolean portCondition2(PassivePort pp) {
     boolean result = false;
     if (pp instanceof final PassiveInputPort pip) {
-      final PortMemoryAnnotation portAnnotation = pip.getOppositePort().getAnnotation();
+      final PortMemoryAnnotation portAnnotation = getNextPort(pip).getAnnotation();
       result = portAnnotation == PortMemoryAnnotation.WRITE_ONLY || portAnnotation == PortMemoryAnnotation.UNUSED;
 
     } else if (pp instanceof final PassiveOutputPort pop) {
-      result = pop.getOppositePort().getAnnotation() == PortMemoryAnnotation.READ_ONLY;
+      result = getNextPort(pop).getAnnotation() == PortMemoryAnnotation.READ_ONLY;
     }
 
-    // If input port doesn't have a an annotation, it is not necessary a problem.
-    // If every instances (composed of a begin and a end pointer) are not recovering another instance AND if every other
-    // ports are not recovering the tokens , then there will be no
-    // writing/reading concurrency since no token will be written/read 2 times.
+    // If input port doesn't have a an annotation, it is not necessary a problem. If every instances (composed of a
+    // begin and an end pointer) are not recovering another instance AND if every other ports are not recovering one
+    // token of current port, then there will be no writing/reading concurrency since no token will be written/read 2
+    // times.
     if (!result) {
       result = true;
 
-      // Inner verification
+      // Instance verification
       final List<Pair<Long, Long>> allInstances = pp.getBeginiEndi();
       for (int i = 0; i < allInstances.size(); i++) {
 
@@ -215,7 +215,7 @@ public class PassiveActorVerifier {
         }
       }
 
-      // Outer verification
+      // Other ports verification
       final Pair<Long, Long> beginEnd = pp.getBeginjEndj();
       final long begin = beginEnd.getKey();
       final long end = beginEnd.getValue();

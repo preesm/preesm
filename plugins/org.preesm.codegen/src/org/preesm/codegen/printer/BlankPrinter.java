@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
-import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
@@ -297,22 +296,6 @@ public class BlankPrinter extends CodegenAbstractPrinter {
     return "";
   }
 
-  public CharSequence printBufferIterator(BufferIterator bufferIterator) {
-    return "";
-  }
-
-  public CharSequence printBufferIteratorDeclaration(BufferIterator bufferIterator) {
-    return "";
-  }
-
-  public CharSequence printBufferIteratorDefinition(BufferIterator bufferIterator) {
-    return "";
-  }
-
-  public CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer) {
-    return "";
-  }
-
   public CharSequence printDataTansfer(DataTransferAction action) {
     return "";
   }
@@ -402,6 +385,11 @@ public class BlankPrinter extends CodegenAbstractPrinter {
 
   @Override
   public CharSequence printIteratedPassiveBufferDeclaration(IteratedPassiveBuffer ipb) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printIteratedBuffer(IteratedBuffer iteratedBuffer) {
     return "";
   }
 }

@@ -151,10 +151,11 @@ public class PiSDFMergeabilty {
     for (final DataInputPort dip : x.getDataInputPorts()) {
 
       // Add all incoming fifo that are not contained in the future cluster
-      if (dip.getIncomingFifo().getSource() != y) {
+      final AbstractActor source = dip.getIncomingFifo().getSource();
+      if (source != y) {
 
         // Case if previous actor is a passive one (passive actors don't count)
-        if (dip.getIncomingFifo().getSource() instanceof final PassiveActor pa) {
+        if (source instanceof final PassiveActor pa) {
           for (final DataInputPort passiveDip : pa.getDataInputPorts()) {
             if (passiveDip.getIncomingFifo().getSource() != y) {
               incomingFifos.add(passiveDip.getIncomingFifo());
@@ -173,10 +174,11 @@ public class PiSDFMergeabilty {
     for (final DataOutputPort dop : x.getDataOutputPorts()) {
 
       // Add all outgoing fifo that are not contained in the future cluster
-      if (dop.getOutgoingFifo().getTarget() != y) {
+      final AbstractActor target = dop.getOutgoingFifo().getTarget();
+      if (target != y) {
 
         // Case if next actor is a passive one (passive actors don't count)
-        if (dop.getOutgoingFifo().getTarget() instanceof final PassiveActor pa) {
+        if (target instanceof final PassiveActor pa) {
           for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
             if (passiveDop.getOutgoingFifo().getTarget() != y) {
               outgoingFifos.add(passiveDop.getOutgoingFifo());
@@ -220,7 +222,8 @@ public class PiSDFMergeabilty {
     for (final DataOutputPort dop : x.getDataOutputPorts()) {
 
       // Case if succ is a passive Actor -> we visit all its output Fifos
-      if (dop.getOutgoingFifo().getTarget() instanceof final PassiveActor pa) {
+      final AbstractActor target = dop.getOutgoingFifo().getTarget();
+      if (target instanceof final PassiveActor pa && target != y) {
         for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
 
           // Add all outgoing fifo that are not contained in the future cluster
@@ -229,8 +232,7 @@ public class PiSDFMergeabilty {
           }
         }
 
-        // Add all outgoing fifo that are not contained in the future cluster
-      } else if (dop.getOutgoingFifo().getDelay() == null && dop.getOutgoingFifo().getTarget() == y) {
+      } else if (dop.getOutgoingFifo().getDelay() == null && target == y) {
         outgoingFifos.add(dop.getOutgoingFifo());
       }
     }
@@ -278,16 +280,22 @@ public class PiSDFMergeabilty {
 
     // Retrieve actors that are not interface nor delay
     final List<AbstractActor> graphActors = graph.getActors().stream()
-        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof DelayActor) && !(a instanceof PassiveActor))
-        .toList();
+        .filter(a -> !(a instanceof InterfaceActor) && !(a instanceof DelayActor)).toList();
 
     // Get every mergeable connected-couple
     for (final AbstractActor a : graphActors) {
+      if (a instanceof final PassiveActor pa && pa.getBufferSize() == pa.getRealBufferSize()) {
+        continue;
+      }
+
       for (final DataOutputPort dop : a.getDataOutputPorts()) {
         AbstractActor b = dop.getOutgoingFifo().getTarget();
 
-        // Processing the case if b is a PassiveActor (a "router" actor: it can't be scheduled)
-        if (b instanceof final PassiveActor pb) {
+        // Processing the case if b is a PassiveActor (a "router" actor: it can't be scheduled, unless its buffer size
+        // is not equal to its real buffer size. Then it can be scheduled to keep track on when we have to fill in the
+        // last tokens of the real buffer)
+        if (b instanceof final PassiveActor pb && pb.getBufferSize() == pb.getRealBufferSize()) {
+
           for (final DataOutputPort passiveOutPort : pb.getDataOutputPorts()) {
             b = passiveOutPort.getOutgoingFifo().getTarget();
 

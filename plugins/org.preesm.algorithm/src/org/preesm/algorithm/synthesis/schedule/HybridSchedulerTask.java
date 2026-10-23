@@ -12,7 +12,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.algos.APGANPiMMScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.APGANScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
 import org.preesm.commons.doc.annotations.Parameter;
@@ -132,7 +132,7 @@ public class HybridSchedulerTask extends ListSchedulerTask {
       schedulerValue = botSchedulerValue;
       scheduler = switch (botSchedulerValue) {
         case VALUE_BOT_SCHEDULER_APGAN:
-          yield new APGANPiMMScheduler();
+          yield new APGANScheduler();
         default:
           throw new PreesmRuntimeException(PARAM_BOT_SCHEDULER + " " + botSchedulerValue
               + " doesn't exists. Choose between the following ones : " + VALUE_BOT_SCHEDULER_APGAN);
