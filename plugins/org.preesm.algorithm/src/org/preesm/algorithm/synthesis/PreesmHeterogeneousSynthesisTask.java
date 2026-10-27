@@ -55,7 +55,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  */
 @PreesmTask(id = "heterogeneous-synthesis", name = "Heterogeneous Synthesis", category = "Synthesis",
     shortDescription = "Schedule and map actors on heterogeneous architecture, no allocation, no codegen",
-    description = "",
+    description = "", // TODO
 
     parameters = {
       @Parameter(name = "scheduler", description = "Scheduler used to schedule and map the tasks. NOT WORKING FOR NOW.",
@@ -91,6 +91,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String       VALUE_SCHEDULER_FPGA_CONSTRAINT = "constraintscheduler";
   public static final List<String> FPGA_SCHEDULERS                 = new ArrayList<>(
       Arrays.asList(VALUE_SCHEDULER_FPGA_LINEAR, VALUE_SCHEDULER_FPGA_EXACT, VALUE_SCHEDULER_FPGA_CONSTRAINT));
+  public static final String       VALUE_K_VALUE                   = "K value";
+  public static final String       VALUE_CYCLE_MAX                 = "Cycle max";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   final SlamFactory     SLAMFactory = SlamFactory.eINSTANCE;
@@ -113,8 +115,19 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       // -------------------------------------------------------------------------------------
       // ------------------- locally schedule and map the clusters' graphs -------------------
 
+      final int[] error_prop = { 1, 5, 10, 20, 50, 100 };
       for (final PiGraph cluster : algorithm.getClusters()) {
-        recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap, FpgaSchedulerName);
+        for (int k = 1; k < 10; k++) {
+          for (int cm_mult = 1; cm_mult < 5000; cm_mult *= 2) {
+            for (final int element : error_prop) {
+              final int cm = cm_mult * 10000;
+              parameters.put(VALUE_K_VALUE, String.valueOf(k));
+              parameters.put(VALUE_CYCLE_MAX, String.valueOf(cm));
+              parameters.put("tolerated_error_proportion", String.valueOf(element));
+              recursiveSynthesis(cluster, scenario, architecture, localSynthesesMap, FpgaSchedulerName, parameters);
+            }
+          }
+        }
       }
     }
 
@@ -125,7 +138,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final String schedulerName = parameters.get("scheduler").toLowerCase();
 
-    final IScheduler scheduler = selectScheduler(schedulerName);
+    final IScheduler scheduler = selectAndInstantiateScheduler(schedulerName, parameters);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling -- " + schedulerName);
     final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
@@ -157,7 +170,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     return outputs;
   }
 
-  private IScheduler selectScheduler(final String schedulerName) {
+  private IScheduler selectAndInstantiateScheduler(final String schedulerName, Map<String, String> parameters) {
     return switch (schedulerName) {
       case VALUE_SCHEDULER_SIMPLE -> new SimpleScheduler();
       case VALUE_SCHEDULER_LEGACY -> new LegacyListScheduler();
@@ -165,7 +178,9 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       case VALUE_SCHEDULER_CHOCO -> new ChocoScheduler();
       case VALUE_SCHEDULER_FPGA_LINEAR -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_LINEAR);
       case VALUE_SCHEDULER_FPGA_EXACT -> new FpgaScheduler(VALUE_SCHEDULER_FPGA_EXACT);
-      case VALUE_SCHEDULER_FPGA_CONSTRAINT -> new FPGAConstraintScheduler(true);
+      case VALUE_SCHEDULER_FPGA_CONSTRAINT -> new FPGAConstraintScheduler(true, true, 1,
+          Integer.parseInt(parameters.get(VALUE_CYCLE_MAX)), Integer.parseInt(parameters.get(VALUE_K_VALUE)),
+          Integer.parseInt(parameters.get("tolerated_error_proportion")));
 
       default -> throw new PreesmRuntimeException("unknown scheduler: " + schedulerName);
     };
@@ -179,13 +194,14 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     };
   }
 
-  private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture, String schedulerName) {
+  private SynthesisResult runSynthesis(PiGraph cluster, Scenario scenario, Design architecture, String schedulerName,
+      Map<String, String> parameters) {
     // TODO refaire : le choix du scheduler-mapper et de l'allocateur est catastrophique
     // find the right scheduler-mapper based on the cluster's shared archi : cpu, fpga, cgra...
     // final String localSchedulerMapperName = switchSchedulerMapper(cluster, scenario);
     final String localSchedulerMapperName = schedulerName;
 
-    final IScheduler localSchedulerMapper = selectScheduler(localSchedulerMapperName);
+    final IScheduler localSchedulerMapper = selectAndInstantiateScheduler(localSchedulerMapperName, parameters);
 
     final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
 
@@ -203,14 +219,15 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   }
 
   private void recursiveSynthesis(PiGraph cluster, Scenario scenario, Design architecture,
-      Map<PiGraph, SynthesisResult> localSynthesesMap, String schedulerName) {
+      Map<PiGraph, SynthesisResult> localSynthesesMap, String schedulerName, Map<String, String> parameters) {
     // We need to schedule the clusters depth-first, so we first get to the botton of the hierarchy
     final List<PiGraph> subClusters = cluster.getClusters();
     for (final PiGraph subCluster : subClusters) {
-      recursiveSynthesis(subCluster, scenario, architecture, localSynthesesMap, schedulerName);
+      recursiveSynthesis(subCluster, scenario, architecture, localSynthesesMap, schedulerName, parameters);
     }
 
-    final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture, schedulerName);
+    final SynthesisResult localSynthesisResult = runSynthesis(cluster, scenario, architecture, schedulerName,
+        parameters);
 
     final Schedule localSchedule = localSynthesisResult.schedule;
     final Mapping localMapping = localSynthesisResult.mapping;
