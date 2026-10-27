@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.evaluation.latency.LatencyCost;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
@@ -69,17 +67,15 @@ public class FPGAConstraintScheduler implements IScheduler {
   // attention aux valeurs ! Si elles sont trop grandes, choco pourrait overflow son calcul d'upper bound de résultats
   // intermédiaire de multiplication
   // vraiment static ? Elles pourraient peut-être prendre des valeurs différentes selon l'algo
-  static int       DEFAULT_CYCLE_MAX = 500_000_000;
-  int              CYCLE_MAX         = DEFAULT_CYCLE_MAX;     // default value
-  static int       TOKENS_MAX        = DEFAULT_CYCLE_MAX / 2; // arbitrary
-  static int       MAX_START_TIME    = DEFAULT_CYCLE_MAX / 2; // abitrary
-  static final int THRESHOLD_RV      = 1_000;                 // arbitrary
+  static int       DEFAULT_CYCLE_MAX = 5_000;
+  static int       CYCLE_MAX         = DEFAULT_CYCLE_MAX; // default value
+  static int       TOKENS_MAX        = CYCLE_MAX / 2;     // arbitrary
+  static int       MAX_START_TIME    = CYCLE_MAX / 2;     // abitrary
+  static final int THRESHOLD_RV      = 1_000;             // arbitrary
 
-  int     logLevel = 2;               // between 0 and 2 included
+  int     logLevel = 2; // between 0 and 2 included
   boolean logsInFile;
   boolean computeGantt;
-  int     K_value;
-  int     tolerated_error_proportion; // a percentage
 
   /**
    * According to {@link org.preesm.model.pisdf.AbstractVertex#getVertexPath}
@@ -107,34 +103,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     this.computeGantt = computeGantt;
     this.logsInFile = logsInFile;
     this.logLevel = level;
-  }
-
-  public FPGAConstraintScheduler(boolean computeGantt, boolean logsInFile, int level, int cycle_max) {
-    super();
-    this.computeGantt = computeGantt;
-    this.logsInFile = logsInFile;
-    this.logLevel = level;
-    this.CYCLE_MAX = cycle_max;
-  }
-
-  public FPGAConstraintScheduler(boolean computeGantt, boolean logsInFile, int level, int cycle_max, int K_value) {
-    super();
-    this.computeGantt = computeGantt;
-    this.logsInFile = logsInFile;
-    this.logLevel = level;
-    this.CYCLE_MAX = cycle_max;
-    this.K_value = K_value;
-  }
-
-  public FPGAConstraintScheduler(boolean computeGantt, boolean logsInFile, int level, int cycle_max, int K_value,
-      int tolerated_error_proportion) {
-    super();
-    this.computeGantt = computeGantt;
-    this.logsInFile = logsInFile;
-    this.logLevel = level;
-    this.CYCLE_MAX = cycle_max;
-    this.K_value = K_value;
-    this.tolerated_error_proportion = tolerated_error_proportion;
   }
 
   // ============================================
@@ -476,10 +444,8 @@ public class FPGAConstraintScheduler implements IScheduler {
             final int nbFirings = delay_size / cons_rate;
             final int supplementaryTokens = delay_size % cons_rate;
 
-            // TODO revoir pour le cas K-periodic
-            // firstStartDateFromInput.eq(pt.startDate_var[0].add(pt.executionTime).add(pt.period_var.mul(n_max))
-            // .sub(prod_rate * (n_max + 1)).add(1).sub(ct.period_var.mul(nbFirings)).sub(supplementaryTokens)).post();
-            firstStartDateFromInput.eq(pt.startDate_var[0]).post();
+            firstStartDateFromInput.eq(pt.startDate_var[0].add(pt.executionTime).add(pt.period_var.mul(n_max))
+                .sub(prod_rate * (n_max + 1)).add(1).sub(ct.period_var.mul(nbFirings)).sub(supplementaryTokens)).post();
 
           }
 
@@ -571,15 +537,14 @@ public class FPGAConstraintScheduler implements IScheduler {
     // TODO would it be useful to make an actual constraint CYCLE_MAX - period_var, to reduce the domain size ?
     final int startDateUB = CYCLE_MAX - minPeriod * res.repetitionCount;
 
-    // +1 to avoid log of 0 later. If 1, the divisor goes to 1 so the case is filtered anyway.
-    final int tolerated_error = 1 + tolerated_error_proportion * res.period_var.getLB() / 100;
+    // On tolère 10% d'erreur par rapport à la période minimale
+    final int tolerated_error = res.period_var.getLB() / 10;
     final int divisor = (int) Math.pow(10, Math.floor(Math.log10(tolerated_error)));
     if (divisor >= 10) {
       // On force start date à être un multiple de divisor
       final IntVar[] multSD = model.intVarArray("multSD_" + actor.getName(), res.K_a, 0,
           Math.ceilDiv(startDateUB, divisor));
       // model.arithm(res.startDate_var, "=", multSD, "*", 10).post();
-      res.startDate_var = new IntVar[res.K_a];
       for (int x = 0; x < res.K_a; x++) {
         res.startDate_var[x] = model.intView(divisor, multSD[x], 0);
       }
@@ -590,6 +555,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     // must have at least executed all its firings by end time
+    // TODO revoir, c'est foiré pour le cas général K-periodic
     res.endDate_var = model.intVarArray("end_" + actor.getName() + "_var", res.K_a,
         res.startDate_var[0].getLB() + res.initiationInterval * (res.repetitionCount - 1) + res.executionTime,
         CYCLE_MAX);
@@ -620,6 +586,8 @@ public class FPGAConstraintScheduler implements IScheduler {
    * The method assumes it is scheduling a flat graph. If it encounters a cluster, it will be treated as an actor.
    */
   public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario) {
+    final long start = System.nanoTime();
+    long end;
 
     final var brv = PiBRV.compute(piGraph, BRVMethod.LCM);
     final Map<InterfaceActor, Pair<Long, Long>> interfaceRates = FpgaAnalysis.checkInterfaces(piGraph, brv);
@@ -632,7 +600,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     final Map<ExecutableActor, ActorTimings> schedule = new HashMap<>();
 
     PrintStream writer = System.out;
-    FileWriter resultsCsv = null;
+    PrintStream resultsCsv = null;
 
     final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
     final IPath osIPath = root.getFolder(new Path(scenario.getCodegenDirectory())).getLocation();
@@ -642,7 +610,6 @@ public class FPGAConstraintScheduler implements IScheduler {
     dir.mkdirs();
     final String folderPath = dir.getAbsolutePath();
     final String fileName = folderPath + "/choco_solver_logs";
-    final String csvName = absolutePathString + "/../results.csv";
 
     final String codegen_dir = scenario.getCodegenDirectory() + "/";
     try {
@@ -675,24 +642,18 @@ public class FPGAConstraintScheduler implements IScheduler {
     }
 
     try {
-      final boolean fileExists = new File(csvName).exists();
-      resultsCsv = new FileWriter(csvName, true);
-
-      if (!fileExists) {
-        resultsCsv.write(
-            "K ; error percentage ; CYCLE_MAX ; TOKENS_MAX ; MAX_START_TIME ; solving time (s) ; latency (cycles) ; graph period (cycles) \n");
-      }
-    } catch (final IOException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE, "Could not create or write to csv file " + csvName);
+      resultsCsv = new PrintStream(fileName + ".csv");
+      resultsCsv.println(
+          "CYCLE_MAX ; TOKENS_MAX ; MAX_START_TIME ; solving time (s) ; latency (cycles) ; graph period (cycles)");
+    } catch (final FileNotFoundException e) {
+      PreesmLogger.getLogger().log(Level.SEVERE, "Could not create output csv file " + fileName + ".csv");
     }
-
-    final long start = System.nanoTime();
 
     final Model model = new Model("Period computing");
     final List<IntVar> variablesToInstantiate = new LinkedList<>();
     final List<IntVar> variablesToOptimize = new LinkedList<>();
     final IntVar latency = buildModel(model, piGraph, slamDesign, scenario, schedule, variablesToInstantiate, writer,
-        variablesToOptimize, this.K_value);
+        variablesToOptimize, 2); // TODO : récupérer K depuis le workflow
 
     // --------
     // Solution
@@ -785,18 +746,11 @@ public class FPGAConstraintScheduler implements IScheduler {
       printFailureAndLog(model, writer);
     }
 
-    final long end = System.nanoTime();
-
     if (gantt_data != null) {
       gantt_data.close();
     }
     if (resultsCsv != null) {
-      try {
-        resultsCsv.close();
-      } catch (final IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-      }
+      resultsCsv.close();
     }
 
     if (logLevel >= 1 && searchTreeFile != null) {
@@ -808,12 +762,14 @@ public class FPGAConstraintScheduler implements IScheduler {
       }
     }
 
-    if (writer != System.out) {
-      writer.close();
-    }
+    end = System.nanoTime();
 
     final long duration = end - start;
     writer.println("Solving duration : " + duration);
+
+    if (writer != System.out) {
+      writer.close();
+    }
 
     // final StatEditorSynthesisTask truc = new StatEditorSynthesisTask();
     // final Map<String, Object> inputs = new HashMap<>();
@@ -821,7 +777,7 @@ public class FPGAConstraintScheduler implements IScheduler {
     // inputs.put("architecture", scenario.getDesign());
     // inputs.put("algorithm", piGraph);
 
-    results.latency = new LatencyCost(solution.getIntVal(latency), null);
+    // final LatencyCost lc = new LatencyCost(solution.getIntVal(latency), null);
     return results;
   }
 
@@ -1351,7 +1307,7 @@ public class FPGAConstraintScheduler implements IScheduler {
   // ====================================================
 
   private FpgaSchedule saveAndPrintResults(Solution solution, Map<ExecutableActor, ActorTimings> schedule,
-      PrintStream writer, FileWriter resultsCsv, Solver solver, PrintStream gantt_data, IntVar latency) {
+      PrintStream writer, PrintStream resultsCsv, Solver solver, PrintStream gantt_data, IntVar latency) {
 
     final FpgaSchedule result = new FpgaSchedule(solution.getIntVal(latency));
 
@@ -1434,15 +1390,8 @@ public class FPGAConstraintScheduler implements IScheduler {
     writer.println("Solving time : " + solver.getTimeCount() + "s");
     writer.print("\n");
 
-    final String output = String.format("%d ; %d ; %d ; %d ; %d ; %f ; %d ; %d \n", K_value,
-        this.tolerated_error_proportion, CYCLE_MAX, TOKENS_MAX, MAX_START_TIME, solver.getTimeCount(), result.latency,
-        hyperperiod);
-    try {
-      resultsCsv.write(output);
-    } catch (final IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
+    resultsCsv.printf("%d ; %d ; %d ; %f ; %d ; %d %n", CYCLE_MAX, TOKENS_MAX, MAX_START_TIME, solver.getTimeCount(),
+        result.latency, hyperperiod);
 
     return result;
   }
