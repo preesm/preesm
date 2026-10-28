@@ -256,13 +256,8 @@ class Scenario {
 //		}
 		
 		if (mapping.isEmpty) {
-<<<<<<< HEAD
-			val source = PreesmCopyTracker.getSource(actor)
-			if (source != actor && source !== null) {
-=======
 			val source = PreesmCopyTracker.getOriginalSource(actor)
 			if (source != actor) {
->>>>>>> clustering_refactoring
 				mapping = getPossibleMappings(source)
 			}
 			else if(actor !== null) {
