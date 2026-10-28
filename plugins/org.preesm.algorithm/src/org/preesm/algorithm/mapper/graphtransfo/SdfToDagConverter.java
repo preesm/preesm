@@ -78,6 +78,7 @@ import org.preesm.model.scenario.Timings;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
 
 /**
  * Uses the SDF4J library to convert the input SDF into a DAG before scheduling.
@@ -425,41 +426,34 @@ public class SdfToDagConverter {
       if (correspondingActor instanceof final AbstractActor rc) {
         final List<ComponentInstance> actorMappings = scenario.getPossibleMappings(rc);
 
-<<<<<<< HEAD
         for (final ComponentInstance mapping : actorMappings) {
-          final Timing newTiming = new Timing(mapping.getComponent(), rc);
-          mapperVertex.getInit().addTiming(newTiming);
-=======
-          final ComponentInstance currentIOp = cg.getKey();
-          if (currentIOp.getComponent() instanceof ProcessingElement) {
+          if (mapping.getComponent() instanceof ProcessingElement) {
 
-            if (!mv.getInit().isMapable(currentIOp)) {
+            if (!mapperVertex.getInit().isMapable(mapping)) {
 
-              mv.getInit().addOperator(currentIOp);
+              mapperVertex.getInit().addOperator(mapping);
 
               // Initializes a default timing that may be erased
               // when timings are imported
-              if (referencePiVertex instanceof final AbstractActor actor) {
-                final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
-                mv.getInit().addTiming(newTiming);
+              if (correspondingActor instanceof final AbstractActor actor) {
+                final Timing newTiming = new Timing(mapping.getComponent(), actor);
+                mapperVertex.getInit().addTiming(newTiming);
               } else {
-                mv.getInit().addTiming(new Timing(currentIOp.getComponent(), null));
+                mapperVertex.getInit().addTiming(new Timing(mapping.getComponent(), null));
               }
             }
->>>>>>> clustering_refactoring
 
-          if (!mapperVertex.getInit().isMapable(mapping)) {
-            mapperVertex.getInit().addOperator(mapping);
+          } else {
+            // this is a vertex with no corresponding actor ! Probably a delay, or maybe a created specialActor
+            // it will therefore be mapped to the specialVertex-cappable components
+            scenario.getSimulationInfo().getSpecialVertexOperators()
+                .forEach(op -> mapperVertex.getInit().addOperator(op));
           }
+
         }
-      } else {
-        // this is a vertex with no corresponding actor ! Probably a delay, or maybe a created specialActor
-        // it will therefore be mapped to the specialVertex-cappable components
-        scenario.getSimulationInfo().getSpecialVertexOperators().forEach(op -> mapperVertex.getInit().addOperator(op));
+
       }
-
     }
-
   }
 
   /**
@@ -531,4 +525,5 @@ public class SdfToDagConverter {
   // }
   // }
   // }
+
 }
