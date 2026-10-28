@@ -26,8 +26,8 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           it will create or regroup hierarchical levels. This parameter is optional. If not present
           , the input graph will just be flatten. For now, there is no vertical heuristic.
           """,
-          values = { @Value(name = ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE,
-              effect = "The input graph will be flatten.") }),
+          values = { @Value(name = HeuristicGetter.VALUE_VERTICAL_HEURISTIC_NONE,
+              effect = "The input graph will just be flatten.") }),
 
       @Parameter(name = ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, description = """
           Name of which heuristic will be used to horizontaly clusterize the graph. Every hierachical
@@ -58,7 +58,12 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             @Value(name = HeuristicGetter.BASIC_BALANCING) }),
 
       @Parameter(name = ClusterCreationTask.PARAM_VERBOSE, description = "More or less logs",
-          values = { @Value(name = "True"), @Value(name = "False") }) },
+          values = { @Value(name = ClusterCreationTask.VALUE_TRUE), @Value(name = ClusterCreationTask.VALUE_FALSE) }),
+
+      @Parameter(name = ClusterCreationTask.PARAM_DEBUG,
+          description = "Enable debug mode (will export the intermediate graphs"
+              + " in the file Algo/generated/clustering-debug)",
+          values = { @Value(name = ClusterCreationTask.VALUE_FALSE), @Value(name = ClusterCreationTask.VALUE_TRUE) }) },
 
     inputs = {
       @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
@@ -70,7 +75,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     outputs = {
       @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class,
-          description = "Output PiGraph algorithm, modified by heuristics"),
+          description = "Output PiGraph algorithm, modified by heuristics. "
+              + "Be aware that the input graph has been copied before doing transformations. "
+              + "The output graph is then a copy of the input graph."),
       @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class,
           description = "Modified scenario, with the clusters constraints") },
 
@@ -104,15 +111,23 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 )
 public class ClusterCreationTask extends AbstractTaskImplementation {
 
-  public static final String PARAM_VERTICAL_HEURISTIC      = "Vertical heuristic";
-  public static final String VALUE_VERTICAL_HEURISTIC_NONE = "None";
-  public static final String PARAM_HORIZONTAL_HEURISTIC    = "Horizontal heuristic";
-  public static final String PARAM_MAPPING_HEURISTIC       = "Mapping heuristic";
-  public static final String PARAM_BALANCING_HEURISTIC     = "Balancing heuristic";
-  public static final String PARAM_SCHEDULING_HEURISTIC    = "Scheduling heuristic";
-  public static final String PARAM_ALLOCATION_HEURISTIC    = "Allocation heuristic";
-  public static final String PARAM_VERBOSE                 = "Verbose";
-  public static final String PARAM_DEBUG                   = "Debug";
+  public static final String PARAM_VERTICAL_HEURISTIC = "Vertical heuristic";
+
+  public static final String PARAM_HORIZONTAL_HEURISTIC = "Horizontal heuristic";
+
+  public static final String PARAM_MAPPING_HEURISTIC = "Mapping heuristic";
+
+  public static final String PARAM_BALANCING_HEURISTIC = "Balancing heuristic";
+
+  public static final String PARAM_SCHEDULING_HEURISTIC = "Scheduling heuristic";
+
+  public static final String PARAM_ALLOCATION_HEURISTIC = "Allocation heuristic";
+
+  public static final String PARAM_VERBOSE = "Verbose";
+
+  public static final String PARAM_DEBUG = "Debug";
+  public static final String VALUE_TRUE  = "True";
+  public static final String VALUE_FALSE = "False";
 
   @Override
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
@@ -122,22 +137,24 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
     PiGraph algorithm = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Design architecture = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
-    // ========================================================================
+
+    // ===========================================================================================================
     //
     // GRAPH TRANSFO & CLUSTER ID
     //
-    // ========================================================================
+    // ===========================================================================================================
 
     // Here, the algorithm parameter will be modified. It will no longer contain actors in clusters, but will contain
-    // directly the clusters.The scenario parameter will also be modified. The clusters constraints identified with the
-    // mapping heuristic will be added to the scenario.
-    algorithm = ClusterIdentifier.identify(algorithm, scenario, architecture, parameters);
+    // directly the clusters.The scenario parameter will also be modified. The clusters constraints will be added to the
+    // scenario.
+    algorithm = ClusterIdentifier.identify(algorithm /* will be modified */, scenario /* will be modified */,
+        architecture, parameters, workflow);
 
-    // ========================================================================
+    // ===========================================================================================================
     //
     // OUTPUTS
     //
-    // ========================================================================
+    // ===========================================================================================================
     final Map<String, Object> outputs = new HashMap<>();
 
     outputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, algorithm);
@@ -148,7 +165,7 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> result = new HashMap<>();
-    result.put(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE);
+    result.put(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, HeuristicGetter.VALUE_VERTICAL_HEURISTIC_NONE);
     result.put(ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, HeuristicGetter.URC_IDENTIFIER);
     result.put(ClusterCreationTask.PARAM_BALANCING_HEURISTIC, HeuristicGetter.COMPLETE_BALANCING);
     result.put(ClusterCreationTask.PARAM_VERBOSE, "true");

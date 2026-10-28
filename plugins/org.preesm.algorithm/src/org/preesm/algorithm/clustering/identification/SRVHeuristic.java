@@ -22,7 +22,7 @@ import org.preesm.model.slam.Design;
  *
  * @author rcazoulat
  */
-public class SRVHeuristic extends HorizontalHeuristic {
+public class SRVHeuristic implements HorizontalHeuristic {
 
   Map<AbstractVertex, Long> brv;
   long                      nPEs;
@@ -35,7 +35,9 @@ public class SRVHeuristic extends HorizontalHeuristic {
     condition &= !(actor instanceof DataInterface);
     condition &= this.brv.get(actor) > this.nPEs;
     condition &= actor.getAllDataPorts().stream().map(p -> p.getFifo()).allMatch(f -> !f.isDelayPresent());
-
+    if (condition) {
+      condition &= ClusteringHelper.actorIsInLoop(actor);
+    }
     return condition;
   }
 
@@ -47,7 +49,6 @@ public class SRVHeuristic extends HorizontalHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
 
     // Computing the basic repetition vector of the graph
     this.brv = PiBRV.compute(graph, BRVMethod.LCM);

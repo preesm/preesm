@@ -50,7 +50,6 @@ import org.junit.Test;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
 import org.preesm.algorithm.clustering.identification.SRVHeuristic;
-import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
@@ -100,20 +99,6 @@ public class SRVIdentificationTest {
       actorsInClusters.add(clusterActorList);
 
     }
-
-    // Debug
-    String log = "[";
-    for (final List<AbstractActor> chain : actorsInClusters) {
-      log += "[";
-      for (final AbstractActor a : chain) {
-        log += a.getName() + ", ";
-      }
-      log += "]";
-
-    }
-    log += "]";
-    PreesmLogger.getLogger().info(log);
-
   }
 
   /**
@@ -194,7 +179,7 @@ public class SRVIdentificationTest {
         this.actorF, this.actorA, this.actorG);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -241,7 +226,7 @@ public class SRVIdentificationTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC1, fifoBC2, fifoCD, fifoDE, fifoEF, fifoFG);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(16);

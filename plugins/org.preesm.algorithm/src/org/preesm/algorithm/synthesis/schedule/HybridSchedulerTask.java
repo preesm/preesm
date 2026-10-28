@@ -2,16 +2,16 @@ package org.preesm.algorithm.synthesis.schedule;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.common.util.EMap;
+import org.preesm.algorithm.clustering.ClusterCreationTask;
+import org.preesm.algorithm.clustering.identification.ClusterIdentifier;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
-import org.preesm.algorithm.synthesis.communications.OptimizedCommunicationInserter;
 import org.preesm.algorithm.synthesis.schedule.algos.APGANPiMMScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
 import org.preesm.algorithm.synthesis.schedule.algos.LegacyListScheduler;
@@ -24,7 +24,6 @@ import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
@@ -71,35 +70,29 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
             @Value(name = ListSchedulerTask.VALUE_ENERGY_AWARNESS_SEARCH_TYPE_HALVES,
                 effect = "Divides in halves the remaining available PEs and goes up/down depending"
                     + " if the FPS reached are below/above the objective") }),
-
-      @Parameter(name = HybridSchedulerTask.PARAM_TOP_THRESHOLD, values = {
-        @Value(name = "0", effect = "The top scheduler will never be called, only the bottom scheduler."),
-        @Value(name = "1",
-            effect = "Default value. The top scheduler will be called on the first level of the graph, "
-                + "and the bottom scheduler will be called on every graph under it. The value can be 2, 3, or more, "
-                + "and the top scheduler will be used for graphs of depth of 2, 3 or more, respectively."),
-        @Value(name = HybridSchedulerTask.VALUE_TOP_THRESHOLD_ALL,
-            effect = "This value garanties that the bottom scheduler will never be used, and that the top scheduler"
-                + " will be called for every graphs, no matter their depth") },
-          description = """
-
-              """),
-
       @Parameter(name = HybridSchedulerTask.PARAM_BOT_SCHEDULER,
-          values = { @Value(name = HybridSchedulerTask.VALUE_BOT_SCHEDULER_APGAN, effect = "") }, description = """
+          values = { @Value(name = HybridSchedulerTask.VALUE_BOT_SCHEDULER_APGAN, effect = "") }, description = ""),
+      @Parameter(name = HybridSchedulerTask.PARAM_VERBOSE,
+          values = { @Value(name = HybridSchedulerTask.VALUE_TRUE, effect = ""),
+            @Value(name = HybridSchedulerTask.VALUE_FALSE, effect = "") },
+          description = ""),
+      @Parameter(name = HybridSchedulerTask.PARAM_DEBUG,
+          values = { @Value(name = HybridSchedulerTask.VALUE_TRUE, effect = ""),
+            @Value(name = HybridSchedulerTask.VALUE_FALSE, effect = "") },
+          description = ""), })
 
-              """),
-
-    })
 public class HybridSchedulerTask extends ListSchedulerTask {
-
-  public static final String PARAM_TOP_THRESHOLD     = "Top Threshold";
-  public static final String VALUE_TOP_THRESHOLD_ALL = "all";
 
   public static final String PARAM_BOT_SCHEDULER       = "Bottom Scheduler";
   public static final String VALUE_BOT_SCHEDULER_APGAN = "APGAN";
 
   public static final String PARAM_VERBOSE = "Verbose";
+  public static final String VALUE_TRUE    = "True";
+  public static final String VALUE_FALSE   = "False";
+
+  public static final String PARAM_DEBUG = "Debug";
+
+  private boolean debug = false;
 
   private static final Logger logger = PreesmLogger.getLogger();
 
@@ -112,23 +105,10 @@ public class HybridSchedulerTask extends ListSchedulerTask {
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design arch = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
 
-    // Computing the threshold
-    final String thresholdValue = parameters.get(PARAM_TOP_THRESHOLD);
-    long depthThreshold;
-    if (thresholdValue.equals(VALUE_TOP_THRESHOLD_ALL)) {
-      depthThreshold = PiSDFFlattener.computeGraphMaxDepth(graph);
-    } else {
-      depthThreshold = Long.parseLong(thresholdValue);
-    }
+    debug = ClusterCreationTask.VALUE_TRUE.equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
 
     // Making the allocation for every hierarchical level of the graph.
-    final SynthesisResult result = executeRecursively(graph, scenario, arch, depthThreshold, 0, parameters, monitor,
-        nodeName, workflow);
-
-    PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
-    final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(graph, result.schedule);
-    final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
-    comIns.insertCommunications(graph, arch, scenario, result.schedule, result.mapping);
+    final SynthesisResult result = executeRecursively(graph, scenario, arch, parameters, monitor, nodeName, workflow);
 
     final Map<String, Object> outputs = new HashMap<>();
     outputs.put(AbstractWorkflowNodeImplementation.KEY_MAPPING, result.mapping);
@@ -137,15 +117,15 @@ public class HybridSchedulerTask extends ListSchedulerTask {
     return outputs;
   }
 
-  SynthesisResult executeRecursively(PiGraph graph, Scenario scenario, Design arch, long threshold, long currentDepth,
-      Map<String, String> parameters, IProgressMonitor monitor, String nodeName, Workflow workflow) {
+  SynthesisResult executeRecursively(PiGraph graph, Scenario scenario, Design arch, Map<String, String> parameters,
+      IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
     /** Choosing witch scheduler to use */
     final String botSchedulerValue = parameters.get(PARAM_BOT_SCHEDULER);
 
     IScheduler scheduler;
     String schedulerValue;
-    if (currentDepth < threshold) {
+    if (!graph.isCluster()) {
       scheduler = new LegacyListScheduler();
       schedulerValue = "List scheduler";
     } else {
@@ -160,29 +140,35 @@ public class HybridSchedulerTask extends ListSchedulerTask {
     }
 
     /** Scheduling and Mapping current graph */
-    PreesmLogger.getLogger().info("Scheduling / Mapping graph " + graph.getName() + " with " + schedulerValue);
+    String log = "Scheduling / Mapping graph " + graph.getName() + " with " + schedulerValue;
+    PreesmLogger.getLogger().info(log);
     final SynthesisResult result = scheduler.scheduleAndMap(graph, arch, scenario, parameters);
 
     final Schedule currentSchedule = result.schedule;
     final Mapping currentMapping = result.mapping;
 
+    if (debug && graph.isCluster()) {
+      ClusterIdentifier.exportGraph((PiGraph) ((HierarchicalSchedule) currentSchedule).getAttachedActor(),
+          "/Algo/generated/scheduling-debug/1.srdag-with-coms/", workflow);
+    }
+
     /** Scheduling each individual direct children graph of current graph, and adding it to the result */
     for (final PiGraph child : graph.getChildrenGraphs()) {
 
       // We get the original subgraph in PiSDF to avoid scheduling multiple times the same subgraph.
-      final PiGraph oriChild = PreesmCopyTracker.getOriginalSource(child);
+      final PiGraph sourceChild = PreesmCopyTracker.getSource(child);
       final EMap<PiGraph, Schedule> internalSchedules = currentSchedule.getInternalSchedules();
-      if (internalSchedules.containsKey(oriChild)) {
+      if (internalSchedules.containsKey(sourceChild)) {
         continue;
       }
-      final SynthesisResult childResult = executeRecursively(oriChild, scenario, arch, threshold, currentDepth + 1,
-          parameters, monitor, nodeName, workflow);
+      final SynthesisResult childResult = executeRecursively(sourceChild, scenario, arch, parameters, monitor, nodeName,
+          workflow);
 
       final Schedule childSchedule = childResult.schedule;
       final Mapping childMapping = childResult.mapping;
 
       /** Merging result in parent Schedule */
-      internalSchedules.put(oriChild, childSchedule);
+      internalSchedules.put(sourceChild, childSchedule);
 
       /** Merging result in parent Mapping */
       if (currentMapping == null) {
@@ -199,12 +185,10 @@ public class HybridSchedulerTask extends ListSchedulerTask {
 
           // Case if there is not the same info of the mapping of a in current and child mapping
         } else if (childMapping != null && currentMapping.getMapping(a) != childMapping.getMapping(a)) {
-          final StringBuilder log = new StringBuilder();
-          log.append("Conflicts between current Mapping and child Mapping for actor ");
-          log.append(a.getName());
-          log.append(". Choosing the child Mapping.");
+          log = "Conflicts between current Mapping and child Mapping for actor " + a.getName()
+              + ". Choosing the child Mapping.";
 
-          logger.log(Level.WARNING, log.toString());
+          logger.warning(log::toString);
 
           currentMapping.getMappings().removeKey(a);
           currentMapping.getMappings().put(a, childMapping.getMapping(a));
@@ -219,7 +203,6 @@ public class HybridSchedulerTask extends ListSchedulerTask {
   @Override
   public Map<String, String> getDefaultParameters() {
     final Map<String, String> parameters = super.getDefaultParameters();
-    parameters.put(PARAM_TOP_THRESHOLD, "1");
     parameters.put(PARAM_BOT_SCHEDULER, VALUE_BOT_SCHEDULER_APGAN);
 
     return parameters;

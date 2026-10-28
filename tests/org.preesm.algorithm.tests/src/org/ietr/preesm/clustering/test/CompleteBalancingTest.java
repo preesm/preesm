@@ -106,7 +106,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testFactor2() {
-    balancer.balanceFirings(topGraph, subGraph, 2);
+    balancer.balanceCluster(topGraph, subGraph, 2);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(2), brv.get(this.subGraph));
     assertEquals(Long.valueOf(128), brv.get(this.actorB));
@@ -115,7 +115,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testFactor4() {
-    balancer.balanceFirings(topGraph, subGraph, 4);
+    balancer.balanceCluster(topGraph, subGraph, 4);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(4), brv.get(this.subGraph));
     assertEquals(Long.valueOf(64), brv.get(this.actorB));
@@ -124,7 +124,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testFactor8() {
-    balancer.balanceFirings(topGraph, subGraph, 8);
+    balancer.balanceCluster(topGraph, subGraph, 8);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(8), brv.get(this.subGraph));
     assertEquals(Long.valueOf(32), brv.get(this.actorB));
@@ -133,7 +133,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testFactor16() {
-    balancer.balanceFirings(topGraph, subGraph, 16);
+    balancer.balanceCluster(topGraph, subGraph, 16);
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
     assertEquals(Long.valueOf(16), brv.get(this.subGraph));
     assertEquals(Long.valueOf(16), brv.get(this.actorB));
@@ -142,7 +142,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testFactor15() {
-    final List<PiGraph> clusters = balancer.balanceFirings(topGraph, subGraph, 15);
+    final List<PiGraph> clusters = balancer.balanceCluster(topGraph, subGraph, 15);
 
     assertEquals(2, clusters.size());
 
@@ -158,7 +158,7 @@ public class CompleteBalancingTest {
 
   @Test
   public void testBrd() {
-    final List<PiGraph> clusters = balancer.balanceFirings(topGraph, subGraph, 4);
+    final List<PiGraph> clusters = balancer.balanceCluster(topGraph, subGraph, 4);
     assertEquals(1, clusters.size());
 
     final PiGraph cluster = clusters.getFirst();
@@ -171,7 +171,7 @@ public class CompleteBalancingTest {
     assertTrue(isBrdPresentInCluster);
 
     final BroadcastActor brdInCluster = (BroadcastActor) cluster.getActors().stream()
-        .filter(a -> a instanceof BroadcastActor).toList().getFirst();
+        .filter(BroadcastActor.class::isInstance).toList().getFirst();
 
     assertEquals(1, brdInCluster.getDataInputPorts().getFirst().getExpression().evaluateAsLong());
     assertEquals(256 / 4, brdInCluster.getDataOutputPorts().getFirst().getExpression().evaluateAsLong());
@@ -181,8 +181,8 @@ public class CompleteBalancingTest {
 
   @Test
   public void testExceptionGraph() {
-    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(null, subGraph, 15));
-    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceFirings(topGraph, null, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceCluster(null, subGraph, 15));
+    Assert.assertThrows(PreesmRuntimeException.class, () -> balancer.balanceCluster(topGraph, null, 15));
   }
 
   private void createTestEnvironment() {
@@ -204,7 +204,7 @@ public class CompleteBalancingTest {
         this.brdActor, this.brdProducer);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -242,7 +242,7 @@ public class CompleteBalancingTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD, fifoBrdB, fifoProdBrd);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(256);

@@ -29,7 +29,7 @@ import org.preesm.model.slam.Design;
  *
  * @author rcazoulat
  */
-public class URCHeuristic extends HorizontalHeuristic {
+public class URCHeuristic implements HorizontalHeuristic {
 
   /**
    * basic repetition vector, one value for each vertex of the graph
@@ -46,18 +46,15 @@ public class URCHeuristic extends HorizontalHeuristic {
    */
   long nPEs;
 
-  /*
-   * ------------------------------------------------------------------------------------------------------
-   *
-   * Override methods
-   *
-   * ------------------------------------------------------------------------------------------------------
-   */
+  // ===========================================================================================================
+  //
+  // OVERRIDE METHODS
+  //
+  // ===========================================================================================================
 
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
 
     // Computing the basic repetition vector of the graph
     brv = PiBRV.compute(graph, BRVMethod.LCM);
@@ -84,20 +81,23 @@ public class URCHeuristic extends HorizontalHeuristic {
   @Override
   public boolean assessMergeable(AbstractActor seed, AbstractActor actor) {
 
-    // Check actor type
+    /** Check actor type */
     boolean isMergeable = actor instanceof ExecutableActor && !(actor instanceof DelayActor)
         && !(actor instanceof PiGraph) && !(actor instanceof SpecialActor);
 
-    // Check if actor has the correct repetition value
+    /** Check if actor has the correct repetition value */
     isMergeable &= Objects.equals(brv.get(actor), brv.get(seed));
 
-    // If actor is predecessor of seed
+    /** check if actor is in a loop */
+    isMergeable &= ClusteringHelper.actorIsInLoop(actor);
+
+    /** If actor is predecessor of seed */
     if (seed.getDirectPredecessors().contains(actor)) {
       isMergeable &= seed.getDataInputPorts().stream().allMatch(x -> checkFifo(x.getFifo()));
       isMergeable &= actor.getDataOutputPorts().stream().allMatch(x -> x.getFifo().getTarget().equals(seed));
       isMergeable &= seed.getDataInputPorts().stream().allMatch(x -> x.getFifo().getSource().equals(actor));
 
-      // If actor is successor of seed
+      /** If actor is successor of seed */
     } else if (seed.getDirectSuccessors().contains(actor)) {
       isMergeable &= seed.getDataOutputPorts().stream().allMatch(x -> checkFifo(x.getFifo()));
       isMergeable &= seed.getDataOutputPorts().stream().allMatch(x -> x.getFifo().getTarget().equals(actor));
@@ -112,7 +112,7 @@ public class URCHeuristic extends HorizontalHeuristic {
       return false;
     }
 
-    /* If all the checks are good, we can add actors in the list and return true */
+    /** If all the checks are good, we can add actors in the list and return true */
     alreadyIdentifiedActors.add(actor);
     return true;
   }
@@ -137,13 +137,11 @@ public class URCHeuristic extends HorizontalHeuristic {
     return "urc";
   }
 
-  /*
-   * ------------------------------------------------------------------------------------------------------
-   *
-   * URC heuristic specific methods
-   *
-   * ------------------------------------------------------------------------------------------------------
-   */
+  // ===========================================================================================================
+  //
+  // URC SPECIFIC METHODS
+  //
+  // ===========================================================================================================
 
   /**
    * This method verifies if the {@link Fifo fifo} is suited to potentially merge the other actor in the URC chain. It

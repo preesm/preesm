@@ -46,7 +46,7 @@ import org.preesm.model.slam.Design;
  *
  * @author dgageot
  */
-public class APGANPiMMScheduler extends AbstractScheduler {
+public class APGANPiMMScheduler extends AbstractPiMMScheduler {
 
   @Override
   protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
@@ -146,11 +146,9 @@ public class APGANPiMMScheduler extends AbstractScheduler {
 
     // Build corresponding hierarchical actor
     final List<AbstractActor> actors = Arrays.asList(couple.getLeft(), couple.getRight());
-    // final Set<AbstractActor> temporarySet = new HashSet<>(actors);
     final String temporaryClusterName = "cluster" + clusterId;
     final long nClusterRep = MathFunctionsHelper.gcd(rv.get(actors.get(0)), rv.get(actors.get(1)));
 
-    // final PiGraph clusteredPair = ClusterCreator.create(cluster, temporarySet, temporaryClusterName);
     final PiGraph clusteredPair = new PiSDFSubgraphBuilder(cluster, actors, temporaryClusterName).build();
     clusteredPair.setClusterValue(true);
     setClusterConstraints(clusteredPair, scenario);
@@ -223,8 +221,6 @@ public class APGANPiMMScheduler extends AbstractScheduler {
       Schedule outputSchedule = null;
 
       // If the actor is parallelizable, create a parallel hierarchical schedule
-      // TODO : see if it works to just replace the SeqActorSched by a ParActorSched instead of a ParHierSched ->
-      // SeqActSched
       if (!isActorDelayed(actor)) {
         final ParallelHiearchicalSchedule parallelNode = ScheduleFactory.eINSTANCE.createParallelHiearchicalSchedule();
         parallelNode.getChildren().add(actorSchedule);

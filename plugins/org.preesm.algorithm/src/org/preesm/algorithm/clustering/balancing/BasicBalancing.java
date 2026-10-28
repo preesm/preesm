@@ -9,7 +9,6 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
 import org.preesm.model.pisdf.AbstractVertex;
-import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
@@ -38,13 +37,12 @@ public class BasicBalancing extends BalancingHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-    super.initHeuristicParameters(graph, scenario, arch, taskParameters);
     brv = PiBRV.compute(graph, BRVMethod.LCM);
     verbose = taskParameters == null || "true".equalsIgnoreCase(taskParameters.get(ClusterCreationTask.PARAM_VERBOSE));
   }
 
   @Override
-  public List<PiGraph> balanceFirings(PiGraph topgraph, PiGraph cluster, long nPEs) {
+  public List<PiGraph> balanceCluster(PiGraph topgraph, PiGraph cluster, long nPEs) {
 
     if (topgraph == null) {
       throw new PreesmRuntimeException("top graph is null");
@@ -81,26 +79,10 @@ public class BasicBalancing extends BalancingHeuristic {
     // Number of repetition of subgraph in cluster,
     final long ratio = clusterRepetition / scale;
 
-    // Log
-    if (verbose) {
-      log = "[Partitioning] > rest = " + rest + ", scale = " + scale + ", repetition = " + clusterRepetition
-          + ", ratio = " + ratio;
-      PreesmLogger.getLogger().info(log);
-    }
-
-    // ------------------------------------------------------------------------------------------- //
     // Modifying the expressions of the ports of interfaces
-    // ------------------------------------------------------------------------------------------- //
     for (final DataInterface dataInterface : cluster.getDataInterfaces()) {
 
-      long expr;
-
-      // Case if dataInterface is an input interface
-      if (dataInterface instanceof DataInputInterface) {
-        expr = dataInterface.getDataPort().getFifo().getTargetPort().getExpression().evaluateAsLong() * ratio;
-      } else {
-        expr = dataInterface.getDataPort().getFifo().getSourcePort().getExpression().evaluateAsLong() * ratio;
-      }
+      final long expr = dataInterface.getDataPort().getFifo().getTargetPort().getExpression().evaluateAsLong() * ratio;
 
       // Top graph & subgraph ports values modifications
       dataInterface.getGraphPort().setExpression(expr);
@@ -109,12 +91,11 @@ public class BasicBalancing extends BalancingHeuristic {
 
     // Log -> track cluster1 modification
     if (verbose) {
-      log = makeCompareLog(cluster, topgraph, clusterOldExprs);
+      log = makeBalancingLog(cluster, topgraph, clusterOldExprs);
       PreesmLogger.getLogger().info(log);
     }
 
     return clusters;
-
   }
 
 }

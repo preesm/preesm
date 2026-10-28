@@ -5,12 +5,12 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.PiGraph;
 
 /**
- * Abstract {@link heuristic} made to horizontally clusterize a {@link PiGraph graph}. The implementation classes are
- * stored in the package clustering.identification
+ * Interface made to horizontally clusterize a {@link PiGraph graph}. The implementation classes are stored in the
+ * package clustering.identification
  *
  * @author rcazoulat
  */
-public abstract class HorizontalHeuristic extends IdentificationHeuristic {
+public interface HorizontalHeuristic extends IdentificationHeuristic {
 
   /***
    * Assesses whether an {@link AbstractActor actor} can be merged with the cluster started from the seed. The seed is
@@ -35,14 +35,11 @@ public abstract class HorizontalHeuristic extends IdentificationHeuristic {
   public abstract boolean assesSeedable(AbstractActor actor);
 
   /***
-   * This method can be overrided, and return true if the created cluster is valid, false otherwise. By default, this
-   * method return true, as a created cluster is always identified as valid.
+   * Return true if the created cluster is valid, false otherwise.
    *
    * @param cluster
    *          the cluster to be checked
    * @return the validity of the cluster
    */
-  public boolean validateCluster(Set<AbstractActor> cluster) {
-    return true;
-  }
+  public boolean validateCluster(Set<AbstractActor> cluster);
 }

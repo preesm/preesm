@@ -6,27 +6,12 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 
 /**
- * This class represents any kind of heuristic, that can be used in a {@link PiGraph graph} clustering process. If a new
- * heuristic is created, it can be registered in the {@link HeuristicGetter} class.
+ * This interface represents any kind of heuristic, that can be used in a {@link PiGraph graph} clustering process. If a
+ * new heuristic is created, it has to be registered in the {@link HeuristicGetter} class.
  *
  * @author rcazoulat
  */
-public abstract class Heuristic {
-
-  /**
-   * The {@link top graph} of the algorithm, accessible to every {@link Heuristic heuristics} if not set to null.
-   */
-  protected PiGraph graph = null;
-
-  /**
-   * The {@link Scenario scenario}, accessible to every {@link Heuristic heuristics} if not set to null.
-   */
-  protected Scenario scenario = null;
-
-  /**
-   * The {@link Design architecture}, accessible to every {@link Heuristic heuristics} if not set to null.
-   */
-  protected Design arch = null;
+public interface Heuristic {
 
   /***
    *
@@ -40,12 +25,7 @@ public abstract class Heuristic {
    *          all the parameters of the workflow {@link Clustering2Task task}, that could give useful informations to
    *          the {@link Heuristic heuristic}
    */
-  public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
-      Map<String, String> taskParameters) {
-    this.graph = graph;
-    this.scenario = scenario;
-    this.arch = arch;
-
-  }
+  public abstract void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
+      Map<String, String> taskParameters);
 
 }

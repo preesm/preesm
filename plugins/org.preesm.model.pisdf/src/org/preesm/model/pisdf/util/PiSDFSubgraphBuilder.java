@@ -60,6 +60,7 @@ import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
+import org.preesm.model.pisdf.PortMemoryAnnotation;
 import org.preesm.model.pisdf.brv.BRVMethod;
 import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.CheckerErrorLevel;
@@ -203,6 +204,11 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       inputInterface.getGraphPort().setExpression(interfaceExpr);
       inputInterface.getDataPort().setExpression(interfaceExpr);
 
+      // Compute port annotation
+      final PortMemoryAnnotation annotation = dataInputPort.getAnnotation();
+      inputInterface.getGraphPort().setAnnotation(annotation);
+      inputInterface.getDataPort().setAnnotation(annotation);
+
       // Parent graph -> interface
       final Fifo outFifo = dataInputPort.getFifo();
       inputInterface.getGraphPort().setIncomingFifo(outFifo); // set the outer port's incoming fifo
@@ -235,6 +241,11 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
       }
       outputInterface.getGraphPort().setExpression(interfaceExpr);
       outputInterface.getDataPort().setExpression(interfaceExpr);
+
+      // Compute port annotation
+      final PortMemoryAnnotation annotation = dataOutputPort.getAnnotation();
+      outputInterface.getGraphPort().setAnnotation(annotation);
+      outputInterface.getDataPort().setAnnotation(annotation);
 
       // Parent interface -> graph
       final Fifo outFifo = dataOutputPort.getFifo();

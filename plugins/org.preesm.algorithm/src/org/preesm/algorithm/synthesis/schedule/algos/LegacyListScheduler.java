@@ -63,7 +63,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
  *
  * @author anmorvan
  */
-public class LegacyListScheduler extends AbstractScheduler {
+public class LegacyListScheduler extends AbstractSingleRateScheduler {
 
   @Override
   protected SynthesisResult exec(final PiGraph algorithm /* SRDAG */, final Design architecture,

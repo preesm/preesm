@@ -176,8 +176,8 @@ public class ScheduleOrderManager {
     ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
     ScheduleUtil.getAllReferencedActors(schedule).forEach(tdag::addVertex);
     for (final Fifo fifo : pigraph.getFifos()) {
-      final AbstractActor src = fifo.getSourcePort().getContainingActor();
-      final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
+      final AbstractActor src = fifo.getSource();
+      final AbstractActor tgt = fifo.getTarget();
       if (dag.getAllEdges(src, tgt).isEmpty()) {
         dag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
         tdag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));

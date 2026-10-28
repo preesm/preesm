@@ -52,7 +52,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
-import org.preesm.model.scenario.SimulationInfo;
 import org.preesm.model.scenario.check.FifoTypeChecker;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
@@ -65,7 +64,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
     inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
       @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class),
-      @Port(name = "scenario", type = Scenario.class) },
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class) },
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_MEM_EX, type = PiMemoryExclusionGraph.class) },
 
     shortDescription = "Executes the memory scripts associated to actors and merge buffers.",
@@ -163,9 +162,6 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(final Map<String, Object> inputs, final Map<String, String> parameters,
       final IProgressMonitor monitor, final String nodeName, final Workflow workflow) {
 
-    // Get verbose parameter
-    final boolean verbose = parameters.get(PiMemoryScriptTask.PARAM_VERBOSE).equals(PiMemoryScriptTask.VALUE_TRUE);
-
     // Get the log parameter
     final String log = parameters.get(PiMemoryScriptTask.PARAM_LOG);
 
@@ -178,34 +174,36 @@ public class PiMemoryScriptTask extends AbstractTaskImplementation {
     final long alignment = IMemoryAllocation.extractAlignment(valueAlignment);
 
     // Retrieve the input graph
-    final PiGraph graph = (PiGraph) inputs.get("PiMM");
+    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
     // Get the data types from the scenario
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     FifoTypeChecker.checkMissingFifoTypeSizes(scenario);
-    final SimulationInfo simulationInfo = scenario.getSimulationInfo();
 
     // Get check policy
     final String checkString = parameters.get(PiMemoryScriptTask.PARAM_CHECK);
 
-    final PiMemoryExclusionGraph meg = (PiMemoryExclusionGraph) inputs.get("MemEx");
+    final PiMemoryExclusionGraph meg = (PiMemoryExclusionGraph) inputs
+        .get(AbstractWorkflowNodeImplementation.KEY_MEM_EX);
 
     // execute
-    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, verbose);
+    final PiMemoryScriptEngine engine = new PiMemoryScriptEngine(falseSharingPreventionFlag, alignment, log, true);
     try {
-      engine.runScripts(graph, simulationInfo, checkString);
+      engine.runScripts(graph, scenario.getSimulationInfo(), checkString);
     } catch (final EvalError e) {
       final String message = "An error occurred during memory scripts execution";
       throw new PreesmRuntimeException(message, e);
     }
     engine.updateMemEx(meg);
     if (!log.equals("")) {
+      // generate
       engine.generateLog(scenario, log);
+
     }
 
     // Outputs
     final Map<String, Object> outputs = new LinkedHashMap<>();
-    outputs.put("MemEx", meg);
+    outputs.put(AbstractWorkflowNodeImplementation.KEY_MEM_EX, meg);
     return outputs;
   }
 }

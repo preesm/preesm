@@ -65,13 +65,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
     outputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class) },
 
     parameters = { @Parameter(name = PiSDFToSingleRateTask.CONSISTENCY_METHOD,
-        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }), })
+        values = { @Value(name = "LCM", effect = ""), @Value(name = "Topology", effect = "") }) })
 public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
 
   public static final String CONSISTENCY_METHOD = "Consistency_Method";
-
-  public static final String PARAM_DEPTH     = "Depth";
-  public static final String VALUE_DEPTH_ALL = "all";
 
   final Logger logger = PreesmLogger.getLogger();
 
@@ -99,7 +96,6 @@ public class PiSDFToSingleRateTask extends AbstractTaskImplementation {
   public Map<String, String> getDefaultParameters() {
     final LinkedHashMap<String, String> res = new LinkedHashMap<>();
     res.put(CONSISTENCY_METHOD, BRVMethod.LCM.getLiteral());
-    res.put(PARAM_DEPTH, "1");
     return res;
   }
 

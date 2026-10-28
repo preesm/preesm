@@ -1,11 +1,11 @@
 package org.preesm.algorithm.clustering.identification;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.preesm.algorithm.clustering.ClusterCreationTask;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
@@ -20,8 +20,7 @@ import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
-import org.preesm.model.pisdf.factory.PiMMUserFactory;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
+import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
@@ -29,6 +28,7 @@ import org.preesm.model.slam.ComponentInstance;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The main method of this class is {@link #identify(PiGraph, Scenario, Design, Map, Workflow) identify}. Check its
@@ -39,14 +39,17 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class ClusterIdentifier {
 
   private ClusterIdentifier() {
+    // Forbid instantiation
   }
 
   /**
-   * This method will (1) identify and create different clusters in {@link PiGraph algorithm} (in a
-   * {@link VerticalHeuristic vertical} and in an {@link HorizontalHeuristic horizontal} way), (2) select a
-   * {@link Component component} for each identified clusters and will update the constraints in the {@link Scenario
-   * scenario}, and then (3) balance weights to adapt the the repetition value of the clusters according to a
-   * {@link BalancingHeuristic balancing heuristic}.
+   * This method will :<br>
+   * -1. identify and create different clusters in {@link PiGraph algorithm} (in a {@link VerticalHeuristic vertical}
+   * and in an {@link HorizontalHeuristic horizontal} way). <br>
+   * -2. select a {@link Component component} for each identified clusters and will update the constraints in the
+   * {@link Scenario scenario}.<br>
+   * -3. balance weights to adapt the the repetition value of the clusters according to a {@link BalancingHeuristic
+   * balancing heuristic}.
    *
    * @param algorithm
    *          the top {@link PiGraph graph} that describes the algorithm.
@@ -61,87 +64,115 @@ public class ClusterIdentifier {
    *         that has been updated with the clusters'constraints as indirect output.
    */
   public static PiGraph identify(PiGraph algorithm, Scenario scenario, Design architecture,
-      Map<String, String> parameters) {
+      Map<String, String> parameters, Workflow workflow) {
 
     // Getting parameters
-    final boolean verbose = "true".equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
+    final boolean verbose = ClusterCreationTask.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
+    final boolean debug = ClusterCreationTask.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
     final String vertiIdentifierName = parameters
-        .getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE)
+        .getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, HeuristicGetter.VALUE_VERTICAL_HEURISTIC_NONE)
         .toLowerCase();
     final String horizIdentifierName = parameters.getOrDefault(ClusterCreationTask.PARAM_HORIZONTAL_HEURISTIC, "")
         .toLowerCase();
     final String balancerName = parameters.getOrDefault(ClusterCreationTask.PARAM_BALANCING_HEURISTIC, "")
         .toLowerCase();
 
-    final boolean verticalEnabled = !ClusterCreationTask.VALUE_VERTICAL_HEURISTIC_NONE.toLowerCase()
+    final boolean verticalEnabled = !HeuristicGetter.VALUE_VERTICAL_HEURISTIC_NONE.toLowerCase()
         .equals(vertiIdentifierName);
 
     // Retrieving heuristics
     final HorizontalHeuristic horizIdentifier = (HorizontalHeuristic) HeuristicGetter.getHeuristic(horizIdentifierName);
     final BalancingHeuristic clusterBalancer = (BalancingHeuristic) HeuristicGetter.getHeuristic(balancerName);
 
-    // ---------------------------------------------------------------------------------------------- //
-    // Vertical clusters
-    // ---------------------------------------------------------------------------------------------- //
+    // ===========================================================================================================
+    //
+    // VERTICAL CLUSTERING
+    //
+    // ===========================================================================================================
     VerticalHeuristic vertiIdentifier = null;
     if (verticalEnabled) {
       vertiIdentifier = (VerticalHeuristic) HeuristicGetter.getHeuristic(vertiIdentifierName);
       vertiIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
     }
 
-    algorithm = buildVerticalClusters(algorithm, vertiIdentifier);
+    buildVerticalClusters(algorithm /* will be modified */, vertiIdentifier);
 
     // Adding special actors for every hierarchical level of algorithm.
     // Can be useful to unlock memory reuse without passing by a SrDAG
     ClusteringHelper.addAllSpecialActors(algorithm);
 
     if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: building vertical clusters done.");
+      PreesmLogger.getLogger().info("Cluster creation: building vertical clusters done.");
     }
 
-    // ---------------------------------------------------------------------------------------------- //
-    // Horizontal clusters
-    // ---------------------------------------------------------------------------------------------- //
+    if (debug) {
+      exportGraph(algorithm, "/Algo/generated/clustering-debug/1.vertical/", workflow);
+    }
+
+    // ===========================================================================================================
+    //
+    // HORIZONTAL CLUSTERING
+    //
+    // ===========================================================================================================
     // It will modify the algorithm graph & return the created subgraphs list
 
     horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
-
-    List<PiGraph> clustersList = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
+    final List<PiGraph> clusters1 = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
         horizIdentifier, verbose);
 
-    if (verbose) {
-      PreesmLogger.getLogger()
-          .info("Clustering Id: building horizontal clusters with " + horizIdentifier + " heuristic done.");
+    // Adding special actors for every hierarchical level of algorithm.
+    // Can be useful to unlock memory reuse without passing by a SrDAG
+    ClusteringHelper.addAllSpecialActors(algorithm);
+
+    if (verbose && !clusters1.isEmpty()) {
+      PreesmLogger.getLogger().info(
+          () -> "Cluster creation: building horizontal clusters with " + horizIdentifierName + " heuristic done.");
+      PreesmLogger.getLogger().info(() -> "Cluster creation: " + clusters1.size() + " created clusters with names "
+          + clusters1.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
+    } else if (verbose) {
+      PreesmLogger.getLogger().info(() -> "No clusters have been found with heuristic " + horizIdentifierName);
     }
 
-    // ---------------------------------------------------------------------------------------------- //
-    // Balancing
-    // ---------------------------------------------------------------------------------------------- //
+    if (debug) {
+      exportGraph(algorithm, "/Algo/generated/clustering-debug/2.horizontal", workflow);
+    }
+
+    // ===========================================================================================================
+    //
+    // BALANCING
+    //
+    // ===========================================================================================================
     // It will modify cluster lists and clusters' input and output weights
-    final List<PiGraph> newClustersList = new ArrayList<>();
     final long nPEs = ClusteringHelper.computeSingleNodeCoreEquivalent(scenario);
 
     clusterBalancer.initHeuristicParameters(algorithm, scenario, architecture, parameters);
+    clusterBalancer.balance(algorithm /* will be modified */, nPEs);
+    final List<PiGraph> clusters2 = ClusteringHelper.getClusters(algorithm);
 
-    for (final PiGraph cluster : clustersList) {
-
-      clusterBalancer.balanceFirings(algorithm /* will be modified */, cluster, nPEs).stream().forEach(c -> {
-        newClustersList.add(c);
-      });
+    if (verbose && !clusters2.isEmpty()) {
+      PreesmLogger.getLogger().info("Cluster creation: partitioning clusters done");
+      if (clusters1.size() < clusters2.size()) {
+        PreesmLogger.getLogger()
+            .info(() -> "Cluster creation: The list of clusters has been updated. " + clusters2.size()
+                + " created clusters with names "
+                + clusters2.stream().map(c -> c.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
+      }
     }
 
-    clustersList = newClustersList;
-
-    if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: partitioning clusters done");
+    if (debug) {
+      exportGraph(algorithm, "/Algo/generated/clustering-debug/3.balanced/", workflow);
     }
 
-    // ---------------------------------------------------------------------------------------------- //
-    // Clusters constraints
-    // ---------------------------------------------------------------------------------------------- //
+    // ===========================================================================================================
+    //
+    // CLUSTERS CONSTRAINTS
+    //
+    // ===========================================================================================================
     // It will modify the scenario by adding constraints.
 
-    for (final PiGraph cluster : clustersList) {
+    for (final PiGraph cluster : clusters2) {
 
       // Updating the constraints of the cluster
       final List<AbstractActor> filtered = cluster.getActors().stream()
@@ -153,7 +184,7 @@ public class ClusterIdentifier {
     }
 
     if (verbose) {
-      PreesmLogger.getLogger().info("Clustering Id: clusters constraints Id done");
+      PreesmLogger.getLogger().info("Cluster creation: clusters constraints done");
     }
 
     return algorithm;
@@ -169,14 +200,10 @@ public class ClusterIdentifier {
    * @param heuristic
    *          the vertical clustering heuristic, used to merge different graphs.
    */
-  public static PiGraph buildVerticalClusters(PiGraph graph, VerticalHeuristic heuristic) {
-    if (heuristic == null) {
-      return PiSDFFlattener.flatten(graph, true);
+  public static void buildVerticalClusters(PiGraph graph, VerticalHeuristic heuristic) {
+    if (heuristic != null) {
+      buildVerticalClustersRec(null, graph, heuristic);
     }
-    final PiGraph graphCopy = PiMMUserFactory.instance.copyPiGraphWithHistory(graph);
-    buildVerticalClustersRec(null, graphCopy, heuristic);
-    return graphCopy;
-
   }
 
   /**
@@ -191,12 +218,23 @@ public class ClusterIdentifier {
    *          the vertical clustering heuristic, used to merge different graphs.
    */
   private static void buildVerticalClustersRec(PiGraph parentGraph, PiGraph graph, VerticalHeuristic heuristic) {
+
+    /**
+     * Some complex heuristics might want a quick way to evaluate a whole graph before diving into the two other methods
+     * that are assessFlatteingBefore and assessFlatteningAfter
+     */
+    if (heuristic.assessGraph(graph)) {
+      return;
+    }
+
+    /** Top-down building */
     heuristic.assessFlatteningBefore(parentGraph, graph);
 
     for (final PiGraph subgraph : graph.getChildrenGraphs()) {
       buildVerticalClustersRec(graph, subgraph, heuristic);
     }
 
+    /** Bottom-up building */
     heuristic.assessFlatteningAfter(parentGraph, graph);
   }
 
@@ -219,23 +257,16 @@ public class ClusterIdentifier {
     // The list that will be returned
     final List<PiGraph> listClusters = new ArrayList<>();
 
-    /*---------------------------------------
-     * STEP 1
-     *---------------------------------------
-     * Exploring the children graphs, in a recursive way
-     */
-
+    /** 1. Exploring the children graphs, in a recursive way */
     for (final PiGraph subGraph : graph.getChildrenGraphs()) {
       final var subClusterList = buildHorizontalClusters(subGraph, arch, scenario, heuristic, verbose);
       listClusters.addAll(subClusterList);
     }
 
-    // ---------------------------------------
-    // STEP 2
-    // ---------------------------------------
-
-    // Seek for clusters within the graph. The first step is to choose an actor to start the cluster from : the "seed".
-    // The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
+    /**
+     * 2. Seek for clusters within the graph. The first step is to choose an actor to start the cluster from : the
+     * "seed". The second step is to merge (un)direct neighbors of the seed, respecting the heuristic.
+     */
 
     // Actors of the graph
     final List<AbstractActor> actors = graph.getActors().stream()
@@ -253,9 +284,7 @@ public class ClusterIdentifier {
       boolean seedFound = false;
       AbstractActor potentialSeed = null;
 
-      // ---------------------------------------
-      // SUB-STEP 1 : identify a seed
-      // ---------------------------------------
+      /** 2.1. Identify a seed */
 
       // **Nested while loop** : Try to find a valid seed
       while (!seedFound && !graphIsFullySearched) {
@@ -283,13 +312,11 @@ public class ClusterIdentifier {
       // If the nested while loop has ended, but no seed has been found,
       // it means that the graph is fully searched. End of the First while loop.
       if (!seedFound) {
-        PreesmLogger.getLogger().info("No seed has been found, end of cluster search");
         continue;
       }
 
-      /* ----- SUB-STEP 2 : identify mergeable actors according to the seed. */
+      /** 2.1. identify mergeable actors according to the seed. */
 
-      // Now we have a seed, let's build a list of all the actors we want to merge.
       // They will all be (un)direct neighbors of the seed.
       final Set<AbstractActor> visited = new HashSet<>();
       final Set<AbstractActor> actorsToMerge = buildMergeList(potentialSeed, visited, identifiedActors, heuristic);
@@ -300,10 +327,7 @@ public class ClusterIdentifier {
         continue;
       }
 
-      // ---------------------------------------
-      // STEP 4
-      // ---------------------------------------
-      // Merging of identified actors
+      /** 3. Merging of identified actors */
 
       // Mark the seed and the merged actors as identified
       identifiedActors.addAll(actorsToMerge);
@@ -314,14 +338,11 @@ public class ClusterIdentifier {
 
       // Log
       if (verbose) {
-        final String info = "> Clustering actors " + actorsToMerge.stream().map(a -> a.getName()).toList()
-            + " into cluster " + clusterName;
-        PreesmLogger.getLogger().log(Level.INFO, info);
-
+        PreesmLogger.getLogger().info(() -> "Creating cluster " + clusterName + ", inner actors: "
+            + actorsToMerge.stream().map(a -> a.getName()).reduce((s1, s2) -> s1 + ", " + s2).get());
       }
 
       // Creating the cluster
-      // final PiGraph cluster = ClusterCreator.create(graph, actorsToMerge, clusterName);
       final PiGraph cluster = new PiSDFSubgraphBuilder(graph, new ArrayList<>(actorsToMerge), clusterName).build();
       cluster.setClusterValue(true);
       listClusters.add(cluster);
@@ -382,4 +403,15 @@ public class ClusterIdentifier {
     }
     return actorsToMerge;
   }
+
+  public static void exportGraph(PiGraph graph, String path, Workflow workflow) {
+    final PiSDFExporterTask exporter = new PiSDFExporterTask();
+    final Map<String, Object> inputs = new HashMap<>();
+    inputs.put(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, graph);
+    final Map<String, String> params = new HashMap<>();
+    params.put(PiSDFExporterTask.PARAM_PATH, path);
+    params.put(PiSDFExporterTask.PARAM_HIER, "True");
+    exporter.execute(inputs, params, null, null, workflow);
+  }
+
 }

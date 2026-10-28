@@ -2,6 +2,7 @@ package org.preesm.algorithm.clustering.identification;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -18,13 +19,15 @@ import org.preesm.model.slam.Design;
  * @author jamorin
  *
  */
-public class SimpleFPGAIdentifier extends HorizontalHeuristic {
+public class SimpleFPGAIdentifier implements HorizontalHeuristic {
 
   public static final int SUCCESSOR   = 0;
   public static final int PREDECESSOR = 1;
 
   int       position;
   Component refArchi;
+
+  Scenario scenario;
 
   /***
    * Successor actors are eligible for merging if all their predecessors have a mapping to the same arch refArchi.
@@ -87,18 +90,22 @@ public class SimpleFPGAIdentifier extends HorizontalHeuristic {
   @Override
   public void initHeuristicParameters(PiGraph graph, Scenario scenario, Design arch,
       Map<String, String> taskParameters) {
-
-    this.position = SUCCESSOR;
     this.scenario = scenario;
-
+    this.position = SUCCESSOR;
     final ComponentInstance refCPU = scenario.getSimulationInfo().getMainOperator();
     this.refArchi = refCPU.getComponent();
-
   }
 
   @Override
   public String getPrefix() {
-    return "cluster";
+    return "fclusterpga"; // Football Club Lusterpga
+  }
+
+  @Override
+  public boolean validateCluster(Set<AbstractActor> cluster) {
+
+    /** A cluster made by this heuristic is always valid */
+    return true;
   }
 
 }

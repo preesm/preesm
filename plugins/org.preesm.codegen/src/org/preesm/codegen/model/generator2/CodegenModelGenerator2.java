@@ -92,7 +92,6 @@ import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.ConfigInputPort;
-import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -441,18 +440,18 @@ public class CodegenModelGenerator2 {
 
     final PortDirection dir;
     final InitActor initActor;
-    if (actor instanceof InitActor) {
-      initActor = (InitActor) actor;
-      fifoCall.setOperation(FifoOperation.POP);
-      dir = PortDirection.OUTPUT;
-
-    } else if (actor instanceof final EndActor endActor) {
-      initActor = (InitActor) endActor.getInitReference();
-      fifoCall.setOperation(FifoOperation.PUSH);
-      dir = PortDirection.INPUT;
-
-    } else {
-      throw new PreesmRuntimeException();
+    switch (actor) {
+      case final InitActor iActor -> {
+        initActor = iActor;
+        fifoCall.setOperation(FifoOperation.POP);
+        dir = PortDirection.OUTPUT;
+      }
+      case final EndActor endActor -> {
+        initActor = (InitActor) endActor.getInitReference();
+        fifoCall.setOperation(FifoOperation.PUSH);
+        dir = PortDirection.INPUT;
+      }
+      default -> throw new PreesmRuntimeException();
     }
 
     final Buffer buffer = (Buffer) memoryLinker.getPortToVariableMap().get(actor.getDataPort());
@@ -581,15 +580,15 @@ public class CodegenModelGenerator2 {
     CHeaderRefinement clusterRefinement;
 
     /** Verify if the original cluster has not been generated yet */
-    final PiGraph oriCluster = PreesmCopyTracker.getOriginalSource(cluster);
-    if (this.alreadyVisitedClusters.containsKey(oriCluster)) {
-      clusterRefinement = this.alreadyVisitedClusters.get(oriCluster);
+    final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
+    if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
+      clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
     } else {
 
       /** if not, Create refinement block for cluster */
-      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(oriCluster);
-      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(oriCluster, scenario,
-          schedule.getInternalSchedules().get(oriCluster), clusterWorkMem);
+      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
+      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
+          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
 
       clusterGenerator.generate();
 
@@ -600,14 +599,14 @@ public class CodegenModelGenerator2 {
       refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
       refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
       refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
-      refinementBlock.setName(oriCluster.getName());
-      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(oriCluster).forEach(h -> refinementBlock.getHeaders().add(h));
+      refinementBlock.setName(sourceCluster.getName());
+      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
 
       this.refinementBlocks.add(refinementBlock);
 
-      clusterRefinement = buildClusterRefinement(oriCluster, scenario);
+      clusterRefinement = buildClusterRefinement(sourceCluster, scenario);
 
-      this.alreadyVisitedClusters.put(oriCluster, clusterRefinement);
+      this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
     }
     /** Transform cluster in a normal actor, with a c refinement */
     final Actor actorCluster = PiMMUserFactory.instance.createActor();
@@ -670,10 +669,8 @@ public class CodegenModelGenerator2 {
         initArg.setType("int");
         initArgs.add(initArg);
 
-      } else if (port instanceof final DataInputPort dip) {
-        loopArg.setType(dip.getFifo().getType());
-      } else if (port instanceof final DataOutputPort dop) {
-        loopArg.setType(dop.getFifo().getType());
+      } else if (port instanceof final DataPort dataPort) {
+        loopArg.setType(dataPort.getFifo().getType());
       } else {
         throw new PreesmRuntimeException("Port" + port.getName() + " is neither config nor data input/output.");
       }
@@ -701,22 +698,9 @@ public class CodegenModelGenerator2 {
       throw new PreesmRuntimeException("Cluster " + cluster.getName() + " should be a sub-graph, not the top graph.");
     }
     actor.setName(cluster.getName());
-    for (final Port port : cluster.getAllPorts()) {
-      if (port instanceof final DataPort dp) {
-        if (dp instanceof final DataInputPort dip) {
-          actor.getDataInputPorts().add(dip);
-        }
-        if (dp instanceof final DataOutputPort dop) {
-          actor.getDataOutputPorts().add(dop);
-        }
-      }
-      if (port instanceof final ConfigInputPort cip) {
-        actor.getConfigInputPorts().add(cip);
-      }
-      if (port instanceof final ConfigOutputPort cop) {
-        actor.getConfigOutputPorts().add(cop);
-      }
-    }
+
+    cluster.getAllPorts().forEach(actor::addPort);
+
     parent.removeActor(cluster);
     parent.addActor(actor);
 
@@ -736,7 +720,7 @@ public class CodegenModelGenerator2 {
 
     /** Add constraints in scenario */
     final EList<ComponentInstance> possibleMappings = scenario.getPossibleMappings(cluster);
-    possibleMappings.stream().forEach(ci -> scenario.getConstraints().addConstraint(ci, actor));
+    possibleMappings.forEach(ci -> scenario.getConstraints().addConstraint(ci, actor));
 
     /** Add the actor timing in scenario */
     // Retrieving component types where the mapping is possible

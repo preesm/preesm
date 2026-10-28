@@ -19,7 +19,6 @@ import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
@@ -147,7 +146,7 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
                 effect = "No special care is taken to align the buffers in memory."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_DATA,
                 effect = "All buffers are aligned on addresses that are multiples of their size. For example, a 32 "
-                    + "bites integer is aligned on 32 bits address."),
+                    + "bits integer is aligned on 32 bits address."),
             @Value(name = MemoryAllocatorTask.VALUE_ALIGNEMENT_FIXED + "n",
                 effect = "Where $$n\\in \\mathbb{N}^*$$. This forces the allocation algorithm to align all buffers"
                     + " on addresses that are multiples of n bits.") }),
@@ -155,20 +154,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           description = "Number of random order tested when using the Shuffle value for the Best/First Fit order"
               + " parameter.",
           values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }),
-
-      @Parameter(name = HybridAllocationTask.PARAM_TOP_THRESHOLD, values = {
-        @Value(name = "0", effect = "The top scheduler will never be called, only the bottom scheduler."),
-        @Value(name = "1",
-            effect = "Default value. The top scheduler will be called on the first level of the graph, "
-                + "and the bottom scheduler will be called on every graph under it. The value can be 2, 3, or more, "
-                + "and the top scheduler will be used for graphs of depth of 2, 3 or more, respectively."),
-        @Value(name = "all",
-            effect = "This value garanties that the bottom scheduler will never be used, and that the top scheduler"
-                + " will be called for every graphs, no matter their depth") },
-          description = """
-              Gives the threshold to separate the top and the bottom hierarchical levels of the graph. By default,
-              it is set a 1.
-              """),
 
       @Parameter(name = HybridAllocationTask.PARAM_BOT_ALLOCATOR,
           values = { @Value(name = HybridAllocationTask.VALUE_BOT_ALLOCATOR_SIMPLE,
@@ -189,10 +174,6 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
 
 public class HybridAllocationTask extends AbstractTaskImplementation {
-
-  public static final String PARAM_TOP_THRESHOLD     = "Top Threshold";
-  public static final String VALUE_TOP_THRESHOLD_ALL = "all";
-
   public static final String PARAM_BOT_ALLOCATOR        = "Bot Allocator";
   public static final String VALUE_BOT_ALLOCATOR_SIMPLE = "simple";
 
@@ -208,25 +189,16 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    // Getting the inputs
+    /** Getting the inputs */
     final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     final Design arch = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
     final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
     final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
 
-    // Computing the threshold
-    final String thresholdValue = parameters.get(PARAM_TOP_THRESHOLD);
-    long depthThreshold;
-    if (thresholdValue.equals(VALUE_TOP_THRESHOLD_ALL)) {
-      depthThreshold = PiSDFFlattener.computeGraphMaxDepth(graph);
-    } else {
-      depthThreshold = Long.parseLong(thresholdValue);
-    }
-
-    // Making the allocation for every hierarchical level of the graph.
-    final AbstractAllocation tmpResult = executeRecursively(graph, scenario, arch, schedule, mapping, depthThreshold, 0,
-        parameters, monitor, nodeName, workflow);
+    /** Making the allocation for every hierarchical level of the graph. */
+    final AbstractAllocation tmpResult = executeRecursively(graph, scenario, arch, schedule, mapping, parameters,
+        workflow);
 
     if (!(tmpResult instanceof final Allocation result)) {
       throw new PreesmRuntimeException("The chosen allocators must give back an Allocation, not just a Working Memory");
@@ -238,14 +210,13 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   }
 
   private AbstractAllocation executeRecursively(PiGraph graph, Scenario scenario, Design arch, Schedule schedule,
-      Mapping mapping, long threshold, int currentDepth, Map<String, String> parameters, IProgressMonitor monitor,
-      String nodeName, Workflow workflow) {
+      Mapping mapping, Map<String, String> parameters, Workflow workflow) {
 
     /** Choosing witch scheduler to use */
     final String botAllocatorValue = parameters.get(PARAM_BOT_ALLOCATOR);
 
     final IMemoryAllocation allocator;
-    if (currentDepth < threshold) {
+    if (!graph.isCluster()) {
       allocator = new LegacyMemoryAllocation(parameters);
     } else {
       allocator = switch (botAllocatorValue) {
@@ -263,15 +234,15 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
 
     /** Making the allocation for every child graphs */
     for (final PiGraph child : graph.getChildrenGraphs()) {
-      final PiGraph oriGraph = PreesmCopyTracker.getOriginalSource(child);
+      final PiGraph sourceGraph = PreesmCopyTracker.getSource(child);
 
-      if (internalAllocationTracker.containsKey(oriGraph)) {
+      if (internalAllocationTracker.containsKey(sourceGraph)) {
         continue;
       }
 
-      final AbstractAllocation childAbstractAlloc = this.executeRecursively(oriGraph, scenario, arch, schedule, mapping,
-          threshold, currentDepth + 1, parameters, monitor, nodeName, workflow);
-      this.internalAllocationTracker.put(oriGraph, childAbstractAlloc);
+      final AbstractAllocation childAbstractAlloc = this.executeRecursively(sourceGraph, scenario, arch, schedule,
+          mapping, parameters, workflow);
+      this.internalAllocationTracker.put(sourceGraph, childAbstractAlloc);
 
       /** Merging child allocation in parent allocation */
       switch (childAbstractAlloc) {
@@ -305,7 +276,6 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
     parameters.put(PiMemoryAllocatorTask.PARAM_DISTRIBUTION_POLICY,
         PiMemoryAllocatorTask.VALUE_DISTRIBUTION_MIXED_MERGED);
     parameters.put(PARAM_BOT_ALLOCATOR, VALUE_BOT_ALLOCATOR_SIMPLE);
-    parameters.put(PARAM_TOP_THRESHOLD, "1");
     parameters.put(PARAM_UPDATE, VALUE_TRUE);
     parameters.put(PARAM_SCRIPTS, VALUE_TRUE);
 

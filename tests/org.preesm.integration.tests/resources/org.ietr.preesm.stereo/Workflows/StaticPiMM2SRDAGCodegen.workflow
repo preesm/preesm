@@ -4,7 +4,6 @@
     <dftools:task pluginId="pisdf-srdag" taskId="PiMM2SrDaGTask">
         <dftools:data key="variables">
             <dftools:variable name="Consistency_Method" value="LCM"/>
-            <dftools:variable name="Depth" value="1"/>
         </dftools:data>
     </dftools:task>
     <dftools:task pluginId="pisdf-mapper.list" taskId="Scheduling">
