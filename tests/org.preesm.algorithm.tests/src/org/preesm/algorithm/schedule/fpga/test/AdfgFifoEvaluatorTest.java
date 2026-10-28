@@ -207,10 +207,10 @@ public class AdfgFifoEvaluatorTest {
   private AbstractActor getMappedActor(final PiGraph graph, final Design design, final Scenario scenario,
       final String actorName) {
     final AbstractActor actor = VertexPath.lookup(graph, actorName);
-    scenario.addConstraint(design.getComponentInstance("Fpga"), actor);
+    scenario.getConstraints().addConstraint(design.getComponentInstance("Fpga"), actor);
     final var ref = PiMMFactoryImpl.eINSTANCE.createCHeaderRefinement();
     ((RefinementContainer) actor).addRefinement(ref);
-    scenario.addConstraint(design.getComponentInstance("Fpga"), ref);
+    scenario.getConstraints().addConstraint(design.getComponentInstance("Fpga"), ref);
     return actor;
   }
 

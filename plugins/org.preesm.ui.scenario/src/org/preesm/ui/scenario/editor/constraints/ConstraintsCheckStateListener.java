@@ -183,10 +183,10 @@ public class ConstraintsCheckStateListener implements ISDFCheckStateListener {
     if (this.currentOpId != null) {
       if (isChecked) {
         // this.scenario.getConstraints().addConstraint(this.currentOpId, abstractActor);
-        this.scenario.addConstraint(currentOpId, abstractActor);
+        this.scenario.getConstraints().addConstraint(currentOpId, abstractActor);
       } else {
         // this.scenario.getConstraints().getGroupConstraints().get(currentOpId).remove(abstractActor);
-        this.scenario.removeConstraint(currentOpId, abstractActor);
+        this.scenario.getConstraints().removeConstraint(currentOpId, abstractActor);
       }
     }
 

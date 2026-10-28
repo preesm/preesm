@@ -157,7 +157,7 @@ public class ExcelConstraintsParser {
 
       if (timingCell.getType().equals(CellType.NUMBER) || timingCell.getType().equals(CellType.NUMBER_FORMULA)) {
 
-        this.scenario.addConstraint(operatorId, vertex);
+        this.scenario.getConstraints().addConstraint(operatorId, vertex);
 
         PreesmLogger.getLogger().fine(() -> "Importing constraint: {" + operatorId + "," + vertex + ",yes}");
 

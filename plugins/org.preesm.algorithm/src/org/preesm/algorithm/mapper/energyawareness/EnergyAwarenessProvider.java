@@ -382,7 +382,8 @@ public class EnergyAwarenessProvider {
       Map<String, Integer> coresUsedOfEachType) {
     for (final String peName : pesAlwaysAdded) {
       final Entry<ComponentInstance, EList<Refinement>> constraint = getConstraintByPeName(scenario, peName);
-      scenarioMapping.addConstraint(constraint);
+      scenarioMapping.getConstraints().getRefinementConstraints().get(constraint.getKey())
+          .addAll(constraint.getValue());
     }
     final Map<String,
         Integer> coresOfEachTypeAlreadyAdded = EnergyAwarenessProvider.getCoresOfEachType(scenarioMapping);

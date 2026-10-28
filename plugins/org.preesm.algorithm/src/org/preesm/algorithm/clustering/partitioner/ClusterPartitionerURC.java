@@ -149,7 +149,7 @@ public class ClusterPartitionerURC extends ClusterPartitioner {
       subGraph.setClusterValue(true);
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(urc, this.scenario)) {
-        this.scenario.addConstraint(component, subGraph);
+        this.scenario.getConstraints().addConstraint(component, subGraph);
       }
     }
 

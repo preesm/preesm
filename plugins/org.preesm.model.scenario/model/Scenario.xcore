@@ -323,26 +323,26 @@ class Scenario {
 		return res.toEList
 	}
 	
-	op void removeConstraintsToPE(AbstractActor actor, ComponentInstance pe) {
-		if(actor instanceof SpecialActor) {
-			// constraints are in specialConstraints
-			var c = constraints.specialConstraints.get(pe)
-			if(c.contains(actor)) {
-				c.remove(actor)
-			}
-			
-		} else if (actor instanceof RefinementContainer) {
-			var a = actor as RefinementContainer
-			// constraints are in refinementConstraints
-			val c = constraints.refinementConstraints.get(pe)
-			// find intersection between actor refinements and constrainted refinements
-			var intersection = a.refinements.filter[it | c.contains(it)]
-			for(Refinement ref: intersection) {
-				constraints.refinementConstraints.get(pe).remove(ref)
-				// remove the refinement from the actor too ?
-			}
-		}
-	}
+//	op void removeConstraintsToPE(AbstractActor actor, ComponentInstance pe) {
+//		if(actor instanceof SpecialActor) {
+//			// constraints are in specialConstraints
+//			var c = constraints.specialConstraints.get(pe)
+//			if(c.contains(actor)) {
+//				c.remove(actor)
+//			}
+//			
+//		} else if (actor instanceof RefinementContainer) {
+//			var a = actor as RefinementContainer
+//			// constraints are in refinementConstraints
+//			val c = constraints.refinementConstraints.get(pe)
+//			// find intersection between actor refinements and constrainted refinements
+//			var intersection = a.refinements.filter[it | c.contains(it)]
+//			for(Refinement ref: intersection) {
+//				constraints.refinementConstraints.get(pe).remove(ref)
+//				// remove the refinement from the actor too ?
+//			}
+//		}
+//	}
 	
 }
 

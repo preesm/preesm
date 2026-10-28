@@ -105,8 +105,8 @@ public class ConstraintSchedulerTest {
       scenario.getTimings().setTiming(a, fpga, TimingType.INITIATION_INTERVAL, "50");
     }
 
-    scenario.addConstraint(fpga1, algo);
-    scenario.addConstraints(fpga1, algo.getActors());
+    scenario.getConstraints().addConstraint(fpga1, algo);
+    scenario.getConstraints().addConstraints(fpga1, algo.getActors());
 
     scenario.getTimings().setTiming(algo, fpga, null, null);
 

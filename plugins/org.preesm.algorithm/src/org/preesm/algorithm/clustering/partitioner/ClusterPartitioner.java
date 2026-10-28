@@ -118,7 +118,7 @@ public class ClusterPartitioner {
       subGraph.addRefinement(PiMMFactoryImpl.eINSTANCE.createPiSDFRefinement());
       // Add constraints of the cluster in the scenario.
       for (final ComponentInstance component : ClusteringHelper.getListOfCommonComponent(URC, this.scenario)) {
-        this.scenario.addConstraint(component, subGraph);
+        this.scenario.getConstraints().addConstraint(component, subGraph);
       }
       subGraphs.add(subGraph);
     }

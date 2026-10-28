@@ -509,7 +509,7 @@ public class ScenarioParser {
       }
     }
     if (opId != null) {
-      this.scenario.addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
+      this.scenario.getConstraints().addConstraints(opId, ECollections.asEList(new ArrayList<>(actors)));
     }
   }
 

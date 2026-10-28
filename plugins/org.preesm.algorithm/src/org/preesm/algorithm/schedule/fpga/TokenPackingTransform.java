@@ -78,8 +78,8 @@ public final class TokenPackingTransform extends ActorConstructTransform {
     final ComponentInstance target = scenario.getPossibleMappings(fifo.getTarget()).get(0);
     // scenario.getConstraints().addConstraint(target, packer);
     // scenario.getConstraints().addConstraint(target, unpacker);
-    scenario.addConstraint(target, packer);
-    scenario.addConstraint(target, unpacker);
+    scenario.getConstraints().addConstraint(target, packer);
+    scenario.getConstraints().addConstraint(target, unpacker);
 
     final long compressionRatio = packedSize / unpackedSize;
 

@@ -74,12 +74,7 @@ public class DelayActorTransform extends ActorConstructTransform {
 
     // Map delayActor to FPGA targeted by source of delay
     final ComponentInstance target = scenario.getPossibleMappings(delay.getContainingFifo().getSource()).get(0);
-<<<<<<< HEAD
-    // scenario.getConstraints().addConstraint(target, delayActor);
-    scenario.addConstraint(target, delayActor);
-=======
     scenario.getConstraints().addConstraint(target, delayActor);
->>>>>>> clustering_refactoring
 
     // Add delayActor timing infos
     scenario.getTimings().setTiming(delayActor, target.getComponent(), TimingType.EXECUTION_TIME, "1");

@@ -110,7 +110,7 @@ public class ClusterBuilder {
         for (final ComponentInstance comp : sharedComponents) {
           final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
           graph.addRefinement(newRefinement);
-          scenario.addConstraint(comp, newRefinement);
+          scenario.getConstraints().addConstraint(comp, newRefinement);
         }
 
         // update all the actors' mappings : they can only retain the same mappings as their containing cluster
@@ -125,7 +125,7 @@ public class ClusterBuilder {
           // we have all the PEs actors must not be mapped to
           for (final AbstractActor a : graph.getActors()) {
             if (scenario.getPossibleMappings(a).contains(ci)) {
-              scenario.removeConstraintsToPE(a, ci);
+              scenario.getConstraints().removeConstraint(cp, a);
             }
           }
         }
@@ -135,7 +135,7 @@ public class ClusterBuilder {
         graph.setUrl("");
         listClusters.add(graph);
         scenario.getDesign().getComponentInstances().stream().filter(ci -> ci.getComponent().equals(cp.getComponent()))
-            .forEach(pe -> scenario.addConstraint(pe, graph));
+            .forEach(pe -> scenario.getConstraints().addConstraint(pe, graph));
 
         return listClusters;
       }
@@ -231,7 +231,7 @@ public class ClusterBuilder {
         for (final ComponentInstance comp : clusteringComponents) {
           final PiSDFRefinement newRefinement = PiMMFactory.eINSTANCE.createPiSDFRefinement();
           clusterActor.addRefinement(newRefinement);
-          scenario.addConstraint(comp, newRefinement);
+          scenario.getConstraints().addConstraint(comp, newRefinement);
         }
 
       }
