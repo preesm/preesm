@@ -162,9 +162,7 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
         CheckerErrorLevel.NONE);
     pgcc.check(this.subGraph);
     pgcc.check(this.parentGraph);
-<<<<<<< HEAD
     this.subGraph.addRefinement(PiMMUserFactory.instance.createPiSDFRefinement());
-=======
 
     // This line is here because of a bug occurring when creating a cluster in a cluster.
     // In details, it seems that the actorIndex (existing just to keep track of the number of actors in a graph) of
@@ -173,7 +171,6 @@ public class PiSDFSubgraphBuilder extends PiMMSwitch<Boolean> {
     this.subGraph.setFifoWithoutDelayIndex(this.subGraph.getFifosWithoutDelay().size());
     this.subGraph.setFifoWithDelayIndex(this.subGraph.getFifosWithDelay().size());
 
->>>>>>> clustering_refactoring
     return this.subGraph;
   }
 

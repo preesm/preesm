@@ -36,12 +36,9 @@
 
 package org.preesm.model.pisdf.check;
 
-<<<<<<< HEAD
-import org.eclipse.emf.common.util.EList;
-=======
 import java.util.List;
+import org.eclipse.emf.common.util.EList;
 import org.preesm.commons.logger.PreesmLogger;
->>>>>>> clustering_refactoring
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.util.FifoCycleDetector;
 

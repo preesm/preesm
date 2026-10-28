@@ -45,11 +45,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-<<<<<<< HEAD
-import java.util.stream.Stream;
-=======
 import java.util.function.Predicate;
->>>>>>> clustering_refactoring
+import java.util.stream.Stream;
 import org.eclipse.emf.common.util.EList;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.xtend2.lib.StringConcatenation;
@@ -437,14 +434,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
       coreBlockHeader = printCoreBlockHeader(coreBlock);
     }
     result.append(coreBlockHeader);
-<<<<<<< HEAD
     if (coreBlock.getAcceleratorTypes().contains("fpga")) {
       result.append("#include \"xcl2.hpp\"\n\n");
     }
+
     final String indentationCoreBlock = (coreBlockHeader.length() > 0)
-=======
-    final String indentationCoreBlock = (!coreBlockHeader.isEmpty())
->>>>>>> clustering_refactoring
         ? CodegenAbstractPrinter.getLastLineIndentation(result)
         : "";
     boolean coreBlockHasNewLine;
@@ -463,26 +457,25 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     // Visit Definitions
     result = printDefinitions(result, indentationCoreBlock, definitions);
 
-<<<<<<< HEAD
-    // Visit init block
-    result = printInitBlock(coreBlock, result, indentationCoreBlock);
-
-    if (coreBlock.getAcceleratorTypes().contains("fpga")) {
-      printOpenclFpgaDeclarations(result, coreBlock);
-    }
-
-    // Visit loop block
-    result = printLoopBlock(coreBlock, result, indentationCoreBlock);
-=======
     // Visit init block & loop block
     if (coreBlock instanceof final RefinementBlock funcCoreBlock) {
       result = printInitFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
+
+      if (coreBlock.getAcceleratorTypes().contains("fpga")) {
+        printOpenclFpgaDeclarations(result, coreBlock);
+      }
+
       result = printLoopFunctionBlock(funcCoreBlock, result, indentationCoreBlock);
     } else {
       result = printInitBlock(coreBlock, result, indentationCoreBlock);
+
+      // TODO : useful ?
+      if (coreBlock.getAcceleratorTypes().contains("fpga")) {
+        printOpenclFpgaDeclarations(result, coreBlock);
+      }
+
       result = printLoopBlock(coreBlock, result, indentationCoreBlock);
     }
->>>>>>> clustering_refactoring
 
     if (coreBlockHasNewLine) {
       result.newLineIfNotEmpty();
