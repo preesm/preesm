@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler;
@@ -145,7 +146,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     } else {
       alloc = new LegacyMemoryAllocation();
     }
-    final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
+    final AbstractAllocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
         scheduleAndMap.mapping);
 
     outputs.put("Schedule", scheduleAndMap.schedule);
@@ -189,7 +190,7 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
 
-    Allocation allocation = null;
+    AbstractAllocation allocation = null;
     if (!PreesmSynthesisTask.FPGA_SCHEDULERS.contains(localSchedulerMapperName)) {
       // case cpu
       final IMemoryAllocation alloc = new LegacyMemoryAllocation();

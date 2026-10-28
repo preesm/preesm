@@ -37,6 +37,7 @@ package org.preesm.algorithm.synthesis;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -48,10 +49,10 @@ import org.preesm.model.pisdf.AbstractActor;
  *
  */
 public class SynthesisResult {
-  public final Mapping  mapping;
-  public Allocation     alloc;
-  public final Schedule schedule;
-  public LatencyCost    latency;
+  public final Mapping      mapping;
+  public AbstractAllocation alloc;
+  public final Schedule     schedule;
+  public LatencyCost        latency;
 
   /**
    *
