@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2016 - 2017)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2017)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
@@ -73,6 +74,9 @@ import org.preesm.codegen.model.PapifyFunctionCall
 import org.preesm.codegen.model.IteratedBuffer
 import org.preesm.codegen.model.ClusterBlock
 import org.preesm.codegen.model.SectionBlock
+import org.preesm.codegen.model.CallFunctionBlock
+import org.preesm.codegen.model.LoopFunctionBlock
+import org.preesm.codegen.model.RefinementBlock
 
 /**
  * This {@link DevelopperPrinter} is a dummy implementation of the
@@ -236,5 +240,21 @@ class DevelopperPrinter extends CodegenAbstractPrinter {
 	override printPreFunctionCall(FunctionCall functionCall) ''''''
 	// nothing on post by default
 	override printPostFunctionCall(FunctionCall functionCall) ''''''
+	
+	override printInitFunctionBlockFooter(CallFunctionBlock loopFuncBlock) '''<Init_Function_Block_Foot>'''
+	
+	override printInitFunctionBlockHeader(CallFunctionBlock callFuncBlock)'''<Init_Function_Block_Head>'''
+	
+	override printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock) '''<Loop_Function_Block_Foot>'''
+	
+	override printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock)'''<Loop_Function_Block_Head>'''
+	
+	override printRefinementBlockHeader(RefinementBlock funcCoreBlock) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
+	
+	override printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
+		throw new UnsupportedOperationException("TODO: auto-generated method stub")
+	}
 
 }

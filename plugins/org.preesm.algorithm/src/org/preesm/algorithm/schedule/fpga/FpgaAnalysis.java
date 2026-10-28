@@ -107,13 +107,12 @@ public class FpgaAnalysis {
       if (iaPort.getFifo() == null) {
         return; // if not connected, we do not care
       }
-      DataPort aaPort = null;
-      if (iaPort instanceof DataInputPort) {
-        aaPort = iaPort.getFifo().getSourcePort();
-      }
-      if (iaPort instanceof DataOutputPort) {
-        aaPort = iaPort.getFifo().getTargetPort();
-      }
+      final DataPort aaPort = switch (iaPort) {
+        case final DataInputPort dip -> iaPort.getFifo().getSourcePort();
+        case final DataOutputPort dop -> iaPort.getFifo().getTargetPort();
+        default -> null;
+      };
+
       final long aaRate = brv.get(aaPort.getContainingActor()) * aaPort.getExpression().evaluateAsLong();
       final long iaRate = iaPort.getExpression().evaluateAsLong();
       if (aaRate % iaRate != 0) {

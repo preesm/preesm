@@ -36,6 +36,7 @@
  */
 package org.preesm.algorithm.mapper.timekeeper;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,7 +91,17 @@ public class BLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     }
 
     // Synchronized vertices are taken into account to compute b-level
-    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
+    final List<MapperDAGVertex> synchroVertices;
+
+    // Lookup with timing.getVertices is awfully slow and only required for timing.getNumberOfVertices() > 1
+    // TODO: Check if else case actually happens
+    if (timing.getNumberOfVertices() == 1) {
+      synchroVertices = new ArrayList<>();
+      synchroVertices.add(dagVertex);
+    } else {
+      synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
+    }
+
     final Map<MapperDAGVertex, MapperDAGEdge> successors = new LinkedHashMap<>();
 
     for (final MapperDAGVertex v : synchroVertices) {

@@ -119,4 +119,26 @@ public class ScheduleUtil {
     return res;
 
   }
+
+  public static final void replaceActor(final AbstractActor oldActor, final AbstractActor newActor,
+      final Schedule schedule) {
+    new ScheduleSwitch<Boolean>() {
+      @Override
+      public Boolean caseHierarchicalSchedule(final HierarchicalSchedule object) {
+        object.getScheduleTree().forEach(this::doSwitch);
+        return true;
+      }
+
+      @Override
+      public Boolean caseActorSchedule(final ActorSchedule object) {
+        final List<AbstractActor> actors = object.getActorList();
+        for (int i = 0; i < actors.size(); i++) {
+          if (actors.get(i) == oldActor) {
+            actors.set(i, newActor);
+          }
+        }
+        return true;
+      }
+    }.doSwitch(schedule);
+  }
 }

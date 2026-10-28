@@ -71,20 +71,6 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
 
   protected abstract boolean initPrototype(final T implem);
 
-  /**
-   * Checks if is scenario node.
-   *
-   * @return True if this node is a scenario node, false otherwise.
-   */
-  public abstract boolean isScenarioNode();
-
-  /**
-   * Checks if is task node.
-   *
-   * @return True if this node is a transformation node, false otherwise.
-   */
-  public abstract boolean isTaskNode();
-
   public abstract String getID();
 
   public abstract String getName();
@@ -108,8 +94,8 @@ public abstract class AbstractWorkflowNode<T extends AbstractWorkflowNodeImpleme
       return false;
     } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException
         | InvocationTargetException | NoSuchMethodException | SecurityException e) {
-      PreesmLogger.getLogger().log(Level.SEVERE,
-          "Failed to load '" + getID() + "' (" + getName() + ") node from workflow", e);
+      PreesmLogger.getLogger().log(Level.SEVERE, e,
+          () -> "Failed to load '" + getID() + "' (" + getName() + ") node from workflow");
       return false;
     }
   }

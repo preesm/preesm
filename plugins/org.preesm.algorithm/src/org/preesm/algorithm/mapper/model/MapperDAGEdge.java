@@ -74,6 +74,16 @@ public class MapperDAGEdge extends DAGEdge {
   }
 
   @Override
+  public MapperDAGVertex getSource() {
+    return (MapperDAGVertex) super.getSource();
+  }
+
+  @Override
+  public MapperDAGVertex getTarget() {
+    return (MapperDAGVertex) super.getTarget();
+  }
+
+  @Override
   public String toString() {
     return "<" + getSource().getName() + "," + getTarget().getName() + ">";
   }

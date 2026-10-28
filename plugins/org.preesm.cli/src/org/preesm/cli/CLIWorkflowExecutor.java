@@ -160,7 +160,7 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
     scenarioPaths = extractScenarioPaths(scenarioPaths, scenarioPath);
 
     getLogger().log(Level.FINE, "Launching workflows execution");
-    // Launch the execution of the workflos with the scenarios
+    // Launch the execution of the workflows with the scenarios
     for (final String wPath : workflowPaths) {
       for (final String sPath : scenarioPaths) {
         if (!execute(wPath, sPath, null, true)) {

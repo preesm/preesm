@@ -1,12 +1,12 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2020 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013)
@@ -74,6 +74,7 @@ import org.preesm.codegen.format.CodeFormatterAndPrinter;
 import org.preesm.codegen.fpga.FpgaCodeGenerator;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.CoreBlock;
+import org.preesm.codegen.model.RefinementBlock;
 import org.preesm.codegen.printer.CodegenAbstractPrinter;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -106,7 +107,7 @@ public class CodegenEngine {
   private boolean clusterGenerator = false;
 
   public Collection<Block> getCodeBlocks() {
-    return this.codeBlocks;
+    return this.codeBlocks.stream().filter(it -> !(it instanceof RefinementBlock)).toList();
   }
 
   public Collection<Block> getCpuCodeBlock() {
@@ -304,9 +305,20 @@ public class CodegenEngine {
   }
 
   /**
-   * Prints the.
+   * Prints all files
    */
   public void print() {
+    print(true);
+  }
+
+  /**
+   * Prints desired files
+   *
+   * @param generateAuxiliaryFiles
+   *          if false, only the CoreBlock files are generated (no secondary files like main.c, no standard library
+   *          files like communication.c, mac_barrier.c, preesm_md5.c, etc.)
+   */
+  public void print(final boolean generateAuxiliaryFiles) {
 
     // if any cluster runs on fpga, the project will be built by vitis which requires the extension to be cpp
     // nice work xilinx
@@ -407,9 +419,16 @@ public class CodegenEngine {
       final Map<String, CharSequence> createSecondaryFiles = printer.createSecondaryFiles(printerAndBlocks.getValue(),
           this.codeBlocks);
       for (final Entry<String, CharSequence> entry : createSecondaryFiles.entrySet()) {
+        if (!generateAuxiliaryFiles && "main.c".equals(entry.getKey())) {
+          continue;
+        }
         final String fileName = entry.getKey();
         final IFile iFile = PreesmIOHelper.getInstance().print(this.codegenPath, fileName, entry.getValue());
         CodeFormatterAndPrinter.format(iFile);
+      }
+
+      if (!generateAuxiliaryFiles) {
+        continue;
       }
 
       // Add standard files for this printer

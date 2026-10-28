@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2012 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2015)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2012 - 2014)
@@ -39,6 +40,7 @@
  */
 package org.preesm.algorithm.mapper.timekeeper;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +135,17 @@ public class TLevelVisitor implements IGraphVisitor<MapperDAG, MapperDAGVertex, 
     }
 
     // Synchronised vertices are taken into account to compute t-level
-    final List<MapperDAGVertex> synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
+    final List<MapperDAGVertex> synchroVertices;
+
+    // Lookup with timing.getVertices is awfully slow and only required for timing.getNumberOfVertices() > 1
+    // TODO: Check if else case actually happens
+    if (timing.getNumberOfVertices() == 1) {
+      synchroVertices = new ArrayList<>();
+      synchroVertices.add(dagVertex);
+    } else {
+      synchroVertices = timing.getVertices((MapperDAG) dagVertex.getBase());
+    }
+
     final Map<MapperDAGVertex, MapperDAGEdge> predecessors = new LinkedHashMap<>();
 
     for (final MapperDAGVertex v : synchroVertices) {

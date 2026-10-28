@@ -34,6 +34,7 @@
  */
 package org.preesm.algorithm.synthesis.schedule.algos;
 
+import java.util.Map;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
@@ -50,7 +51,16 @@ public interface IScheduler {
    *
    * Builds a {@link SynthesisResult} for the given PiGraph, SlamDesign and scenario.
    *
-   * The memory allocation in the result canbe null;
+   * @param piGraph
+   *          input piGraph
+   * @param slamDesign
+   *          input architecture
+   * @param scenario
+   *          input scenario
+   * @param parameters
+   *          input parameters (they might be different between two schedulers)
+   * @return synthesis result. The memory allocation in the result can be null;
    */
-  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario);
+  public SynthesisResult scheduleAndMap(final PiGraph piGraph, final Design slamDesign, final Scenario scenario,
+      final Map<String, String> parameters);
 }

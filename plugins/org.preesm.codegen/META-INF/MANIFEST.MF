@@ -22,13 +22,21 @@ Require-Bundle: org.eclipse.core.runtime,
  org.preesm.model.slam
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Export-Package: org.preesm.codegen.model,
+ org.preesm.codegen.model.impl,
+ org.preesm.codegen.model.util
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
+<<<<<<< HEAD
 Export-Package: org.preesm.codegen.format,
  org.preesm.codegen.fpga,
  org.preesm.codegen.model,
  org.preesm.codegen.model.clustering,
+=======
+Export-Package: org.preesm.codegen.model,
+ org.preesm.codegen.format,
+>>>>>>> clustering_refactoring
  org.preesm.codegen.model.generator,
  org.preesm.codegen.model.generator2,
  org.preesm.codegen.model.impl,

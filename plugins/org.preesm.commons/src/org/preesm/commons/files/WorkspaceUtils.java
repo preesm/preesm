@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2017 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -74,12 +74,11 @@ public class WorkspaceUtils {
    * @return Project absolute path.
    */
   public static String getAbsolutePath(final String relative, final String projectName) {
-    final String absolute;
 
     if (relative.startsWith("/" + projectName)) {
       return relative;
     }
-    absolute = "/" + projectName + "/" + relative;
+    final String absolute = "/" + projectName + "/" + relative;
 
     return absolute.replace("//", "/").strip();
   }

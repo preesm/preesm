@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2011 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2011)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -140,10 +141,14 @@ public class Workflow extends DirectedMultigraph<AbstractWorkflowNode<?>, Workfl
   public boolean hasScenario() {
     int nbScenarios = 0;
     for (final AbstractWorkflowNode<?> node : vertexSet()) {
-      if (node.isScenarioNode()) {
+      if (node instanceof ScenarioNode) {
         nbScenarios++;
       }
     }
     return nbScenarios == 1;
+  }
+
+  public AbstractWorkflowNode<?> findVertex(String taskId) {
+    return this.vertexSet().stream().filter(v -> v.getName().equals(taskId)).findAny().orElse(null);
   }
 }

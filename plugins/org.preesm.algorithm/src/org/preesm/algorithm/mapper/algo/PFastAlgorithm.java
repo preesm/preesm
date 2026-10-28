@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2008 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Matthieu Wipliez [matthieu.wipliez@insa-rennes.fr] (2008)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2008 - 2016)
@@ -332,7 +332,7 @@ public class PFastAlgorithm {
         final String name = String.format("thread%d", i);
 
         // step 9/11
-        final PFastCallable thread = new PFastCallable(name, dag, archi, subIter.next(), true, abcParams, fastParams,
+        final PFastCallable thread = new PFastCallable(name, dag, archi, subIter.next(), false, abcParams, fastParams,
             scenario);
 
         final FutureTask<MapperDAG> task = new FutureTask<>(thread);
@@ -361,14 +361,14 @@ public class PFastAlgorithm {
 
       } catch (final InterruptedException | ExecutionException e) {
         Thread.currentThread().interrupt();
-        es.shutdown();
+        es.close();
         throw new PreesmRuntimeException("Error in PFast", e);
       }
       // step 13
       totalsearchcount++;
 
     }
-    es.shutdown();
+    es.close();
 
     if (population) {
       final Iterator<MapperDAG> ite = mappedDAGSet.iterator();

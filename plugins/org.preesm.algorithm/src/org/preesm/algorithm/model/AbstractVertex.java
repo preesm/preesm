@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -81,6 +81,8 @@ public abstract class AbstractVertex<G> extends Observable
 
   /** Property kind for property name. */
   public static final String KIND_LITERAL = "kind";
+
+  private int cachedHashcode = -1;
 
   /** The public properties. */
   protected static final List<
@@ -297,6 +299,7 @@ public abstract class AbstractVertex<G> extends Observable
    */
   public void setName(final String name) {
     this.properties.setValue(AbstractVertex.NAME_LITERAL, this.properties.getValue(AbstractVertex.NAME_LITERAL), name);
+    cachedHashcode = Objects.hashCode(name);
   }
 
   /**
@@ -436,7 +439,7 @@ public abstract class AbstractVertex<G> extends Observable
 
   @Override
   public int hashCode() {
-    return Objects.hash(this.getName());
+    return cachedHashcode;
   }
 
   /**

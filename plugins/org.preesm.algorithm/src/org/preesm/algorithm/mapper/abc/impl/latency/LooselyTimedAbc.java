@@ -84,7 +84,7 @@ public class LooselyTimedAbc extends LatencyAbc {
 
     if (effectiveOp != null) {
       // Adding precedence edges for an automatic graph timings calculation
-      new PrecedenceEdgeAdder(this.orderManager, this.implementation).scheduleVertex(vertex);
+      new PrecedenceEdgeAdder(this.orderManager, this.getImplementation()).scheduleVertex(vertex);
     }
 
   }
@@ -98,8 +98,8 @@ public class LooselyTimedAbc extends LatencyAbc {
   @Override
   protected final void setEdgeCost(final MapperDAGEdge edge) {
 
-    final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
-    final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
+    final MapperDAGVertex source = edge.getSource();
+    final MapperDAGVertex dest = edge.getTarget();
 
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance destOp = dest.getEffectiveOperator();

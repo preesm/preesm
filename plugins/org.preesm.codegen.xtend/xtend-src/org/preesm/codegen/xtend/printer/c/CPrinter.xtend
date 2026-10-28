@@ -1,5 +1,5 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2023) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
@@ -7,7 +7,7 @@
  * Daniel Madroñal [daniel.madronal@upm.es] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2023)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2021 - 2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2019 - 2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2019)
@@ -100,8 +100,15 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
+<<<<<<< HEAD
 import org.preesm.model.pisdf.CHeaderRefinement
 import org.preesm.model.slam.CPU
+=======
+import org.preesm.codegen.model.CallFunctionBlock
+import org.preesm.codegen.model.LoopFunctionBlock
+import org.preesm.codegen.model.FunctionBlock
+import org.preesm.codegen.model.RefinementBlock
+>>>>>>> clustering_refactoring
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -119,11 +126,8 @@ class CPrinter extends BlankPrinter {
 	/**
 	 * Variable to check if we are using PAPIFY or not --> Will be updated during preprocessing
 	 */
-	int usingPapify = 0;
-	/**
-	 * Variable to check if cluster are used.
-	 */
-	int usingOpenMP = 0;
+	protected int usingPapify = 0;
+	
 	/**
 	 * Set to true if a main file should be generated. Set at object creation in constructor.
 	 */
@@ -142,7 +146,7 @@ class CPrinter extends BlankPrinter {
 	new(boolean generateMainFile) {
 		this.generateMainFile = generateMainFile;
 	}
-
+	
 	/**
 	 * Temporary global var to ignore the automatic suppression of memcpy
 	 * whose target and destination are identical.
@@ -450,14 +454,10 @@ class CPrinter extends BlankPrinter {
 	«ENDIF»
 	'''
 
-	//#pragma omp parallel for private(«block2.iter.name»)
 	override printFiniteLoopBlockHeader(FiniteLoopBlock block2) '''
 		// Begin the for loop
 		{
 			int «block2.iter.name»;
-			«IF block2.parallel.equals(true)»
-			#pragma omp parallel for private(«block2.iter.name»)
-			«ENDIF»
 			for(«block2.iter.name»=0;«block2.iter.name»<«block2.nbIter»;«block2.iter.name»++) {
 
 				'''
@@ -470,9 +470,6 @@ class CPrinter extends BlankPrinter {
 	override printClusterBlockHeader(ClusterBlock block) '''
 		// Cluster: «block.name»
 		// Schedule: «block.schedule»
-		«IF block.parallel.equals(true)»
-		#pragma omp parallel sections
-		«ENDIF»
 		{
 
 			'''
@@ -482,7 +479,6 @@ class CPrinter extends BlankPrinter {
 	'''
 
 	override printSectionBlockHeader(SectionBlock block) '''
-		#pragma omp section
 		{
 
 			'''
@@ -627,6 +623,7 @@ class CPrinter extends BlankPrinter {
 										" in order to avoid this situation.")
 	}»
 	// this secures the next branch since there is a number division by input.size, which is 0 in case of a NullBuffer
+	
 	«ELSE»
 	«FOR output : call.outputBuffers»«var outputIdx = 0L»
 		«// TODO: Change how this loop iterates (nbIter is used in a comment only ...)
@@ -814,6 +811,7 @@ class CPrinter extends BlankPrinter {
 			totalOffsetIn = totalOffsetIn + bInput.getOffsetInByte
 			bInput = bInput.container
 		}
+<<<<<<< HEAD
 
 
 		// If the Buffer and offsets are identical there is nothing to print
@@ -822,6 +820,13 @@ class CPrinter extends BlankPrinter {
 		var acceptableNullBuffer = !(input.name.equals("NULL") || output.name.equals("NULL"))
 		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) && acceptableNullBuffer){
 			// || ((output instanceof NullBuffer || input instanceof NullBuffer) && !acceptableNullBuffer)
+=======
+		
+		// If the Buffer and offsets are identical, or one buffer is null
+		// there is nothing to print
+		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
+			output instanceof NullBuffer || input instanceof NullBuffer){
+>>>>>>> clustering_refactoring
 			return ''''''
 		} else {
 			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»); // «nbToken» * «type»'''
@@ -842,7 +847,8 @@ class CPrinter extends BlankPrinter {
 				 " for the " + this.class.name + " printer")
 		}
 	}
-
+	
+	  
 	def CharSequence generatePreesmHeader(List<String> stdLibFiles) {
 	    // 0- without the following class loader initialization, I get the following exception when running as Eclipse
 	    // plugin:
@@ -859,6 +865,8 @@ class CPrinter extends BlankPrinter {
 	    // 2- init context
 	    val VelocityContext context = new VelocityContext();
 	    val findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(getEngine.algo)
+	    
+	    findAllCHeaderFileNamesUsed.forEach[PreesmLogger.getLogger.info("HEADER = " + it)]
 
 	    context.put("PREESM_INCLUDES", stdLibFiles.filter[it.endsWith(".h")].map["#include \""+ it +"\""].join("\n"));
 
@@ -927,10 +935,19 @@ class CPrinter extends BlankPrinter {
 			var name = "main.c" + fileExtension
 			result.put(name, printMain(printerBlocks))
 		}
+		for (Block block: printerBlocks) {
+			if(block instanceof RefinementBlock) {
+				result.put(block.getName() + ".h", printRefinementHeaderFile(block))
+			}
+		}
+		
+		
 		return result
 	}
+	
+	
 
-	def String printMain(List<Block> printerBlocks) '''
+	protected def String printMain(List<Block> printerBlocks) '''
 		/**
 		 * @file main.c
 		 * @generated by «this.class.simpleName»
@@ -1020,7 +1037,6 @@ class CPrinter extends BlankPrinter {
 
 
 		int main(void) {
-		«IF this.usingOpenMP == 0»
 			 #ifndef _WIN32
 			 signal(SIGSEGV, handler);
 			 signal(SIGPIPE, handler);
@@ -1059,14 +1075,12 @@ class CPrinter extends BlankPrinter {
 		#ifdef PREESM_VERBOSE
 			printf("Launched main\n");
 		#endif
-		«ENDIF»
 			// Creating a synchronization barrier
 			preesmStopThreads = 0;
 			pthread_barrier_init(&iter_barrier, NULL, _PREESM_NBTHREADS_);
 #ifdef PREESM_MD5_UPDATE
 			rk_sema_init(&preesmPrintSema, 1);
 #endif
-		«IF this.usingOpenMP == 0»
 			communicationInit();
 
 			«IF this.apolloEnabled»
@@ -1099,9 +1113,7 @@ class CPrinter extends BlankPrinter {
 				event_destroy();
 				#endif
 			«ENDIF»
-			«ELSE»
-			«FOR coreBlock : engine.codeBlocks»computationThread_Core«(coreBlock as CoreBlock).coreID»(NULL);«ENDFOR»
-			«ENDIF»
+			
 
 			return 0;
 		}
@@ -1238,18 +1250,79 @@ class CPrinter extends BlankPrinter {
 					// Is there is Papify function call?
 					if(codeElt instanceof PapifyFunctionCall){
 						this.usingPapify = 1;
-					}
-					// Is there is cluster block?
-					if (codeElt instanceof ClusterBlock) {
-						// Does it contains parallelism information?
-						if (codeElt.isContainParallelism()) {
-							this.usingOpenMP = 1;
-						}
-					}
+					}					
 				}
 			}
 		}
 	}
 	
+<<<<<<< HEAD
+=======
+	override printInitFunctionBlockHeader(CallFunctionBlock initFuncBlock) '''
+	«printFunctionBlockHeader(initFuncBlock)» {
+	'''
+	
+	override printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock)  '''
+	«{IGNORE_USELESS_MEMCPY = false ""}»
+	
+	«printFunctionBlockHeader(loopFuncBlock)»{
+	'''
+	
+	def CharSequence printFunctionBlockHeader(FunctionBlock funcBlock) '''
+	void «funcBlock.getName()»(
+	
+	«FOR param: funcBlock.getInputParams() SEPARATOR ','»
+		const «param.getType()» «param.getName()»
+	«ENDFOR»
+	«IF funcBlock.getInputArgs().size() > 0 && funcBlock.getInputParams().size() > 0»
+	, 
+	«ENDIF»
+	«FOR inputBuffer: funcBlock.getInputArgs() SEPARATOR ','»
+		«inputBuffer.getType()»* «inputBuffer.getName()»
+	«ENDFOR»
+	«IF funcBlock.getOutputArgs().size() > 0»
+		, 
+	«ENDIF»
+	«FOR outputBuffer: funcBlock.getOutputArgs() SEPARATOR ','»
+		«outputBuffer.getType()»* «outputBuffer.getName()»
+	«ENDFOR»
+	)
+	'''
+	
+	override printInitFunctionBlockFooter(CallFunctionBlock callFuncBlock)  '''
+	«printFunctionBlockFooter(callFuncBlock)»
+	'''
+	
+	override printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock)  '''
+	«printFunctionBlockFooter(loopFuncBlock)»
+	
+	«{IGNORE_USELESS_MEMCPY = true ""}»
+	'''
+	
+	def CharSequence printFunctionBlockFooter(FunctionBlock funcBlock) '''
+	}
+	'''
+	
+	def CharSequence printRefinementHeaderFile(RefinementBlock funcBlock)'''
+	#include "preesm_gen.h"
+		
+	«printFunctionBlockHeader(funcBlock.getInitBlock())»;
+	
+	«printFunctionBlockHeader(funcBlock.getLoopBlock())»;
+	'''
+	
+	  
+  override CharSequence printRefinementBlockHeader(RefinementBlock refinementBlock) '''
+  #include "«refinementBlock.getName()».h"
+  «FOR header: refinementBlock.getHeaders()»
+  	#include "«header»"
+  	«ENDFOR»
+  '''
+
+  
+  override CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) '''
+  '''
+
+>>>>>>> clustering_refactoring
 
 }

@@ -1,7 +1,7 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2023 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2023 - 2025) :
  *
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Dardaillon Mickael [mickael.dardaillon@insa-rennes.fr] (2023)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -74,8 +74,12 @@ public class DelayActorTransform extends ActorConstructTransform {
 
     // Map delayActor to FPGA targeted by source of delay
     final ComponentInstance target = scenario.getPossibleMappings(delay.getContainingFifo().getSource()).get(0);
+<<<<<<< HEAD
     // scenario.getConstraints().addConstraint(target, delayActor);
     scenario.addConstraint(target, delayActor);
+=======
+    scenario.getConstraints().addConstraint(target, delayActor);
+>>>>>>> clustering_refactoring
 
     // Add delayActor timing infos
     scenario.getTimings().setTiming(delayActor, target.getComponent(), TimingType.EXECUTION_TIME, "1");

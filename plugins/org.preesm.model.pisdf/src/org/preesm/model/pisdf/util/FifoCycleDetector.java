@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2015)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2013)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
  *
@@ -158,7 +158,8 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
   public Void casePiGraph(final PiGraph graph) {
 
     // Visit AbstractActor until they are all visited
-    final ArrayList<AbstractActor> actors = new ArrayList<>(graph.getActors());
+    final ArrayList<
+        AbstractActor> actors = new ArrayList<>(graph.getActors().stream().filter(a -> !a.isCluster()).toList());
     while (!actors.isEmpty()) {
       doSwitch(actors.get(0));
 

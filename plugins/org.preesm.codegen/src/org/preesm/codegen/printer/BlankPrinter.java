@@ -1,9 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Leonardo Suriano [leonardo.suriano@upm.es] (2019)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -45,6 +46,7 @@ import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.BufferIterator;
 import org.preesm.codegen.model.CallBlock;
+import org.preesm.codegen.model.CallFunctionBlock;
 import org.preesm.codegen.model.ClusterBlock;
 import org.preesm.codegen.model.Communication;
 import org.preesm.codegen.model.Constant;
@@ -61,10 +63,12 @@ import org.preesm.codegen.model.GlobalBufferDeclaration;
 import org.preesm.codegen.model.IntVar;
 import org.preesm.codegen.model.IteratedBuffer;
 import org.preesm.codegen.model.LoopBlock;
+import org.preesm.codegen.model.LoopFunctionBlock;
 import org.preesm.codegen.model.NullBuffer;
 import org.preesm.codegen.model.OutputDataTransfer;
 import org.preesm.codegen.model.PapifyAction;
 import org.preesm.codegen.model.PapifyFunctionCall;
+import org.preesm.codegen.model.RefinementBlock;
 import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SectionBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
@@ -349,6 +353,39 @@ public class BlankPrinter extends CodegenAbstractPrinter {
 
   @Override
   public CharSequence printPostFunctionCall(FunctionCall functionCall) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printInitFunctionBlockHeader(CallFunctionBlock callFuncBlock) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printInitFunctionBlockFooter(CallFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printLoopFunctionBlockHeader(LoopFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printLoopFunctionBlockFooter(LoopFunctionBlock loopFuncBlock) {
+    return "";
+
+  }
+
+  @Override
+  public CharSequence printRefinementBlockHeader(RefinementBlock funcCoreBlock) {
+    return "";
+  }
+
+  @Override
+  public CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) {
     return "";
   }
 }

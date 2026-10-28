@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -113,16 +113,16 @@ public abstract class AbstractWorkflowExecutor {
 
     boolean workflowOk = true;
     for (final AbstractWorkflowNode<?> node : workflow.vertexSet()) {
-      if (node.isScenarioNode()) {
-        workflowOk = ((ScenarioNode) node).getExtensionInformation();
+      if (node instanceof final ScenarioNode scenarioNode) {
+        workflowOk = scenarioNode.getExtensionInformation();
 
         // The plugin declaring the scenario class was not found
         if (!workflowOk) {
           log(Level.SEVERE, "Workflow.FailedFindScenarioPlugin", node.getName());
           return false;
         }
-      } else if (node.isTaskNode() && !workflow.edgesOf(node).isEmpty()) {
-        workflowOk = ((TaskNode) node).getExtensionInformation();
+      } else if (node instanceof final TaskNode taskNode && !workflow.edgesOf(node).isEmpty()) {
+        workflowOk = taskNode.getExtensionInformation();
 
         // The plugin declaring the task class was not found
         if (!workflowOk) {
@@ -196,8 +196,7 @@ public abstract class AbstractWorkflowExecutor {
       }
     }
 
-    // There may be several output edges with same data type (sharing same
-    // port)
+    // There may be several output edges with same data type (sharing same port)
     for (final WorkflowEdge edge : workflow.outgoingEdgesOf(taskNode)) {
       if (!outputs.contains(edge.getSourcePort())
           && !edge.getSourcePort().equals(AbstractWorkflowExecutor.IGNORE_PORT_NAME)) {
@@ -296,11 +295,10 @@ public abstract class AbstractWorkflowExecutor {
       Map<String, Object> outputs = null;
       String nodeId = null;
 
-      if (node.isScenarioNode()) {
+      if (node instanceof final ScenarioNode scenarioNode) {
         // The scenario node is special because it gets a reference
         // path and generates the inputs of the rapid prototyping
         // process
-        final ScenarioNode scenarioNode = (ScenarioNode) node;
         final AbstractScenarioImplementation scenario = scenarioNode.getScenario();
 
         // Checks that the scenario node output edges fit the task
@@ -340,8 +338,7 @@ public abstract class AbstractWorkflowExecutor {
             nodeResult = false;
           }
         }
-      } else if (node.isTaskNode()) {
-        final TaskNode taskNode = (TaskNode) node;
+      } else if (node instanceof final TaskNode taskNode) {
         final AbstractTaskImplementation task = taskNode.getTask();
         nodeId = taskNode.getName();
 
@@ -484,6 +481,26 @@ public abstract class AbstractWorkflowExecutor {
 
       check = false;
     }
+
+    if (check) {
+      // Remove parameters with null/empty values
+      workflow.vertexSet().stream().filter(TaskNode.class::isInstance).map(TaskNode.class::cast).forEach(taskNode -> {
+
+        final Map<String, String> paramToKeep = new LinkedHashMap<>();
+        for (final Entry<String, String> param : taskNode.getParameters().entrySet()) {
+          if (param.getValue() != null && !param.getValue().isEmpty()) {
+            paramToKeep.put(param.getKey(), param.getValue());
+          } else {
+            getLogger().fine(
+                () -> taskNode.getName() + ": Parameter \"" + param.getKey() + "\" has no/empty value. Ignoring.");
+          }
+        }
+
+        taskNode.getParameters().clear();
+        taskNode.getParameters().putAll(paramToKeep);
+      });
+    }
+
     return check;
   }
 

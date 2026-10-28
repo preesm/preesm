@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2018 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import org.preesm.commons.IntegerName;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -800,6 +801,28 @@ public class PiSDFFlattener extends PiMMSwitch<Boolean> {
     }
 
     this.graphPrefix = backupPrefix;
+  }
+
+  /**
+   * Compute the max depth of a graph. The number returned is the size of a map that would contain all piGraphs of every
+   * depth level. The top level is depth 0, and if there is no sub graphs, result will be 1 (there can't be a depth of
+   * 0).
+   *
+   * @param graph
+   *          input graph
+   * @return the max depth level
+   */
+  public static long computeGraphMaxDepth(PiGraph graph) {
+    final List<PiGraph> children = graph.getChildrenGraphs();
+    if (children.isEmpty()) {
+      return 1;
+    }
+
+    final List<Long> childrenResults = new ArrayList<>();
+    for (final PiGraph child : children) {
+      childrenResults.add(computeGraphMaxDepth(child));
+    }
+    return childrenResults.stream().mapToLong(l -> l).max().orElseThrow(NoSuchElementException::new) + 1;
   }
 
 }

@@ -1,11 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019 - 2020)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -261,9 +261,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    * creates a parameter and dependency to reflect the original actor's and adds them to result
    */
   private void instantiateParameters(final AbstractActor actor, final AbstractActor copyActor) {
-
-    // // Copy parameters
-
+    // Copy parameters
     for (final ConfigInputPort port : copyActor.getConfigInputPorts()) {
       final Port lookupPort = actor.lookupPort(port.getName());
       if (!(lookupPort instanceof ConfigInputPort)) {
@@ -287,9 +285,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseAbstractActor(final AbstractActor actor) {
-    if (actor instanceof final PiGraph piGraph) {
+    if (actor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
       // Here we handle the replacement of the interfaces by what should be
+<<<<<<< HEAD
       // Copy the actor, should we use copyPiGraphWithHistory() instead ?
+=======
+>>>>>>> clustering_refactoring
       final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(piGraph);
       // Set the properties
       copyGraph.setName(this.currentActorName);
@@ -326,6 +327,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
       // Add the actor to the FIFO source/sink sets
       this.actor2SRActors.get(this.graphPrefix + piGraph.getName()).add(copyGraph);
+      instantiateParameters(piGraph, copyGraph);
     } else {
       doSwitch(actor);
     }
@@ -437,8 +439,18 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
    */
   @Override
   public Boolean caseExecutableActor(final ExecutableActor actor) {
-    // Copy the BroadCast actor
-    final ExecutableActor copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    return caseExecOrClusterActor(actor);
+  }
+
+  private Boolean caseExecOrClusterActor(final AbstractActor actor) {
+    // Copy the actor
+    AbstractActor copyActor;
+    if (actor instanceof final PiGraph pi) {
+      copyActor = PiMMUserFactory.instance.copyPiGraphWithHistory(pi);
+    } else {
+      copyActor = PiMMUserFactory.instance.copyWithHistory(actor);
+    }
+
     // Set the properties
     copyActor.setName(this.currentActorName);
     if (copyActor instanceof final Actor act) {
@@ -462,6 +474,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     final String graphPrefix2 = this.graphPrefix;
     final String name = actor.getName();
     final String key = graphPrefix2 + name;
+
     final List<AbstractVertex> list = this.actor2SRActors.get(key);
     list.add(copyActor);
 
@@ -637,7 +650,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         if (inFifo != null) {
           final DataOutputPort sourcePort = inFifo.getSourcePort();
           final AbstractActor containingActor = sourcePort.getContainingActor();
-          if (containingActor instanceof final PiGraph piGraph) {
+          if (containingActor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
             return lookForSourcePort(piGraph, source, sourcePort.getName());
           }
           return (DataOutputPort) source.lookupPort(sourcePort.getName());
@@ -683,7 +696,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       return Collections.singletonList(interfaceBR);
     }
     final List<AbstractVertex> sinkSet;
-    if (sinkActor instanceof PiGraph) {
+    if (sinkActor instanceof final PiGraph pi && !pi.isCluster()) {
       sinkSet = inPort2SRActors.remove(targetPort);
     } else {
       final String keyActor = this.graphPrefix + sinkActor.getName();
@@ -787,7 +800,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
         final Fifo outFifo = dii.getDataPort().getFifo();
         final DataInputPort targetPort = outFifo.getTargetPort();
         final AbstractActor containingActor = targetPort.getContainingActor();
-        if (containingActor instanceof final PiGraph piGraph) {
+        if (containingActor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
           return lookForTargetPort(piGraph, target, targetPort.getName());
         }
         return (DataInputPort) target.lookupPort(targetPort.getName());
@@ -827,7 +840,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       this.outPort2SRActors.get(correspondingPort).add(interfaceRB);
       return Collections.singletonList(interfaceRB);
     }
-    if (sourceActor instanceof PiGraph) {
+    if (sourceActor instanceof final PiGraph pi && !pi.isCluster()) {
       // 2.3 If sourceActor is a PiGraph then we forward the mapped actors to the next level of hierarchy
       this.outPort2SRActors.get(correspondingPort).addAll(sourceSet);
       return Collections.emptyList();
@@ -1057,12 +1070,18 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
 
+<<<<<<< HEAD
     if (graph.isCluster()) {
       // if (!graph.isToSrdag()) { // already managed in caseCluster
       this.currentGraphIsCluster = true;
       return caseCluster(graph);
       // }
       // return true;
+=======
+    // If it is a cluster, compute it as a classic actor
+    if (graph.isCluster()) {
+      return caseExecOrClusterActor(graph);
+>>>>>>> clustering_refactoring
     }
 
     this.currentGraphIsCluster = false;
@@ -1101,9 +1120,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final long lInstance = backupInstance * graphRV + i;
       final String backupPrefix = this.graphPrefix;
       final String backupName = this.graphName;
+<<<<<<< HEAD
       final boolean backupcurrentGraphIsCluster = this.currentGraphIsCluster;
       final PiGraph backupCurrentResultsrDAG = this.currentResultSrDAG;
       for (final PiGraph g : graph.getChildrenGraphs()) {
+=======
+      for (final PiGraph g : graph.getChildrenGraphs().stream().filter(g -> !g.isCluster()).toList()) {
+>>>>>>> clustering_refactoring
         this.firingInstance = lInstance;
         doSwitch(g);
         this.graphPrefix = backupPrefix;
@@ -1131,7 +1154,7 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
     // Special Actors and Delay Actors cannot have empty data ports
     // So only (regular) Actor are considered
     actors.stream().filter(a -> a.getAllDataPorts().isEmpty())
-        .filter(a -> (a instanceof Actor) || (a instanceof PiGraph && a.isCluster()))
+        .filter(a -> (a instanceof Actor) || (a instanceof final PiGraph pi && pi.isCluster()))
         .forEach(this::populateSingleRatePiMMActor);
     // handle the case of interfaces of top level
     if (graph.getContainingPiGraph() == null) {

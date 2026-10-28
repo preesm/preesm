@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -68,7 +69,7 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    */
   @Override
   public String getName() {
-    return "Scenario Node";
+    return "scenario";
   }
 
   @Override
@@ -83,16 +84,6 @@ public class ScenarioNode extends AbstractWorkflowNode<AbstractScenarioImplement
    */
   public AbstractScenarioImplementation getScenario() {
     return this.implementation;
-  }
-
-  @Override
-  public boolean isScenarioNode() {
-    return true;
-  }
-
-  @Override
-  public boolean isTaskNode() {
-    return false;
   }
 
   /**

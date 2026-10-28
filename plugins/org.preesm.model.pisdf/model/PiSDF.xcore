@@ -1,13 +1,14 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2026) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2018 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
  * Florian Arrestier [florian.arrestier@insa-rennes.fr] (2018 - 2020)
  * Dylan Gageot [gageot.dylan@gmail.com] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2022 - 2026)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Dardaillon Mickael [mickael.dardaillon@insa-rennes.fr] (2022)
+ * Ophelie-Renaud [ophelie.renaud@insa-rennes.fr] (2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -240,6 +241,16 @@ abstract class AbstractActor extends Configurable {
 	op boolean isCluster() {
 		return false
 	}
+
+	op boolean addPort(Port p) {
+		switch p.getKind {
+			case CFG_INPUT: return configInputPorts.add(p as ConfigInputPort)
+			case CFG_OUTPUT: return configOutputPorts.add(p as ConfigOutputPort)
+			case DATA_INPUT: return dataInputPorts.add(p as DataInputPort)
+			case DATA_OUTPUT: return  dataOutputPorts.add(p as DataOutputPort)
+		}
+	}
+
 	/*
 	 * Check if an AbstractActor is contained in a top-level graph.
 	 * 

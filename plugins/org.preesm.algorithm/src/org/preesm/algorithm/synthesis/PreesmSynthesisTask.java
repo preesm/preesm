@@ -1,10 +1,10 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -131,7 +131,7 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
     final IMemoryAllocation alloc = selectAllocation(allocationName);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling - " + schedulerName);
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario, null);
 
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 
@@ -147,8 +147,8 @@ public class PreesmSynthesisTask extends AbstractTaskImplementation {
       throw new PreesmSynthesisException(
           "Cannot perform the memory allocation since not all fifo types have a defined size.", e);
     }
-    final Allocation memalloc = alloc.allocateMemory(algorithm, architecture, scenario, scheduleAndMap.schedule,
-        scheduleAndMap.mapping);
+    final Allocation memalloc = (Allocation) alloc.allocateMemory(algorithm, architecture, scenario,
+        scheduleAndMap.schedule, scheduleAndMap.mapping);
 
     final Map<String, Object> outputs = new LinkedHashMap<>();
     outputs.put("Schedule", scheduleAndMap.schedule);

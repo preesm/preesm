@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  *
  * This software is a computer program whose purpose is to help prototyping
  * parallel applications using dataflow formalism.
@@ -36,6 +37,8 @@ package org.preesm.workflow.elements;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import org.preesm.commons.PreesmPlugin;
+import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.workflow.WorkflowParser;
@@ -78,6 +81,18 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
     this.taskId = taskId;
 
     this.parameters = new LinkedHashMap<>();
+
+    // Get declared parameters from PreesmTask annotation
+
+    final Class<?> task = PreesmPlugin.getInstance().getTask(this.pluginId);
+
+    if (task != null) {
+      final Parameter[] pluginParameters = task.getAnnotation(PreesmTask.class).parameters();
+
+      for (final Parameter param : pluginParameters) {
+        this.parameters.put(param.name(), null);
+      }
+    }
   }
 
   /**
@@ -120,16 +135,6 @@ public class TaskNode extends AbstractWorkflowNode<AbstractTaskImplementation> {
    */
   public String getParameter(final String key) {
     return this.parameters.get(key);
-  }
-
-  @Override
-  public boolean isScenarioNode() {
-    return false;
-  }
-
-  @Override
-  public boolean isTaskNode() {
-    return true;
   }
 
   /**

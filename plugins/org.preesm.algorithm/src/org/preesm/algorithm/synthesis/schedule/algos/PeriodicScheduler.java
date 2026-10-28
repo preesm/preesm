@@ -1,8 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Mickaël Dardaillon [mickael.dardaillon@insa-rennes.fr] (2020)
  *
@@ -80,7 +80,7 @@ import org.preesm.model.slam.Design;
  *
  * @author ahonorat
  */
-public class PeriodicScheduler extends AbstractScheduler {
+public class PeriodicScheduler extends AbstractSingleRateScheduler {
 
   /**
    *
@@ -242,7 +242,8 @@ public class PeriodicScheduler extends AbstractScheduler {
   }
 
   @Override
-  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario) {
+  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
+      Map<String, String> parameters) {
 
     // if (!SlamDesignPEtypeChecker.isHomogeneousCPU(slamDesign)) {
     // throw new PreesmSchedulingException("This task must be called with a homogeneous CPU architecture, abandon.");

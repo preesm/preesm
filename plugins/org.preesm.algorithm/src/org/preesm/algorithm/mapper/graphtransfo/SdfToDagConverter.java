@@ -425,9 +425,28 @@ public class SdfToDagConverter {
       if (correspondingActor instanceof final AbstractActor rc) {
         final List<ComponentInstance> actorMappings = scenario.getPossibleMappings(rc);
 
+<<<<<<< HEAD
         for (final ComponentInstance mapping : actorMappings) {
           final Timing newTiming = new Timing(mapping.getComponent(), rc);
           mapperVertex.getInit().addTiming(newTiming);
+=======
+          final ComponentInstance currentIOp = cg.getKey();
+          if (currentIOp.getComponent() instanceof ProcessingElement) {
+
+            if (!mv.getInit().isMapable(currentIOp)) {
+
+              mv.getInit().addOperator(currentIOp);
+
+              // Initializes a default timing that may be erased
+              // when timings are imported
+              if (referencePiVertex instanceof final AbstractActor actor) {
+                final Timing newTiming = new Timing(currentIOp.getComponent(), actor);
+                mv.getInit().addTiming(newTiming);
+              } else {
+                mv.getInit().addTiming(new Timing(currentIOp.getComponent(), null));
+              }
+            }
+>>>>>>> clustering_refactoring
 
           if (!mapperVertex.getInit().isMapable(mapping)) {
             mapperVertex.getInit().addOperator(mapping);

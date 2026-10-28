@@ -1,8 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -175,10 +176,16 @@ public class ScheduleOrderManager {
     ScheduleUtil.getAllReferencedActors(schedule).forEach(dag::addVertex);
     ScheduleUtil.getAllReferencedActors(schedule).forEach(tdag::addVertex);
     for (final Fifo fifo : pigraph.getFifos()) {
+<<<<<<< HEAD
       final AbstractActor src = fifo.getSourcePort().getContainingActor();
       final AbstractActor tgt = fifo.getTargetPort().getContainingActor();
       final var edges = dag.getAllEdges(src, tgt);
       if (edges.isEmpty()) {
+=======
+      final AbstractActor src = fifo.getSource();
+      final AbstractActor tgt = fifo.getTarget();
+      if (dag.getAllEdges(src, tgt).isEmpty()) {
+>>>>>>> clustering_refactoring
         dag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
         tdag.addEdge(src, tgt, new DAGedge(DAGedgeType.DATA));
       }

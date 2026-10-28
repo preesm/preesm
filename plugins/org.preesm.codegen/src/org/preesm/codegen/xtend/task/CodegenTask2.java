@@ -1,10 +1,11 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2019) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2013 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2017 - 2019)
  * Clément Guy [clement.guy@insa-rennes.fr] (2014 - 2015)
  * Daniel Madroñal [daniel.madronal@upm.es] (2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Hascoet [jhascoet@kalray.eu] (2016)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2013 - 2015)
  * Maxime Pelcat [maxime.pelcat@insa-rennes.fr] (2013)
@@ -67,18 +68,22 @@ import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
+import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 
 /**
  * The Class CodegenTask.
  */
 @PreesmTask(id = "codegen2", name = "Code Generation 2", category = "Code Generation 2",
 
-    inputs = { @Port(name = "PiMM", type = PiGraph.class), @Port(name = "scenario", type = Scenario.class),
-      @Port(name = "architecture", type = Design.class), @Port(name = "Schedule", type = Schedule.class),
-      @Port(name = "Mapping", type = Mapping.class), @Port(name = "Allocation", type = Allocation.class) },
+    inputs = { @Port(name = AbstractWorkflowNodeImplementation.KEY_PI_GRAPH, type = PiGraph.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCENARIO, type = Scenario.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE, type = Design.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_SCHEDULE, type = Schedule.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_MAPPING, type = Mapping.class),
+      @Port(name = AbstractWorkflowNodeImplementation.KEY_ALLOCATION, type = Allocation.class) },
 
     parameters = {
-      @Parameter(name = "Printer",
+      @Parameter(name = CodegenTask2.PARAM_PRINTER,
           description = "Specify which printer should be used to generate code. Printers are defined in Preesm source"
               + " code using an extension mechanism that make it possible to define a single printer name for several "
               + "targeted architecture. Hence, depending on the type of PEs declared in the architecture model, Preesm "
@@ -93,7 +98,8 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
             @Value(name = "XML",
                 effect = "Print XML code with all informations used by other printers to print code. "
                     + "Compatible with x86, c6678.") }),
-      @Parameter(name = "Papify", description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
+      @Parameter(name = CodegenTask2.PARAM_PAPIFY,
+          description = "Enable the PAPI-based code instrumentation provided by PAPIFY",
           values = { @Value(name = "true/false",
               effect = "Print C code instrumented with PAPIFY function calls based on the user-defined configuration"
                   + " of PAPIFY tab in the scenario. Currently compatibe with x86 and MPPA-256") }) })
@@ -121,17 +127,17 @@ public class CodegenTask2 extends AbstractTaskImplementation {
     PreesmLogger.getLogger().info(" -- Global codegen --");
 
     // Retrieve inputs
-    final Scenario scenario = (Scenario) inputs.get("scenario");
+    final Scenario scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
     if (scenario.getCodegenDirectory() == null) {
       throw new PreesmRuntimeException("Codegen path has not been specified in scenario, cannot go further.");
     }
 
-    final Design archi = (Design) inputs.get("architecture");
-    final PiGraph algo = (PiGraph) inputs.get("PiMM");
+    final Design archi = (Design) inputs.get(AbstractWorkflowNodeImplementation.KEY_ARCHITECTURE);
+    final PiGraph algo = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
 
-    final Schedule schedule = (Schedule) inputs.get("Schedule");
-    final Mapping mapping = (Mapping) inputs.get("Mapping");
-    final Allocation memAlloc = (Allocation) inputs.get("Allocation");
+    final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
+    final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
+    final Allocation memAlloc = (Allocation) inputs.get(AbstractWorkflowNodeImplementation.KEY_ALLOCATION);
 
     // Retrieve the PAPIFY flag
     final boolean papify = "true".equalsIgnoreCase(parameters.get(CodegenTask2.PARAM_PAPIFY));

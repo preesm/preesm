@@ -1,9 +1,9 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2024) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2019 - 2025) :
  *
  * Alexandre Honorat [alexandre.honorat@inria.fr] (2019 - 2021)
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2019)
- * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2024 - 2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  *
  * This software is a computer program whose purpose is to help prototyping
@@ -37,8 +37,10 @@
  */
 package org.preesm.codegen.model.generator2;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,10 +50,12 @@ import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
+import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
+import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ReceiveStartActor;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -59,6 +63,7 @@ import org.preesm.algorithm.schedule.model.SendActor;
 import org.preesm.algorithm.schedule.model.SendStartActor;
 import org.preesm.algorithm.synthesis.SynthesisResult;
 import org.preesm.algorithm.synthesis.schedule.ScheduleOrderManager;
+import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
 import org.preesm.codegen.model.Buffer;
@@ -72,6 +77,7 @@ import org.preesm.codegen.model.Direction;
 import org.preesm.codegen.model.FifoCall;
 import org.preesm.codegen.model.FifoOperation;
 import org.preesm.codegen.model.PortDirection;
+import org.preesm.codegen.model.RefinementBlock;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
@@ -82,17 +88,24 @@ import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.BroadcastActor;
 import org.preesm.model.pisdf.CHeaderRefinement;
+import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.DataInputPort;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.EndActor;
 import org.preesm.model.pisdf.ExecutableActor;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
+import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
+import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
@@ -102,6 +115,10 @@ import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.SrdagActor;
 import org.preesm.model.pisdf.UserSpecialActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.util.CHeaderUsedLocator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Component;
 import org.preesm.model.slam.ComponentInstance;
@@ -110,6 +127,7 @@ import org.preesm.model.slam.FPGA;
 import org.preesm.model.slam.ProcessingElement;
 import org.preesm.model.slam.SlamMessageRouteStep;
 import org.preesm.model.slam.SlamRouteStep;
+import org.preesm.model.slam.TimingType;
 
 /**
  *
@@ -132,6 +150,10 @@ public class CodegenModelGenerator2 {
 
   private AllocationToCodegenBuffer memoryLinker;
 
+  private final Map<PiGraph, CHeaderRefinement> alreadyVisitedClusters;
+
+  private final List<RefinementBlock> refinementBlocks;
+
   private final boolean papify;
 
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
@@ -143,6 +165,8 @@ public class CodegenModelGenerator2 {
     this.mapping = mapping;
     this.memAlloc = memAlloc;
     this.papify = papify;
+    this.alreadyVisitedClusters = new HashMap<>();
+    this.refinementBlocks = new ArrayList<>();
   }
 
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
@@ -224,6 +248,9 @@ public class CodegenModelGenerator2 {
 
     // generate buffer definitions
     generateBuffers(coreBlocks);
+
+    // Adding the refinement files of cluster to create
+    resultList.addAll(this.refinementBlocks);
 
     return Collections.unmodifiableList(resultList);
   }
@@ -324,6 +351,7 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
+<<<<<<< HEAD
         case final PiGraph cluster -> {
           if (!cluster.isCluster()) {
             throw new PreesmRuntimeException(
@@ -335,6 +363,10 @@ public class CodegenModelGenerator2 {
             generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
           }
         }
+=======
+        case final PiGraph cluster ->
+          generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
+>>>>>>> clustering_refactoring
         default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
@@ -501,18 +533,18 @@ public class CodegenModelGenerator2 {
 
     final PortDirection dir;
     final InitActor initActor;
-    if (actor instanceof InitActor) {
-      initActor = (InitActor) actor;
-      fifoCall.setOperation(FifoOperation.POP);
-      dir = PortDirection.OUTPUT;
-
-    } else if (actor instanceof final EndActor endActor) {
-      initActor = (InitActor) endActor.getInitReference();
-      fifoCall.setOperation(FifoOperation.PUSH);
-      dir = PortDirection.INPUT;
-
-    } else {
-      throw new PreesmRuntimeException();
+    switch (actor) {
+      case final InitActor iActor -> {
+        initActor = iActor;
+        fifoCall.setOperation(FifoOperation.POP);
+        dir = PortDirection.OUTPUT;
+      }
+      case final EndActor endActor -> {
+        initActor = (InitActor) endActor.getInitReference();
+        fifoCall.setOperation(FifoOperation.PUSH);
+        dir = PortDirection.INPUT;
+      }
+      default -> throw new PreesmRuntimeException();
     }
 
     final Buffer buffer = (Buffer) memoryLinker.getPortToVariableMap().get(actor.getDataPort());
@@ -689,6 +721,7 @@ public class CodegenModelGenerator2 {
   private void generateClusterFiring(final PiGraph cluster, final Map<Port, Variable> portToVariable,
       final CoreBlock coreBlock) {
 
+<<<<<<< HEAD
     // store buffers on which MD5 can be computed to check validity of transformations
     if (cluster.getDataOutputPorts().isEmpty()) {
       final EList<DataInputPort> dataInputPorts = cluster.getDataInputPorts();
@@ -748,4 +781,174 @@ public class CodegenModelGenerator2 {
     }
   }
 
+=======
+    CHeaderRefinement clusterRefinement;
+
+    /** Verify if the original cluster has not been generated yet */
+    final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
+    if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
+      clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
+    } else {
+
+      /** if not, Create refinement block for cluster */
+      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
+      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
+          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
+
+      clusterGenerator.generate();
+
+      final Component clusterComponentType = scenario.getPossibleMappings(cluster).getFirst().getComponent();
+
+      final RefinementBlock refinementBlock = CodegenModelUserFactory.eINSTANCE.createRefinementBlock();
+
+      refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
+      refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
+      refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
+      refinementBlock.setName(sourceCluster.getName());
+      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
+
+      this.refinementBlocks.add(refinementBlock);
+
+      clusterRefinement = buildClusterRefinement(sourceCluster, scenario);
+
+      this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
+    }
+    /** Transform cluster in a normal actor, with a c refinement */
+    final Actor actorCluster = PiMMUserFactory.instance.createActor();
+    actorCluster.setRefinement(clusterRefinement);
+    this.replacePiGraphByActor(cluster, actorCluster);
+
+    /** Add functions call in refinement in current core block */
+    generateActorFiring(actorCluster, portToVariable, coreBlock);
+  }
+
+  /**
+   * A loop and an init function will be generated for each cluster. A cluster need a refinement so that the top graph
+   * that is scheduled in a more conventional way can consider the cluster as a classic actor. For now, the cluster can
+   * only have a {@link CHeaderRefinement}. It has to be changed if multiple languages (Other than C and its derivatives
+   * like C++, OpenMP, or CUDA) are supported by PREESM.
+   *
+   * @param cluster
+   *          The given cluster. A refinement will be added to it.
+   * @param scenario
+   *          The given scenario
+   */
+  static CHeaderRefinement buildClusterRefinement(PiGraph cluster, Scenario scenario) {
+
+    // extract function's arguments
+    final CHeaderRefinement clusterHeader = PiMMUserFactory.instance.createCHeaderRefinement();
+    clusterHeader.setFilePath(scenario.getCodegenDirectory() + File.separator + cluster.getName() + ".h");
+
+    final FunctionPrototype initPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+    initPrototype.setName(ClusteringHelper.getInitPrototypeName(cluster));
+    final FunctionPrototype loopPrototype = PiMMUserFactory.instance.createFunctionPrototype();
+    loopPrototype.setName(ClusteringHelper.getLoopPrototypeName(cluster));
+    clusterHeader.setLoopPrototype(loopPrototype);
+    clusterHeader.setInitPrototype(initPrototype);
+
+    final List<Port> clusterInputsOutputs = new ArrayList<>();
+    clusterInputsOutputs.addAll(cluster.getConfigInputPorts());
+    clusterInputsOutputs.addAll(cluster.getAllDataPorts());
+
+    final List<FunctionArgument> initArgs = new ArrayList<>();
+    final List<FunctionArgument> loopArgs = new ArrayList<>();
+
+    for (int i = 0; i < clusterInputsOutputs.size(); i++) {
+      final Port port = clusterInputsOutputs.get(i);
+      final FunctionArgument loopArg = PiMMUserFactory.instance.createFunctionArgument();
+      loopArg.setDirection(
+          port instanceof DataOutputPort ? org.preesm.model.pisdf.Direction.OUT : org.preesm.model.pisdf.Direction.IN);
+      loopArg.setIsConfigurationParameter(port instanceof ConfigInputPort);
+      loopArg.setIsPassedByReference(port instanceof DataPort);
+      loopArg.setName(clusterInputsOutputs.get(i).getName());
+
+      if (port instanceof ConfigInputPort) {
+        loopArg.setType("int");
+
+        // We have to recreate a function argument for init, otherwise it can't be in two lists at a time
+        final FunctionArgument initArg = PiMMUserFactory.instance.createFunctionArgument();
+        initArg.setDirection(loopArg.getDirection());
+        initArg.setIsConfigurationParameter(true);
+        initArg.setIsPassedByReference(false);
+        initArg.setName(port.getName());
+        initArg.setType("int");
+        initArgs.add(initArg);
+
+      } else if (port instanceof final DataPort dataPort) {
+        loopArg.setType(dataPort.getFifo().getType());
+      } else {
+        throw new PreesmRuntimeException("Port" + port.getName() + " is neither config nor data input/output.");
+      }
+      loopArgs.add(loopArg);
+    }
+    loopPrototype.getArguments().addAll(loopArgs);
+    initPrototype.getArguments().addAll(initArgs);
+
+    return clusterHeader;
+  }
+
+  /**
+   * Replaces a hierarchical actor into its flattened homolog, with an automatically created refinement.
+   *
+   * @param cluster
+   *          input cluster
+   * @param actor
+   *          input actor
+   */
+  void replacePiGraphByActor(PiGraph cluster, Actor actor) {
+
+    /** Replace actor in its containing Graph */
+    final PiGraph parent = cluster.getContainingPiGraph();
+    if (parent == null) {
+      throw new PreesmRuntimeException("Cluster " + cluster.getName() + " should be a sub-graph, not the top graph.");
+    }
+    actor.setName(cluster.getName());
+
+    cluster.getAllPorts().forEach(actor::addPort);
+
+    parent.removeActor(cluster);
+    parent.addActor(actor);
+
+    /** Replace actor in the Schedule */
+    ScheduleUtil.replaceActor(cluster, actor, schedule);
+
+    /** Remove sub-actors in the Mapping */
+    for (final AbstractActor sub : cluster.getActors()) {
+      if (this.mapping.getMapping(sub) != null) {
+        this.mapping.getMappings().removeKey(sub);
+      }
+    }
+
+    /** Replace actor in the Mapping */
+    final EList<ComponentInstance> cis = this.mapping.getMappings().removeKey(cluster);
+    this.mapping.getMappings().put(actor, cis);
+
+    /** Add constraints in scenario */
+    final EList<ComponentInstance> possibleMappings = scenario.getPossibleMappings(cluster);
+    possibleMappings.forEach(ci -> scenario.getConstraints().addConstraint(ci, actor));
+
+    /** Add the actor timing in scenario */
+    // Retrieving component types where the mapping is possible
+    final List<Component> cmps = new ArrayList<>();
+    cis.forEach(ci -> {
+      if (!cmps.contains(ci.getComponent())) {
+        cmps.add(ci.getComponent());
+      }
+    });
+    // Computing and filling scenario with timing for each component type
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(cluster, BRVMethod.LCM);
+    cmps.forEach(cmp -> {
+      long timing = 0L;
+      for (final AbstractActor sub : cluster.getActors().stream().filter(a -> !(a instanceof InterfaceActor))
+          .toList()) {
+        // TODO RC: it will work if the cluster is ran one one PU, but not if it is a arch. node containing multiple PUs
+        // allowing internal parallelism (like with OpenMP). We have to find a smarter way of computing the timing of
+        // the actor, with the cluster schedule's informations for instance.
+        timing += brv.get(sub) * scenario.getTimings().evaluateExecutionTimeOrDefault(sub, cmp);
+      }
+      this.scenario.getTimings().setTiming(actor, cmp, TimingType.EXECUTION_TIME, Long.toString(timing));
+    });
+
+  }
+>>>>>>> clustering_refactoring
 }

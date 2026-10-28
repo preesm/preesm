@@ -1,7 +1,8 @@
 /**
- * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2020) :
+ * Copyright or © or Copr. IETR/INSA - Rennes (2018 - 2025) :
  *
  * Antoine Morvan [antoine.morvan@insa-rennes.fr] (2018 - 2019)
+ * Hugo Miomandre [hugo.miomandre@insa-rennes.fr] (2025)
  * Julien Heulot [julien.heulot@insa-rennes.fr] (2020)
  * Karol Desnos [karol.desnos@insa-rennes.fr] (2020)
  *

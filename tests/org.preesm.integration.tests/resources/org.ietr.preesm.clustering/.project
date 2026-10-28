@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+<<<<<<< HEAD:tests/org.preesm.integration.tests/resources/org.ietr.preesm.sobel-morpho.partitioner/.project
+	<name>org.ietr.preesm.sobel-morpho.partitioner</name>
+=======
+	<name>org.ietr.preesm.clustering</name>
+>>>>>>> clustering_refactoring:tests/org.preesm.integration.tests/resources/org.ietr.preesm.clustering/.project
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+		<nature>org.ietr.preesm.core.ui.wizards.nature</nature>
+	</natures>
+</projectDescription>
