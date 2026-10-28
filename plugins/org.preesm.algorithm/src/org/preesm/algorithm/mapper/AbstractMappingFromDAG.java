@@ -85,13 +85,13 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
 public abstract class AbstractMappingFromDAG extends AbstractTaskImplementation {
 
   /** The Constant PARAM_CHECK. */
-  private static final String PARAM_CHECK = "Check";
+  public static final String PARAM_CHECK = "Check";
 
   /** The Constant PARAM_OPTIMIZE. */
-  private static final String PARAM_OPTIMIZE = "Optimize synchronization";
+  public static final String PARAM_OPTIMIZE = "Optimize synchronization";
 
   /** The Constant VALUE_CHECK_FALSE. */
-  private static final String VALUE_FALSE = "False";
+  public static final String VALUE_FALSE = "False";
 
   /** The Constant VALUE_CHECK_TRUE. */
   public static final String VALUE_TRUE = "True";
