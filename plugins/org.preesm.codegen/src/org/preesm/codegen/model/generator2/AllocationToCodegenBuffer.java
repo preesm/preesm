@@ -261,19 +261,6 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     // set names for buffers that are NullBuffers linked to fork/join actors ?
   }
 
-<<<<<<< HEAD
-  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
-  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
-
-  // map physical buffer to codegen buffer
-  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb            = new DualHashBidiMap<>();
-  private final Map<Port, Variable>                                         portToVariable = new LinkedHashMap<>();
-
-  // for generating unique names
-  private static final Map<String, Long> bufferNames = new LinkedHashMap<>();
-
-=======
->>>>>>> clustering_refactoring
   private String generateUniqueBufferName(final String name) {
     final String candidate = name.replace(".", "_").replace("-", "_");
     long idx;
@@ -357,17 +344,6 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     mainBuffer.setNbToken(
         (phys.getSizeInBit() + mainBuffer.getTokenTypeSizeInBit() - 1) / mainBuffer.getTokenTypeSizeInBit());
 
-<<<<<<< HEAD
-    // all the fifos contained in a cluster
-    final List<Fifo> clusterFifos = ((Allocation) phys.eContainer()).getFifoAllocations().keySet().stream()
-        .filter(fifo -> fifo.getContainingPiGraph().isCluster()).toList();
-    if (!clusterFifos.isEmpty()) {
-      mainBuffer.setName("Memory_" + ((PiGraph) clusterFifos.getFirst().eContainer()).getName());
-    } else {
-      // set classic CoreX name
-      mainBuffer.setName(phys.getMemoryBank().getInstanceName());
-    }
-=======
     String bufferName;
     if (phys.getMemoryBank() == null) {
       bufferName = "virtual_phys_buffer_" + bufferNameID++;
@@ -375,7 +351,6 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       bufferName = phys.getMemoryBank().getInstanceName();
     }
     mainBuffer.setName(bufferName);
->>>>>>> clustering_refactoring
 
     this.btb.put(phys, mainBuffer);
     this.codegenBufferStack.push(mainBuffer);
