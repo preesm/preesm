@@ -71,21 +71,15 @@ import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
-<<<<<<< HEAD
 import org.preesm.model.pisdf.CHeaderRefinement;
 import org.preesm.model.pisdf.DataInputInterface;
 import org.preesm.model.pisdf.DataOutputInterface;
 import org.preesm.model.pisdf.DataPort;
-import org.preesm.model.pisdf.Direction;
-import org.preesm.model.pisdf.FunctionArgument;
-import org.preesm.model.pisdf.FunctionPrototype;
-=======
 import org.preesm.model.pisdf.DelayActor;
 import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
->>>>>>> clustering_refactoring
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
@@ -241,21 +235,13 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
   /**
    *
    */
-<<<<<<< HEAD
-  public final ActorFunctionCall createActorFunctionCall(final Actor actor, final FunctionPrototype prototype,
-      final Map<Port, Variable> portValues) {
-    // if (prototype.isCPP()) {
-    // throw new PreesmRuntimeException(
-    // "The codegen is not compatible with CPP function call as for: " + prototype.getName());
-    // }
-=======
+
   public final ActorFunctionCall createActorFunctionCall(final RefinementContainer rcontainer,
       final FunctionPrototype prototype, final Map<Port, Variable> portValues) {
     if (prototype.isCPP()) {
       throw new PreesmRuntimeException(
           "The codegen is not compatible with CPP function call as for: " + prototype.getName());
     }
->>>>>>> clustering_refactoring
 
     final AbstractActor actor = castRefinementContainerToAbstractActor(rcontainer);
 
