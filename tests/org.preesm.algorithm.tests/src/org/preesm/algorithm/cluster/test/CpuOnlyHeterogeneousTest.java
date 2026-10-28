@@ -3,6 +3,7 @@ package org.preesm.algorithm.cluster.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -255,7 +256,8 @@ public class CpuOnlyHeterogeneousTest {
     // final Map<String, Object> reference = refTask.execute(inputs, parameters, monitor, nodeName, workflow);
 
     final IScheduler scheduler = new LegacyListScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algo, homoDesign, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algo, homoDesign, scenario,
+        new HashMap<>()); // empty parameter map
 
     // Compare the output schedule : since there has been no clustering involved, they should be the same
     // Are they always this type ? Should this test support a variety of schedule types ?

@@ -129,7 +129,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
     final IScheduler scheduler = selectScheduler(schedulerName);
 
     PreesmLogger.getLogger().log(Level.INFO, () -> " -- Scheduling -- " + schedulerName);
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario);
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algorithm, architecture, scenario, 
+        new HashMap<>()); // empty parameters map
 
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(algorithm, scheduleAndMap.schedule);
 
@@ -188,7 +189,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
 
     final IScheduler localSchedulerMapper = selectScheduler(localSchedulerMapperName);
 
-    final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario);
+    final SynthesisResult res = localSchedulerMapper.scheduleAndMap(cluster, architecture, scenario, 
+        new HashMap<>()); // empty parameters map
 
     AbstractAllocation allocation = null;
     if (!PreesmSynthesisTask.FPGA_SCHEDULERS.contains(localSchedulerMapperName)) {

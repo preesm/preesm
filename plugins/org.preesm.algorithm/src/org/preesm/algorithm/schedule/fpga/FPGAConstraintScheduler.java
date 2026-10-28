@@ -37,7 +37,7 @@ import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.ActorNormalizedInfos;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.synthesis.SynthesisResult;
-import org.preesm.algorithm.synthesis.schedule.algos.IScheduler;
+import org.preesm.algorithm.synthesis.schedule.algos.AbstractPiMMScheduler;
 import org.preesm.commons.files.PreesmIOHelper;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
@@ -60,7 +60,7 @@ import org.preesm.model.slam.Component;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.TimingType;
 
-public class FPGAConstraintScheduler implements IScheduler {
+public class FPGAConstraintScheduler extends AbstractPiMMScheduler {
 
   static final int MAX_INT = Integer.MAX_VALUE;
 
@@ -580,8 +580,6 @@ public class FPGAConstraintScheduler implements IScheduler {
   // -------------------------------------------
   // ------------ Scheduling method ------------
   // -------------------------------------------
-
-  @Override
   /**
    * The method assumes it is scheduling a flat graph. If it encounters a cluster, it will be treated as an actor.
    */
@@ -1414,6 +1412,12 @@ public class FPGAConstraintScheduler implements IScheduler {
               .map(Object::toString).toList();
       writer.printf("%s \n", String.join("\n", truc));
     }
+  }
+
+  @Override
+  protected SynthesisResult exec(PiGraph piGraph, Design slamDesign, Scenario scenario,
+      Map<String, String> parameters) {
+    return scheduleAndMap(piGraph, slamDesign, scenario);
   }
 
 }
