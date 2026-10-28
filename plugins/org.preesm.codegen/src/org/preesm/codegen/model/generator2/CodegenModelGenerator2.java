@@ -748,7 +748,8 @@ public class CodegenModelGenerator2 {
 
       /** Transform cluster in a normal actor, with a c refinement */
       final Actor actorCluster = PiMMUserFactory.instance.createActor();
-      actorCluster.setRefinement(clusterRefinement);
+      final CHeaderRefinement headerCopy = PiMMUserFactory.instance.copyWithHistory(clusterRefinement);
+      actorCluster.setRefinement(headerCopy);
       this.replacePiGraphByActor(cluster, actorCluster);
 
       /** Add functions call in refinement in current core block */

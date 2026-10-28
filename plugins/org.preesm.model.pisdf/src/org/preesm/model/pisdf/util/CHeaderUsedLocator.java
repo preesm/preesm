@@ -40,10 +40,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.Refinement;
 
 /**
  *
@@ -61,7 +63,7 @@ public class CHeaderUsedLocator {
   public static final List<IPath> findAllCHeadersUsed(final PiGraph graph) {
     final List<IPath> result = new ArrayList<>();
 
-    final var refinements = graph.getAllActors().stream().filter(Actor.class::isInstance)
+    final Stream<Refinement> refinements = graph.getAllActors().stream().filter(Actor.class::isInstance)
         .map(a -> ((Actor) a).getRefinement());
 
     refinements.forEach(cHeaderRef -> {
