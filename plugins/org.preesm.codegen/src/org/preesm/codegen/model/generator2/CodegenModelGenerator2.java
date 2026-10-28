@@ -189,7 +189,9 @@ public class CodegenModelGenerator2 {
       List<AbstractActor> totallyOrderedActors) {
 
     // 1- generate variables (and keep track of them with a linker)
-    final var memLinker = AllocationToCodegenBuffer.link(localSynthesis.alloc, scenario, algo, totallyOrderedActors);
+    // warning : brutal cast that SHOULD work, but i don't really know what I'm doing
+    final var memLinker = AllocationToCodegenBuffer.link((Allocation) localSynthesis.alloc, scenario, algo,
+        totallyOrderedActors);
 
     final CodegenModelGenerator2 codegen = new CodegenModelGenerator2(archi, algo, scenario, localSynthesis, memLinker,
         papify);
@@ -239,7 +241,8 @@ public class CodegenModelGenerator2 {
         .buildScheduleAndTopologicalOrderedList();
 
     // 1- generate variables (and keep track of them with a linker)
-    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo, totallyOrderedActors);
+    // warning : brutal cast that SHOULD work, but i don't really know what I'm doing
+    this.memoryLinker = AllocationToCodegenBuffer.link((Allocation) memAlloc, scenario, algo, totallyOrderedActors);
 
     // 2- generate code
     generateCode(coreBlocks, totallyOrderedActors);
