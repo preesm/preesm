@@ -139,7 +139,6 @@ public abstract class AbstractSingleRateScheduler implements IScheduler {
       final Schedule schedule, final Mapping mapping) {
 
     // make sure all actors have been scheduled and schedule contains only actors from the input graph
-<<<<<<< HEAD:plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/schedule/algos/AbstractScheduler.java
     // We only inspect this hierarchy level's actors. The other levels are inspected when their graph is scheduled.
     final List<AbstractActor> piGraphActors = new ArrayList<>(
         piGraph.getActors().stream().filter(a -> a instanceof Actor).toList());
@@ -150,14 +149,6 @@ public abstract class AbstractSingleRateScheduler implements IScheduler {
         AbstractActor> scheduledActors = new ArrayList<>(actors.stream().filter(a -> a instanceof Actor).toList());
 
     if (!piGraphActors.containsAll(scheduledActors)) {
-=======
-    final List<AbstractActor> piGraphAllActors = new ArrayList<>(piGraph.getActors());
-
-    final List<AbstractActor> actors = ScheduleUtil.getAllReferencedActors(schedule);
-    final List<AbstractActor> scheduledActors = new ArrayList<>(actors);
-
-    if (!piGraphAllActors.containsAll(scheduledActors)) {
->>>>>>> clustering_refactoring:plugins/org.preesm.algorithm/src/org/preesm/algorithm/synthesis/schedule/algos/AbstractSingleRateScheduler.java
       throw new PreesmSynthesisException("Schedule refers actors not present in the input PiSDF.");
     }
 
