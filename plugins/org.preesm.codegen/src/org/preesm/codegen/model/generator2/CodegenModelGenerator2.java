@@ -735,7 +735,7 @@ public class CodegenModelGenerator2 {
     CHeaderRefinement clusterRefinement;
 
     // TODO : ici on crée un refinement s'il n'en existe pas déjà un. Seulement, dans le paradigme multi-refinement avec
-    // mapping par erefinement, tous les acteurs en ont forcément au moins un. Donc il y aurait de la redondance ici ?
+    // mapping par refinement, tous les acteurs en ont forcément au moins un. Donc il y aurait de la redondance ici ?
 
     /** Verify if the original cluster has not been generated yet */
     final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);

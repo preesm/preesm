@@ -287,10 +287,6 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseAbstractActor(final AbstractActor actor) {
     if (actor instanceof final PiGraph piGraph && !piGraph.isCluster()) {
       // Here we handle the replacement of the interfaces by what should be
-<<<<<<< HEAD
-      // Copy the actor, should we use copyPiGraphWithHistory() instead ?
-=======
->>>>>>> clustering_refactoring
       final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(piGraph);
       // Set the properties
       copyGraph.setName(this.currentActorName);
@@ -1070,18 +1066,11 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   @Override
   public Boolean casePiGraph(final PiGraph graph) {
 
-<<<<<<< HEAD
-    if (graph.isCluster()) {
-      // if (!graph.isToSrdag()) { // already managed in caseCluster
-      this.currentGraphIsCluster = true;
-      return caseCluster(graph);
-      // }
-      // return true;
-=======
     // If it is a cluster, compute it as a classic actor
     if (graph.isCluster()) {
+      this.currentGraphIsCluster = true;
       return caseExecOrClusterActor(graph);
->>>>>>> clustering_refactoring
+      // TODO : het. version calls caseCluster. Verify that calling caseExecOrClusterActor covers all its features !
     }
 
     this.currentGraphIsCluster = false;
@@ -1120,13 +1109,9 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
       final long lInstance = backupInstance * graphRV + i;
       final String backupPrefix = this.graphPrefix;
       final String backupName = this.graphName;
-<<<<<<< HEAD
       final boolean backupcurrentGraphIsCluster = this.currentGraphIsCluster;
       final PiGraph backupCurrentResultsrDAG = this.currentResultSrDAG;
-      for (final PiGraph g : graph.getChildrenGraphs()) {
-=======
       for (final PiGraph g : graph.getChildrenGraphs().stream().filter(g -> !g.isCluster()).toList()) {
->>>>>>> clustering_refactoring
         this.firingInstance = lInstance;
         doSwitch(g);
         this.graphPrefix = backupPrefix;
