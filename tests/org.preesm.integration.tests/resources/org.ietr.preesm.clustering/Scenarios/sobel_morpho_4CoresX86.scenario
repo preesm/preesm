@@ -59,12 +59,8 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-<<<<<<< HEAD:tests/org.preesm.integration.tests/resources/org.ietr.preesm.cluster.scheduler/Scenarios/4coreSobel.scenario
             <dataType name="unsigned char" size="8"/>
             <dataType name="char" size="8"/>
-=======
-            <dataType name="uchar" size="8"/>
->>>>>>> clustering_refactoring:tests/org.preesm.integration.tests/resources/org.ietr.preesm.clustering/Scenarios/sobel_morpho_4CoresX86.scenario
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>

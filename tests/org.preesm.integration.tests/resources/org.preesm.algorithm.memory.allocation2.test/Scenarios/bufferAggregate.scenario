@@ -25,13 +25,8 @@
         <mainComNode>shared_mem</mainComNode>
         <averageDataSize>1000</averageDataSize>
         <dataTypes>
-<<<<<<< HEAD:tests/org.preesm.integration.tests/resources/org.ietr.preesm.cluster.scheduler/Scenarios/1coreSobel.scenario
-            <dataType name="unsigned char" size="8"/>
-            <dataType name="char" size="8"/>
-=======
             <dataType name="d128" size="128"/>
             <dataType name="d192" size="192"/>
->>>>>>> clustering_refactoring:tests/org.preesm.integration.tests/resources/org.preesm.algorithm.memory.allocation2.test/Scenarios/bufferAggregate.scenario
         </dataTypes>
         <specialVertexOperators>
             <specialVertexOperator path="Core0"/>
