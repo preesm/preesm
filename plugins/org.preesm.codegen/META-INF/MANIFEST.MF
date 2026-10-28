@@ -28,15 +28,10 @@ Export-Package: org.preesm.codegen.model,
 Bundle-ClassPath: .
 Bundle-Vendor: %providerName
 Bundle-Localization: plugin
-<<<<<<< HEAD
 Export-Package: org.preesm.codegen.format,
  org.preesm.codegen.fpga,
  org.preesm.codegen.model,
- org.preesm.codegen.model.clustering,
-=======
-Export-Package: org.preesm.codegen.model,
  org.preesm.codegen.format,
->>>>>>> clustering_refactoring
  org.preesm.codegen.model.generator,
  org.preesm.codegen.model.generator2,
  org.preesm.codegen.model.impl,
