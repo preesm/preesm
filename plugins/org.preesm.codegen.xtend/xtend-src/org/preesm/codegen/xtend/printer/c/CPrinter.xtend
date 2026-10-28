@@ -100,15 +100,11 @@ import org.preesm.commons.files.PreesmResourcesHelper
 import org.preesm.model.pisdf.util.CHeaderUsedLocator
 import org.preesm.commons.logger.PreesmLogger
 import org.preesm.commons.files.PreesmIOHelper
-<<<<<<< HEAD
-import org.preesm.model.pisdf.CHeaderRefinement
 import org.preesm.model.slam.CPU
-=======
 import org.preesm.codegen.model.CallFunctionBlock
 import org.preesm.codegen.model.LoopFunctionBlock
 import org.preesm.codegen.model.FunctionBlock
 import org.preesm.codegen.model.RefinementBlock
->>>>>>> clustering_refactoring
 
 /**
  * This printer is currently used to print C code only for GPP processors
@@ -175,9 +171,9 @@ class CPrinter extends BlankPrinter {
 	
 	override printNullBufferDefinition(NullBuffer buffer) '''
 	    «IF !(buffer.name.equals("null") || buffer.sizeInBit == 0)»
-	««« Case where this nullBuffer represents the connection between a fork/join and other actors without the need of memcopy. 
-	««« We simply need to declare a renamed buffer to give as input/output to the fork/join, with as adress the beginning of the 
-	««« output buffers.
+	    ««« Case where this nullBuffer represents the connection between a fork/join and other actors without the need of memcopy. 
+		««« We simply need to declare a renamed buffer to give as input/output to the fork/join, with as adress the beginning of the 
+		««« output buffers.
 	  «buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	  {offset = buffer.getOffsetInByte
 	   var b = buffer.container;
@@ -312,7 +308,7 @@ class CPrinter extends BlankPrinter {
 
 	override printSubBufferDeclaration(SubBuffer buffer) '''
 «««	avoid the case of a cluster input/output variable and not an inner, intermmediate buffer
-	«IF buffer.creator != null»  
+	«IF buffer.creator !== null»  
 	extern «buffer.type» *const «buffer.name»;  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type» defined in «buffer.creator.name»
 	«ENDIF»
 	'''
@@ -811,8 +807,6 @@ class CPrinter extends BlankPrinter {
 			totalOffsetIn = totalOffsetIn + bInput.getOffsetInByte
 			bInput = bInput.container
 		}
-<<<<<<< HEAD
-
 
 		// If the Buffer and offsets are identical there is nothing to print
 		// null buffers are now (sometimes) acceptable, they represent connections to data interfaces
@@ -820,13 +814,6 @@ class CPrinter extends BlankPrinter {
 		var acceptableNullBuffer = !(input.name.equals("NULL") || output.name.equals("NULL"))
 		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) && acceptableNullBuffer){
 			// || ((output instanceof NullBuffer || input instanceof NullBuffer) && !acceptableNullBuffer)
-=======
-		
-		// If the Buffer and offsets are identical, or one buffer is null
-		// there is nothing to print
-		if((IGNORE_USELESS_MEMCPY && bInput == bOutput && totalOffsetIn == totalOffsetOut) ||
-			output instanceof NullBuffer || input instanceof NullBuffer){
->>>>>>> clustering_refactoring
 			return ''''''
 		} else {
 			return '''memcpy(«doSwitch(output)»+«outOffset», «doSwitch(input)»+«inOffset», «engine.scenario.simulationInfo.getBufferSizeInByte(type, nbToken)»); // «nbToken» * «type»'''
@@ -1255,9 +1242,7 @@ class CPrinter extends BlankPrinter {
 			}
 		}
 	}
-	
-<<<<<<< HEAD
-=======
+
 	override printInitFunctionBlockHeader(CallFunctionBlock initFuncBlock) '''
 	«printFunctionBlockHeader(initFuncBlock)» {
 	'''
@@ -1323,6 +1308,5 @@ class CPrinter extends BlankPrinter {
   override CharSequence printRefinementBlockFooter(RefinementBlock funcCoreBlock) '''
   '''
 
->>>>>>> clustering_refactoring
 
 }
