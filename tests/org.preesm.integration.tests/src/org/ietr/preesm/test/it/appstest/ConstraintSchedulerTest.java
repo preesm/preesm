@@ -14,6 +14,7 @@ import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
+import org.preesm.model.pisdf.test.PiGraphGenerator;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.scenario.util.ScenarioUserFactory;
 import org.preesm.model.slam.CPU;
@@ -129,8 +130,8 @@ public class ConstraintSchedulerTest {
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put("scheduler", "legacy");
     parameters.put("fpgascheduler", PreesmHeterogeneousSynthesisTask.VALUE_SCHEDULER_FPGA_CONSTRAINT);
-    // inputs.put(PreesmHeterogeneousSynthesisTask.VALUE_CYCLE_MAX, "5000");
-    // inputs.put(PreesmHeterogeneousSynthesisTask.VALUE_K_VALUE, "1");
+    inputs.put(PreesmHeterogeneousSynthesisTask.VALUE_CYCLE_MAX, "5000");
+    inputs.put(PreesmHeterogeneousSynthesisTask.VALUE_K_VALUE, "1");
 
     // final FPGAConstraintScheduler task = new FPGAConstraintScheduler(true, false, 0, 500000, 1);
     // final SynthesisResult res = task.scheduleAndMap(algo, heteroDesign, scenario);

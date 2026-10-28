@@ -93,6 +93,8 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
   public static final String       VALUE_SCHEDULER_FPGA_CONSTRAINT = "constraintscheduler";
   public static final List<String> FPGA_SCHEDULERS                 = new ArrayList<>(
       Arrays.asList(VALUE_SCHEDULER_FPGA_LINEAR, VALUE_SCHEDULER_FPGA_EXACT, VALUE_SCHEDULER_FPGA_CONSTRAINT));
+  public static final String       VALUE_K_VALUE                   = "K value";
+  public static final String       VALUE_CYCLE_MAX                 = "Cycle max";
 
   final PiMMUserFactory PiMMFactory = org.preesm.model.pisdf.factory.PiMMUserFactory.instance;
   final SlamFactory     SLAMFactory = SlamFactory.eINSTANCE;
