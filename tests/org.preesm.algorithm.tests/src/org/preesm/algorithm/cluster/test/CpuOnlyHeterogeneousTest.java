@@ -3,7 +3,6 @@ package org.preesm.algorithm.cluster.test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.preesm.algorithm.clustering.ClusterBuilder;
+import org.preesm.algorithm.mapper.AbstractMappingFromDAG;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.schedule.model.CommunicationActor;
 import org.preesm.algorithm.schedule.model.ParallelHiearchicalSchedule;
@@ -241,23 +241,24 @@ public class CpuOnlyHeterogeneousTest {
 
     final Map<String, String> parameters = new LinkedHashMap<>();
     parameters.put("scheduler", "legacy");
-    parameters.put("allocation", "legacy"); // for reference task
+    parameters.put("allocation", "legacy");
+    parameters.put("simulatorType", "LooselyTimed");
+    parameters.put("balanceLoads", "true");
+    parameters.put("edgeSchedType", "Simple");
+    parameters.put("clusterize", "false");
+    parameters.put(AbstractMappingFromDAG.PARAM_CHECK, ""); // equivalent to a false
+    parameters.put(AbstractMappingFromDAG.PARAM_OPTIMIZE, ""); // equivalent to a false
+    parameters.put(MemoryScriptTask.PARAM_LOG, "");
 
     final IProgressMonitor monitor = new NullProgressMonitor(); // constucteur au pif
     final String nodeName = ""; // ne semble pas utilisé pour de vrai donc raf
     final Workflow workflow = new Workflow(); // pas utilisé non plus donc raf
 
     final PreesmHeterogeneousSynthesisTask task = new PreesmHeterogeneousSynthesisTask();
-    // ce n'est pas la valeur FALSE pour le mettre à false, mais du vide...
-    parameters.put(MemoryScriptTask.PARAM_LOG, "");
     final Map<String, Object> res = task.execute(inputs, parameters, monitor, nodeName, workflow);
 
-    // final PreesmSynthesisTask refTask = new PreesmSynthesisTask();
-    // final Map<String, Object> reference = refTask.execute(inputs, parameters, monitor, nodeName, workflow);
-
     final IScheduler scheduler = new LegacyListScheduler();
-    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algo, homoDesign, scenario,
-        new HashMap<>()); // empty parameter map
+    final SynthesisResult scheduleAndMap = scheduler.scheduleAndMap(algo, homoDesign, scenario, parameters);
 
     // Compare the output schedule : since there has been no clustering involved, they should be the same
     // Are they always this type ? Should this test support a variety of schedule types ?
@@ -273,20 +274,24 @@ public class CpuOnlyHeterogeneousTest {
       final SequentialActorSchedule actorListResult = (SequentialActorSchedule) outputSchedule.getScheduleTree().get(i);
 
       final int expectedNumberOfComms = 14;
+      final int refNbActors = actorListReference.getActorList().size();
+      final int outputNbActors = actorListResult.getActorList().size();
 
-      assertEquals(actorListReference.getActorList().size(),
-          actorListResult.getActorList().size() - expectedNumberOfComms);
+      assertEquals(refNbActors, outputNbActors - expectedNumberOfComms);
     }
 
     // check same schedule per PE
     for (int i = 0; i < refSchedule.getScheduleTree().size(); i++) {
-      final EList<AbstractActor> actorListReference = ((SequentialActorSchedule) refSchedule.getScheduleTree().get(i))
-          .getActorList();
+      final List<AbstractActor> actorListReference = ((SequentialActorSchedule) refSchedule.getScheduleTree().get(i))
+          .getActorList().stream().filter(a -> !(a instanceof CommunicationActor)).toList();
       final List<AbstractActor> actorListResult = ((SequentialActorSchedule) outputSchedule.getScheduleTree().get(i))
           .getActorList().stream().filter(a -> !(a instanceof CommunicationActor)).toList();
+      // we don't really care about the order of comm actors, so we filter them out. But maybe we should ?
 
       for (int actorIndex = 0; actorIndex < actorListReference.size(); actorIndex++) {
-        assertEquals(actorListReference.get(actorIndex), actorListResult.get(actorIndex));
+        final var refActor = actorListReference.get(actorIndex);
+        final var outputActor = actorListResult.get(actorIndex);
+        assertEquals(refActor, outputActor);
       }
     }
   }
