@@ -179,6 +179,8 @@ public class CodegenModelGenerator2 {
     this.memAlloc = synthesisResults.alloc;
     this.papify = papify;
     this.memoryLinker = memLinker;
+    this.alreadyVisitedClusters = new HashMap<>();
+    this.refinementBlocks = new ArrayList<>();
   }
 
   public static List<Block> generateClusterCode(final Design archi, final PiGraph algo, final Scenario scenario,
@@ -351,7 +353,6 @@ public class CodegenModelGenerator2 {
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
         case final CommunicationActor commActor -> generateCommunication(commActor, coreBlock);
-<<<<<<< HEAD
         case final PiGraph cluster -> {
           if (!cluster.isCluster()) {
             throw new PreesmRuntimeException(
@@ -363,10 +364,6 @@ public class CodegenModelGenerator2 {
             generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
           }
         }
-=======
-        case final PiGraph cluster ->
-          generateClusterFiring(cluster, this.memoryLinker.getPortToVariableMap(), coreBlock);
->>>>>>> clustering_refactoring
         default -> throw new PreesmRuntimeException("Unsupported actor [" + actor + "]");
       }
     }
@@ -721,7 +718,7 @@ public class CodegenModelGenerator2 {
   private void generateClusterFiring(final PiGraph cluster, final Map<Port, Variable> portToVariable,
       final CoreBlock coreBlock) {
 
-<<<<<<< HEAD
+    // <<<<<<< HEAD
     // store buffers on which MD5 can be computed to check validity of transformations
     if (cluster.getDataOutputPorts().isEmpty()) {
       final EList<DataInputPort> dataInputPorts = cluster.getDataInputPorts();
@@ -732,7 +729,29 @@ public class CodegenModelGenerator2 {
     }
 
     final Refinement refinement = cluster.getRefinement();
-    if (refinement instanceof final CHeaderRefinement cHeaderRef) {
+
+    // code à merger
+
+    CHeaderRefinement clusterRefinement;
+
+    // TODO : ici on crée un refinement s'il n'en existe pas déjà un. Seulement, dans le paradigme multi-refinement avec
+    // mapping par erefinement, tous les acteurs en ont forcément au moins un. Donc il y aurait de la redondance ici ?
+
+    /** Verify if the original cluster has not been generated yet */
+    final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
+    if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
+      clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
+
+      /** Transform cluster in a normal actor, with a c refinement */
+      final Actor actorCluster = PiMMUserFactory.instance.createActor();
+      actorCluster.setRefinement(clusterRefinement);
+      this.replacePiGraphByActor(cluster, actorCluster);
+
+      /** Add functions call in refinement in current core block */
+      generateActorFiring(actorCluster, portToVariable, coreBlock);
+
+    } else if (refinement instanceof final CHeaderRefinement cHeaderRef) {
+      /** if a refinement already exists, simply register the call */
       final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {
         final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createClusterFunctionCall(cluster,
@@ -744,7 +763,39 @@ public class CodegenModelGenerator2 {
           portToVariable);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
       registerCallVariableToCoreBlock(coreBlock, loop);
+    } else {
+      /** if not, Create refinement block for cluster */
+      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
+      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
+          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
+
+      clusterGenerator.generate();
+
+      final Component clusterComponentType = scenario.getPossibleMappings(cluster).getFirst().getComponent();
+
+      final RefinementBlock refinementBlock = CodegenModelUserFactory.eINSTANCE.createRefinementBlock();
+
+      refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
+      refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
+      refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
+      refinementBlock.setName(sourceCluster.getName());
+      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
+
+      this.refinementBlocks.add(refinementBlock);
+
+      clusterRefinement = buildClusterRefinement(sourceCluster, scenario);
+
+      this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
+
+      /** Transform cluster in a normal actor, with a c refinement */
+      final Actor actorCluster = PiMMUserFactory.instance.createActor();
+      actorCluster.setRefinement(clusterRefinement);
+      this.replacePiGraphByActor(cluster, actorCluster);
+
+      /** Add functions call in refinement in current core block */
+      generateActorFiring(actorCluster, portToVariable, coreBlock);
     }
+
   }
 
   private void generateAcceleratorCall(final PiGraph cluster, final Map<Port, Variable> portToVariable,
@@ -779,47 +830,6 @@ public class CodegenModelGenerator2 {
       coreBlock.getLoopBlock().getCodeElts().add(loop);
       registerCallVariableToCoreBlock(coreBlock, loop);
     }
-  }
-
-=======
-    CHeaderRefinement clusterRefinement;
-
-    /** Verify if the original cluster has not been generated yet */
-    final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
-    if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
-      clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
-    } else {
-
-      /** if not, Create refinement block for cluster */
-      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
-      final PiMMCodegenModelGenerator clusterGenerator = new PiMMCodegenModelGenerator(sourceCluster, scenario,
-          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
-
-      clusterGenerator.generate();
-
-      final Component clusterComponentType = scenario.getPossibleMappings(cluster).getFirst().getComponent();
-
-      final RefinementBlock refinementBlock = CodegenModelUserFactory.eINSTANCE.createRefinementBlock();
-
-      refinementBlock.setCoreType(clusterComponentType.getVlnv().getName());
-      refinementBlock.setInitBlock(clusterGenerator.getCallFunctionBlock());
-      refinementBlock.setLoopBlock(clusterGenerator.getLoopFunctionBlock());
-      refinementBlock.setName(sourceCluster.getName());
-      CHeaderUsedLocator.findAllCHeaderFileNamesUsed(sourceCluster).forEach(h -> refinementBlock.getHeaders().add(h));
-
-      this.refinementBlocks.add(refinementBlock);
-
-      clusterRefinement = buildClusterRefinement(sourceCluster, scenario);
-
-      this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
-    }
-    /** Transform cluster in a normal actor, with a c refinement */
-    final Actor actorCluster = PiMMUserFactory.instance.createActor();
-    actorCluster.setRefinement(clusterRefinement);
-    this.replacePiGraphByActor(cluster, actorCluster);
-
-    /** Add functions call in refinement in current core block */
-    generateActorFiring(actorCluster, portToVariable, coreBlock);
   }
 
   /**
@@ -950,5 +960,4 @@ public class CodegenModelGenerator2 {
     });
 
   }
->>>>>>> clustering_refactoring
 }
