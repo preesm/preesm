@@ -52,6 +52,7 @@ import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.mapping.model.Mapping;
+import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
@@ -141,12 +142,12 @@ public class CodegenModelGenerator2 {
     return new CodegenModelGenerator2(archi, algo, scenario, schedule, mapping, memAlloc, papify).generate();
   }
 
-  private final Design     archi;
-  private final PiGraph    algo;
-  private final Scenario   scenario;
-  private final Schedule   schedule;
-  private final Mapping    mapping;
-  private final Allocation memAlloc;
+  private final Design             archi;
+  private final PiGraph            algo;
+  private final Scenario           scenario;
+  private final Schedule           schedule;
+  private final Mapping            mapping;
+  private final AbstractAllocation memAlloc;
 
   private AllocationToCodegenBuffer memoryLinker;
 
