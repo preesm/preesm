@@ -35,9 +35,6 @@
  */
 package org.preesm.algorithm.model;
 
-import java.util.Observable;
-import java.util.Observer;
-
 /**
  * Abstract class common to all edges.
  *
@@ -48,7 +45,7 @@ import java.util.Observer;
  *          the value type
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
-public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observable implements PropertySource, Observer {
+public abstract class AbstractEdge<G, V extends AbstractVertex> implements PropertySource {
 
   /** The property. */
   private final PropertyBean property;
@@ -216,21 +213,6 @@ public abstract class AbstractEdge<G, V extends AbstractVertex> extends Observab
    */
   public String getTargetPortModifier() {
     return targetPortModifier;
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-   */
-  @Override
-  public void update(final Observable o, final Object arg) {
-    if ((arg instanceof final String str) && (o instanceof final AbstractEdge ae)) {
-      final Object propertyValue = ae.getPropertyBean().getValue(str);
-      if (propertyValue != null) {
-        this.getPropertyBean().setValue(str, propertyValue);
-      }
-    }
   }
 
 }

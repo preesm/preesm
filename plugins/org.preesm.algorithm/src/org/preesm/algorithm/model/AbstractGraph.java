@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.model;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -68,7 +67,7 @@ import org.preesm.commons.math.ExpressionEvaluationException;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class AbstractGraph<V extends AbstractVertex, E extends AbstractEdge> extends DirectedPseudograph<V, E>
-    implements PropertySource, IRefinement, IExpressionSolver, IModelObserver, CloneableProperty {
+    implements PropertySource, IRefinement, IExpressionSolver, CloneableProperty {
 
   private static final long   serialVersionUID               = 1381565218127310945L;
   private static final String NAME_PROPERTY_LITERAL          = "name";
@@ -78,9 +77,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public static final String  PATH_PROPERTY_LITERAL          = "path";
   private static final String PARENT_VERTEX_PROPERTY_LITERAL = "parent_vertex";
 
-  private final PropertyBean                        properties;
-  private final transient ArrayList<IModelObserver> observers;
-  private boolean                                   hasChanged;
+  private final PropertyBean properties;
 
   /**
    * Creates a new Instance of Abstract graph with the given factory.
@@ -89,8 +86,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   protected AbstractGraph(final Supplier<E> edgeSupplier) {
     super(null, edgeSupplier, false);
     this.properties = new PropertyBean();
-    this.observers = new ArrayList<>();
-    this.hasChanged = false;
   }
 
   /**
@@ -123,8 +118,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     edge.setSourceLabel(sourcePort.getName());
     edge.setTargetLabel(targetPort.getName());
     edge.setBase(this);
-    this.setChanged();
-    this.notifyObservers(edge);
     return edge;
   }
 
@@ -132,8 +125,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public E addEdge(final V source, final V target) {
     final E edge = super.addEdge(source, target);
     edge.setBase(this);
-    this.setChanged();
-    this.notifyObservers(edge);
     return edge;
   }
 
@@ -175,17 +166,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     vertex.setName(name);
     final boolean result = super.addVertex(vertex);
     vertex.setBase(this);
-    this.setChanged();
-    this.notifyObservers(vertex);
     return result;
-  }
-
-  /**
-   * Indicates that this object has no longer changed, or that it has already notified all of its observers of its most
-   * recent change, so that the hasChanged method will now return false.
-   */
-  private void clearChanged() {
-    this.hasChanged = true;
   }
 
   public ArgumentFactory getArgumentFactory() {
@@ -288,43 +269,16 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
 
   public abstract IModelVertexFactory<V> getVertexFactory();
 
-  /**
-   * If this object has changed, as indicated by the hasChanged method, then notify all of its observers and then call
-   * the clearChanged method to indicate that this object has no longer changed.
-   *
-   * @param arg
-   *          Arguments to be passe to the update method
-   */
-  private void notifyObservers(final Object arg) {
-    if (this.hasChanged) {
-      for (final IModelObserver o : this.observers) {
-        o.update(this, arg);
-      }
-      clearChanged();
-    }
-  }
-
   @Override
   public boolean removeEdge(final E edge) {
     final boolean res = super.removeEdge(edge);
-    this.setChanged();
-    this.notifyObservers(edge);
     return res;
   }
 
   @Override
   public boolean removeVertex(final V vertex) {
     final boolean result = super.removeVertex(vertex);
-    this.setChanged();
-    this.notifyObservers(vertex);
     return result;
-  }
-
-  /**
-   * Marks this Observable object as having been changed the hasChanged method will now return true.
-   */
-  private void setChanged() {
-    this.hasChanged = true;
   }
 
   public void setName(final String name) {
