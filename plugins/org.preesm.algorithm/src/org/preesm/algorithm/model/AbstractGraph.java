@@ -44,15 +44,9 @@ import org.nfunk.jep.Node;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.Parameter;
-import org.preesm.algorithm.model.parameters.ParameterFactory;
-import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Value;
-import org.preesm.algorithm.model.parameters.Variable;
-import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
@@ -128,33 +122,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return edge;
   }
 
-  /**
-   * Add the given parameter to his graph parameter set.
-   *
-   * @param param
-   *          The parameter to add
-   */
-  public void addParameter(final Parameter param) {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) == null) {
-      setParameterSet(new ParameterSet());
-    }
-    this.properties.<ParameterSet>getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL).addParameter(param);
-  }
-
-  /**
-   * Add the given variable to his graph parameter set.
-   *
-   * @param variable
-   *          The variable to add
-   */
-  public void addVariable(final Variable variable) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
-      setVariableSet(new VariableSet());
-    }
-    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).addVariable(variable);
-    variable.setExpressionSolver(this);
-  }
-
   @Override
   public boolean addVertex(final V vertex) {
     int number = 0;
@@ -194,19 +161,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL);
   }
 
-  public ParameterFactory getParameterFactory() {
-    return new ParameterFactory();
-  }
-
-  /**
-   */
-  public ParameterSet getParameters() {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) != null) {
-      return this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL);
-    }
-    return null;
-  }
-
   public V getParentVertex() {
     return this.properties.getValue(AbstractGraph.PARENT_VERTEX_PROPERTY_LITERAL);
   }
@@ -222,33 +176,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       return this.getPropertyBean().getValue(propertyName).toString();
     }
     return null;
-  }
-
-  /**
-   * Gives the variable of this graph with the given name.
-   *
-   * @param name
-   *          The name of the variable to get
-   * @return The variable with the given name
-   */
-  public Variable getVariable(final String name) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) != null) {
-      return this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).getVariable(name);
-    }
-    return null;
-  }
-
-  /**
-   * Gives the variables set of this graph.
-   *
-   * @return The set of variables of this graph
-   */
-  public VariableSet getVariables() {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
-      final VariableSet variables = new VariableSet();
-      this.setVariableSet(variables);
-    }
-    return this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL);
   }
 
   /**
@@ -286,11 +213,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
         this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL), name);
   }
 
-  public void setParameterSet(final ParameterSet parameters) {
-    this.properties.setValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL,
-        this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL), parameters);
-  }
-
   protected void setParentVertex(final V parentVertex) {
     this.properties.setValue(AbstractGraph.PARENT_VERTEX_PROPERTY_LITERAL, parentVertex);
   }
@@ -300,29 +222,12 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     this.getPropertyBean().setValue(propertyName, value);
   }
 
-  public void setVariableSet(final VariableSet variables) {
-    this.properties.setValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL,
-        this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL), variables);
-  }
-
   @Override
   public long solveExpression(final String expression, final Value caller) {
     long resultValue;
     try {
       final JEP jep = new JEP();
-      if (this.getVariables() != null /*
-                                       * && !(caller instanceof Argument)
-                                       */) {
-        for (final String variable : this.getVariables().keySet()) {
-          if ((this.getVariable(variable) == caller) || this.getVariable(variable).getValue().equals(expression)) {
-            break;
-          }
-          jep.addVariable(variable, this.getVariable(variable).longValue());
-        }
-      }
-      if ((this.getParameters() != null) && (this.getParentVertex() != null)) {
-        addParametersToScope(jep);
-      }
+
       final Node expressionMainNode = jep.parse(expression);
       final Object result = jep.evaluate(expressionMainNode);
       if (!(result instanceof Number)) {
@@ -333,21 +238,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }
     return resultValue;
-  }
-
-  private void addParametersToScope(final JEP jep) {
-    for (final String arg : this.getParameters().keySet()) {
-      try {
-        Long paramValue = this.getParameters().get(arg).getValue();
-        if (paramValue == null) {
-          paramValue = this.getParentVertex().getArgument(arg).longValue();
-          this.getParameters().get(arg).setValue(paramValue);
-        }
-        jep.addVariable(arg, paramValue);
-      } catch (final ExpressionEvaluationException e) {
-        throw new PreesmRuntimeException("Could not evaluate value", e);
-      }
-    }
   }
 
   /**
