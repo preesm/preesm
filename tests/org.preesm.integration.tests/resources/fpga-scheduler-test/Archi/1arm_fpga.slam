@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<spirit:design xmlns:spirit="http://www.spiritconsortium.org/XMLSchema/SPIRIT/1.4">
+    <spirit:vendor/>
+    <spirit:library/>
+    <spirit:name>arm-fpga</spirit:name>
+    <spirit:version/>
+    <spirit:componentInstances>
+        <spirit:componentInstance>
+            <spirit:instanceName>core0</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:componentRef spirit:library="" spirit:name="ARM" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>shared_mem</spirit:instanceName>
+            <spirit:hardwareId>0</spirit:hardwareId>
+            <spirit:componentRef spirit:library="" spirit:name="SHARED_MEM" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+        <spirit:componentInstance>
+            <spirit:instanceName>KRIA260</spirit:instanceName>
+            <spirit:hardwareId>2</spirit:hardwareId>
+            <spirit:componentRef spirit:library="" spirit:name="FPGA" spirit:vendor="" spirit:version=""/>
+            <spirit:configurableElementValues/>
+        </spirit:componentInstance>
+    </spirit:componentInstances>
+    <spirit:interconnections>
+        <spirit:interconnection>
+            <spirit:name>core0|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="core0"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+        <spirit:interconnection>
+            <spirit:name>KRIA260|shared_mem|shared_mem|shared_mem</spirit:name>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="KRIA260"/>
+            <spirit:activeInterface spirit:busRef="shared_mem" spirit:componentRef="shared_mem"/>
+        </spirit:interconnection>
+    </spirit:interconnections>
+    <spirit:hierConnections/>
+    <spirit:vendorExtensions>
+        <slam:componentDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:componentDescription slam:componentRef="ARM" slam:componentType="CPU" slam:refinement=""/>
+            <slam:componentDescription slam:componentRef="SHARED_MEM" slam:componentType="parallelComNode" slam:refinement="" slam:speed="1000000000"/>
+            <slam:componentDescription slam:board="xilinx.com:kr260_som:part0:1.1" slam:componentRef="FPGA" slam:componentType="FPGA" slam:frequency="50" slam:part="xck26-sfvc784-2LV-c" slam:refinement=""/>
+        </slam:componentDescriptions>
+        <slam:linkDescriptions xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:linkDescription slam:directedLink="undirected" slam:linkType="DataLink" slam:referenceId="core0|shared_mem|shared_mem|shared_mem"/>
+            <slam:linkDescription slam:directedLink="undirected" slam:linkType="DataLink" slam:referenceId="KRIA260|shared_mem|shared_mem|shared_mem"/>
+        </slam:linkDescriptions>
+        <slam:designDescription xmlns:slam="http://sourceforge.net/projects/dftools/slam">
+            <slam:parameters/>
+        </slam:designDescription>
+    </spirit:vendorExtensions>
+</spirit:design>

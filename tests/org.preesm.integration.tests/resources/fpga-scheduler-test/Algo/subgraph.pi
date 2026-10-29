@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph edgedefault="directed">
+        <data key="name">subgraph</data>
+        <node defaultValue="100" id="size" kind="cfg_in_iface"/>
+        <node id="in" kind="src">
+            <port annotation="NONE" expr="size" kind="output" name="in"/>
+        </node>
+        <node id="out" kind="snk">
+            <port annotation="NONE" expr="size" kind="input" name="out"/>
+        </node>
+        <node id="a1" kind="actor">
+            <data key="graph_desc">Code/include/test.hpp</data>
+            <loop isCPPdefinition="true" name="process1&lt;size&gt;">
+                <param direction="IN" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="in" type="hls::stream&lt;int&gt;"/>
+                <param direction="OUT" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="out" type="hls::stream&lt;int&gt;"/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size/5" kind="output" name="out"/>
+        </node>
+        <node id="a4" kind="actor">
+            <data key="graph_desc">Code/include/test.hpp</data>
+            <loop isCPPdefinition="true" name="process2&lt;size&gt;">
+                <param direction="IN" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="in" type="hls::stream&lt;int&gt;"/>
+                <param direction="OUT" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="out" type="hls::stream&lt;int&gt;"/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size/5" kind="input" name="in"/>
+            <port annotation="NONE" expr="size/10" kind="output" name="out"/>
+        </node>
+        <node id="a2" kind="actor">
+            <data key="graph_desc">Code/include/test.hpp</data>
+            <loop isCPPdefinition="true" name="process1&lt;size&gt;">
+                <param direction="IN" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="in" type="hls::stream&lt;int&gt;"/>
+                <param direction="OUT" isCPPdefinition="true" isConfig="false" isPassedByReference="true" name="out" type="hls::stream&lt;int&gt;"/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size/5" kind="input" name="in"/>
+            <port annotation="NONE" expr="size/5" kind="output" name="out"/>
+        </node>
+        <edge kind="fifo" source="in" sourceport="in" target="a1" targetport="in" type="int"/>
+        <edge kind="fifo" source="a4" sourceport="out" target="out" targetport="out" type="int"/>
+        <edge kind="fifo" source="a1" sourceport="out" target="a2" targetport="in" type="int"/>
+        <edge kind="fifo" source="a2" sourceport="out" target="a4" targetport="in" type="int"/>
+        <edge kind="dependency" source="size" target="in"/>
+        <edge kind="dependency" source="size" target="out"/>
+        <edge kind="dependency" source="size" target="a1" targetport="size"/>
+        <edge kind="dependency" source="size" target="a4" targetport="size"/>
+        <edge kind="dependency" source="size" target="a2" targetport="size"/>
+    </graph>
+</graphml>

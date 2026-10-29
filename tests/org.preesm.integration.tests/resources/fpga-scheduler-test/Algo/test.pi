@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns">
+    <graph edgedefault="directed">
+        <data key="name">test</data>
+        <node expr="10" id="size" kind="param"/>
+        <node id="acteur1" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="prod1">
+                <param direction="IN" isConfig="true" name="size" type="int"/>
+                <param direction="OUT" isConfig="false" name="out" type="int"/>
+            </loop>
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="prod2">
+                <param direction="IN" isConfig="true" name="size" type="int"/>
+                <param direction="OUT" isConfig="false" name="out" type="int"/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="acteur2" kind="actor">
+            <data key="graph_desc">Algo/subgraph.pi</data>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+            <port annotation="NONE" expr="size" kind="output" name="out"/>
+        </node>
+        <node id="acteur3" kind="actor">
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="cons1">
+                <param direction="IN" isConfig="true" name="size" type="int"/>
+                <param direction="IN" isConfig="false" name="in" type="int"/>
+            </loop>
+            <data key="graph_desc">Code/include/test.h</data>
+            <loop name="cons2">
+                <param direction="IN" isConfig="true" name="size" type="int"/>
+                <param direction="IN" isConfig="false" name="in" type="int"/>
+            </loop>
+            <port kind="cfg_input" name="size"/>
+            <port annotation="NONE" expr="size" kind="input" name="in"/>
+        </node>
+        <edge kind="fifo" source="acteur1" sourceport="out" target="acteur2" targetport="in" type="int"/>
+        <edge kind="fifo" source="acteur2" sourceport="out" target="acteur3" targetport="in" type="int"/>
+        <edge kind="dependency" source="size" target="acteur1" targetport="size"/>
+        <edge kind="dependency" source="size" target="acteur3" targetport="size"/>
+        <edge kind="dependency" source="size" target="acteur2" targetport="size"/>
+    </graph>
+</graphml>

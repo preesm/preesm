@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scenario>
+    <flags>
+        <sizesAreInBit/>
+    </flags>
+    <files>
+        <algorithm url="/fpga-scheduler-test/Algo/test.pi"/>
+        <architecture url="/fpga-scheduler-test/Archi/1arm_fpga.slam"/>
+        <codegenDirectory url="/fpga-scheduler-test/Code/generated"/>
+    </files>
+    <constraints excelUrl="">
+        <constraintGroup>
+            <operator name="KRIA260"/>
+            <task name="test/acteur2/a1"/>
+            <refinement name="process1&lt;size&gt;"/>
+            <task name="test/acteur2/a4"/>
+            <refinement name="process2&lt;size&gt;"/>
+            <task name="test/acteur2/a2"/>
+            <refinement name="process1&lt;size&gt;"/>
+        </constraintGroup>
+        <constraintGroup>
+            <operator name="core0"/>
+            <task name="test/acteur3"/>
+            <refinement name="cons1"/>
+            <refinement name="cons2"/>
+            <task name="test/acteur1"/>
+            <refinement name="prod1"/>
+            <refinement name="prod2"/>
+        </constraintGroup>
+    </constraints>
+    <timings excelUrl="">
+        <timing opname="FPGA" time="50" timingtype="EXECUTION_TIME" vertexname="test/acteur2/a4"/>
+        <timing opname="FPGA" time="50" timingtype="INITIATION_INTERVAL" vertexname="test/acteur2/a4"/>
+        <timing opname="FPGA" time="50" timingtype="EXECUTION_TIME" vertexname="test/acteur2/a2"/>
+        <timing opname="FPGA" time="50" timingtype="INITIATION_INTERVAL" vertexname="test/acteur2/a2"/>
+        <timing opname="FPGA" time="50" timingtype="EXECUTION_TIME" vertexname="test/acteur2/a1"/>
+        <timing opname="FPGA" time="50" timingtype="INITIATION_INTERVAL" vertexname="test/acteur2/a1"/>
+        <memcpyspeed opname="ARM" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="FPGA" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="ARM" setuptime="1" timeperunit="0.001"/>
+        <memcpyspeed opname="FPGA" setuptime="1" timeperunit="0.001"/>
+    </timings>
+    <simuParams>
+        <mainCore>core0</mainCore>
+        <mainComNode>shared_mem</mainComNode>
+        <averageDataSize>1000</averageDataSize>
+        <dataTypes>
+            <dataType name="int" size="32"/>
+        </dataTypes>
+        <specialVertexOperators>
+            <specialVertexOperator path="KRIA260"/>
+            <specialVertexOperator path="core0"/>
+            <specialVertexOperator path="KRIA260"/>
+            <specialVertexOperator path="core0"/>
+        </specialVertexOperators>
+    </simuParams>
+    <parameterValues/>
+    <papifyConfigs xmlUrl=""/>
+    <energyConfigs xmlUrl="">
+        <performanceObjective objectiveEPS="0.0"/>
+        <peActorsEnergy/>
+    </energyConfigs>
+</scenario>
