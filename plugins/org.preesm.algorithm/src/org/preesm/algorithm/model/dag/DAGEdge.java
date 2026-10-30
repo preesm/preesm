@@ -36,9 +36,7 @@
 package org.preesm.algorithm.model.dag;
 
 import org.preesm.algorithm.model.AbstractEdge;
-import org.preesm.algorithm.model.AbstractEdgePropertyType;
 import org.preesm.algorithm.model.PropertyFactory;
-import org.preesm.algorithm.model.types.StringEdgePropertyType;
 
 /**
  * Class used to represent an Edge in a Directed Acyclic Graph.
@@ -56,11 +54,31 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
   /** Key to access to property containing_edge. */
   private static final String CONTAINING_EDGE = "containing_edge";
 
-  /** Property name for property target_port_modifier. */
-  private static final String TARGET_PORT_MODIFIER = "target_port_modifier";
+  /** Property name for data type. */
+  private static final String DATA_TYPE = "data_type";
 
-  /** Property name for property source_port_modifier. */
-  private static final String SOURCE_PORT_MODIFIER = "source_port_modifier";
+  /** Property name for property data size. */
+  private static final String DATA_SIZE = "data_size";
+
+  /**
+   * Modifier used to make a input port a pure input. <br>
+   * i.e. the corresponding actor will only read the corresponding data.
+   */
+  public static final String MODIFIER_READ_ONLY = "read_only";
+
+  /**
+   * Modifier used to make a input port an unused input. <br>
+   * i.e. the corresponding actor not use the corresponding input.
+   */
+  public static final String MODIFIER_UNUSED = "unused";
+
+  /**
+   * Modifier used to make a input port a pure output. <br>
+   * i.e. the corresponding actor will only write the corresponding data but will not use the written data. In other
+   * terms, it does not matter if the written data is overwritten by another process, even during the execution of the
+   * producer actor.
+   */
+  public static final String MODIFIER_WRITE_ONLY = "write_only";
 
   /**
    * Creates a new empty DAGEdge.
@@ -74,11 +92,8 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
    *
    * @return This DAGEdge weight
    */
-  public AbstractEdgePropertyType<?> getWeight() {
-    if (getPropertyBean().getValue(DAGEdge.WEIGHT) != null) {
-      return getPropertyBean().getValue(DAGEdge.WEIGHT);
-    }
-    return null;
+  public long getWeight() {
+    return getPropertyBean().getValue(DAGEdge.WEIGHT);
   }
 
   /**
@@ -87,7 +102,7 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
    * @param w
    *          The weight to set for this DAGEdge
    */
-  public void setWeight(final AbstractEdgePropertyType<?> w) {
+  public void setWeight(final long w) {
     getPropertyBean().setValue(DAGEdge.WEIGHT, w);
   }
 
@@ -99,11 +114,10 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
   public EdgeAggregate getAggregate() {
     if (getPropertyBean().getValue(DAGEdge.AGGREGATE) != null) {
       return getPropertyBean().getValue(DAGEdge.AGGREGATE);
-    } else {
-      final EdgeAggregate agg = new EdgeAggregate();
-      setAggregate(agg);
-      return agg;
     }
+    final EdgeAggregate agg = new EdgeAggregate();
+    setAggregate(agg);
+    return agg;
   }
 
   /**
@@ -158,50 +172,20 @@ public class DAGEdge extends AbstractEdge<DirectedAcyclicGraph, DAGVertex> {
     return null;
   }
 
-  /**
-   * Sets the target port modifier.
-   *
-   * @param modifier
-   *          the new target port modifier
-   */
-  public void setTargetPortModifier(final AbstractEdgePropertyType<?> modifier) {
-    if (modifier != null) {
-      getPropertyBean().setValue(DAGEdge.TARGET_PORT_MODIFIER, null, modifier);
-    } else {
-      getPropertyBean().removeProperty(DAGEdge.TARGET_PORT_MODIFIER);
-    }
+  public long getDataSize() {
+    return getPropertyBean().getValue(DAGEdge.DATA_SIZE);
   }
 
-  /**
-   * Sets the source port modifier.
-   *
-   * @param modifier
-   *          the new source port modifier
-   */
-  public void setSourcePortModifier(final AbstractEdgePropertyType<?> modifier) {
-    if (modifier != null) {
-      getPropertyBean().setValue(DAGEdge.SOURCE_PORT_MODIFIER, null, modifier);
-    } else {
-      getPropertyBean().removeProperty(DAGEdge.SOURCE_PORT_MODIFIER);
-    }
+  public void setDataSize(long size) {
+    setPropertyValue(DAGEdge.DATA_SIZE, size);
   }
 
-  /**
-   * Gets the source port modifier.
-   *
-   * @return the source port modifier
-   */
-  public StringEdgePropertyType getSourcePortModifier() {
-    return getPropertyBean().getValue(DAGEdge.SOURCE_PORT_MODIFIER);
+  public String getDataType() {
+    return getPropertyBean().getValue(DAGEdge.DATA_TYPE);
   }
 
-  /**
-   * Gets the target port modifier.
-   *
-   * @return the target port modifier
-   */
-  public StringEdgePropertyType getTargetPortModifier() {
-    return getPropertyBean().getValue(DAGEdge.TARGET_PORT_MODIFIER);
+  public void setDataType(String type) {
+    setPropertyValue(DAGEdge.DATA_TYPE, type);
   }
 
 }

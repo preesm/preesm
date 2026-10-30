@@ -197,10 +197,6 @@ public class MapperDAG extends DirectedAcyclicGraph {
       final MapperDAGVertex source = origEdge.getSource();
       final MapperDAGVertex target = origEdge.getTarget();
 
-      // final String sourceName = source.getName();
-      // final String targetName = target.getName();
-      // final MapperDAGEdge newEdge = (MapperDAGEdge) implemenationDAG.addEdge(implemenationDAG.getVertex(sourceName),
-      // implemenationDAG.getVertex(targetName));
       final MapperDAGEdge newEdge = (MapperDAGEdge) implemenationDAG.addEdge(source.getAssociatedMDAGVertex(),
           target.getAssociatedMDAGVertex());
       newEdge.setInit(origEdge.getInit().copy());

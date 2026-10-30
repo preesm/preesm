@@ -59,11 +59,6 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IWorkspace;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.emf.common.util.BasicEList;
 import org.eclipse.emf.common.util.ECollections;
 import org.eclipse.emf.common.util.EList;
@@ -71,7 +66,6 @@ import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.clustering.ClusteringHelper;
 import org.preesm.algorithm.codegen.idl.ActorPrototypes;
-import org.preesm.algorithm.codegen.idl.IDLPrototypeFactory;
 import org.preesm.algorithm.codegen.idl.Prototype;
 import org.preesm.algorithm.codegen.model.CodeGenArgument;
 import org.preesm.algorithm.codegen.model.CodeGenParameter;
@@ -87,16 +81,10 @@ import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.memory.script.Range;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.CodeRefinement;
-import org.preesm.algorithm.model.CodeRefinement.Language;
 import org.preesm.algorithm.model.dag.DAGEdge;
 import org.preesm.algorithm.model.dag.DAGVertex;
 import org.preesm.algorithm.model.dag.DirectedAcyclicGraph;
 import org.preesm.algorithm.model.parameters.Argument;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
-import org.preesm.algorithm.model.sdf.SDFVertex;
-import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
@@ -208,8 +196,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   private final Map<Pair<DAGVertex, DAGVertex>, Pair<Buffer, Buffer>> dagFifoBuffers;
 
   /**
-   * This {@link Map} associates a {@link SDFInitVertex} to its corresponding {@link FifoOperation#POP Pop}
-   * {@link FifoCall}.
+   * This {@link Map} associates an init vertex to its corresponding {@link FifoOperation#POP Pop} {@link FifoCall}.
    */
   private final Map<DAGVertex, FifoCall> popFifoCalls;
 
@@ -623,21 +610,18 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
           new SrDAGOutsideFetcher(), outsideFetcherOption).generate(this.scheduleMapping.get(originalActor));
 
     } else {
-      // If the actor has an IDL refinement
+      // If the actor has a refinement
       final ActorPrototypes prototypes = switch (refinement) {
-        // Retrieve the prototypes associated to the actor
-        case final CodeRefinement cRef when cRef.getLanguage() == Language.IDL -> getActorPrototypes(dagVertex);
         // Or if we already extracted prototypes from a .h refinement
         case final ActorPrototypes actorProto -> actorProto;
-        default ->
-          throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement (.idl, .h or .graphml)."
-              + " Associate a refinement to this actor before generating code.");
+        default -> throw new PreesmRuntimeException("Actor (" + dagVertex + ") has no valid refinement."
+            + " Associate a refinement to this actor before generating code.");
       };
 
       // Generate the loop functionCall
       final Prototype loopPrototype = prototypes.getLoopPrototype();
       if (loopPrototype == null) {
-        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its IDL refinement.");
+        throw new PreesmRuntimeException("The actor " + dagVertex + " has no loop interface in its refinement.");
       }
       if (!loopPrototype.getIsStandardC()) {
         throw new PreesmRuntimeException("The actor " + dagVertex + " has a non standard C refinement.");
@@ -844,7 +828,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
   /**
    * This method creates a {@link Buffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
    * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all the
-   * {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+   * edges of the single-rate graph from which the {@link #dag} is derived.<br>
    * <br>
    * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
    *
@@ -1014,8 +998,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @param prototype
    *          the prototype whose {@link Variable variables} are retrieved
    * @param isInit
-   *          Whethet the given prototype is an Init or a loop call. (We do not check missing arguments in the IDL for
-   *          init Calls)
+   *          Whether the given prototype is an Init or a loop call. (We do not check missing arguments for init Calls)
    * @return the entry
    */
   protected Entry<List<Variable>, List<PortDirection>> generateCallVariables(final DAGVertex dagVertex,
@@ -1047,7 +1030,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
       if (!containsPort) {
         throw new PreesmRuntimeException(
-            "Mismatch between actor (" + dagVertex + ") ports and IDL loop prototype argument " + arg.getName());
+            "Mismatch between actor (" + dagVertex + ") ports and loop prototype argument " + arg.getName());
       }
 
       // Retrieve the Edge corresponding to the current Argument
@@ -1086,9 +1069,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if ((dagEdge == null) || (subBufferProperties == null)) {
         throw new PreesmRuntimeException(
-            "The DAGEdge connected to the port  " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
-                + "Possible cause is that the DAG" + " was altered before entering" + " the Code generation.\n"
-                + "This error may also happen if the port type " + "in the graph and in the IDL are not identical");
+            "The DAGEdge connected to the port " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
+                + "Possible cause is that the DAG was altered before entering the Code generation.\n"
+                + "This error may also happen if the port type in the graph and in the refinement are not identical");
       }
 
       // At this point, the dagEdge, srsdfEdge corresponding to the
@@ -1138,7 +1121,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (actorParam == null) {
         throw new PreesmRuntimeException(
-            "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
+            "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the refinement.");
       }
 
       final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
@@ -1163,8 +1146,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @param prototype
    *          the prototype whose {@link Variable variables} are retrieved
    * @param isInit
-   *          Whether the given prototype is an Init or a loop call. (We do not check missing arguments in the IDL for
-   *          init Calls)
+   *          Whether the given prototype is an Init or a loop call. (We do not check missing arguments in the for init
+   *          Calls)
    * @return the entry
    */
   protected Entry<List<Buffer>, List<PortDirection>> generateBufferList(final DAGVertex dagVertex,
@@ -1194,7 +1177,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
       if (!containsPort) {
         throw new PreesmRuntimeException(
-            "Mismatch between actor (" + dagVertex + ") ports and IDL loop prototype argument " + arg.getName());
+            "Mismatch between actor (" + dagVertex + ") ports and loop prototype argument " + arg.getName());
       }
 
       // Retrieve the Edge corresponding to the current Argument
@@ -1233,9 +1216,9 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if ((dagEdge == null) || (subBufferProperties == null)) {
         throw new PreesmRuntimeException(
-            "The DAGEdge connected to the port  " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
-                + "Possible cause is that the DAG" + " was altered before entering" + " the Code generation.\n"
-                + "This error may also happen if the port type " + "in the graph and in the IDL are not identical");
+            "The DAGEdge connected to the port " + arg.getName() + " of Actor (" + dagVertex + ") does not exist.\n"
+                + "Possible cause is that the DAG was altered before entering the Code generation.\n"
+                + "This error may also happen if the port type in the graph and in the refinement are not identical");
       }
 
       // At this point, the dagEdge, srsdfEdge corresponding to the
@@ -1279,8 +1262,8 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @param prototype
    *          the prototype whose {@link Variable variables} are retrieved
    * @param isInit
-   *          Whethet the given prototype is an Init or a loop call. (We do not check missing arguments in the IDL for
-   *          init Calls)
+   *          Whethet the given prototype is an Init or a loop call. (We do not check missing arguments in the for init
+   *          Calls)
    * @return the entry
    */
   protected Entry<List<Variable>, List<PortDirection>> generateVariableList(final DAGVertex dagVertex,
@@ -1300,7 +1283,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
       if (actorParam == null) {
         throw new PreesmRuntimeException(
-            "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the IDL.");
+            "Actor " + dagVertex + " has no match for parameter " + param.getName() + " declared in the refinement.");
       }
 
       final Constant constant = CodegenModelUserFactory.eINSTANCE.createConstant();
@@ -1322,7 +1305,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
       }
     }
     throw new PreesmRuntimeException("SDF port \"" + portName + "\" of actor \"" + dagVertex
-        + "\" has no corresponding parameter in the associated IDL.");
+        + "\" has no corresponding parameter in the associated refinement.");
   }
 
   /**
@@ -1584,7 +1567,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // Retrieve the internal buffer
     DAGVertex dagEndVertex;
     DAGVertex dagInitVertex;
-    final String endReferenceName = dagVertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+    final String endReferenceName = dagVertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
     if (fifoCall.getOperation().equals(FifoOperation.POP)) {
       dagInitVertex = dagVertex;
       dagEndVertex = (DAGVertex) dagInitVertex.getBase().getVertex(endReferenceName);
@@ -1662,7 +1645,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @param dagVertex
    *          the {@link DAGVertex} corresponding to the {@link FunctionCall}.
    * @param prototype
-   *          the {@link Prototype IDL prototype} of the {@link FunctionCall} to generate.
+   *          the {@link Prototype prototype} of the {@link FunctionCall} to generate.
    * @param isInit
    *          Indicicate whether this function call corresponds to an initialization call (in such case,
    *          {@link #generateCallVariables(DAGVertex, Prototype, boolean)} does not need to check for missing parameter
@@ -2582,38 +2565,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     idx += 1;
     this.bufferNames.put(key, idx);
     return bufferName;
-  }
-
-  /**
-   * Retrieve the {@link ActorPrototypes prototypes} defined in the IDL {@link CodeRefinement refinement} of the
-   * {@link SDFVertex} passed as a parameter.
-   *
-   * @param dagVertex
-   *          the {@link SDFVertex} whose IDL refinement is parsed to retrieve the corresponding {@link ActorPrototypes}
-   * @return the parsed {@link ActorPrototypes}.
-   */
-  protected ActorPrototypes getActorPrototypes(final DAGVertex dagVertex) {
-    final Object refinement = dagVertex.getRefinement();
-
-    // Check that it has an IDL refinement.
-    if (!(refinement instanceof final CodeRefinement cRef) || (cRef.getLanguage() != Language.IDL)) {
-      throw new PreesmRuntimeException("generateFunctionCall was called with a DAG Vertex withoud IDL");
-    }
-
-    // Retrieve the IDL File
-    final IWorkspace workspace = ResourcesPlugin.getWorkspace();
-    final IWorkspaceRoot root = workspace.getRoot();
-
-    final IPath path = ((CodeRefinement) refinement).getPath();
-    final IFile idlFile = root.getFile(path);
-
-    // Retrieve the ActorPrototype
-    if (idlFile != null) {
-      final IPath rawPath = idlFile.getRawLocation();
-      final String rawLocation = rawPath.toOSString();
-      return IDLPrototypeFactory.INSTANCE.create(rawLocation);
-    }
-    throw new NullPointerException();
   }
 
   /**

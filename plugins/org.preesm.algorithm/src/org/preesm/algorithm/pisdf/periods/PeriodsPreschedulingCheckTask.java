@@ -110,7 +110,7 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
   public static final String SELECTION_RATE = "Selection rate (%)";
 
   /**
-   * By default all actors are analyzed.
+   * By default all actors are analysed.
    */
   public static final String DEFAULT_SELECTION_RATE = "100";
 
@@ -221,10 +221,10 @@ public class PeriodsPreschedulingCheckTask extends AbstractTaskImplementation {
 
     // 1. log all actor w/o incoming edges and all others w/o outgoing edge
     final StringBuilder sources = new StringBuilder();
-    heurFifoBreaks.allSourceActors.stream().forEach(a -> sources.append(a.getName() + " / "));
+    heurFifoBreaks.allSourceActors.forEach(a -> sources.append(a.getName() + " / "));
     PreesmLogger.getLogger().fine(() -> "Sources: " + sources.toString());
     final StringBuilder sinks = new StringBuilder();
-    heurFifoBreaks.allSinkActors.stream().forEach(a -> sinks.append(a.getName() + " / "));
+    heurFifoBreaks.allSinkActors.forEach(a -> sinks.append(a.getName() + " / "));
     PreesmLogger.getLogger().fine(() -> "Sinks: " + sinks.toString());
 
     // 2. perform heuristic to select periodic nodes

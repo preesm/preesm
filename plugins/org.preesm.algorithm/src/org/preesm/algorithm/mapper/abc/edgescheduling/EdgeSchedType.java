@@ -56,13 +56,11 @@ public enum EdgeSchedType {
   @Override
   public String toString() {
 
-    if (this == SIMPLE) {
-      return "Simple";
-    } else if (this == SWITCHER) {
-      return "Switcher";
-    } else {
-      throw new UnsupportedOperationException();
-    }
+    return switch (this) {
+      case SIMPLE -> "Simple";
+      case SWITCHER -> "Switcher";
+      default -> throw new UnsupportedOperationException();
+    };
   }
 
   /**
@@ -76,7 +74,8 @@ public enum EdgeSchedType {
 
     if (type.equalsIgnoreCase("Simple")) {
       return SIMPLE;
-    } else if (type.equalsIgnoreCase("Switcher")) {
+    }
+    if (type.equalsIgnoreCase("Switcher")) {
       return SWITCHER;
     }
 

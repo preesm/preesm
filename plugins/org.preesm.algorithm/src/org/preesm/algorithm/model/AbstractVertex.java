@@ -39,8 +39,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.Observable;
-import java.util.Observer;
 import org.preesm.algorithm.model.parameters.Argument;
 import org.preesm.algorithm.model.parameters.ArgumentSet;
 import org.preesm.commons.CloneableProperty;
@@ -54,8 +52,7 @@ import org.preesm.commons.exceptions.PreesmException;
  *          the generic type
  */
 @SuppressWarnings("unchecked")
-public abstract class AbstractVertex<G> extends Observable
-    implements PropertySource, Observer, CloneableProperty<AbstractVertex<G>> {
+public abstract class AbstractVertex<G> implements PropertySource, CloneableProperty<AbstractVertex<G>> {
 
   /** The properties. */
   protected PropertyBean properties;
@@ -183,7 +180,7 @@ public abstract class AbstractVertex<G> extends Observable
     return this.properties;
   }
 
-  // Refinement of the vertex (can be an AbstractGraph describing the behavior
+  // Refinement of the vertex (can be an AbstractGraph describing the behaviour
   // of the vertex, or a header file giving signatures of functions to call
   /** The refinement. */
   // when executing the vertex).
@@ -208,8 +205,6 @@ public abstract class AbstractVertex<G> extends Observable
     this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
         this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
     this.refinement = desc;
-    setChanged();
-    this.notifyObservers();
   }
 
   /**
@@ -278,21 +273,6 @@ public abstract class AbstractVertex<G> extends Observable
    */
   public void setInfo(final String info) {
     this.properties.setValue(AbstractVertex.INFO_LITERAL, this.properties.getValue(AbstractVertex.INFO_LITERAL), info);
-  }
-
-  /*
-   * (non-Javadoc)
-   *
-   * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
-   */
-  @Override
-  public void update(final Observable o, final Object arg) {
-    if ((arg instanceof final String str) && (o instanceof final AbstractEdge<?, ?> abstractEdge)) {
-      final Object property = abstractEdge.getPropertyBean().getValue(str);
-      if (property != null) {
-        this.getPropertyBean().setValue((String) arg, property);
-      }
-    }
   }
 
   /**

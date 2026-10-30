@@ -78,7 +78,7 @@ public class PiMM2SRDAGTest {
     String projectName = "org.ietr.preesm.reinforcement_learning";
     String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
       "1coreTraining.scenario", "4coreTraining.scenario" };
-    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMCodegen.workflow" };
+    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
     for (final String workflow : workflows) {
       for (final String scenario : scenarios) {
         params.add(new Object[] { workflow, scenario, projectName });

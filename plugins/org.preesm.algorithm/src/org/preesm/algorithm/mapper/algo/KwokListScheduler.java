@@ -45,7 +45,6 @@ import java.util.logging.Level;
 import org.preesm.algorithm.mapper.abc.impl.latency.LatencyAbc;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
-import org.preesm.algorithm.model.sdf.esdf.SDFInitVertex;
 import org.preesm.commons.exceptions.PreesmException;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -176,7 +175,7 @@ public class KwokListScheduler {
 
   private ComponentInstance getEndReferenceOperator(final MapperDAGVertex currentvertex) {
     final String value = currentvertex.getPropertyBean().getValue("kind");
-    final String endReferenceName = currentvertex.getPropertyBean().getValue(SDFInitVertex.END_REFERENCE);
+    final String endReferenceName = currentvertex.getPropertyBean().getValue(MapperDAGVertex.END_REFERENCE);
     return switch (value) {
       case MapperDAGVertex.DAG_INIT_VERTEX -> {
         final MapperDAGVertex dagEndVertex = (MapperDAGVertex) currentvertex.getBase().getVertex(endReferenceName);
