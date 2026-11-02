@@ -60,9 +60,6 @@ public abstract class AbstractVertex<G> implements PropertySource, CloneableProp
   /** Property name for property base. */
   public static final String BASE_LITERAL = "base";
 
-  /** Property name for property graph_desc. */
-  public static final String REFINEMENT_LITERAL = "graph_desc";
-
   /** Property name for property arguments. */
   public static final String ARGUMENTS_LITERAL = "arguments";
 
@@ -81,9 +78,8 @@ public abstract class AbstractVertex<G> implements PropertySource, CloneableProp
   private int cachedHashcode = -1;
 
   /** The public properties. */
-  protected static final List<
-      String> public_properties = new ArrayList<>(Arrays.asList(AbstractVertex.ARGUMENTS_LITERAL,
-          AbstractVertex.REFINEMENT_LITERAL, AbstractVertex.NAME_LITERAL, AbstractVertex.KIND_LITERAL));
+  protected static final List<String> public_properties = new ArrayList<>(
+      Arrays.asList(AbstractVertex.ARGUMENTS_LITERAL, AbstractVertex.NAME_LITERAL, AbstractVertex.KIND_LITERAL));
 
   /** The interfaces. */
   private final List<IInterface> interfaces;
@@ -202,8 +198,6 @@ public abstract class AbstractVertex<G> implements PropertySource, CloneableProp
    *          the new refinement
    */
   public void setRefinement(final IRefinement desc) {
-    this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
-        this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
     this.refinement = desc;
   }
 
@@ -215,8 +209,6 @@ public abstract class AbstractVertex<G> implements PropertySource, CloneableProp
    */
   @SuppressWarnings("rawtypes")
   public void setGraphDescription(final AbstractGraph desc) {
-    this.properties.setValue(AbstractVertex.REFINEMENT_LITERAL,
-        this.properties.getValue(AbstractVertex.REFINEMENT_LITERAL), desc);
     this.refinement = desc;
     desc.setParentVertex(this);
   }
