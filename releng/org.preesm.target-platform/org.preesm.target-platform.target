@@ -131,12 +131,6 @@
 					<type>jar</type>
 				</dependency>
 				<dependency>
-					<groupId>org.jacorb</groupId>
-					<artifactId>jacorb-idl-compiler</artifactId>
-					<version>3.9</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
 					<groupId>org.jfree</groupId>
 					<artifactId>jcommon</artifactId>
 					<version>1.0.24</version>
