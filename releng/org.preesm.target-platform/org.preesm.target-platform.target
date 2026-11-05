@@ -3,7 +3,7 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2024-12"/>
+			<repository location="https://download.eclipse.org/releases/2025-09"/>
 			<unit id="org.eclipse.cdt.sdk.feature.group"/>
 			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group"/>
 			<unit id="org.eclipse.egit.feature.group"/>
@@ -24,6 +24,16 @@
 			<unit id="org.eclipse.tm.terminal.view.feature.feature.group"/>
 			<unit id="org.eclipse.xtend.sdk.feature.group"/>
 			<unit id="org.eclipse.xtext.sdk.feature.group"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2025-06"/>
+			<unit id="org.eclipse.ecf.filetransfer.feature.feature.group"/>
+			<unit id="org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2024-12"/>
+			<unit id="org.eclipse.ecf.core.ssl.feature.feature.group"/>
+			<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/latest"/>
