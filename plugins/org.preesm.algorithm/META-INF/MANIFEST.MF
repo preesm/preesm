@@ -106,6 +106,6 @@ Export-Package: org.preesm.algorithm,
  org.preesm.algorithm.synthesis.schedule.algos,
  org.preesm.algorithm.synthesis.schedule.transform,
  org.preesm.algorithm.synthesis.timer
-Bundle-RequiredExecutionEnvironment: JavaSE-21
+Bundle-RequiredExecutionEnvironment: JavaSE-25
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: org.preesm.algorithm.PreesmAlgorithmPlugin

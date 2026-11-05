@@ -36,7 +36,7 @@
 			<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/latest"/>
+			<repository location="https://download.eclipse.org/justj/jres/25/updates/release/latest"/>
 			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group"/>
 		</location>
 		<location includeDependencyDepth="none" includeDependencyScopes="compile" includeMode="planner" missingManifest="generate" type="Maven">
