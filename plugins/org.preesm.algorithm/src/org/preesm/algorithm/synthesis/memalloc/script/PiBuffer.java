@@ -834,7 +834,7 @@ public class PiBuffer {
           }
         });
 
-    modifiedMatches.stream().forEach(it -> {
+    modifiedMatches.forEach(it -> {
 
       final PiMatch modifiedMatch = it.getKey();
       final PiRange newRange = it.getValue();
@@ -1223,7 +1223,7 @@ public class PiBuffer {
     }
 
     // Remove it from conflictingMatches and conflictCandidates
-    match.getConflictCandidates().stream().forEach(it -> {
+    match.getConflictCandidates().forEach(it -> {
       final Iterator<PiMatch> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
@@ -1231,7 +1231,7 @@ public class PiBuffer {
         }
       }
     });
-    match.getConflictingMatches().stream().forEach(it -> {
+    match.getConflictingMatches().forEach(it -> {
       final Iterator<PiMatch> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
@@ -1239,7 +1239,7 @@ public class PiBuffer {
         }
       }
     });
-    match.getReciprocate().getConflictCandidates().stream().forEach(it -> {
+    match.getReciprocate().getConflictCandidates().forEach(it -> {
       final Iterator<PiMatch> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {
@@ -1248,7 +1248,7 @@ public class PiBuffer {
       }
     });
 
-    match.getReciprocate().getConflictingMatches().stream().forEach(it -> {
+    match.getReciprocate().getConflictingMatches().forEach(it -> {
       final Iterator<PiMatch> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {

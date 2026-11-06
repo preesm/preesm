@@ -57,8 +57,6 @@ public abstract class AbstractWorkflowNodeImplementation {
   public static final String KEY_SCENARIO           = "scenario";
   public static final String KEY_PI_GRAPH           = "PiMM";
   public static final String KEY_ARCHITECTURE       = "architecture";
-  public static final String KEY_SDF_GRAPHS_SET     = "SDFs";
-  public static final String KEY_SDF_GRAPH          = "SDF";
   public static final String KEY_SDF_DAG            = "DAG";
   public static final String KEY_SDF_DAG_SET        = "DAGs";
   public static final String KEY_SDF_ABC            = "ABC";

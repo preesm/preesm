@@ -135,9 +135,7 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
           final AbstractActor aaFirst = seqActors.get(0);
           final List<ComponentInstance> mappings = scheduleAndMap.mapping.getMapping(aaFirst);
           final List<DAGVertex> seqVertices = new ArrayList<>();
-          for (final AbstractActor aa : seqActors) {
-            seqVertices.add(newTOold.get(aa));
-          }
+          seqActors.forEach(aa -> seqVertices.add(newTOold.get(aa)));
           schedByCI.put(mappings.get(0), seqVertices);
         }
       }
@@ -205,8 +203,7 @@ public class PeriodicMappingFromPiMMTask extends AbstractMappingFromDAG {
 
   @Override
   public Map<String, String> getDefaultParameters() {
-    final Map<String, String> parameters = new LinkedHashMap<>();
-    return parameters;
+    return new LinkedHashMap<>();
   }
 
 }

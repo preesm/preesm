@@ -3,7 +3,7 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2024-12"/>
+			<repository location="https://download.eclipse.org/releases/2025-09"/>
 			<unit id="org.eclipse.cdt.sdk.feature.group"/>
 			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group"/>
 			<unit id="org.eclipse.egit.feature.group"/>
@@ -26,6 +26,16 @@
 			<unit id="org.eclipse.xtext.sdk.feature.group"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2025-06"/>
+			<unit id="org.eclipse.ecf.filetransfer.feature.feature.group"/>
+			<unit id="org.eclipse.ecf.filetransfer.httpclient5.feature.feature.group"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2024-12"/>
+			<unit id="org.eclipse.ecf.core.ssl.feature.feature.group"/>
+			<unit id="org.eclipse.ecf.filetransfer.ssl.feature.feature.group"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/justj/jres/21/updates/release/latest"/>
 			<unit id="org.eclipse.justj.openjdk.hotspot.jre.full.stripped.feature.group"/>
 		</location>
@@ -34,52 +44,53 @@
 				<dependency>
 					<groupId>com.fasterxml.jackson.core</groupId>
 					<artifactId>jackson-annotations</artifactId>
-					<version>2.21</version>
+					<version>2.22</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-core</artifactId>
-					<version>3.1.2</version>
+					<version>3.2.4</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>tools.jackson.core</groupId>
 					<artifactId>jackson-databind</artifactId>
-					<version>3.1.2</version>
+					<version>3.2.4</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
-				    <groupId>jakarta.annotation</groupId>
-				    <artifactId>jakarta.annotation-api</artifactId>
-				    <version>3.0.0</version>
-				    <type>jar</type>
+					<!-- Required codegen.xtend generated code -->
+					<groupId>jakarta.annotation</groupId>
+					<artifactId>jakarta.annotation-api</artifactId>
+					<version>3.0.0</version>
+					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.mockito</groupId>
 					<artifactId>mockito-core</artifactId>
-					<version>5.23.0</version>
+					<version>5.24.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy-agent</artifactId>
-					<version>1.18.8</version>
+					<version>1.18.17</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>net.bytebuddy</groupId>
 					<artifactId>byte-buddy</artifactId>
-					<version>1.18.8</version>
+					<version>1.18.17</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by org.mockito.mockito-core -->
 					<groupId>org.objenesis</groupId>
 					<artifactId>objenesis</artifactId>
-					<version>3.5</version>
+					<version>3.6</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -97,7 +108,7 @@
 				<dependency>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-collections4</artifactId>
-					<version>4.5.0</version>
+					<version>4.6.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -109,14 +120,14 @@
 				<dependency>
 					<groupId>org.apache.commons</groupId>
 					<artifactId>commons-lang3</artifactId>
-					<version>3.20.0</version>
+					<version>3.21.0</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
-				    <groupId>commons-io</groupId>
-				    <artifactId>commons-io</artifactId>
-				    <version>2.21.0</version>
-				    <type>jar</type>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+					<version>2.22.0</version>
+					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.apache.velocity</groupId>
@@ -127,13 +138,7 @@
 				<dependency>
 					<groupId>org.choco-solver</groupId>
 					<artifactId>choco-solver</artifactId>
-					<version>5.0.1</version>
-					<type>jar</type>
-				</dependency>
-				<dependency>
-					<groupId>org.jacorb</groupId>
-					<artifactId>jacorb-idl-compiler</artifactId>
-					<version>3.9</version>
+					<version>6.0.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -151,46 +156,47 @@
 				<dependency>
 					<groupId>org.jgrapht</groupId>
 					<artifactId>jgrapht-core</artifactId>
-					<version>1.5.2</version>
+					<version>1.5.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.jgrapht</groupId>
 					<artifactId>jgrapht-io</artifactId>
-					<version>1.5.2</version>
+					<version>1.5.3</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by jgrapht.io -->
-				    <groupId>org.apache.commons</groupId>
-				    <artifactId>commons-text</artifactId>
-				    <version>1.15.0</version>
-				    <type>jar</type>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-text</artifactId>
+					<version>1.15.0</version>
+					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by jgrapht.io -->
-				    <groupId>org.antlr</groupId>
-				    <artifactId>antlr4-runtime</artifactId>
-				    <version>4.13.2</version>
-				    <type>jar</type>
+					<groupId>org.antlr</groupId>
+					<artifactId>antlr4-runtime</artifactId>
+					<version>4.13.2</version>
+					<type>jar</type>
 				</dependency>
 				<dependency>
 					<!-- Required by jgrapht-core -->
-				    <groupId>org.apfloat</groupId>
-				    <artifactId>apfloat</artifactId>
-				    <version>1.16.0</version>
-				    <type>jar</type>
+					<groupId>org.apfloat</groupId>
+					<artifactId>apfloat</artifactId>
+					<version>1.16.0</version>
+					<type>jar</type>
 				</dependency>
 				<dependency>
+					<!-- Required by jgrapht-core -->
 					<groupId>org.jheaps</groupId>
 					<artifactId>jheaps</artifactId>
-					<version>0.14</version>
+					<version>0.16</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.ojalgo</groupId>
 					<artifactId>ojalgo</artifactId>
-					<version>56.2.1</version>
+					<version>57.6.1</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
@@ -202,19 +208,19 @@
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-					<version>2.0.17</version>
+					<version>2.0.20</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-simple</artifactId>
-					<version>2.0.17</version>
+					<version>2.0.20</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>
 					<groupId>org.yaml</groupId>
 					<artifactId>snakeyaml</artifactId>
-					<version>2.6</version>
+					<version>2.7</version>
 					<type>jar</type>
 				</dependency>
 				<dependency>

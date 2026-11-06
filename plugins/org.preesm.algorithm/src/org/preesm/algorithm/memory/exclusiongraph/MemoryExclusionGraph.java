@@ -252,7 +252,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               "DAGEdge " + outgoingEdge + " has no buffer properties.\n This is not supported by the MemEx builder.");
         }
         if (buffers.size() > 1) {
-          throw new PreesmRuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
+          throw new PreesmRuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several edges.\n"
               + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
         }
         final String typeName = buffers.get(0).getDataType();

@@ -44,7 +44,6 @@ import org.preesm.algorithm.mapper.graphtransfo.ImplementationPropertyNames;
 import org.preesm.algorithm.mapper.model.MapperDAG;
 import org.preesm.algorithm.mapper.model.MapperDAGVertex;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.types.LongVertexPropertyType;
 
 /**
  * Vertex corresponding to sending a data. This vertex is mapped on the sender of the corresponding route step.
@@ -79,8 +78,8 @@ public class SendVertex extends TransferVertex {
   }
 
   @Override
-  public LongVertexPropertyType getNbRepeat() {
-    return new LongVertexPropertyType(1);
+  public long getNbRepeat() {
+    return 1;
   }
 
 }

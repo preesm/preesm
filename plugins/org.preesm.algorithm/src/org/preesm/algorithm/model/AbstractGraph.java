@@ -35,7 +35,6 @@
  */
 package org.preesm.algorithm.model;
 
-import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -45,15 +44,9 @@ import org.nfunk.jep.Node;
 import org.preesm.algorithm.model.factories.IModelVertexFactory;
 import org.preesm.algorithm.model.parameters.ArgumentFactory;
 import org.preesm.algorithm.model.parameters.IExpressionSolver;
-import org.preesm.algorithm.model.parameters.Parameter;
-import org.preesm.algorithm.model.parameters.ParameterFactory;
-import org.preesm.algorithm.model.parameters.ParameterSet;
 import org.preesm.algorithm.model.parameters.Value;
-import org.preesm.algorithm.model.parameters.Variable;
-import org.preesm.algorithm.model.parameters.VariableSet;
 import org.preesm.commons.CloneableProperty;
 import org.preesm.commons.exceptions.PreesmException;
-import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
 
 /**
@@ -68,7 +61,7 @@ import org.preesm.commons.math.ExpressionEvaluationException;
  */
 @SuppressWarnings({ "unchecked", "rawtypes" })
 public abstract class AbstractGraph<V extends AbstractVertex, E extends AbstractEdge> extends DirectedPseudograph<V, E>
-    implements PropertySource, IRefinement, IExpressionSolver, IModelObserver, CloneableProperty {
+    implements PropertySource, IRefinement, IExpressionSolver, CloneableProperty {
 
   private static final long   serialVersionUID               = 1381565218127310945L;
   private static final String NAME_PROPERTY_LITERAL          = "name";
@@ -78,9 +71,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public static final String  PATH_PROPERTY_LITERAL          = "path";
   private static final String PARENT_VERTEX_PROPERTY_LITERAL = "parent_vertex";
 
-  private final PropertyBean                        properties;
-  private final transient ArrayList<IModelObserver> observers;
-  private boolean                                   hasChanged;
+  private final PropertyBean properties;
 
   /**
    * Creates a new Instance of Abstract graph with the given factory.
@@ -89,8 +80,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   protected AbstractGraph(final Supplier<E> edgeSupplier) {
     super(null, edgeSupplier, false);
     this.properties = new PropertyBean();
-    this.observers = new ArrayList<>();
-    this.hasChanged = false;
   }
 
   /**
@@ -123,8 +112,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     edge.setSourceLabel(sourcePort.getName());
     edge.setTargetLabel(targetPort.getName());
     edge.setBase(this);
-    this.setChanged();
-    this.notifyObservers(edge);
     return edge;
   }
 
@@ -132,36 +119,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
   public E addEdge(final V source, final V target) {
     final E edge = super.addEdge(source, target);
     edge.setBase(this);
-    this.setChanged();
-    this.notifyObservers(edge);
     return edge;
-  }
-
-  /**
-   * Add the given parameter to his graph parameter set.
-   *
-   * @param param
-   *          The parameter to add
-   */
-  public void addParameter(final Parameter param) {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) == null) {
-      setParameterSet(new ParameterSet());
-    }
-    this.properties.<ParameterSet>getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL).addParameter(param);
-  }
-
-  /**
-   * Add the given variable to his graph parameter set.
-   *
-   * @param variable
-   *          The variable to add
-   */
-  public void addVariable(final Variable variable) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
-      setVariableSet(new VariableSet());
-    }
-    this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).addVariable(variable);
-    variable.setExpressionSolver(this);
   }
 
   @Override
@@ -175,17 +133,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     vertex.setName(name);
     final boolean result = super.addVertex(vertex);
     vertex.setBase(this);
-    this.setChanged();
-    this.notifyObservers(vertex);
     return result;
-  }
-
-  /**
-   * Indicates that this object has no longer changed, or that it has already notified all of its observers of its most
-   * recent change, so that the hasChanged method will now return false.
-   */
-  private void clearChanged() {
-    this.hasChanged = true;
   }
 
   public ArgumentFactory getArgumentFactory() {
@@ -213,19 +161,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     return this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL);
   }
 
-  public ParameterFactory getParameterFactory() {
-    return new ParameterFactory();
-  }
-
-  /**
-   */
-  public ParameterSet getParameters() {
-    if (this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL) != null) {
-      return this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL);
-    }
-    return null;
-  }
-
   public V getParentVertex() {
     return this.properties.getValue(AbstractGraph.PARENT_VERTEX_PROPERTY_LITERAL);
   }
@@ -241,33 +176,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       return this.getPropertyBean().getValue(propertyName).toString();
     }
     return null;
-  }
-
-  /**
-   * Gives the variable of this graph with the given name.
-   *
-   * @param name
-   *          The name of the variable to get
-   * @return The variable with the given name
-   */
-  public Variable getVariable(final String name) {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) != null) {
-      return this.properties.<VariableSet>getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL).getVariable(name);
-    }
-    return null;
-  }
-
-  /**
-   * Gives the variables set of this graph.
-   *
-   * @return The set of variables of this graph
-   */
-  public VariableSet getVariables() {
-    if (this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL) == null) {
-      final VariableSet variables = new VariableSet();
-      this.setVariableSet(variables);
-    }
-    return this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL);
   }
 
   /**
@@ -288,53 +196,21 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
 
   public abstract IModelVertexFactory<V> getVertexFactory();
 
-  /**
-   * If this object has changed, as indicated by the hasChanged method, then notify all of its observers and then call
-   * the clearChanged method to indicate that this object has no longer changed.
-   *
-   * @param arg
-   *          Arguments to be passe to the update method
-   */
-  private void notifyObservers(final Object arg) {
-    if (this.hasChanged) {
-      for (final IModelObserver o : this.observers) {
-        o.update(this, arg);
-      }
-      clearChanged();
-    }
-  }
-
   @Override
   public boolean removeEdge(final E edge) {
     final boolean res = super.removeEdge(edge);
-    this.setChanged();
-    this.notifyObservers(edge);
     return res;
   }
 
   @Override
   public boolean removeVertex(final V vertex) {
     final boolean result = super.removeVertex(vertex);
-    this.setChanged();
-    this.notifyObservers(vertex);
     return result;
-  }
-
-  /**
-   * Marks this Observable object as having been changed the hasChanged method will now return true.
-   */
-  private void setChanged() {
-    this.hasChanged = true;
   }
 
   public void setName(final String name) {
     this.properties.setValue(AbstractGraph.NAME_PROPERTY_LITERAL,
         this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL), name);
-  }
-
-  public void setParameterSet(final ParameterSet parameters) {
-    this.properties.setValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL,
-        this.properties.getValue(AbstractGraph.PARAMETERS_PROPERTY_LITERAL), parameters);
   }
 
   protected void setParentVertex(final V parentVertex) {
@@ -346,29 +222,12 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
     this.getPropertyBean().setValue(propertyName, value);
   }
 
-  public void setVariableSet(final VariableSet variables) {
-    this.properties.setValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL,
-        this.properties.getValue(AbstractGraph.VARIABLES_PROPERTY_LITERAL), variables);
-  }
-
   @Override
   public long solveExpression(final String expression, final Value caller) {
     long resultValue;
     try {
       final JEP jep = new JEP();
-      if (this.getVariables() != null /*
-                                       * && !(caller instanceof Argument)
-                                       */) {
-        for (final String variable : this.getVariables().keySet()) {
-          if ((this.getVariable(variable) == caller) || this.getVariable(variable).getValue().equals(expression)) {
-            break;
-          }
-          jep.addVariable(variable, this.getVariable(variable).longValue());
-        }
-      }
-      if ((this.getParameters() != null) && (this.getParentVertex() != null)) {
-        addParametersToScope(jep);
-      }
+
       final Node expressionMainNode = jep.parse(expression);
       final Object result = jep.evaluate(expressionMainNode);
       if (!(result instanceof Number)) {
@@ -379,21 +238,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
       throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }
     return resultValue;
-  }
-
-  private void addParametersToScope(final JEP jep) {
-    for (final String arg : this.getParameters().keySet()) {
-      try {
-        Long paramValue = this.getParameters().get(arg).getValue();
-        if (paramValue == null) {
-          paramValue = this.getParentVertex().getArgument(arg).longValue();
-          this.getParameters().get(arg).setValue(paramValue);
-        }
-        jep.addVariable(arg, paramValue);
-      } catch (final ExpressionEvaluationException e) {
-        throw new PreesmRuntimeException("Could not evaluate value", e);
-      }
-    }
   }
 
   /**

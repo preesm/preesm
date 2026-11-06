@@ -42,7 +42,6 @@ import java.util.TreeSet;
 import java.util.UUID;
 import org.preesm.algorithm.model.AbstractEdge;
 import org.preesm.algorithm.model.AbstractVertex;
-import org.preesm.algorithm.model.AbstractVertexPropertyType;
 import org.preesm.algorithm.model.PropertyBean;
 import org.preesm.algorithm.model.PropertyFactory;
 
@@ -62,11 +61,18 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   /** The string representing the kind of this vertex. */
   public static final String DAG_VERTEX = "dag_vertex";
 
+  /** Property memory script. */
+  public static final String MEMORY_SCRIPT = "memory_script";
+
   /** Key to access to property vertex_sinks. */
   public static final String SINKS = "vertex_sinks";
 
   /** Key to access to property vertex_sources. */
   public static final String SOURCES = "vertex_sources";
+
+  private long nbRepeat;
+
+  private long execTime;
 
   static {
     AbstractVertex.public_properties.add(DAGVertex.TIME);
@@ -96,8 +102,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * @param nb
    *          This Vertex number of repetition
    */
-  public DAGVertex(final String n, final AbstractVertexPropertyType<?> t, final AbstractVertexPropertyType<?> nb,
-      org.preesm.model.pisdf.AbstractVertex origVertex) {
+  public DAGVertex(final String n, final long t, final long nb, org.preesm.model.pisdf.AbstractVertex origVertex) {
     super();
     this.origVertex = origVertex;
     setKind(DAGVertex.DAG_VERTEX);
@@ -122,11 +127,8 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    *
    * @return This vertex number of repetition
    */
-  public AbstractVertexPropertyType<?> getNbRepeat() {
-    if (this.properties.getValue(DAGVertex.NB_REPEAT) != null) {
-      return this.properties.getValue(DAGVertex.NB_REPEAT);
-    }
-    return null;
+  public long getNbRepeat() {
+    return this.nbRepeat;
   }
 
   /**
@@ -134,11 +136,8 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    *
    * @return This vertex execution time
    */
-  public AbstractVertexPropertyType<?> getTime() {
-    if (this.properties.getValue(DAGVertex.TIME) != null) {
-      return this.properties.getValue(DAGVertex.TIME);
-    }
-    return null;
+  public long getTime() {
+    return this.execTime;
   }
 
   /**
@@ -173,8 +172,8 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * @param nb
    *          The repetition number of this vertex
    */
-  public void setNbRepeat(final AbstractVertexPropertyType<?> nb) {
-    this.properties.setValue(DAGVertex.NB_REPEAT, nb);
+  public void setNbRepeat(final long nb) {
+    this.nbRepeat = nb;
   }
 
   /**
@@ -183,8 +182,8 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
    * @param t
    *          The execution of this vertex
    */
-  public void setTime(final AbstractVertexPropertyType<?> t) {
-    this.properties.setValue(DAGVertex.TIME, t);
+  public void setTime(final long t) {
+    this.execTime = t;
   }
 
   /*
@@ -247,7 +246,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   public void addSinkName(final String sinkName) {
     final List<String> sinkList = getPropertyBean().getValue(DAGVertex.SINKS);
     if (sinkList == null) {
-      getPropertyBean().setValue(DAGVertex.SINKS, new ArrayList<String>());
+      getPropertyBean().setValue(DAGVertex.SINKS, new ArrayList<>());
       addSinkName(sinkName);
     } else {
       sinkList.add(sinkName);
@@ -273,7 +272,7 @@ public class DAGVertex extends AbstractVertex<DirectedAcyclicGraph> {
   public void addSourceName(final String sourceName) {
     final List<String> sourceList = getPropertyBean().getValue(DAGVertex.SOURCES);
     if (sourceList == null) {
-      getPropertyBean().setValue(DAGVertex.SOURCES, new ArrayList<String>());
+      getPropertyBean().setValue(DAGVertex.SOURCES, new ArrayList<>());
       addSourceName(sourceName);
     } else {
       sourceList.add(sourceName);
