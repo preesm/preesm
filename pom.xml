@@ -96,8 +96,8 @@
       <!-- <emf-common-version>2.25.0</emf-common-version> -->
       <!-- <emf-codegen-version>2.30.0</emf-codegen-version> -->
       <xtext-version>2.44.0</xtext-version>
-      <ecore-xtext-version>1.8.0</ecore-xtext-version>
-      <ecore-xcore-version>1.36.0</ecore-xcore-version>
+      <ecore-xtext-version>1.9.0</ecore-xtext-version>
+      <ecore-xcore-version>1.38.0</ecore-xcore-version>
       <!-- <ecore-xcore-lib-version>1.6.0</ecore-xcore-lib-version> -->
 
       <!-- ############### -->
@@ -119,8 +119,8 @@
       <updatesite.preesm>https://preesm.insa-rennes.fr/repo/</updatesite.preesm>
       <!-- <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps> -->
       <!-- <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti> -->
-      <updatesite.eclipse>${eclipse.mirror}/releases/2024-12/</updatesite.eclipse>
-      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.34</updatesite.eclipse.updates>
+      <updatesite.eclipse>${eclipse.mirror}/releases/2026-09</updatesite.eclipse>
+      <updatesite.eclipse.updates>${eclipse.mirror}/eclipse/updates/4.41</updatesite.eclipse.updates>
       <updatesite.tmf>${eclipse.mirror}/modeling/tmf/xtext/updates/releases/${xtext-version}</updatesite.tmf>
 
       <!-- ############## -->

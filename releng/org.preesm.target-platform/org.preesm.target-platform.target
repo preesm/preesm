@@ -3,7 +3,7 @@
 <target name="preesm">
 	<locations>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
-			<repository location="https://download.eclipse.org/releases/2025-09"/>
+			<repository location="https://download.eclipse.org/releases/2026-09"/>
 			<unit id="org.eclipse.cdt.sdk.feature.group"/>
 			<unit id="org.eclipse.ecf.remoteservice.sdk.feature.feature.group"/>
 			<unit id="org.eclipse.egit.feature.group"/>
@@ -14,16 +14,19 @@
 			<unit id="org.eclipse.emf.ecore.xcore.sdk.feature.group"/>
 			<unit id="org.eclipse.emf.sdk.feature.group"/>
 			<unit id="org.eclipse.equinox.executable.feature.group"/>
-			<unit id="org.eclipse.gef.common.sdk.feature.group"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group"/>
-			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group"/>
 			<unit id="org.eclipse.pde.feature.group"/>
 			<unit id="org.eclipse.platform.feature.group"/>
 			<unit id="org.eclipse.sdk.feature.group"/>
-			<unit id="org.eclipse.tm.terminal.feature.feature.group"/>
-			<unit id="org.eclipse.tm.terminal.view.feature.feature.group"/>
 			<unit id="org.eclipse.xtend.sdk.feature.group"/>
 			<unit id="org.eclipse.xtext.sdk.feature.group"/>
+		</location>
+		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
+			<repository location="https://download.eclipse.org/releases/2025-09"/>
+			<unit id="org.eclipse.gef.common.sdk.feature.group"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.feature.group"/>
+			<unit id="org.eclipse.graphiti.sdk.plus.feature.source.feature.group"/>
+			<unit id="org.eclipse.tm.terminal.feature.feature.group"/>
+			<unit id="org.eclipse.tm.terminal.view.feature.feature.group"/>
 		</location>
 		<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="false" type="InstallableUnit">
 			<repository location="https://download.eclipse.org/releases/2025-06"/>
