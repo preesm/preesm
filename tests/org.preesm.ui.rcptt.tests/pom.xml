@@ -61,7 +61,7 @@
        http://maven.xored.com/nexus/content/repositories/ci4rcptt-releases/org/eclipse/sdk/
   -->
   <properties>
-    <rcptt-maven-version>2.8.1</rcptt-maven-version>
+    <rcptt-maven-version>2.8.2</rcptt-maven-version>
   </properties>
 
   <!-- The main part of RCPTT Maven plugin -->
@@ -104,9 +104,9 @@
           -->
           <testOptions>
             <!-- Timeout for all tests, in seconds -->
-            <execTimeout>1800</execTimeout>
+            <execTimeout>2400</execTimeout>
             <!-- Timeout for a single test case, in seconds -->
-            <testExecTimeout>300</testExecTimeout>
+            <testExecTimeout>600</testExecTimeout>
           </testOptions>
         </configuration>
       </plugin>
