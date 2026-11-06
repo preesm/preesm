@@ -104,9 +104,9 @@
           -->
           <testOptions>
             <!-- Timeout for all tests, in seconds -->
-            <execTimeout>2400</execTimeout>
+            <execTimeout>1800</execTimeout>
             <!-- Timeout for a single test case, in seconds -->
-            <testExecTimeout>600</testExecTimeout>
+            <testExecTimeout>300</testExecTimeout>
           </testOptions>
         </configuration>
       </plugin>
