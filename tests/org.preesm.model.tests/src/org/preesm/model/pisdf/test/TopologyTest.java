@@ -40,8 +40,8 @@ package org.preesm.model.pisdf.test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -77,164 +77,166 @@ public class TopologyTest {
   }
 
   @Test
-  public void testDirectPredecessors() {
+  void testDirectPredecessors() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     List<AbstractActor> preds = helper.getDirectPredecessorsOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
 
     preds = helper.getDirectPredecessorsOf(VertexPath.lookup(createGraph, "A"));
-    Assert.assertEquals(Collections.emptyList(), preds);
+    Assertions.assertEquals(Collections.emptyList(), preds);
 
     preds = helper.getDirectPredecessorsOf(VertexPath.lookup(createGraph, "D"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C")),
+        preds);
   }
 
   @Test
-  public void testAllPredecessors() {
+  void testAllPredecessors() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     List<AbstractActor> preds = helper.getAllPredecessorsOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "A")), preds);
 
     preds = helper.getAllPredecessorsOf(VertexPath.lookup(createGraph, "A"));
-    Assert.assertEquals(Collections.emptyList(), preds);
+    Assertions.assertEquals(Collections.emptyList(), preds);
 
     preds = helper.getAllPredecessorsOf(VertexPath.lookup(createGraph, "D"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C"),
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C"),
         VertexPath.lookup(createGraph, "A")), preds);
 
   }
 
   @Test
-  public void testAllPredecessorsNoDAG() {
+  void testAllPredecessorsNoDAG() {
     final PiGraph createGraph = createGraphNoDAG();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final AbstractActor actor = VertexPath.lookup(createGraph, "A");
 
-    Assert.assertThrows(StackOverflowError.class, () -> helper.getAllPredecessorsOf(actor));
+    Assertions.assertThrows(StackOverflowError.class, () -> helper.getAllPredecessorsOf(actor));
   }
 
   @Test
-  public void testDirectSuccessors() {
+  void testDirectSuccessors() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     List<AbstractActor> preds = helper.getDirectSuccessorsOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
 
     preds = helper.getDirectSuccessorsOf(VertexPath.lookup(createGraph, "A"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C")),
+        preds);
 
     preds = helper.getDirectSuccessorsOf(VertexPath.lookup(createGraph, "D"));
-    Assert.assertEquals(Collections.emptyList(), preds);
+    Assertions.assertEquals(Collections.emptyList(), preds);
   }
 
   @Test
-  public void testAllSuccessors() {
+  void testAllSuccessors() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     List<AbstractActor> preds = helper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "D")), preds);
 
     preds = helper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "A"));
-    Assert.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C"),
+    Assertions.assertEquals(Arrays.asList(VertexPath.lookup(createGraph, "B"), VertexPath.lookup(createGraph, "C"),
         VertexPath.lookup(createGraph, "D")), preds);
 
     preds = helper.getAllSuccessorsOf(VertexPath.lookup(createGraph, "D"));
-    Assert.assertEquals(Collections.emptyList(), preds);
+    Assertions.assertEquals(Collections.emptyList(), preds);
   }
 
   @Test
-  public void testAllSuccessorNoDAG() {
+  void testAllSuccessorNoDAG() {
     final PiGraph createGraph = createGraphNoDAG();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final AbstractActor actor = VertexPath.lookup(createGraph, "A");
 
-    Assert.assertThrows(StackOverflowError.class, () -> helper.getAllSuccessorsOf(actor));
+    Assertions.assertThrows(StackOverflowError.class, () -> helper.getAllSuccessorsOf(actor));
   }
 
   @Test
-  public void testAllOutFifos() {
+  void testAllOutFifos() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     List<Fifo> outFifos;
     final Fifo fifo;
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     outFifos = helper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(1, outFifos.size());
+    Assertions.assertEquals(1, outFifos.size());
     fifo = outFifos.get(0);
-    Assert.assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getTarget());
-    Assert.assertEquals(VertexPath.lookup(createGraph, "A"), fifo.getSource());
+    Assertions.assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getTarget());
+    Assertions.assertEquals(VertexPath.lookup(createGraph, "A"), fifo.getSource());
 
     outFifos = helper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "D"));
-    Assert.assertEquals(4, outFifos.size());
+    Assertions.assertEquals(4, outFifos.size());
 
     outFifos = helper.getPredecessorEdgesOf(VertexPath.lookup(createGraph, "A"));
-    Assert.assertEquals(0, outFifos.size());
+    Assertions.assertEquals(0, outFifos.size());
   }
 
   @Test
-  public void testAllInFifos() {
+  void testAllInFifos() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     List<Fifo> outFifos;
     final Fifo fifo;
 
     outFifos = new PiSDFTopologyHelper(createGraph).getSuccessorEdgesOf(VertexPath.lookup(createGraph, "B"));
-    Assert.assertEquals(1, outFifos.size());
+    Assertions.assertEquals(1, outFifos.size());
     fifo = outFifos.get(0);
-    Assert.assertEquals(VertexPath.lookup(createGraph, "D"), fifo.getTarget());
-    Assert.assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getSource());
+    Assertions.assertEquals(VertexPath.lookup(createGraph, "D"), fifo.getTarget());
+    Assertions.assertEquals(VertexPath.lookup(createGraph, "B"), fifo.getSource());
 
   }
 
   @Test
-  public void testIsPredecessor() {
+  void testIsPredecessor() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final boolean successor = helper.isPredecessor(VertexPath.lookup(createGraph, "D"),
         VertexPath.lookup(createGraph, "B"));
-    Assert.assertFalse(successor);
+    Assertions.assertFalse(successor);
     final boolean successor2 = helper.isPredecessor(VertexPath.lookup(createGraph, "B"),
         VertexPath.lookup(createGraph, "D"));
-    Assert.assertTrue(successor2);
+    Assertions.assertTrue(successor2);
   }
 
   @Test
-  public void testIsSuccessor() {
+  void testIsSuccessor() {
     final PiGraph createGraph = PiGraphGenerator.createDiamondGraph();
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final boolean successor = helper.isSuccessor(VertexPath.lookup(createGraph, "D"),
         VertexPath.lookup(createGraph, "B"));
-    Assert.assertTrue(successor);
+    Assertions.assertTrue(successor);
     final boolean successor2 = helper.isSuccessor(VertexPath.lookup(createGraph, "B"),
         VertexPath.lookup(createGraph, "D"));
-    Assert.assertFalse(successor2);
+    Assertions.assertFalse(successor2);
   }
 
   @Test
-  public void testAllOutFifosNoDAG() {
+  void testAllOutFifosNoDAG() {
     final PiGraph createGraph = createGraphNoDAG();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final AbstractActor actor = VertexPath.lookup(createGraph, "B");
 
-    Assert.assertThrows(StackOverflowError.class, () -> helper.getSuccessorEdgesOf(actor));
+    Assertions.assertThrows(StackOverflowError.class, () -> helper.getSuccessorEdgesOf(actor));
   }
 
   @Test
-  public void testAllInFifosNoDAG() {
+  void testAllInFifosNoDAG() {
     final PiGraph createGraph = createGraphNoDAG();
 
     final PiSDFTopologyHelper helper = new PiSDFTopologyHelper(createGraph);
     final AbstractActor actor = VertexPath.lookup(createGraph, "B");
 
-    Assert.assertThrows(StackOverflowError.class, () -> helper.getPredecessorEdgesOf(actor));
+    Assertions.assertThrows(StackOverflowError.class, () -> helper.getPredecessorEdgesOf(actor));
   }
 
 }

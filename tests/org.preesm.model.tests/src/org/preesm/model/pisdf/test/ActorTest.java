@@ -35,8 +35,8 @@
  */
 package org.preesm.model.pisdf.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -47,14 +47,14 @@ import org.preesm.model.pisdf.impl.ActorImpl;
 public class ActorTest {
 
   @Test
-  public void testCreateActor() {
+  void testCreateActor() {
     Actor actor = null;
-    Assert.assertNull(actor);
+    Assertions.assertNull(actor);
     actor = PiMMUserFactory.instance.createActor();
-    Assert.assertNotNull(actor);
-    Assert.assertTrue(ActorImpl.class.isInstance(actor));
+    Assertions.assertNotNull(actor);
+    Assertions.assertTrue((actor instanceof ActorImpl));
     final Refinement refinement = actor.getRefinement();
-    Assert.assertNull(refinement);
+    Assertions.assertNull(refinement);
   }
 
 }
