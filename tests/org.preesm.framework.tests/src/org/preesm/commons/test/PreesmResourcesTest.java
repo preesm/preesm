@@ -36,8 +36,8 @@
 package org.preesm.commons.test;
 
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.exceptions.PreesmResourceException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 
@@ -58,43 +58,37 @@ public class PreesmResourcesTest {
    *
    */
   @Test
-  public void testResourceLoadFromBundles() throws IOException {
+  void testResourceLoadFromBundles() throws IOException {
     final String content = PreesmResourcesHelper.getInstance().read("test_resource.txt", this.getClass());
-    Assert.assertEquals(expectedContent1, content);
+    Assertions.assertEquals(expectedContent1, content);
   }
 
   /**
    *
    */
   @Test
-  public void testResourceLoadFromBundlesSubFolder() throws IOException {
+  void testResourceLoadFromBundlesSubFolder() throws IOException {
     final String content = PreesmResourcesHelper.getInstance().read("subfolder/test_resource.txt", this.getClass());
-    Assert.assertEquals(expectedContentSubFolder, content);
+    Assertions.assertEquals(expectedContentSubFolder, content);
   }
 
   /**
    *
    */
   @Test
-  public void testResourceLoadFromBundlesFake() throws IOException {
-    try {
-      PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt", this.getClass());
-      Assert.fail("Expecting preesm resource exception");
-    } catch (final PreesmResourceException e) {
-      // success
-    }
+  void testResourceLoadFromBundlesFake() {
+    Assertions.assertThrowsExactly(PreesmResourceException.class,
+        () -> PreesmResourcesHelper.getInstance().resolve("test_resource_fake.txt", this.getClass()),
+        "Expecting preesm resource exception");
   }
 
   /**
    *
    */
   @Test
-  public void testResourceLoadFromBundlesSubOnly() throws IOException {
-    try {
-      PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt", this.getClass());
-      Assert.fail("Expecting preesm resource exception");
-    } catch (final PreesmResourceException e) {
-      // success
-    }
+  void testResourceLoadFromBundlesSubOnly() {
+    Assertions.assertThrowsExactly(PreesmResourceException.class,
+        () -> PreesmResourcesHelper.getInstance().resolve("test_resource_subonly.txt", this.getClass()),
+        "Expecting preesm resource exception");
   }
 }
