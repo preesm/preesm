@@ -52,7 +52,7 @@ class MemoryBoundsTest {
   static Stream<Arguments> data() {
     final String projectName = "org.preesm.algorithm.memory.bounds.test";
     final String scenarios = "bufferAggregate.scenario";
-    final String[] workflows = new String[] { "CodegenHeuristic.workflow", "CodegenOstergard.workflow",
+    final String[] workflows = { "CodegenHeuristic.workflow", "CodegenOstergard.workflow",
       "CodegenYamaguchi.workflow" };
 
     return Stream.of(workflows)

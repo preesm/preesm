@@ -52,7 +52,7 @@ class MemoryAllocationTest {
   static Stream<Arguments> data() {
     final String projectName = "org.preesm.algorithm.memory.allocation.test";
     final String scenarios = "bufferAggregate.scenario";
-    final String[] workflows = new String[] { "CodegenApproxStableSet.workflow", "CodegenExactStableSet.workflow",
+    final String[] workflows = { "CodegenApproxStableSet.workflow", "CodegenExactStableSet.workflow",
       "CodegenBasic.workflow", "CodegenFirstFit.workflow", "CodegenBestFit.workflow", "CodegenDeGreef.workflow",
       "CodegenShuffle.workflow" };
 

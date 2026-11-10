@@ -60,9 +60,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class PapifyTest {
 
   static final String   PROJECT   = "org.ietr.preesm.sobel_parallel";
-  static final String[] SCENARIOS = new String[] { "1core.scenario", "2core.scenario", "4core.scenario",
-    "1corePapify.scenario", "2corePapify.scenario", "4corePapify.scenario" };
-  static final String[] WORKFLOWS = new String[] { "Codegen.workflow" };
+  static final String[] SCENARIOS = { "1core.scenario", "2core.scenario", "4core.scenario", "1corePapify.scenario",
+    "2corePapify.scenario", "4corePapify.scenario" };
+  static final String[] WORKFLOWS = { "Codegen.workflow" };
 
   static Stream<Arguments> data() {
     return Stream.of(WORKFLOWS)

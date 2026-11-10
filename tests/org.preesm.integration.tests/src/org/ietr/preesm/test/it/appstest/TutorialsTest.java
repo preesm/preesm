@@ -53,8 +53,8 @@ class TutorialsTest {
 
   static Stream<Arguments> sobelData() {
     final String sobelProjectName = "org.ietr.preesm.sobel";
-    final String[] sobelScenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
-    final String[] sobelWorkflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow",
+    final String[] sobelScenarios = { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    final String[] sobelWorkflows = { "Codegen.workflow", "InstrumentedCodegen.workflow",
       "CodegenMemoryDeGreef.workflow" };
 
     return Stream.of(sobelWorkflows).flatMap(
@@ -63,10 +63,9 @@ class TutorialsTest {
 
   static Stream<Arguments> stereoData() {
     final String stereoProjectName = "org.ietr.preesm.stereo";
-    final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+    final String[] stereoScenarios = { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
       "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
-      "CodegenMemoryDeGreef.workflow" };
+    final String[] stereoWorkflows = { "CodegenMemoryScriptsMixedMerged.workflow", "CodegenMemoryDeGreef.workflow" };
 
     return Stream.of(stereoWorkflows).flatMap(
         workflow -> Stream.of(stereoScenarios).map(scenario -> Arguments.of(workflow, scenario, stereoProjectName)));

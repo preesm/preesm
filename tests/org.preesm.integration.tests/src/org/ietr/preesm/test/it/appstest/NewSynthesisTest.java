@@ -53,10 +53,10 @@ class NewSynthesisTest {
 
   static Stream<Arguments> data() {
     final String stereoProjectName = "org.ietr.preesm.stereo";
-    final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+    final String[] stereoScenarios = { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
       "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] stereoWorkflows = new String[] { "NEWSynthesisAPI_legacy.workflow",
-      "NEWSynthesisAPI_simple.workflow", "NEWSynthesisAPI_periodic.workflow" };
+    final String[] stereoWorkflows = { "NEWSynthesisAPI_legacy.workflow", "NEWSynthesisAPI_simple.workflow",
+      "NEWSynthesisAPI_periodic.workflow" };
 
     return Stream.of(stereoWorkflows).flatMap(
         workflow -> Stream.of(stereoScenarios).map(scenario -> Arguments.of(workflow, scenario, stereoProjectName)));

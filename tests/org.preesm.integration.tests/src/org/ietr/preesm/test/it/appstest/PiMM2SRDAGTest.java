@@ -53,9 +53,9 @@ class PiMM2SRDAGTest {
 
   static Stream<Arguments> rlData() {
     final String projectName = "org.ietr.preesm.reinforcement_learning";
-    final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
-      "1coreTraining.scenario", "4coreTraining.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
+    final String[] scenarios = { "1corePrediction.scenario", "4corePrediction.scenario", "1coreTraining.scenario",
+      "4coreTraining.scenario" };
+    final String[] workflows = { "StaticPiMM2SRDAGCodegen.workflow" };
 
     return Stream.of(workflows)
         .flatMap(workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(workflow, scenario, projectName)));
@@ -63,8 +63,8 @@ class PiMM2SRDAGTest {
 
   static Stream<Arguments> sobelData() {
     final String projectName = "org.ietr.preesm.sobel";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
-    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
+    final String[] scenarios = { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    final String[] workflows = { "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
 
     return Stream.of(workflows)
         .flatMap(workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(workflow, scenario, projectName)));
@@ -72,9 +72,9 @@ class PiMM2SRDAGTest {
 
   static Stream<Arguments> stereoData() {
     final String projectName = "org.ietr.preesm.stereo";
-    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
-      "lowMaxDisparity.scenario", "YUV4core.scenario" };
-    final String[] workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
+    final String[] scenarios = { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario",
+      "YUV4core.scenario" };
+    final String[] workflows = { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
       "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
 
     return Stream.of(workflows)

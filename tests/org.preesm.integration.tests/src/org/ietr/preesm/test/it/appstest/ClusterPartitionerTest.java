@@ -55,8 +55,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class ClusterPartitionerTest {
 
   static final String   PROJECT   = "org.ietr.preesm.sobel-morpho.partitioner";
-  static final String[] SCENARIOS = new String[] { "MPPA2Cluster.scenario" };
-  static final String[] WORKFLOWS = new String[] { "CodegenAutomaticClustering.workflow" };
+  static final String[] SCENARIOS = { "MPPA2Cluster.scenario" };
+  static final String[] WORKFLOWS = { "CodegenAutomaticClustering.workflow" };
 
   /**
   *

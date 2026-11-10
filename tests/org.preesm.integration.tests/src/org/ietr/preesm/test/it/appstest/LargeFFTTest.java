@@ -51,10 +51,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class LargeFFTTest {
 
   static final String   PROJECT   = "org.ietr.preesm.largeFFT";
-  static final String[] SCENARIOS = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
+  static final String[] SCENARIOS = { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
     "largeFFT_monox86.scenario" };
-  static final String[] WORKFLOWS = new String[] { "CodegenWMemScripts.workflow", "Simulate.workflow",
-    "XTendCodegen.workflow" };
+  static final String[] WORKFLOWS = { "CodegenWMemScripts.workflow", "Simulate.workflow", "XTendCodegen.workflow" };
 
   static Stream<Arguments> data() {
     return Stream.of(WORKFLOWS)

@@ -56,8 +56,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class DistributedMemoryCommsHierarchicalTest {
 
   static final String   PROJECT   = "org.ietr.preesm.stereo";
-  static final String[] SCENARIOS = new String[] { "4core.scenario" };
-  static final String[] WORKFLOWS = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
+  static final String[] SCENARIOS = { "4core.scenario" };
+  static final String[] WORKFLOWS = { "CodegenMemoryScriptsMixedMerged.workflow",
     "CodegenMemoryScriptsDistributedOnly.workflow" };
 
   /**

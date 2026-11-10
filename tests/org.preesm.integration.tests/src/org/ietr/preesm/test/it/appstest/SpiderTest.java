@@ -51,8 +51,8 @@ import org.junit.jupiter.params.provider.MethodSource;
 class SpiderTest {
 
   static final String   PROJECT   = "org.ietr.preesm.spider.sobel";
-  static final String[] SCENARIOS = new String[] { "1core.scenario", "4core.scenario" };
-  static final String[] WORKFLOWS = new String[] { "SpiderCodegen.workflow", "Spider2Codegen.workflow" };
+  static final String[] SCENARIOS = { "1core.scenario", "4core.scenario" };
+  static final String[] WORKFLOWS = { "SpiderCodegen.workflow", "Spider2Codegen.workflow" };
 
   static Stream<Arguments> data() {
     return Stream.of(WORKFLOWS)

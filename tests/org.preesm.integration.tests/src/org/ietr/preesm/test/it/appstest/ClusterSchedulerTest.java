@@ -55,12 +55,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 class ClusterSchedulerTest {
 
   static final String   PROJECT           = "org.ietr.preesm.cluster.scheduler";
-  static final String[] SCENARIOS         = new String[] { "1coreFlat.scenario", "1coreSobel.scenario",
-    "4coreSobel.scenario" };
-  static final String[] WORKFLOWS_GRAPH   = new String[] { "CodegenGraphPerformance.workflow",
-    "CodegenGraphMemory.workflow" };
-  static final String[] WORKFLOWS_CLUSTER = new String[] { "CodegenClusterPerformance.workflow",
-    "CodegenClusterMemory.workflow" };
+  static final String[] SCENARIOS         = { "1coreFlat.scenario", "1coreSobel.scenario", "4coreSobel.scenario" };
+  static final String[] WORKFLOWS_GRAPH   = { "CodegenGraphPerformance.workflow", "CodegenGraphMemory.workflow" };
+  static final String[] WORKFLOWS_CLUSTER = { "CodegenClusterPerformance.workflow", "CodegenClusterMemory.workflow" };
 
   /**
   *

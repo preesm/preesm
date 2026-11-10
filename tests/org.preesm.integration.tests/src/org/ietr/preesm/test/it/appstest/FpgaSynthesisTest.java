@@ -54,8 +54,8 @@ class FpgaSynthesisTest {
 
   static Stream<Arguments> data() {
     final String triangleProjectName = "org.ietr.preesm.triangle";
-    final String[] stereoScenarios = new String[] { "Triangle.scenario" };
-    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
+    final String[] stereoScenarios = { "Triangle.scenario" };
+    final String[] stereoWorkflows = { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
       "FPGAanalysisAVGEval.workflow", "FPGAanalysisSDFEval.workflow", "FPGAanalysisPacking.workflow" };
 
     return Stream.of(stereoWorkflows).flatMap(
