@@ -36,11 +36,10 @@
  */
 package org.ietr.preesm.memory.script.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.ArrayList;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.memory.script.Range;
 
 /**
@@ -56,41 +55,41 @@ public class RangeTest {
   Range range3 = new Range(15, 20);
 
   @Test
-  public void testDifference() {
-    List<Range> ranges = new ArrayList<>();
+  void testDifference() {
+    final List<Range> ranges = new ArrayList<>();
     Range.union(ranges, range0);
     Range.union(ranges, new Range(12, 17));
 
-    List<Range> ranges1 = new ArrayList<>();
+    final List<Range> ranges1 = new ArrayList<>();
     ranges1.add(new Range(2, 3));
     ranges1.add(new Range(5, 14));
 
-    List<Range> rangesInput = new ArrayList<>();
+    final List<Range> rangesInput = new ArrayList<>();
 
     // Check the result of range0 - range1
     rangesInput.add(new Range(0, 5));
     List<Range> difference = range0.difference(range1);
-    assertEquals(rangesInput, difference);
+    Assertions.assertEquals(rangesInput, difference);
     rangesInput.clear();
 
     // Check the result of range0 - range3
     rangesInput.add(new Range(0, 10));
     difference = range0.difference(range3);
-    assertEquals(rangesInput, difference);
+    Assertions.assertEquals(rangesInput, difference);
     rangesInput.clear();
 
     // Check the result of range0 - range2
     rangesInput.add(new Range(0, 3));
     rangesInput.add(new Range(7, 10));
     difference = range0.difference(range2);
-    assertEquals(rangesInput, difference);
+    Assertions.assertEquals(rangesInput, difference);
     rangesInput.clear();
 
     // Check the result of ranges - range1
     rangesInput.add(new Range(0, 5));
     rangesInput.add(new Range(15, 17));
     difference = Range.difference(ranges, range1);
-    assertEquals(rangesInput, difference);
+    Assertions.assertEquals(rangesInput, difference);
     rangesInput.clear();
 
     // Check the result of ranges - ranges1
@@ -98,7 +97,7 @@ public class RangeTest {
     rangesInput.add(new Range(3, 5));
     rangesInput.add(new Range(14, 17));
     difference = Range.difference(ranges, ranges1);
-    assertEquals(rangesInput, difference);
+    Assertions.assertEquals(rangesInput, difference);
     rangesInput.clear();
   }
 }

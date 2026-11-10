@@ -37,47 +37,36 @@
  */
 package org.preesm.model.pisdf.test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
 public class JEPCustomFunctionTest {
 
-  private final String input;
-  private final long   expected;
-
-  public JEPCustomFunctionTest(String input, long expected) {
-    this.input = input;
-    this.expected = expected;
+  static Stream<Arguments> data() {
+    return Stream.of(Arguments.of("floor(0)", 0L), Arguments.of("floor(0)", 0L), Arguments.of("floor(-1)", -1L),
+        Arguments.of("floor(1.2)", 1L), Arguments.of("floor(1.9)", 1L), Arguments.of("floor(-1.9)", -2L),
+        Arguments.of("floor(-1.1)", -2L), Arguments.of("floor(-2.1)", -3L), Arguments.of("floor(5/2)", 2L),
+        Arguments.of("floor(5/-2)", -3L), Arguments.of("ceil(5/2)", 3L), Arguments.of("min(min(1,-3),-2)", -3L),
+        Arguments.of("max(10, max(1,-3))", 10L), Arguments.of("1000*geo_sum(3,1/2,4)", 5625L),
+        Arguments.of("geo_sum(3,2,4)", 45L), Arguments.of("geo_sum(512000,0.25,7)", 682625L),
+        Arguments.of("pow_div_max(2, 72)", 3L), Arguments.of("pow_div_max(2, 73)", 0L));
   }
 
-  @Parameters(name = "Expression: {0}, expected = {1}")
-  public static Collection<Object[]> data() {
-    final Object[][] data = new Object[][] { { "floor(0)", 0 }, { "floor(0)", 0 }, { "floor(-1)", -1 },
-      { "floor(1.2)", 1 }, { "floor(1.9)", 1 }, { "floor(-1.9)", -2 }, { "floor(-1.1)", -2 }, { "floor(-2.1)", -3 },
-      { "floor(5/2)", 2 }, { "floor(5/-2)", -3 }, { "ceil(5/2)", 3 }, { "min(min(1,-3),-2)", -3 },
-      { "max(10, max(1,-3))", 10 }, { "1000*geo_sum(3,1/2,4)", 5625 }, { "geo_sum(3,2,4)", 45 },
-      { "geo_sum(512000,0.25,7)", 682625 }, { "pow_div_max(2, 72)", 3 }, { "pow_div_max(2, 73)", 0 } };
-
-    return Arrays.asList(data);
-  }
-
-  @Test
-  public void testEvaluation() {
+  @ParameterizedTest(name = "Expression: {0}, expected = {1}")
+  @MethodSource("data")
+  void testEvaluation(String input, long expected) {
     final Expression createExpression = PiMMUserFactory.instance.createExpression(input);
     final long evaluate = createExpression.evaluateAsLong();
 
-    Assert.assertEquals(expected, evaluate);
+    Assertions.assertEquals(expected, evaluate);
   }
 
 }

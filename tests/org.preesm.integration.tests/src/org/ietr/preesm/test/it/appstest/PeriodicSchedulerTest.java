@@ -15,7 +15,8 @@ public class PeriodicSchedulerTest {
     final String workflow = "/Workflows/" + "CodegenPeriod.workflow";
 
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflow, scenario);
-    Assertions.assertTrue(success, "[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.");
+    Assertions.assertTrue(success,
+        () -> "[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.");
   }
 
 }

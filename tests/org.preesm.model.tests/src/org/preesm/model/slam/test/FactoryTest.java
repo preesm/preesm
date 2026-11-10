@@ -35,8 +35,8 @@
  */
 package org.preesm.model.slam.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamFactory;
 
@@ -49,8 +49,8 @@ public class FactoryTest {
    * Test factory design.
    */
   @Test
-  public void testFactoryDesign() {
+  void testFactoryDesign() {
     final Design d = SlamFactory.eINSTANCE.createDesign();
-    Assert.assertNotNull(d);
+    Assertions.assertNotNull(d);
   }
 }

@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.pimm.algorithm.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 
 /**
@@ -45,11 +45,11 @@ import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 public class SpiderNameGeneratorTest {
 
   @Test
-  public void testGetCoreName() {
+  void testGetCoreName() {
     final String inputString = "toto";
     final String expectedOutput = "CORE_TOTO";
     final String coreName = SpiderNameGenerator.getCoreName(inputString);
-    Assert.assertNotNull(coreName);
-    Assert.assertEquals(expectedOutput, coreName);
+    Assertions.assertNotNull(coreName);
+    Assertions.assertEquals(expectedOutput, coreName);
   }
 }

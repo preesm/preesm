@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.architecture.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.slam.utils.SlamHierarchyFlattening;
 
 // TODO: Auto-generated Javadoc
@@ -50,10 +50,10 @@ public class MonitorMessagesTest {
    * Test slam hierarchy flattening monitor message.
    */
   @Test
-  public void testSlamHierarchyFlatteningMonitorMessage() {
+  void testSlamHierarchyFlatteningMonitorMessage() {
     final SlamHierarchyFlattening architectureExporter = new SlamHierarchyFlattening();
     final String monitorMessage = architectureExporter.monitorMessage();
-    Assert.assertEquals("Flattening an S-LAM model hierarchy.", monitorMessage);
+    Assertions.assertEquals("Flattening an S-LAM model hierarchy.", monitorMessage);
   }
 
 }

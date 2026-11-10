@@ -35,8 +35,8 @@
  */
 package org.ietr.preesm.memory.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.memory.allocation.BasicAllocator;
 
 /**
@@ -44,15 +44,8 @@ import org.preesm.algorithm.memory.allocation.BasicAllocator;
 public class BasicAllocatorTest {
 
   @Test
-  public void testBasicAllocator() {
-    try {
-      new BasicAllocator(null);
-      Assert.fail();
-    } catch (final NullPointerException e) {
-      // success
-      return;
-    }
-    Assert.fail();
+  void testBasicAllocator() {
+    Assertions.assertThrows(NullPointerException.class, () -> new BasicAllocator(null));
   }
 
 }

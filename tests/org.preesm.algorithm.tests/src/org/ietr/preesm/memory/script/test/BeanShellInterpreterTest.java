@@ -45,7 +45,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,8 +52,8 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.memory.script.Buffer;
 import org.preesm.algorithm.memory.script.Match;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -98,82 +97,76 @@ public class BeanShellInterpreterTest {
   private static final String RESLIST       = "resList";
 
   @Test
-  public void testBasicEval() throws EvalError {
+  void testBasicEval() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final Object eval = interpreter.eval("a = 2;");
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof Integer);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof Integer);
     final Integer value = (Integer) eval;
     final int intValue = value.intValue();
-    Assert.assertEquals(2, intValue);
+    Assertions.assertEquals(2, intValue);
   }
 
   @Test
-  public void testListIteration() throws EvalError {
+  void testListIteration() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     interpreter.eval(IMPORT + List.class.getName() + ";");
     interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     Object result = interpreter.eval("list = new ArrayList(10)");
-    Assert.assertNotNull(result);
-    Assert.assertTrue(result instanceof ArrayList);
+    Assertions.assertNotNull(result);
+    Assertions.assertTrue(result instanceof ArrayList);
     result = interpreter.eval("list");
-    Assert.assertNotNull(result);
+    Assertions.assertNotNull(result);
 
     final ByteArrayOutputStream baos = new ByteArrayOutputStream();
     final PrintStream ps = new PrintStream(baos);
 
     final Object setListEval = interpreter.eval("for (i = 0; i < 10; i++) { list.add(\"#\"+i); }");
-    Assert.assertNull(setListEval);
+    Assertions.assertNull(setListEval);
     interpreter.setOut(ps);
     final Object readListEval = interpreter.eval("for (string : list) { print(string); }");
-    Assert.assertNull(readListEval);
+    Assertions.assertNull(readListEval);
     final String genContent = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-    Assert.assertFalse(genContent.isEmpty());
+    Assertions.assertFalse(genContent.isEmpty());
     final String expectedContent = "#0\n#1\n#2\n#3\n#4\n#5\n#6\n#7\n#8\n#9\n".replace("\n", System.lineSeparator());
-    Assert.assertEquals(expectedContent, genContent);
+    Assertions.assertEquals(expectedContent, genContent);
   }
 
   @Test
-  public void testParameterSet() throws EvalError {
+  void testParameterSet() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final Map<String, Double> hashMap = new LinkedHashMap<>();
     hashMap.put("item1", Double.valueOf(5.125));
     interpreter.set("myParam", hashMap);
 
     final Object result = interpreter.eval("myParam");
-    Assert.assertNotNull(result);
-    Assert.assertTrue(result instanceof LinkedHashMap);
+    Assertions.assertNotNull(result);
+    Assertions.assertTrue(result instanceof LinkedHashMap);
   }
 
   @Test
-  public void testNotDefined() throws EvalError {
+  void testNotDefined() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final Object eval = interpreter.eval("a");
-    Assert.assertNull(eval);
+    Assertions.assertNull(eval);
   }
 
   @Test
-  public void testMethodNotDefined() throws EvalError {
+  void testMethodNotDefined() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     interpreter.eval(IMPORT + List.class.getName() + ";");
     interpreter.eval(IMPORT + ArrayList.class.getName() + ";");
 
     final Object result = interpreter.eval("list = new ArrayList(10)");
-    Assert.assertNotNull(result);
-    Assert.assertTrue(result instanceof ArrayList);
-    try {
-      interpreter.eval("list.methodDoesntExist()");
-      Assert.fail();
-    } catch (final EvalError err) {
-      // success
-      return;
-    }
-    Assert.fail();
+    Assertions.assertNotNull(result);
+    Assertions.assertTrue(result instanceof ArrayList);
+
+    Assertions.assertThrows(EvalError.class, () -> interpreter.eval("list.methodDoesntExist()"));
   }
 
   @Test
-  public void testDesinterleave() throws EvalError, IOException {
+  void testDesinterleave() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/desinterleave_standalonetest.bsh";
 
@@ -200,17 +193,17 @@ public class BeanShellInterpreterTest {
     interpreter.set("i_i", i);
     interpreter.set("o_o", o);
     final Object eval = interpreter.source(bshFileUnderTest);
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof ArrayList);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof ArrayList);
     @SuppressWarnings("unchecked")
     final List<Match> matchList = (List<Match>) eval;
     final int size = matchList.size();
-    Assert.assertEquals(N, size);
+    Assertions.assertEquals(N, size);
 
   }
 
   @Test
-  public void testShuffleSplit() throws EvalError, IOException {
+  void testShuffleSplit() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/ShuffleSplit_standalonetest.bsh";
 
@@ -238,17 +231,17 @@ public class BeanShellInterpreterTest {
     interpreter.set(I_INPUT, i);
     interpreter.set(O_OUTPUT, o);
     final Object eval = interpreter.source(bshFileUnderTest);
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof ArrayList);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof ArrayList);
     @SuppressWarnings("unchecked")
     final List<Match> matchList = (List<Match>) eval;
     final int size = matchList.size();
-    Assert.assertEquals(NbSlice, size);
+    Assertions.assertEquals(NbSlice, size);
 
   }
 
   @Test
-  public void testSplit() throws EvalError, IOException {
+  void testSplit() throws EvalError, IOException {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/split_standalonetest.bsh";
 
@@ -276,17 +269,17 @@ public class BeanShellInterpreterTest {
     interpreter.set(I_INPUT, i);
     interpreter.set(O_OUTPUT, o);
     final Object eval = interpreter.source(bshFileUnderTest);
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof ArrayList);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof ArrayList);
     @SuppressWarnings("unchecked")
     final List<Match> matchList = (List<Match>) eval;
     final int size = matchList.size();
-    Assert.assertEquals(NbSlice, size);
+    Assertions.assertEquals(NbSlice, size);
 
   }
 
   @Test
-  public void testSplitFail() throws EvalError, IOException {
+  void testSplitFail() throws EvalError {
     final Interpreter interpreter = new Interpreter();
     final String bshFileUnderTest = ScriptRunnerTest.SCRIPT_FOLDER_PATH + "/split_standalonetest.bsh";
 
@@ -309,19 +302,12 @@ public class BeanShellInterpreterTest {
     interpreter.set(I_INPUT, i);
     interpreter.set(O_OUTPUT, o);
 
-    try {
-      interpreter.source(bshFileUnderTest);
-      Assert.fail();
-    } catch (final EvalError e) {
-      final Throwable cause = e.getCause();
-      Assert.assertTrue(cause instanceof RuntimeException);
-      final String message = cause.getMessage();
-      Assert.assertNotNull(message);
-      Assert.assertTrue(message.startsWith("Cannot match"));
-      // success
-      return;
-    }
-    Assert.fail();
+    final EvalError error = Assertions.assertThrows(EvalError.class, () -> interpreter.source(bshFileUnderTest));
+    final Throwable cause = error.getCause();
+    Assertions.assertTrue(cause instanceof RuntimeException);
+    final String message = cause.getMessage();
+    Assertions.assertNotNull(message);
+    Assertions.assertTrue(message.startsWith("Cannot match"));
   }
 
   /**
@@ -329,7 +315,7 @@ public class BeanShellInterpreterTest {
    *
    */
   @Test
-  public void testFork() throws URISyntaxException, IOException, EvalError {
+  void testFork() throws IOException, EvalError {
 
     final StringBuilder content = new StringBuilder();
     final File scriptFile = new File(FORK_SCRIPT);
@@ -349,7 +335,7 @@ public class BeanShellInterpreterTest {
       }
       content.append(RESLIST_SC);
     }
-    Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
+    Assertions.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,0,outSize);"));
 
     final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
     final int numberOfForks = 8;
@@ -372,10 +358,10 @@ public class BeanShellInterpreterTest {
     interpreter.set(OUTPUTS, outputs);
     interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
-    Assert.assertEquals(resList, eval);
+    Assertions.assertEquals(resList, eval);
 
     final int size = resList.size();
-    Assert.assertEquals(numberOfForks, size);
+    Assertions.assertEquals(numberOfForks, size);
   }
 
   /**
@@ -383,7 +369,7 @@ public class BeanShellInterpreterTest {
    *
    */
   @Test
-  public void testJoin() throws URISyntaxException, IOException, EvalError {
+  void testJoin() throws IOException, EvalError {
 
     final StringBuilder content = new StringBuilder();
     final File scriptFile = new File(JOIN_SCRIPT);
@@ -403,7 +389,7 @@ public class BeanShellInterpreterTest {
       }
       content.append(RESLIST_SC);
     }
-    Assert.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
+    Assertions.assertTrue(content.toString().contains("outputs.get(0).matchWith(outIdx,input,0,inSize);"));
 
     final int bufferToSplitSize = 1024 * 1024 * 8; // 8MB
     final int numberOfForks = 8;
@@ -426,10 +412,10 @@ public class BeanShellInterpreterTest {
     interpreter.set(OUTPUTS, outputs);
     interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
-    Assert.assertEquals(resList, eval);
+    Assertions.assertEquals(resList, eval);
 
     final int size = resList.size();
-    Assert.assertEquals(numberOfForks, size);
+    Assertions.assertEquals(numberOfForks, size);
   }
 
   /**
@@ -437,7 +423,7 @@ public class BeanShellInterpreterTest {
    *
    */
   @Test
-  public void testRoundBuffer() throws URISyntaxException, IOException, EvalError {
+  void testRoundBuffer() throws IOException, EvalError {
 
     final StringBuilder content = new StringBuilder();
     final File scriptFile = new File(ROUNDBUFFER_SCRIPT);
@@ -458,7 +444,7 @@ public class BeanShellInterpreterTest {
     }
     content.append(RESLIST_SC);
 
-    Assert.assertTrue(content.toString().contains("RuntimeException"));
+    Assertions.assertTrue(content.toString().contains("RuntimeException"));
 
     final int bufferToBroadcastSize = 1024 * 1024 * 8; // 8MB
 
@@ -481,11 +467,11 @@ public class BeanShellInterpreterTest {
     interpreter.set(OUTPUTS, outputs);
     interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof List);
-    Assert.assertEquals(resList, eval);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof List);
+    Assertions.assertEquals(resList, eval);
     final int size = resList.size();
-    Assert.assertEquals(1, size);
+    Assertions.assertEquals(1, size);
 
   }
 
@@ -494,7 +480,7 @@ public class BeanShellInterpreterTest {
    *
    */
   @Test
-  public void testBroadCast() throws URISyntaxException, IOException, EvalError {
+  void testBroadCast() throws IOException, EvalError {
 
     final StringBuilder content = new StringBuilder();
     final File scriptFile = new File(BROADCAST_SCRIPT);
@@ -515,7 +501,7 @@ public class BeanShellInterpreterTest {
     }
     content.append(RESLIST_SC);
 
-    Assert.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
+    Assertions.assertTrue(content.toString().contains("inputs.get(0).matchWith(inIdx,output,outIdx,matchSize);"));
 
     final long nbOutputBuffers = 2L;
     final long bufferToBroadcastSize = 1024L * 1024L * 8L; // 8MB
@@ -540,10 +526,10 @@ public class BeanShellInterpreterTest {
     interpreter.set(OUTPUTS, outputs);
     interpreter.set(RESLIST, resList);
     final Object eval = interpreter.eval(content.toString());
-    Assert.assertNotNull(eval);
-    Assert.assertTrue(eval instanceof List);
-    Assert.assertEquals(resList, eval);
+    Assertions.assertNotNull(eval);
+    Assertions.assertTrue(eval instanceof List);
+    Assertions.assertEquals(resList, eval);
     final int size = resList.size();
-    Assert.assertEquals(nbOutputBuffers * ratio, size);
+    Assertions.assertEquals(nbOutputBuffers * ratio, size);
   }
 }

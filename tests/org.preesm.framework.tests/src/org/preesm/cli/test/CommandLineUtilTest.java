@@ -36,9 +36,8 @@
 package org.preesm.cli.test;
 
 import java.util.logging.Logger;
-import org.eclipse.core.runtime.CoreException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.cli.CommandLineUtil;
 
 /**
@@ -46,16 +45,8 @@ import org.preesm.cli.CommandLineUtil;
 public class CommandLineUtilTest {
 
   @Test
-  public void testDisableuatobuild() {
-    try {
-      CommandLineUtil.disableAutoBuild(null, Logger.getAnonymousLogger());
-      Assert.fail();
-    } catch (final CoreException e) {
-      Assert.fail();
-    } catch (final NullPointerException e) {
-      // success
-      return;
-    }
-    Assert.fail();
+  void testDisableuatobuild() {
+    Assertions.assertThrows(NullPointerException.class,
+        () -> CommandLineUtil.disableAutoBuild(null, Logger.getAnonymousLogger()));
   }
 }
