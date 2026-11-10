@@ -145,7 +145,7 @@ public class SaveAsWizard extends Wizard implements INewWizard {
     }
     try {
       in.close();
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       // don't care because in is a byte array input stream
     }
 

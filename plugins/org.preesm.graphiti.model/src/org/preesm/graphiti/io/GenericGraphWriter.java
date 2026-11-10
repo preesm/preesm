@@ -118,7 +118,7 @@ public class GenericGraphWriter {
       final String content = element.getTextContent();
       try {
         byteStream.write(content.getBytes());
-      } catch (final IOException e) {
+      } catch (final IOException _) {
         // byte stream is a byte array output stream
       }
     } else {

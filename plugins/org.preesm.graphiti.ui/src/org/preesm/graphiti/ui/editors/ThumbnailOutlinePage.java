@@ -93,9 +93,9 @@ public class ThumbnailOutlinePage extends ContentOutlinePage {
     lws.setContents(this.thumbnail);
 
     this.disposeListener = _ -> {
-      if (ThumbnailOutlinePage.this.thumbnail != null) {
-        ThumbnailOutlinePage.this.thumbnail.deactivate();
-        ThumbnailOutlinePage.this.thumbnail = null;
+      if (this.thumbnail != null) {
+        this.thumbnail.deactivate();
+        this.thumbnail = null;
       }
     };
 

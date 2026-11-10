@@ -168,7 +168,7 @@ public class ConfigurationParser {
         } else {
           res = value;
         }
-      } catch (final NumberFormatException e) {
+      } catch (final NumberFormatException _) {
         res = null;
       }
     }

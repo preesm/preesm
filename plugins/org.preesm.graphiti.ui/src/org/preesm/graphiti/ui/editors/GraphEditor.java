@@ -178,7 +178,7 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
     getActionRegistry().registerAction(new ZoomInAction(this.manager));
     getActionRegistry().registerAction(new ZoomOutAction(this.manager));
 
-    final double[] zoomLevels = new double[] { 0.1, 0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0 };
+    final double[] zoomLevels = { 0.1, 0.15, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0 };
     this.manager.setZoomLevels(zoomLevels);
 
     // Predefined zoom levels
