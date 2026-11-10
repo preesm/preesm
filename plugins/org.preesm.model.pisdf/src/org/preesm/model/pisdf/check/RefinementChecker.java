@@ -682,7 +682,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
       if (key != null) {
         final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(key,
-            k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
+            _ -> new Pair<>(CorrespondingTemplateParameterType.FIFO_TYPE, new ArrayList<>()));
         p.getValue().add(fa);
         if (p.getKey() != CorrespondingTemplateParameterType.FIFO_TYPE) {
           // a single parameter is used for different use cases
@@ -692,7 +692,7 @@ public class RefinementChecker extends AbstractPiSDFObjectChecker {
 
       if (value != null) {
         final Pair<CorrespondingTemplateParameterType, List<FunctionArgument>> p = result.computeIfAbsent(value,
-            k -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
+            _ -> new Pair<>(CorrespondingTemplateParameterType.FIFO_DEPTH, new ArrayList<>()));
         p.getValue().add(fa);
         if (p.getKey() != CorrespondingTemplateParameterType.FIFO_DEPTH) {
           // a single parameter is used for different use cases

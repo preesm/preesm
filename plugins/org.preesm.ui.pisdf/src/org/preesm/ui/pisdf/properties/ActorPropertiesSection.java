@@ -165,7 +165,7 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
     lblName.setLayoutData(data);
 
     /*** Name box listener ***/
-    this.txtNameObj.addModifyListener(e -> {
+    this.txtNameObj.addModifyListener(_ -> {
       final PictogramElement pe = getSelectedPictogramElement();
       if (pe != null) {
         final EObject bo = Graphiti.getLinkService().getBusinessObjectForLinkedPictogramElement(pe);

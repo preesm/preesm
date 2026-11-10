@@ -529,13 +529,13 @@ public class PiBuffer {
     }
 
     // Do the match
-    this.matchTable.computeIfAbsent(localBitIdx, k -> new ArrayList<>());
+    this.matchTable.computeIfAbsent(localBitIdx, _ -> new ArrayList<>());
 
     final List<PiMatch> matchSet = this.matchTable.get(localBitIdx);
     final PiMatch localMatch = new PiMatch(this, localBitIdx, buffer, remoteBitIdx, bitSize);
     matchSet.add(localMatch);
 
-    buffer.matchTable.computeIfAbsent(remoteBitIdx, k -> new ArrayList<>());
+    buffer.matchTable.computeIfAbsent(remoteBitIdx, _ -> new ArrayList<>());
 
     final List<PiMatch> remoteMatchSet = buffer.matchTable.get(remoteBitIdx);
 

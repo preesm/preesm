@@ -224,7 +224,7 @@ public class TopologicalRanking {
         rank = maxRank - tv.rank;
       }
 
-      final Set<AbstractActor> aas = irRankActors.computeIfAbsent(rank, r -> new HashSet<>());
+      final Set<AbstractActor> aas = irRankActors.computeIfAbsent(rank, _ -> new HashSet<>());
 
       aas.add(aa);
     }

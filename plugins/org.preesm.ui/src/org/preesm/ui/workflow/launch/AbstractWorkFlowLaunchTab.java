@@ -121,7 +121,7 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
     final GridData layoutData = new GridData(SWT.FILL, SWT.TOP, true, false);
     layoutData.widthHint = 200;
     this.filePath.setLayoutData(layoutData);
-    this.filePath.addModifyListener(e -> {
+    this.filePath.addModifyListener(_ -> {
       setDirty(true);
       updateLaunchConfigurationDialog();
     });
@@ -141,7 +141,7 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
   public void initializeFrom(final ILaunchConfiguration configuration) {
     try {
       this.filePath.setText(configuration.getAttribute(this.fileAttributeName, ""));
-    } catch (final CoreException e) {
+    } catch (final CoreException _) {
       this.filePath.setText("");
     }
 

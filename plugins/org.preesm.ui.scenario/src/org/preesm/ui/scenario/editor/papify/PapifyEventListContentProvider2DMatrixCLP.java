@@ -75,7 +75,7 @@ class PapifyEventListContentProvider2DMatrixCLP extends ColumnLabelProvider {
 
     final Map<String, PAPIEventStatus> statuses = treeElement.papiStatuses;
 
-    return statuses.computeIfAbsent(this.eventName, k -> PAPIEventStatus.NO).toString();
+    return statuses.computeIfAbsent(this.eventName, _ -> PAPIEventStatus.NO).toString();
   }
 
   @Override

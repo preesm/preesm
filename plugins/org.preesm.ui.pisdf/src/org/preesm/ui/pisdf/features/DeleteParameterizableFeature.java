@@ -137,9 +137,9 @@ public class DeleteParameterizableFeature extends DeletePiMMelementFeature {
       // hack ... should be the same behavior for all anchor type
       switch (anchor) {
         // case ConfigInputInterface
-        case final ChopboxAnchor cba -> deleteConnectedConnection(anchor);
+        case final ChopboxAnchor _ -> deleteConnectedConnection(anchor);
         // case ConfigInputInterface
-        case final BoxRelativeAnchor bra -> deleteConnectedConnection(anchor);
+        case final BoxRelativeAnchor _ -> deleteConnectedConnection(anchor);
         default -> throw new UnsupportedOperationException("Unsupported anchor type");
       }
     }

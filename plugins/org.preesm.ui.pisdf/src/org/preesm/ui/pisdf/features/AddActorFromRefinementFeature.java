@@ -138,10 +138,10 @@ public class AddActorFromRefinementFeature extends AbstractAddFeature {
 
         // Instance of ConfigOutputPort needs to be check BEFORE DataOutputPort because the former extends the latter
         final AbstractAddActorPortFeature addFeature = switch (port) {
-          case final ConfigInputPort cip -> new AddConfigInputPortFeature(getFeatureProvider());
-          case final ConfigOutputPort cop -> new AddConfigOutputPortFeature(getFeatureProvider());
-          case final DataInputPort dip -> new AddDataInputPortFeature(getFeatureProvider());
-          case final DataOutputPort dop -> new AddDataOutputPortFeature(getFeatureProvider());
+          case final ConfigInputPort _ -> new AddConfigInputPortFeature(getFeatureProvider());
+          case final ConfigOutputPort _ -> new AddConfigOutputPortFeature(getFeatureProvider());
+          case final DataInputPort _ -> new AddDataInputPortFeature(getFeatureProvider());
+          case final DataOutputPort _ -> new AddDataOutputPortFeature(getFeatureProvider());
           default -> throw new PreesmRuntimeException("Unrecognized port type");
         };
 

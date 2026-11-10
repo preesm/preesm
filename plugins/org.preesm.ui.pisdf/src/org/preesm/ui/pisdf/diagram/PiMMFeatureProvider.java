@@ -328,9 +328,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
 
     return switch (newObject) {
       case final EObject eObject -> new PiMMAddFeatureSelectionSwitch().doSwitch(eObject);
-      case final IFile iFile when bo instanceof Actor -> new AddRefinementFeature(this);
-      case final IFile iFile when bo instanceof Delay -> new AddRefinementFeature(this);
-      case final IFile iFile when bo instanceof PiGraph -> new AddActorFromRefinementFeature(this);
+      case final IFile _ when bo instanceof Actor -> new AddRefinementFeature(this);
+      case final IFile _ when bo instanceof Delay -> new AddRefinementFeature(this);
+      case final IFile _ when bo instanceof PiGraph -> new AddActorFromRefinementFeature(this);
       default -> null;
     };
   }
@@ -487,9 +487,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       final EObject eContainer = object.eContainer();
 
       return switch (eContainer) {
-        case final ExecutableActor ea -> new DeleteActorPortFeature(PiMMFeatureProvider.this);
+        case final ExecutableActor _ -> new DeleteActorPortFeature(PiMMFeatureProvider.this);
         // We do not allow deletion of the port of an InterfaceActor through the GUI
-        case final InterfaceActor ia -> new DefaultDeleteFeature(PiMMFeatureProvider.this) {
+        case final InterfaceActor _ -> new DefaultDeleteFeature(PiMMFeatureProvider.this) {
           @Override
           public boolean canDelete(final IDeleteContext context) {
             return false;
@@ -592,11 +592,11 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 
     return switch (bo) {
-      case final ExecutableActor ea -> new LayoutActorFeature(this);
-      case final Port p -> new LayoutPortFeature(this);
-      case final InterfaceActor ia -> new LayoutInterfaceFeature(this);
-      case final ConfigInputInterface cii -> new LayoutInterfaceFeature(this);
-      case final Parameter p -> new LayoutParameterFeature(this);
+      case final ExecutableActor _ -> new LayoutActorFeature(this);
+      case final Port _ -> new LayoutPortFeature(this);
+      case final InterfaceActor _ -> new LayoutInterfaceFeature(this);
+      case final ConfigInputInterface _ -> new LayoutInterfaceFeature(this);
+      case final Parameter _ -> new LayoutParameterFeature(this);
       default -> super.getLayoutFeature(context);
     };
   }
@@ -631,9 +631,9 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final Object bo = getBusinessObjectForPictogramElement(pe);
 
     return switch (bo) {
-      case final Delay d -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
-      case final Fifo f -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
-      case final AbstractActor aa -> new MoveAbstractActorFeature(this);
+      case final Delay _ -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
+      case final Fifo _ -> new MovesIfOnlyOneFeature(this); // we do nothing since they will be moved by actors move
+      case final AbstractActor _ -> new MoveAbstractActorFeature(this);
       default -> super.getMoveShapeFeature(context);
     };
   }
@@ -745,10 +745,10 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
     final Object bo = getBusinessObjectForPictogramElement(pictogramElement);
 
     return switch (pictogramElement) {
-      case final Diagram d -> new UpdateDiagramFeature(this);
-      case final ContainerShape cs when bo instanceof ExecutableActor -> new UpdateActorFeature(this);
-      case final ContainerShape cs when bo instanceof AbstractVertex -> new UpdateAbstractVertexFeature(this);
-      case final BoxRelativeAnchor bra when bo instanceof Port -> new UpdatePortFeature(this);
+      case final Diagram _ -> new UpdateDiagramFeature(this);
+      case final ContainerShape _ when bo instanceof ExecutableActor -> new UpdateActorFeature(this);
+      case final ContainerShape _ when bo instanceof AbstractVertex -> new UpdateAbstractVertexFeature(this);
+      case final BoxRelativeAnchor _ when bo instanceof Port -> new UpdatePortFeature(this);
       default -> super.getUpdateFeature(context);
     };
   }

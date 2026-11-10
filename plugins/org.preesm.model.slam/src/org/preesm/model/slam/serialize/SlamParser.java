@@ -67,9 +67,9 @@ public class SlamParser {
   public static Design parseSlamDesign(final String url) {
 
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extToFactoryMap.computeIfAbsent(ARCHI_EXT, str -> new IPXACTResourceFactoryImpl());
+    extToFactoryMap.computeIfAbsent(ARCHI_EXT, _ -> new IPXACTResourceFactoryImpl());
 
-    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, s -> SlamPackage.eINSTANCE);
+    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, _ -> SlamPackage.eINSTANCE);
 
     Design slamDesign = null;
     final ResourceSet resourceSet = new ResourceSetImpl();
@@ -85,7 +85,7 @@ public class SlamParser {
       ressource = resourceSet.getResource(uri, true);
       slamDesign = (Design) (ressource.getContents().get(0));
       slamDesign.setUrl(url);
-    } catch (final WrappedException e) {
+    } catch (final WrappedException _) {
       final String message = "The architecture file \"" + uri + "\" specified by the scenario does not exist.";
       throw new PreesmRuntimeException(message);
     }

@@ -890,11 +890,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final EObject getter = dependency.getGetter().eContainer();
 
     return switch (getter) {
-      case final Parameter p -> {
+      case final Parameter _ -> {
         layoutDependencyToParamter(stagedParameters, param, ffc, getter);
         yield currentYUsed;
       }
-      case final InterfaceActor ia -> {
+      case final InterfaceActor _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().clear();
@@ -902,14 +902,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         layoutDependencyToInterface(diagram, currentY, currentX, ffc, getter);
         yield true;
       }
-      case final AbstractActor aa -> {
+      case final AbstractActor _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().add(0, bPoint);
         layoutDependencyToActor(currentY, currentX, ffc);
         yield true;
       }
-      case final Delay d -> {
+      case final Delay _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().add(0, bPoint);

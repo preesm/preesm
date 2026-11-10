@@ -224,7 +224,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     // Get total set of vertices after distribution
     final Set<PiMemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
     final Set<PiMemoryExclusionVertex> verticesInMegs = new LinkedHashSet<>();
-    megs.forEach((bank, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
+    megs.forEach((_, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
 
     // Check that the total number of vertices is unchanged
     if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)

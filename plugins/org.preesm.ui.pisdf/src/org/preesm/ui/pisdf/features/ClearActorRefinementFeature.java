@@ -108,8 +108,8 @@ public class ClearActorRefinementFeature extends AbstractCustomFeature {
 
       final RefinementContainer rc = switch (bo) {
         case final Delay delay -> delay.getDelayActor();
-        case final Actor a -> (RefinementContainer) bo;
-        case final InitActor ia -> (RefinementContainer) bo;
+        case final Actor _ -> (RefinementContainer) bo;
+        case final InitActor _ -> (RefinementContainer) bo;
         default -> null;
       };
 

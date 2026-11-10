@@ -213,7 +213,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
       if (delay != null) {
         final AbstractActor getter = delay.getGetterActor();
         if (getter != null && !this.ignoredFifos.contains(delay.getDelayActor().getDataOutputPort().getFifo())) {
-          final Set<AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, x -> new LinkedHashSet<>());
+          final Set<AbstractActor> lSources = gettersToSourceActors.computeIfAbsent(getter, _ -> new LinkedHashSet<>());
           lSources.add(actor);
           successors.add(getter);
         }
@@ -253,7 +253,7 @@ public class FifoCycleDetector extends PiMMSwitch<Void> {
     if (relatedFifo != null) {
       final DataInputPort dp = relatedFifo.getTargetPort();
       if (dp.eContainer() instanceof final AbstractActor aa) {
-        final Set<AbstractActor> lTargets = settersToTargetActors.computeIfAbsent(setter, x -> new LinkedHashSet<>());
+        final Set<AbstractActor> lTargets = settersToTargetActors.computeIfAbsent(setter, _ -> new LinkedHashSet<>());
         lTargets.add(aa);
         doSwitch(dp.eContainer());
       }

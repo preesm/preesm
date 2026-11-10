@@ -609,7 +609,7 @@ public class FpgaCodeGenerator {
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
-    analysisResult.interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, _) -> {
       final String type = i.getDataPort().getFifo().getType();
       interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
       interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(" + getInterfaceRateNameMacro(i) + ");\n");
@@ -618,7 +618,7 @@ public class FpgaCodeGenerator {
 
     // 2.2- generate buffers for interfaces
     final StringBuilder interfaceBuffers = new StringBuilder("// buffers referencing interface elements\n");
-    analysisResult.interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, _) -> {
       String bufferDecl = "cl::Buffer " + i.getName() + SUFFIX_INTERFACE_BUFFER + "(context, CL_MEM_USE_HOST_PTR";
       if (i instanceof DataInputInterface) {
         bufferDecl += " | CL_MEM_READ_ONLY";
@@ -723,7 +723,7 @@ public class FpgaCodeGenerator {
     final StringBuilder inBufferFlushing = new StringBuilder();
     final StringBuilder outBufferFlushing = new StringBuilder();
 
-    analysisResult.interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, _) -> {
       final String type = i.getDataPort().getFifo().getType();
       final String name = i.getName();
       final String rate = getInterfaceRateNameMacro(i);
@@ -756,7 +756,7 @@ public class FpgaCodeGenerator {
 
     // 2.1- generate vectors for interfaces
     final StringBuilder interfaceVectors = new StringBuilder("// vectors containing interface elements\n");
-    analysisResult.interfaceRates.forEach((i, p) -> {
+    analysisResult.interfaceRates.forEach((i, _) -> {
       final String type = i.getDataPort().getFifo().getType();
       interfaceVectors.append("  std::vector<" + type + ", aligned_allocator<" + type + ">> ");
       interfaceVectors.append(i.getName() + SUFFIX_INTERFACE_VECTOR + "(" + getInterfaceRateNameMacro(i) + ");\n");
@@ -928,7 +928,7 @@ public class FpgaCodeGenerator {
 
   protected String generateAllFifoDefinitions(final Map<Fifo, Long> allFifoDepths) {
     final StringBuilder sb = new StringBuilder();
-    allFifoDepths.forEach((x, y) -> {
+    allFifoDepths.forEach((x, _) -> {
       final String sizeValue = getFifoStreamSizeNameMacro(x);
       sb.append(getFifoStreamDeclaration(x));
       sb.append("#pragma HLS stream variable=" + getFifoStreamName(x) + " depth=" + sizeValue + "\n");

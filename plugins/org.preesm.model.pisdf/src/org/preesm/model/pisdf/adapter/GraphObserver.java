@@ -112,8 +112,8 @@ public class GraphObserver extends AdapterImpl {
 
     switch (vertex) {
       case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.incrementActorIndex();
-      case final Parameter p -> graph.incrementParameterIndex();
-      case final Delay d -> graph.incrementDelayIndex();
+      case final Parameter _ -> graph.incrementParameterIndex();
+      case final Delay _ -> graph.incrementDelayIndex();
       default -> {
         /* Nothing */ }
     }
@@ -156,8 +156,8 @@ public class GraphObserver extends AdapterImpl {
 
     switch (vertex) {
       case final AbstractActor aa when !(aa instanceof DelayActor) -> graph.decrementActorIndex();
-      case final Parameter p -> graph.decrementParameterIndex();
-      case final Delay d -> graph.decrementDelayIndex();
+      case final Parameter _ -> graph.decrementParameterIndex();
+      case final Delay _ -> graph.decrementDelayIndex();
       default -> {
         /* Nothing */ }
     }
@@ -201,7 +201,7 @@ public class GraphObserver extends AdapterImpl {
       // If the notifying expression is affected to a Parameter, the expression cache is flushed.
       // TODO: Check if tracking/flushing every expression depending on this parameter would be faster than flushing the
       // whole cache.
-      case final StringExpression expr when notification.getNewValue() instanceof Parameter ->
+      case final StringExpression _ when notification.getNewValue() instanceof Parameter ->
         ExpressionEvaluator.clearExpressionCache();
 
       // The expression was replaced, can be remove from cache

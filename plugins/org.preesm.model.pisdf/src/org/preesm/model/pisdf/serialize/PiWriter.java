@@ -711,10 +711,10 @@ public class PiWriter {
   protected void writeSpecialActor(final Element vertexElt, final SpecialActor actor) {
 
     final String kind = switch (actor) {
-      case final BroadcastActor brd -> PiIdentifiers.BROADCAST;
-      case final JoinActor join -> PiIdentifiers.JOIN;
-      case final ForkActor fork -> PiIdentifiers.FORK;
-      case final RoundBufferActor rb -> PiIdentifiers.ROUND_BUFFER;
+      case final BroadcastActor _ -> PiIdentifiers.BROADCAST;
+      case final JoinActor _ -> PiIdentifiers.JOIN;
+      case final ForkActor _ -> PiIdentifiers.FORK;
+      case final RoundBufferActor _ -> PiIdentifiers.ROUND_BUFFER;
       case final EndActor endActor -> {
         if (endActor.getInitReference() != null) {
           vertexElt.setAttribute(PiIdentifiers.INIT_END_REF, endActor.getInitReference().getName());

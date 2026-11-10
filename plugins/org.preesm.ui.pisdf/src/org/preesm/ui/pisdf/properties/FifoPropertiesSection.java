@@ -196,7 +196,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     this.lblTargetPortValue.setLayoutData(data);
 
     /*** Type box listener ***/
-    this.txtTypeObj.addModifyListener(e -> {
+    this.txtTypeObj.addModifyListener(_ -> {
       final PictogramElement pe = getSelectedPictogramElement();
       if (pe == null) {
         return;
@@ -216,7 +216,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     });
 
     /** SourcePort expression listener */
-    this.txtSourcePortExpression.addModifyListener(e -> {
+    this.txtSourcePortExpression.addModifyListener(_ -> {
       final PictogramElement pe = getSelectedPictogramElement();
       if (pe == null) {
         return;
@@ -240,7 +240,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
     });
 
     /** TargetPort expression listener */
-    this.txtTargetPortExpression.addModifyListener(e -> {
+    this.txtTargetPortExpression.addModifyListener(_ -> {
       final PictogramElement pe = getSelectedPictogramElement();
       if (pe == null) {
         return;

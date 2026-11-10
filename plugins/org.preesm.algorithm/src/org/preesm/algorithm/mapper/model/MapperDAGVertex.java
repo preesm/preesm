@@ -174,7 +174,7 @@ public class MapperDAGVertex extends DAGVertex {
   public MapperDAGVertex copy() {
 
     final MapperDAGVertex result = switch (this) {
-      case final OverheadVertex ov -> new OverheadVertex(getId(), origVertex);
+      case final OverheadVertex _ -> new OverheadVertex(getId(), origVertex);
       case final SendVertex thisSendVertex -> new SendVertex(getId(), (MapperDAG) getBase(), thisSendVertex.getSource(),
           thisSendVertex.getTarget(), thisSendVertex.getRouteStepIndex(), thisSendVertex.getNodeIndex(), origVertex);
       case final ReceiveVertex thisRcvVerex ->

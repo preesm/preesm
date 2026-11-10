@@ -135,7 +135,7 @@ public class ExchangePortCategory extends AbstractCustomFeature {
             && (portToExchange.eContainer() instanceof final ExecutableActor executableActor)) {
 
           final List<Pair<String, PortKind>> newPorts = actorsToNewPorts.computeIfAbsent(executableActor,
-              k -> new ArrayList<>());
+              _ -> new ArrayList<>());
 
           // Switch Port into opposite category
           final PortKind portKind = switch (portToExchange.getKind()) {
