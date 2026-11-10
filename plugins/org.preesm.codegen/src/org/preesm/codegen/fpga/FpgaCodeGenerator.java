@@ -522,11 +522,11 @@ public class FpgaCodeGenerator {
       sizeArgs.add(s.toString());
       sizeMinArgs.add(Long.toString(MIN_BUFFER_DEPTH - 1)); // Lower bound is excluded from range of values
       final long srcRate = f.getSourcePort().getExpression().evaluateAsLong();
-      final long srcII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getSource(), fpga,
+      final long srcII = scenario.getTimings().evaluateTimingOrDefault(f.getSource(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long srcLambda = AdfgUtils.computeLambda(srcRate, srcII).longValue();
       final long snkRate = f.getTargetPort().getExpression().evaluateAsLong();
-      final long snkII = scenario.getTimings().evaluateTimingOrDefault((AbstractActor) f.getTarget(), fpga,
+      final long snkII = scenario.getTimings().evaluateTimingOrDefault(f.getTarget(), fpga,
           TimingType.INITIATION_INTERVAL);
       final long snkLambda = AdfgUtils.computeLambda(snkRate, snkII).longValue();
       lambdaArgs.add(Long.toString(srcLambda + snkLambda));
