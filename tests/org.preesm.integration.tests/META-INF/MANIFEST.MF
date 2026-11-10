@@ -16,9 +16,8 @@ Require-Bundle: org.preesm.codegen.xtend,
  org.yaml.snakeyaml;bundle-version="2.0.0"
 Export-Package: org.ietr.preesm.test.it.api,
  org.ietr.preesm.test.it.appstest
-Import-Package: org.junit.jupiter.api;version="[5.14.0,6.0.0)",
- org.junit.jupiter.api.function;version="[5.14.0,6.0.0)",
- org.junit.jupiter.api.parallel;version="[5.14.0,6.0.0)",
- org.junit.jupiter.params;version="[5.14.0,6.0.0)",
- org.junit.jupiter.params.provider;version="[5.14.0,6.0.0)",
- org.junit.platform.commons.annotation;version="1.8.1"
+Import-Package: org.junit.jupiter.api;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.api.function;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.api.parallel;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.params;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.params.provider;version="[6.0.0,7.0.0)"

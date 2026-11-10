@@ -6,6 +6,6 @@ Bundle-SymbolicName: org.preesm.graphiti.ui.test
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Fragment-Host: org.preesm.graphiti.ui
-Import-Package: org.junit.jupiter.api;version="[5.14.3, 6.0.0)"
+Import-Package: org.junit.jupiter.api;version="[6.0.0,7.0.0)"
 Bundle-RequiredExecutionEnvironment: JavaSE-25
 Export-Package: org.preesm.graphiti.ui.test

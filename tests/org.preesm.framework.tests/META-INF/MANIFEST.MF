@@ -13,5 +13,5 @@ Require-Bundle: org.preesm.cli,
 Export-Package: org.preesm.cli.test,
  org.preesm.commons.test,
  org.preesm.workflow.test
-Import-Package: org.junit.jupiter.api;version="[5.14.0,6.0.0)",
- org.junit.jupiter.api.function;version="[5.14.0,6.0.0)"
+Import-Package: org.junit.jupiter.api;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.api.function;version="[6.0.0,7.0.0)"
