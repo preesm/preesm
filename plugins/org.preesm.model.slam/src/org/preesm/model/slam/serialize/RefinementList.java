@@ -130,7 +130,7 @@ public class RefinementList {
     for (final String fileName : this.nameList) {
       stringList.append(fileName + ",");
     }
-    if (stringList.length() != 0) {
+    if (!stringList.isEmpty()) {
       stringList.deleteCharAt(stringList.length() - 1);
     }
     return stringList.toString();
