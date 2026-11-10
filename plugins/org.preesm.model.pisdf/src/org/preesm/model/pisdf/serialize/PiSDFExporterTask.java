@@ -175,7 +175,7 @@ public class PiSDFExporterTask extends AbstractTaskImplementation {
       SubgraphDisconnector.disconnectSubGraphs(graph, xmlPath.toString());
       new PiWriter(uri).write(graph, outStream);
       // the reconnection is useless since we copied the graph first
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       throw new PreesmRuntimeException("Could not open outputstream file " + string);
     }
   }

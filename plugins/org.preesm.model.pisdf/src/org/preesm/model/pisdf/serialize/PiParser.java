@@ -140,7 +140,7 @@ public class PiParser {
       ressource = resourceSet.getResource(uri, true);
       pigraph = (PiGraph) (ressource.getContents().get(0));
       pigraph.setUrl(algorithmURL);
-    } catch (final WrappedException e) {
+    } catch (final WrappedException _) {
       final String message = "The algorithm file \"" + uri + "\" does not exist.";
       throw new PreesmRuntimeException(message);
     }
