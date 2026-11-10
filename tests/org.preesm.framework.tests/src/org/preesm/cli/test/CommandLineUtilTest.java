@@ -46,7 +46,7 @@ public class CommandLineUtilTest {
 
   @Test
   void testDisableuatobuild() {
-    Assertions.assertThrows(NullPointerException.class,
+    Assertions.assertThrowsExactly(NullPointerException.class,
         () -> CommandLineUtil.disableAutoBuild(null, Logger.getAnonymousLogger()));
   }
 }
