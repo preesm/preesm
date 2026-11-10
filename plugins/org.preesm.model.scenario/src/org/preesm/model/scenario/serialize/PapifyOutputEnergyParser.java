@@ -109,7 +109,7 @@ public class PapifyOutputEnergyParser {
 
     final Map<String, EMap<PapiEvent, Double>> coreModels = readKPI(opDefIds);
 
-    for (File file : fList) {
+    for (final File file : fList) {
       readFile(url, opDefIds, energies, coreModels, file);
     }
     if (!energies.isEmpty()) {
@@ -122,13 +122,13 @@ public class PapifyOutputEnergyParser {
       File file) {
     final String filePath = url.concat("//").concat(file.getName());
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
-    Map<String, Double> energiesParsed = new LinkedHashMap<>();
-    Map<String, Integer> times = new LinkedHashMap<>();
-    Set<String> coresParseable = new LinkedHashSet<>();
+    final Map<String, Double> energiesParsed = new LinkedHashMap<>();
+    final Map<String, Integer> times = new LinkedHashMap<>();
+    final Set<String> coresParseable = new LinkedHashSet<>();
     try (final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()))) {
       processFile(opDefIds, energies, coreModels, energiesParsed, times, coresParseable, br);
     } catch (final IOException | CoreException e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not read " + filePath, e);
+      PreesmLogger.getLogger().log(Level.WARNING, e, () -> "Could not read " + filePath);
     }
   }
 
@@ -138,11 +138,11 @@ public class PapifyOutputEnergyParser {
       final BufferedReader br) throws IOException {
     String line = br.readLine();
     final String[] cellsInit = line.split(",");
-    int totalCells = cellsInit.length;
+    final int totalCells = cellsInit.length;
     if (totalCells > 4) {
-      Map<PapiEvent, Integer> papiEventsFileColumn = new LinkedHashMap<>();
+      final Map<PapiEvent, Integer> papiEventsFileColumn = new LinkedHashMap<>();
       for (int i = 4; i < cellsInit.length; i++) {
-        PapiEvent papiEvent = this.scenario.getPapifyConfig().getEventByName(cellsInit[i]);
+        final PapiEvent papiEvent = this.scenario.getPapifyConfig().getEventByName(cellsInit[i]);
         papiEventsFileColumn.put(papiEvent, i);
       }
       addParsedCores(coreModels, coresParseable, papiEventsFileColumn);
@@ -164,13 +164,13 @@ public class PapifyOutputEnergyParser {
       Map<String, Integer> times, Set<String> coresParseable, Map<PapiEvent, Integer> papiEventsFileColumn,
       final String[] cells) {
     String actorName;
-    String coreName = cells[0];
+    final String coreName = cells[0];
     actorName = cells[1];
     if (coresParseable.contains(coreName)) {
-      EMap<PapiEvent, Double> coreModel = coreModels.get(coreName);
+      final EMap<PapiEvent, Double> coreModel = coreModels.get(coreName);
       double energyEstimated = 0.0;
-      for (Entry<PapiEvent, Double> modelParam : coreModel.entrySet()) {
-        int columnInFile = papiEventsFileColumn.get(modelParam.getKey());
+      for (final Entry<PapiEvent, Double> modelParam : coreModel.entrySet()) {
+        final int columnInFile = papiEventsFileColumn.get(modelParam.getKey());
         energyEstimated = energyEstimated + modelParam.getValue() * Double.parseDouble(cells[columnInFile]);
       }
       if (!energiesParsed.containsKey(coreName)) {
@@ -188,11 +188,11 @@ public class PapifyOutputEnergyParser {
       final Map<AbstractActor, Map<Component, String>> energies, Map<String, Double> energiesParsed,
       Map<String, Integer> times, final AbstractActor lookupActor) {
     final Map<Component, String> energy = new LinkedHashMap<>();
-    for (Component comp : opDefIds) {
+    for (final Component comp : opDefIds) {
       double averageEnergy = 0;
       double totalTime = 0;
       int totalTimes = 0;
-      for (ComponentInstance compInstance : comp.getInstances()) {
+      for (final ComponentInstance compInstance : comp.getInstances()) {
         if (energiesParsed.containsKey(compInstance.getInstanceName())) {
           totalTime = totalTime + energiesParsed.get(compInstance.getInstanceName());
           totalTimes = totalTimes + times.get(compInstance.getInstanceName());
@@ -210,8 +210,8 @@ public class PapifyOutputEnergyParser {
 
   private void addParsedCores(final Map<String, EMap<PapiEvent, Double>> coreModels, Set<String> coresParseable,
       Map<PapiEvent, Integer> papiEventsFileColumn) {
-    for (Entry<String, EMap<PapiEvent, Double>> coreModel : coreModels.entrySet()) {
-      Set<PapiEvent> papiEventsModel = coreModel.getValue().keySet();
+    for (final Entry<String, EMap<PapiEvent, Double>> coreModel : coreModels.entrySet()) {
+      final Set<PapiEvent> papiEventsModel = coreModel.getValue().keySet();
       if (papiEventsFileColumn.keySet().containsAll(papiEventsModel)) {
         coresParseable.add(coreModel.getKey());
       }
@@ -220,8 +220,8 @@ public class PapifyOutputEnergyParser {
 
   private Map<String, EMap<PapiEvent, Double>> readKPI(final List<ProcessingElement> opDefIds) {
     final Map<String, EMap<PapiEvent, Double>> coreModels = new LinkedHashMap<>();
-    for (Component comp : opDefIds) {
-      for (ComponentInstance compInstance : comp.getInstances()) {
+    for (final Component comp : opDefIds) {
+      for (final ComponentInstance compInstance : comp.getInstances()) {
         coreModels.put(compInstance.getInstanceName(),
             this.scenario.getPapifyConfig().getPapifyEnergyKPIModels().get(comp));
       }
@@ -264,7 +264,7 @@ public class PapifyOutputEnergyParser {
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseEnergyForVertex(energies, a, opDefIds));
     // parse energies of all direct subgraphs
-    currentGraph.getChildrenGraphs().stream().forEach(g -> parseEnergiesForPISDFGraph(energies, g, opDefIds));
+    currentGraph.getChildrenGraphs().forEach(g -> parseEnergiesForPISDFGraph(energies, g, opDefIds));
   }
 
   /**
@@ -292,7 +292,7 @@ public class PapifyOutputEnergyParser {
               + " takes " + expression;
           PreesmLogger.getLogger().log(Level.INFO, msg);
 
-        } catch (final Exception e) {
+        } catch (final Exception _) {
           PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive energy for ({0}, {1})",
               new Object[] { actor, component });
         }

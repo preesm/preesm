@@ -102,7 +102,7 @@ public class PapifyOutputTimingParser {
     final File folder = new File(fullPath);
     final File[] fList = folder.listFiles();
 
-    for (File file : fList) {
+    for (final File file : fList) {
       parseFile(url, opDefIds, timings, file);
     }
     if (!timings.isEmpty()) {
@@ -114,8 +114,8 @@ public class PapifyOutputTimingParser {
       final Map<AbstractActor, Map<Component, String>> timings, File file) {
     final String filePath = url.concat("//").concat(file.getName());
     final IFile iFile = ResourcesPlugin.getWorkspace().getRoot().getFile(new Path(filePath));
-    Map<String, Integer> timingsParsed = new LinkedHashMap<>();
-    Map<String, Integer> times = new LinkedHashMap<>();
+    final Map<String, Integer> timingsParsed = new LinkedHashMap<>();
+    final Map<String, Integer> times = new LinkedHashMap<>();
     try (final BufferedReader br = new BufferedReader(new InputStreamReader(iFile.getContents()))) {
       String line = br.readLine();
       String actorName = "";
@@ -129,7 +129,7 @@ public class PapifyOutputTimingParser {
         }
       }
     } catch (final IOException | CoreException e) {
-      PreesmLogger.getLogger().log(Level.WARNING, "Could not parse Papify output timings " + filePath, e);
+      PreesmLogger.getLogger().log(Level.WARNING, e, () -> "Could not parse Papify output timings " + filePath);
     }
   }
 
@@ -137,11 +137,11 @@ public class PapifyOutputTimingParser {
       final Map<AbstractActor, Map<Component, String>> timings, Map<String, Integer> timingsParsed,
       Map<String, Integer> times, final AbstractActor lookupActor) {
     final Map<Component, String> timing = new LinkedHashMap<>();
-    for (Component comp : opDefIds) {
+    for (final Component comp : opDefIds) {
       int averageTiming = 0;
       int totalTime = 0;
       int totalTimes = 0;
-      for (ComponentInstance compInstance : comp.getInstances()) {
+      for (final ComponentInstance compInstance : comp.getInstances()) {
         if (timingsParsed.containsKey(compInstance.getInstanceName())) {
           totalTime = totalTime + timingsParsed.get(compInstance.getInstanceName());
           totalTimes = totalTimes + times.get(compInstance.getInstanceName());
@@ -160,10 +160,10 @@ public class PapifyOutputTimingParser {
   private String processLine(Map<String, Integer> timingsParsed, Map<String, Integer> times, String line) {
     String actorName;
     final String[] cells = line.split(",");
-    String coreName = cells[0];
+    final String coreName = cells[0];
     actorName = cells[1];
-    int tinit = Integer.parseInt(cells[2]);
-    int tend = Integer.parseInt(cells[3]);
+    final int tinit = Integer.parseInt(cells[2]);
+    final int tend = Integer.parseInt(cells[3]);
     if (tinit != 0 && tend != 0) {
       if (!timingsParsed.containsKey(coreName)) {
         timingsParsed.put(coreName, tend - tinit);
@@ -211,7 +211,7 @@ public class PapifyOutputTimingParser {
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseTimingForVertex(timings, a, opDefIds));
     // parse timings of all direct subgraphs
-    currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
+    currentGraph.getChildrenGraphs().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
 
   /**
@@ -239,7 +239,7 @@ public class PapifyOutputTimingParser {
               + " takes " + expression;
           PreesmLogger.getLogger().log(Level.INFO, msg);
 
-        } catch (final Exception e) {
+        } catch (final Exception _) {
           PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
               new Object[] { actor, component });
         }

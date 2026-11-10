@@ -111,25 +111,24 @@ public class PapifyTimingParser {
 
       /* Read header */
       line = br.readLine();
-      if (line != null) {
-        final String[] opNames = line.split(",");
-        if (opNames.length <= 1) {
-          PreesmLogger.getLogger().log(Level.WARNING, "Timing papify csv file must have values inside");
-          return;
-        }
-
-        /* Parse the whole file to create the timings Map */
-        while ((line = br.readLine()) != null) {
-          processLine(timingsInstances, line, opNames);
-        }
-        for (Entry<AbstractActor, Map<ComponentInstance, String>> actorTimings : timingsInstances.entrySet()) {
-          applyTimings(timings, actorTimings);
-        }
-
-        parseTimings(timings, opDefIds);
-      } else {
+      if (line == null) {
         throw new IllegalArgumentException("Given URL points to an empty file");
       }
+      final String[] opNames = line.split(",");
+      if (opNames.length <= 1) {
+        PreesmLogger.getLogger().log(Level.WARNING, "Timing papify csv file must have values inside");
+        return;
+      }
+
+      /* Parse the whole file to create the timings Map */
+      while ((line = br.readLine()) != null) {
+        processLine(timingsInstances, line, opNames);
+      }
+      for (final Entry<AbstractActor, Map<ComponentInstance, String>> actorTimings : timingsInstances.entrySet()) {
+        applyTimings(timings, actorTimings);
+      }
+
+      parseTimings(timings, opDefIds);
     } catch (final IOException | CoreException e) {
       PreesmLogger.getLogger().log(Level.WARNING, "Could not parse papify timings", e);
     }
@@ -139,25 +138,25 @@ public class PapifyTimingParser {
       Entry<AbstractActor, Map<ComponentInstance, String>> actorTimings) {
     final Map<Component, String> timing = new LinkedHashMap<>();
     final Map<Component, Integer> timingTimes = new LinkedHashMap<>();
-    for (Entry<ComponentInstance, String> timingEntry : actorTimings.getValue().entrySet()) {
+    for (final Entry<ComponentInstance, String> timingEntry : actorTimings.getValue().entrySet()) {
       if (!timingEntry.getValue().equals(" ")) {
-        String peType = timingEntry.getKey().getComponent().getVlnv().getName();
-        Component comp = this.scenario.getDesign().getComponent(peType);
+        final String peType = timingEntry.getKey().getComponent().getVlnv().getName();
+        final Component comp = this.scenario.getDesign().getComponent(peType);
         if (!timing.containsKey(comp)) {
           timing.put(comp, timingEntry.getValue());
           timingTimes.put(comp, 1);
         } else {
-          double valueStored = Double.parseDouble(timing.get(comp));
-          double valueNew = Double.parseDouble(timingEntry.getValue());
-          String addedValue = Double.toString(valueStored + valueNew);
+          final double valueStored = Double.parseDouble(timing.get(comp));
+          final double valueNew = Double.parseDouble(timingEntry.getValue());
+          final String addedValue = Double.toString(valueStored + valueNew);
           timing.put(comp, addedValue);
           timingTimes.put(comp, timingTimes.get(comp) + 1);
         }
       }
     }
-    for (Entry<Component, String> timingToAverage : timing.entrySet()) {
-      double valueStored = Double.parseDouble(timingToAverage.getValue());
-      double valueAveraged = valueStored / timingTimes.get(timingToAverage.getKey());
+    for (final Entry<Component, String> timingToAverage : timing.entrySet()) {
+      final double valueStored = Double.parseDouble(timingToAverage.getValue());
+      final double valueAveraged = valueStored / timingTimes.get(timingToAverage.getKey());
       timing.put(timingToAverage.getKey(), Double.toString(valueAveraged));
     }
     timings.put(actorTimings.getKey(), timing);
@@ -166,25 +165,24 @@ public class PapifyTimingParser {
   private void processLine(final Map<AbstractActor, Map<ComponentInstance, String>> timingsInstances, String line,
       final String[] opNames) {
     final String[] cells = line.split(",");
-    if (cells.length == opNames.length) {
-      final Map<ComponentInstance, String> timing = new LinkedHashMap<>();
-
-      for (int i = 1; i < cells.length; i++) {
-        final String peName = opNames[i];
-        final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
-        timing.put(com, cells[i]);
-      }
-
-      final String string = cells[0];
-      final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
-      if (lookupActor != null) {
-        timingsInstances.put(lookupActor, timing);
-      }
-    } else {
-      String errMessage = "Papify auto-generated timing csv file has incorrect data: "
+    if (cells.length != opNames.length) {
+      final String errMessage = "Papify auto-generated timing csv file has incorrect data: "
           + "all rows have not the same number of columns.";
       PreesmLogger.getLogger().log(Level.SEVERE, errMessage);
       throw new PreesmRuntimeException(errMessage);
+    }
+    final Map<ComponentInstance, String> timing = new LinkedHashMap<>();
+
+    for (int i = 1; i < cells.length; i++) {
+      final String peName = opNames[i];
+      final ComponentInstance com = this.scenario.getDesign().getComponentInstance(peName);
+      timing.put(com, cells[i]);
+    }
+
+    final String string = cells[0];
+    final AbstractActor lookupActor = VertexPath.lookup(this.scenario.getAlgorithm(), string);
+    if (lookupActor != null) {
+      timingsInstances.put(lookupActor, timing);
     }
   }
 
@@ -223,7 +221,7 @@ public class PapifyTimingParser {
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseTimingForVertex(timings, a, opDefIds));
     // parse timings of all direct subgraphs
-    currentGraph.getChildrenGraphs().stream().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
+    currentGraph.getChildrenGraphs().forEach(g -> parseTimingsForPISDFGraph(timings, g, opDefIds));
   }
 
   /**
@@ -251,7 +249,7 @@ public class PapifyTimingParser {
               + " takes " + expression;
           PreesmLogger.getLogger().log(Level.INFO, msg);
 
-        } catch (final Exception e) {
+        } catch (final Exception _) {
           PreesmLogger.getLogger().log(Level.INFO, "Cannot retreive timing for ({0}, {1})",
               new Object[] { actor, component });
         }
