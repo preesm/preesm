@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -682,7 +681,7 @@ public class PiScriptRunner {
 
       // Sort the buffers in alphabetical order to enforce similarities
       // between successive run
-      Collections.sort(buffers, (a, b) -> {
+      buffers.sort((a, b) -> {
         final int nameRes = a.getVertexName().compareTo(b.getVertexName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       });
@@ -1245,7 +1244,7 @@ public class PiScriptRunner {
     final List<PiBuffer> involved = new ArrayList<>();
 
     // Largest buffers first for this step.
-    Collections.sort(buffers, (a, b) -> {
+    buffers.sort((a, b) -> {
       // Largest buffer first
       final int cmp = Long.compare(a.getBufferSize(), b.getBufferSize());
       // Alphabetical order for buffers of equal size
@@ -1918,8 +1917,7 @@ public class PiScriptRunner {
         }
 
         // Sort mObjRoots in order of contiguous ranges
-        Collections.sort(mObjRoots,
-            (m1, m2) -> Long.compare(m1.getValue().getKey().getStart(), m2.getValue().getKey().getStart()));
+        mObjRoots.sort((m1, m2) -> Long.compare(m1.getValue().getKey().getStart(), m2.getValue().getKey().getStart()));
       }
     }
     //

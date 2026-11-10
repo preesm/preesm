@@ -135,8 +135,8 @@ public class TransferVertex extends MapperDAGVertex {
     for (final DAGEdge incomingEdge : ((DirectedAcyclicGraph) getBase()).incomingEdgesOf(this)) {
       if (!(incomingEdge instanceof PrecedenceEdge)) {
         final MapperDAGVertex precV = (MapperDAGVertex) incomingEdge.getSource();
-        if (precV instanceof OverheadVertex) {
-          return (OverheadVertex) precV;
+        if (precV instanceof final OverheadVertex ovrhVertex) {
+          return ovrhVertex;
         }
       }
     }

@@ -42,7 +42,6 @@
 package org.preesm.algorithm.mapper.abc.impl.latency;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -1043,7 +1042,7 @@ public abstract class LatencyAbc {
     }
 
     if (!taskSums.isEmpty()) {
-      Collections.sort(taskSums, (arg0, arg1) -> {
+      taskSums.sort((arg0, arg1) -> {
         long temp = arg0 - arg1;
         if (temp >= 0) {
           temp = 1;

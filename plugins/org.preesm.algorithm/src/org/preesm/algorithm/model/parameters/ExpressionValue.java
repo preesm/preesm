@@ -89,7 +89,7 @@ public class ExpressionValue implements Value {
             throw (new ExpressionEvaluationException("Not a numeric expression"));
           }
           this.value = numberResult.longValue();
-        } catch (final ParseException e) {
+        } catch (final ParseException _) {
           throw (new ExpressionEvaluationException("Can't parse expresion :" + this.expression));
         }
       }

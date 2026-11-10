@@ -40,7 +40,6 @@ package org.preesm.algorithm.mapper;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -140,7 +139,7 @@ public class ExternalMappingFromDAG extends AbstractMappingFromDAG {
 
     // 3- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
-    Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
+    componentInstances.sort(new LexicographicComponentInstanceComparator());
 
     PreesmLogger.getLogger().log(Level.INFO, "Order schedule vertices.");
 

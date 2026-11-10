@@ -131,7 +131,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
       subgraphVertices.remove(currentVertex);
 
       // Si(v)
-      final Set<V> subGraph = new LinkedHashSet<>(subgraphVertices.size());
+      final Set<V> subGraph = LinkedHashSet.newLinkedHashSet(subgraphVertices.size());
 
       // N(v) inter Si
       final Set<V> adjacentSet = this.adjacentVerticesOf(currentVertex);
@@ -203,7 +203,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
 
       // (6) for each u in N(v) inter S, let a(u) <- a(v') + w(u)
       final Set<V> adjacentSet = adjacentVerticesOf(selectedVertex);
-      final Set<V> vertexSet = new LinkedHashSet<>(adjacentSet.size());
+      final Set<V> vertexSet = LinkedHashSet.newLinkedHashSet(adjacentSet.size());
 
       adjacentSet.stream().filter(unorderedVertexSet::contains).forEach(vertexSet::add);
 
@@ -231,7 +231,7 @@ public class YamaguchiSolver<V extends IWeightedVertex<Long>, E extends DefaultE
   public void solve() {
     this.graphVertices = new LinkedHashSet<>();
 
-    this.graph.vertexSet().stream().forEach(v -> this.graphVertices.add(v));
+    this.graph.vertexSet().forEach(v -> this.graphVertices.add(v));
 
     this.heaviestClique = maxWeightClique(this.graphVertices, this.min);
     this.max = sumWeight(this.heaviestClique);

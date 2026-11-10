@@ -838,7 +838,7 @@ public class Buffer {
           }
         });
 
-    modifiedMatches.stream().forEach(it -> {
+    modifiedMatches.forEach(it -> {
 
       final Match modifiedMatch = it.getKey();
       final Range newRange = it.getValue();
@@ -1225,7 +1225,7 @@ public class Buffer {
     }
 
     // Remove it from conflictingMatches and conflictCandidates
-    match.getConflictCandidates().stream().forEach(it -> {
+    match.getConflictCandidates().forEach(it -> {
       final Iterator<Match> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
@@ -1233,7 +1233,7 @@ public class Buffer {
         }
       }
     });
-    match.getConflictingMatches().stream().forEach(it -> {
+    match.getConflictingMatches().forEach(it -> {
       final Iterator<Match> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match) {
@@ -1241,7 +1241,7 @@ public class Buffer {
         }
       }
     });
-    match.getReciprocate().getConflictCandidates().stream().forEach(it -> {
+    match.getReciprocate().getConflictCandidates().forEach(it -> {
       final Iterator<Match> iterator = it.getConflictCandidates().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {
@@ -1250,7 +1250,7 @@ public class Buffer {
       }
     });
 
-    match.getReciprocate().getConflictingMatches().stream().forEach(it -> {
+    match.getReciprocate().getConflictingMatches().forEach(it -> {
       final Iterator<Match> iterator = it.getConflictingMatches().iterator();
       while (iterator.hasNext()) {
         if (iterator.next() == match.getReciprocate()) {

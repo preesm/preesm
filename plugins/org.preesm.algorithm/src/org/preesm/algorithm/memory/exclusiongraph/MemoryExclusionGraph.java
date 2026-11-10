@@ -1138,7 +1138,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     }
 
     final ArrayList<Integer> schedulingOrders = new ArrayList<>(verticesMap.keySet());
-    Collections.sort(schedulingOrders);
+    schedulingOrders.sort(null);
 
     final List<DAGVertex> dagVerticesInSchedulingOrder = new ArrayList<>();
 

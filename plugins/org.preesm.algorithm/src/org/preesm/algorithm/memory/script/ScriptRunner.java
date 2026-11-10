@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -681,7 +680,7 @@ public class ScriptRunner {
 
       // Sort the buffers in alphabetical order to enforce similarities
       // between successive run
-      Collections.sort(buffers, (a, b) -> {
+      buffers.sort((a, b) -> {
         final int nameRes = a.getVertexName().compareTo(b.getVertexName());
         return (nameRes != 0) ? nameRes : a.name.compareTo(b.name);
       });
@@ -1246,7 +1245,7 @@ public class ScriptRunner {
     final List<Buffer> involved = new ArrayList<>();
 
     // Largest buffers first for this step.
-    Collections.sort(buffers, (a, b) -> {
+    buffers.sort((a, b) -> {
       // Largest buffer first
       final int cmp = Long.compare(a.getBufferSize(), b.getBufferSize());
       // Alphabetical order for buffers of equal size
@@ -1665,7 +1664,7 @@ public class ScriptRunner {
     final List<Buffer> inputs = incomingEdges.stream().map(it -> {
       final String dataType = it.getDataType();
       // An input buffer is backward mergeable if it is read_only OR if it is unused
-      final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
+      final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier();
       final boolean isMergeable = portModiferString.contains(DAGEdge.MODIFIER_READ_ONLY)
           || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
@@ -1693,7 +1692,7 @@ public class ScriptRunner {
     final List<Buffer> outputs = outgoingEdges.stream().map(it -> {
       final String dataType = it.getDataType();
       // An output buffer is forward mergeable if its target port is unused OR if its target port is read_only
-      final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier().toString();
+      final String portModiferString = it.getTargetPortModifier() == null ? "" : it.getTargetPortModifier();
       final boolean isMergeable = portModiferString.contains(DAGEdge.MODIFIER_READ_ONLY)
           || portModiferString.contains(DAGEdge.MODIFIER_UNUSED);
       final long dataSize = this.simulationInfo.getDataTypeSizeInBit(dataType);
@@ -1929,8 +1928,7 @@ public class ScriptRunner {
         }
 
         // Sort mObjRoots in order of contiguous ranges
-        Collections.sort(mObjRoots,
-            (m1, m2) -> Long.compare(m1.getValue().getKey().getStart(), m2.getValue().getKey().getStart()));
+        mObjRoots.sort((m1, m2) -> Long.compare(m1.getValue().getKey().getStart(), m2.getValue().getKey().getStart()));
       }
     }
     //

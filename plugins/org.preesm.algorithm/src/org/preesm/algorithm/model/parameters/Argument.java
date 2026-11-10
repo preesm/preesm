@@ -75,7 +75,7 @@ public class Argument {
     try {
       final long ongValue = Long.parseLong(value);
       this.value = new ConstantValue(ongValue);
-    } catch (final NumberFormatException e) {
+    } catch (final NumberFormatException _) {
       this.value = new ExpressionValue(value);
     }
   }
@@ -153,7 +153,7 @@ public class Argument {
     try {
       final long longValue = Long.parseLong(value);
       this.value = new ConstantValue(longValue);
-    } catch (final NumberFormatException e) {
+    } catch (final NumberFormatException _) {
       this.value = new ExpressionValue(value);
     }
   }

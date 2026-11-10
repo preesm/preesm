@@ -74,10 +74,8 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
     }
 
     // Explore and replace children
-    if (schedule instanceof HierarchicalSchedule) {
-      final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      final List<Schedule> childSchedules = new LinkedList<>();
-      childSchedules.addAll(hierSchedule.getChildren());
+    if (schedule instanceof final HierarchicalSchedule hierSchedule) {
+      final List<Schedule> childSchedules = new LinkedList<>(hierSchedule.getChildren());
       // Clear list of children schedule
       hierSchedule.getChildren().clear();
       for (final Schedule child : childSchedules) {
@@ -87,20 +85,20 @@ public class ScheduleParallelismDepthLimiter implements IScheduleTransform {
 
     // Rework if parallel is below the depth target
     if ((schedule instanceof ParallelSchedule) && (iterator > this.depthTarget)) {
-      if (schedule instanceof HierarchicalSchedule) {
+      if (schedule instanceof final HierarchicalSchedule hierSchedule) {
         if (!schedule.hasAttachedActor()) {
           final Schedule childrenSchedule = schedule.getChildren().get(0);
           childrenSchedule.setRepetition(schedule.getRepetition());
           return childrenSchedule;
-        } else {
-          final SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
-              .createSequentialHiearchicalSchedule();
-          sequenceSchedule.setAttachedActor(((HierarchicalSchedule) schedule).getAttachedActor());
-          sequenceSchedule.setRepetition(schedule.getRepetition());
-          sequenceSchedule.getChildren().addAll(schedule.getChildren());
-          return sequenceSchedule;
         }
-      } else if (schedule instanceof ActorSchedule) {
+        final SequentialHiearchicalSchedule sequenceSchedule = ScheduleFactory.eINSTANCE
+            .createSequentialHiearchicalSchedule();
+        sequenceSchedule.setAttachedActor(hierSchedule.getAttachedActor());
+        sequenceSchedule.setRepetition(schedule.getRepetition());
+        sequenceSchedule.getChildren().addAll(schedule.getChildren());
+        return sequenceSchedule;
+      }
+      if (schedule instanceof ActorSchedule) {
         final SequentialActorSchedule actorSchedule = ScheduleFactory.eINSTANCE.createSequentialActorSchedule();
         actorSchedule.setRepetition(schedule.getRepetition());
 

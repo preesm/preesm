@@ -70,12 +70,12 @@ public class ConsecutiveTransfersList extends ArrayList<ConsecutiveTransfersGrou
    *
    */
   public void process(final DAGVertex currentVertex) {
-    if (currentVertex instanceof final SendVertex sendVertex) {
-      addSend(sendVertex);
-    } else if (currentVertex instanceof final ReceiveVertex receiveVertex) {
-      addReceive(receiveVertex);
-    } else {
-      // simply change last vertex
+    switch (currentVertex) {
+      case final SendVertex sendVertex -> addSend(sendVertex);
+      case final ReceiveVertex receiveVertex -> addReceive(receiveVertex);
+      default -> {
+        // simply change last vertex
+      }
     }
     this.lastVertex = currentVertex;
   }

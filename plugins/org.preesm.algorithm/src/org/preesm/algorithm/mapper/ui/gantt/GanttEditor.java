@@ -86,7 +86,7 @@ public class GanttEditor extends EditorPart {
         this.ganttData = implinput.getGanttData();
       }
 
-    } catch (final Exception e) {
+    } catch (final Exception _) {
       // Editor might not exist anymore if switching databases. So
       // just close it.
       getEditorSite().getPage().closeEditor(this, false);

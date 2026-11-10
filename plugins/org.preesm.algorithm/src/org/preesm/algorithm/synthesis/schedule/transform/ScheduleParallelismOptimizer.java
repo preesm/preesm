@@ -46,7 +46,7 @@ import org.preesm.algorithm.schedule.model.SequentialSchedule;
 
 /**
  * @author dgageot
- * 
+ *
  *         Identifies and moves actors inside a sequential and repeated schedule that can be parallelized outside to
  *         gain in performance. The input schedule should have been flattened for a better result.
  *
@@ -58,14 +58,12 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
   @Override
   public Schedule performTransform(final Schedule schedule) {
     // If it is an hierarchical schedule, explore child
-    if (schedule instanceof HierarchicalSchedule) {
+    if (schedule instanceof final HierarchicalSchedule hierSchedule) {
 
       // This boolean variable is used to determine if the schedule being processed is composed of sequential element
       boolean isComposedOfSequentialSchedule = false;
       // Retrieve childrens schedule and actors
-      final HierarchicalSchedule hierSchedule = (HierarchicalSchedule) schedule;
-      final List<Schedule> childSchedules = new LinkedList<>();
-      childSchedules.addAll(hierSchedule.getChildren());
+      final List<Schedule> childSchedules = new LinkedList<>(hierSchedule.getChildren());
       // Clear list of children schedule
       hierSchedule.getChildren().clear();
       final List<Schedule> parallelSchedules = new LinkedList<>();
@@ -135,8 +133,8 @@ public class ScheduleParallelismOptimizer implements IScheduleTransform {
 
       // Set repetition value for moved schedules
       final long repetitionSchedule = schedule.getRepetition();
-      leftSchedules.stream().forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
-      rightSchedules.stream().forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
+      leftSchedules.forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
+      rightSchedules.forEach(x -> x.getChildren().get(0).setRepetition(repetitionSchedule));
 
       return temporaryHierarchy;
     }

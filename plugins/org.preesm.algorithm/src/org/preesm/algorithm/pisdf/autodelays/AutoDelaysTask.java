@@ -305,8 +305,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       hlbd.performAnalysis(graphCopy, brv);
     }
 
-    long duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Analysis time " + Math.round(duration / 1e6) + " ms.");
+    {
+      final long duration = System.nanoTime() - time;
+      PreesmLogger.getLogger().info(() -> "Analysis time " + Math.round(duration / 1e6) + " ms.");
+    }
 
     // intermediate data : forbidden fifos (in cycles), ranks, wcet(rank)
 
@@ -328,7 +330,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
     final Map<AbstractActor, TopoVisit> topoRanksT = TopologicalRanking.topologicalAsapRankingT(hlbd);
     // what we are interested in is not exactly ALAP = inverse of ASAP_T, it is ALAP with all sources executed at the
     // beginning
-    hlbd.allSourceActors.stream().forEach(x -> {
+    hlbd.allSourceActors.forEach(x -> {
       final TopoVisit tv = topoRanksT.get(x);
       tv.rank = maxRank - 1;
     });
@@ -371,8 +373,10 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
 
     final List<CutInformation> bestCuts = selectBestCuts(possibleCuts, selec, rankWCETs, totC, scenario);
 
-    duration = System.nanoTime() - time;
-    PreesmLogger.getLogger().info("Total heuristic time " + Math.round(duration / 1e6) + " ms.");
+    {
+      final long duration = System.nanoTime() - time;
+      PreesmLogger.getLogger().info(() -> "Total heuristic time " + Math.round(duration / 1e6) + " ms.");
+    }
 
     // set the cuts
     final int nbCuts = Math.min(bestCuts.size(), maxii);
@@ -488,7 +492,8 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
         final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
         final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
         final int stages = e.getValue();
-        sb.append(stages + " stages from " + src.getName() + " to " + tgt.getName() + "\n");
+        sb.append(stages).append(" stages from ").append(src.getName()).append(" to ").append(tgt.getName())
+            .append("\n");
       }
 
       PreesmLogger.getLogger().info(() -> "Best Choco cut: " + sb.toString());
@@ -559,7 +564,7 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
       try {
         // Run statistic editor
         PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-      } catch (final IllegalStateException e) {
+      } catch (final IllegalStateException _) {
         PreesmLogger.getLogger().info("Gantt display is impossible in this context."
             + " Ignore this log entry if you are running the command line version of Preesm.");
       }
@@ -662,9 +667,9 @@ public class AutoDelaysTask extends AbstractTaskImplementation {
           for (final FifoAbstraction fa : fas) {
             final AbstractActor src = hlbd.absGraph.getEdgeSource(fa);
             final AbstractActor tgt = hlbd.absGraph.getEdgeTarget(fa);
-            sb.append(src.getName() + " --> " + tgt.getName() + "\n");
+            sb.append(src.getName()).append(" --> ").append(tgt.getName()).append("\n");
           }
-          PreesmLogger.getLogger().log(Level.FINE, sb.toString());
+          PreesmLogger.getLogger().fine(sb::toString);
         }
       }
     }

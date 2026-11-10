@@ -66,7 +66,7 @@ public class Messages {
   public static String getString(final String key) {
     try {
       return Messages.RESOURCE_BUNDLE.getString(key);
-    } catch (final MissingResourceException e) {
+    } catch (final MissingResourceException _) {
       return '!' + key + '!';
     }
   }

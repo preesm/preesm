@@ -39,7 +39,6 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -150,11 +149,11 @@ public class AdfgUtils {
    *          Actors infos with II to update.
    */
   static void overestimateIIToSimplifyADFG(final Map<AbstractActor, ActorNormalizedInfos> mapActorNormalizedInfos) {
-    final float overestimationRatio = (float) 1.005;
+    final float overestimationRatio = 1.005f;
 
     // Sort actors by rate to equalize them when close
     final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
-    Collections.sort(listInfos, new DecreasingActorIIComparator());
+    listInfos.sort(new DecreasingActorIIComparator());
 
     for (int i = 0; i < listInfos.size(); i++) {
       final ActorNormalizedInfos current = listInfos.get(i);

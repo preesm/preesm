@@ -53,7 +53,7 @@ public class MemExUpdaterEngine {
   private final Schedule               schedule;
   private final Mapping                mapping;
 
-  private int    beforeEdges;
+  private final int    beforeEdges;
   private double density;
 
   /**

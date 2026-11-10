@@ -58,7 +58,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
  * Displays the gantt chart of the given mapped dag
  *
  * TODO: remove scenario from inputs (already contained in ABC)
- * 
+ *
  * @author mpelcat
  */
 @PreesmTask(id = "org.ietr.preesm.plugin.mapper.plot", name = "ABC Gantt displayer", category = "Gantt exporters",
@@ -83,7 +83,7 @@ public class StatEditorAbcTask extends AbstractTaskImplementation {
     try {
       // Run statistic editor
       PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-    } catch (final IllegalStateException e) {
+    } catch (final IllegalStateException _) {
       PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
           + " Ignore this log entry if you are running the command line version of Preesm.");
     }

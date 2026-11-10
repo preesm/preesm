@@ -127,7 +127,7 @@ public class StatEditorSynthesisTask extends AbstractTaskImplementation {
         try {
           // Run statistic editor
           PlatformUI.getWorkbench().getDisplay().asyncExec(new EditorRunnable(input));
-        } catch (final IllegalStateException e) {
+        } catch (final IllegalStateException _) {
           PreesmLogger.getLogger().log(Level.INFO, "Gantt display is impossible in this context."
               + " Ignore this log entry if you are running the command line version of Preesm.");
         }

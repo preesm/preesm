@@ -196,18 +196,6 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
 
   public abstract IModelVertexFactory<V> getVertexFactory();
 
-  @Override
-  public boolean removeEdge(final E edge) {
-    final boolean res = super.removeEdge(edge);
-    return res;
-  }
-
-  @Override
-  public boolean removeVertex(final V vertex) {
-    final boolean result = super.removeVertex(vertex);
-    return result;
-  }
-
   public void setName(final String name) {
     this.properties.setValue(AbstractGraph.NAME_PROPERTY_LITERAL,
         this.properties.getValue(AbstractGraph.NAME_PROPERTY_LITERAL), name);
@@ -234,7 +222,7 @@ public abstract class AbstractGraph<V extends AbstractVertex, E extends Abstract
         throw (new ExpressionEvaluationException("Not a numerical expression"));
       }
       resultValue = ((Number) result).longValue();
-    } catch (final Exception e) {
+    } catch (final Exception _) {
       throw (new ExpressionEvaluationException("Could not parse expresion:" + expression));
     }
     return resultValue;

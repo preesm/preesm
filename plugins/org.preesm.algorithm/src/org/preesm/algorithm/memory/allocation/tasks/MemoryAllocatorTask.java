@@ -500,7 +500,7 @@ public class MemoryAllocatorTask extends AbstractTaskImplementation {
         this.logger.log(Level.INFO, msg);
       }
 
-      meg.vertexSet().stream().forEach(meg::getAdjacentVertexOf);
+      meg.vertexSet().forEach(meg::getAdjacentVertexOf);
 
       allocateWith(this.allocator);
     }
