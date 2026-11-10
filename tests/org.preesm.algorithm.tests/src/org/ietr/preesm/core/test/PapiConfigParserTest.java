@@ -35,8 +35,8 @@
  */
 package org.ietr.preesm.core.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.scenario.PapiEventInfo;
 import org.preesm.model.scenario.serialize.PapiConfigParser;
 
@@ -48,11 +48,11 @@ import org.preesm.model.scenario.serialize.PapiConfigParser;
 public class PapiConfigParserTest {
 
   @Test
-  public void testParser() {
+  void testParser() {
     final PapiConfigParser parser = new PapiConfigParser();
     final PapiEventInfo eventInfos = parser.parse("resources/papi/PAPI_info.xml");
-    Assert.assertNotNull(eventInfos);
+    Assertions.assertNotNull(eventInfos);
     final int size = eventInfos.getComponents().size();
-    Assert.assertEquals(3, size);
+    Assertions.assertEquals(3, size);
   }
 }

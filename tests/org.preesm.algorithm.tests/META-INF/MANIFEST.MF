@@ -6,8 +6,7 @@ Bundle-SymbolicName: org.preesm.algorithm.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
 Bundle-RequiredExecutionEnvironment: JavaSE-25
-Require-Bundle: org.junit;bundle-version="4.13.2",
- org.apache.commons.lang3;bundle-version="3.12.0",
+Require-Bundle: org.apache.commons.lang3;bundle-version="3.12.0",
  org.preesm.codegen.xtend,
  wrapped.org.apache-extras.beanshell.bsh,
  org.preesm.model.tests
@@ -19,4 +18,6 @@ Export-Package: org.ietr.dftools.algorithm.test,
  org.ietr.preesm.memory.test,
  org.ietr.preesm.throughput.helpers.test,
  org.preesm.algorithm.synthesis.test
+Import-Package: org.junit.jupiter.api;version="[5.14.0,6.0.0)",
+ org.junit.jupiter.api.function;version="[5.14.0,6.0.0)"
 Bundle-ClassPath: .
