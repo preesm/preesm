@@ -38,80 +38,51 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class TutorialsTest {
+class TutorialsTest {
 
-  final String workflow;
-  final String scenario;
-  final String projectName;
-
-  /**
-   */
-  public TutorialsTest(final String workflow, final String scenario, final String projectName) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-    this.projectName = projectName;
-  }
-
-  /**
-   *
-   */
-  @Parameters(name = "{2} - {0} - {1}")
-  public static Collection<Object[]> data() {
-
-    final List<Object[]> params = new ArrayList<>();
-
-    params.add(new Object[] { "Codegen.workflow", "TestComPC.scenario", "org.ietr.preesm.tutorials.tutorial1" });
-
+  static Stream<Arguments> sobelData() {
     final String sobelProjectName = "org.ietr.preesm.sobel";
     final String[] sobelScenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
     final String[] sobelWorkflows = new String[] { "Codegen.workflow", "InstrumentedCodegen.workflow",
       "CodegenMemoryDeGreef.workflow" };
-    for (final String workflow : sobelWorkflows) {
-      for (final String scenario : sobelScenarios) {
-        params.add(new Object[] { workflow, scenario, sobelProjectName });
-      }
-    }
 
+    return Stream.of(sobelWorkflows).flatMap(
+        workflow -> Stream.of(sobelScenarios).map(scenario -> Arguments.of(workflow, scenario, sobelProjectName)));
+  }
+
+  static Stream<Arguments> stereoData() {
     final String stereoProjectName = "org.ietr.preesm.stereo";
     final String[] stereoScenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
       "lowMaxDisparity.scenario", "YUV4core.scenario" };
     final String[] stereoWorkflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
       "CodegenMemoryDeGreef.workflow" };
-    for (final String workflow : stereoWorkflows) {
-      for (final String scenario : stereoScenarios) {
-        params.add(new Object[] { workflow, scenario, stereoProjectName });
-      }
-    }
 
-    final String hardwareProjectName = "org.preesm.tests.testHardware";
-    final String hardwareScenario = "HardwareMultipleSlots.scenario";
-    final String hardwareWorkflow = "Codegen.workflow";
-
-    params.add(new Object[] { hardwareWorkflow, hardwareScenario, hardwareProjectName });
-
-    return params;
+    return Stream.of(stereoWorkflows).flatMap(
+        workflow -> Stream.of(stereoScenarios).map(scenario -> Arguments.of(workflow, scenario, stereoProjectName)));
   }
 
-  @Test
-  public void test() throws IOException, CoreException {
+  static Stream<Arguments> data() {
+    return Stream.of(Arguments.of("Codegen.workflow", "TestComPC.scenario", "org.ietr.preesm.tutorials.tutorial1"),
+        Arguments.of("Codegen.workflow", "HardwareMultipleSlots.scenario", "org.preesm.tests.testHardware"));
+  }
+
+  @ParameterizedTest(name = "{2} - {0} - {1}")
+  @MethodSource({ "sobelData", "stereoData", "data" })
+  void test(final String workflow, final String scenario, final String projectName) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

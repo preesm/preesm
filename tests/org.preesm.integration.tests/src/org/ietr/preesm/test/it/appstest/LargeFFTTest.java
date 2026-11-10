@@ -37,59 +37,36 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class LargeFFTTest {
+class LargeFFTTest {
 
-  static final String[] scenarios = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
+  static final String   PROJECT   = "org.ietr.preesm.largeFFT";
+  static final String[] SCENARIOS = new String[] { "largeFFT_hawking.scenario", "largeFFT_lamaar.scenario",
     "largeFFT_monox86.scenario" };
-  static final String[] workflows = new String[] { "CodegenWMemScripts.workflow", "Simulate.workflow",
+  static final String[] WORKFLOWS = new String[] { "CodegenWMemScripts.workflow", "Simulate.workflow",
     "XTendCodegen.workflow" };
 
-  static final String projectName = "org.ietr.preesm.largeFFT";
-
-  final String workflow;
-  final String scenario;
-
-  public LargeFFTTest(final String workflow, final String scenario) {
-    this.scenario = scenario;
-    this.workflow = workflow;
+  static Stream<Arguments> data() {
+    return Stream.of(WORKFLOWS)
+        .flatMap(workflow -> Stream.of(SCENARIOS).map(scenario -> Arguments.of(workflow, scenario)));
   }
 
-  /**
-   *
-   */
-  @Parameters(name = "{0} - {1}")
-  public static Collection<Object[]> data() {
-    final Object[][] params = new Object[workflows.length * scenarios.length][2];
-    int i = 0;
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params[i][0] = workflow;
-        params[i][1] = scenario;
-        i++;
-      }
-    }
-    return Arrays.asList(params);
-  }
-
-  @Test
-  public void testLargeFFT() throws IOException, CoreException {
+  @ParameterizedTest(name = "{0} - {1}")
+  @MethodSource("data")
+  void testLargeFFT(final String workflow, final String scenario) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

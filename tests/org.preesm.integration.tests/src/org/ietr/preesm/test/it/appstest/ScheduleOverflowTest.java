@@ -40,27 +40,22 @@ package org.ietr.preesm.test.it.appstest;
 import java.io.IOException;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class ScheduleOverflowTest {
+class ScheduleOverflowTest {
 
   @Test
-  public void testScheduleOverflow() throws IOException, CoreException {
+  void testScheduleOverflow() throws IOException, CoreException {
     final String projectName = "schedule.overflow";
-    final String[] scenarios = new String[] { "Sample1.scenario" };
-    final String[] workflows = new String[] { "Codegen.workflow" };
+    final String scenario = "/Scenarios/" + "Sample1.scenario";
+    final String workflow = "/Workflows/" + "Codegen.workflow";
 
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final String workflowFilePathStr = "/Workflows/" + workflow;
-        final String scenarioFilePathStr = "/Scenarios/" + scenario;
-        final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-        Assert.assertTrue("[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.", success);
-      }
-    }
+    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflow, scenario);
+    Assertions.assertTrue(success,
+        () -> "[FAILED] Workflow [" + workflow + "] with scenario [" + scenario + "] failed.");
   }
 }

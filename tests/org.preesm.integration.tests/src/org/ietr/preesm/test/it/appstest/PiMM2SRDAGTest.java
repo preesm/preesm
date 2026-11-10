@@ -38,81 +38,56 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class PiMM2SRDAGTest {
+class PiMM2SRDAGTest {
 
-  final String workflow;
-  final String scenario;
-  final String projectName;
-
-  /**
-   */
-  public PiMM2SRDAGTest(final String workflow, final String scenario, final String projectName) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-    this.projectName = projectName;
-  }
-
-  /**
-   *
-   */
-  @Parameters(name = "{2} - {0} - {1}")
-  public static Collection<Object[]> data() {
-
-    final List<Object[]> params = new ArrayList<>();
-
-    String projectName = "org.ietr.preesm.reinforcement_learning";
-    String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
+  static Stream<Arguments> rlData() {
+    final String projectName = "org.ietr.preesm.reinforcement_learning";
+    final String[] scenarios = new String[] { "1corePrediction.scenario", "4corePrediction.scenario",
       "1coreTraining.scenario", "4coreTraining.scenario" };
-    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params.add(new Object[] { workflow, scenario, projectName });
-      }
-    }
+    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow" };
 
-    projectName = "org.ietr.preesm.stereo";
-    scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario", "lowMaxDisparity.scenario",
-      "YUV4core.scenario" };
-    workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow", "StaticPiMM2SRDAGCodegen.workflow",
-      "XMLCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params.add(new Object[] { workflow, scenario, projectName });
-      }
-    }
-
-    projectName = "org.ietr.preesm.sobel";
-    scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
-    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params.add(new Object[] { workflow, scenario, projectName });
-      }
-    }
-
-    return params;
+    return Stream.of(workflows)
+        .flatMap(workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(workflow, scenario, projectName)));
   }
 
-  @Test
-  public void testSrdag() throws IOException, CoreException {
+  static Stream<Arguments> sobelData() {
+    final String projectName = "org.ietr.preesm.sobel";
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coreC6678.scenario" };
+    final String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
+
+    return Stream.of(workflows)
+        .flatMap(workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(workflow, scenario, projectName)));
+  }
+
+  static Stream<Arguments> stereoData() {
+    final String projectName = "org.ietr.preesm.stereo";
+    final String[] scenarios = new String[] { "1core.scenario", "4core.scenario", "8coresC6678.scenario",
+      "lowMaxDisparity.scenario", "YUV4core.scenario" };
+    final String[] workflows = new String[] { "PiMM2SRDAGCodegenMemoryScriptsMixedMerged.workflow",
+      "StaticPiMM2SRDAGCodegen.workflow", "XMLCodegen.workflow" };
+
+    return Stream.of(workflows)
+        .flatMap(workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(workflow, scenario, projectName)));
+  }
+
+  @ParameterizedTest(name = "{2} - {0} - {1}")
+  @MethodSource({ "rlData", "stereoData", "sobelData" })
+  void testSrdag(final String workflow, final String scenario, final String projectName)
+      throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }
