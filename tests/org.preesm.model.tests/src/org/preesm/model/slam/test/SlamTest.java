@@ -61,12 +61,12 @@ import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 
 /**
  */
-public class SlamTest {
+class SlamTest {
 
   /**
    */
   @Test
-  public void testSlam() throws IOException {
+  void testSlam() throws IOException {
 
     // check that the factory is registered
     // (only happens in command-line mode)

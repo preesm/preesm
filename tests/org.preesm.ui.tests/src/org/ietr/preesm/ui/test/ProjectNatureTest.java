@@ -43,16 +43,16 @@ import org.preesm.ui.wizards.PreesmProjectNature;
 /**
  * The Class ProjectNatureTest.
  */
-public class ProjectNatureTest {
+class ProjectNatureTest {
 
   /**
    * Test ID.
    */
   @Test
-  public void testID() {
+  void testID() {
     final String id = PreesmProjectNature.ID;
     Assertions.assertNotNull(id);
-    Assertions.assertTrue("org.ietr.preesm.core.ui.wizards.nature".equals(id));
+    Assertions.assertEquals("org.ietr.preesm.core.ui.wizards.nature", id);
   }
 
 }
