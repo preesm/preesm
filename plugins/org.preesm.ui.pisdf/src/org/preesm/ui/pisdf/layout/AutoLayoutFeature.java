@@ -558,7 +558,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         int posY;
         if (bPoints.size() > 1) {
           final int pX = posX;
-          bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
+          bPoints.sort((p1, p2) -> Integer.compare(Math.abs(p1.getX() - pX), Math.abs(p2.getX() - pX)));
 
           posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
@@ -745,7 +745,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final int srcStage2 = getActorStage((AbstractActor) f2.getSourcePort().eContainer(), stagedActors);
       final int dstStage2 = getActorStage((AbstractActor) f2.getTargetPort().eContainer(), stagedActors);
 
-      return Math.abs(srcStage1 - dstStage1) - Math.abs(srcStage2 - dstStage2);
+      return Integer.compare(Math.abs(srcStage1 - dstStage1), Math.abs(srcStage2 - dstStage2));
     });
 
     // Add new gap on top of all stages

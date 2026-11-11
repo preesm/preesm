@@ -175,8 +175,8 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
 
         if (bo instanceof ExecutableActor) {
           final AbstractActor actor = (AbstractActor) bo;
-          if (ActorPropertiesSection.this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
-            setNewName(actor, ActorPropertiesSection.this.txtNameObj.getText());
+          if (this.txtNameObj.getText().compareTo(actor.getName()) != 0) {
+            setNewName(actor, this.txtNameObj.getText());
             getDiagramTypeProvider().getFeatureProvider().updateIfPossible(new UpdateContext(pe));
             getDiagramTypeProvider().getFeatureProvider().layoutIfPossible(new LayoutContext(pe));
           }

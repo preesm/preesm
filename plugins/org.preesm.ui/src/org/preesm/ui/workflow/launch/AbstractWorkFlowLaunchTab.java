@@ -109,7 +109,7 @@ public abstract class AbstractWorkFlowLaunchTab extends AbstractLaunchConfigurat
         scenarioExtensions.add(fileType);
         final String message = PreesmMessages
             .getString("Workflow.browse" + Character.toUpperCase(fileType.charAt(0)) + fileType.substring(1) + "Title");
-        IPath browseFiles = FileUtils.browseFiles(message, scenarioExtensions);
+        final IPath browseFiles = FileUtils.browseFiles(message, scenarioExtensions);
         if (browseFiles != null) {
           filePath.setText(browseFiles.toString());
         }

@@ -207,8 +207,8 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
         return;
       }
 
-      if (!FifoPropertiesSection.this.txtTypeObj.getText().equals(fifo.getType())) {
-        setNewType(fifo, FifoPropertiesSection.this.txtTypeObj.getText().trim());
+      if (!this.txtTypeObj.getText().equals(fifo.getType())) {
+        setNewType(fifo, this.txtTypeObj.getText().trim());
         getDiagramTypeProvider().getDiagramBehavior().refreshContent();
       }
 
@@ -228,7 +228,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
       }
 
       final DataPort port = fifo.getSourcePort();
-      updateDataPortProperties(port, FifoPropertiesSection.this.txtSourcePortExpression);
+      updateDataPortProperties(port, this.txtSourcePortExpression);
       final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
       // at most one port, none if delay actor
       if (!picts.isEmpty()) {
@@ -252,7 +252,7 @@ public class FifoPropertiesSection extends DataPortPropertiesUpdater implements 
       }
 
       final DataPort port = fifo.getTargetPort();
-      updateDataPortProperties(port, FifoPropertiesSection.this.txtTargetPortExpression);
+      updateDataPortProperties(port, this.txtTargetPortExpression);
       final List<PictogramElement> picts = Graphiti.getLinkService().getPictogramElements(getDiagram(), port);
       // at most one port, none if delay actor
       if (!picts.isEmpty()) {

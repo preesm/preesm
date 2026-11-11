@@ -40,7 +40,6 @@
 package org.preesm.ui.scenario.editor.papify;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -84,8 +83,7 @@ public class PapifyEnergyModelContentProvider implements IStructuredContentProvi
           .getPapifyEnergyKPIModels().entrySet();
       this.elementList = new ArrayList<>(entrySet);
 
-      Collections.sort(this.elementList,
-          (o1, o2) -> o1.getKey().getVlnv().getName().compareTo(o2.getKey().getVlnv().getName()));
+      this.elementList.sort((o1, o2) -> o1.getKey().getVlnv().getName().compareTo(o2.getKey().getVlnv().getName()));
     }
     return this.elementList.toArray();
   }

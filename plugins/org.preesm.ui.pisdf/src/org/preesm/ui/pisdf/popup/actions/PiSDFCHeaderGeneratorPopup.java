@@ -118,7 +118,7 @@ public class PiSDFCHeaderGeneratorPopup extends AbstractGenericMultiplePiHandler
       try (final OutputStream outStream = new FileOutputStream(osString);) {
         // compute and write the result
         createAndPrintMissingRefinements(outStream, pigraph, actorsWithoutRefinement);
-      } catch (final IOException e) {
+      } catch (final IOException _) {
         throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
       }
 

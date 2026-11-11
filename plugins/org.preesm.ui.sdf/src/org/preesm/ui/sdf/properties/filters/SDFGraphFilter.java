@@ -57,10 +57,9 @@ public class SDFGraphFilter implements IFilter {
    */
   @Override
   public boolean select(final Object toTest) {
-    if (toTest instanceof EditPart) {
-      final Object model = ((EditPart) toTest).getModel();
-      if (model instanceof Graph) {
-        final Graph graph = (Graph) model;
+    if (toTest instanceof final EditPart editPart) {
+      final Object model = editPart.getModel();
+      if (model instanceof final Graph graph) {
         return graph.getType().getName().equals("Dataflow Graph");
       }
     }

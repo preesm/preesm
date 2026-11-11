@@ -57,12 +57,12 @@ public class SlamDesignFilter implements IFilter {
    */
   @Override
   public boolean select(final Object toTest) {
-    if (toTest instanceof EditPart) {
-      final Object model = ((EditPart) toTest).getModel();
+    if (toTest instanceof final EditPart editPart) {
+      final Object model = editPart.getModel();
 
       // Designs have parameters
-      if (model instanceof Graph) {
-        return ((Graph) model).getType().getName().equals("S-LAM Design");
+      if (model instanceof final Graph graph) {
+        return graph.getType().getName().equals("S-LAM Design");
       }
     }
     return false;

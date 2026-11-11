@@ -715,8 +715,8 @@ public class SimulationPage extends ScenarioPage {
     treeviewer.addCheckStateListener(checkStateListener);
 
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    gd.heightHint = Math.clamp(
-        (long) SimulationPage.this.scenario.getDesign().getOperatorComponentInstances().size() * 20 + 30, 50, 300);
+    gd.heightHint = Math.clamp((long) this.scenario.getDesign().getOperatorComponentInstances().size() * 20 + 30, 50,
+        300);
     gd.widthHint = 250;
     treeviewer.getTree().setLayoutData(gd);
 

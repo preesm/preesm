@@ -58,10 +58,9 @@ public class SDFVertexFilter implements IFilter {
    */
   @Override
   public boolean select(final Object toTest) {
-    if (toTest instanceof EditPart) {
-      final Object model = ((EditPart) toTest).getModel();
-      if (model instanceof Vertex) {
-        final Vertex vertex = (Vertex) model;
+    if (toTest instanceof final EditPart editPart) {
+      final Object model = editPart.getModel();
+      if (model instanceof final Vertex vertex) {
         final Graph graph = vertex.getParent();
         return graph.getType().getName().equals("Dataflow Graph");
       }

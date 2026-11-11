@@ -420,7 +420,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
       }
 
       if (obj instanceof ExecutableActor) { // AbstractActor, AbstractVertex
-        final ICustomFeature[] actorFeatures = new ICustomFeature[] { new AddConfigInputPortFeature(this),
+        final ICustomFeature[] actorFeatures = { new AddConfigInputPortFeature(this),
           new AddConfigOutputPortFeature(this), new AddDataInputPortFeature(this),
           new AddDataOutputPortFeature(this), };
         features.addAll(Arrays.asList(actorFeatures));
@@ -431,7 +431,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
         features.add(new OpenRefinementFeature(this));
       }
       if (obj instanceof Actor) { // ExecutableActor, AbstractActor, AbstractVertex
-        final ICustomFeature[] actorFeatures = new ICustomFeature[] { new SetActorRefinementFeature(this),
+        final ICustomFeature[] actorFeatures = { new SetActorRefinementFeature(this),
           new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
           new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this) };
         features.addAll(Arrays.asList(actorFeatures));

@@ -111,7 +111,7 @@ public class WorkflowValidator implements IValidator {
       // Adding the default parameters if necessary
       addDefaultParameters(vertex, vertexTaskObj, file);
     } catch (final InstantiationException | IllegalAccessException | IllegalArgumentException
-        | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+        | InvocationTargetException | NoSuchMethodException | SecurityException _) {
       createMarker(file, "Class could not be instantiated", pluginId, IMarker.PROBLEM, IMarker.SEVERITY_ERROR);
       return false;
     }
@@ -152,7 +152,7 @@ public class WorkflowValidator implements IValidator {
       if (clasz == TreeMap.class) {
         final TreeMap<String, String> varMap = (TreeMap<String, String>) variable;
 
-        for (Entry<String, String> e : parameterDefaults.entrySet()) {
+        for (final Entry<String, String> e : parameterDefaults.entrySet()) {
           final String key = e.getKey();
           if (!varMap.containsKey(key)) {
             varMap.put(key, parameterDefaults.get(key));
