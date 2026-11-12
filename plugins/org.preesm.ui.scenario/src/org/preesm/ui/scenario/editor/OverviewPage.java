@@ -218,9 +218,9 @@ public class OverviewPage extends ScenarioPage {
       final String path = FilenameUtils.separatorsToUnix(text.getText());
       try {
         if (type.equals(Messages.getString("Overview.algorithmFile"))) {
-          OverviewPage.this.scenario.update(path, null);
+          this.scenario.update(path, null);
         } else if (type.equals(Messages.getString("Overview.architectureFile"))) {
-          OverviewPage.this.scenario.update(null, path);
+          this.scenario.update(null, path);
         }
       } catch (final PreesmException ex) {
         PreesmLogger.getLogger().log(Level.SEVERE, ex.getMessage(), e);

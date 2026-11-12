@@ -203,7 +203,7 @@ public class HeuristicLoopBreakingDelays {
       });
 
       final StringBuilder sb = new StringBuilder(src.getName() + " => " + tgt.getName() + " breaks cycle: ");
-      cycle.stream().forEach(a -> sb.append(" -> " + a.getName()));
+      cycle.forEach(a -> sb.append(" -> ").append(a.getName()));
       PreesmLogger.getLogger().info(sb::toString);
     }
 

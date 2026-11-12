@@ -44,7 +44,6 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IWorkspace;
@@ -287,7 +286,7 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
     try (final FileWriter fw = new FileWriter(file, true)) {
       fw.write(header.toString());
       fw.write(logDSEpoints.toString());
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       PreesmLogger.getLogger()
           .severe(() -> "Unhable to write the DSE task log in file:" + exportAbsolutePath + fileName);
     }
@@ -328,13 +327,13 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
       if (charComparisons[i] != 'P') {
         try {
           numberThresholds[i] = Long.parseLong(tabThresholds[i]);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           throw new PreesmRuntimeException("Threshold n°" + i + " must be an integer number.");
         }
       } else {
         try {
           numberThresholds[i] = Double.parseDouble(tabThresholds[i]);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           throw new PreesmRuntimeException("Threshold n°" + i + " must be a float number.");
         }
       }
@@ -393,7 +392,7 @@ public class SetMoldableParametersTask extends AbstractTaskImplementation {
       final String parent = parentAndParamNames[0].substring(1);
       final Parameter param = graph.lookupParameterGivenGraph(parentAndParamNames[1], parent);
       if (param == null) {
-        PreesmLogger.getLogger().log(Level.WARNING, "Parameter: " + tabParam + " has not been found, ignored.");
+        PreesmLogger.getLogger().warning(() -> "Parameter: " + tabParam + " has not been found, ignored.");
       } else {
         paramsObjvs.put(new Pair<>(parent, parentAndParamNames[1]), minOrMax);
       }

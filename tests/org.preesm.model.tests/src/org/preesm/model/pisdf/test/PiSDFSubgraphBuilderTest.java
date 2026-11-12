@@ -40,10 +40,10 @@ package org.preesm.model.pisdf.test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputInterface;
@@ -83,8 +83,8 @@ public class PiSDFSubgraphBuilderTest {
   /**
    * Set-up the test environnement
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     // Create a chained actors PiGraph and lookup for actors B and C
     this.topGraph = createChainedActorsPiGraph();
     this.actorA = (AbstractActor) topGraph.lookupAllVertex("A");
@@ -105,8 +105,8 @@ public class PiSDFSubgraphBuilderTest {
   /**
    * Teardown the test environnement
    */
-  @After
-  public void tearDown() {
+  @AfterEach
+  void tearDown() {
     this.topGraph = null;
     this.actorA = null;
     this.actorB = null;
@@ -117,156 +117,156 @@ public class PiSDFSubgraphBuilderTest {
   }
 
   @Test
-  public void testExistenceOfSubGraph() {
+  void testExistenceOfSubGraph() {
     // Check if the subgraph has been found in top graph
-    Assert.assertNotNull(subGraph);
+    Assertions.assertNotNull(subGraph);
   }
 
   @Test
-  public void testNameOfSubGraph() {
+  void testNameOfSubGraph() {
     // Check if the subgraph is called "B_C"
-    Assert.assertEquals(SUB_GRAPH_NAME, subGraph.getName());
+    Assertions.assertEquals(SUB_GRAPH_NAME, subGraph.getName());
   }
 
   @Test
-  public void testRepetitionCountsOfSubGraph() {
+  void testRepetitionCountsOfSubGraph() {
     // Compute the repetition vector
     final Map<AbstractVertex, Long> repetitionVector = PiBRV.compute(topGraph, BRVMethod.LCM);
     // Check if the subgraph is repeated 4 times
-    Assert.assertEquals(4, repetitionVector.get(subGraph).longValue());
+    Assertions.assertEquals(4, repetitionVector.get(subGraph).longValue());
     // Check if the actor B is repeated 2 times
-    Assert.assertEquals(2, repetitionVector.get(actorB).longValue());
+    Assertions.assertEquals(2, repetitionVector.get(actorB).longValue());
     // Check if the actor C is repeated 1 times
-    Assert.assertEquals(1, repetitionVector.get(actorC).longValue());
+    Assertions.assertEquals(1, repetitionVector.get(actorC).longValue());
   }
 
   @Test
-  public void testActorsContainedInSubGraph() {
+  void testActorsContainedInSubGraph() {
     // Check if the subgraph contains actors B and C
-    Assert.assertTrue(subGraph.getActors().contains(actorB));
-    Assert.assertTrue(subGraph.getActors().contains(actorC));
+    Assertions.assertTrue(subGraph.getActors().contains(actorB));
+    Assertions.assertTrue(subGraph.getActors().contains(actorC));
   }
 
   @Test
-  public void testFifoContainedInSubGraph() {
+  void testFifoContainedInSubGraph() {
     // Check if the fifo that link B to C is contained
     final Fifo fifoBC = actorB.getDataOutputPorts().get(0).getFifo();
-    Assert.assertEquals(subGraph, fifoBC.getContainingPiGraph());
+    Assertions.assertEquals(subGraph, fifoBC.getContainingPiGraph());
     // Check that the delay and its actor is contained in the subgraph
-    Assert.assertEquals(subGraph, fifoBC.getDelay().getContainingPiGraph());
-    Assert.assertEquals(subGraph, fifoBC.getDelay().getDelayActor().getContainingPiGraph());
+    Assertions.assertEquals(subGraph, fifoBC.getDelay().getContainingPiGraph());
+    Assertions.assertEquals(subGraph, fifoBC.getDelay().getDelayActor().getContainingPiGraph());
     // Check that added fifo are also contained in the sugraph
-    Assert.assertEquals(subGraph, actorB.getDataInputPorts().get(0).getFifo().getContainingPiGraph());
-    Assert.assertEquals(subGraph, actorC.getDataOutputPorts().get(0).getFifo().getContainingPiGraph());
+    Assertions.assertEquals(subGraph, actorB.getDataInputPorts().get(0).getFifo().getContainingPiGraph());
+    Assertions.assertEquals(subGraph, actorC.getDataOutputPorts().get(0).getFifo().getContainingPiGraph());
   }
 
   @Test
-  public void testFifoOutsideOfSubGraph() {
+  void testFifoOutsideOfSubGraph() {
     // Check that outside delays are outside
     // 1. On fifo from actor A
     final Fifo fifoAB = actorA.getDataOutputPorts().get(0).getFifo();
-    Assert.assertEquals(topGraph, fifoAB.getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoAB.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
-    Assert.assertEquals(topGraph, fifoAB.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoAB.getDelay().getDelayActor().getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoAB.getDelay().getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoAB.getDelay().getDelayActor().getContainingPiGraph());
     // 2. On fifo to actor D
     final Fifo fifoCD = actorD.getDataInputPorts().get(0).getFifo();
-    Assert.assertEquals(topGraph, fifoCD.getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoCD.getContainingPiGraph());
     // Check that the delay and its actor is contained in the top graph
-    Assert.assertEquals(topGraph, fifoCD.getDelay().getContainingPiGraph());
-    Assert.assertEquals(topGraph, fifoCD.getDelay().getDelayActor().getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoCD.getDelay().getContainingPiGraph());
+    Assertions.assertEquals(topGraph, fifoCD.getDelay().getDelayActor().getContainingPiGraph());
   }
 
   @Test
-  public void testDataInputPortsOfSubGraph() {
+  void testDataInputPortsOfSubGraph() {
     // Check the number of data input ports
-    Assert.assertEquals(1, subGraph.getDataInputPorts().size());
+    Assertions.assertEquals(1, subGraph.getDataInputPorts().size());
     final DataInputPort dipSubGraph = subGraph.getDataInputPorts().get(0);
     // Check port name
     if (this.subGraph.getName().matches("^sub\\d+")) {
-      Assert.assertTrue(dipSubGraph.getName().contains("in_0"));
+      Assertions.assertTrue(dipSubGraph.getName().contains("in_0"));
     }
     // Check rate
-    Assert.assertEquals(4, dipSubGraph.getExpression().evaluateAsLong());
+    Assertions.assertEquals(4, dipSubGraph.getExpression().evaluateAsLong());
     // Check if incoming fifo link actor A to actor B_C
-    Assert.assertEquals(actorA, dipSubGraph.getIncomingFifo().getSource());
+    Assertions.assertEquals(actorA, dipSubGraph.getIncomingFifo().getSource());
   }
 
   @Test
-  public void testDataOutputPortsOfSubGraph() {
+  void testDataOutputPortsOfSubGraph() {
     // Check the number of data input ports
-    Assert.assertEquals(1, subGraph.getDataOutputPorts().size());
+    Assertions.assertEquals(1, subGraph.getDataOutputPorts().size());
     final DataOutputPort dopSubGraph = subGraph.getDataOutputPorts().get(0);
     // Check port name
     if (this.subGraph.getName().matches("^sub\\d+")) {
-      Assert.assertTrue(dopSubGraph.getName().contains("out_0"));
+      Assertions.assertTrue(dopSubGraph.getName().contains("out_0"));
     }
     // Check rate
-    Assert.assertEquals(4, dopSubGraph.getExpression().evaluateAsLong());
+    Assertions.assertEquals(4, dopSubGraph.getExpression().evaluateAsLong());
     // Check if outgoing fifo link actor B_C to actor D
-    Assert.assertEquals(actorD, dopSubGraph.getOutgoingFifo().getTarget());
+    Assertions.assertEquals(actorD, dopSubGraph.getOutgoingFifo().getTarget());
   }
 
   @Test
-  public void testConfigInputPortsOfSubGraph() {
+  void testConfigInputPortsOfSubGraph() {
     // Check the number of data input ports
-    Assert.assertEquals(1, subGraph.getConfigInputPorts().size());
+    Assertions.assertEquals(1, subGraph.getConfigInputPorts().size());
     final ConfigInputPort cipSubGraph = subGraph.getConfigInputPorts().get(0);
     // Check port name
-    Assert.assertTrue(cipSubGraph.getName().contains("cfg_0"));
+    Assertions.assertTrue(cipSubGraph.getName().contains("cfg_0"));
     // Check if setter is param object
-    Assert.assertEquals(param, cipSubGraph.getIncomingDependency().getSetter());
+    Assertions.assertEquals(param, cipSubGraph.getIncomingDependency().getSetter());
   }
 
   @Test
-  public void testDataInputInterfaceOfSubGraph() {
+  void testDataInputInterfaceOfSubGraph() {
     // Check the number of data input interfaces
-    Assert.assertEquals(1, subGraph.getDataInputInterfaces().size());
+    Assertions.assertEquals(1, subGraph.getDataInputInterfaces().size());
     final DataInputInterface diiSubGraph = subGraph.getDataInputInterfaces().get(0);
     // Check interface name
     if (this.subGraph.getName().matches("^sub\\d+")) {
-      Assert.assertTrue(diiSubGraph.getName().contains("in_0"));
+      Assertions.assertTrue(diiSubGraph.getName().contains("in_0"));
     }
     // Check if graph port
-    Assert.assertEquals(subGraph.getDataInputPorts().get(0), diiSubGraph.getGraphPort());
+    Assertions.assertEquals(subGraph.getDataInputPorts().get(0), diiSubGraph.getGraphPort());
     // Check if actor B input fifo is linked to the data input interface
-    Assert.assertEquals(actorB.getDataInputPorts().get(0).getFifo(), diiSubGraph.getDataPort().getFifo());
+    Assertions.assertEquals(actorB.getDataInputPorts().get(0).getFifo(), diiSubGraph.getDataPort().getFifo());
     // Check rate of data port of the interface
-    Assert.assertEquals(4, diiSubGraph.getDataPort().getExpression().evaluateAsLong());
+    Assertions.assertEquals(4, diiSubGraph.getDataPort().getExpression().evaluateAsLong());
     // Check rate on actor B data input port
-    Assert.assertEquals(2, actorB.getDataInputPorts().get(0).getExpression().evaluateAsLong());
+    Assertions.assertEquals(2, actorB.getDataInputPorts().get(0).getExpression().evaluateAsLong());
   }
 
   @Test
-  public void testDataOutputInterfaceOfSubGraph() {
+  void testDataOutputInterfaceOfSubGraph() {
     // Check the number of data output interfaces
-    Assert.assertEquals(1, subGraph.getDataOutputInterfaces().size());
+    Assertions.assertEquals(1, subGraph.getDataOutputInterfaces().size());
     final DataOutputInterface doiSubGraph = subGraph.getDataOutputInterfaces().get(0);
     // Check interface name
     if (this.subGraph.getName().matches("^sub\\d+")) {
-      Assert.assertTrue(doiSubGraph.getName().contains("out_0"));
+      Assertions.assertTrue(doiSubGraph.getName().contains("out_0"));
     }
     // Check if graph port
-    Assert.assertEquals(subGraph.getDataOutputPorts().get(0), doiSubGraph.getGraphPort());
+    Assertions.assertEquals(subGraph.getDataOutputPorts().get(0), doiSubGraph.getGraphPort());
     // Check if actor C input fifo is linked to the data output interface
-    Assert.assertEquals(actorC.getDataOutputPorts().get(0).getFifo(), doiSubGraph.getDataPort().getFifo());
+    Assertions.assertEquals(actorC.getDataOutputPorts().get(0).getFifo(), doiSubGraph.getDataPort().getFifo());
     // Check rate of data port of the interface
-    Assert.assertEquals(4, doiSubGraph.getDataPort().getExpression().evaluateAsLong());
+    Assertions.assertEquals(4, doiSubGraph.getDataPort().getExpression().evaluateAsLong());
     // Check rate on actor C data output port
-    Assert.assertEquals(4, actorC.getDataOutputPorts().get(0).getExpression().evaluateAsLong());
+    Assertions.assertEquals(4, actorC.getDataOutputPorts().get(0).getExpression().evaluateAsLong());
   }
 
   @Test
-  public void testConfigInputInterfaceOfSubGraph() {
+  void testConfigInputInterfaceOfSubGraph() {
     // Check the number of data output interfaces
-    Assert.assertEquals(1, subGraph.getConfigInputInterfaces().size());
+    Assertions.assertEquals(1, subGraph.getConfigInputInterfaces().size());
     final ConfigInputInterface cfgSubGraph = subGraph.getConfigInputInterfaces().get(0);
     // Check interface name
-    Assert.assertTrue(cfgSubGraph.getName().contains("cfg_0"));
+    Assertions.assertTrue(cfgSubGraph.getName().contains("cfg_0"));
     // Check if graph port
-    Assert.assertEquals(subGraph.getConfigInputPorts().get(0), cfgSubGraph.getGraphPort());
+    Assertions.assertEquals(subGraph.getConfigInputPorts().get(0), cfgSubGraph.getGraphPort());
     // Check if actor B input dependency is linked to the config input interface
-    Assert.assertEquals(actorB.getConfigInputPorts().get(0).getIncomingDependency(),
+    Assertions.assertEquals(actorB.getConfigInputPorts().get(0).getIncomingDependency(),
         cfgSubGraph.getOutgoingDependencies().get(0));
   }
 

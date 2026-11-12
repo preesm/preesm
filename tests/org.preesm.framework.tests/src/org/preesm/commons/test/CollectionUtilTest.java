@@ -35,12 +35,11 @@
  */
 package org.preesm.commons.test;
 
-import static org.junit.Assert.assertEquals;
-
 import java.util.Arrays;
 import java.util.List;
 import org.eclipse.emf.common.util.BasicEList;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.CollectionUtil;
 
 /**
@@ -54,9 +53,8 @@ public class CollectionUtilTest {
    *
    */
   @Test
-  public void testInsertAfter1() {
-    final List<String> expected = new BasicEList<>(
-        Arrays.asList(new String[] { "A", "B", "b1", "b2", "b3", "b4", "C", "D", "E" }));
+  void testInsertAfter1() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "B", "b1", "b2", "b3", "b4", "C", "D", "E"));
     final List<String> subject = new BasicEList<>();
 
     subject.add("A");
@@ -66,53 +64,53 @@ public class CollectionUtilTest {
     subject.add("E");
 
     CollectionUtil.insertAfter(subject, "B", "b1", "b2", "b3", "b4");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertAfter2() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "A", "B", "C", "D", "E" }));
+  void testInsertAfter2() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "B", "C", "D", "E"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     subject.add("B");
     CollectionUtil.insertAfter(subject, "B", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertAfter3() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "A", "B", "C", "D", "E" }));
+  void testInsertAfter3() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "B", "C", "D", "E"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     CollectionUtil.insertAfter(subject, "A", "B", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertAfter4() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "A", "C", "D", "E", "B" }));
+  void testInsertAfter4() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "C", "D", "E", "B"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     subject.add("B");
     CollectionUtil.insertAfter(subject, "A", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertBefore1() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "A", "b1", "b2", "B", "C", "D", "E" }));
+  void testInsertBefore1() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "b1", "b2", "B", "C", "D", "E"));
     final List<String> subject = new BasicEList<>();
 
     subject.add("A");
@@ -122,45 +120,45 @@ public class CollectionUtilTest {
     subject.add("E");
 
     CollectionUtil.insertBefore(subject, "B", "b1", "b2");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertBefore2() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "A", "C", "D", "E", "B" }));
+  void testInsertBefore2() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("A", "C", "D", "E", "B"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     subject.add("B");
     CollectionUtil.insertBefore(subject, "B", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertBefore3() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "B", "C", "D", "E", "A" }));
+  void testInsertBefore3() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("B", "C", "D", "E", "A"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     CollectionUtil.insertBefore(subject, "A", "B", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
   /**
    *
    */
   @Test
-  public void testInsertBefore4() {
-    final List<String> expected = new BasicEList<>(Arrays.asList(new String[] { "C", "D", "E", "A", "B" }));
+  void testInsertBefore4() {
+    final List<String> expected = new BasicEList<>(Arrays.asList("C", "D", "E", "A", "B"));
     final List<String> subject = new BasicEList<>();
     subject.add("A");
     subject.add("B");
     CollectionUtil.insertBefore(subject, "A", "C", "D", "E");
-    assertEquals(expected, subject);
+    Assertions.assertEquals(expected, subject);
   }
 
 }

@@ -35,24 +35,24 @@
  */
 package org.ietr.preesm.ui.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.ui.wizards.PreesmProjectNature;
 
 // TODO: Auto-generated Javadoc
 /**
  * The Class ProjectNatureTest.
  */
-public class ProjectNatureTest {
+class ProjectNatureTest {
 
   /**
    * Test ID.
    */
   @Test
-  public void testID() {
+  void testID() {
     final String id = PreesmProjectNature.ID;
-    Assert.assertNotNull(id);
-    Assert.assertTrue("org.ietr.preesm.core.ui.wizards.nature".equals(id));
+    Assertions.assertNotNull(id);
+    Assertions.assertEquals("org.ietr.preesm.core.ui.wizards.nature", id);
   }
 
 }

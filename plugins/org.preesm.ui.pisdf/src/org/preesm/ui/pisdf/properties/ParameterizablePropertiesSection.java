@@ -137,7 +137,7 @@ public class ParameterizablePropertiesSection extends DataPortPropertiesUpdater 
     data.top = new FormAttachment(this.lblNameObj);
     this.txtExpression.setLayoutData(data);
     this.txtExpression.setEnabled(true);
-    this.txtExpression.addModifyListener(e -> updateProperties());
+    this.txtExpression.addModifyListener(_ -> updateProperties());
 
     this.lblExpression = factory.createCLabel(composite, "Expression:");
     data = new FormData();

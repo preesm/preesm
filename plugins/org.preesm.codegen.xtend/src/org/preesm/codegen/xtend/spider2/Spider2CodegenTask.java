@@ -209,7 +209,7 @@ public class Spider2CodegenTask extends AbstractTaskImplementation {
       for (final File file : folder.listFiles()) {
         try {
           Files.delete(file.toPath());
-        } catch (final IOException e) {
+        } catch (final IOException _) {
           PreesmLogger.getLogger().fine(() -> "Could not delete file [" + file.toPath().toString() + "].");
         }
       }

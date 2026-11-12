@@ -135,7 +135,7 @@ public class TopologicalRanking {
 
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
       final StringBuilder sb = new StringBuilder();
-      topoRanks.entrySet().stream().forEach(e -> {
+      topoRanks.entrySet().forEach(e -> {
         final TopoVisit v = e.getValue();
         sb.append(
             "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
@@ -190,7 +190,7 @@ public class TopologicalRanking {
 
     if (PreesmLogger.getLogger().isLoggable(Level.FINE)) {
       final StringBuilder sb = new StringBuilder();
-      topoRanks.entrySet().stream().forEach(e -> {
+      topoRanks.entrySet().forEach(e -> {
         final TopoVisit v = e.getValue();
         sb.append(
             "\n\t" + e.getKey().getName() + ": " + v.rank + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
@@ -224,7 +224,7 @@ public class TopologicalRanking {
         rank = maxRank - tv.rank;
       }
 
-      final Set<AbstractActor> aas = irRankActors.computeIfAbsent(rank, r -> new HashSet<>());
+      final Set<AbstractActor> aas = irRankActors.computeIfAbsent(rank, _ -> new HashSet<>());
 
       aas.add(aa);
     }

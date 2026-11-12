@@ -210,7 +210,7 @@ public abstract class PiBRV {
     final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataOutputInterface out : graph.getDataOutputInterfaces()) {
-      final DataInputPort dataInputPort = (DataInputPort) out.getDataPort();
+      final DataInputPort dataInputPort = out.getDataPort();
       final long cons = dataInputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, out, cons);
       final Fifo fifo = dataInputPort.getIncomingFifo();
@@ -272,7 +272,7 @@ public abstract class PiBRV {
     final SortedSet<Long> scaleScaleFactors = new TreeSet<>();
     scaleScaleFactors.add(1L);
     for (final DataInputInterface in : graph.getDataInputInterfaces()) {
-      final DataOutputPort dataOutputPort = (DataOutputPort) in.getDataPort();
+      final DataOutputPort dataOutputPort = in.getDataPort();
       final long prod = dataOutputPort.getPortRateExpression().evaluateAsLong();
       checkOppositeInterfaceRate(graph, in, prod);
       final Fifo fifo = dataOutputPort.getOutgoingFifo();

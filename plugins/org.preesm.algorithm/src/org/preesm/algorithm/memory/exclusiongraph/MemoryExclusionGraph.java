@@ -252,7 +252,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
               "DAGEdge " + outgoingEdge + " has no buffer properties.\n This is not supported by the MemEx builder.");
         }
         if (buffers.size() > 1) {
-          throw new PreesmRuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several SDFEdges.\n"
+          throw new PreesmRuntimeException("DAGEdge " + outgoingEdge + " is equivalent to several edges.\n"
               + "This is not supported by the MemEx builder.\n" + "Please contact Preesm developers.");
         }
         final String typeName = buffers.get(0).getDataType();
@@ -760,7 +760,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     if (hosts != null) {
       // Changes to the KeySet are applied to the map
       hosts.keySet().removeAll(vertices);
-      hosts.forEach((host, hosted) -> {
+      hosts.forEach((_, hosted) -> {
         if (hosted.removeAll(vertices)) {
           // List of hosted mObjects should never be impacted by the remove operation. (in the context of Distributor
           // call) indeed, deeply removed vertices correspond to vertices belonging to other memory banks, hence if a
@@ -889,7 +889,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     final Map<MemoryExclusionVertex, Set<MemoryExclusionVertex>> hosts = getPropertyBean()
         .getValue(MemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hosts != null) {
-      hosts.forEach((host, hosted) -> allVertices.addAll(hosted));
+      hosts.forEach((_, hosted) -> allVertices.addAll(hosted));
     }
 
     return allVertices;
@@ -1138,7 +1138,7 @@ public class MemoryExclusionGraph extends SimpleGraph<MemoryExclusionVertex, Def
     }
 
     final ArrayList<Integer> schedulingOrders = new ArrayList<>(verticesMap.keySet());
-    Collections.sort(schedulingOrders);
+    schedulingOrders.sort(null);
 
     final List<DAGVertex> dagVerticesInSchedulingOrder = new ArrayList<>();
 

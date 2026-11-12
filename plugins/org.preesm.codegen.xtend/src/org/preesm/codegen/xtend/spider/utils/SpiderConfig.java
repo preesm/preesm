@@ -42,7 +42,7 @@ import org.preesm.codegen.xtend.spider.SpiderCodegenTask;
 
 /**
  * Class containing all the config parameters necessary for spider
- * 
+ *
  * @author farresti
  *
  */
@@ -53,15 +53,15 @@ public class SpiderConfig {
   private boolean usePapify;
   private boolean dumpPapifyInfo;
   private boolean feedbackPapifyInfo;
-  private boolean useApollo;
-  private boolean useVerbose;
-  private boolean useTrace;
-  private boolean useGraphOptims;
-  private boolean useDynamicStack;
+  private final boolean useApollo;
+  private final boolean useVerbose;
+  private final boolean useTrace;
+  private final boolean useGraphOptims;
+  private final boolean useDynamicStack;
   private String  schedulerType;
   private String  memAllocType;
-  private Long    sharedMemorySize;
-  private boolean energyAwareness;
+  private final Long    sharedMemorySize;
+  private final boolean energyAwareness;
   private double  performanceObjective;
 
   private void setSchedulerType(final String scheduleType) {
@@ -105,7 +105,7 @@ public class SpiderConfig {
   }
 
   /**
-   * 
+   *
    * @param workflowParameters
    *          Parameters of the workflow task
    */

@@ -77,7 +77,7 @@ public class PreesmMessages {
         }
       }
       return message;
-    } catch (final MissingResourceException e) {
+    } catch (final MissingResourceException _) {
       return '!' + key + '!';
     }
   }

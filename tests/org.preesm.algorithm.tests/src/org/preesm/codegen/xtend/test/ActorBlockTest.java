@@ -36,8 +36,8 @@
 package org.preesm.codegen.xtend.test;
 
 import org.eclipse.emf.common.util.EList;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.CodeElt;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
@@ -47,14 +47,14 @@ import org.preesm.codegen.model.util.CodegenModelUserFactory;
 public class ActorBlockTest {
 
   @Test
-  public void testConstruct() {
+  void testConstruct() {
     final ActorBlock actor = CodegenModelUserFactory.eINSTANCE.createActorBlock();
-    Assert.assertNotNull(actor);
+    Assertions.assertNotNull(actor);
     final EList<CodeElt> codeElts = actor.getCodeElts();
-    Assert.assertNotNull(codeElts);
+    Assertions.assertNotNull(codeElts);
 
     final int size = codeElts.size();
-    Assert.assertEquals(2, size);
+    Assertions.assertEquals(2, size);
 
   }
 }

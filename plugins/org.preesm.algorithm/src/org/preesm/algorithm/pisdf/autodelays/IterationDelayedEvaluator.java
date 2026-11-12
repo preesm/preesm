@@ -41,7 +41,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
 import org.jgrapht.alg.cycle.JohnsonSimpleCycles;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.preesm.algorithm.pisdf.autodelays.AbstractGraph.FifoAbstraction;
@@ -57,7 +56,7 @@ import org.preesm.model.pisdf.statictools.PiSDFFlattener;
 
 /**
  * This class evaluates the application latency in number of graph iteration.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -70,7 +69,7 @@ public class IterationDelayedEvaluator {
   /**
    * Performs a graph flattening and graph traversal in order to estimate the number of iterations needed to transform
    * all data produced during the first iteration, i.e. the latency.
-   * 
+   *
    * @param graph
    *          to be analyzed.
    * @return Latency as a multiplication factor of a graph iteration duration (should start at 1).
@@ -80,13 +79,13 @@ public class IterationDelayedEvaluator {
     // 0. copy and flatten graph of PiGraph
     final PiGraph flatGraph = PiSDFFlattener.flatten(graph, true);
     // 1. compute brv
-    Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> brv = PiBRV.compute(flatGraph, BRVMethod.LCM);
     PiMMHelper.removeNonExecutedActorsAndFifos(flatGraph, brv);
     // 2. create AbsGrap and compute breaking fifos
-    HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
+    final HeuristicLoopBreakingDelays heurFifoBreaks = new HeuristicLoopBreakingDelays();
     heurFifoBreaks.performAnalysis(flatGraph, brv);
     // 3. get absGraph and remove cycles
-    DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = heurFifoBreaks.absGraph;
+    final DefaultDirectedGraph<AbstractActor, FifoAbstraction> absGraph = heurFifoBreaks.absGraph;
     absGraph.removeAllEdges(heurFifoBreaks.breakingFifosAbs);
     // 3.5 check if new graph is a DAG
     final JohnsonSimpleCycles<AbstractActor, FifoAbstraction> cycleFinder = new JohnsonSimpleCycles<>(absGraph);
@@ -95,10 +94,10 @@ public class IterationDelayedEvaluator {
       throw new PreesmRuntimeException("The iteration latency evaluation computed a DAG which is not a DAG, abandon.");
     }
     // 4 max+ algebra of the AbsGraph, as done for TopoRanking of HeuristicPeriodicActorSelection
-    Map<AbstractActor,
+    final Map<AbstractActor,
         ActorDelayInfo> actorDelayInfos = topologicalActorDelayEstimation(heurFifoBreaks.allSourceActors, absGraph);
     int maxIteration = 0;
-    for (AbstractActor ska : heurFifoBreaks.allSinkActors) {
+    for (final AbstractActor ska : heurFifoBreaks.allSinkActors) {
       maxIteration = Math.max(maxIteration, actorDelayInfos.get(ska).delay);
     }
 
@@ -141,7 +140,7 @@ public class IterationDelayedEvaluator {
         final ActorDelayInfo av = topoDelays.get(dest);
         av.nbVisit++;
         if (av.nbVisit <= av.nbMaxVisit) {
-          int delayEstimation = fa.nbIterationDelayed;
+          final int delayEstimation = fa.nbIterationDelayed;
           av.delay = Math.max(av.delay, delay + delayEstimation);
           if (av.nbVisit == av.nbMaxVisit) {
             toVisit.addLast(dest);
@@ -150,12 +149,12 @@ public class IterationDelayedEvaluator {
       }
     }
 
-    StringBuilder sb = new StringBuilder();
-    topoDelays.entrySet().stream().forEach(e -> {
-      ActorDelayInfo v = e.getValue();
+    final StringBuilder sb = new StringBuilder();
+    topoDelays.entrySet().forEach(e -> {
+      final ActorDelayInfo v = e.getValue();
       sb.append("\n\t" + e.getKey().getName() + ": " + v.delay + " (" + v.nbVisit + " visits on " + v.nbMaxVisit + ")");
     });
-    PreesmLogger.getLogger().log(Level.FINE, "Actor iteration delays: " + sb.toString());
+    PreesmLogger.getLogger().fine(() -> "Actor iteration delays: " + sb.toString());
 
     return topoDelays;
   }

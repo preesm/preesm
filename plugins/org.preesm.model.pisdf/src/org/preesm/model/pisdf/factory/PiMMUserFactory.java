@@ -428,7 +428,7 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
       final Expression expression = this.createExpression(Long.parseLong(value));
       expression.eAdapters().add(GraphObserver.getInstance());
       return expression;
-    } catch (final NumberFormatException e) {
+    } catch (final NumberFormatException _) {
       final StringExpression createStringExpression = super.createStringExpression();
       createStringExpression.setExpressionString(value);
       createStringExpression.eAdapters().add(GraphObserver.getInstance());

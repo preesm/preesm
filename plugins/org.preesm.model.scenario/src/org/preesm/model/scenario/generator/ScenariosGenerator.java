@@ -214,9 +214,9 @@ public class ScenariosGenerator {
     final Scenario scenario = ScenarioUserFactory.createScenario();
     // Handle factory registry
     final Map<String, Object> extToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extToFactoryMap.computeIfAbsent(ARCHI_EXT, str -> new IPXACTResourceFactoryImpl());
+    extToFactoryMap.computeIfAbsent(ARCHI_EXT, _ -> new IPXACTResourceFactoryImpl());
 
-    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, s -> SlamPackage.eINSTANCE);
+    EPackage.Registry.INSTANCE.computeIfAbsent(SlamPackage.eNS_URI, _ -> SlamPackage.eINSTANCE);
 
     // Set algorithm and architecture
 

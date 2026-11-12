@@ -868,7 +868,7 @@ public class ScenarioParser {
         try {
           setupTime = Long.parseLong(sSetupTime);
           timePerUnit = Double.parseDouble(sTimePerUnit);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           setupTime = -1;
           timePerUnit = -1;
         }

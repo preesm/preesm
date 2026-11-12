@@ -133,7 +133,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    */
   private void allocateLargestFirst() {
     final ArrayList<MemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
+    list.sort((v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -233,9 +233,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
    * @return The ordered vertices list
    */
   private ArrayList<MemoryExclusionVertex> getStableSetOrderedList(final boolean exactStableSet) {
-    ArrayList<MemoryExclusionVertex> orderedList;
-    orderedList = new ArrayList<>();
-
+    final ArrayList<MemoryExclusionVertex> orderedList = new ArrayList<>();
     final SimpleGraph<MemoryExclusionVertex, DefaultEdge> inclusionGraph = this.inputExclusionGraph.getComplementary();
 
     while (!inclusionGraph.vertexSet().isEmpty()) {
@@ -250,7 +248,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
       solver.solve();
 
       final ArrayList<MemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
+      stableSet.sort((v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);
@@ -289,7 +287,7 @@ public abstract class OrderedAllocator extends MemoryAllocator {
         }
         case MEDIANE -> {
           final List<Long> listCopy = new ArrayList<>(this.listsSize);
-          Collections.sort(listCopy);
+          listCopy.sort(null);
           final long mediane = listCopy.get(this.listsSize.size() / 2);
           yield this.listsSize.indexOf(mediane);
         }

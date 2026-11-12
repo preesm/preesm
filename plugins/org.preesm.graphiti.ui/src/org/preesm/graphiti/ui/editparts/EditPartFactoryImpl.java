@@ -66,10 +66,10 @@ public class EditPartFactoryImpl implements EditPartFactory {
   public EditPart createEditPart(final EditPart context, final Object model) {
 
     final AbstractGraphicalEditPart child = switch (model) {
-      case final Graph g -> new GraphEditPart();
-      case final Vertex v -> new VertexEditPart();
-      case final Edge e -> new EdgeEditPart();
-      case final IStatus is -> new GraphEditPart();
+      case final Graph _ -> new GraphEditPart();
+      case final Vertex _ -> new VertexEditPart();
+      case final Edge _ -> new EdgeEditPart();
+      case final IStatus _ -> new GraphEditPart();
       default -> null;
     };
 

@@ -44,7 +44,6 @@ package org.preesm.codegen.xtend.spider.visitor;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -52,7 +51,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Level;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.xtend.spider.utils.SpiderNameGenerator;
 import org.preesm.codegen.xtend.spider.utils.SpiderTypeConverter;
@@ -256,7 +254,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
       for (final Parameter p : params) {
         getLevelParameter(p);
       }
-      params.sort((p1, p2) -> this.parameterLevels.get(p1) - this.parameterLevels.get(p2));
+      params.sort((p1, p2) -> Integer.compare(this.parameterLevels.get(p1), this.parameterLevels.get(p2)));
       return params;
     }
 
@@ -278,7 +276,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     definition.append(prototype.toString());
 
     final List<Parameter> l = new LinkedList<>(pg.getParameters());
-    Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    l.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
 
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
@@ -467,9 +465,9 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
     }
 
     // Adding definition of subgraph (if any)
-    if (aa instanceof PiGraph) {
+    if (aa instanceof final PiGraph piGraph) {
       append("\t/* == Generating subgraph definition == */\n");
-      append("\t" + SpiderNameGenerator.getMethodName((PiGraph) aa) + "(" + vertexName + ");\n");
+      append("\t" + SpiderNameGenerator.getMethodName(piGraph) + "(" + vertexName + ");\n");
     }
 
     if ((aa instanceof Actor) && !(aa instanceof PiGraph)) {
@@ -489,8 +487,8 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
           }
         }
       } else {
-        PreesmLogger.getLogger().log(Level.WARNING,
-            "Actor " + aa.getName() + " does not have a valid operator to execute on");
+        PreesmLogger.getLogger()
+            .warning(() -> "Actor " + aa.getName() + " does not have a valid operator to execute on");
       }
     }
 
@@ -508,7 +506,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         append("\");\n");
       }
     } else {
-      PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have timing information.");
+      PreesmLogger.getLogger().warning(() -> "Actor " + aa.getName() + " does not have timing information.");
     }
 
     final Map<Component, Double> aaEnergies = this.energies.get(aa);
@@ -525,7 +523,7 @@ public class SpiderCodegenVisitor extends PiMMSwitch<Boolean> {
         append(");\n");
       }
     } else {
-      PreesmLogger.getLogger().log(Level.WARNING, "Actor " + aa.getName() + " does not have energy information.");
+      PreesmLogger.getLogger().warning(() -> "Actor " + aa.getName() + " does not have energy information.");
     }
 
     append("\n");

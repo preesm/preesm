@@ -36,8 +36,8 @@
  */
 package org.preesm.model.pisdf.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.Expression;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.factory.PiMMUserFactory;
@@ -49,14 +49,14 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 public class ParameterTest {
 
   @Test
-  public void testParameterCreation() {
+  void testParameterCreation() {
 
     final Parameter p = PiMMUserFactory.instance.createParameter();
     final Expression valueExpression = p.getValueExpression();
-    Assert.assertNotNull("Parameter value expression cannot be null", valueExpression);
+    Assertions.assertNotNull(valueExpression, "Parameter value expression cannot be null");
     final String string = valueExpression.getExpressionAsString();
-    Assert.assertNotNull("Expression value cannot be null", string);
+    Assertions.assertNotNull(string, "Expression value cannot be null");
     final String expectedDefaultalue = "0";
-    Assert.assertEquals(expectedDefaultalue, string);
+    Assertions.assertEquals(expectedDefaultalue, string);
   }
 }

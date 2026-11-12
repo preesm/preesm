@@ -69,7 +69,7 @@ class PapifyComponentListContentProvider2DMatrixCLP extends ColumnLabelProvider 
     }
     final Map<Component, PAPIStatus> statuses = treeElement.papiStatuses;
 
-    return statuses.computeIfAbsent(this.peType, k -> PAPIStatus.NO).toString();
+    return statuses.computeIfAbsent(this.peType, _ -> PAPIStatus.NO).toString();
   }
 
   @Override

@@ -109,7 +109,7 @@ public class WorkflowLaunchShortcut implements ILaunchShortcut {
 
     try {
       return workingCopy.doSave();
-    } catch (final CoreException e) {
+    } catch (final CoreException _) {
       return null;
     }
   }

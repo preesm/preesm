@@ -39,7 +39,6 @@
 package org.preesm.algorithm.synthesis.memalloc.allocation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -96,8 +95,8 @@ public class PiBestFitAllocator extends PiOrderedAllocator {
           excludeTo.add(neighborOffset + neighbor.getWeight());
         }
       }
-      Collections.sort(excludeFrom);
-      Collections.sort(excludeTo);
+      excludeFrom.sort(null);
+      excludeTo.sort(null);
 
       long bestFitOffset = -1;
       long freeFrom = 0; // Where the last exclusion ended

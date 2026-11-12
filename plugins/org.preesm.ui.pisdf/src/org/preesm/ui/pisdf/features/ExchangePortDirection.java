@@ -108,7 +108,7 @@ public class ExchangePortDirection extends ExchangePortCategory {
             && (portToExchange.eContainer() instanceof final ExecutableActor executableActor)) {
 
           final List<Pair<String, PortKind>> newPorts = actorsToNewPorts.computeIfAbsent(executableActor,
-              k -> new ArrayList<>());
+              _ -> new ArrayList<>());
 
           // Switch Port into opposite direction
           final PortKind portKind = switch (portToExchange.getKind()) {

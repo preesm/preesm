@@ -109,9 +109,8 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
       final TransactionManager transactions, final int type, final int routeStepIndex, Transaction lastTransaction,
       final List<MapperDAGVertex> alreadyCreatedVertices) {
 
-    if (routeStep instanceof SlamMemoryRouteStep) {
+    if (routeStep instanceof final SlamMemoryRouteStep ramStep) {
       // Adding the transfers
-      final SlamMemoryRouteStep ramStep = ((SlamMemoryRouteStep) routeStep);
       // All the transfers along the path have the same time: the time
       // to transfer the data on the slowest contention node
       final long dataSize = edge.getInit().getDataSize();
@@ -143,15 +142,15 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
         }
 
         return transaction;
-      } else if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
+      }
+      if (type == CommunicationRouter.INVOLVEMENT_TYPE) {
         // Adding the involvements
         MapperDAGEdge incomingEdge = null;
         MapperDAGEdge outgoingEdge = null;
         int currentNodeIndex = -1;
 
         for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
+          if (o instanceof final TransferVertex v) {
             if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
                 && (v.getRouteStep() == routeStep) && (v.getNodeIndex() == 0)) {
               // Finding the edge where to add an involvement
@@ -182,8 +181,7 @@ public class SharedRamRouterImplementer extends CommunicationRouterImplementer {
         final List<MapperDAGVertex> toSynchronize = new ArrayList<>();
 
         for (final Object o : alreadyCreatedVertices) {
-          if (o instanceof TransferVertex) {
-            final TransferVertex v = (TransferVertex) o;
+          if (o instanceof final TransferVertex v) {
             if (v.getSource().equals(edge.getSource()) && v.getTarget().equals(edge.getTarget())
                 && (v.getRouteStep() == routeStep)) {
               toSynchronize.add(v);

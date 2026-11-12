@@ -37,15 +37,12 @@
  */
 package org.preesm.model.pisdf.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -77,8 +74,8 @@ public class URCSeekerTest {
   /**
    * Set-up the test environnement
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     // Create a chained actors PiGraph
     createChainedActorsPiGraph();
     // Build the URC seeker
@@ -90,8 +87,8 @@ public class URCSeekerTest {
   /**
    * Teardown the test environnement
    */
-  @After
-  public void tearDown() {
+  @AfterEach
+  void tearDown() {
     this.topGraph = null;
     this.actorA = null;
     this.actorB = null;
@@ -104,26 +101,26 @@ public class URCSeekerTest {
   }
 
   @Test
-  public void testExpectToFoundTwoURCs() {
-    assertEquals(2, this.seekerResults.size());
+  void testExpectToFoundTwoURCs() {
+    Assertions.assertEquals(2, this.seekerResults.size());
   }
 
   @Test
-  public void testExpectToFoundChainBCD() {
+  void testExpectToFoundChainBCD() {
     final List<AbstractActor> expectedChain = Arrays.asList(this.actorB, this.actorC, this.actorD);
-    assertTrue(this.seekerResults.contains(expectedChain));
+    Assertions.assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
-  public void testExpectToFoundChainEFG() {
+  void testExpectToFoundChainEFG() {
     final List<AbstractActor> expectedChain = Arrays.asList(this.actorE, this.actorF, this.actorG);
-    assertTrue(this.seekerResults.contains(expectedChain));
+    Assertions.assertTrue(this.seekerResults.contains(expectedChain));
   }
 
   @Test
-  public void testDoesntExpectToFoundChainDE() {
+  void testDoesntExpectToFoundChainDE() {
     final List<AbstractActor> expectedChain = Arrays.asList(this.actorD, this.actorE);
-    assertFalse(this.seekerResults.contains(expectedChain));
+    Assertions.assertFalse(this.seekerResults.contains(expectedChain));
   }
 
   private void createChainedActorsPiGraph() {
@@ -146,7 +143,7 @@ public class URCSeekerTest {
         this.actorF, this.actorA, this.actorG);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -193,7 +190,7 @@ public class URCSeekerTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC1, fifoBC2, fifoCD, fifoDE, fifoEF, fifoFG);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(16);

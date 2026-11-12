@@ -103,7 +103,7 @@ public class ManualGraphLayoutManager extends StackLayout {
    */
   @Override
   protected Dimension calculateMinimumSize(final IFigure figure, final int wHint, final int hHint) {
-    return calculateSize(figure, wHint, hHint, (f, w, h) -> f.getMinimumSize(w, h));
+    return calculateSize(figure, wHint, hHint, IFigure::getMinimumSize);
   }
 
   /**
@@ -121,7 +121,7 @@ public class ManualGraphLayoutManager extends StackLayout {
    */
   @Override
   protected Dimension calculatePreferredSize(final IFigure figure, final int wHint, final int hHint) {
-    return calculateSize(figure, wHint, hHint, (f, w, h) -> f.getPreferredSize(w, h));
+    return calculateSize(figure, wHint, hHint, IFigure::getPreferredSize);
   }
 
   /**

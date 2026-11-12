@@ -116,8 +116,8 @@ public class AddInvolvementVertexTransaction implements Transaction {
   @Override
   public void execute(final List<MapperDAGVertex> resultList) {
 
-    final MapperDAGVertex currentSource = (MapperDAGVertex) this.edge.getSource();
-    final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
+    final MapperDAGVertex currentSource = this.edge.getSource();
+    final MapperDAGVertex currentTarget = this.edge.getTarget();
 
     if (this.edge instanceof PrecedenceEdge) {
       PreesmLogger.getLogger().log(Level.INFO, "no involvement vertex corresponding to a schedule edge");

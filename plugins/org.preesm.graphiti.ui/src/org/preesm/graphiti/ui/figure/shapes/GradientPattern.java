@@ -84,7 +84,7 @@ public class GradientPattern {
         // Needs advanced capabilities or throws SWTException
         graphics.setAntialias(SWT.ON);
         graphics.setBackgroundPattern(pattern);
-      } catch (final RuntimeException e) {
+      } catch (final RuntimeException _) {
         // No anti alias, not pattern, less pretty but it will work!
       }
 

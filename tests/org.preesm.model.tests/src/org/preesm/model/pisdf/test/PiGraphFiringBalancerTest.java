@@ -37,16 +37,13 @@
  */
 package org.preesm.model.pisdf.test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
@@ -78,8 +75,8 @@ public class PiGraphFiringBalancerTest {
   /**
    * Set-up the test environnement
    */
-  @Before
-  public void setUp() {
+  @BeforeEach
+  void setUp() {
     // Create a test environment
     createTestEnvironment();
   }
@@ -87,8 +84,8 @@ public class PiGraphFiringBalancerTest {
   /**
    * Teardown the test environnement
    */
-  @After
-  public void tearDown() {
+  @AfterEach
+  void tearDown() {
     this.topGraph = null;
     this.subGraph = null;
     this.actorA = null;
@@ -98,55 +95,57 @@ public class PiGraphFiringBalancerTest {
   }
 
   @Test
-  public void testFactor2() {
+  void testFactor2() {
     new PiGraphFiringBalancer(this.subGraph, 2).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
-    assertEquals(Long.valueOf(128), brv.get(this.subGraph));
-    assertEquals(Long.valueOf(2), brv.get(this.actorB));
-    assertEquals(Long.valueOf(2), brv.get(this.actorC));
+    Assertions.assertEquals(Long.valueOf(128), brv.get(this.subGraph));
+    Assertions.assertEquals(Long.valueOf(2), brv.get(this.actorB));
+    Assertions.assertEquals(Long.valueOf(2), brv.get(this.actorC));
   }
 
   @Test
-  public void testFactor4() {
+  void testFactor4() {
     new PiGraphFiringBalancer(this.subGraph, 4).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
-    assertEquals(Long.valueOf(64), brv.get(this.subGraph));
-    assertEquals(Long.valueOf(4), brv.get(this.actorB));
-    assertEquals(Long.valueOf(4), brv.get(this.actorC));
+    Assertions.assertEquals(Long.valueOf(64), brv.get(this.subGraph));
+    Assertions.assertEquals(Long.valueOf(4), brv.get(this.actorB));
+    Assertions.assertEquals(Long.valueOf(4), brv.get(this.actorC));
   }
 
   @Test
-  public void testFactor8() {
+  void testFactor8() {
     new PiGraphFiringBalancer(this.subGraph, 8).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
-    assertEquals(Long.valueOf(32), brv.get(this.subGraph));
-    assertEquals(Long.valueOf(8), brv.get(this.actorB));
-    assertEquals(Long.valueOf(8), brv.get(this.actorC));
+    Assertions.assertEquals(Long.valueOf(32), brv.get(this.subGraph));
+    Assertions.assertEquals(Long.valueOf(8), brv.get(this.actorB));
+    Assertions.assertEquals(Long.valueOf(8), brv.get(this.actorC));
   }
 
   @Test
-  public void testFactor16() {
+  void testFactor16() {
     new PiGraphFiringBalancer(this.subGraph, 16).balance();
     final Map<AbstractVertex, Long> brv = PiBRV.compute(topGraph, BRVMethod.LCM);
-    assertEquals(Long.valueOf(16), brv.get(this.subGraph));
-    assertEquals(Long.valueOf(16), brv.get(this.actorB));
-    assertEquals(Long.valueOf(16), brv.get(this.actorC));
+    Assertions.assertEquals(Long.valueOf(16), brv.get(this.subGraph));
+    Assertions.assertEquals(Long.valueOf(16), brv.get(this.actorB));
+    Assertions.assertEquals(Long.valueOf(16), brv.get(this.actorC));
   }
 
   @Test
-  public void testExceptionFactor() {
+  void testExceptionFactor() {
     try {
       new PiGraphFiringBalancer(this.subGraph, 15).balance();
-      assertTrue(false);
-    } catch (final PreesmRuntimeException e) {
-      assertTrue(true);
+      Assertions.assertTrue(false);
+    } catch (final PreesmRuntimeException _) {
+      Assertions.assertTrue(true);
     }
+    // Assertions.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(this.subGraph,
+    // 15).balance());
   }
 
   @Test
-  public void testExceptionGraph() {
-    Assert.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(this.topGraph, 16));
-    Assert.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(null, 16));
+  void testExceptionGraph() {
+    Assertions.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(this.topGraph, 16));
+    Assertions.assertThrows(PreesmRuntimeException.class, () -> new PiGraphFiringBalancer(null, 16));
   }
 
   private void createTestEnvironment() {
@@ -165,7 +164,7 @@ public class PiGraphFiringBalancerTest {
     final List<AbstractActor> actorsList = Arrays.asList(this.actorA, this.actorB, this.actorC, this.actorD);
 
     // Add actors to the top graph
-    actorsList.stream().forEach(x -> this.topGraph.addActor(x));
+    actorsList.forEach(x -> this.topGraph.addActor(x));
 
     // Create data output and input ports
     final DataOutputPort outputA = PiMMUserFactory.instance.createDataOutputPort("out");
@@ -192,7 +191,7 @@ public class PiGraphFiringBalancerTest {
     final List<Fifo> fifosList = Arrays.asList(fifoAB, fifoBC, fifoCD);
 
     // Add fifos to the top graph
-    fifosList.stream().forEach(x -> this.topGraph.addFifo(x));
+    fifosList.forEach(x -> this.topGraph.addFifo(x));
 
     // Setup data output and input ports rates
     outputA.setExpression(256);

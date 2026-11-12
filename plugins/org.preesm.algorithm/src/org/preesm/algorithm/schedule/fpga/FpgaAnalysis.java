@@ -108,8 +108,8 @@ public class FpgaAnalysis {
         return; // if not connected, we do not care
       }
       final DataPort aaPort = switch (iaPort) {
-        case final DataInputPort dip -> iaPort.getFifo().getSourcePort();
-        case final DataOutputPort dop -> iaPort.getFifo().getTargetPort();
+        case final DataInputPort _ -> iaPort.getFifo().getSourcePort();
+        case final DataOutputPort _ -> iaPort.getFifo().getTargetPort();
         default -> null;
       };
 

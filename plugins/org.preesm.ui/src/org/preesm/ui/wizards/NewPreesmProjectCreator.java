@@ -69,7 +69,7 @@ public class NewPreesmProjectCreator {
   public static IProject createProject(final String projectName, final URI location) {
 
     Assert.isNotNull(projectName);
-    Assert.isTrue(projectName.trim().length() != 0);
+    Assert.isTrue(!projectName.isBlank());
 
     IProject project = NewPreesmProjectCreator.createBaseProject(projectName, location);
     try {

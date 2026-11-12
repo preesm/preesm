@@ -35,8 +35,8 @@
  */
 package org.ietr.dftools.algorithm.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.model.parameters.ExpressionValue;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.math.ExpressionEvaluationException;
@@ -50,12 +50,12 @@ public class JepTransitionTest {
    * Test expression value.
    */
   @Test
-  public void testExpressionValue() {
+  void testExpressionValue() {
     final double expected = 2 + (((5 * 7) / 1.2) * 7.00002);
     final ExpressionValue value = new ExpressionValue("2 + 5 * 7 / 1.2 * 7.00002");
     try {
       final long intValue = value.longValue();
-      Assert.assertEquals((int) expected, intValue);
+      Assertions.assertEquals((int) expected, intValue);
     } catch (final ExpressionEvaluationException e) {
       final String message = "Expression should be valid, but failed with " + e.getMessage();
       throw new PreesmRuntimeException(message, e);

@@ -35,8 +35,8 @@
  */
 package org.preesm.graphiti.model.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.graphiti.model.FileFormat;
 
 /**
@@ -48,9 +48,9 @@ public class FileFormatTest {
    * Test construct.
    */
   @Test
-  public void testConstruct() {
+  void testConstruct() {
     final FileFormat fileFormat = new FileFormat("txt", "Text");
-    Assert.assertEquals("Text", fileFormat.getContentType());
+    Assertions.assertEquals("Text", fileFormat.getContentType());
   }
 
 }

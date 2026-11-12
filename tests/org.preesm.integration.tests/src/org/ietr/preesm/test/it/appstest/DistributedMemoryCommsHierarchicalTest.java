@@ -38,15 +38,13 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
@@ -55,45 +53,27 @@ import org.junit.runners.Parameterized.Parameters;
  * @author anmorvan
  *
  */
-@RunWith(Parameterized.class)
-public class DistributedMemoryCommsHierarchicalTest {
+class DistributedMemoryCommsHierarchicalTest {
 
-  static final String[] scenarios = new String[] { "4core.scenario" };
-  static final String[] workflows = new String[] { "CodegenMemoryScriptsMixedMerged.workflow",
+  static final String   PROJECT   = "org.ietr.preesm.stereo";
+  static final String[] SCENARIOS = { "4core.scenario" };
+  static final String[] WORKFLOWS = { "CodegenMemoryScriptsMixedMerged.workflow",
     "CodegenMemoryScriptsDistributedOnly.workflow" };
-
-  static final String projectName = "org.ietr.preesm.stereo";
-
-  final String workflow;
-  final String scenario;
-
-  public DistributedMemoryCommsHierarchicalTest(final String workflow, final String scenario) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-  }
 
   /**
    *
    */
-  @Parameters(name = "{0} - {1}")
-  public static Collection<Object[]> data() {
-    final Object[][] params = new Object[workflows.length * scenarios.length][2];
-    int i = 0;
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params[i][0] = workflow;
-        params[i][1] = scenario;
-        i++;
-      }
-    }
-    return Arrays.asList(params);
+  static Stream<Arguments> data() {
+    return Stream.of(WORKFLOWS)
+        .flatMap(workflow -> Stream.of(SCENARIOS).map(scenario -> Arguments.of(workflow, scenario)));
   }
 
-  @Test
-  public void testDistributedMemoryComms() throws IOException, CoreException {
+  @ParameterizedTest(name = "{0} - {1}")
+  @MethodSource("data")
+  void testDistributedMemoryComms(final String workflow, final String scenario) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
-    final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

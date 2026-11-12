@@ -56,8 +56,6 @@ import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionVertex;
 import org.preesm.algorithm.model.dag.DAGEdge;
-import org.preesm.algorithm.model.sdf.SDFEdge;
-import org.preesm.algorithm.model.sdf.SDFGraph;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBasicAllocator;
 import org.preesm.algorithm.synthesis.memalloc.allocation.PiBestFitAllocator;
@@ -226,7 +224,7 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
     // Get total set of vertices after distribution
     final Set<PiMemoryExclusionVertex> verticesAfterDistribution = memEx.getTotalSetOfVertices();
     final Set<PiMemoryExclusionVertex> verticesInMegs = new LinkedHashSet<>();
-    megs.forEach((bank, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
+    megs.forEach((_, meg) -> verticesInMegs.addAll(meg.getTotalSetOfVertices()));
 
     // Check that the total number of vertices is unchanged
     if (!valueDistribution.equals(MemoryAllocatorTask.VALUE_DISTRIBUTION_SHARED_ONLY)

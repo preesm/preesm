@@ -130,7 +130,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
    */
   private void allocateLargestFirst() {
     final ArrayList<PiMemoryExclusionVertex> list = new ArrayList<>(this.inputExclusionGraph.vertexSet());
-    Collections.sort(list, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
+    list.sort((v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
     allocateInOrder(list);
   }
 
@@ -246,7 +246,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
       solver.solve();
 
       final ArrayList<PiMemoryExclusionVertex> stableSet = new ArrayList<>(solver.getHeaviestClique());
-      Collections.sort(stableSet, (v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
+      stableSet.sort((v1, v2) -> Long.compare(v2.getWeight(), v1.getWeight()));
       orderedList.addAll(stableSet);
 
       inclusionGraph.removeAllVertices(stableSet);
@@ -298,7 +298,7 @@ public abstract class PiOrderedAllocator extends PiMemoryAllocator {
 
       case MEDIANE:
         final List<Long> listCopy = new ArrayList<>(this.listsSize);
-        Collections.sort(listCopy);
+        listCopy.sort(null);
         final long mediane = listCopy.get(this.listsSize.size() / 2);
         index = this.listsSize.indexOf(mediane);
         break;

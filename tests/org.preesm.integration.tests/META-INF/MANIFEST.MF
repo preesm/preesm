@@ -5,9 +5,8 @@ Automatic-Module-Name: org.preesm.integration.tests
 Bundle-SymbolicName: org.preesm.integration.tests
 Bundle-Version: 3.21.0.qualifier
 Bundle-Vendor: IETR / INSA Rennes - VAADER
-Bundle-RequiredExecutionEnvironment: JavaSE-21
-Require-Bundle: org.junit;bundle-version="4.13.2",
- org.preesm.codegen.xtend,
+Bundle-RequiredExecutionEnvironment: JavaSE-25
+Require-Bundle: org.preesm.codegen.xtend,
  org.preesm.model.pisdf,
  org.preesm.commons,
  org.preesm.cli,
@@ -17,7 +16,8 @@ Require-Bundle: org.junit;bundle-version="4.13.2",
  org.yaml.snakeyaml;bundle-version="2.0.0"
 Export-Package: org.ietr.preesm.test.it.api,
  org.ietr.preesm.test.it.appstest
-Import-Package: org.junit.jupiter.api;version="5.8.1",
- org.junit.jupiter.api.function;version="5.8.1",
- org.junit.jupiter.api.parallel;version="5.8.1",
- org.junit.platform.commons.annotation;version="1.8.1"
+Import-Package: org.junit.jupiter.api;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.api.function;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.api.parallel;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.params;version="[6.0.0,7.0.0)",
+ org.junit.jupiter.params.provider;version="[6.0.0,7.0.0)"

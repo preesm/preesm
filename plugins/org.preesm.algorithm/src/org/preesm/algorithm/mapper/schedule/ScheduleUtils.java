@@ -58,7 +58,7 @@ public class ScheduleUtils {
     final FileReader fileReader = new FileReader(fileName);
     try (BufferedReader bufferedReader = new BufferedReader(fileReader)) {
       while ((line = bufferedReader.readLine()) != null) {
-        sb.append(line + "\n");
+        sb.append(line).append("\n");
       }
     }
     return sb.toString();
@@ -75,7 +75,7 @@ public class ScheduleUtils {
   /**
    *
    */
-  public static final Schedule parseJsonString(final String inputJsonString) throws IOException {
+  public static final Schedule parseJsonString(final String inputJsonString) {
     final ObjectMapper mapper = new ObjectMapper();
     return mapper.readValue(inputJsonString, Schedule.class);
   }

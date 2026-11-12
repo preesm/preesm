@@ -148,7 +148,7 @@ public class IPXACTDesignParser extends IPXACTParser {
 
     try {
       inputStream.close();
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       throw new PreesmRuntimeException("Could not parse IPXACT");
     }
 

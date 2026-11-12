@@ -39,61 +39,35 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class FpgaSynthesisTest {
+class FpgaSynthesisTest {
 
-  final String workflow;
-  final String scenario;
-  final String projectName;
-
-  /**
-   */
-  public FpgaSynthesisTest(final String workflow, final String scenario, final String projectName) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-    this.projectName = projectName;
-  }
-
-  /**
-   *
-   */
-  @Parameters(name = "{2} - {0} - {1}")
-  public static Collection<Object[]> data() {
-
-    final List<Object[]> params = new ArrayList<>();
-
+  static Stream<Arguments> data() {
     final String triangleProjectName = "org.ietr.preesm.triangle";
-    final String[] stereoScenarios = new String[] { "Triangle.scenario" };
-    final String[] stereoWorkflows = new String[] { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
+    final String[] stereoScenarios = { "Triangle.scenario" };
+    final String[] stereoWorkflows = { "FPGAanalysis.workflow", "FPGAanalysisADFGLinear.workflow",
       "FPGAanalysisAVGEval.workflow", "FPGAanalysisSDFEval.workflow", "FPGAanalysisPacking.workflow" };
-    for (final String workflow : stereoWorkflows) {
-      for (final String scenario : stereoScenarios) {
-        params.add(new Object[] { workflow, scenario, triangleProjectName });
-      }
-    }
 
-    return params;
+    return Stream.of(stereoWorkflows).flatMap(
+        workflow -> Stream.of(stereoScenarios).map(scenario -> Arguments.of(workflow, scenario, triangleProjectName)));
   }
 
-  @Test
-  public void test() throws IOException, CoreException {
+  @ParameterizedTest(name = "{2} - {0} - {1}")
+  @MethodSource("data")
+  void test(final String workflow, final String scenario, final String projectName) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

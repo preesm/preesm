@@ -51,8 +51,8 @@ import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.slam.Design;
 import org.preesm.model.slam.SlamPackage;
@@ -61,12 +61,12 @@ import org.preesm.model.slam.serialize.IPXACTResourceFactoryImpl;
 
 /**
  */
-public class SlamTest {
+class SlamTest {
 
   /**
    */
   @Test
-  public void testSlam() throws IOException {
+  void testSlam() throws IOException {
 
     // check that the factory is registered
     // (only happens in command-line mode)
@@ -96,7 +96,7 @@ public class SlamTest {
       success &= createTempFile.setReadable(true, true);
       success &= createTempFile.setWritable(true, true);
       success &= createTempFile.setExecutable(true, true);
-      Assert.assertTrue(success);
+      Assertions.assertTrue(success);
     }
     createTempFile.deleteOnExit();
 
@@ -104,8 +104,8 @@ public class SlamTest {
 
     final List<String> readAllLines = Files.readAllLines(createTempFile.toPath());
 
-    Assert.assertNotNull(readAllLines);
-    Assert.assertNotEquals(0, readAllLines.size());
+    Assertions.assertNotNull(readAllLines);
+    Assertions.assertNotEquals(0, readAllLines.size());
   }
 
   /**

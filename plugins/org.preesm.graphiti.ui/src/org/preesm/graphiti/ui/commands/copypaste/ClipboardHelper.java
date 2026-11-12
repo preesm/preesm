@@ -59,8 +59,8 @@ public interface ClipboardHelper {
     transfer.setSelection(new StructuredSelection(verticesArray));
 
     // put in clipboard
-    final Object[] data = new Object[] { verticesArray };
-    final Transfer[] transfers = new Transfer[] { transfer };
+    final Object[] data = { verticesArray };
+    final Transfer[] transfers = { transfer };
     GraphitiClipboard.getInstance().setContents(data, transfers);
   }
 }

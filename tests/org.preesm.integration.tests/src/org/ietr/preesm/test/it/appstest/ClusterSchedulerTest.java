@@ -36,16 +36,13 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
@@ -55,50 +52,33 @@ import org.junit.runners.Parameterized.Parameters;
  * @author jheulot
  *
  */
-@RunWith(Parameterized.class)
-public class ClusterSchedulerTest {
+class ClusterSchedulerTest {
 
   static final String   PROJECT           = "org.ietr.preesm.cluster.scheduler";
-  static final String[] SCENARIOS         = new String[] { "1coreFlat.scenario", "1coreSobel.scenario",
-    "4coreSobel.scenario" };
-  static final String[] WORKFLOWS_GRAPH   = new String[] { "CodegenGraphPerformance.workflow",
-    "CodegenGraphMemory.workflow" };
-  static final String[] WORKFLOWS_CLUSTER = new String[] { "CodegenClusterPerformance.workflow",
-    "CodegenClusterMemory.workflow" };
-
-  final String workflow;
-  final String scenario;
-
-  public ClusterSchedulerTest(final String workflow, final String scenario) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-  }
+  static final String[] SCENARIOS         = { "1coreFlat.scenario", "1coreSobel.scenario", "4coreSobel.scenario" };
+  static final String[] WORKFLOWS_GRAPH   = { "CodegenGraphPerformance.workflow", "CodegenGraphMemory.workflow" };
+  static final String[] WORKFLOWS_CLUSTER = { "CodegenClusterPerformance.workflow", "CodegenClusterMemory.workflow" };
 
   /**
   *
   */
-  @Parameters(name = "{0} - {1}")
-  public static Collection<Object[]> data() {
-    final List<Object[]> params = new ArrayList<>();
-    for (final String workflow : WORKFLOWS_GRAPH) {
-      for (final String scenario : SCENARIOS) {
-        params.add(new Object[] { workflow, scenario });
-      }
-    }
-    for (final String workflow : WORKFLOWS_CLUSTER) {
-      for (final String scenario : SCENARIOS) {
-        params.add(new Object[] { workflow, scenario });
-      }
-      params.add(new Object[] { workflow, "1coreHierarchical.scenario" });
-    }
-    return params;
+  static Stream<Arguments> data() {
+    final Stream<Arguments> graphArguments = Stream.of(WORKFLOWS_GRAPH)
+        .flatMap(workflow -> Stream.of(SCENARIOS).map(scenario -> Arguments.of(workflow, scenario)));
+
+    final Stream<Arguments> clusterArguments = Stream.of(WORKFLOWS_CLUSTER)
+        .flatMap(workflow -> Stream.concat(Stream.of(SCENARIOS).map(scenario -> Arguments.of(workflow, scenario)),
+            Stream.of(Arguments.of(workflow, "1coreHierarchical.scenario"))));
+
+    return Stream.concat(graphArguments, clusterArguments);
   }
 
-  @Test
-  public void testClusterScheduler() throws IOException, CoreException {
+  @ParameterizedTest(name = "{0} - {1}")
+  @MethodSource("data")
+  void testClusterScheduler(final String workflow, final String scenario) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, PROJECT, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

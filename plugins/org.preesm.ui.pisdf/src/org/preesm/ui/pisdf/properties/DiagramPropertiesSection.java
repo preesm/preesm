@@ -124,7 +124,7 @@ public class DiagramPropertiesSection extends GFPropertySection implements ITabb
     this.lblPeriod.setLayoutData(data);
 
     /*** Period box listener ***/
-    this.txtPeriod.addModifyListener(e -> updatePeriod());
+    this.txtPeriod.addModifyListener(_ -> updatePeriod());
 
     this.lblPeriodValueObj = factory.createCLabel(composite, "0");
     data = new FormData();

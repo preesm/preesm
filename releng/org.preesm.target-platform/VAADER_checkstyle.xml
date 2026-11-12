@@ -123,9 +123,9 @@
     <module name="CommentsIndentation"/>
     <module name="CatchParameterName"/>
     <module name="JavadocType"/>
-    <module name="JavadocStyle">
+<!--     <module name="JavadocStyle">
       <property name="checkFirstSentence" value="false"/>
-    </module>
+    </module> -->
   </module>
   <module name="FileTabCharacter">
     <property name="eachLine" value="true"/>

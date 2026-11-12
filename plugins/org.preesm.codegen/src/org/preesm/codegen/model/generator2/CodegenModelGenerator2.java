@@ -163,8 +163,8 @@ public class CodegenModelGenerator2 {
 
     // sort blocks
     final List<Block> resultList = coreBlocks.entrySet().stream()
-        .sorted((e1, e2) -> e1.getKey().getHardwareId() - e2.getKey().getHardwareId()).map(Entry::getValue)
-        .collect(Collectors.toList());
+        .sorted((e1, e2) -> Integer.compare(e1.getKey().getHardwareId(), e2.getKey().getHardwareId()))
+        .map(Entry::getValue).collect(Collectors.toList());
 
     // generate buffer definitions
     generateBuffers(coreBlocks);
@@ -410,18 +410,19 @@ public class CodegenModelGenerator2 {
 
     final PortDirection dir;
     final InitActor initActor;
-    if (actor instanceof InitActor) {
-      initActor = (InitActor) actor;
-      fifoCall.setOperation(FifoOperation.POP);
-      dir = PortDirection.OUTPUT;
 
-    } else if (actor instanceof final EndActor endActor) {
-      initActor = (InitActor) endActor.getInitReference();
-      fifoCall.setOperation(FifoOperation.PUSH);
-      dir = PortDirection.INPUT;
-
-    } else {
-      throw new PreesmRuntimeException();
+    switch (actor) {
+      case final InitActor iActor -> {
+        initActor = iActor;
+        fifoCall.setOperation(FifoOperation.POP);
+        dir = PortDirection.OUTPUT;
+      }
+      case final EndActor eActor -> {
+        initActor = (InitActor) eActor.getInitReference();
+        fifoCall.setOperation(FifoOperation.PUSH);
+        dir = PortDirection.INPUT;
+      }
+      default -> throw new PreesmRuntimeException();
     }
 
     final Buffer buffer = (Buffer) memoryLinker.getPortToVariableMap().get(actor.getDataPort());

@@ -665,7 +665,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     if (hosts != null) {
       // Changes to the KeySet are applied to the map
       hosts.keySet().removeAll(vertices);
-      hosts.forEach((host, hosted) -> {
+      hosts.forEach((_, hosted) -> {
         if (hosted.removeAll(vertices)) {
           // List of hosted mObjects should never be impacted by the remove operation. (in the context of Distributor
           // call) indeed, deeply removed vertices correspond to vertices belonging to other memory banks, hence if a
@@ -760,7 +760,7 @@ public class PiMemoryExclusionGraph extends SimpleGraph<PiMemoryExclusionVertex,
     final Map<PiMemoryExclusionVertex, Set<PiMemoryExclusionVertex>> hosts = getPropertyBean()
         .getValue(PiMemoryExclusionGraph.HOST_MEMORY_OBJECT_PROPERTY);
     if (hosts != null) {
-      hosts.forEach((host, hosted) -> allVertices.addAll(hosted));
+      hosts.forEach((_, hosted) -> allVertices.addAll(hosted));
     }
 
     return allVertices;
