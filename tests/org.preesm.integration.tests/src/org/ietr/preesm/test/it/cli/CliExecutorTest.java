@@ -36,14 +36,13 @@ class CliExecutorTest {
   @Test
   void start_withArgs_runsCli() throws Exception {
 
-    final String projectName = "org.ietr.preesm.sobel";
+    final String projectName = "org.ietr.preesm.tutorials.tutorial1";
 
     setUp(projectName);
 
     try {
       final CLIWorkflowExecutor cliExecApp = new CLIWorkflowExecutor();
-      final IApplicationContext context = new FakeApplicationContext(
-          new String[] { projectName, "-s", "1core.scenario", "-w", "Codegen.workflow" });
+      final IApplicationContext context = new FakeApplicationContext(new String[] { projectName });
 
       final Object result = cliExecApp.start(context);
 
