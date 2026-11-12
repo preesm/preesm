@@ -177,9 +177,15 @@ class CPrinter extends BlankPrinter {
 	«buffer.type» *const «buffer.name» = («buffer.type»*) («var offset = 0L»«
 	{offset = buffer.getOffsetInByte
 	 var b = buffer.container;
-	 while(b instanceof SubBuffer){
-		offset = offset + b.getOffsetInByte
-	  	b = b.container
+	 while(b instanceof SubBuffer && !(b as SubBuffer).isWorkMem() && !(b as SubBuffer).isInterface()){
+		val sb = b as SubBuffer
+		
+		if (sb.container === null) {
+  		  throw new PreesmRuntimeException("SubBuffer " + sb.name + " has no container")
+  		}
+  
+		offset = offset + sb.getOffsetInByte
+		b = sb.container
 	  }
 	 b}.name»+«offset»);  // «buffer.comment» size:= «buffer.getNbToken»*«buffer.type»
 	'''

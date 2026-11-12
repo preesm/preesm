@@ -60,6 +60,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
       @Parameter(name = ClusterCreationTask.PARAM_VERBOSE, description = "More or less logs",
           values = { @Value(name = ClusterCreationTask.VALUE_TRUE), @Value(name = ClusterCreationTask.VALUE_FALSE) }),
 
+      @Parameter(name = ClusterCreationTask.PARAM_MEM_OPTIM,
+          description = "Modify srdag graph to restore memory reuse opportunities with the memory scripts",
+          values = { @Value(name = ClusterCreationTask.VALUE_TRUE), @Value(name = ClusterCreationTask.VALUE_FALSE) }),
+
       @Parameter(name = ClusterCreationTask.PARAM_DEBUG,
           description = "Enable debug mode (will export the intermediate graphs"
               + " in the file Algo/generated/clustering-debug)",
@@ -124,6 +128,8 @@ public class ClusterCreationTask extends AbstractTaskImplementation {
   public static final String PARAM_ALLOCATION_HEURISTIC = "Allocation heuristic";
 
   public static final String PARAM_VERBOSE = "Verbose";
+
+  public static final String PARAM_MEM_OPTIM = "Memory Optimization";
 
   public static final String PARAM_DEBUG = "Debug";
   public static final String VALUE_TRUE  = "True";

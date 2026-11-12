@@ -1,11 +1,8 @@
-package org.preesm.algorithm.synthesis.memalloc.passiveactors;
+package org.preesm.algorithm.synthesis.memalloc.passive;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
@@ -52,13 +49,10 @@ public class PassiveActorVerifier {
       final long bufferSize = pp.getSubBufferSize();
 
       String scriptName = "";
-      try {
-        final URI scriptURI = new URI(pp.getScript());
-        final URL scriptURL = scriptURI.toURL();
-        final String path = scriptURL.getPath();
-        scriptName = path.substring(path.lastIndexOf('/') + 1);
-      } catch (URISyntaxException | MalformedURLException e) {
-        e.printStackTrace();
+      final String script = pp.getScript();
+      if (script != null && !script.isEmpty()) {
+        final String lastSegment = new Path(script).lastSegment();
+        scriptName = (lastSegment != null) ? lastSegment : "";
       }
 
       boolean pointersValuesAreCorrect = verifyPointerValue(globalBeginEnd.getKey(), bufferSize)

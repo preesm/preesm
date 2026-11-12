@@ -2765,7 +2765,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
 
   /**
    * {@link Buffer#reaffectCreator(Block) Set the creator} of the given {@link Buffer} to the given {@link CoreBlock},
-   * and recursively iterate over the {@link Buffer#getChildrens() children} {@link SubBuffer} of this {@link Buffer} to
+   * and recursively iterate over the {@link Buffer#getChildren() children} {@link SubBuffer} of this {@link Buffer} to
    * set the same {@link Buffer#reaffectCreator(Block) creator} for them.
    *
    * @param buffer
@@ -2781,7 +2781,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     buffer.reaffectCreator(correspondingOperatorBlock);
     buffer.setLocal(isLocal);
     // Do the same recursively for all its children subbuffers
-    for (final SubBuffer subBuffer : buffer.getChildrens()) {
+    for (final SubBuffer subBuffer : buffer.getChildren()) {
       recursiveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
     }
   }

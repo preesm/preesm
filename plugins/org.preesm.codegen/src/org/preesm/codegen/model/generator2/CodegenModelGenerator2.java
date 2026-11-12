@@ -45,7 +45,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.ECollections;
@@ -82,9 +81,8 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
-import org.preesm.codegen.model.generator2.clustering.IClusterCodegenModelGenerator;
-import org.preesm.codegen.model.generator2.clustering.PassiveCodegenModelGeneratorSwitch;
-import org.preesm.codegen.model.generator2.clustering.PiMMCodegenModelGeneratorSwitch;
+import org.preesm.codegen.model.generator2.clustering.AllocationToCodegenBuffer2;
+import org.preesm.codegen.model.generator2.clustering.PiMMCodegenModelGeneratorSwitch2;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.codegen.model.util.VariableSorter;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
@@ -107,7 +105,6 @@ import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
 import org.preesm.model.pisdf.InterfaceActor;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PassiveActor;
 import org.preesm.model.pisdf.PersistenceLevel;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -147,7 +144,7 @@ public class CodegenModelGenerator2 {
   private final Mapping    mapping;
   private final Allocation memAlloc;
 
-  private AllocationToCodegenBuffer memoryLinker;
+  private AllocationToCodegenBuffer2 memoryLinker;
 
   private final Map<PiGraph, CHeaderRefinement> alreadyVisitedClusters;
 
@@ -155,11 +152,7 @@ public class CodegenModelGenerator2 {
 
   private final boolean papify;
 
-  private final String clusterGenType;
-
-  public static final String CLUSTER_TYPE_PIMM = "pimm";
-
-  public static final String CLUSTER_TYPE_PASSIVE = "passive";
+  public static final String WORKING_MEMORY_NAME = "workingMemory";
 
   private CodegenModelGenerator2(final Design archi, final PiGraph algo, final Scenario scenario,
       final Schedule schedule, final Mapping mapping, final Allocation memAlloc, final boolean papify) {
@@ -172,18 +165,6 @@ public class CodegenModelGenerator2 {
     this.papify = papify;
     this.alreadyVisitedClusters = new HashMap<>();
     this.refinementBlocks = new ArrayList<>();
-    this.clusterGenType = findClusterGenType(algo);
-  }
-
-  private static String findClusterGenType(PiGraph top) {
-    for (final PiGraph graph : top.getChildrenGraphs().stream().filter(g -> g.isCluster()).toList()) {
-      for (final AbstractActor a : graph.getActors()) {
-        if (a instanceof PassiveActor) {
-          return CLUSTER_TYPE_PASSIVE;
-        }
-      }
-    }
-    return CLUSTER_TYPE_PIMM;
   }
 
   private List<Block> generate() {
@@ -204,7 +185,7 @@ public class CodegenModelGenerator2 {
         .buildScheduleAndTopologicalOrderedList();
 
     // 1- generate variables (and keep track of them with a linker)
-    this.memoryLinker = AllocationToCodegenBuffer.link(memAlloc, scenario, algo, totallyOrderedActors);
+    this.memoryLinker = AllocationToCodegenBuffer2.link(memAlloc, scenario, algo, totallyOrderedActors);
 
     // 2- generate code
     generateCode(coreBlocks, totallyOrderedActors);
@@ -229,7 +210,7 @@ public class CodegenModelGenerator2 {
   }
 
   private void generateBuffer(final Map<ComponentInstance, CoreBlock> coreBlocks, final Buffer mainBuffer) {
-    final org.preesm.algorithm.memalloc.model.Buffer key = this.memoryLinker.getAllocationBuffer(mainBuffer);
+    final org.preesm.algorithm.memalloc.model.MemBuffer key = this.memoryLinker.getAllocationBuffer(mainBuffer);
     final PhysicalBuffer memoryBankObj = key.getBank();
     final String memoryBank = memoryBankObj.getMemoryBank().getInstanceName();
 
@@ -294,7 +275,10 @@ public class CodegenModelGenerator2 {
     if (variable instanceof final Buffer buffer) {
       buffer.setLocal(isLocal);
       // Do the same recursively for all its children subbuffers
-      for (final SubBuffer subBuffer : buffer.getChildrens()) {
+      if (buffer instanceof final SubBuffer subBuf && subBuf.isWorkMem()) {
+        return;
+      }
+      for (final SubBuffer subBuffer : buffer.getChildren()) {
         recursiveSetBufferCreator(subBuffer, correspondingOperatorBlock, isLocal);
       }
     }
@@ -311,7 +295,7 @@ public class CodegenModelGenerator2 {
 
       switch (actor) {
         case final Actor normalActor ->
-          generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
+          generateActorFiring(normalActor, this.memoryLinker.getPortToVariableMap(), coreBlock, null);
         case final UserSpecialActor userSpecialActor ->
           generateSpecialActor(userSpecialActor, this.memoryLinker.getPortToVariableMap(), coreBlock);
         case final SrdagActor srdagActor -> generateInitEndFifoCall(srdagActor, coreBlock);
@@ -368,10 +352,10 @@ public class CodegenModelGenerator2 {
     final FifoAllocation fifoAllocation = memAlloc.getFifoAllocations().get(fifo);
 
     if (actor instanceof SendActor) {
-      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getSourceBuffer();
+      final org.preesm.algorithm.memalloc.model.MemBuffer allocBuffer = fifoAllocation.getSourceBuffer();
       buffer = memoryLinker.getCodegenBuffer(allocBuffer);
     } else {
-      final org.preesm.algorithm.memalloc.model.Buffer allocBuffer = fifoAllocation.getTargetBuffer();
+      final org.preesm.algorithm.memalloc.model.MemBuffer allocBuffer = fifoAllocation.getTargetBuffer();
       buffer = memoryLinker.getCodegenBuffer(allocBuffer);
     }
     newComm.setData(buffer);
@@ -480,7 +464,7 @@ public class CodegenModelGenerator2 {
     final Buffer buffer = (Buffer) memoryLinker.getPortToVariableMap().get(actor.getDataPort());
     fifoCall.addParameter(buffer, dir);
 
-    final org.preesm.algorithm.memalloc.model.Buffer buffer2 = memAlloc.getDelayAllocations().get(initActor);
+    final org.preesm.algorithm.memalloc.model.MemBuffer buffer2 = memAlloc.getDelayAllocations().get(initActor);
     final Buffer delayBuffer = memoryLinker.getCodegenBuffer(buffer2);
 
     buffer.getUsers().add(coreBlock);
@@ -570,7 +554,7 @@ public class CodegenModelGenerator2 {
   }
 
   private void generateActorFiring(final Actor actor, final Map<Port, Variable> portToVariable,
-      final CoreBlock coreBlock) {
+      final CoreBlock coreBlock, final Buffer workingMemory) {
 
     // store buffers on which MD5 can be computed to check validity of transformations
     if (actor.getDataOutputPorts().isEmpty()) {
@@ -586,12 +570,12 @@ public class CodegenModelGenerator2 {
       final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {
         final ActorFunctionCall init = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, initPrototype,
-            portToVariable);
+            portToVariable, null);
         coreBlock.getInitBlock().getCodeElts().add(init);
       }
       final FunctionPrototype loopPrototype = cHeaderRef.getLoopPrototype();
       final ActorFunctionCall loop = CodegenModelUserFactory.eINSTANCE.createActorFunctionCall(actor, loopPrototype,
-          portToVariable);
+          portToVariable, workingMemory);
       coreBlock.getLoopBlock().getCodeElts().add(loop);
       registerCallVariableToCoreBlock(coreBlock, loop);
     }
@@ -606,22 +590,15 @@ public class CodegenModelGenerator2 {
     final PiGraph sourceCluster = PreesmCopyTracker.getSource(cluster);
     if (this.alreadyVisitedClusters.containsKey(sourceCluster)) {
       clusterRefinement = this.alreadyVisitedClusters.get(sourceCluster);
-    } else {
 
-      IClusterCodegenModelGenerator clusterGenerator;
-      if (Objects.equals(this.clusterGenType, CLUSTER_TYPE_PIMM)) {
-        /** if not, Create refinement block for cluster */
-        final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(sourceCluster);
-        clusterGenerator = new PiMMCodegenModelGeneratorSwitch(sourceCluster, scenario,
-            schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem);
-      } else if (Objects.equals(this.clusterGenType, CLUSTER_TYPE_PASSIVE)) {
-        clusterGenerator = new PassiveCodegenModelGeneratorSwitch(sourceCluster, scenario,
-            schedule.getInternalSchedules().get(sourceCluster));
-      } else {
-        throw new PreesmRuntimeException("the cluster generator type " + this.clusterGenType
-            + " is not known. Choose between the following values : " + CLUSTER_TYPE_PIMM + ", "
-            + CLUSTER_TYPE_PASSIVE);
-      }
+    } else {
+      PiMMCodegenModelGeneratorSwitch2 clusterGenerator;
+
+      /** if not, Create refinement block for cluster */
+      final WorkingMemory clusterWorkMem = memAlloc.recursivelyGetMemoryAttachedTo(cluster);
+      final Buffer codegenMainBuffer = memoryLinker.getWorkingMemory(cluster);
+      clusterGenerator = new PiMMCodegenModelGeneratorSwitch2(sourceCluster, scenario,
+          schedule.getInternalSchedules().get(sourceCluster), clusterWorkMem, codegenMainBuffer);
 
       clusterGenerator.generate();
 
@@ -642,13 +619,14 @@ public class CodegenModelGenerator2 {
 
       this.alreadyVisitedClusters.put(sourceCluster, clusterRefinement);
     }
+
     /** Transform cluster in a normal actor, with a c refinement */
     final Actor actorCluster = PiMMUserFactory.instance.createActor();
     actorCluster.setRefinement(clusterRefinement);
     this.replacePiGraphByActor(cluster, actorCluster);
 
     /** Add functions call in refinement in current core block */
-    generateActorFiring(actorCluster, portToVariable, coreBlock);
+    generateActorFiring(actorCluster, portToVariable, coreBlock, this.memoryLinker.getWorkingMemory(cluster));
   }
 
   /**
@@ -697,7 +675,7 @@ public class CodegenModelGenerator2 {
         // We have to recreate a function argument for init, otherwise it can't be in two lists at a time
         final FunctionArgument initArg = PiMMUserFactory.instance.createFunctionArgument();
         initArg.setDirection(loopArg.getDirection());
-        initArg.setIsConfigurationParameter(true);
+        initArg.setIsConfigurationParameter(false);
         initArg.setIsPassedByReference(false);
         initArg.setName(port.getName());
         initArg.setType("int");
@@ -710,6 +688,16 @@ public class CodegenModelGenerator2 {
       }
       loopArgs.add(loopArg);
     }
+
+    // create workingMemory loop Argument
+    final FunctionArgument workMemArg = PiMMUserFactory.instance.createFunctionArgument();
+    workMemArg.setDirection(org.preesm.model.pisdf.Direction.IN);
+    workMemArg.setIsConfigurationParameter(false);
+    workMemArg.setIsPassedByReference(false);
+    workMemArg.setName(WORKING_MEMORY_NAME);
+    workMemArg.setType("char");
+    loopArgs.add(workMemArg);
+
     loopPrototype.getArguments().addAll(loopArgs);
     initPrototype.getArguments().addAll(initArgs);
 

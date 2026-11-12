@@ -50,6 +50,7 @@ import org.preesm.commons.exceptions.PreesmRuntimeException
 import org.preesm.model.pisdf.AbstractActor
 import org.preesm.model.pisdf.Fifo
 import org.preesm.model.pisdf.InitActor
+import org.preesm.model.pisdf.DataInterface
 import org.preesm.model.slam.ComponentInstance
 
 // !!! This is needed as of the current versions of xcore/xtext
@@ -67,14 +68,14 @@ type long wraps long
 type double wraps double
 
 
-interface Buffer {
+interface MemBuffer {
 	long sizeInBit // size in bit
 	contains LogicalBuffer[] children opposite containingBuffer
 	op PhysicalBuffer getBank()
 	op Allocation getAllocation() {
 		return bank.allocation
 	}
-	op boolean isEqualsOrRecursivelyContains(Buffer other) {
+	op boolean isEqualsOrRecursivelyContains(MemBuffer other) {
 		return this == other || children.exists[it.isEqualsOrRecursivelyContains(other)]
 	}
 	
@@ -83,7 +84,7 @@ interface Buffer {
 	}
 }
 
-class PhysicalBuffer extends Buffer {
+class PhysicalBuffer extends MemBuffer {
 	refers Allocation allocation opposite physicalBuffers
 	refers ComponentInstance memoryBank
 	op PhysicalBuffer getBank() {
@@ -91,12 +92,18 @@ class PhysicalBuffer extends Buffer {
 	}
 }
 
-class LogicalBuffer extends Buffer {
+class LogicalBuffer extends MemBuffer {
 	long offsetInBit // absolute offset in bits wrt parent address 0
-	refers Buffer containingBuffer opposite children
+	boolean workMemValue = "false"
+	refers MemBuffer containingBuffer opposite children
 	op PhysicalBuffer getBank() {
 		return containingBuffer?.getBank()
 	}
+	
+	op boolean isWorkMem() {
+		return isWorkMemValue
+	}
+	
 }
 
 class NullBuffer extends LogicalBuffer {
@@ -113,24 +120,24 @@ class FifoAllocation {
 
 	// must verify that the fifo source actor is mapped to an operator
 	// with a link to memory bank storing the sourceBuffer
-	refers Buffer sourceBuffer
+	refers MemBuffer sourceBuffer
 
 	// must verify that the fifo target actor is mapped to an operator
 	// with a link to memory bank storing the targetBuffer
-	refers Buffer targetBuffer
+	refers MemBuffer targetBuffer
 
 	// Can be empty if the route does not use any proxy operator, i.e. when
 	// source and target buffers are on the same memory bank;
-	contains Buffer[] routeBuffers
+	contains MemBuffer[] routeBuffers
 
-	op Buffer[] getAllBuffers() {
+	op MemBuffer[] getAllBuffers() {
 		return (#[sourceBuffer] + routeBuffers + #[targetBuffer]).toEList
 	}
 }
 
 class DelayAllocationEntry wraps java.util.Map$Entry {
 	refers InitActor key
-	refers Buffer value
+	refers MemBuffer value
 }
 
 abstract class AbstractAllocation {
@@ -143,20 +150,20 @@ abstract class AbstractAllocation {
 	// Buffers allocated for the permanent and local delays. The values are pushed by the
 	// EndActor and poped by the InitActor. To get the buffer for an EndActor, get its
 	// init reference allocated buffer.
-	contains DelayAllocationEntry[] delayAllocations
+	contains DelayAllocationEntry[] delayAllocations	
 
 	// Query method that returns the Fifos mapped to this buffer
 	// and this buffer children (recursively)
-	op Fifo[] getFifoAllocationEntry(Buffer b) {
+	op Fifo[] getFifoAllocationEntry(MemBuffer b) {
 		return fifoAllocations.filter[it.value.allBuffers.exists[b.isEqualsOrRecursivelyContains(it)]].map[it.key].toEList.unmodifiableEList
 	}
 
 	// Query method that return the Delays (in form of their InitActors) mapped to this buffer
 	// and this buffer children (recursively)
-	op InitActor[] getDelayAllocationEntry(Buffer b) {
+	op InitActor[] getDelayAllocationEntry(MemBuffer b) {
 		return delayAllocations.filter[b.isEqualsOrRecursivelyContains(it.value)].map[it.key].toEList.unmodifiableEList
 	}
-
+	
 	op WorkingMemory[] getAllWorkingMemories() {
 		return (workingMemories + workingMemories.map[it.allWorkingMemories].flatten).toEList.unmodifiableEList
 	}
@@ -181,7 +188,8 @@ abstract class AbstractAllocation {
 		}
 		return workMem.getMainBuffer().getSizeInBit()
 	}
-
+	
+	op long getMemorySize()
 }
 
 class WorkingMemoryEntry wraps java.util.Map$Entry {
@@ -215,6 +223,27 @@ class Allocation extends AbstractAllocation {
 	op PhysicalBuffer physicalBufferAlreadyExists(PhysicalBuffer phys) {
 		return physicalBuffers.filter[it.getBank() === phys.getBank()].toEList.unmodifiableEList.getFirst();
 	}
+	
+	op void addWorkingMemory(WorkingMemory workMem, ComponentInstance bank) {
+		
+		val physBuffer = physicalBuffers.filter[it.getMemoryBank() == bank].toEList.getFirst()
+		if(physBuffer === null) {
+			throw new PreesmRuntimeException("no physical buffer for memory component instance " + bank.getInstanceName())
+		}
+	}
+	
+	op long getMemorySize() {
+		var workMemsSize = 0L
+		if(!workingMemories.isEmpty()) {
+			workMemsSize = workingMemories.map[it.memorySize].reduce[a, b|a + b]
+		}
+		return physicalBuffers.map[sizeInBit].reduce[a, b | a + b] + workMemsSize
+	}
+}
+
+class InterfaceBufferEntry wraps java.util.Map$Entry {
+	refers DataInterface key
+	refers LogicalBuffer value
 }
 
 class WorkingMemory extends AbstractAllocation {
@@ -223,5 +252,24 @@ class WorkingMemory extends AbstractAllocation {
 	refers AbstractActor attachedActor
 	
 	// Main Buffer of the working memory of a sub-graph
-	contains LogicalBuffer mainBuffer
+	refers LogicalBuffer mainBuffer
+	
+	contains InterfaceBufferEntry[] interfaceBuffers
+	
+	op DataInterface getInterface(LogicalBuffer lb) {
+		return interfaceBuffers.filter[it.getValue() === lb].map[it.getKey()].toEList.first
+	}
+	
+	op long getMemorySize() {
+		var workMemsSize = 0L
+		if(!workingMemories.isEmpty()) {
+			workMemsSize = workingMemories.map[it.getMainBuffer().getSizeInBit()].reduce[a, b|a + b]
+		}
+		return mainBuffer.getSizeInBit() + workMemsSize
+	}
+	
+	
 }
+
+
+

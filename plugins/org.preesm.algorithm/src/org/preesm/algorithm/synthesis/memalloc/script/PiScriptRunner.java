@@ -197,7 +197,7 @@ public class PiScriptRunner {
    * checked points are:
    * <ul>
    * <li>If all {@link Match matches} are reciprocal. A {@link Match} belonging to the {@link Buffer#getMatchTable()
-   * matchTable} of a {@link Buffer} is reciprocal if the {@link Match#getBuffer() matched buffer} has a reciprocal
+   * matchTable} of a {@link Buffer} is reciprocal if the {@link Match#getMemBuffer() matched buffer} has a reciprocal
    * {@link Match} in its {@link Buffer#getMatchTable() match table}.</li>
    * <li>If there are inter-siblings matches. (i.e. inter-inputs or inter- outputs matches.)</li>
    * <li>If ranges matched multiple times are not matched with other ranges that are

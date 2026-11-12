@@ -1,17 +1,20 @@
-package org.preesm.algorithm.synthesis.memalloc.passiveactors;
+package org.preesm.algorithm.synthesis.memalloc.passive;
 
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.commons.math.MathFunctionsHelper;
+import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.Actor;
@@ -21,6 +24,7 @@ import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.InterfaceActor;
@@ -114,7 +118,6 @@ public class PassiveActorEngine {
     }
 
     /** Second, running passive scripts to evaluate passive actors' buffer sizes */
-
     // New brv compute, otherwise passive actors won't appear.
     this.brv = PiBRV.compute(this.graph, BRVMethod.LCM);
     scriptRunner.updateBrv(brv);
@@ -178,6 +181,120 @@ public class PassiveActorEngine {
     return this.graph;
   }
 
+  /**
+   * There are two conditions :
+   *
+   * (1) current actor is a special actor OR current actor is an actor that has at least one passive script
+   *
+   * (2) repetition of current actor <= repetition of all its adjacent actors
+   *
+   * @param abstractActor
+   *          input actor
+   * @return if it could be a passive actor
+   */
+  public boolean canBePassive(AbstractActor abstractActor) {
+
+    // Condition 1
+    boolean condition1 = abstractActor instanceof final Actor actor
+        && (actor.getWritePassiveScriptPath() != null || actor.getReadPassiveScriptPath() != null);
+    condition1 |= abstractActor instanceof SpecialActor;
+
+    if (!condition1) {
+      return false;
+    }
+
+    // Condition 2
+    final Long repActor = brv.get(abstractActor);
+    final List<AbstractActor> allAdjacentActors = abstractActor.getAllDataPorts().stream()
+        .map(dp -> dp.getOppositePort().getContainingActor()).toList();
+    return allAdjacentActors.stream().allMatch(adj -> {
+      final long repAdj = adj instanceof DataInterface ? 1 : brv.get(adj);
+      return repActor <= repAdj;
+    });
+  }
+
+  public PassiveActor transformActorInPassiveActor(AbstractActor abstractActor, PiGraph graph) {
+
+    String writeScript = "";
+    String readScript = "";
+    if (abstractActor instanceof final Actor actor) {
+      writeScript = actor.getWritePassiveScriptPath() != null ? actor.getWritePassiveScriptPath() : WDEFAULT;
+      readScript = actor.getReadPassiveScriptPath() != null ? actor.getReadPassiveScriptPath() : RDEFAULT;
+
+    } else if (abstractActor instanceof BroadcastActor) {
+      writeScript = defaultWriteUrl.toString();
+      readScript = createSpecialUrl(RBROADCAST).toString();
+
+    } else if (abstractActor instanceof JoinActor) {
+      writeScript = createSpecialUrl(WJOIN).toString();
+      readScript = defaultReadUrl.toString();
+
+    } else if (abstractActor instanceof ForkActor) {
+      writeScript = defaultWriteUrl.toString();
+      readScript = createSpecialUrl(RFORK).toString();
+
+    } else if (abstractActor instanceof RoundBufferActor) {
+      writeScript = createSpecialUrl(WROUNDBUFFER).toString();
+      readScript = defaultReadUrl.toString();
+    }
+
+    passiveLog(abstractActor.getName() + " is transformed in passive actor");
+    passiveLog(abstractActor.getName() + " write script = " + writeScript + ", read script = " + readScript);
+
+    final PassiveActor pa = PiMMUserFactory.instance.createPassiveActor();
+    pa.setName(abstractActor.getName());
+    passiveActors.add(pa);
+
+    // Replace actor by its passive form in graph
+    graph.addActor(pa);
+
+    for (final DataInputPort dip : abstractActor.getDataInputPorts()) {
+      final PassiveInputPort pip = PiMMUserFactory.instance.createPassiveInputPort();
+      pip.setExpression(dip.getExpression());
+      pip.setAnnotation(dip.getAnnotation());
+      pip.setName(dip.getName());
+      pip.setWritePassiveScriptPath(writeScript);
+      pip.setOffset(0);
+      pip.setSubBufferSize(0);
+      pa.getPassiveInputPorts().add(pip);
+      dip.getFifo().setTargetPort(pip);
+    }
+
+    for (final DataOutputPort dop : abstractActor.getDataOutputPorts()) {
+      final PassiveOutputPort pop = PiMMUserFactory.instance.createPassiveOutputPort();
+      pop.setExpression(dop.getExpression());
+      pop.setAnnotation(dop.getAnnotation());
+      pop.setName(dop.getName());
+      pop.setReadPassiveScriptPath(readScript);
+      pop.setOffset(0);
+      pop.setSubBufferSize(0);
+      pa.getPassiveOutputPorts().add(pop);
+      dop.getFifo().setSourcePort(pop);
+    }
+
+    for (final ConfigInputPort cip : abstractActor.getConfigInputPorts()) {
+      final ConfigInputPort newCip = PiMMUserFactory.instance.createConfigInputPort();
+      pa.getConfigInputPorts().add(newCip);
+      newCip.setName(cip.getName());
+      cip.getIncomingDependency().setGetter(newCip);
+    }
+
+    for (final ConfigOutputPort cop : abstractActor.getConfigOutputPorts()) {
+      final ConfigOutputPort newCop = PiMMUserFactory.instance.createConfigOutputPort();
+      newCop.setName(cop.getName());
+      newCop.setAnnotation(cop.getAnnotation());
+      newCop.setExpression(cop.getExpression());
+      cop.getOutgoingFifo().setSourcePort(newCop);
+      pa.getConfigOutputPorts().add(newCop);
+    }
+    for (final ComponentInstance ci : scenario.getPossibleMappings(abstractActor)) {
+      scenario.getConstraints().addConstraint(ci, pa);
+    }
+
+    graph.removeActor(abstractActor);
+    return pa;
+  }
+
   // =====================================================================================
   //
   // Private methods
@@ -197,100 +314,10 @@ public class PassiveActorEngine {
     }
 
     // Fin actors that could be passive actors.
-    // There is two conditions :
-    // (1) it is a special actor
-    // (2) it is an Actor that has at least one passive script
-    for (final AbstractActor abstractActor : graph.getActors()) {
-      final boolean isActorWithPassiveScript = abstractActor instanceof final Actor actor
-          && (actor.getWritePassiveScriptPath() != null || actor.getReadPassiveScriptPath() != null);
 
-      final boolean isSpecialActor = abstractActor instanceof SpecialActor;
-
-      if (isActorWithPassiveScript || isSpecialActor) {
-
-        String writeScript = "";
-        String readScript = "";
-        if (isActorWithPassiveScript) {
-          final Actor actor = (Actor) abstractActor;
-          writeScript = actor.getWritePassiveScriptPath() != null ? actor.getWritePassiveScriptPath() : WDEFAULT;
-          readScript = actor.getReadPassiveScriptPath() != null ? actor.getReadPassiveScriptPath() : RDEFAULT;
-
-        } else if (abstractActor instanceof BroadcastActor) {
-          writeScript = defaultWriteUrl.toString();
-          readScript = createSpecialUrl(RBROADCAST).toString();
-
-        } else if (abstractActor instanceof JoinActor) {
-          writeScript = createSpecialUrl(WJOIN).toString();
-          readScript = defaultReadUrl.toString();
-
-        } else if (abstractActor instanceof ForkActor) {
-          writeScript = defaultWriteUrl.toString();
-          readScript = createSpecialUrl(RFORK).toString();
-
-        } else if (abstractActor instanceof RoundBufferActor) {
-          writeScript = createSpecialUrl(WROUNDBUFFER).toString();
-          readScript = defaultReadUrl.toString();
-        }
-
-        PreesmLogger.getLogger()
-            .info("[PASSIVE] actor " + abstractActor.getName() + " is transformed in passive actor");
-
-        PreesmLogger.getLogger().info("[PASSIVE] actor " + abstractActor.getName() + " write script = " + writeScript
-            + ", read script = " + readScript);
-
-        final PassiveActor pa = PiMMUserFactory.instance.createPassiveActor();
-        pa.setName(abstractActor.getName());
-        passiveActors.add(pa);
-
-        // Replace actor by its passive form in graph
-        graph.addActor(pa);
-
-        for (final DataInputPort dip : abstractActor.getDataInputPorts()) {
-          final PassiveInputPort pip = PiMMUserFactory.instance.createPassiveInputPort();
-          pip.setExpression(dip.getExpression());
-          pip.setAnnotation(dip.getAnnotation());
-          pip.setName(dip.getName());
-          pip.setWritePassiveScriptPath(writeScript);
-          pip.setOffset(0);
-          pip.setSubBufferSize(0);
-          pa.getPassiveInputPorts().add(pip);
-          dip.getFifo().setTargetPort(pip);
-        }
-
-        for (final DataOutputPort dop : abstractActor.getDataOutputPorts()) {
-          final PassiveOutputPort pop = PiMMUserFactory.instance.createPassiveOutputPort();
-          pop.setExpression(dop.getExpression());
-          pop.setAnnotation(dop.getAnnotation());
-          pop.setName(dop.getName());
-          pop.setReadPassiveScriptPath(readScript);
-          pop.setOffset(0);
-          pop.setSubBufferSize(0);
-          pa.getPassiveOutputPorts().add(pop);
-          dop.getFifo().setSourcePort(pop);
-        }
-
-        for (final ConfigInputPort cip : abstractActor.getConfigInputPorts()) {
-          final ConfigInputPort newCip = PiMMUserFactory.instance.createConfigInputPort();
-          pa.getConfigInputPorts().add(newCip);
-          newCip.setName(cip.getName());
-          cip.getIncomingDependency().setGetter(newCip);
-        }
-
-        for (final ConfigOutputPort cop : abstractActor.getConfigOutputPorts()) {
-          final ConfigOutputPort newCop = PiMMUserFactory.instance.createConfigOutputPort();
-          newCop.setName(cop.getName());
-          newCop.setAnnotation(cop.getAnnotation());
-          newCop.setExpression(cop.getExpression());
-          cop.getOutgoingFifo().setSourcePort(newCop);
-          pa.getConfigOutputPorts().add(newCop);
-        }
-
-        for (final ComponentInstance ci : scenario.getPossibleMappings(abstractActor)) {
-          scenario.getConstraints().addConstraint(ci, pa);
-        }
-
-        graph.removeActor(abstractActor);
-
+    for (final AbstractActor actor : graph.getActors()) {
+      if (canBePassive(actor)) {
+        transformActorInPassiveActor(actor, graph);
       }
     }
   }
@@ -298,7 +325,7 @@ public class PassiveActorEngine {
   /**
    *
    */
-  private void runPassiveScripts(List<PassiveActor> pas) {
+  public void runPassiveScripts(List<PassiveActor> pas) {
 
     // Runs all scripts and stores them in maps in scriptRunner class
     scriptRunner.run(pas);
@@ -364,10 +391,16 @@ public class PassiveActorEngine {
 
     for (final Fifo fifo : graph.getFifos()) {
 
-      // An interface is only
+      // Fifo is linked to an interface, living its containing graph
       boolean toOutside = fifo.getTarget() instanceof InterfaceActor && !children.contains(fifo.getTarget());
       toOutside |= fifo.getSource() instanceof InterfaceActor && !children.contains(fifo.getSource());
       if (toOutside) {
+        continue;
+      }
+
+      // Fifo is between 2 Passive actors
+      final boolean between2PAs = fifo.getSource() instanceof PassiveActor && fifo.getTarget() instanceof PassiveActor;
+      if (between2PAs) {
         continue;
       }
 
@@ -389,23 +422,37 @@ public class PassiveActorEngine {
   }
 
   private void prunePassiveFifos(PiGraph graph) {
+
+    // Exploring children graphs
     for (final PiGraph child : graph.getChildrenGraphs()) {
       prunePassiveFifos(child);
     }
 
+    // Retrieving parent Graph
     PiGraph parentGraph = graph.getContainingPiGraph();
     if (parentGraph == null) {
       parentGraph = graph;
     }
+
     final Map<AbstractVertex, Long> localBrv = PiBRV.compute(parentGraph, BRVMethod.LCM);
 
+    // For each passive actor, seek its adjacent simple passive actor and see if they can be removed.
     for (final PassiveActor complexPa : graph.getPassiveActors().stream().filter(a -> !a.isSimple()).toList()) {
 
       for (final PassivePort pp : complexPa.getAllPassivePorts()) {
         if (pp.getOppositePort().getContainingActor() instanceof final SimplePassiveActor passiveFifo) {
 
+          // Condition 1
+          // This one is never supposed to be false, as complex PAs must have a rep <= rep(ad),
+          // and rep(passiveFifo) = min(rep(cons), rep(prod))
+          if (!Objects.equals(localBrv.get(complexPa), localBrv.get(passiveFifo))) {
+            continue;
+          }
+
           final PassivePort spp = pp instanceof DataInputPort ? passiveFifo.getInputPort()
               : passiveFifo.getOutputPort();
+
+          // Verify port conditions & remove passive fifo is possible
           if (PassiveActorVerifier.verifyPassivePortConditions(spp, localBrv)) {
             final Fifo oppositeFifo = pp instanceof PassiveInputPort ? passiveFifo.getInputPort().getFifo()
                 : passiveFifo.getOutputPort().getFifo();
@@ -416,8 +463,6 @@ public class PassiveActorEngine {
             } else {
               oppositeFifo.setSourcePort((PassiveOutputPort) pp);
             }
-          } else {
-            PreesmLogger.getLogger().info("Can't prune");
           }
         }
       }
@@ -488,10 +533,58 @@ public class PassiveActorEngine {
         realBufferSize = Math.max(realBufferSize, Math.max(beginji + ratei, bufferSize));
       }
     }
-    final String log = "[PASSIVE] actor " + pa.getName() + " has a buffer size = " + pa.getBufferSize()
-        + " and a real buffer size = " + realBufferSize;
-    PreesmLogger.getLogger().info(log);
+    passiveLog(
+        pa.getName() + " has a buffer size = " + pa.getBufferSize() + " and a real buffer size = " + realBufferSize);
     return realBufferSize;
   }
 
+  private static void passiveLog(String msg) {
+    final String log = "[PASSIVE] " + msg;
+    PreesmLogger.getLogger().info(log);
+  }
+
+  /**
+   * Returns a map containing an abstract actor in algorithm with its equivalent passive form in passive algorithm.
+   *
+   * @param algorithm
+   *          The graph algorithm
+   * @param passiveAlgorithm
+   *          The graph algorithm with passive actors. It must be a copy of algorithm.
+   * @return the created map.
+   */
+  public static Map<AbstractActor, PassiveActor> createEquivalencyMap(PiGraph algorithm, PiGraph passiveAlgorithm) {
+    final Map<AbstractActor, PassiveActor> result = new HashMap<>();
+    for (final PassiveActor pa : passiveAlgorithm.getPassiveActors()) {
+
+      final DataPort firstAdjPort = pa.getAllDataPorts().getFirst().getOppositePort();
+
+      final AbstractActor firstAdj = pa.getAllDataPorts().getFirst().getOppositePort().getContainingActor();
+      final AbstractActor sourceAdj = PreesmCopyTracker.getSource(firstAdj);
+      final DataPort sourceAdjPort = retrieveDataPort(firstAdj, sourceAdj, firstAdjPort);
+      if (sourceAdjPort == null || sourceAdjPort.getContainingActor().getContainingPiGraph() != algorithm) {
+        continue;
+      }
+      final AbstractActor sourceActor = sourceAdjPort.getOppositePort().getContainingActor();
+      result.put(sourceActor, pa);
+    }
+    return result;
+  }
+
+  public static PassivePort retrievePassivePort(AbstractActor a, PassiveActor pa, DataPort dp) {
+    for (final PassivePort pp : pa.getAllPassivePorts()) {
+      if (Objects.equals(pp.getName(), dp.getName())) {
+        return pp;
+      }
+    }
+    return null;
+  }
+
+  private static DataPort retrieveDataPort(AbstractActor a, AbstractActor ori, DataPort dp) {
+    for (final DataPort p : ori.getAllDataPorts()) {
+      if (Objects.equals(p.getName(), dp.getName())) {
+        return p;
+      }
+    }
+    return null;
+  }
 }

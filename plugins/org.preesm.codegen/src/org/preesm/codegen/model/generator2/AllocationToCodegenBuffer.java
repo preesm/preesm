@@ -52,6 +52,7 @@ import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
 import org.preesm.algorithm.memalloc.model.NullBuffer;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
+import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.memalloc.model.util.MemoryAllocationSwitch;
 import org.preesm.algorithm.memory.exclusiongraph.MemoryExclusionGraph;
 import org.preesm.codegen.model.Buffer;
@@ -95,10 +96,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
   private final Allocation          memAlloc;
   private final List<AbstractActor> totallyOrderedActors;
 
-  private final Deque<Buffer>                                     codegenBufferStack = new LinkedList<>();
-  private final Deque<org.preesm.algorithm.memalloc.model.Buffer> allocBufferStack   = new LinkedList<>();
+  private final Deque<Buffer>                                        codegenBufferStack = new LinkedList<>();
+  private final Deque<org.preesm.algorithm.memalloc.model.MemBuffer> allocBufferStack   = new LinkedList<>();
 
-  private final BidiMap<org.preesm.algorithm.memalloc.model.Buffer, Buffer> btb = new DualLinkedHashBidiMap<>();
+  private final BidiMap<org.preesm.algorithm.memalloc.model.MemBuffer, Buffer> btb = new DualLinkedHashBidiMap<>();
 
   private final Map<Port, Variable> portToVariable = new LinkedHashMap<>();
 
@@ -114,6 +115,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.scenario = scenario;
     this.algo = algo;
     this.totallyOrderedActors = totallyOrderedActors;
+
   }
 
   /**
@@ -132,8 +134,8 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
           throw new PreesmRuntimeException("Fifo [" + fifo.getId() + "] has no allocation.");
         }
 
-        final org.preesm.algorithm.memalloc.model.Buffer srcBuffer = fifoAllocation.getSourceBuffer();
-        final org.preesm.algorithm.memalloc.model.Buffer tgtBuffer = fifoAllocation.getTargetBuffer();
+        final org.preesm.algorithm.memalloc.model.MemBuffer srcBuffer = fifoAllocation.getSourceBuffer();
+        final org.preesm.algorithm.memalloc.model.MemBuffer tgtBuffer = fifoAllocation.getTargetBuffer();
         final Buffer srcCodegenBuffer = this.btb.get(srcBuffer);
         final Buffer tgtCodegenBuffer = this.btb.get(tgtBuffer);
 
@@ -195,11 +197,11 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       }
     }
     // link variables for Delays and set names
-    for (final Entry<InitActor, org.preesm.algorithm.memalloc.model.Buffer> delayAllocation : this.memAlloc
+    for (final Entry<InitActor, org.preesm.algorithm.memalloc.model.MemBuffer> delayAllocation : this.memAlloc
         .getDelayAllocations()) {
       final InitActor initActor = delayAllocation.getKey();
       final Fifo fifo = initActor.getDataPort().getFifo();
-      final org.preesm.algorithm.memalloc.model.Buffer buffer = delayAllocation.getValue();
+      final org.preesm.algorithm.memalloc.model.MemBuffer buffer = delayAllocation.getValue();
       final Buffer codegenBuffer = this.btb.get(buffer);
 
       // XXX old naming
@@ -223,6 +225,21 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
       final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit(fifo.getType());
       codegenBuffer.setNbToken(allocSize / typeSize);
       codegenBuffer.setTokenTypeSizeInBit(typeSize);
+    }
+
+    for (final WorkingMemory workMem : memAlloc.getWorkingMemories()) {
+      final AbstractActor actor = workMem.getAttachedActor();
+      final Buffer codegenBuffer = this.btb.get(workMem.getMainBuffer());
+
+      final String name = actor.getName() + "_workingMemory";
+      final String uniqueName = generateUniqueBufferName(name);
+      final long allocSize = codegenBuffer.getSizeInBit();
+      final long typeSize = scenario.getSimulationInfo().getDataTypeSizeInBit("char");
+      codegenBuffer.setName(uniqueName);
+      codegenBuffer.setType("char");
+      codegenBuffer.setTokenTypeSizeInBit(8);
+      codegenBuffer.setNbToken(allocSize / typeSize);
+
     }
 
     final EList<AbstractActor> allActors = this.algo.getActors();
@@ -265,8 +282,10 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
 
   @Override
   public Boolean caseAllocation(final Allocation alloc) {
+
     // init internal variables with physical buffer children
     alloc.getPhysicalBuffers().forEach(this::doSwitch);
+
     return true;
   }
 
@@ -299,11 +318,11 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.codegenBufferStack.push(subBuffer);
     this.allocBufferStack.push(logicalBuffer);
 
-    final org.preesm.algorithm.memalloc.model.Buffer memory = logicalBuffer.getContainingBuffer();
+    final org.preesm.algorithm.memalloc.model.MemBuffer memory = logicalBuffer.getContainingBuffer();
     final Buffer buffer = this.btb.get(memory);
     subBuffer.reaffectContainer(buffer);
 
-    for (final org.preesm.algorithm.memalloc.model.Buffer l : logicalBuffer.getChildren()) {
+    for (final org.preesm.algorithm.memalloc.model.MemBuffer l : logicalBuffer.getChildren()) {
       doSwitch(l);
     }
 
@@ -338,9 +357,7 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     this.codegenBufferStack.push(mainBuffer);
     this.allocBufferStack.push(phys);
 
-    for (final org.preesm.algorithm.memalloc.model.Buffer l : phys.getChildren()) {
-      doSwitch(l);
-    }
+    phys.getChildren().forEach(this::doSwitch);
 
     this.codegenBufferStack.pop();
     this.allocBufferStack.pop();
@@ -351,11 +368,11 @@ public class AllocationToCodegenBuffer extends MemoryAllocationSwitch<Boolean> {
     return new ArrayList<>(this.btb.values());
   }
 
-  public org.preesm.algorithm.memalloc.model.Buffer getAllocationBuffer(Buffer codegenBuffer) {
+  public org.preesm.algorithm.memalloc.model.MemBuffer getAllocationBuffer(Buffer codegenBuffer) {
     return this.btb.getKey(codegenBuffer);
   }
 
-  public Buffer getCodegenBuffer(org.preesm.algorithm.memalloc.model.Buffer allocationBuffer) {
+  public Buffer getCodegenBuffer(org.preesm.algorithm.memalloc.model.MemBuffer allocationBuffer) {
     return this.btb.get(allocationBuffer);
   }
 

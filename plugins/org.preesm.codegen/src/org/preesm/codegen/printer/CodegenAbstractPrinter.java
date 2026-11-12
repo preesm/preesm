@@ -886,7 +886,14 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
   @Override
   public CharSequence caseSubBuffer(final SubBuffer subBuffer) {
     return switch (this.state) {
-      case PRINTING_DEFINITIONS -> printSubBufferDefinition(subBuffer);
+      case PRINTING_DEFINITIONS -> {
+        try {
+          yield printSubBufferDefinition(subBuffer);
+        } catch (final Exception e) {
+          throw new PreesmRuntimeException(
+              "Print subBuffer " + subBuffer.getName() + " definition failed: " + e.toString());
+        }
+      }
       case PRINTING_DECLARATIONS -> printSubBufferDeclaration(subBuffer);
       default -> printSubBuffer(subBuffer);
     };

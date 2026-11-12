@@ -523,7 +523,7 @@ public class PiMemoryAllocatorTask extends AbstractTaskImplementation {
   }
 
   /**
-   * This method creates a {@link Buffer} for each {@link AbstractActor edge} of the {@link #dag}.
+   * This method creates a {@link MemBuffer} for each {@link AbstractActor edge} of the {@link #dag}.
    */
   protected Allocation generateBuffers(final Map<String, PiMemoryExclusionGraph> megs, final Scenario scenario,
       final Design slamDesign, final PiGraph pigraph, final long align) {

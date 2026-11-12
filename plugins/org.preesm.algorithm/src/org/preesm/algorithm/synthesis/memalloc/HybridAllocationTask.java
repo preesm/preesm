@@ -3,10 +3,15 @@ package org.preesm.algorithm.synthesis.memalloc;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memalloc.model.Allocation;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
+import org.preesm.algorithm.memalloc.model.LogicalBuffer;
+import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryAllocatorTask;
 import org.preesm.algorithm.schedule.model.Schedule;
@@ -18,6 +23,7 @@ import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.commons.doc.annotations.Value;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.model.PreesmCopyTracker;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
@@ -156,8 +162,11 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
           values = { @Value(name = "$$n\\in \\mathbb{N}^*$$", effect = "Number of random order.") }),
 
       @Parameter(name = HybridAllocationTask.PARAM_BOT_ALLOCATOR,
-          values = { @Value(name = HybridAllocationTask.VALUE_BOT_ALLOCATOR_SIMPLE,
-              effect = "Simple and naive allocation from PiMM graph.") },
+          values = {
+            @Value(name = HybridAllocationTask.VALUE_BOT_ALLOCATOR_SIMPLE,
+                effect = "Simple and naive allocation from PiMM graph."),
+            @Value(name = HybridAllocationTask.VALUE_BOT_ALLOCATOR_NONE,
+                effect = "The allocation will be directly done in the codegen step.") },
           description = """
               Gives the PiMM Based allocation method to use when allocating the bottom hierarchical levels of the graph.
               """),
@@ -174,8 +183,10 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
 
 public class HybridAllocationTask extends AbstractTaskImplementation {
-  public static final String PARAM_BOT_ALLOCATOR        = "Bot Allocator";
-  public static final String VALUE_BOT_ALLOCATOR_SIMPLE = "simple";
+  public static final String PARAM_BOT_ALLOCATOR         = "Bot Allocator";
+  public static final String VALUE_BOT_ALLOCATOR_SIMPLE  = "Simple";
+  public static final String VALUE_BOT_ALLOCATOR_PASSIVE = "Passive";
+  public static final String VALUE_BOT_ALLOCATOR_NONE    = "None";
 
   public static final String PARAM_UPDATE = "Update MEG";
 
@@ -209,6 +220,24 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
     return outputs;
   }
 
+  /**
+   *
+   * @param graph
+   *          current graph
+   * @param scenario
+   *          input scenario
+   * @param arch
+   *          input arch
+   * @param schedule
+   *          input schedule
+   * @param mapping
+   *          input mapping
+   * @param parameters
+   *          input parameters
+   * @param workflow
+   *          input workflow
+   * @return allocation of current graph
+   */
   private AbstractAllocation executeRecursively(PiGraph graph, Scenario scenario, Design arch, Schedule schedule,
       Mapping mapping, Map<String, String> parameters, Workflow workflow) {
 
@@ -222,40 +251,94 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
       schedule = schedule.getInternalSchedules().get(graph);
       allocator = switch (botAllocatorValue) {
         case VALUE_BOT_ALLOCATOR_SIMPLE:
-          yield new SimplePiMMMemoryAllocation();
+          yield new SimplePiMMAllocation();
+        case VALUE_BOT_ALLOCATOR_PASSIVE:
+          yield new PassivePiMMAllocation();
         default:
-          throw new PreesmRuntimeException(PARAM_BOT_ALLOCATOR + " " + botAllocatorValue
-              + " doesn't exists. Choose between the following ones : " + VALUE_BOT_ALLOCATOR_SIMPLE);
+          throw new PreesmRuntimeException(
+              PARAM_BOT_ALLOCATOR + " " + botAllocatorValue + " doesn't exists. Choose between the following ones : "
+                  + VALUE_BOT_ALLOCATOR_SIMPLE + ", " + VALUE_BOT_ALLOCATOR_PASSIVE);
       };
     }
 
     /** Making the allocation for the current graph */
     final AbstractAllocation parentAbstractAlloc = allocator.allocateMemory(graph, arch, scenario, schedule, mapping);
 
+    // PreesmLogger.getLogger()
+    // .info(() -> "Comparing " + graph.getName() + " allocation: simple=" + simpleSize + ", passive=" + passiveSize
+    // + ", a " + (simpleSize - passiveSize) / (float) simpleSize * 100 + "% reduction.");
+
     /** Making the allocation for every child graphs */
     for (final PiGraph child : graph.getChildrenGraphs()) {
-      final PiGraph sourceGraph = PreesmCopyTracker.getSource(child);
+      final PiGraph sourceChild = PreesmCopyTracker.getSource(child);
 
-      if (internalAllocationTracker.containsKey(sourceGraph)) {
-        continue;
+      AbstractAllocation childAbstractAlloc;
+
+      // Get back the allocation if it already exists
+      if (internalAllocationTracker.containsKey(sourceChild)) {
+        childAbstractAlloc = internalAllocationTracker.get(sourceChild);
+      } else {
+
+        // Otherwise, creating the allocation for child graph
+        childAbstractAlloc = this.executeRecursively(sourceChild, scenario, arch, schedule, mapping, parameters,
+            workflow);
+        this.internalAllocationTracker.put(sourceChild, childAbstractAlloc);
       }
-
-      final AbstractAllocation childAbstractAlloc = this.executeRecursively(sourceGraph, scenario, arch, schedule,
-          mapping, parameters, workflow);
-      this.internalAllocationTracker.put(sourceGraph, childAbstractAlloc);
 
       /** Merging child allocation in parent allocation */
       switch (childAbstractAlloc) {
-        case final WorkingMemory childWorkingMem -> parentAbstractAlloc.getWorkingMemories().add(childWorkingMem);
+        case final WorkingMemory templateWorkMem ->
+          addWorkingMemoryInAllocation(parentAbstractAlloc, templateWorkMem, child);
 
         case final Allocation childAlloc when parentAbstractAlloc instanceof final Allocation parentAlloc ->
-          parentAlloc.mergeAllocations(childAlloc);
+          parentAlloc.mergeAllocations(EcoreUtil.copy(childAlloc));
 
         default -> throw new PreesmRuntimeException(
             "This type of allocation merging is not supported yet. Please contact Preesm developers.");
       }
     }
     return parentAbstractAlloc;
+  }
+
+  private void addWorkingMemoryInAllocation(AbstractAllocation parentAbstractAlloc, WorkingMemory templateWorkMem,
+      PiGraph child) {
+
+    final EcoreUtil.Copier copier = new EcoreUtil.Copier();
+    final WorkingMemory instanceChildWorkingMem = (WorkingMemory) copier.copy(templateWorkMem);
+    final LogicalBuffer instanceMainBuffer = (LogicalBuffer) copier.copy(templateWorkMem.getMainBuffer());
+    for (final Entry<Fifo, FifoAllocation> e : templateWorkMem.getFifoAllocations()) {
+      copier.copy(e.getValue()); // refers are not copied automatically
+    }
+    copier.copyReferences();
+
+    instanceChildWorkingMem.setMainBuffer(instanceMainBuffer);
+    for (final Entry<Fifo, FifoAllocation> e : templateWorkMem.getFifoAllocations()) {
+      // the copier maps sourceBuffer/targetBuffer to the copied buffers
+      instanceChildWorkingMem.getFifoAllocations().put(e.getKey(), (FifoAllocation) copier.get(e.getValue()));
+    }
+
+    long parentSize = 0;
+    if (parentAbstractAlloc instanceof final Allocation parentAlloc) {
+      parentSize = parentAlloc.getPhysicalBuffers().getFirst().getSizeInBit();
+    } else if (parentAbstractAlloc instanceof final WorkingMemory parentWorkMem) {
+      parentSize = parentWorkMem.getMainBuffer().getSizeInBit();
+    }
+
+    instanceMainBuffer.setOffsetInBit(parentSize);
+    instanceChildWorkingMem.setAttachedActor(child);
+
+    final long newParentSize = parentSize + instanceMainBuffer.getSizeInBit();
+    if (parentAbstractAlloc instanceof final Allocation parentAlloc) {
+      final PhysicalBuffer parentBuffer = parentAlloc.getPhysicalBuffers().getFirst();
+      parentBuffer.setSizeInBit(newParentSize);
+      parentBuffer.getChildren().add(instanceMainBuffer);
+    } else if (parentAbstractAlloc instanceof final WorkingMemory parentWorkMem) {
+      parentWorkMem.getMainBuffer().setSizeInBit(newParentSize);
+      parentWorkMem.getMainBuffer().getChildren().add(instanceMainBuffer);
+    }
+
+    parentAbstractAlloc.getWorkingMemories().add(instanceChildWorkingMem);
+
   }
 
   @Override

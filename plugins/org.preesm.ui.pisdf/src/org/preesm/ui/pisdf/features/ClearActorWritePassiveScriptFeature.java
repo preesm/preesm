@@ -46,22 +46,22 @@ import org.preesm.model.pisdf.Actor;
 
 // TODO: Auto-generated Javadoc
 /**
- * Custom Feature to clear the ReadPassiveScript of an {@link Actor}.
+ * Custom Feature to clear the write passive script of an {@link Actor}.
  *
  * @author jheulot
  */
-public class ClearReadPassiveScriptFeature extends AbstractCustomFeature {
+public class ClearActorWritePassiveScriptFeature extends AbstractCustomFeature {
 
   /** The has done changes. */
   protected boolean hasDoneChanges = false;
 
   /**
-   * Default Constructor of {@link ClearReadPassiveScriptFeature}.
+   * Default Constructor of {@link ClearActorWritePassiveScriptFeature}.
    *
    * @param fp
    *          the feature provider
    */
-  public ClearReadPassiveScriptFeature(final IFeatureProvider fp) {
+  public ClearActorWritePassiveScriptFeature(final IFeatureProvider fp) {
     super(fp);
   }
 
@@ -72,7 +72,7 @@ public class ClearReadPassiveScriptFeature extends AbstractCustomFeature {
    */
   @Override
   public String getName() {
-    return "Clear wirte passive script path";
+    return "Clear write passive script path";
   }
 
   /*
@@ -82,7 +82,7 @@ public class ClearReadPassiveScriptFeature extends AbstractCustomFeature {
    */
   @Override
   public String getDescription() {
-    return "Clear the path of the read passive script of an Actor";
+    return "Clear the path of the write passive script of an Actor";
   }
 
   /*
@@ -99,7 +99,7 @@ public class ClearReadPassiveScriptFeature extends AbstractCustomFeature {
     final PictogramElement[] pes = context.getPictogramElements();
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
-      if ((bo instanceof final Actor actor) && (actor.getReadPassiveScriptPath() != null)) {
+      if ((bo instanceof final Actor actor) && (actor.getWritePassiveScriptPath() != null)) {
         ret = true;
       }
     }
@@ -120,7 +120,7 @@ public class ClearReadPassiveScriptFeature extends AbstractCustomFeature {
     if ((pes != null) && (pes.length == 1)) {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof final Actor actor) {
-        actor.setReadPassiveScriptPath(null);
+        actor.setWritePassiveScriptPath(null);
 
         // Call the layout feature
         layoutPictogramElement(pes[0]);

@@ -12,14 +12,29 @@ import org.preesm.algorithm.clustering.heuristics.BalancingHeuristic;
 import org.preesm.algorithm.clustering.heuristics.HeuristicGetter;
 import org.preesm.algorithm.clustering.heuristics.HorizontalHeuristic;
 import org.preesm.algorithm.clustering.heuristics.VerticalHeuristic;
+import org.preesm.algorithm.synthesis.memalloc.passive.PassiveActorEngine;
+import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
+import org.preesm.model.pisdf.Actor;
+import org.preesm.model.pisdf.DataInputInterface;
+import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
+import org.preesm.model.pisdf.DataOutputInterface;
+import org.preesm.model.pisdf.DataOutputPort;
+import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.DelayActor;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.InterfaceActor;
+import org.preesm.model.pisdf.PassiveActor;
+import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.SpecialActor;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.check.PiGraphConsistenceChecker;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.pisdf.util.PiSDFSubgraphBuilder;
 import org.preesm.model.scenario.Scenario;
@@ -71,6 +86,8 @@ public class ClusterIdentifier {
         .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_VERBOSE));
     final boolean debug = ClusterCreationTask.VALUE_TRUE
         .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_DEBUG));
+    final boolean memOptim = ClusterCreationTask.VALUE_TRUE
+        .equalsIgnoreCase(parameters.get(ClusterCreationTask.PARAM_MEM_OPTIM));
     final String vertiIdentifierName = parameters
         .getOrDefault(ClusterCreationTask.PARAM_VERTICAL_HEURISTIC, HeuristicGetter.VALUE_VERTICAL_HEURISTIC_NONE)
         .toLowerCase();
@@ -118,6 +135,18 @@ public class ClusterIdentifier {
     // ===========================================================================================================
     // It will modify the algorithm graph & return the created subgraphs list
 
+    PiGraph passiveAlgorithm = null;
+
+    if (memOptim) {
+      PreesmLogger.getLogger().info(() -> "MEMORY OPTIM ACTIVATED");
+      passiveAlgorithm = PiMMUserFactory.instance.copyPiGraphWithHistory(algorithm);
+      final PassiveActorEngine passiveEngine = new PassiveActorEngine(passiveAlgorithm, scenario, 8L);
+      passiveEngine.processPassiveActors();
+    } else {
+      PreesmLogger.getLogger().info(() -> "MEMORY OPTIM NOT ACTIVATED");
+    }
+
+    // Cluster horizontally
     horizIdentifier.initHeuristicParameters(algorithm, scenario, architecture, parameters);
     final List<PiGraph> clusters1 = buildHorizontalClusters(algorithm /* will be modified */, architecture, scenario,
         horizIdentifier, verbose);
@@ -150,6 +179,12 @@ public class ClusterIdentifier {
     clusterBalancer.initHeuristicParameters(algorithm, scenario, architecture, parameters);
     clusterBalancer.balance(algorithm /* will be modified */, nPEs);
     final List<PiGraph> clusters2 = ClusteringHelper.getClusters(algorithm);
+
+    // Copy inside the clusters adjacent passive actors, and modify ports rate to restore memory reuse opportunities in
+    // SrDAG
+    if (memOptim) {
+      optimizeSrDAG(algorithm, passiveAlgorithm, clusters2);
+    }
 
     if (verbose && !clusters2.isEmpty()) {
       PreesmLogger.getLogger().info("Cluster creation: partitioning clusters done");
@@ -402,6 +437,86 @@ public class ClusterIdentifier {
       }
     }
     return actorsToMerge;
+  }
+
+  private static void optimizeSrDAG(PiGraph algorithm, PiGraph passiveAlgorithm, List<PiGraph> clusters) {
+    final Map<AbstractVertex, Long> passiveBrv = PiBRV.compute(passiveAlgorithm, BRVMethod.LCM);
+    final Map<AbstractVertex, Long> oriBrv = PiBRV.compute(algorithm, BRVMethod.LCM);
+
+    final Map<AbstractActor, PassiveActor> map = PassiveActorEngine.createEquivalencyMap(algorithm, passiveAlgorithm);
+    for (final PiGraph cluster : clusters) {
+      final List<AbstractActor> adjacentActors = cluster.getDataInterfaces().stream()
+          .map(di -> di.getGraphPort().getOppositePort().getContainingActor()).toList();
+      for (final AbstractActor adjActor : adjacentActors) {
+        if (!map.containsKey(adjActor)) {
+          continue;
+        }
+        final PassiveActor pa = map.get(adjActor);
+        final DataPort dp = adjActor.getAllDataPorts().stream()
+            .filter(p -> p.getOppositePort().getContainingActor() == cluster).toList().getFirst();
+        final PassivePort pp = PassiveActorEngine.retrievePassivePort(adjActor, pa, dp);
+        if (pp == null) {
+          PreesmLogger.getLogger().warning(() -> "data port " + dp.getName() + " of actor " + adjActor.getName()
+              + " has no equivalent in passive actor " + pa.getName());
+          continue;
+        }
+
+        // Change rate in srdag
+        final long index = (passiveBrv.get(pp.getOppositePort().getContainingActor()) / oriBrv.get(cluster)) - 1;
+        final long newRate = pp.getBeginiEndi().get((int) index % pp.getBeginiEndi().size()).getValue();
+        dp.setExpression(newRate);
+
+        // Copy actor in cluster
+        if (adjActor instanceof final Actor actor) {
+          final Map<AbstractVertex, Long> clusterBrv = PiBRV.compute(cluster, BRVMethod.LCM);
+
+          final Actor inClusterActor = PiMMUserFactory.instance.copyWithHistory(actor);
+          final DataInputPort firstDip = inClusterActor.getDataInputPorts().getFirst();
+          inClusterActor.getDataInputPorts().clear();
+          inClusterActor.getDataInputPorts().add(firstDip);
+          final DataOutputPort firstDop = inClusterActor.getDataOutputPorts().getFirst();
+          inClusterActor.getDataOutputPorts().clear();
+          inClusterActor.getDataOutputPorts().add(firstDop);
+          cluster.addActor(inClusterActor);
+
+          final DataInterface clusterDi = retrieveInterfaceFromPort(dp.getOppositePort(),
+              (PiGraph) dp.getOppositePort().getContainingActor());
+          if (clusterDi == null) {
+            throw new PreesmRuntimeException("can't retrieve interface of data port " + dp.getName());
+          }
+          final Fifo fifo = clusterDi.getDataPort().getFifo();
+          Fifo newFifo;
+          if (clusterDi instanceof final DataInputInterface dii) {
+            fifo.setSourcePort(firstDop);
+            newFifo = PiMMUserFactory.instance.createFifo(dii.getDataPort(), firstDip, fifo.getType());
+            firstDip.setExpression(dii.getDataPort().getExpression());
+
+            final long dopExpr = fifo.getTargetPort().getExpression().evaluateAsLong()
+                * clusterBrv.get(fifo.getTarget());
+            firstDop.setExpression(dopExpr);
+
+          } else {
+            final DataOutputInterface doi = (DataOutputInterface) clusterDi;
+            fifo.setTargetPort(firstDip);
+            newFifo = PiMMUserFactory.instance.createFifo(firstDop, doi.getDataPort(), fifo.getType());
+            firstDop.setExpression(doi.getDataPort().getExpression());
+            final long dipExpr = fifo.getSourcePort().getExpression().evaluateAsLong()
+                * clusterBrv.get(fifo.getSource());
+            firstDip.setExpression(dipExpr);
+          }
+          cluster.addFifo(newFifo);
+        }
+      }
+    }
+  }
+
+  private static DataInterface retrieveInterfaceFromPort(DataPort dp, PiGraph sub) {
+    for (final DataInterface di : sub.getDataInterfaces()) {
+      if (dp == di.getGraphPort()) {
+        return di;
+      }
+    }
+    return null;
   }
 
   public static void exportGraph(PiGraph graph, String path, Workflow workflow) {

@@ -770,6 +770,10 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		val PiSDFParameterResolverVisitor piMMResolverVisitor = new PiSDFParameterResolverVisitor
 		piMMResolverVisitor.casePiGraph(this);
 	}
+	
+	op boolean isPafg() {
+		return actors.filter[it instanceof PassiveActor].size > 0;
+	}
 }
 
 abstract class ExecutableActor extends AbstractActor {
@@ -1372,6 +1376,9 @@ class PassiveActor extends ExecutableActor, PassiveElt {
 	contains PassiveInputPort[] passiveInputPorts 
 	contains PassiveOutputPort[] passiveOutputPorts
 	
+	refers AbstractActor setterActor 
+	refers AbstractActor getterActor
+	
 	long realBufferSize
 	
 	op DataInputPort[] getDataInputPorts() {
@@ -1406,12 +1413,20 @@ class PassiveActor extends ExecutableActor, PassiveElt {
 		return false
 	}
 	
-	op boolean isDelayed() {
-		return allPassivePorts.filter[!it.isDelayed()].size > 0
-	}
-	
-	op Fifo[] getAttachedDelayedFifos() {
-		return allPassivePorts.filter[it.isDelayed()].map[it.getFifo()].toEList.unmodifiableView
+	op boolean canAbsorbDelay(Delay delay) {
+		val AbstractActor setter = delay.getSetterActor()
+		
+		if(setter === null) {
+			return true
+		}
+		if(setterActor !== null) {
+			return false
+		}
+		
+		setterActor = setter
+		getterActor = delay.getGetterActor();
+		
+		return true
 	}
 }
 
@@ -1453,16 +1468,7 @@ abstract class PassivePort extends DataPort, PassiveElt {
 	Pair beginjEndj
 	Pair[] beginiEndi
 	
-	
 	op String getScript()
-	
-	op boolean isDelayed() 
- 	{
- 		return fifo.getDelay() !== null
- 	}	
- 	op Delay getDelay() {
- 		return fifo.getDelay()
- 	}
  	
  	op PassiveActor getContainingPassiveActor() {
 		if (eContainer() instanceof PassiveActor) {

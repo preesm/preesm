@@ -275,13 +275,34 @@ public class PiParser {
 
     parseRefinement(nodeElt, actor);
 
-    final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
-    if ((memoryScript != null) && !memoryScript.isEmpty()) {
-      final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(memoryScript));
-      actor.setMemoryScriptPath(path.toString());
-    }
+    parseActorScripts(nodeElt, actor);
 
     return actor;
+  }
+
+  /**
+   * Parses the memory script and the write/read passive scripts of the actor, if any.
+   */
+  private void parseActorScripts(final Element nodeElt, final Actor actor) {
+    final String memoryScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT);
+    if ((memoryScript != null) && !memoryScript.isEmpty()) {
+      actor.setMemoryScriptPath(toWorkspacePath(memoryScript));
+    }
+
+    final String writePassiveScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_WRITE_PASSIVE_SCRIPT);
+    if ((writePassiveScript != null) && !writePassiveScript.isEmpty()) {
+      actor.setWritePassiveScriptPath(toWorkspacePath(writePassiveScript));
+    }
+
+    final String readPassiveScript = PiParser.getProperty(nodeElt, PiIdentifiers.ACTOR_READ_PASSIVE_SCRIPT);
+    if ((readPassiveScript != null) && !readPassiveScript.isEmpty()) {
+      actor.setReadPassiveScriptPath(toWorkspacePath(readPassiveScript));
+    }
+  }
+
+  private String toWorkspacePath(final String projectRelativePath) {
+    final IPath path = WorkspaceUtils.getWorkspaceRelativePathFrom(this.documentURI, new Path(projectRelativePath));
+    return path.toString();
   }
 
   /**

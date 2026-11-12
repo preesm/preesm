@@ -259,10 +259,8 @@ public class PiWriter {
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
     }
-    final IPath memoryScriptPath = Optional.ofNullable(originalActor.getMemoryScriptPath()).map(Path::new).orElse(null);
-    if (memoryScriptPath != null) {
-      writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
-    }
+    writeActorScripts(vertexElt, originalActor);
+
     // Write ports of the actor
     writePorts(vertexElt, childGraph.getConfigInputPorts());
     writePorts(vertexElt, childGraph.getConfigOutputPorts());
@@ -287,20 +285,36 @@ public class PiWriter {
       vertexElt.setAttribute(PiIdentifiers.ACTOR_PERIOD, periodExpr);
     }
 
+    // write refinement
     final Refinement refinement = actor.getRefinement();
     if (refinement != null) {
       writeRefinement(vertexElt, refinement);
     }
-    final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
-    if (memoryScriptPath != null) {
-      writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
-    }
+
+    // write scripts
+    writeActorScripts(vertexElt, actor);
+
     // Write ports of the actor
     writePorts(vertexElt, actor.getConfigInputPorts());
     writePorts(vertexElt, actor.getConfigOutputPorts());
     writePorts(vertexElt, actor.getDataInputPorts());
     writePorts(vertexElt, actor.getDataOutputPorts());
 
+  }
+
+  private void writeActorScripts(final Element vertexElt, final Actor actor) {
+    final IPath memoryScriptPath = Optional.ofNullable(actor.getMemoryScriptPath()).map(Path::new).orElse(null);
+    if (memoryScriptPath != null) {
+      writeMemoryScript(vertexElt, getProjectRelativePathFrom(memoryScriptPath));
+    }
+    final IPath writePassivePath = Optional.ofNullable(actor.getWritePassiveScriptPath()).map(Path::new).orElse(null);
+    if (writePassivePath != null) {
+      writeWritePassiveScript(vertexElt, getProjectRelativePathFrom(writePassivePath));
+    }
+    final IPath readPassivePath = Optional.ofNullable(actor.getReadPassiveScriptPath()).map(Path::new).orElse(null);
+    if (readPassivePath != null) {
+      writeReadPassiveScript(vertexElt, getProjectRelativePathFrom(readPassivePath));
+    }
   }
 
   /**
@@ -542,10 +556,37 @@ public class PiWriter {
    *          The memory script path to serialize
    */
   protected void writeMemoryScript(final Element vertexElt, final IPath memScriptPath) {
-    if (memScriptPath != null) {
-      // The makeRelative() call ensures that the path is relative to the
-      // project.
-      writeDataElt(vertexElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT, memScriptPath.makeRelative().toPortableString());
+    writeScript(vertexElt, PiIdentifiers.ACTOR_MEMORY_SCRIPT, memScriptPath);
+  }
+
+  /**
+   * Write information of the write passive script in the given {@link Element}.
+   *
+   * @param vertexElt
+   *          The {@link Element} to write
+   * @param memScriptPath
+   *          The write passive script path to serialize
+   */
+  protected void writeWritePassiveScript(final Element vertexElt, final IPath scriptPath) {
+    writeScript(vertexElt, PiIdentifiers.ACTOR_WRITE_PASSIVE_SCRIPT, scriptPath);
+  }
+
+  /**
+   * Write information of the read passive script in the given {@link Element}.
+   *
+   * @param vertexElt
+   *          The {@link Element} to write
+   * @param memScriptPath
+   *          The read passive script path to serialize
+   */
+  protected void writeReadPassiveScript(final Element vertexElt, final IPath scriptPath) {
+    writeScript(vertexElt, PiIdentifiers.ACTOR_READ_PASSIVE_SCRIPT, scriptPath);
+  }
+
+  private void writeScript(final Element vertexElt, final String key, final IPath scriptPath) {
+    if (scriptPath != null) {
+      // makeRelative() ensures that the path is relative to the project.
+      writeDataElt(vertexElt, key, scriptPath.makeRelative().toPortableString());
     }
   }
 

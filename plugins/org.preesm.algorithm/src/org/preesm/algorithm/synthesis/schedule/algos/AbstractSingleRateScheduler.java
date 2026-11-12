@@ -71,7 +71,7 @@ public abstract class AbstractSingleRateScheduler implements IScheduler {
 
     verifyInputs(piGraph, slamDesign, scenario);
 
-    // Creating mapping and scheduling
+    /** Creating mapping and scheduling */
     final SynthesisResult res = exec(piGraph, slamDesign, scenario, parameters);
     if (res.alloc != null) {
       throw new PreesmSynthesisException("Simple scheduling API should not allocate memory");
@@ -79,7 +79,12 @@ public abstract class AbstractSingleRateScheduler implements IScheduler {
 
     verifyOutputs(piGraph, slamDesign, scenario, res.schedule, res.mapping);
 
-    // Inserting special communication actors
+    /** Removing Pasive Actors in mapping and in scheduling */
+    // Except passive actors that have a bufferSIze < realBufferSize
+    // They have to be scheduled so that we know when to copy the missing tokens at the end of the buffer
+    new RemovePassiveActorsInMappingScheduling(res.schedule, res.mapping).remove();
+
+    /** Inserting special communication actors */
     PreesmLogger.getLogger().log(Level.INFO, " -- Insert communication");
     final ScheduleOrderManager scheduleOM = new ScheduleOrderManager(piGraph, res.schedule);
     final ICommunicationInserter comIns = new OptimizedCommunicationInserter(scheduleOM);
@@ -182,5 +187,4 @@ public abstract class AbstractSingleRateScheduler implements IScheduler {
       }
     }
   }
-
 }

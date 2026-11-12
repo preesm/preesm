@@ -552,12 +552,12 @@ public final class PiMMUserFactory extends PiMMFactoryImpl implements PreesmUser
       throw new PreesmRuntimeException("actor" + targetActor.getName() + " is not contained in brv");
     }
 
-    final long gcd = MathFunctionsHelper.gcd(sourceRV, targetRV);
+    final Long mult = MathFunctionsHelper.gcd(sourceRV, targetRV);
 
     final long inputExpr = fifo.getSourcePort().getExpression().evaluateAsLong();
     final long outputExpr = fifo.getTargetPort().getExpression().evaluateAsLong();
 
-    final long rate = Math.max(inputExpr, outputExpr) * brv.get(sourceActor) / gcd;
+    final long rate = Math.max(inputExpr, outputExpr) * mult;
     passiveFifo.getInputPort().setExpression(Long.toString(rate));
     passiveFifo.getOutputPort().setExpression(Long.toString(rate));
 

@@ -353,7 +353,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   private List<AbstractVertex> generateList(final DataPort port, final AbstractActor actor, final String suffixe) {
     final List<AbstractVertex> list = new ArrayList<>();
     // 0. Get RV value of the Actor
-    final long actorRV = this.brv.get(actor);
+    final Long actorRV = this.brv.get(actor);
+    if (actorRV == null) {
+      throw new PreesmRuntimeException("actor " + actor.getName() + " is not present in brv");
+    }
     // 1. Find matched actors
     final IntegerName iN = new IntegerName(actorRV - 1);
     for (long i = 0; i < actorRV; ++i) {

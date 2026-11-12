@@ -1,4 +1,4 @@
-package org.preesm.algorithm.synthesis.memalloc.passiveactors;
+package org.preesm.algorithm.synthesis.memalloc.passive;
 
 import bsh.EvalError;
 import bsh.Interpreter;

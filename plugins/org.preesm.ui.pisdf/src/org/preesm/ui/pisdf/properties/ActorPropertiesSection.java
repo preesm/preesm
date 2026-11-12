@@ -76,11 +76,17 @@ import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RefinementContainer;
 import org.preesm.model.pisdf.util.PrototypeFormatter;
 import org.preesm.ui.pisdf.features.ClearActorMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.ClearActorReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.ClearActorRefinementFeature;
+import org.preesm.ui.pisdf.features.ClearActorWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.OpenMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.OpenReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.OpenRefinementFeature;
+import org.preesm.ui.pisdf.features.OpenWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.SetActorMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.SetActorReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.SetActorRefinementFeature;
+import org.preesm.ui.pisdf.features.SetActorWritePassiveScriptFeature;
 
 /**
  * Properties Section used for Actors.
@@ -644,11 +650,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] clearWritePassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : clearMemoryScriptFeature) {
-          if (feature instanceof ClearActorMemoryScriptFeature) {
+        for (final ICustomFeature feature : clearWritePassiveScriptFeature) {
+          if (feature instanceof ClearActorWritePassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
@@ -675,11 +681,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] setWritePassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : setMemoryScriptFeature) {
-          if (feature instanceof SetActorMemoryScriptFeature) {
+        for (final ICustomFeature feature : setWritePassiveScriptFeature) {
+          if (feature instanceof SetActorWritePassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
@@ -706,11 +712,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] openWritePassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : openMemoryScriptFeature) {
-          if (feature instanceof OpenMemoryScriptFeature) {
+        for (final ICustomFeature feature : openWritePassiveScriptFeature) {
+          if (feature instanceof OpenWritePassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
@@ -797,11 +803,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] clearMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] clearReadPassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : clearMemoryScriptFeature) {
-          if (feature instanceof ClearActorMemoryScriptFeature) {
+        for (final ICustomFeature feature : clearReadPassiveScriptFeature) {
+          if (feature instanceof ClearActorReadPassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
@@ -828,11 +834,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] setMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] setReadPassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : setMemoryScriptFeature) {
-          if (feature instanceof SetActorMemoryScriptFeature) {
+        for (final ICustomFeature feature : setReadPassiveScriptFeature) {
+          if (feature instanceof SetActorReadPassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()
@@ -859,11 +865,11 @@ public class ActorPropertiesSection extends GFPropertySection implements ITabbed
         pes[0] = getSelectedPictogramElement();
 
         final CustomContext context = new CustomContext(pes);
-        final ICustomFeature[] openMemoryScriptFeature = getDiagramTypeProvider().getFeatureProvider()
+        final ICustomFeature[] openReadPassiveScriptFeature = getDiagramTypeProvider().getFeatureProvider()
             .getCustomFeatures(context);
 
-        for (final ICustomFeature feature : openMemoryScriptFeature) {
-          if (feature instanceof OpenMemoryScriptFeature) {
+        for (final ICustomFeature feature : openReadPassiveScriptFeature) {
+          if (feature instanceof OpenReadPassiveScriptFeature) {
             getDiagramTypeProvider().getDiagramBehavior().executeFeature(feature, context);
             final LayoutContext contextLayout = new LayoutContext(getSelectedPictogramElement());
             final ILayoutFeature layoutFeature = getDiagramTypeProvider().getFeatureProvider()

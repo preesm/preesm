@@ -137,9 +137,9 @@ import org.preesm.ui.pisdf.features.AddPassiveActorFeature;
 import org.preesm.ui.pisdf.features.AddRefinementFeature;
 import org.preesm.ui.pisdf.features.AddRoundBufferActorFeature;
 import org.preesm.ui.pisdf.features.ClearActorMemoryScriptFeature;
+import org.preesm.ui.pisdf.features.ClearActorReadPassiveScriptFeature;
 import org.preesm.ui.pisdf.features.ClearActorRefinementFeature;
-import org.preesm.ui.pisdf.features.ClearReadPassiveScriptFeature;
-import org.preesm.ui.pisdf.features.ClearWritePassiveScriptFeature;
+import org.preesm.ui.pisdf.features.ClearActorWritePassiveScriptFeature;
 import org.preesm.ui.pisdf.features.CopyFeature;
 import org.preesm.ui.pisdf.features.CreateActorFeature;
 import org.preesm.ui.pisdf.features.CreateBroadcastActorFeature;
@@ -450,7 +450,7 @@ public class PiMMFeatureProvider extends DefaultFeatureProvider {
           new ClearActorRefinementFeature(this), new OpenRefinementFeature(this), new SetActorMemoryScriptFeature(this),
           new ClearActorMemoryScriptFeature(this), new OpenMemoryScriptFeature(this),
           new SetActorWritePassiveScriptFeature(this), new SetActorReadPassiveScriptFeature(this),
-          new ClearWritePassiveScriptFeature(this), new ClearReadPassiveScriptFeature(this),
+          new ClearActorWritePassiveScriptFeature(this), new ClearActorReadPassiveScriptFeature(this),
           new OpenWritePassiveScriptFeature(this), new OpenReadPassiveScriptFeature(this) };
         features.addAll(Arrays.asList(actorFeatures));
       }

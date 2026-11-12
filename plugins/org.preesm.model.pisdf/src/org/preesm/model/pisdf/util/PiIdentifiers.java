@@ -119,6 +119,12 @@ public class PiIdentifiers {
   /** The Constant ACTOR_MEMORY_SCRIPT. */
   public static final String ACTOR_MEMORY_SCRIPT = "memoryScript";
 
+  /** The Constant ACTOR_MEMORY_SCRIPT. */
+  public static final String ACTOR_WRITE_PASSIVE_SCRIPT = "writePassiveScript";
+
+  /** The Constant ACTOR_MEMORY_SCRIPT. */
+  public static final String ACTOR_READ_PASSIVE_SCRIPT = "readPassiveScript";
+
   /** The Constant ACTOR_PERIOD. */
   public static final String ACTOR_PERIOD = "period";
 

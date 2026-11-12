@@ -107,7 +107,7 @@ abstract class Variable extends Commentable {
 
 class Buffer extends Variable {
 	long nbToken
-	refers SubBuffer[] childrens opposite ^container
+	refers SubBuffer[] children opposite ^container
 	long tokenTypeSizeInBit // in Bits
 	//long size
 	transient EEList<range>mergedRange
@@ -126,9 +126,17 @@ class Buffer extends Variable {
 }
 
 class SubBuffer extends Buffer {
-	refers Buffer ^container opposite childrens
+	refers Buffer ^container opposite children
 	long offsetInBit
+	boolean workMemValue = "false"
+	boolean interfaceValue = "false"
 	
+	op boolean isWorkMem() {
+		return workMemValue
+	}
+	op boolean isInterface() {
+		return interfaceValue
+	}
 	
 	op long getOffsetInByte() {
 		return (offsetInBit + 7L) / 8L;
@@ -267,8 +275,8 @@ class LoopFunctionBlock extends FunctionBlock, LoopBlock {
 // This method allows to not modify the existing workflow, and just add a first pass of clustering before.	
 class FunctionBlock extends Block {
 	contains IntVar[] inputParams
-	contains Buffer[] inputArgs
-	contains Buffer[] outputArgs
+	refers Buffer[] inputArgs
+	refers Buffer[] outputArgs
 	
 	String funcName
 }

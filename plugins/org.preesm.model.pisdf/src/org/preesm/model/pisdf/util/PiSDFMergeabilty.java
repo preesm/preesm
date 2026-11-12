@@ -119,6 +119,7 @@ public class PiSDFMergeabilty {
     }
 
     for (final Fifo outgoingFifo : outgoingFifos) {
+
       final long prodRate = outgoingFifo.getSourcePort().getPortRateExpression().evaluateAsLong();
       final long consRate = outgoingFifo.getTargetPort().getPortRateExpression().evaluateAsLong();
       final long individualRepetition = brv.get(first) / clusterRepetition;
@@ -158,7 +159,7 @@ public class PiSDFMergeabilty {
         if (source instanceof final PassiveActor pa) {
           for (final DataInputPort passiveDip : pa.getDataInputPorts()) {
             if (passiveDip.getIncomingFifo().getSource() != y) {
-              incomingFifos.add(passiveDip.getIncomingFifo());
+              incomingFifos.add(dip.getIncomingFifo());
             }
           }
         } else {
@@ -181,7 +182,7 @@ public class PiSDFMergeabilty {
         if (target instanceof final PassiveActor pa) {
           for (final DataOutputPort passiveDop : pa.getDataOutputPorts()) {
             if (passiveDop.getOutgoingFifo().getTarget() != y) {
-              outgoingFifos.add(passiveDop.getOutgoingFifo());
+              outgoingFifos.add(dop.getOutgoingFifo());
             }
           }
         } else {

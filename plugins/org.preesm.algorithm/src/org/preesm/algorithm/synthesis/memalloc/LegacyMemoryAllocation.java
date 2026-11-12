@@ -49,6 +49,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memalloc.model.FifoAllocation;
 import org.preesm.algorithm.memalloc.model.LogicalBuffer;
+import org.preesm.algorithm.memalloc.model.MemBuffer;
 import org.preesm.algorithm.memalloc.model.MemoryAllocationFactory;
 import org.preesm.algorithm.memalloc.model.PhysicalBuffer;
 import org.preesm.algorithm.memory.allocation.MemoryAllocator;
@@ -446,9 +447,9 @@ public class LegacyMemoryAllocation implements IMemoryAllocation {
   }
 
   /**
-   * This method creates a {@link Buffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
-   * {@link #generateSubBuffers(Buffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all the
-   * {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
+   * This method creates a {@link MemBuffer} for each {@link DAGEdge} of the {@link #dag}. It also calls
+   * {@link #generateSubBuffers(MemBuffer, DAGEdge, Integer)} to create distinct {@link SubBuffer} corresponding to all
+   * the {@link SDFEdge} of the single-rate {@link SDFGraph} from which the {@link #dag} is derived.<br>
    * <br>
    * In this method, the {@link #sharedBuffer}, and the {@link #dagEdgeBuffers} attributes are filled.
    *

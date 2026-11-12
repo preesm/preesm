@@ -1,21 +1,26 @@
 package org.preesm.codegen.model.generator2.clustering;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-import org.eclipse.emf.common.util.EList;
 import org.preesm.algorithm.clustering.ClusteringHelper;
+import org.preesm.algorithm.memalloc.model.FifoAllocation;
+import org.preesm.algorithm.memalloc.model.MemBuffer;
+import org.preesm.algorithm.memalloc.model.WorkingMemory;
 import org.preesm.algorithm.schedule.model.ActorSchedule;
 import org.preesm.algorithm.schedule.model.HierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.ParallelHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.schedule.model.SequentialHierarchicalSchedule;
 import org.preesm.algorithm.schedule.model.util.ScheduleSwitch;
+import org.preesm.algorithm.synthesis.memalloc.PassivePiMMAllocation;
 import org.preesm.algorithm.synthesis.schedule.ScheduleUtil;
 import org.preesm.codegen.model.ActorFunctionCall;
 import org.preesm.codegen.model.Block;
@@ -39,6 +44,7 @@ import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.SpecialType;
 import org.preesm.codegen.model.SubBuffer;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.generator2.CodegenModelGenerator2;
 import org.preesm.codegen.model.util.CodegenModelUserFactory;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.commons.logger.PreesmLogger;
@@ -54,11 +60,10 @@ import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataInterface;
 import org.preesm.model.pisdf.DataPort;
 import org.preesm.model.pisdf.Direction;
+import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ForkActor;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.JoinActor;
-import org.preesm.model.pisdf.PassiveActor;
-import org.preesm.model.pisdf.PassiveElt;
 import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
@@ -72,11 +77,13 @@ import org.preesm.model.scenario.Scenario;
  * actor with a C refinement. It allows to reduce the size of the generated code, as the same instance of a cluster in
  * the SrDAG will share the same file.
  *
- * @author dgageot
+ * WIP, temporary class that will be removed when {@link PiMMCodegenModelGeneratorSwitch2} and
+ * {@link PassivePiMMAllocation} will be finished.
+ *
+ * @author rcazoulat
  *
  */
-public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
-    implements IClusterCodegenModelGenerator {
+public class PiMMCodegenModelGeneratorSwitch2 extends ScheduleSwitch<CodeElt> {
 
   /**
    * {@link Scenario} to get data size from.
@@ -104,9 +111,9 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   private final Map<Buffer, IntVar> iterMap;
 
   /**
-   *
+   * The current {@link PiGraph cluster}
    */
-  private final PiGraph originalCluster;
+  private final PiGraph cluster;
 
   /**
    * If the cluster to generate the model from contains parallelism information, it is specified in the
@@ -120,42 +127,49 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
   Schedule schedule;
 
   /**
-   * Alloc buffer to Codegen buffer
-   */
-  Map<PassiveElt, Buffer> p2b;
-
-  /**
-   * Alloc buffer to Codegen buffer
-   */
-  Map<DataInterface, Buffer> i2b;
-
-  /**
    *
    */
   Buffer mainBuffer;
 
   /**
    *
-   * @param originalCluster
+   */
+  WorkingMemory workMem;
+
+  /**
+   *
+   */
+  AllocationToCodegenBuffer2 memoryLinker;
+
+  /**
+   *
+   */
+  Map<Fifo, Buffer> bufferMap;
+
+  Map<DataInterface, Buffer> interfaceCodegenBufferMap = new HashMap<>();
+
+  /**
+   *
+   * @param cluster
    *          input cluster
    * @param scenario
    *          the global scenario
    */
-  public PassiveCodegenModelGeneratorSwitch(final PiGraph originalCluster, final Scenario scenario,
-      final Schedule schedule) {
+  public PiMMCodegenModelGeneratorSwitch2(final PiGraph cluster, final Scenario scenario, final Schedule schedule,
+      final WorkingMemory workMem, final Buffer mainBuffer) {
     super();
-    this.originalCluster = originalCluster;
+    this.cluster = cluster;
     this.scenario = scenario;
     this.sinkFifoBuffers = new LinkedList<>();
     this.iterMap = new HashMap<>();
     this.parallelFiringsInside = false;
     this.callFuncBlock = CodegenModelUserFactory.eINSTANCE.createCallFunctionBlock();
     this.loopFuncBlock = CodegenModelUserFactory.eINSTANCE.createLoopFunctionBlock();
-    callFuncBlock.setName(ClusteringHelper.getInitPrototypeName(originalCluster));
-    loopFuncBlock.setName(ClusteringHelper.getLoopPrototypeName(originalCluster));
-    p2b = new HashMap<>();
-    i2b = new HashMap<>();
-
+    callFuncBlock.setName(ClusteringHelper.getInitPrototypeName(cluster));
+    loopFuncBlock.setName(ClusteringHelper.getLoopPrototypeName(cluster));
+    this.workMem = workMem;
+    this.mainBuffer = mainBuffer;
+    this.bufferMap = new HashMap<>();
     this.schedule = schedule;
   }
 
@@ -170,46 +184,45 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * Main function and class entry point. Generate and set code element for the corresponding cluster inside of
    * callFuncBlock and loopFuncBlock.
    */
-  @Override
   public void generate() {
-
-    // Compute the cluster function arguments
-    generateClusterConfigParameters(originalCluster);
-    generateParameterClusterBuffers(originalCluster);
 
     // Create memory buffers
     generateBuffers();
 
+    // Compute the cluster function arguments
+    generateConfigParameters(cluster);
+    retrieveDataInterfaceBuffers(cluster);
+
+    generateWorkingMemoryParameter();
+
     // Print block from input schedule into callFuncBlock and loopFuncBlock
-    final CodeElt cluster = doSwitch(schedule);
+    final CodeElt clusterElt = doSwitch(schedule);
 
     // Is final cluster parallel
-    if (cluster instanceof final ClusterBlock clusterBlock) {
+    if (clusterElt instanceof final ClusterBlock clusterBlock) {
       clusterBlock.setContainParallelism(parallelFiringsInside);
     }
 
-    // Generate buffer definitions
-    if (this.mainBuffer.getSizeInBit() != 0) {
-      this.mainBuffer.reaffectCreator(this.loopFuncBlock);
-    }
-    for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
-      final PassiveElt pelt = entry.getKey();
-      if (pelt instanceof PassiveActor) {
+    for (final Entry<Fifo, Buffer> entry : this.bufferMap.entrySet()) {
+      final Fifo fifo = entry.getKey();
+      if (fifo.getTarget() instanceof DataInterface || fifo.getSource() instanceof DataInterface) {
         continue;
       }
-      final Buffer buffer = entry.getValue();
-      recursiveSetBufferCreator(buffer, this.loopFuncBlock, true);
+      recursivelySetBufferCreator(entry.getValue(), this.loopFuncBlock, true);
     }
 
     // Add code
-    loopFuncBlock.getCodeElts().add(cluster);
+    loopFuncBlock.getCodeElts().add(clusterElt);
+
+    PreesmLogger.getLogger().info(() -> "Passive Allocation: working memory for cluster " + cluster.getName() + " = "
+        + mainBuffer.getSizeInBit() + " bit(s)");
+
   }
 
   /**
    *
    * @return the call function block
    */
-  @Override
   public CallFunctionBlock getCallFunctionBlock() {
     return this.callFuncBlock;
   }
@@ -218,12 +231,10 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    *
    * @return the loop function block
    */
-  @Override
   public LoopFunctionBlock getLoopFunctionBlock() {
     return this.loopFuncBlock;
   }
 
-  @Override
   public List<Buffer> getSinkFifoBuffers() {
     return this.sinkFifoBuffers;
   }
@@ -320,14 +331,11 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
       actorBlock.getCodeElts().add(generateActorFiring(a, finiteLoopBlock));
     }
 
-    // Add delay pop if necessary
-    // TODO
-
     // store buffers on which MD5 can be computed to check validity of transformations
     if (actor.getDataOutputPorts().isEmpty()) {
-      final EList<DataInputPort> dataInputPorts = actor.getDataInputPorts();
-      for (final DataInputPort dip : dataInputPorts) {
-        final Buffer buffer = retrieveAssociatedBuffer(dip);
+      final List<Fifo> inputFifos = actor.getDataInputPorts().stream().map(DataPort::getFifo).toList();
+      for (final Fifo fifo : inputFifos) {
+        final Buffer buffer = retrieveAssociatedBuffer(fifo);
         sinkFifoBuffers.add(buffer);
       }
     }
@@ -349,36 +357,92 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    */
   private void generateBuffers() {
 
-    this.mainBuffer = CodegenModelUserFactory.eINSTANCE.createBuffer();
-    final long typeSizeInBit = scenario.getSimulationInfo().getDataTypeSizeInBit("char");
-    final String name = "workingMem_" + originalCluster.getName();
-    this.mainBuffer.setName(name);
-    this.mainBuffer.setType("char");
-    this.mainBuffer.setTokenTypeSizeInBit(typeSizeInBit);
+    final List<AbstractActor> totallyOrderedActors = new APGANScheduleOrderManager().doSwitch(schedule);
 
-    long finalSizeInBit = 0;
+    this.memoryLinker = AllocationToCodegenBuffer2.link(workMem, scenario, cluster, totallyOrderedActors);
 
-    this.p2b = new PassiveBufferGeneratorSwitch(scenario, this.i2b).doSwitch(originalCluster);
+    final Set<Fifo> alreadyAllocated = new HashSet<>();
 
-    for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
-      final Buffer buffer = entry.getValue();
+    for (final AbstractActor actor : totallyOrderedActors) {
 
-      if (entry.getKey() instanceof final PassiveActor pa) {
+      for (final Fifo fifo : actor.getAllDataPorts().stream().map(DataPort::getFifo).toList()) {
 
-        if (buffer instanceof final SubBuffer subBuffer && subBuffer.getContainer() == null) {
-
-          subBuffer.setOffsetInBit(finalSizeInBit);
-          subBuffer.setContainer(this.mainBuffer);
-          finalSizeInBit += subBuffer.getSizeInBit();
-
-        } else if (!(buffer instanceof final SubBuffer)) {
-          PreesmLogger.getLogger().warning(
-              "The buffer " + buffer.getName() + " attached to actor " + pa.getName() + " should be a SubBuffer");
+        if (alreadyAllocated.contains(fifo)) {
+          continue;
         }
+        alreadyAllocated.add(fifo);
+
+        final FifoAllocation fifoAlloc = this.workMem.getFifoAllocations().get(fifo);
+
+        if (fifoAlloc == null) {
+          throw new PreesmRuntimeException("fifo " + fifo.getId() + " does not have any linked fifo Allocation");
+        }
+
+        final MemBuffer memBuffer = fifoAlloc.getSourceBuffer();
+        final Buffer codegenBuffer = this.memoryLinker.getCodegenBuffer(memBuffer);
+
+        // TODO : might be really buggy !!!
+        if ("bit".equals(codegenBuffer.getType())) {
+          codegenBuffer.setType("char");
+          codegenBuffer.setTokenTypeSizeInBit(8);
+          codegenBuffer.setNbToken((codegenBuffer.getNbToken() + 7L) / 8L);
+        }
+        this.bufferMap.put(fifo, codegenBuffer);
       }
     }
 
-    this.mainBuffer.setNbToken(finalSizeInBit / typeSizeInBit);
+    for (final Fifo fifo : cluster.getDataInterfaces().stream().map(i -> i.getDataPort().getFifo()).toList()) {
+      if (alreadyAllocated.contains(fifo)) {
+        continue;
+      }
+      alreadyAllocated.add(fifo);
+      final FifoAllocation fifoAlloc = this.workMem.getFifoAllocations().get(fifo);
+      if (fifoAlloc == null) {
+        throw new PreesmRuntimeException("fifo " + fifo.getId() + " does not have any linked fifo Allocation");
+      }
+
+      final MemBuffer memBuffer = fifoAlloc.getSourceBuffer();
+      final Buffer codegenBuffer = this.memoryLinker.getCodegenBuffer(memBuffer);
+
+      // TODO : might be really buggy !!!
+      if ("bit".equals(codegenBuffer.getType())) {
+        codegenBuffer.setType("char");
+        codegenBuffer.setTokenTypeSizeInBit(8);
+        codegenBuffer.setNbToken((codegenBuffer.getNbToken() + 7L) / 8L);
+      }
+      this.bufferMap.put(fifo, codegenBuffer);
+    }
+  }
+
+  /**
+   * Instantiate the Input/Output buffers of cluster
+   *
+   * @param i
+   *          the data interface (it can be a input or output interface)
+   */
+  private void retrieveDataInterfaceBuffers(PiGraph graph) {
+    for (final DataInterface i : graph.getDataInterfaces()) {
+
+      final Buffer ioBuffer = retrieveAssociatedBuffer(i.getDataPort().getFifo());
+
+      if (i instanceof DataInputInterface) {
+        loopFuncBlock.getInputArgs().add(ioBuffer);
+      } else {
+        loopFuncBlock.getOutputArgs().add(ioBuffer);
+      }
+    }
+  }
+
+  /**
+  *
+  */
+  private void generateWorkingMemoryParameter() {
+    final Buffer workMemArg = CodegenFactory.eINSTANCE.createBuffer();
+    workMemArg.setName(CodegenModelGenerator2.WORKING_MEMORY_NAME);
+    workMemArg.setType("char");
+    workMemArg.setTokenTypeSizeInBit(8);
+    workMemArg.setNbToken(mainBuffer.getNbToken());
+    loopFuncBlock.getOutputArgs().add(workMemArg);
   }
 
   /**
@@ -391,15 +455,21 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @param isLocal
    *          if it local or not
    */
-  private void recursiveSetBufferCreator(final Variable variable, final Block correspondingBlock,
+  private void recursivelySetBufferCreator(final Variable variable, final Block correspondingBlock,
       final boolean isLocal) {
     // Set the creator for the current buffer
     variable.reaffectCreator(correspondingBlock);
     if (variable instanceof final Buffer buffer) {
       buffer.setLocal(isLocal);
+
+      // No need to explore recursively, as it will be done by the graph having buffer as a workMem
+      if (buffer instanceof final SubBuffer sb && sb.isWorkMem()) {
+        return;
+      }
+
       // Do the same recursively for all its children subbuffers
-      for (final SubBuffer subBuffer : buffer.getChildrens()) {
-        recursiveSetBufferCreator(subBuffer, correspondingBlock, isLocal);
+      for (final SubBuffer subBuffer : buffer.getChildren()) {
+        recursivelySetBufferCreator(subBuffer, correspondingBlock, isLocal);
       }
     }
   }
@@ -494,15 +564,10 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
 
     // Retrieve associated fifo/buffer
     for (final DataPort dp : actor.getAllDataPorts()) {
+      final Fifo fifo = dp.getFifo();
 
-      PassiveElt passiveElt;
-      try {
-        passiveElt = getAttachedPassiveElt(dp);
-      } catch (final Exception e) {
-        passiveElt = null;
-      }
-      Buffer associatedBuffer = retrieveAssociatedBuffer(dp);
-      associatedBuffer = generateIteratedBuffer(associatedBuffer, dp, passiveElt);
+      Buffer associatedBuffer = retrieveAssociatedBuffer(fifo);
+      associatedBuffer = generateIteratedBuffer(associatedBuffer, dp);
 
       if (dp instanceof DataInputPort) {
         specialCall.addInputBuffer(associatedBuffer);
@@ -526,7 +591,7 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @param graph
    *          the cluster
    */
-  private void generateClusterConfigParameters(PiGraph graph) {
+  private void generateConfigParameters(PiGraph graph) {
     for (final ConfigInputInterface i : graph.getConfigInputInterfaces()) {
       addParamToFunctionBlock(i, callFuncBlock);
       addParamToFunctionBlock(i, loopFuncBlock);
@@ -549,34 +614,6 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     param.setType("int");
     container.getInputParams().add(param);
 
-  }
-
-  /**
-   * Instantiate the Input/Output buffers of cluster
-   *
-   * @param i
-   *          the data interface (it can be a input or output interface)
-   */
-  private void generateParameterClusterBuffers(PiGraph graph) {
-    for (final DataInterface i : graph.getDataInterfaces()) {
-
-      // creating input/output Buffer
-      final Buffer ioBuffer = CodegenFactory.eINSTANCE.createBuffer();
-
-      ioBuffer.setName(i.getName());
-      ioBuffer.setNbToken(i.getDataPort().getExpression().evaluateAsLong());
-      ioBuffer.setTokenTypeSizeInBit(
-          scenario.getSimulationInfo().getDataTypeSizeInBit(i.getDataPort().getFifo().getType()));
-      ioBuffer.setType(i.getDataPort().getFifo().getType());
-
-      i2b.put(i, ioBuffer);
-
-      if (i instanceof DataInputInterface) {
-        loopFuncBlock.getInputArgs().add(ioBuffer);
-      } else {
-        loopFuncBlock.getOutputArgs().add(ioBuffer);
-      }
-    }
   }
 
   /**
@@ -614,14 +651,16 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
           final List<DataPort> sourcePorts = sourceContainer.getAllDataPorts().stream()
               .filter(dp -> Objects.equals(dp.getName(), tmpInnerPort.getName())).toList();
           final DataPort sourcePort = sourcePorts.getFirst();
-          iterMap.put(retrieveAssociatedBuffer(sourcePort), iterator);
+          final Fifo fifo = sourcePort.getFifo();
+          iterMap.put(retrieveAssociatedBuffer(fifo), iterator);
         }
       }
       case final ActorSchedule actSched -> {
         final AbstractActor actor = PreesmCopyTracker.getSource(actSched.getActorList().getFirst());
         iterator.setName("index_" + actor.getName());
         for (final DataPort dp : actor.getAllDataPorts()) {
-          iterMap.put(retrieveAssociatedBuffer(dp), iterator);
+          final Fifo fifo = dp.getFifo();
+          iterMap.put(retrieveAssociatedBuffer(fifo), iterator);
         }
       }
       default -> throw new PreesmRuntimeException(
@@ -657,21 +696,23 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    *          cluster)
    * @return the iterated Buffer
    */
-  final Buffer generateIteratedBuffer(final Buffer buffer, final DataPort dataPort, final PassiveElt passiveElt) {
+  private final Buffer generateIteratedBuffer(final Buffer buffer, final DataPort dataPort) {
     if (!iterMap.containsKey(buffer)) {
       return buffer;
     }
 
-    // If iteration map contain actor, it means that buffer has to be iterated
+    PassivePort passivePort = null;
+    if (dataPort.getOppositePort() instanceof final PassivePort oppPort) {
+      passivePort = oppPort;
+    }
+
     final IteratedBuffer iteratedBuffer;
-    if (passiveElt != null && passiveElt instanceof final PassivePort passivePort
-        && !passivePort.getContainingPassiveActor().isSimple()) {
+    if (passivePort != null && !passivePort.getContainingPassiveActor().isSimple()) {
       final IteratedPassiveBuffer ipb = CodegenModelUserFactory.eINSTANCE.createIteratedPassiveBuffer();
       passivePort.getBeginiEndi().forEach(pair -> ipb.getPossibleBeginValues().add(pair.getKey()));
       iteratedBuffer = ipb;
     } else {
       iteratedBuffer = CodegenModelUserFactory.eINSTANCE.createIteratedBuffer();
-
     }
     iteratedBuffer.setBuffer(buffer);
     iteratedBuffer.setIter(iterMap.get(buffer));
@@ -679,40 +720,8 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
     iteratedBuffer.setType(buffer.getType());
     iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
 
-    boolean i2bChanged = false;
-    if (i2b.containsValue(buffer)) {
-      DataInterface di = null;
-      for (final Entry<DataInterface, Buffer> entry : this.i2b.entrySet()) {
-        if (entry.getValue() == buffer) {
-          if (di != null) {
-            throw new PreesmRuntimeException(
-                "The following buffer " + buffer.getName() + " should be attached to only one Interface");
-          }
-          di = entry.getKey();
-        }
-      }
-      this.i2b.put(di, iteratedBuffer);
-      i2bChanged = true;
-    }
+    this.bufferMap.put(dataPort.getFifo(), iteratedBuffer);
 
-    if (p2b.containsValue(buffer)) {
-      if (i2bChanged) {
-        throw new PreesmRuntimeException("The following buffer " + buffer.getName()
-            + " is attached to an Interface and a Passive Element. It should not be the case");
-      }
-
-      PassiveElt pe = null;
-      for (final Entry<PassiveElt, Buffer> entry : this.p2b.entrySet()) {
-        if (entry.getValue() == buffer) {
-          if (pe != null) {
-            throw new PreesmRuntimeException(
-                "The following buffer " + buffer.getName() + " should be attached to only one Passive Element");
-          }
-          pe = entry.getKey();
-        }
-      }
-      this.p2b.put(pe, iteratedBuffer);
-    }
     return iteratedBuffer;
   }
 
@@ -801,21 +810,17 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @param flb
    *          the finite loop block containing the call
    */
+
   private final void addDataPortArgument(final FunctionCall functionCall, final DataPort port,
       final FunctionArgument arg, final FiniteLoopBlock flb) {
+    // Retrieve associated Fifo
+    final Fifo associatedFifo = port.getFifo();
 
     // Retrieve associated Buffer
-    Buffer associatedBuffer = retrieveAssociatedBuffer(port);
+    Buffer associatedBuffer = retrieveAssociatedBuffer(associatedFifo);
 
-    PassiveElt passiveElt;
-    try {
-      passiveElt = getAttachedPassiveElt(port);
-    } catch (final Exception e) {
-      passiveElt = null;
-    }
-
-    // If there is a repetition over the actor, iterate the buffer
-    associatedBuffer = generateIteratedBuffer(associatedBuffer, port, passiveElt);
+    // If there is an repetion over actor, iterate the buffer
+    associatedBuffer = generateIteratedBuffer(associatedBuffer, port);
 
     // Add parameter to functionCall
     functionCall.addParameter(associatedBuffer,
@@ -880,54 +885,13 @@ public class PassiveCodegenModelGeneratorSwitch extends ScheduleSwitch<CodeElt>
    * @return the buffer. If the dp is connected to a dataInterface, it will retrieve the buffer in the i2b map. If there
    *         is no buffer at the end, an error is raised Otherwise in the p2b map.
    */
-  private final Buffer retrieveAssociatedBuffer(DataPort dp) {
-
-    Buffer result;
-
-    // If dp is at the edge of the cluster, we should look in i2b
-    if (dp.getOppositePort().getContainingActor() instanceof final DataInterface di) {
-
-      // Checking that the top down allocation approach has been respected
-      if (di.getContainingGraph() != originalCluster) {
-        throw new PreesmRuntimeException(
-            "The assumption is that at an interface, it is the fifo linked to the graph port that should be"
-                + " instanciated, not the one connected to the data port. In the current way of doing, it not seems "
-                + "to be the case for interface " + di.getName());
-      }
-
-      result = i2b.get(di);
-
-      if (result == null) {
-        throw new PreesmRuntimeException("the data interface " + di.getName() + " doesn't have an associated buffer");
-      }
-
-      // If dp is not at the edge of the cluster, we should look in p2b
-    } else {
-      final PassiveElt passiveElt = getAttachedPassiveElt(dp);
-
-      result = p2b.get(passiveElt);
-
-      if (result == null) {
-        throw new PreesmRuntimeException("the passiveElt " + dp.getName() + " doesn't have an associated buffer");
-      }
+  private final Buffer retrieveAssociatedBuffer(Fifo fifo) {
+    final Buffer result;
+    result = this.bufferMap.get(fifo);
+    if (result == null) {
+      throw new PreesmRuntimeException("Can't retrieve the buffer of fifo " + fifo.getId());
     }
     return result;
   }
 
-  /**
-   * Get the attached passive element of a data port (surely it will be a PassivePort, but we keep the return type as a
-   * PassiveElt because of the p2b map that takes as a key a PassiveElt).
-   *
-   * @param dp
-   *          the data port
-   * @return the connected passive element. If there is not, an error will be raised
-   */
-  private static PassiveElt getAttachedPassiveElt(DataPort dp) {
-    final DataPort attached = dp.getOppositePort();
-    if (!(attached instanceof final PassivePort attachedPort)) {
-      throw new PreesmRuntimeException("a Passive Actor should be there between actor "
-          + attached.getContainingActor().getName() + " and " + dp.getContainingActor().getName());
-    }
-    return attachedPort;
-  }
 }

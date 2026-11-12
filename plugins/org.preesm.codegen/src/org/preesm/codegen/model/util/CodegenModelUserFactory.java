@@ -38,9 +38,11 @@
 package org.preesm.codegen.model.util;
 
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.emf.common.util.EList;
 import org.preesm.codegen.model.ActorBlock;
 import org.preesm.codegen.model.ActorFunctionCall;
+import org.preesm.codegen.model.Buffer;
 import org.preesm.codegen.model.Call;
 import org.preesm.codegen.model.CallBlock;
 import org.preesm.codegen.model.CodegenPackage;
@@ -63,6 +65,7 @@ import org.preesm.codegen.model.RegisterSetUpAction;
 import org.preesm.codegen.model.SharedMemoryCommunication;
 import org.preesm.codegen.model.SpecialCall;
 import org.preesm.codegen.model.Variable;
+import org.preesm.codegen.model.generator2.CodegenModelGenerator2;
 import org.preesm.codegen.model.impl.CallImpl;
 import org.preesm.codegen.model.impl.CodegenFactoryImpl;
 import org.preesm.commons.ecore.EObjectResolvingNonUniqueEList;
@@ -75,7 +78,6 @@ import org.preesm.model.pisdf.Direction;
 import org.preesm.model.pisdf.FunctionArgument;
 import org.preesm.model.pisdf.FunctionPrototype;
 import org.preesm.model.pisdf.InitActor;
-import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.pisdf.Port;
 import org.preesm.model.pisdf.PortKind;
 import org.preesm.model.pisdf.RefinementContainer;
@@ -178,7 +180,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
    *
    */
   public final ActorFunctionCall createActorFunctionCall(final RefinementContainer rcontainer,
-      final FunctionPrototype prototype, final Map<Port, Variable> portValues) {
+      final FunctionPrototype prototype, final Map<Port, Variable> portValues, Buffer workingMemory) {
     if (prototype.isCPP()) {
       throw new PreesmRuntimeException(
           "The codegen is not compatible with CPP function call as for: " + prototype.getName());
@@ -193,14 +195,22 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
     final EList<FunctionArgument> arguments = prototype.getArguments();
     for (final FunctionArgument a : arguments) {
       final String name = a.getName();
-      final Port lookupPort = actor.lookupPort(name);
-      if (lookupPort == null) {
-        throw new PreesmRuntimeException(
-            "Cannot find function argument " + name + " for actor " + actor.getVertexPath());
+      if (Objects.equals(name, CodegenModelGenerator2.WORKING_MEMORY_NAME)) {
+        if (workingMemory == null) {
+          throw new PreesmRuntimeException("Actor " + actor.getName() + " has no working memory initialized.");
+        }
+        afc.addParameter(workingMemory, PortDirection.INPUT);
+      } else {
+        final Port lookupPort = actor.lookupPort(name);
+        if (lookupPort == null) {
+          throw new PreesmRuntimeException(
+              "Cannot find function argument " + name + " for actor " + actor.getVertexPath());
+        }
+        final PortKind portKind = lookupPort.getKind();
+        final Variable variable = portValues.get(lookupPort);
+        afc.addParameter(variable, createPortDirection(portKind));
       }
-      final PortKind portKind = lookupPort.getKind();
-      final Variable variable = portValues.get(lookupPort);
-      afc.addParameter(variable, createPortDirection(portKind));
+
     }
     return afc;
   }
@@ -216,8 +226,7 @@ public class CodegenModelUserFactory extends CodegenFactoryImpl {
    */
   public final AbstractActor castRefinementContainerToAbstractActor(final RefinementContainer rcontainer) {
 
-    if (!(rcontainer instanceof Actor || rcontainer instanceof PiGraph || rcontainer instanceof InitActor
-        || rcontainer instanceof DelayActor)) {
+    if (!(rcontainer instanceof Actor || rcontainer instanceof InitActor || rcontainer instanceof DelayActor)) {
       throw new PreesmRuntimeException("wtf");
     }
 

@@ -1,4 +1,4 @@
-package org.preesm.algorithm.synthesis.memalloc.passiveactors;
+package org.preesm.algorithm.synthesis.memalloc.passive;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -7,6 +7,7 @@ import org.preesm.commons.doc.annotations.Parameter;
 import org.preesm.commons.doc.annotations.Port;
 import org.preesm.commons.doc.annotations.PreesmTask;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.factory.PiMMUserFactory;
 import org.preesm.model.pisdf.serialize.PiSDFExporterTask;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.workflow.elements.Workflow;
@@ -52,12 +53,14 @@ public class PassiveActorExposerTask extends AbstractTaskImplementation {
   public Map<String, Object> execute(Map<String, Object> inputs, Map<String, String> parameters,
       IProgressMonitor monitor, String nodeName, Workflow workflow) {
 
-    final PiGraph graph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
+    final PiGraph oriGraph = (PiGraph) inputs.get(AbstractWorkflowNodeImplementation.KEY_PI_GRAPH);
     scenario = (Scenario) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCENARIO);
 
     alignment = Long.parseLong(parameters.get(PARAM_ALIGNMENT));
     debug = Boolean.parseBoolean(parameters.get(PARAM_DEBUG));
     final boolean clustersOnly = Boolean.parseBoolean(parameters.get(PARAM_CLUSTERS_ONLY));
+
+    final PiGraph graph = PiMMUserFactory.instance.copyPiGraphWithHistory(oriGraph);
 
     if (clustersOnly) {
       for (final PiGraph cluster : graph.getAllChildrenGraphs().stream().filter(c -> c.isCluster()).toList()) {

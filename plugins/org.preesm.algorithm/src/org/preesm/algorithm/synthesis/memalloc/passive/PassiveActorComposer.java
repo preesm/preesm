@@ -1,10 +1,12 @@
-package org.preesm.algorithm.synthesis.memalloc.passiveactors;
+package org.preesm.algorithm.synthesis.memalloc.passive;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
 import org.preesm.model.pisdf.AbstractActor;
+import org.preesm.model.pisdf.AbstractVertex;
 import org.preesm.model.pisdf.ConfigInputPort;
 import org.preesm.model.pisdf.ConfigOutputPort;
 import org.preesm.model.pisdf.DataPort;
@@ -14,6 +16,8 @@ import org.preesm.model.pisdf.PassiveInputPort;
 import org.preesm.model.pisdf.PassiveOutputPort;
 import org.preesm.model.pisdf.PassivePort;
 import org.preesm.model.pisdf.PiGraph;
+import org.preesm.model.pisdf.brv.BRVMethod;
+import org.preesm.model.pisdf.brv.PiBRV;
 import org.preesm.model.pisdf.util.PiMMSwitch;
 
 /**
@@ -24,11 +28,12 @@ import org.preesm.model.pisdf.util.PiMMSwitch;
  */
 public class PassiveActorComposer extends PiMMSwitch<Boolean> {
 
-  PiGraph             currentGraph     = null;
-  List<AbstractActor> explored;
-  PassiveScriptRunner psr;
-  int                 offset           = 0;
-  int                 uniquePortNameId = 0;
+  PiGraph                   currentGraph     = null;
+  Map<AbstractVertex, Long> brv;
+  List<AbstractActor>       explored;
+  PassiveScriptRunner       psr;
+  int                       offset           = 0;
+  int                       uniquePortNameId = 0;
 
   public PassiveActorComposer(final PassiveScriptRunner psr) {
     explored = new ArrayList<>();
@@ -51,8 +56,8 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
     graph.getChildrenGraphs().stream().forEach(c -> doSwitch(c));
 
     currentGraph = graph;
-
-    doSwitch(graph.getActors().getFirst());
+    brv = PiBRV.compute(currentGraph, BRVMethod.LCM);
+    doSwitch(currentGraph.getActors().getFirst());
 
     return true;
   }
@@ -76,13 +81,15 @@ public class PassiveActorComposer extends PiMMSwitch<Boolean> {
 
     uniquePortNameId = 0;
     PassiveActor result = actor;
-
+    final Long resultRep = brv.get(result);
     List<PassiveActor> passiveNeighbors = PassiveActorHelper.getPassiveNeighbors(result);
+    passiveNeighbors = passiveNeighbors.stream().filter(adj -> Objects.equals(brv.get(adj), resultRep)).toList();
 
     while (!passiveNeighbors.isEmpty()) {
       final PassiveActor passiveNeighbor = passiveNeighbors.getFirst();
       result = fuse(result, passiveNeighbor);
       passiveNeighbors = PassiveActorHelper.getPassiveNeighbors(result);
+      passiveNeighbors = passiveNeighbors.stream().filter(adj -> Objects.equals(brv.get(adj), resultRep)).toList();
     }
 
     return caseAbstractActor(result);
