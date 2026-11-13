@@ -38,6 +38,7 @@ package org.preesm.algorithm.schedule.fpga;
 
 import java.util.List;
 import org.preesm.commons.exceptions.PreesmRuntimeException;
+import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;

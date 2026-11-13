@@ -669,7 +669,7 @@ public class SDFGraph extends AbstractGraph<SDFAbstractVertex, SDFEdge> {
         final SDFVertex newVertex = new SDFVertex(null);
         newVertex.setName(av.getName());
         newVertex.setId(av.getId());
-        newVertex.setRefinement(av.getRefinements());
+        newVertex.setRefinement(av.getRefinement());
         addVertex(newVertex);
       }
       case final AbstractVertex av -> removeVertex(getVertex(av.getName()));

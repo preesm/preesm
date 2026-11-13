@@ -37,7 +37,6 @@
 
 package org.preesm.codegen.fpga;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -47,14 +46,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.stream.Collectors;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.xtext.xbase.lib.Pair;
 import org.preesm.algorithm.pisdf.autodelays.HeuristicLoopBreakingDelays;
 import org.preesm.algorithm.pisdf.autodelays.TopologicalRanking;
@@ -969,35 +965,6 @@ public class FpgaCodeGenerator {
     return writer.toString();
   }
 
-  private List<String> findAllCHeaderFileNamesUsedExcludingArchs(final PiGraph graph, final Scenario scenario,
-      List<org.preesm.model.slam.Component> excludedComponents) {
-    return findAllCHeadersUsedExcludingArches(graph, scenario, excludedComponents).stream().map(IPath::toFile)
-        .map(File::getName).toList();
-  }
-
-  private List<IPath> findAllCHeadersUsedExcludingArches(final PiGraph graph, final Scenario scenario,
-      List<org.preesm.model.slam.Component> excludedComponents) {
-    final List<IPath> result = new ArrayList<>();
-
-    final var refinements = graph.getAllActors().stream().filter(Actor.class::isInstance)
-        .map(a -> ((Actor) a).getRefinement());
-
-    refinements.forEach(cHeaderRef -> {
-      // we don't want to include headers for fpga generated code
-      if (!(cHeaderRef.getAbstractActor() instanceof final PiGraph g && g.isCluster()
-          && scenario.getPossibleMappings(g).stream().anyMatch(map -> map.getComponent() instanceof FPGA))) {
-
-        final IPath filePath = Optional.ofNullable(cHeaderRef.getFilePath()).map(Path::new).orElse(null);
-        if ((filePath != null) && !(result.contains(filePath))) {
-          result.add(filePath);
-        }
-
-      }
-    });
-
-    return result;
-  }
-
   protected String writeTopKernelFile() {
     // 1- init engine
     final VelocityEngine engine = new VelocityEngine();
@@ -1005,11 +972,8 @@ public class FpgaCodeGenerator {
 
     // 2- init context
     final VelocityContext context = new VelocityContext();
-
-    final List<org.preesm.model.slam.Component> excludedComponents = new LinkedList<>();
-
-    final List<String> findAllCHeaderFileNamesUsed = findAllCHeaderFileNamesUsedExcludingArchs(analysisResult.flatGraph,
-        scenario, excludedComponents);
+    final List<
+        String> findAllCHeaderFileNamesUsed = CHeaderUsedLocator.findAllCHeaderFileNamesUsed(analysisResult.flatGraph);
 
     context.put(PREESM_INCLUDES,
         includeCFile(TEMPLATE_DEFINE_HEADER_NAME) + "\n" + "#include \"WRAPPER_" + graphName + ".hpp\"");
@@ -1700,7 +1664,7 @@ public class FpgaCodeGenerator {
    *          the top algorithm
    * @return the stream_connect commands as a string
    */
-  public static String generateConnectivityCommands(PiGraph algo, Scenario scenario) {
+  public String generateConnectivityCommands(PiGraph algo) {
     final StringBuilder sb = new StringBuilder("");
 
     final List<PiGraph> clusterList = algo.getAllClusters().stream()

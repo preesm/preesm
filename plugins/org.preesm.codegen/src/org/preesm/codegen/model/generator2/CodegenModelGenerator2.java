@@ -820,8 +820,7 @@ public class CodegenModelGenerator2 {
     }
     // TODO have the CHeaderRefinement replace the PiSDFRefinement in the localCodegenTask so we don't have to search
     // for it.
-    final Refinement refinement = cluster.getRefinements().stream().filter(CHeaderRefinement.class::isInstance).toList()
-        .getFirst();
+    final Refinement refinement = cluster.getRefinement();
     if (refinement instanceof final CHeaderRefinement cHeaderRef) {
       final FunctionPrototype initPrototype = cHeaderRef.getInitPrototype();
       if (initPrototype != null) {

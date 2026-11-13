@@ -67,7 +67,6 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.ISetter;
 import org.preesm.model.pisdf.Parameter;
 import org.preesm.model.pisdf.PiGraph;
-import org.preesm.model.pisdf.Refinement;
 import org.preesm.model.pisdf.RoundBufferActor;
 import org.preesm.model.pisdf.SpecialActor;
 import org.preesm.model.pisdf.brv.BRVMethod;
@@ -215,7 +214,7 @@ public class ClusteringHelper {
 
     // filter instances that don't have any mapped actors
     cpuInstances = cpuInstances.stream().filter(i -> {
-      final List<Refinement> iConstraints = inputScenario.getConstraints().getRefinementConstraints().get(i);
+      final var iConstraints = inputScenario.getConstraints().getGroupConstraints().get(i);
       return iConstraints != null && !iConstraints.isEmpty();
     }).toList();
 

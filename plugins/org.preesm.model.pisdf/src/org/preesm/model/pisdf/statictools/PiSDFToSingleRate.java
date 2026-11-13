@@ -145,6 +145,10 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
   private PiGraph currentResultSrDAG;
 
+  private static List<String> flattenExclusionList;
+
+  private static List<String> srdagExclusionList;
+
   /**
    * Instantiates a new abstract StaticPiMM2ASrPiMMVisitor.
    *
@@ -162,6 +166,13 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
 
     // copy input graph period
     this.result.setExpression(inputGraph.getPeriod().evaluateAsLong());
+  }
+
+  public static final PiGraph computeWithExclusionLists(final PiGraph graph, final BRVMethod method,
+      List<String> flattenExclusion, List<String> srdagExclusion) {
+    flattenExclusionList = flattenExclusion;
+    srdagExclusionList = srdagExclusion;
+    return compute(graph, method);
   }
 
   /**
@@ -1164,12 +1175,12 @@ public class PiSDFToSingleRate extends PiMMSwitch<Boolean> {
   public Boolean caseCluster(PiGraph cluster) {
     final PiGraph copyGraph = PiMMUserFactory.instance.copyPiGraphWithHistory(cluster);
 
-    if (cluster.isToFlatten()) {
+    if (!flattenExclusionList.contains(cluster.getName())) {
       // flatten
       PiSDFFlattener.flatten(copyGraph, true);
     }
 
-    if (cluster.isToSrdag()) {
+    if (!srdagExclusionList.contains(cluster.getName())) {
       // convert to srdag
       // absolutely the same lines as casePiGraph, I was just too lazy to mutualize into a single function.
 

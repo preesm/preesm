@@ -305,7 +305,6 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     // architecture
     for (final DAGVertex vertex : dag.vertexSet()) {
       final ComponentInstance operator = vertex.getPropertyBean().getValue(OPERATOR_LITERAL);
-      // final ComponentInstance operator = vertex.getPropertyBean().getValue(OPERATOR_LITERAL);
       if (operator == null) {
         final String msg = "The DAG Actor " + vertex + " is not mapped on any operator.\n"
             + " All actors must be mapped before using the code generation.";
@@ -597,7 +596,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
     }
 
     // Check whether the ActorCall is a call to a hierarchical actor or not.
-    final Object refinement = dagVertex.getRefinements();
+    final Object refinement = dagVertex.getRefinement();
 
     // If the actor has an IDL refinement
     final ActorPrototypes prototypes = switch (refinement) {
@@ -2566,7 +2565,7 @@ public class CodegenModelGenerator extends AbstractCodegenModelGenerator {
    * @return the parsed {@link ActorPrototypes}.
    */
   protected ActorPrototypes getActorPrototypes(final DAGVertex dagVertex) {
-    final Object refinement = dagVertex.getRefinements();
+    final Object refinement = dagVertex.getRefinement();
 
     // Check that it has an IDL refinement.
     if (!(refinement instanceof final CodeRefinement cRef) || (cRef.getLanguage() != Language.IDL)) {

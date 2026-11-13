@@ -347,13 +347,9 @@ public class CodegenEngine {
       }
 
       // for fpga heterogeneous projects, print the necessary files :
-      // - connectivity
       // - cluster list
       // - vitis build files (python, tcl and makefile)
       if (het_fpga_project) {
-        // final String sb = FpgaCodeGenerator.generateConnectivityCommands(algo, scenario);
-        // PreesmIOHelper.getInstance().print(codegenPath, "connectivity.cfg", sb);
-
         PreesmIOHelper.getInstance().print(codegenPath, "clusters_list", algo.getClusters().stream()
             .filter(c -> scenario.getPossibleMappings(c).stream().anyMatch(comp -> comp.getComponent() instanceof FPGA))
             .map(c -> PreesmCopyTracker.getOriginalSource(c).getName()).collect(Collectors.joining("\n")));

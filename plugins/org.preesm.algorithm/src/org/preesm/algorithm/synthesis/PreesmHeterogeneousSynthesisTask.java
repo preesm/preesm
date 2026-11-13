@@ -13,6 +13,7 @@ import org.preesm.algorithm.mapping.model.Mapping;
 import org.preesm.algorithm.memalloc.model.AbstractAllocation;
 import org.preesm.algorithm.memalloc.model.Allocation;
 import org.preesm.algorithm.memory.allocation.tasks.MemoryScriptTask;
+import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.fpga.FPGAConstraintScheduler;
 import org.preesm.algorithm.schedule.model.Schedule;
 import org.preesm.algorithm.synthesis.communications.ICommunicationInserter;
@@ -313,6 +314,32 @@ public class PreesmHeterogeneousSynthesisTask extends AbstractTaskImplementation
       default -> throw new PreesmSynthesisException("No mapper available for component " + arch.getInstanceName());
     };
 
+  }
+
+  /***
+   * Returns the corresponding scheduler-mapper instance based on its name. public or private, I don't care
+   *
+   * @param localSchedulerMapperName
+   *          the scheduler's name
+   * @return the sceduler-mapper instance
+   */
+  private IScheduler getSchedulerMapperInstance(String localSchedulerMapperName) {
+    // TODO expand switch
+    switch (localSchedulerMapperName.toLowerCase()) {
+      case AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_LINEAR,
+          AdfgOjalgoFpgaFifoEvaluator.FIFO_EVALUATOR_ADFG_DEFAULT_EXACT:
+        return new FpgaScheduler(localSchedulerMapperName);
+      case PreesmSynthesisTask.VALUE_SCHEDULER_SIMPLE:
+        return new SimpleScheduler();
+      case PreesmSynthesisTask.VALUE_SCHEDULER_LEGACY:
+        return new LegacyListScheduler();
+      case PreesmSynthesisTask.VALUE_SCHEDULER_PERIODIC:
+        return new PeriodicScheduler();
+      default:
+        PreesmLogger.getLogger().log(Level.SEVERE,
+            () -> "This scheduler is not implemented : " + localSchedulerMapperName);
+        return null;
+    }
   }
 
   /***

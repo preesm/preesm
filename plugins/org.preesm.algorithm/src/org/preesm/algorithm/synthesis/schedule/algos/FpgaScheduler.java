@@ -34,5 +34,4 @@ public class FpgaScheduler extends AbstractPiMMScheduler {
 
     return synthesisResults;
   }
-
 }

@@ -189,8 +189,7 @@ public class MapperDAGVertex extends DAGVertex {
     copy.setParentVertex(result);
     result.setInit(copy);
     result.setEffectiveComponent(getEffectiveComponent());
-    // result.setRefinement(this.getRefinement());
-    result.setRefinement(this.getRefinements());
+    result.setRefinement(this.getRefinement());
 
     for (final String propertyKey : getPropertyBean().keys()) {
       final Object property = getPropertyBean().getValue(propertyKey);

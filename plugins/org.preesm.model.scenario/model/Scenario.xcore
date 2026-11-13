@@ -105,9 +105,8 @@ class Scenario {
 	String scenarioURL
 	String codegenDirectory
 	refers PiGraph algorithm
-	refers Design design
+	refers Design  design
 	contains Constraints constraints opposite scenario
-//	contains RefinementConstraints refinementConstraints opposite scenario
 	contains Timings timings opposite scenario
 	contains SimulationInfo simulationInfo opposite scenario
 	contains ParameterValueOverride[] parameterValues opposite scenario
@@ -152,61 +151,13 @@ class Scenario {
 		// are no more valid (they depends on both algo and archi)
 		if (algoPath !== null || archiPath !== null) {
 			timings.actorTimings.clear()
-			constraints.refinementConstraints.clear()
+			constraints.groupConstraints.clear()
 			papifyConfig.papifyConfigGroupsActors.clear
 			papifyConfig.papifyConfigGroupsPEs.clear
 		}
 	}
-	
-//	op ComponentInstance[] getPossibleGraphMappings(PiGraph graph) {
-//		var EList<ComponentInstance> processingElements = design.componentInstances.filter[it.component instanceof ProcessingElement].toEList
-		
-		// first, try and find its refinements' mappings
-//		if(graph.refinements !== null && !graph.refinements.empty) {
-//			var refs = graph.refinements
-//			var EList<ComponentInstance> mapping = new BasicEList<ComponentInstance>()
-//			for(Refinement ref: refs) {
-//				val ComponentInstance[] possibleMappings = constraints.refinementConstraints.filter[it.value.contains(ref)].map[it.key]
-//				if(mapping === null) { // initialize array
-//					mapping = possibleMappings.toEList
-//				}
-//				else { // keep filling array
-//					mapping.addAll(possibleMappings)
-//				}
-//			}
-//			if(!mapping.empty) {
-//				return mapping
-//			}
-//		}
-
-		// otherwise, deduct it from its actors
-//		for(AbstractActor a: graph.actors.filter[it instanceof RefinementContainer || it instanceof PiGraph]) {
-//			var ComponentInstance[] actorMappings
-//			if(a instanceof PiGraph) {
-//				// récursif
-//				actorMappings = getPossibleGraphMappings(a)
-//			}
-//			else {
-//				actorMappings = getPossibleMappings(a)
-//			}
-//			// intersection
-//			var EList<ComponentInstance> mappingsToRemove = new BasicEList<ComponentInstance>()
-//			for(ComponentInstance mapping: processingElements) {
-//				if(!actorMappings.contains(mapping)) {
-//					mappingsToRemove.add(mapping)
-//				}
-//			}
-//			processingElements.removeAll(mappingsToRemove)
-//			if(processingElements.empty) {
-//				return processingElements.toEList
-//			}
-//		}
-//		return processingElements.toEList
-//	}
-	
 	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
-		 var EList<ComponentInstance> mapping = new BasicEList<ComponentInstance>()
-
+		var ComponentInstance[] mapping
 		if (actor instanceof SpecialActor) {
 			//TODO this might introduce bugs because we keep the previous behaviour for non-clusters and introduce a new one for clusters
 			if(actor.containingPiGraph.cluster) {
@@ -216,45 +167,9 @@ class Scenario {
 				mapping = simulationInfo.specialVertexOperators
 			}
 
-		} else if(actor instanceof RefinementContainer) { 
-			var refs = actor.refinements
-			for(Refinement ref: refs) {
-				val ComponentInstance[] possibleMappings = constraints.refinementConstraints.filter[it.value.contains(ref)].map[it.key]
-				if(mapping === null) { // initialize array
-					mapping = possibleMappings.toEList
-				}
-				else { // keep filling array
-					mapping.addAll(possibleMappings)
-				}
-			}
-			if(mapping === null || mapping.empty) { // if the pigraph has no mapping set yet
-//				mapping = getPossibleGraphMappings(actor)
-				val source = PreesmCopyTracker.getSource(actor)
-				if(source !== null) { // avoid infinit recursion
-					return getPossibleMappings(source)
-				}
-			}
+		} else {
+			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, actor, 0) != -1].map[it.key]
 		}
-//		else if(actor instanceof PiGraph) { // mettre ça au-dessus si les mappings retournés sont vides/null ?
-//			var refs = actor.refinements
-//			for(Refinement ref: refs) {
-//				val ComponentInstance[] possibleMappings = constraints.refinementConstraints.filter[it.value.contains(ref)].map[it.key]
-//				if(mapping === null) { // initialize array
-//					mapping = possibleMappings.toEList
-//				}
-//				if(possibleMappings !== null && !possibleMappings.empty) { // keep filling array
-//					mapping.addAll(possibleMappings)
-//				}
-//			}
-//			if(mapping === null || mapping.empty) { // if the pigraph has no mapping set yet
-////				mapping = getPossibleGraphMappings(actor)
-//				val source = PreesmCopyTracker.getSource(actor)
-//				if(source !== null) { // avoid infinit recursion
-//					return getPossibleMappings(source)
-//				}
-//			}
-//		}
-		
 		if (mapping.isEmpty) {
 			val source = PreesmCopyTracker.getOriginalSource(actor)
 			if (source != actor) {
@@ -264,8 +179,7 @@ class Scenario {
 				val graph = actor.containingPiGraph
 				// if the actor is contained in a cluster, its mapping is the same as its cluster's mapping
         		if(graph.clusterValue) {
-//          			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, graph, 0) != -1].map[it.key]
-						mapping = getPossibleMappings(graph)
+          			mapping = constraints.groupConstraints.filter[ECollections.indexOf(it.value, graph, 0) != -1].map[it.key]
         		}
         		else {
          			mapping = ECollections.newBasicEList
@@ -277,70 +191,21 @@ class Scenario {
 		}
 		return mapping.unmodifiableEList
 	}
-	
-	op void addConstraint(ComponentInstance cmp, AbstractActor a) {
-		if(a instanceof RefinementContainer) {
-			a.refinements.forEach[constraints.addConstraint(cmp, it)]
-		} else if (a instanceof SpecialActor) {
-			constraints.addSpecialConstraint(cmp, a)
-		}
-	}
-	
 	op void addConstraints(ComponentInstance cmp, AbstractActor[] actors) {
 		for(AbstractActor a: actors) {
 			addConstraint(cmp, a)
 		}
 	}
 	
-	op void addConstraint(ComponentInstance cmp, Refinement r) {
-		constraints.addConstraint(cmp, r)
-	}
-	
-	op void addConstraint(RefinementConstraint c) {
-		constraints.refinementConstraints.add(c)
-	}
-	
-	op void removeConstraint(ComponentInstance cmp, Refinement r) {
-		constraints.removeConstraint(cmp, r)
+	op void addConstraint(ComponentInstance cmp, AbstractActor actor) {
+		constraints.addConstraint(cmp, actor);
 	}
 	
 	op void removeConstraint(ComponentInstance cmp, AbstractActor a) {
 		constraints.removeConstraint(cmp, a)
 	}
 	
-	op ComponentInstance[] getRefinementPEs(Refinement ref) {
-		var ComponentInstance[] res
-		for(ComponentInstance ci: constraints.refinementConstraints.keySet) {
-			if(constraints.refinementConstraints.get(ci).contains(ref)) {
-				res.add(ci)
-			}
-		}
-		return res.toEList
-	}
-	
-//	op void removeConstraintsToPE(AbstractActor actor, ComponentInstance pe) {
-//		if(actor instanceof SpecialActor) {
-//			// constraints are in specialConstraints
-//			var c = constraints.specialConstraints.get(pe)
-//			if(c.contains(actor)) {
-//				c.remove(actor)
-//			}
-//			
-//		} else if (actor instanceof RefinementContainer) {
-//			var a = actor as RefinementContainer
-//			// constraints are in refinementConstraints
-//			val c = constraints.refinementConstraints.get(pe)
-//			// find intersection between actor refinements and constrainted refinements
-//			var intersection = a.refinements.filter[it | c.contains(it)]
-//			for(Refinement ref: intersection) {
-//				constraints.refinementConstraints.get(pe).remove(ref)
-//				// remove the refinement from the actor too ?
-//			}
-//		}
-//	}
-	
 }
-
 
 /* #####################
  *  		Simulation
@@ -399,102 +264,51 @@ class DataType wraps java.util.Map$Entry {
 /* #####################
  *  		Constraints
  ##################### */
- 
 class Constraints {
 	refers Scenario scenario opposite constraints
 	// constraint group
 	String groupConstraintsFileURL
-	contains RefinementConstraint[] refinementConstraints opposite constraints
-	contains SpecialConstraint[] specialConstraints opposite constraints
-
+	contains GroupConstraint[] groupConstraints opposite constraints
+	
 	op void addConstraint(ComponentInstance cmpInstance, AbstractActor actor) {
-		if(actor instanceof SpecialActor) {
-			// if this actor has no refinement, it has no mapping anyway
-			addSpecialConstraint(cmpInstance, actor)
+		if (!groupConstraints.containsKey(cmpInstance)) {
+			groupConstraints.put(cmpInstance, ECollections.newBasicEList);
 		}
-		else if(actor instanceof RefinementContainer) {
-			if (!refinementConstraints.containsKey(cmpInstance)) {
-				refinementConstraints.put(cmpInstance, ECollections.newBasicEList);
-			}
-			// for now, we'll say that addConstraint(actor) adds the constraints to all the actor's refinements
-			// groupConstraints.get(cmpInstance).add(actor);
-			refinementConstraints.get(cmpInstance).addAll(actor.refinements)
-		}
+		groupConstraints.get(cmpInstance).add(actor);
 	}
 	op void addConstraints(ComponentInstance cmpInstance, AbstractActor[] actors) {
-		if (!refinementConstraints.containsKey(cmpInstance)) {
-			refinementConstraints.put(cmpInstance, ECollections.newBasicEList);
+		if (!groupConstraints.containsKey(cmpInstance)) {
+			groupConstraints.put(cmpInstance, ECollections.newBasicEList);
 		}
-		// groupConstraints.get(cmpInstance).addAll(actors);
-		actors.forEach[addConstraint(cmpInstance, it)]
+		groupConstraints.get(cmpInstance).addAll(actors);
 	}
-	op void addConstraint(ComponentInstance cmpInstance, Refinement r) {
-		if (!refinementConstraints.containsKey(cmpInstance)) {
-			refinementConstraints.put(cmpInstance, ECollections.newBasicEList);
-		}
-		refinementConstraints.get(cmpInstance).add(r)
-	}
-	op void addSpecialConstraint(ComponentInstance cmpInstance, SpecialActor sa) {
-		if (!specialConstraints.containsKey(cmpInstance)) {
-			specialConstraints.put(cmpInstance, ECollections.newBasicEList);
-		}
-		specialConstraints.get(cmpInstance).add(sa)
-	}
-	
-	op void removeConstraint(ComponentInstance cmpInstance, Refinement r) {
-		if(refinementConstraints.containsKey(cmpInstance) && refinementConstraints.get(cmpInstance).contains(r)) {
-			refinementConstraints.get(cmpInstance).remove(r)
-		}
-	}
-	
 	op void removeConstraint(ComponentInstance cmpInstance, AbstractActor a) {
-		if(a instanceof SpecialActor) {
-			// if this actor has no refinement, it has no mapping anyway
-			removeSpecialConstraint(cmpInstance, a)
+		if(groupConstraints.get(cmpInstance) !== null) {
+			groupConstraints.get(cmpInstance).remove(a);
 		}
-		else if(a instanceof RefinementContainer) {
-			if (refinementConstraints.containsKey(cmpInstance)) {
-				refinementConstraints.get(cmpInstance).removeAll(a.refinements)
-			}
-		}
+		
 	}
 	
-	op void removeSpecialConstraint(ComponentInstance cmpInstance, SpecialActor sa) {
-		if (specialConstraints.containsKey(cmpInstance)) {
-			specialConstraints.get(cmpInstance).remove(sa)
-		}
-	}
-		
 	op ComponentInstance[] getPossibleMappings(AbstractActor actor) {
-		return refinementConstraints.filter[e | e.value.contains(actor)].map[e | e.key].toEList.unmodifiableView
+		return groupConstraints.filter[e | e.value.contains(actor)].map[e | e.key].toEList.unmodifiableView
 	}
+
 	op int nbConstrainsWithComp(String compType) {
-		return refinementConstraints.filter[e | e.key.component.vlnv.name.equals(compType)].size;
+		return groupConstraints.filter[e | e.key.component.vlnv.name.equals(compType)].size;
 	}
 	op boolean isCoreContained(String peName) {
-		return !refinementConstraints.filter[e | e.key.instanceName.equals(peName)].empty;
+		return !groupConstraints.filter[e | e.key.instanceName.equals(peName)].empty;
 	}
-	
 }
 
 /*
  * A group constraint specifies which actors (the value) can be executed
  * on a given processing element (the key)
  */
-class RefinementConstraint wraps java.util.Map$Entry {
-	refers Constraints constraints opposite refinementConstraints
+class GroupConstraint wraps java.util.Map$Entry {
+	refers Constraints constraints opposite groupConstraints
 	refers ComponentInstance key // the operator
-	refers Refinement[] value // the refinements allowed on that operator
-}
-
-/*
- * A group constraint specifies which actors (the value) can be executed
- * on a given processing element (the key)
- */
-class SpecialConstraint wraps java.util.Map$Entry {
-	refers Constraints constraints opposite specialConstraints
-	refers ComponentInstance key // the operator
-	refers SpecialActor[] value // the specialActor that are allowed on that operator
+	refers AbstractActor[] value // the vertices allowed on that operator
 }
 
 /* #####################
