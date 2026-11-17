@@ -381,41 +381,41 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 		if (actor instanceof DelayActor) {
 			// No indices to increment, DelayActor are last in list
 			return vertices.add(actor)
-		} else {
-			try {
-				vertices.add(parameterIndex + actorIndex, actor)
-			} catch (IllegalArgumentException ignore) {
-				return false
-			}
-
-			if (actor instanceof InterfaceActor) {
-
-				var DataPort port
-
-				switch (actor.kind) {
-					case DATA_INPUT: {
-						port = PiMMUserFactory.instance.createDataInputPort
-						this.getDataInputPorts.add(port as DataInputPort)
-					}
-					case DATA_OUTPUT: {
-						port = PiMMUserFactory.instance.createDataOutputPort
-						this.getDataOutputPorts.add(port as DataOutputPort)
-					}
-					case CFG_OUTPUT: {
-						port = PiMMUserFactory.instance.createConfigOutputPort
-						this.getConfigOutputPorts.add(port as ConfigOutputPort)
-					}
-					default: {
-						return false
-					}
-				}
-
-				// Set the interface properties
-				port.name = actor.name
-				actor.graphPort = port
-			}
-			return true
 		}
+
+		try {
+			vertices.add(parameterIndex + actorIndex, actor)
+		} catch (IllegalArgumentException ignore) {
+			return false
+		}
+
+		if (actor instanceof InterfaceActor) {
+
+			var DataPort port
+
+			switch (actor.kind) {
+				case DATA_INPUT: {
+					port = PiMMUserFactory.instance.createDataInputPort
+					this.getDataInputPorts.add(port as DataInputPort)
+				}
+				case DATA_OUTPUT: {
+					port = PiMMUserFactory.instance.createDataOutputPort
+					this.getDataOutputPorts.add(port as DataOutputPort)
+				}
+				case CFG_OUTPUT: {
+					port = PiMMUserFactory.instance.createConfigOutputPort
+					this.getConfigOutputPorts.add(port as ConfigOutputPort)
+				}
+				default: {
+					return false
+				}
+			}
+
+			// Set the interface properties
+			port.name = actor.name
+			actor.graphPort = port
+		}
+		return true
 	}
 	/*
 	 * Add the {@link Parameter} at the end of the {@link Parameter} sublist before the first {@link AbstractActor},<br>
@@ -431,7 +431,7 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	op boolean addParameter(Parameter parameter) {
 		try {
 			vertices.add(parameterIndex, parameter) // can't do addFirst
-		} catch (IllegalArgumentException ignore) {
+		} catch (IllegalArgumentException _) {
 			return false
 		}
 
@@ -772,11 +772,7 @@ class Actor extends ExecutableActor, RefinementContainer, PeriodicElement {
 		return refinement !== null && refinement.isHierarchical
 	}
 	op AbstractActor getChildAbstractActor() {
-		if (refinement === null) {
-			return null;
-		} else {
-			return refinement.abstractActor
-		}
+		return refinement?.abstractActor
 	}
 	op PiGraph getSubGraph() {
 		if (hierarchical) {

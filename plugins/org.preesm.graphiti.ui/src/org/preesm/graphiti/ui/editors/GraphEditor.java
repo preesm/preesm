@@ -39,7 +39,6 @@ import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EventObject;
 import java.util.List;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IMarker;
@@ -58,6 +57,7 @@ import org.eclipse.gef.MouseWheelZoomHandler;
 import org.eclipse.gef.RootEditPart;
 import org.eclipse.gef.commands.Command;
 import org.eclipse.gef.commands.CommandStack;
+import org.eclipse.gef.commands.CommandStackEvent;
 import org.eclipse.gef.dnd.TemplateTransferDragSourceListener;
 import org.eclipse.gef.editparts.ScalableFreeformRootEditPart;
 import org.eclipse.gef.editparts.ZoomManager;
@@ -73,6 +73,7 @@ import org.eclipse.gef.ui.palette.PaletteViewerProvider;
 import org.eclipse.gef.ui.parts.GraphicalEditorWithFlyoutPalette;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.util.TransferDragSourceListener;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
@@ -159,9 +160,11 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
   }
 
   @Override
-  public void commandStackChanged(final EventObject event) {
-    firePropertyChange(IEditorPart.PROP_DIRTY);
-    super.commandStackChanged(event);
+  public void stackChanged(CommandStackEvent event) {
+    if (event.isPostChangeEvent()) {
+      firePropertyChange(IEditorPart.PROP_DIRTY);
+      super.stackChanged(event);
+    }
   }
 
   @Override
@@ -233,7 +236,7 @@ public class GraphEditor extends GraphicalEditorWithFlyoutPalette implements ITa
       @Override
       protected void configurePaletteViewer(final PaletteViewer viewer) {
         super.configurePaletteViewer(viewer);
-        viewer.addDragSourceListener(new TemplateTransferDragSourceListener(viewer));
+        viewer.addDragSourceListener((TransferDragSourceListener) new TemplateTransferDragSourceListener(viewer));
       }
     };
   }

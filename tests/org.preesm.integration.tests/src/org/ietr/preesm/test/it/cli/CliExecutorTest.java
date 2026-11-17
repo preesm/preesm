@@ -2,7 +2,6 @@ package org.ietr.preesm.test.it.cli;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
@@ -62,7 +61,7 @@ class CliExecutorTest {
     Assertions.assertEquals(IApplication.EXIT_OK, result);
   }
 
-  private void setUp(String projectName) throws CoreException, IOException, URISyntaxException {
+  private void setUp(String projectName) throws CoreException, IOException {
 
     final IWorkspace workspace = ResourcesPlugin.getWorkspace();
     final IWorkspaceRoot root = workspace.getRoot();

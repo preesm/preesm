@@ -35,7 +35,6 @@
  */
 package org.preesm.cli;
 
-import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -55,9 +54,9 @@ public class DocGenApplication implements IApplication {
 
   private Options getCommandLineOptions() {
     final Options options = new Options();
-    Option opt;
+    final Option opt = new Option("mdd", "markdowndoc", true,
+        "outputs MarkDown task reference to file given as argument");
 
-    opt = new Option("mdd", "markdowndoc", true, "outputs MarkDown task reference to file given as argument");
     options.addOption(opt);
 
     return options;
@@ -76,7 +75,7 @@ public class DocGenApplication implements IApplication {
       MarkdownPrinter.prettyPrintTo(mdFilePath);
       return IApplication.EXIT_OK;
     }
-    PreesmLogger.getLogger().log(Level.SEVERE, "Expecting -mdd <path> option");
+    PreesmLogger.getLogger().info("Expecting -mdd <path> option");
     return IApplication.EXIT_OK;
   }
 
