@@ -76,7 +76,7 @@
    <properties>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
       <jacoco-version>0.8.16</jacoco-version>
-      <tycho-version>5.0.2</tycho-version>
+      <tycho-version>5.0.4</tycho-version>
       <findbugs-version>3.0.5</findbugs-version>
       <sonar-version>5.8.0.7211</sonar-version>
       <checkstyle-version>14.3.0</checkstyle-version>
@@ -116,7 +116,7 @@
       <!-- ############### -->
       <!-- P2 REPOS CONFIG -->
       <!-- ############### -->
-      <updatesite.preesm>https://preesm.insa-rennes.fr/repo/</updatesite.preesm>
+      <!-- <updatesite.preesm>https://preesm.insa-rennes.fr/repo/</updatesite.preesm> -->
       <!-- <updatesite.preesm.externaldeps>${updatesite.preesm}/org.preesm.externaldeps/</updatesite.preesm.externaldeps> -->
       <!-- <updatesite.preesm.graphiti>${updatesite.preesm}/org.ietr.graphiti/</updatesite.preesm.graphiti> -->
       <updatesite.eclipse>${eclipse.mirror}/releases/2026-09</updatesite.eclipse>
