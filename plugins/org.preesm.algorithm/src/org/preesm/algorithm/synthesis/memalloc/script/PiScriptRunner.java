@@ -362,7 +362,7 @@ public class PiScriptRunner {
             this.scriptedVertices.put(dagVertex, scriptFile);
           } else {
             final String message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" + pathString
-                + "\". Change it in the graphml editor.";
+                + "\". Change it in the graph editor.";
             PiScriptRunner.logger.log(Level.WARNING, message);
           }
         }

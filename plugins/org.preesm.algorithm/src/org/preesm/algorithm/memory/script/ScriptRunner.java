@@ -337,7 +337,7 @@ public class ScriptRunner {
           final String pathString = dagVertex.getPropertyBean().getValue(DAGVertex.MEMORY_SCRIPT);
           if (pathString != null) {
 
-            // Retrieve the script path as a relative path to the graphml
+            // Retrieve the script path as a relative path to the graph
             URL scriptFile = scriptFiles.get(pathString);
             if (scriptFile == null) {
               scriptFile = URLResolver.findFirst(pathString);
@@ -347,7 +347,7 @@ public class ScriptRunner {
               this.scriptedVertices.put(dagVertex, scriptFile);
             } else {
               final String message = "Memory script of vertex " + dagVertex.getName() + " is invalid: \"" + pathString
-                  + "\". Change it in the graphml editor.";
+                  + "\". Change it in the graph editor.";
               ScriptRunner.logger.log(Level.WARNING, message);
             }
           }
