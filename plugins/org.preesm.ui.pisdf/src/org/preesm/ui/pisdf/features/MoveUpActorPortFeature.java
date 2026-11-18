@@ -121,11 +121,11 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
       final Object bo = getBusinessObjectForPictogramElement(pes[0]);
       if (bo instanceof final Port port && (port.eContainer() instanceof final ExecutableActor actor)) {
         return switch (port.getKind()) {
-          case DATA_INPUT -> actor.getDataInputPorts().size() > 1 && (actor.getDataInputPorts().indexOf(port) > 0);
-          case DATA_OUTPUT -> actor.getDataOutputPorts().size() > 1 && (actor.getDataOutputPorts().indexOf(port) > 0);
-          case CFG_INPUT -> actor.getConfigInputPorts().size() > 1 && (actor.getConfigInputPorts().indexOf(port) > 0);
+          case DATA_INPUT -> actor.getDataInputPorts().size() > 1 && (actor.getDataInputPorts().indexOf(port) >= 1);
+          case DATA_OUTPUT -> actor.getDataOutputPorts().size() > 1 && (actor.getDataOutputPorts().indexOf(port) >= 1);
+          case CFG_INPUT -> actor.getConfigInputPorts().size() > 1 && (actor.getConfigInputPorts().indexOf(port) >= 1);
           case CFG_OUTPUT ->
-            actor.getConfigOutputPorts().size() > 1 && (actor.getConfigOutputPorts().indexOf(port) > 0);
+            actor.getConfigOutputPorts().size() > 1 && (actor.getConfigOutputPorts().indexOf(port) >= 1);
         };
       }
     }
@@ -263,10 +263,8 @@ public class MoveUpActorPortFeature extends AbstractCustomFeature {
    * @param portToMove
    *          the port to move
    * @return the point to move
-   * @throws RuntimeException
-   *           the runtime exception
    */
-  protected List<Point> getPointToMove(final Anchor anchor, final Port portToMove) throws RuntimeException {
+  protected List<Point> getPointToMove(final Anchor anchor, final Port portToMove) {
     List<Connection> edges = new ArrayList<>();
     boolean fromStart = true;
     switch (portToMove.getKind()) {

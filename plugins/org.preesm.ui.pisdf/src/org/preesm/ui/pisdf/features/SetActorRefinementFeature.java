@@ -350,15 +350,13 @@ public class SetActorRefinementFeature extends AbstractCustomFeature {
   private List<FunctionPrototype> getPrototypes(final RefinementContainer actor, final PrototypeFilter prototypeFilter,
       final List<FunctionPrototype> allPrototypes) {
 
-    final List<FunctionPrototype> result = switch (prototypeFilter) {
+    return switch (prototypeFilter) {
       case INIT_ACTOR -> HeaderParser.filterInitPrototypesFor((AbstractActor) actor, allPrototypes);
       case LOOP_ACTOR -> HeaderParser.filterLoopPrototypesFor((AbstractActor) actor, allPrototypes);
       case INIT -> HeaderParser.filterInitPrototypes(allPrototypes);
       case INIT_DELAY_ACTOR -> HeaderParser.filterInitBufferPrototypes(allPrototypes);
       case NONE -> throw new PreesmRuntimeException();
     };
-
-    return result;
   }
 
   /*
