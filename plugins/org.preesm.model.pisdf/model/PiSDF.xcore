@@ -454,9 +454,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Configurable} was successfully added, false otherwise
 	 */
 	op boolean addConfigurable(Configurable configurable) {
-		switch configurable {
-			AbstractActor: return addActor(configurable)
-			Parameter: return addParameter(configurable)
+		return switch configurable {
+			AbstractActor: addActor(configurable)
+			Parameter: addParameter(configurable)
 			default: throw new PreesmRuntimeException(configurable.toString + " cannot be added this way.")
 		}
 	}
@@ -556,9 +556,9 @@ class PiGraph extends AbstractActor, Graph, PeriodicElement {
 	 * @return true is the {@link Configurable} was successfully removed, false otherwise
 	 */
 	op boolean removeConfigurable(Configurable configurable) {
-		switch configurable {
-			AbstractActor: return removeActor(configurable)
-			Parameter: return removeParameter(configurable)
+		return switch configurable {
+			AbstractActor: removeActor(configurable)
+			Parameter: removeParameter(configurable)
 			default: throw new PreesmRuntimeException(configurable.toString + " cannot be removed this way.")
 		}
 	}
