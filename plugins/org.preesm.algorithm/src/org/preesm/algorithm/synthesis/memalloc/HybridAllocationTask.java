@@ -1,5 +1,6 @@
 package org.preesm.algorithm.synthesis.memalloc;
 
+import java.io.FileWriter;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.preesm.model.pisdf.Fifo;
 import org.preesm.model.pisdf.PiGraph;
 import org.preesm.model.scenario.Scenario;
 import org.preesm.model.slam.Design;
+import org.preesm.model.slam.ProcessingElement;
 import org.preesm.workflow.elements.Workflow;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
@@ -183,6 +185,9 @@ import org.preesm.workflow.implement.AbstractWorkflowNodeImplementation;
         + "Architectures, Modeling, and Simulation (SAMOS XII), 2012 International Conference on, 2012." })
 
 public class HybridAllocationTask extends AbstractTaskImplementation {
+
+  public static final String LOG_PATH = "/home/rcazoula/Documents/redaction/DAC2027/python/allocationLogs.txt";
+
   public static final String PARAM_BOT_ALLOCATOR         = "Bot Allocator";
   public static final String VALUE_BOT_ALLOCATOR_SIMPLE  = "Simple";
   public static final String VALUE_BOT_ALLOCATOR_PASSIVE = "Passive";
@@ -193,6 +198,9 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   public static final String PARAM_SCRIPTS = "Run memory scripts";
   public static final String VALUE_TRUE    = "True";
   public static final String VALUE_FALSE   = "False";
+  FileWriter                 writer        = null;
+
+  String logHeader = "";
 
   Map<PiGraph, AbstractAllocation> internalAllocationTracker = new HashMap<>();
 
@@ -207,11 +215,28 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
     final Schedule schedule = (Schedule) inputs.get(AbstractWorkflowNodeImplementation.KEY_SCHEDULE);
     final Mapping mapping = (Mapping) inputs.get(AbstractWorkflowNodeImplementation.KEY_MAPPING);
 
+    try {
+      writer = new FileWriter(LOG_PATH, true);
+    } catch (final Exception e) {
+      e.printStackTrace();
+    }
+
+    // Building log header
+    logHeader = createLogHeader(workflow, arch);
     /** Making the allocation for every hierarchical level of the graph. */
-    final AbstractAllocation tmpResult = executeRecursively(graph, scenario, arch, schedule, mapping, parameters,
+    final AbstractAllocation abstractResult = executeRecursively(graph, scenario, arch, schedule, mapping, parameters,
         workflow);
 
-    if (!(tmpResult instanceof final Allocation result)) {
+    // logs
+    final String line = logHeader + "global," + abstractResult.getMemorySizeInBit();
+    writeLog(line, writer);
+    try {
+      writer.close();
+    } catch (final Exception e) {
+      throw new PreesmRuntimeException("Could not close file " + LOG_PATH + ": " + e);
+    }
+
+    if (!(abstractResult instanceof final Allocation result)) {
       throw new PreesmRuntimeException("The chosen allocators must give back an Allocation, not just a Working Memory");
     }
 
@@ -264,9 +289,10 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
     /** Making the allocation for the current graph */
     final AbstractAllocation parentAbstractAlloc = allocator.allocateMemory(graph, arch, scenario, schedule, mapping);
 
-    // PreesmLogger.getLogger()
-    // .info(() -> "Comparing " + graph.getName() + " allocation: simple=" + simpleSize + ", passive=" + passiveSize
-    // + ", a " + (simpleSize - passiveSize) / (float) simpleSize * 100 + "% reduction.");
+    // logs
+    final String graphName = graph.getContainingPiGraph() == null ? "topOnly" : graph.getName();
+    final String line = logHeader + graphName + "," + parentAbstractAlloc.getMemorySizeInBit();
+    writeLog(line, writer);
 
     /** Making the allocation for every child graphs */
     for (final PiGraph child : graph.getChildrenGraphs()) {
@@ -365,5 +391,28 @@ public class HybridAllocationTask extends AbstractTaskImplementation {
   @Override
   public String monitorMessage() {
     return "allocating the graph and its sub graphs";
+  }
+
+  public static void writeLog(String line, FileWriter writer) {
+    try {
+      writer.append(line).append(System.lineSeparator());
+    } catch (final Exception e) {
+      throw new PreesmRuntimeException("could not write hybrid allocation logs in " + LOG_PATH + ": " + e);
+    }
+  }
+
+  public static String createLogHeader(Workflow workflow, Design arch) {
+    final long nCore = arch.getComponentInstances().stream()
+        .filter(ci -> ci.getComponent() instanceof ProcessingElement).toList().size();
+    String workflowType;
+    if (workflow.vertexSet().stream().anyMatch(v -> "passive.actor.exposer".equals(v.getID()))) {
+      workflowType = "passiveClustering";
+    } else if (workflow.vertexSet().stream().anyMatch(v -> "clustering.creation".equals(v.getID()))) {
+      workflowType = "clustering";
+    } else {
+      workflowType = "classic";
+    }
+    // Project, nCores, workflow, (graph, allocSize)
+    return workflow.getProjectName() + "," + nCore + "Cores," + workflowType + ",";
   }
 }
