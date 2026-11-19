@@ -189,7 +189,7 @@ abstract class AbstractAllocation {
 		return workMem.getMainBuffer().getSizeInBit()
 	}
 	
-	op long getMemorySize()
+	op long getMemorySizeInBit()
 }
 
 class WorkingMemoryEntry wraps java.util.Map$Entry {
@@ -232,12 +232,8 @@ class Allocation extends AbstractAllocation {
 		}
 	}
 	
-	op long getMemorySize() {
-		var workMemsSize = 0L
-		if(!workingMemories.isEmpty()) {
-			workMemsSize = workingMemories.map[it.memorySize].reduce[a, b|a + b]
-		}
-		return physicalBuffers.map[sizeInBit].reduce[a, b | a + b] + workMemsSize
+	op long getMemorySizeInBit() {
+		return physicalBuffers.map[sizeInBit].reduce[a, b | a + b]
 	}
 }
 
@@ -260,15 +256,9 @@ class WorkingMemory extends AbstractAllocation {
 		return interfaceBuffers.filter[it.getValue() === lb].map[it.getKey()].toEList.first
 	}
 	
-	op long getMemorySize() {
-		var workMemsSize = 0L
-		if(!workingMemories.isEmpty()) {
-			workMemsSize = workingMemories.map[it.getMainBuffer().getSizeInBit()].reduce[a, b|a + b]
-		}
-		return mainBuffer.getSizeInBit() + workMemsSize
+	op long getMemorySizeInBit() {
+		return mainBuffer.getSizeInBit()
 	}
-	
-	
 }
 
 

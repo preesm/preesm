@@ -35,6 +35,7 @@
  */
 package org.preesm.workflow;
 
+import java.time.Clock;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -233,6 +234,11 @@ public abstract class AbstractWorkflowExecutor {
    */
   public boolean execute(final String workflowPath, final String scenarioPath, final IProgressMonitor monitor,
       final boolean printLog) {
+
+    final Clock clock = Clock.systemDefaultZone();
+
+    final long begin = clock.millis();
+
     final Workflow workflow = new WorkflowParser().parse(workflowPath);
 
     boolean result = initAndCheck(workflowPath, monitor, workflow);
@@ -259,6 +265,8 @@ public abstract class AbstractWorkflowExecutor {
 
       if (result) {
         log(Level.INFO, "Workflow.EndInfo", workflowPath);
+        final long workflowTime = clock.millis() - begin;
+        PreesmLogger.getLogger().info(() -> "Workflow execution time: " + workflowTime + " ms.");
       }
 
       WorkspaceUtils.updateWorkspace();

@@ -147,7 +147,7 @@ public class CompleteBalancing extends BalancingHeuristic {
           long brdOutPortExpr;
 
           if (brdInPortExpr * brdActorRep >= outerRep1 * innerRep1 * tokensOneExec) {
-            brdOutPortExpr = outerRep1 * innerRep1 * tokensOneExec;
+            brdOutPortExpr = (outerRep1 * innerRep1 * tokensOneExec) / brdActorRep;
             interfaceExpr = innerRep1 * tokensOneExec;
           } else {
             brdOutPortExpr = outerRep1 * tokensOneExec;

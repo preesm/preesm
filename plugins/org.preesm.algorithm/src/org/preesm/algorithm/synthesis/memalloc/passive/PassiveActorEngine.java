@@ -140,7 +140,7 @@ public class PassiveActorEngine {
     new PassiveActorComposer(scriptRunner).doFusion(graph);
   }
 
-  private static URL createSpecialUrl(final String filePath) {
+  public static URL createSpecialUrl(final String filePath) {
     final URL url = PreesmResourcesHelper.getInstance().resolve(filePath, PassiveScriptRunner.class);
     if (url == null) {
       throw new PreesmRuntimeException("can't resolve following url : " + filePath);

@@ -707,7 +707,8 @@ public class PiMMCodegenModelGeneratorSwitch2 extends ScheduleSwitch<CodeElt> {
     }
 
     final IteratedBuffer iteratedBuffer;
-    if (passivePort != null && !passivePort.getContainingPassiveActor().isSimple()) {
+    final boolean isPassiveIteration = passivePort != null && !passivePort.getContainingPassiveActor().isSimple();
+    if (isPassiveIteration) {
       final IteratedPassiveBuffer ipb = CodegenModelUserFactory.eINSTANCE.createIteratedPassiveBuffer();
       passivePort.getBeginiEndi().forEach(pair -> ipb.getPossibleBeginValues().add(pair.getKey()));
       iteratedBuffer = ipb;
@@ -720,8 +721,9 @@ public class PiMMCodegenModelGeneratorSwitch2 extends ScheduleSwitch<CodeElt> {
     iteratedBuffer.setType(buffer.getType());
     iteratedBuffer.setTokenTypeSizeInBit(buffer.getTokenTypeSizeInBit());
 
-    this.bufferMap.put(dataPort.getFifo(), iteratedBuffer);
-
+    if (isPassiveIteration) {
+      this.bufferMap.put(dataPort.getFifo(), iteratedBuffer);
+    }
     return iteratedBuffer;
   }
 
