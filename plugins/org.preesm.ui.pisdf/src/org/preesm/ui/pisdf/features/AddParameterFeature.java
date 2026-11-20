@@ -107,7 +107,7 @@ public class AddParameterFeature extends AbstractAddConfigurableFeature {
     final int height = getDefaultHeight();
 
     // Create a house shaped polygon
-    final int[] xy = new int[] { 12, 0, 24, 26, 24, height, 0, height, 0, 26 };
+    final int[] xy = { 12, 0, 24, 26, 24, height, 0, height, 0, 26 };
     final Polygon house = gaService.createPolygon(containerShape, xy);
 
     house.setBackground(manageColor(getBackgroundColor()));

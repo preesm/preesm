@@ -57,7 +57,7 @@ public class JavaExpressionParserTest {
   private static BufferedReader bufferedReader;
 
   @BeforeAll
-  public static void beforeTest() {
+  static void beforeTest() {
 
     final InputStream inputStream = JavaExpressionParserTest.class.getClassLoader()
         .getResourceAsStream("resources/expression.traces");

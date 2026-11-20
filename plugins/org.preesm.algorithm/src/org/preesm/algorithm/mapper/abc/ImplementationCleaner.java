@@ -113,8 +113,8 @@ public class ImplementationCleaner {
     this.transactionManager.clear();
 
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
-      if (v instanceof TransferVertex) {
-        final MapperDAGVertex o = ((TransferVertex) v).getPrecedingOverhead();
+      if (v instanceof final TransferVertex transferVertex) {
+        final MapperDAGVertex o = transferVertex.getPrecedingOverhead();
         if (o instanceof OverheadVertex) {
           this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
@@ -135,8 +135,8 @@ public class ImplementationCleaner {
     this.transactionManager.clear();
 
     for (final DAGVertex v : ImplementationCleaner.getAllTransfers(vertex)) {
-      if (v instanceof TransferVertex) {
-        final MapperDAGVertex o = ((TransferVertex) v).getInvolvementVertex();
+      if (v instanceof final TransferVertex transferVertex) {
+        final MapperDAGVertex o = transferVertex.getInvolvementVertex();
         if (o instanceof InvolvementVertex) {
           this.transactionManager.add(new RemoveVertexTransaction(o, this.implementation, this.orderManager));
         }
@@ -191,9 +191,8 @@ public class ImplementationCleaner {
    */
   private static Set<DAGVertex> getAllTransfers(final MapperDAGVertex vertex) {
 
-    final Set<DAGVertex> transfers = new LinkedHashSet<>();
+    final Set<DAGVertex> transfers = new LinkedHashSet<>(ImplementationCleaner.getPrecedingTransfers(vertex));
 
-    transfers.addAll(ImplementationCleaner.getPrecedingTransfers(vertex));
     transfers.addAll(ImplementationCleaner.getFollowingTransfers(vertex));
 
     return transfers;

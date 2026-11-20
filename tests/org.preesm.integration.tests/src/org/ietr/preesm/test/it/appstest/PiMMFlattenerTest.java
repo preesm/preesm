@@ -38,60 +38,36 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class PiMMFlattenerTest {
+class PiMMFlattenerTest {
 
-  final String workflow;
-  final String scenario;
-  final String projectName;
-
-  /**
-   */
-  public PiMMFlattenerTest(final String workflow, final String scenario, final String projectName) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-    this.projectName = projectName;
+  static Stream<Arguments> data() {
+    return Stream.of(
+        Arguments.of("StaticPiMMFlattenerCodegen.workflow", "1corePrediction.scenario",
+            "org.ietr.preesm.reinforcement_learning"),
+        Arguments.of("StaticPiMMFlattenerCodegen.workflow", "1coreTraining.scenario",
+            "org.ietr.preesm.reinforcement_learning"),
+        Arguments.of("StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.stereo"),
+        Arguments.of("StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.sobel"));
   }
 
-  /**
-   *
-   */
-  @Parameters(name = "{2} - {0} - {1}")
-  public static Collection<Object[]> data() {
-
-    final List<Object[]> params = new ArrayList<>();
-
-    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1corePrediction.scenario",
-      "org.ietr.preesm.reinforcement_learning" });
-    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1coreTraining.scenario",
-      "org.ietr.preesm.reinforcement_learning" });
-
-    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.stereo" });
-
-    params.add(new Object[] { "StaticPiMMFlattenerCodegen.workflow", "1core.scenario", "org.ietr.preesm.sobel" });
-
-    return params;
-  }
-
-  @Test
-  public void testPiMMFlattener() throws IOException, CoreException {
+  @ParameterizedTest(name = "{2} - {0} - {1}")
+  @MethodSource("data")
+  void testPiMMFlattener(final String workflow, final String scenario, final String projectName)
+      throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure", success);
+    Assertions.assertTrue(success, () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] caused failure");
   }
 }

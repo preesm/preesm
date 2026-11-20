@@ -869,7 +869,7 @@ public class Distributor {
 
         // Put the mObj in the verticesSet, if the component is not yet in the map, add it
         final Set<
-            MemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, k -> new LinkedHashSet<>());
+            MemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, _ -> new LinkedHashSet<>());
 
         verticesSet.add(memExVertex);
       }

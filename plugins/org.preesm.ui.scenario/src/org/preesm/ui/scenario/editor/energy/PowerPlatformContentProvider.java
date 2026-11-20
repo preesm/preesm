@@ -40,7 +40,6 @@
 package org.preesm.ui.scenario.editor.energy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -89,7 +88,7 @@ public class PowerPlatformContentProvider implements IStructuredContentProvider 
       final Set<Entry<String, Double>> entrySet = energyConfig.getPlatformPower().entrySet();
       this.elementList = new ArrayList<>(entrySet);
 
-      Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+      this.elementList.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
     }
     return this.elementList.toArray();
   }

@@ -165,7 +165,7 @@ public class AddTransferVertexTransaction implements Transaction {
 
   @Override
   public void execute(final List<MapperDAGVertex> resultList) {
-    final MapperDAGVertex currentTarget = (MapperDAGVertex) this.edge.getTarget();
+    final MapperDAGVertex currentTarget = this.edge.getTarget();
 
     // Linking with previous transaction consists in chaining the new
     // transfers with
@@ -176,11 +176,11 @@ public class AddTransferVertexTransaction implements Transaction {
         ((MapperDAG) this.currentSource.getBase()).removeAllEdges(this.currentSource, currentTarget);
       }
     } else {
-      this.currentSource = (MapperDAGVertex) this.edge.getSource();
+      this.currentSource = this.edge.getSource();
     }
 
     final String tvertexID = "__" + this.transferType + this.routeIndex + "_" + this.nodeIndex + " ("
-        + ((MapperDAGVertex) this.edge.getSource()).getName() + "," + currentTarget.getName() + ")";
+        + this.edge.getSource().getName() + "," + currentTarget.getName() + ")";
 
     if (this.edge instanceof PrecedenceEdge) {
       PreesmLogger.getLogger().log(Level.INFO, "no transfer vertex corresponding to a schedule edge");
@@ -188,8 +188,8 @@ public class AddTransferVertexTransaction implements Transaction {
     }
 
     if (this.transferTime > 0) {
-      this.tVertex = new TransferVertex(tvertexID, this.implementation, (MapperDAGVertex) this.edge.getSource(),
-          (MapperDAGVertex) this.edge.getTarget(), this.routeIndex, this.nodeIndex, null);
+      this.tVertex = new TransferVertex(tvertexID, this.implementation, this.edge.getSource(), this.edge.getTarget(),
+          this.routeIndex, this.nodeIndex, null);
       this.implementation.getTimings().dedicate(this.tVertex);
       this.implementation.getMappings().dedicate(this.tVertex);
 

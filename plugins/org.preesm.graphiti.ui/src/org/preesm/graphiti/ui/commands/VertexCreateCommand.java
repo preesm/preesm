@@ -125,8 +125,8 @@ public class VertexCreateCommand extends Command {
             return "";
           }
 
-          if (VertexCreateCommand.this.graph != null) {
-            final Vertex foundVertex = VertexCreateCommand.this.graph.findVertex(vertexId);
+          if (this.graph != null) {
+            final Vertex foundVertex = this.graph.findVertex(vertexId);
             if (foundVertex != null) {
               return "A vertex already exists with the same identifier";
             }

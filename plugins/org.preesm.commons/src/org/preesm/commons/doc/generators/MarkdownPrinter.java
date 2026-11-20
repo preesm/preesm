@@ -90,15 +90,15 @@ public class MarkdownPrinter {
     for (final Entry<String, Set<Class<?>>> category : outputsPerCategory.entrySet()) {
       final String categoryName = category.getKey();
       final Set<Class<?>> categoryContent = category.getValue();
-      sb.append("## " + categoryName + "\n");
+      sb.append("## ").append(categoryName).append("\n");
       for (final Class<?> content : categoryContent) {
-        sb.append(MarkdownPrinter.prettyPrint(content) + "\n");
+        sb.append(MarkdownPrinter.prettyPrint(content)).append("\n");
       }
     }
     if (otherCategoryContent != null) {
       sb.append("## Other\n");
       for (final Class<?> content : otherCategoryContent) {
-        sb.append(MarkdownPrinter.prettyPrint(content) + "\n");
+        sb.append(MarkdownPrinter.prettyPrint(content)).append("\n");
       }
     }
     return sb.toString();
@@ -159,7 +159,7 @@ public class MarkdownPrinter {
     }
     final StringBuilder sb = new StringBuilder("\n#### See Also\n\n");
     for (final String s : seeAlso) {
-      sb.append("  * " + s + "\n");
+      sb.append("  * ").append(s).append("\n");
     }
     return sb.toString();
   }
@@ -168,13 +168,13 @@ public class MarkdownPrinter {
     final StringBuilder sb = new StringBuilder("\n#### Parameters\n");
     if (parameters.length > 0) {
       for (final Parameter param : parameters) {
-        sb.append("\n##### " + param.name() + "\n");
-        sb.append(param.description() + "\n");
+        sb.append("\n##### ").append(param.name()).append("\n");
+        sb.append(param.description()).append("\n");
         final Value[] values = param.values();
         if (values.length > 0) {
           sb.append("\n| Value | Effect |\n| --- | --- |\n");
           for (final Value val : values) {
-            sb.append("| _" + val.name() + "_ | " + val.effect() + " |\n");
+            sb.append("| _").append(val.name()).append("_ | ").append(val.effect()).append(" |\n");
           }
         }
       }
@@ -191,7 +191,7 @@ public class MarkdownPrinter {
     final StringBuilder sb = new StringBuilder("\n#### Documented Errors\n");
     sb.append("\n| Message | Explanation |\n| --- | --- |\n");
     for (final DocumentedError error : documentedErrors) {
-      sb.append("| **" + error.message() + "** | " + error.explanation() + " |\n");
+      sb.append("| **").append(error.message()).append("** | ").append(error.explanation()).append(" |\n");
     }
     return sb.toString();
   }
@@ -200,9 +200,9 @@ public class MarkdownPrinter {
     final StringBuilder sb = new StringBuilder("\n#### " + direction + "\n");
     if (ports.length > 0) {
       for (final Port p : ports) {
-        sb.append("  * **" + p.name() + "** (of _" + p.type().getSimpleName() + "_)");
+        sb.append("  * **").append(p.name()).append("** (of _").append(p.type().getSimpleName()).append("_)");
         if (!p.description().isEmpty()) {
-          sb.append(" : " + p.description());
+          sb.append(" : ").append(p.description());
         }
         sb.append("\n");
       }

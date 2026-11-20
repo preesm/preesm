@@ -615,8 +615,8 @@ public class TimingsPage extends ScenarioPage {
 
     this.tableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    final List<AbstractActor> sortedPISDFVertices = PreesmAlgorithmListContentProvider
-        .getSortedPISDFVertices(TimingsPage.this.scenario);
+    final List<
+        AbstractActor> sortedPISDFVertices = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
     gd.heightHint = Math.min(400, sortedPISDFVertices.size() * 20 + 50);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = false;
@@ -678,9 +678,9 @@ public class TimingsPage extends ScenarioPage {
     // If the text is modified or Enter key pressed, timings are imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      TimingsPage.this.scenario.getTimings().setExcelFileURL(text1.getText());
-      TimingImporter.importTimings(TimingsPage.this.scenario);
-      TimingsPage.this.tableViewer.refresh();
+      this.scenario.getTimings().setExcelFileURL(text1.getText());
+      TimingImporter.importTimings(this.scenario);
+      this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
     });

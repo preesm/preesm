@@ -35,8 +35,8 @@
  */
 package org.ietr.preesm.mapper.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.mapper.abc.AbcType;
 
 /**
@@ -44,8 +44,8 @@ import org.preesm.algorithm.mapper.abc.AbcType;
 public class AbcTypeTest {
 
   @Test
-  public void testAbcTypeFromString() {
+  void testAbcTypeFromString() {
     final AbcType fromString = AbcType.fromString("toto");
-    Assert.assertNull(fromString);
+    Assertions.assertNull(fromString);
   }
 }

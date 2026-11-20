@@ -44,7 +44,6 @@ package org.preesm.ui.scenario.editor.energy;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -276,7 +275,7 @@ public class EnergyPage extends ScenarioPage {
         operatorTypes.add(opDefId.getVlnv().getName());
       }
     }
-    Collections.sort(operatorTypes, Comparable::compareTo);
+    operatorTypes.sort(Comparable::compareTo);
     newTableViewer.setContentProvider(new CommsEnergyContentProvider());
     newTableViewer.setLabelProvider(new CommsEnergyLabelProvider(operatorTypes, this.scenario));
 
@@ -658,8 +657,8 @@ public class EnergyPage extends ScenarioPage {
 
     this.tableViewer.setInput(this.scenario);
     final GridData gd = new GridData(GridData.FILL_HORIZONTAL | GridData.VERTICAL_ALIGN_BEGINNING);
-    final List<AbstractActor> sortedPISDFVertices = PreesmAlgorithmListContentProvider
-        .getSortedPISDFVertices(EnergyPage.this.scenario);
+    final List<
+        AbstractActor> sortedPISDFVertices = PreesmAlgorithmListContentProvider.getSortedPISDFVertices(this.scenario);
     gd.heightHint = Math.min(400, sortedPISDFVertices.size() * 20 + 50);
     gd.widthHint = 400;
     gd.grabExcessVerticalSpace = false;
@@ -721,9 +720,9 @@ public class EnergyPage extends ScenarioPage {
     // If the text is modified or Enter key pressed, the energy of the actors is imported
     text.addModifyListener(e -> {
       final Text text1 = (Text) e.getSource();
-      EnergyPage.this.scenario.getEnergyConfig().setExcelFileURL(text1.getText());
-      EnergyImporter.importEnergy(EnergyPage.this.scenario);
-      EnergyPage.this.tableViewer.refresh();
+      this.scenario.getEnergyConfig().setExcelFileURL(text1.getText());
+      EnergyImporter.importEnergy(this.scenario);
+      this.tableViewer.refresh();
       firePropertyChange(IEditorPart.PROP_DIRTY);
 
     });

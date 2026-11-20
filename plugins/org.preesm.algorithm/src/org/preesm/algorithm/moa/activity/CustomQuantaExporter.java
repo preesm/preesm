@@ -281,8 +281,8 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
    * Visiting one edge and extracting activity
    */
   private void visitEdge(final MapperDAGEdge edge, final LatencyAbc abc) {
-    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final MapperDAGVertex source = edge.getSource();
+    final MapperDAGVertex target = edge.getTarget();
     if (!(source.getEffectiveComponent()).equals(target.getEffectiveComponent())) {
       final long size = edge.getInit().getDataSize();
       final SlamRoute route = abc.getComRouter().getRoute(edge);
@@ -315,7 +315,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
       } else {
         WorkspaceUtils.createMissingFolders(path);
       }
-    } catch (final CoreException e) {
+    } catch (final CoreException _) {
       throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");
     }
 
@@ -424,7 +424,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
             PreesmLogger.getLogger().log(Level.INFO, msg);
             this.customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.getContents());
 
-          } catch (final NumberFormatException e) {
+          } catch (final NumberFormatException _) {
             PreesmLogger.getLogger().severe(() -> "Problem importing quanta of " + vertexName + " on " + opDefId
                 + ". Integer with no space or special character needed. Be careful on the special number formats.");
           }
@@ -443,7 +443,7 @@ public class CustomQuantaExporter extends AbstractTaskImplementation {
             jep.evaluate(node);
 
             this.customQuanta.addQuantaExpression(vertexName, opDefId, timingCell.getContents());
-          } catch (final ParseException e) {
+          } catch (final ParseException _) {
             PreesmLogger.getLogger().severe(() -> "Problem evaluating quanta expression of " + vertexName + " on "
                 + opDefId + ": " + timingCell.getContents());
           }

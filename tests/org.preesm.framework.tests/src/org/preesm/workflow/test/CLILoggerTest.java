@@ -37,8 +37,8 @@
 package org.preesm.workflow.test;
 
 import java.util.logging.Level;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.logger.CLIWorkflowLogger;
 
 /**
@@ -50,22 +50,17 @@ public class CLILoggerTest {
    * Test sample.
    */
   @Test
-  public void testLog() {
-    new CLIWorkflowLogger(false).log(Level.INFO, "test message");
-    new CLIWorkflowLogger(false).log(Level.FINEST, "test message");
-
-    // Replace by Assertions.assertDoesNotThrow from junit5
-    Assert.assertTrue(true);
+  void testLog() {
+    Assertions.assertDoesNotThrow(() -> new CLIWorkflowLogger(false).log(Level.INFO, "test message"));
+    Assertions.assertDoesNotThrow(() -> new CLIWorkflowLogger(false).log(Level.FINEST, "test message"));
   }
 
   /**
    * Test sample.
    */
   @Test
-  public void testLogException() {
-    new CLIWorkflowLogger(false).log(Level.INFO, "test message", new NullPointerException());
-
-    // Replace by Assertions.assertDoesNotThrow from junit5
-    Assert.assertTrue(true);
+  void testLogException() {
+    Assertions.assertDoesNotThrow(
+        () -> new CLIWorkflowLogger(false).log(Level.INFO, "test message", new NullPointerException()));
   }
 }

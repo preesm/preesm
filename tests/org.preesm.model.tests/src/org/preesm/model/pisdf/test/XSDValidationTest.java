@@ -38,13 +38,11 @@ package org.preesm.model.pisdf.test;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.preesm.commons.files.PreesmResourcesHelper;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator;
 import org.preesm.model.pisdf.util.PiSDFXSDValidator.PiSDFXSDValidationException;
@@ -54,40 +52,27 @@ import org.preesm.model.pisdf.util.PiSDFXSDValidator.PiSDFXSDValidationException
  * @author anmorvan
  *
  */
-@RunWith(Parameterized.class)
 public class XSDValidationTest {
 
-  private final URL pisdURL;
-
-  /**
-   *
-   */
-  public XSDValidationTest(final String pisdfName) {
-    this.pisdURL = PreesmResourcesHelper.getInstance().resolve("pisdf/" + pisdfName, XSDValidationTest.class);
+  static Stream<Arguments> data() {
+    return Stream.of(Arguments.of("actor_mlp.pi"), Arguments.of("top_display.pi"), Arguments.of("adam.pi"),
+        Arguments.of("layer_gradients.pi"), Arguments.of("mlp_raw.pi"), Arguments.of("mlp.pi"),
+        Arguments.of("network_train.pi"), Arguments.of("output_gradients.pi"), Arguments.of("prediction.pi"),
+        Arguments.of("training.pi"), Arguments.of("weight_generator.pi"));
   }
 
-  /**
-   *
-   */
-  @Parameters
-  public static Collection<Object[]> data() {
-    final Object[][] data = new Object[][] { { "actor_mlp.pi" }, { "top_display.pi" }, { "adam.pi" },
-      { "layer_gradients.pi" }, { "mlp_raw.pi" }, { "mlp.pi" }, { "network_train.pi" }, { "output_gradients.pi" },
-      { "prediction.pi" }, { "training.pi" }, { "weight_generator.pi" } };
+  @ParameterizedTest
+  @MethodSource("data")
+  void testPiSDFValidation(final String pisdfName) throws IOException {
+    final URL pisdURL = PreesmResourcesHelper.getInstance().resolve("pisdf/" + pisdfName, XSDValidationTest.class);
 
-    return Arrays.asList(data);
-  }
+    Assertions.assertNotNull(pisdURL, "Could not resolve PiSDF resource: " + pisdfName);
 
-  @Test
-  public void testPiSDFValidation() throws IOException {
-    if (this.pisdURL == null) {
-      throw new NullPointerException();
-    }
     try {
-      PiSDFXSDValidator.validate(this.pisdURL);
+      PiSDFXSDValidator.validate(pisdURL);
     } catch (final PiSDFXSDValidationException e) {
       e.printStackTrace();
-      Assert.fail("Error on " + pisdURL.getFile() + ":\n" + e.getCause().getMessage() + ":" + e.getMessage());
+      Assertions.fail("Error on " + pisdURL.getFile() + ":\n" + e.getCause().getMessage() + ":" + e.getMessage());
     }
   }
 }

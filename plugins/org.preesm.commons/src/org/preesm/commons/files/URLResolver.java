@@ -119,20 +119,20 @@ public final class URLResolver {
     URL resultURL;
     try {
       resultURL = resolveURLFromWorkspace(location, bundleFilterList);
-    } catch (final MalformedURLException e) {
+    } catch (final MalformedURLException _) {
       resultURL = null;
     }
     if (resultURL == null) {
       try {
         resultURL = resolveFileSystemURL(location);
-      } catch (final MalformedURLException | InvalidPathException e) {
+      } catch (final MalformedURLException | InvalidPathException _) {
         resultURL = null;
       }
     }
     if (resultURL == null) {
       try {
         resultURL = resolvePlainURL(location);
-      } catch (final MalformedURLException | URISyntaxException e) {
+      } catch (final MalformedURLException | URISyntaxException _) {
         resultURL = null;
       }
     }
@@ -144,7 +144,7 @@ public final class URLResolver {
     final IWorkspace workspace;
     try {
       workspace = ResourcesPlugin.getWorkspace();
-    } catch (final Exception e) {
+    } catch (final Exception _) {
       return null;
     }
     if (workspace == null) {
@@ -159,7 +159,7 @@ public final class URLResolver {
       if (file != null) {
         return file.getRawLocationURI().toURL();
       }
-    } catch (final Exception e) {
+    } catch (final Exception _) {
       // ignore
     }
     final IProject project = Stream.of(projects)

@@ -280,7 +280,7 @@ public class GanttPlotter {
         // org/preesm/algorithm/mapper/ui/stats/PerformancePlotter.java
         // (we care but not too much since it is not used with the new Synthesis)
         frame = SWT_AWT.new_Frame(composite);
-      } catch (UnsatisfiedLinkError | SWTError e) {
+      } catch (UnsatisfiedLinkError | SWTError _) {
         // we catch this error since we can recover from it
         // Level.WARNING may stop the workflow depending on options
         // and as we are in a separate thread, events are not always well managed ...

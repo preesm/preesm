@@ -103,7 +103,7 @@ public abstract class PreesmLogger extends Logger {
           anonymousLogger.log(Level.WARNING, "Could not initialize Preesm Logger; using anonymous logger.");
           setLogger(anonymousLogger);
         }
-      } catch (final Exception e) {
+      } catch (final Exception _) {
         // if something went wrong, use anonymous logger
         final Logger anonymousLogger = Logger.getAnonymousLogger();
         anonymousLogger.log(Level.WARNING, "Could not initialize Preesm Logger; using anonymous logger.");

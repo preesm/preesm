@@ -204,7 +204,7 @@ public class SpiderCodegenTask extends AbstractTaskImplementation {
       for (final File file : folder.listFiles()) {
         try {
           Files.delete(file.toPath());
-        } catch (final IOException e) {
+        } catch (final IOException _) {
           PreesmLogger.getLogger().log(Level.FINE, "Could not delete file");
         }
       }

@@ -39,6 +39,7 @@
 package org.preesm.cli;
 
 import java.io.File;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -46,10 +47,10 @@ import java.util.logging.Level;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.UnrecognizedOptionException;
+import org.apache.commons.cli.help.HelpFormatter;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -279,16 +280,15 @@ public class CLIWorkflowExecutor extends AbstractWorkflowExecutor implements IAp
    * @param parserMsg
    *          message to print
    */
-  private void printUsage(final Options options, final String parserMsg) {
+  private void printUsage(final Options options, final String parserMsg) throws IOException {
 
     String footer = "";
     if ((parserMsg != null) && !parserMsg.isEmpty()) {
       footer = "\nMessage of the command line parser :\n" + parserMsg;
     }
 
-    final HelpFormatter helpFormatter = new HelpFormatter();
-    helpFormatter.setWidth(80);
-    helpFormatter.printHelp(getClass().getSimpleName() + " [options] ", "Valid options are :", options, footer);
+    final HelpFormatter helpFormatter = HelpFormatter.builder().get();
+    helpFormatter.printHelp(getClass().getSimpleName() + " [options] ", "Valid options are :", options, footer, true);
   }
 
 }

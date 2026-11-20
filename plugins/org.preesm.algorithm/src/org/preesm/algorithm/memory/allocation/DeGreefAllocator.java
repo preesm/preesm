@@ -41,7 +41,6 @@ package org.preesm.algorithm.memory.allocation;
 
 import com.google.common.primitives.Ints;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -74,12 +73,10 @@ public class DeGreefAllocator extends MemoryAllocator {
     // clear all previous allocation
     clear();
 
-    ArrayList<IntegerAndVertex> nonAllocatedVertices;
-    nonAllocatedVertices = new ArrayList<>();
-
+    final ArrayList<IntegerAndVertex> nonAllocatedVertices = new ArrayList<>();
     this.inputExclusionGraph.vertexSet().forEach(v -> nonAllocatedVertices.add(new IntegerAndVertex(0, v)));
 
-    Collections.sort(nonAllocatedVertices);
+    nonAllocatedVertices.sort(null);
 
     while (!nonAllocatedVertices.isEmpty()) {
       final IntegerAndVertex currentPair = nonAllocatedVertices.remove(0);
@@ -101,8 +98,8 @@ public class DeGreefAllocator extends MemoryAllocator {
         excludeTo.add(neighborOffset + n.getWeight());
       });
 
-      Collections.sort(excludeFrom);
-      Collections.sort(excludeTo);
+      excludeFrom.sort(null);
+      excludeTo.sort(null);
 
       long newOffset = -1;
       long freeFrom = 0; // Where the last exclusion ended
@@ -187,7 +184,7 @@ public class DeGreefAllocator extends MemoryAllocator {
       // If the offset was not valid
       if (newOffset != offset) {
         nonAllocatedVertices.add(new IntegerAndVertex(newOffset, vertex));
-        Collections.sort(nonAllocatedVertices);
+        nonAllocatedVertices.sort(null);
       } else {
         allocateMemoryObject(vertex, offset);
       }

@@ -213,11 +213,9 @@ public class CommunicationRouter {
     // Get edges in scheduling order of their producers
     final Schedule totalOrder = this.orderManager.getTotalOrder();
     final List<MapperDAGVertex> list = totalOrder.getList();
-    final Iterator<MapperDAGVertex> dagIterator = list.iterator();
     final List<DAGEdge> edgesInPrecedenceOrder = new ArrayList<>();
 
-    while (dagIterator.hasNext()) {
-      final DAGVertex vertex = dagIterator.next();
+    for (final DAGVertex vertex : list) {
       edgesInPrecedenceOrder.addAll(vertex.outgoingEdges());
     }
 
@@ -235,8 +233,8 @@ public class CommunicationRouter {
       final MapperDAGEdge currentEdge = (MapperDAGEdge) iterator.next();
 
       if (!(currentEdge instanceof PrecedenceEdge) && (currentEdge.getInit().getDataSize() != 0)) {
-        final MapperDAGVertex currentSource = ((MapperDAGVertex) currentEdge.getSource());
-        final MapperDAGVertex currentDest = ((MapperDAGVertex) currentEdge.getTarget());
+        final MapperDAGVertex currentSource = (currentEdge.getSource());
+        final MapperDAGVertex currentDest = (currentEdge.getTarget());
 
         if (currentSource.hasEffectiveOperator() && currentDest.hasEffectiveOperator()
             && !currentSource.getEffectiveOperator().equals(currentDest.getEffectiveOperator())) {
@@ -353,24 +351,23 @@ public class CommunicationRouter {
    */
   public double evaluateTransferCost(final MapperDAGEdge edge) {
 
-    final MapperDAGVertex source = ((MapperDAGVertex) edge.getSource());
-    final MapperDAGVertex dest = ((MapperDAGVertex) edge.getTarget());
+    final MapperDAGVertex source = (edge.getSource());
+    final MapperDAGVertex dest = (edge.getTarget());
 
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance destOp = dest.getEffectiveOperator();
 
     final long dataSize = edge.getInit().getDataSize();
 
-    double cost = 0;
+    double cost;
 
     // Retrieving the route
-    if ((sourceOp != null) && (destOp != null)) {
-      final SlamRoute route = this.routingTable.getRoute(sourceOp, destOp);
-      cost = RouteCostEvaluator.evaluateTransferCost(route, dataSize);
-    } else {
+    if ((sourceOp == null) || (destOp == null)) {
       final String msg = "trying to evaluate a transfer between non mapped operators.";
       throw new PreesmRuntimeException(msg);
     }
+    final SlamRoute route = this.routingTable.getRoute(sourceOp, destOp);
+    cost = RouteCostEvaluator.evaluateTransferCost(route, dataSize);
 
     return cost;
   }
@@ -379,8 +376,8 @@ public class CommunicationRouter {
    *
    */
   public SlamRoute getRoute(final MapperDAGEdge edge) {
-    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final MapperDAGVertex source = edge.getSource();
+    final MapperDAGVertex target = edge.getTarget();
     final ComponentInstance sourceOp = source.getEffectiveOperator();
     final ComponentInstance targetOp = target.getEffectiveOperator();
     return routingTable.getRoute(sourceOp, targetOp);

@@ -118,7 +118,7 @@ public class SavePiGraph {
     try (final OutputStream outStream = new BufferedOutputStream(new FileOutputStream(osString))) {
       // Write the Graph to the OutputStream using the Pi format
       new PiWriter(uri).write(graph, outStream);
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       throw new PreesmRuntimeException("Could not open outputstream file " + uri.toPlatformString(false));
     }
 

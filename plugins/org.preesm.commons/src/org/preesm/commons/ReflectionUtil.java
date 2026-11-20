@@ -110,12 +110,12 @@ public class ReflectionUtil {
             final Class<? extends T> asSubclass = loadClass.asSubclass(parentClassOrInterface);
             res.add(asSubclass);
           }
-        } catch (final ClassNotFoundException | NoClassDefFoundError e) {
+        } catch (final ClassNotFoundException | NoClassDefFoundError _) {
           // skip this class
         }
       }
     }
-    Collections.sort(res, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    res.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
     return Collections.unmodifiableList(res);
   }
 
@@ -139,12 +139,12 @@ public class ReflectionUtil {
               && loadClass.isAnnotationPresent(annotationToMatch)) {
             res.add(loadClass);
           }
-        } catch (final ClassNotFoundException | NoClassDefFoundError e) {
+        } catch (final ClassNotFoundException | NoClassDefFoundError _) {
           // skip this class
         }
       }
     }
-    Collections.sort(res, (c1, c2) -> c1.getName().compareTo(c2.getName()));
+    res.sort((c1, c2) -> c1.getName().compareTo(c2.getName()));
     return Collections.unmodifiableList(res);
   }
 }

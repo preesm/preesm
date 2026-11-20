@@ -38,7 +38,6 @@
 package org.preesm.algorithm.mapper.abc.taskscheduling;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import org.preesm.algorithm.mapper.abc.order.VertexOrderList;
@@ -114,7 +113,7 @@ public class TopologicalTaskSched extends AbstractTaskSched {
       }
     }
 
-    Collections.sort(this.topolist, new InitListComparator(this.initList));
+    this.topolist.sort(new InitListComparator(this.initList));
 
     return this.topolist;
   }

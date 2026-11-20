@@ -44,7 +44,6 @@ package org.preesm.algorithm.mapper.ui.stats;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Frame;
-import java.util.logging.Level;
 import javax.swing.BorderFactory;
 import javax.swing.JRootPane;
 import org.eclipse.swt.SWT;
@@ -208,8 +207,8 @@ public class PerformancePlotter {
     try {
       frame = SWT_AWT.new_Frame(composite);
     } catch (UnsatisfiedLinkError | SWTError e) {
-      PreesmLogger.getLogger().log(Level.INFO,
-          "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
+      PreesmLogger.getLogger()
+          .info(() -> "An error occured while loading org.eclipse.swt.awt.SWT_AWT class "
               + "or its associated shared object libswt-awt-gtk-4928+.so, "
               + "thus the speedup diagram is not embedded in Eclipse. See error:\n" + e.getMessage());
       if (!composite.isDisposed()) {

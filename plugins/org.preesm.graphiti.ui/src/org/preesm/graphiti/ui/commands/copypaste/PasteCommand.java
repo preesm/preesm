@@ -126,8 +126,8 @@ public class PasteCommand extends Command {
             return "";
           }
 
-          if (PasteCommand.this.graph != null) {
-            final Vertex vertex = PasteCommand.this.graph.findVertex(vertexId);
+          if (this.graph != null) {
+            final Vertex vertex = this.graph.findVertex(vertexId);
             if (vertex != null) {
               return "A vertex already exists with the same identifier";
             }
@@ -142,9 +142,8 @@ public class PasteCommand extends Command {
     final String value = dialog.getValue();
     if ((value == null) || value.isEmpty()) {
       return null;
-    } else {
-      return value;
     }
+    return value;
   }
 
   /**

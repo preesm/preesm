@@ -38,7 +38,6 @@
 package org.preesm.algorithm.schedule.fpga;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -173,7 +172,7 @@ public abstract class AbstractGenericFpgaFifoEvaluator {
     }
 
     final List<ActorNormalizedInfos> listInfos = new ArrayList<>(mapActorNormalizedInfos.values());
-    Collections.sort(listInfos, new DecreasingGraphIIComparator());
+    listInfos.sort(new DecreasingGraphIIComparator());
     // set graph II
     final ActorNormalizedInfos slowestActorInfos = listInfos.get(0);
     final long slowestGraphII = slowestActorInfos.normGraphII;

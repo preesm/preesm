@@ -39,7 +39,6 @@
 package org.preesm.ui.scenario.editor.energy;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,7 @@ public class ObjectiveContentProvider implements IStructuredContentProvider {
       final Set<Entry<String, Double>> entrySet = map.entrySet();
       this.elementList = new ArrayList<>(entrySet);
 
-      Collections.sort(this.elementList, (o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+      this.elementList.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
     }
     return this.elementList.toArray();
   }

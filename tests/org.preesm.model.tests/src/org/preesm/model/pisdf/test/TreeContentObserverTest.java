@@ -37,8 +37,8 @@ package org.preesm.model.pisdf.test;
 
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.ecore.util.EContentAdapter;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.DataInputPort;
 import org.preesm.model.pisdf.DataOutputPort;
@@ -64,7 +64,7 @@ public class TreeContentObserverTest {
   }
 
   @Test
-  public void testObs() {
+  void testObs() {
     final PiGraph g = PiMMUserFactory.instance.createPiGraph();
     g.setName("Test Graph");
     final Actor producer = PiMMUserFactory.instance.createActor();
@@ -80,8 +80,8 @@ public class TreeContentObserverTest {
 
     final TestObserver adapter = new TestObserver();
     g.eAdapters().add(adapter);
-    Assert.assertFalse(adapter.changed);
+    Assertions.assertFalse(adapter.changed);
     inPort.setName("in");
-    Assert.assertTrue(adapter.changed);
+    Assertions.assertTrue(adapter.changed);
   }
 }

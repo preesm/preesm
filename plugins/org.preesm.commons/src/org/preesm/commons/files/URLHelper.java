@@ -74,7 +74,7 @@ public class URLHelper {
   public static final URL resolve(final URL baseUrl, final String path) {
     try {
       return baseUrl.toURI().resolve(path).toURL();
-    } catch (final MalformedURLException | URISyntaxException e) {
+    } catch (final MalformedURLException | URISyntaxException _) {
       return null;
     }
   }
@@ -138,7 +138,7 @@ public class URLHelper {
     try {
       destContainer.touch(null);
       destContainer.refreshLocal(IResource.DEPTH_INFINITE, null);
-    } catch (final CoreException e) {
+    } catch (final CoreException _) {
       // skip
     }
   }
@@ -159,7 +159,7 @@ public class URLHelper {
         final URL u = srcUrl.toURI().resolve(pathString).toURL();
         final File file = destFolder.toPath().resolve(pathString).toFile();
         FileUtils.copyInputStreamToFile(u.openStream(), file);
-      } catch (final Exception e) {
+      } catch (final Exception _) {
         // skip
       }
     });

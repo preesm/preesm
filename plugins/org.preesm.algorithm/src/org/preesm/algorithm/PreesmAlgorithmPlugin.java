@@ -35,16 +35,11 @@
  */
 package org.preesm.algorithm;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import org.preesm.algorithm.mathematicalmodels.PeriodicScheduleModelOjAlgo;
-import org.preesm.algorithm.mathematicalmodels.SolverMethod;
-import org.preesm.algorithm.schedule.sdf.PeriodicSchedulerSDF.Method;
 
 /**
  *
@@ -53,8 +48,6 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
 
   /** The Constant PLUGIN_ID. */
   private static final String PLUGIN_ID = "org.preesm.algorithm";
-
-  public final Map<Method, SolverMethod> solverMethodRegistry = new LinkedHashMap<>();
 
   private static PreesmAlgorithmPlugin instance = null;
 
@@ -81,14 +74,12 @@ public class PreesmAlgorithmPlugin extends AbstractUIPlugin {
   public void start(final BundleContext context) throws Exception {
     super.start(context);
     PreesmAlgorithmPlugin.setInstance(this);
-    this.solverMethodRegistry.put(Method.LINEAR_PROGRAMMING_OJALGO, new PeriodicScheduleModelOjAlgo());
   }
 
   @Override
   public void stop(final BundleContext context) throws Exception {
     super.stop(context);
     PreesmAlgorithmPlugin.setInstance(null);
-    this.solverMethodRegistry.clear();
   }
 
   /**

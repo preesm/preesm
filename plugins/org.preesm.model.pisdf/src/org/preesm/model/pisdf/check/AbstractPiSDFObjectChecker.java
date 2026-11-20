@@ -121,7 +121,7 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
 
     final String message = String.format(messageFormat, args);
 
-    mapError.computeIfAbsent(obj, x -> new ArrayList<>()).add(message);
+    mapError.computeIfAbsent(obj, _ -> new ArrayList<>()).add(message);
 
     if (loggerLevel.getIndex() >= level.getIndex()) {
       PreesmLogger.getLogger().log(level.getCorrespondingLoggingLevel(), message);
@@ -170,7 +170,7 @@ public abstract class AbstractPiSDFObjectChecker extends PiMMSwitch<Boolean> {
       for (final Entry<EObject, List<String>> e : mapToCopy.entrySet()) {
         final EObject piObject = e.getKey();
         final List<String> messagesToCopy = e.getValue();
-        final List<String> messagesToExtend = mapToExtend.computeIfAbsent(piObject, x -> new ArrayList<>());
+        final List<String> messagesToExtend = mapToExtend.computeIfAbsent(piObject, _ -> new ArrayList<>());
         messagesToExtend.addAll(messagesToCopy);
       }
     }

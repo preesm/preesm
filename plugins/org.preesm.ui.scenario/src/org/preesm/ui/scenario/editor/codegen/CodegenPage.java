@@ -217,7 +217,7 @@ public class CodegenPage extends ScenarioPage {
         absolutePath = WorkspaceUtils.getAbsolutePath(path, projectName);
       }
 
-      CodegenPage.this.scenario.setCodegenDirectory(absolutePath);
+      this.scenario.setCodegenDirectory(absolutePath);
       firePropertyChange(IEditorPart.PROP_DIRTY);
     });
 

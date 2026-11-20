@@ -35,8 +35,8 @@
  */
 package org.preesm.graphiti.ui.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.graphiti.ui.figure.PortAnchorReferenceManager;
 
 /**
@@ -48,8 +48,8 @@ public class PortAnchorReferenceManagerTest {
    * Test port anchor reference manager.
    */
   @Test
-  public void testPortAnchorReferenceManager() {
+  void testPortAnchorReferenceManager() {
     final PortAnchorReferenceManager portAnchorReferenceManager = new PortAnchorReferenceManager(null, null, false);
-    Assert.assertNotNull(portAnchorReferenceManager);
+    Assertions.assertNotNull(portAnchorReferenceManager);
   }
 }

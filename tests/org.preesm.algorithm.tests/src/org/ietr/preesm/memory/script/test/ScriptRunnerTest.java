@@ -37,8 +37,8 @@
 package org.ietr.preesm.memory.script.test;
 
 import java.io.File;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  */
@@ -49,9 +49,9 @@ public class ScriptRunnerTest {
    * Make sure the tests will be able to find the test files
    */
   @Test
-  public void testFindScripts() {
+  void testFindScripts() {
     final File dir = new File(ScriptRunnerTest.SCRIPT_FOLDER_PATH);
     final String[] list = dir.list();
-    Assert.assertEquals(14, list.length);
+    Assertions.assertEquals(14, list.length);
   }
 }

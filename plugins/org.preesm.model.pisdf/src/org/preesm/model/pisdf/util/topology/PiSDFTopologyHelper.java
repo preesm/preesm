@@ -86,29 +86,27 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
   private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getGraph() {
     if (internalGraphCache != null) {
       return internalGraphCache;
-    } else {
-      final DirectedAcyclicGraph<AbstractActor,
-          DefaultEdge> internalGraph = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
-      pigraph.getActors().forEach(internalGraph::addVertex);
-      pigraph.getFifos().forEach(fifo -> internalGraph.addEdge(fifo.getSourcePort().getContainingActor(),
-          fifo.getTargetPort().getContainingActor()));
-      internalGraphCache = internalGraph;
-      return internalGraph;
     }
+    final DirectedAcyclicGraph<AbstractActor,
+        DefaultEdge> internalGraph = new DirectedAcyclicGraph<>(null, DefaultEdge::new, false);
+    pigraph.getActors().forEach(internalGraph::addVertex);
+    pigraph.getFifos().forEach(fifo -> internalGraph.addEdge(fifo.getSourcePort().getContainingActor(),
+        fifo.getTargetPort().getContainingActor()));
+    internalGraphCache = internalGraph;
+    return internalGraph;
   }
 
   private final DirectedAcyclicGraph<AbstractActor, DefaultEdge> getTransitiveClosure() {
     if (internalTransitiveClosureCache != null) {
       return internalTransitiveClosureCache;
-    } else {
-      final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
-      @SuppressWarnings("unchecked")
-      final DirectedAcyclicGraph<AbstractActor,
-          DefaultEdge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DefaultEdge>) graph.clone();
-      TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
-      internalTransitiveClosureCache = transitiveClosure;
-      return transitiveClosure;
     }
+    final DirectedAcyclicGraph<AbstractActor, DefaultEdge> graph = getGraph();
+    @SuppressWarnings("unchecked")
+    final DirectedAcyclicGraph<AbstractActor,
+        DefaultEdge> transitiveClosure = (DirectedAcyclicGraph<AbstractActor, DefaultEdge>) graph.clone();
+    TransitiveClosure.INSTANCE.closeDirectedAcyclicGraph(transitiveClosure);
+    internalTransitiveClosureCache = transitiveClosure;
+    return transitiveClosure;
   }
 
   /**
@@ -130,13 +128,13 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
       final List<AbstractActor> allPreds = Graphs.predecessorListOf(closure, target);
       return allPreds.contains(potentialPred);
-    } catch (final IllegalArgumentException e) {
+    } catch (final IllegalArgumentException _) {
       // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
       // fail
       try {
         new IsPredecessorSwitch(potentialPred).doSwitch(target);
         return false;
-      } catch (final PredecessorFoundException foundEx) {
+      } catch (final PredecessorFoundException _) {
         return true;
       }
     }
@@ -150,13 +148,13 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
       final List<AbstractActor> allSuccs = Graphs.successorListOf(closure, target);
       return allSuccs.contains(potentialSucc);
-    } catch (final IllegalArgumentException e) {
+    } catch (final IllegalArgumentException _) {
       // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
       // fail
       try {
         new IsSuccessorSwitch(potentialSucc).doSwitch(target);
         return false;
-      } catch (final SuccessorFoundException foundEx) {
+      } catch (final SuccessorFoundException _) {
         return true;
       }
     }
@@ -170,7 +168,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
     try {
       new IsThereALongPathSwitch(target).doSwitch(potentialSucc);
       return false;
-    } catch (final ThereIsALongPathException e) {
+    } catch (final ThereIsALongPathException _) {
       return true;
     }
   }
@@ -184,7 +182,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
    */
   public final List<AbstractActor> getDirectPredecessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
-    a.getDataInputPorts().stream().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
+    a.getDataInputPorts().forEach(x -> result.add(x.getIncomingFifo().getSourcePort().getContainingActor()));
     return Collections.unmodifiableList(result);
   }
 
@@ -197,7 +195,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
    */
   public final List<AbstractActor> getDirectSuccessorsOf(final AbstractActor a) {
     final List<AbstractActor> result = new ArrayList<>();
-    a.getDataOutputPorts().stream().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
+    a.getDataOutputPorts().forEach(x -> result.add(x.getOutgoingFifo().getTargetPort().getContainingActor()));
     return Collections.unmodifiableList(result);
   }
 
@@ -209,7 +207,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
       final List<AbstractActor> allPreds = Graphs.predecessorListOf(closure, actor);
       return Collections.unmodifiableList(allPreds);
-    } catch (final IllegalArgumentException e) {
+    } catch (final IllegalArgumentException _) {
       // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
       // fail
       final Set<AbstractActor> result = new LinkedHashSet<>();
@@ -229,7 +227,7 @@ public class PiSDFTopologyHelper extends PreesmContentAdapter {
       final DirectedAcyclicGraph<AbstractActor, DefaultEdge> closure = getTransitiveClosure();
       final List<AbstractActor> allSuccs = Graphs.successorListOf(closure, actor);
       return Collections.unmodifiableList(allSuccs);
-    } catch (final IllegalArgumentException e) {
+    } catch (final IllegalArgumentException _) {
       // in case the PiSDF is not in the SRDAG form (i.e. some cycles are present), building the internal graph will
       // fail
       final Set<AbstractActor> result = new LinkedHashSet<>();

@@ -879,7 +879,7 @@ public class PiDistributor {
         }
         // Put the mObj in the verticesSet
         final Set<
-            PiMemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, k -> new LinkedHashSet<>());
+            PiMemoryExclusionVertex> verticesSet = memExesVerticesSet.computeIfAbsent(bank, _ -> new LinkedHashSet<>());
 
         verticesSet.add(memExVertex);
       }

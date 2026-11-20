@@ -182,7 +182,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
     final SimpleGraph<V, E> graphCopy = (SimpleGraph<V, E>) this.graph.clone();
 
     // First, the list is ordered in the ascending order of weights
-    Collections.sort(unorderedSet, (v1, v2) -> Long.compare(v1.getWeight(), v2.getWeight()));
+    unorderedSet.sort((v1, v2) -> Long.compare(v1.getWeight(), v2.getWeight()));
 
     // Vertices are added one by one to the ordered vertex set
     while (!unorderedSet.isEmpty()) {
@@ -191,7 +191,7 @@ public class OstergardSolver<V extends IWeightedVertex<Long>, E extends DefaultE
       final long selectedWeight = unorderedSet.get(0).getWeight();
       long selectedAdjacentWeight = 0;
 
-      for (V currentVertex : unorderedSet) {
+      for (final V currentVertex : unorderedSet) {
         // If the vertex weight is equal to the selectedWeight
         if (currentVertex.getWeight() != selectedWeight) {
           // Leave the loop, the current vertex is heavier than the

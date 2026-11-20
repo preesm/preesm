@@ -40,7 +40,7 @@ import org.eclipse.jface.dialogs.IInputValidator;
 
 /**
  * Check if the number of cores is strictly positive.
- * 
+ *
  * @author ahonorat
  *
  */
@@ -54,11 +54,11 @@ public class NbCoresValidator implements IInputValidator {
       return null;
     }
     try {
-      int a = Integer.parseInt(newText);
+      final int a = Integer.parseInt(newText);
       if (a < 1) {
         return ERROR_INPUT;
       }
-    } catch (NumberFormatException e) {
+    } catch (final NumberFormatException _) {
       return ERROR_INPUT;
     }
     return null;

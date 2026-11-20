@@ -52,8 +52,7 @@ public class WorkflowLaunchConfigurationTabGroup extends AbstractLaunchConfigura
 
   @Override
   public void createTabs(final ILaunchConfigurationDialog dialog, final String mode) {
-    final ILaunchConfigurationTab[] tabs = new ILaunchConfigurationTab[] { new WorkFlowLaunchWorkflowTab(),
-      new WorkFlowLaunchScenarioTab() };
+    final ILaunchConfigurationTab[] tabs = { new WorkFlowLaunchWorkflowTab(), new WorkFlowLaunchScenarioTab() };
     setTabs(tabs);
   }
 

@@ -257,6 +257,6 @@ public class MyGanttRenderer extends GanttRenderer {
   }
 
   private int genNewRandomColorComponent(final Double r, final int liberty) {
-    return (int) Math.round(Math.max(0, Math.min(((Math.random() * liberty) + r), 255)));
+    return (int) Math.round(Math.clamp((Math.random() * liberty) + r, 0, 255));
   }
 }

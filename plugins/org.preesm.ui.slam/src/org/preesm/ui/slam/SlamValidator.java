@@ -520,11 +520,11 @@ public final class SlamValidator implements IValidator {
         // Setting hardwareId if not done
         final String hardwareId = (String) v.getValue("hardwareId");
         if (hardwareId.isEmpty()) {
-          Integer hs = definitionToHighestHardwareIds.get(definition);
+          final Integer hs = definitionToHighestHardwareIds.get(definition);
           if (hs == null) {
             v.setValue("hardwareId", "0");
           } else {
-            int i = hs + 1;
+            final int i = hs + 1;
             definitionToHighestHardwareIds.put(definition, hs);
             v.setValue("hardwareId", Integer.toString(i));
           }
@@ -568,12 +568,12 @@ public final class SlamValidator implements IValidator {
         boolean emptyHId = (hardwareId == null);
         if (!emptyHId) {
           try {
-            int i = Integer.parseInt(hardwareId);
-            Integer hs = definitionToHighestHardwareIds.get(definition);
+            final int i = Integer.parseInt(hardwareId);
+            final Integer hs = definitionToHighestHardwareIds.get(definition);
             if ((hs == null || i > hs) && i >= 0) {
               definitionToHighestHardwareIds.put(definition, i);
             }
-          } catch (NumberFormatException e) {
+          } catch (final NumberFormatException _) {
             emptyHId = true;
           }
         }

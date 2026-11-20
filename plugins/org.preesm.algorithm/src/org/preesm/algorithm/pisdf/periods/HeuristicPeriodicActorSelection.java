@@ -96,7 +96,7 @@ class HeuristicPeriodicActorSelection {
     final int nbActorsToSelect = Math.max((int) Math.ceil(nActorsToSelect), 1);
 
     return topoRanksPeriodic.entrySet().stream().sorted(Map.Entry.comparingByValue()).limit(nbActorsToSelect)
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, _) -> e1, LinkedHashMap::new));
   }
 
 }

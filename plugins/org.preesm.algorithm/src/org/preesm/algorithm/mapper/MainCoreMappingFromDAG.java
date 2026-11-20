@@ -36,7 +36,6 @@
 package org.preesm.algorithm.mapper;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -84,7 +83,7 @@ public class MainCoreMappingFromDAG extends AbstractMappingFromDAG {
 
     // 1- sort components to have a relation from ID to component
     final List<ComponentInstance> componentInstances = new ArrayList<>(architecture.getComponentInstances());
-    Collections.sort(componentInstances, new LexicographicComponentInstanceComparator());
+    componentInstances.sort(new LexicographicComponentInstanceComparator());
     final ComponentInstance mainOperator = scenario.getSimulationInfo().getMainOperator();
 
     final LatencyAbc abc = LatencyAbc.getInstance(abcParams, dag, architecture, scenario);

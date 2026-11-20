@@ -160,7 +160,7 @@ public class ExcelTimingParser {
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseTimingForVertex(w, a, opDefIds, missingVertices, missingOperatorTypes));
 
-    currentGraph.getChildrenGraphs().stream()
+    currentGraph.getChildrenGraphs()
         .forEach(g -> parseTimingsForPISDFGraph(w, g, opDefIds, missingVertices, missingOperatorTypes));
 
   }
@@ -203,7 +203,7 @@ public class ExcelTimingParser {
           final String msg = "Importing timing: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;
           PreesmLogger.getLogger().log(Level.INFO, msg);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           final String message = "Problem importing timing of " + actor + " on " + component
               + ". Integer with no space or special character needed. Be careful on the special number formats.";
           throw new PreesmRuntimeException(message);

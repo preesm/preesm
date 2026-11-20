@@ -58,14 +58,13 @@ public class SlamComponentFilter implements IFilter {
    */
   @Override
   public boolean select(final Object toTest) {
-    if (toTest instanceof EditPart) {
-      final Object model = ((EditPart) toTest).getModel();
+    if (toTest instanceof final EditPart editPart) {
+      final Object model = editPart.getModel();
 
       // Hierarchical connection vertices and edges have no custom
       // parameters.
       // Elements of other types have.
-      if (model instanceof Vertex) {
-        final Vertex vertex = (Vertex) model;
+      if (model instanceof final Vertex vertex) {
         if (!vertex.getType().toString().equals("hierConnection")) {
           final Graph graph = vertex.getParent();
           return graph.getType().getName().equals("S-LAM Design");

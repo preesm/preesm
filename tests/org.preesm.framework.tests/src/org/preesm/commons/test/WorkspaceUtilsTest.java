@@ -35,13 +35,13 @@
  */
 package org.preesm.commons.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.files.WorkspaceUtils;
 
 // TODO: Auto-generated Javadoc
 /**
- * The Class ContainersManagerTest.
+ * The Class WorkspaceUtilsTest.
  */
 public class WorkspaceUtilsTest {
 
@@ -49,12 +49,12 @@ public class WorkspaceUtilsTest {
    * Test project exists.
    */
   @Test
-  public void testProjectExists() {
+  void testProjectExists() {
     try {
       final boolean projectExists = WorkspaceUtils.projectExists("toto");
-      Assert.assertFalse(projectExists);
+      Assertions.assertFalse(projectExists);
       System.out.println("done");
-    } catch (final IllegalStateException e) {
+    } catch (final IllegalStateException _) {
       System.out.println("workspace not found");
       return;
     }

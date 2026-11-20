@@ -87,7 +87,7 @@ public class PiRange implements CloneableProperty<PiRange> {
    */
   public static List<PiRange> difference(final List<PiRange> ranges, final PiRange range) {
     final List<PiRange> result = new ArrayList<>();
-    ranges.stream().forEach(r -> PiRange.union(result, r.difference(range)));
+    ranges.forEach(r -> PiRange.union(result, r.difference(range)));
     return result;
   }
 
@@ -160,7 +160,7 @@ public class PiRange implements CloneableProperty<PiRange> {
    */
   public static List<PiRange> intersection(final Collection<PiRange> ranges, final Collection<PiRange> newRanges) {
     final List<PiRange> intersectionRanges = new ArrayList<>();
-    newRanges.stream().forEach(r -> PiRange.union(intersectionRanges, PiRange.intersection(ranges, r)));
+    newRanges.forEach(r -> PiRange.union(intersectionRanges, PiRange.intersection(ranges, r)));
     return intersectionRanges;
   }
 
@@ -181,7 +181,7 @@ public class PiRange implements CloneableProperty<PiRange> {
    */
   public static List<PiRange> intersection(final Collection<PiRange> ranges, final PiRange newRange) {
     final List<PiRange> intersectionRanges = new ArrayList<>();
-    ranges.stream().forEach(range -> {
+    ranges.forEach(range -> {
       // If the ranges overlap
       final PiRange intersect = range.intersection(newRange);
       // !== is equivalent to the != of java
@@ -215,7 +215,7 @@ public class PiRange implements CloneableProperty<PiRange> {
    * @return ranges0, that contains the union result
    */
   public static List<PiRange> union(final List<PiRange> ranges0, final List<PiRange> ranges1) {
-    ranges1.stream().forEach(r -> PiRange.union(ranges0, r));
+    ranges1.forEach(r -> PiRange.union(ranges0, r));
     return ranges0;
   }
 

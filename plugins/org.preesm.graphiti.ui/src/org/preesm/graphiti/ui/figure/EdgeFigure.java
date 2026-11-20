@@ -110,7 +110,7 @@ public class EdgeFigure extends PolylineConnection {
       try {
         // Needs advanced capabilities or throws SWTException
         graphics.setAntialias(SWT.ON);
-      } catch (final RuntimeException e) {
+      } catch (final RuntimeException _) {
         // No anti alias, less pretty but it will work!
       }
 

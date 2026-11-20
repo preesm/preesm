@@ -344,8 +344,8 @@ public class SlamFlattener {
 
     for (final Link originalLink : links) {
       final Link newLink = switch (originalLink) {
-        case final DataLink dl -> SlamFactory.eINSTANCE.createDataLink();
-        case final ControlLink cl -> SlamFactory.eINSTANCE.createControlLink();
+        case final DataLink _ -> SlamFactory.eINSTANCE.createDataLink();
+        case final ControlLink _ -> SlamFactory.eINSTANCE.createControlLink();
         default -> throw new PreesmRuntimeException("Unsupported link type");
       };
 

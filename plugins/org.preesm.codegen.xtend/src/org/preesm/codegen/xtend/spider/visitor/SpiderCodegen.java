@@ -45,7 +45,6 @@
 package org.preesm.codegen.xtend.spider.visitor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
@@ -332,11 +331,11 @@ public class SpiderCodegen {
     /* Declare Fcts */
     append("void init_" + pg.getName() + "(");
     final List<Parameter> l = new LinkedList<>(pg.getParameters());
-    Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    l.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        if (parametersProto.length() > 0) {
+        if (!parametersProto.isEmpty()) {
           parametersProto.append(", ");
         }
         parametersProto.append("Param " + p.getName() + " = " + p.getValueExpression().evaluateAsLong());
@@ -356,7 +355,7 @@ public class SpiderCodegen {
     /* Core */
     append("enum class PEVirtID : std::uint32_t {\n");
     final List<ComponentInstance> sortedCores = new ArrayList<>(this.coreIds.keySet());
-    Collections.sort(sortedCores, (c1, c2) -> c1.getInstanceName().compareTo(c2.getInstanceName()));
+    sortedCores.sort((c1, c2) -> c1.getInstanceName().compareTo(c2.getInstanceName()));
     for (int i = 0; i < this.coreIds.size(); i++) {
       for (final Entry<ComponentInstance, Integer> entry : this.coreIds.entrySet()) {
         if (entry.getValue() == i) {
@@ -878,15 +877,15 @@ public class SpiderCodegen {
 
     final StringBuilder params = new StringBuilder();
     final List<Parameter> l = new LinkedList<>(pg.getParameters());
-    Collections.sort(l, (p1, p2) -> p1.getName().compareTo(p2.getName()));
+    l.sort((p1, p2) -> p1.getName().compareTo(p2.getName()));
     final StringBuilder parametersProto = new StringBuilder();
     for (final Parameter p : l) {
       if (p.isLocallyStatic() && !p.isDependent() && !p.isConfigurationInterface()) {
-        if (parametersProto.length() > 0) {
+        if (!parametersProto.isEmpty()) {
           parametersProto.append(", ");
           params.append(", ");
         }
-        parametersProto.append("Param " + p.getName());
+        parametersProto.append("Param ").append(p.getName());
         params.append(p.getName());
       }
     }
@@ -907,7 +906,7 @@ public class SpiderCodegen {
     append("\t\t/*InParam*/  0);\n");
 
     append("\n\t/* Top graph definition */\n");
-    if (params.toString().equals("")) {
+    if (params.isEmpty()) {
       append("\t" + sgName + "(topVertex);\n");
     } else {
       append("\t" + sgName + "(topVertex, " + params.toString() + ");\n");

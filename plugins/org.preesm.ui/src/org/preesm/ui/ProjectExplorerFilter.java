@@ -49,8 +49,7 @@ public class ProjectExplorerFilter extends ViewerFilter {
 
   @Override
   public boolean select(final Viewer viewer, final Object parentElement, final Object element) {
-    if (element instanceof IFile) {
-      final IFile file = (IFile) element;
+    if (element instanceof final IFile file) {
       final String fileName = file.getName();
       if (fileName.endsWith(".layout")) {
         return false;

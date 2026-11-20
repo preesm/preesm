@@ -39,7 +39,6 @@
 package org.preesm.algorithm.synthesis.memalloc.allocation;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -90,8 +89,8 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
           excludeTo.add(neighborOffset + neighbor.getWeight());
         }
       }
-      Collections.sort(excludeFrom);
-      Collections.sort(excludeTo);
+      excludeFrom.sort(null);
+      excludeTo.sort(null);
 
       long firstFitOffset = -1;
       long freeFrom = 0; // Where the last exclusion ended
@@ -137,13 +136,11 @@ public class PiFirstFitAllocator extends PiOrderedAllocator {
             if (iterFrom.hasNext()) {
               from = iterFrom.next();
               nbExcludeFrom++;
-            } else {
-              if (!lastFromTreated) {
-                lastFromTreated = true;
-                // Add a from to avoid considering the end of
-                // lastTo as a free space
-                nbExcludeFrom++;
-              }
+            } else if (!lastFromTreated) {
+              lastFromTreated = true;
+              // Add a from to avoid considering the end of
+              // lastTo as a free space
+              nbExcludeFrom++;
             }
           }
 

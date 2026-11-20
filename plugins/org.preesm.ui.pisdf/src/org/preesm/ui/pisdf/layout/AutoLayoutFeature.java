@@ -558,7 +558,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         int posY;
         if (bPoints.size() > 1) {
           final int pX = posX;
-          bPoints.sort((p1, p2) -> Math.abs(p1.getX() - pX) - Math.abs(p2.getX() - pX));
+          bPoints.sort((p1, p2) -> Integer.compare(Math.abs(p1.getX() - pX), Math.abs(p2.getX() - pX)));
 
           posY = ((bPoints.get(0).getY() + bPoints.get(1).getY()) - AddDelayFeature.DELAY_SIZE) / 2;
 
@@ -745,7 +745,7 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
       final int srcStage2 = getActorStage((AbstractActor) f2.getSourcePort().eContainer(), stagedActors);
       final int dstStage2 = getActorStage((AbstractActor) f2.getTargetPort().eContainer(), stagedActors);
 
-      return Math.abs(srcStage1 - dstStage1) - Math.abs(srcStage2 - dstStage2);
+      return Integer.compare(Math.abs(srcStage1 - dstStage1), Math.abs(srcStage2 - dstStage2));
     });
 
     // Add new gap on top of all stages
@@ -890,11 +890,11 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
     final EObject getter = dependency.getGetter().eContainer();
 
     return switch (getter) {
-      case final Parameter p -> {
+      case final Parameter _ -> {
         layoutDependencyToParamter(stagedParameters, param, ffc, getter);
         yield currentYUsed;
       }
-      case final InterfaceActor ia -> {
+      case final InterfaceActor _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().clear();
@@ -902,14 +902,14 @@ public class AutoLayoutFeature extends AbstractCustomFeature {
         layoutDependencyToInterface(diagram, currentY, currentX, ffc, getter);
         yield true;
       }
-      case final AbstractActor aa -> {
+      case final AbstractActor _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().add(0, bPoint);
         layoutDependencyToActor(currentY, currentX, ffc);
         yield true;
       }
-      case final Delay d -> {
+      case final Delay _ -> {
         final int xPosition = this.paramXPositions.get(param);
         final Point bPoint = Graphiti.getGaCreateService().createPoint(xPosition, currentY);
         ffc.getBendpoints().add(0, bPoint);

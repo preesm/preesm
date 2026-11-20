@@ -36,7 +36,6 @@
 package org.preesm.algorithm.moa.activity;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ public class Activity {
    */
   public String tokensString(final boolean humanReadable) {
     final List<String> sortedNames = new ArrayList<>(this.tokens.keySet());
-    Collections.sort(sortedNames);
+    sortedNames.sort(null);
 
     return generateString(sortedNames, humanReadable);
   }
@@ -115,7 +114,7 @@ public class Activity {
    */
   public String quantaString(final boolean humanReadable) {
     final List<String> sortedNames = new ArrayList<>(this.quanta.keySet());
-    Collections.sort(sortedNames);
+    sortedNames.sort(null);
 
     return generateString(sortedNames, humanReadable);
   }
@@ -125,14 +124,14 @@ public class Activity {
 
     if (humanReadable) {
       for (final String name : sortedNames) {
-        builder.append(name + ",");
+        builder.append(name).append(",");
       }
       builder.append(builder.substring(0, builder.length() - 1));
       builder.append("\n");
     }
 
     for (final String name : sortedNames) {
-      builder.append(this.tokens.get(name) + ",");
+      builder.append(this.tokens.get(name)).append(",");
     }
     builder.append(builder.substring(0, builder.length() - 1));
     builder.append("\n");

@@ -207,8 +207,8 @@ public class MonoActivityExporter extends AbstractTaskImplementation {
    * Visiting one edge and extracting activity
    */
   private void visitEdge(final MapperDAGEdge edge, final LatencyAbc abc) {
-    final MapperDAGVertex source = (MapperDAGVertex) edge.getSource();
-    final MapperDAGVertex target = (MapperDAGVertex) edge.getTarget();
+    final MapperDAGVertex source = edge.getSource();
+    final MapperDAGVertex target = edge.getTarget();
     if (!(source.getEffectiveComponent()).equals(target.getEffectiveComponent())) {
       final long size = edge.getInit().getDataSize();
       final SlamRoute route = abc.getComRouter().getRoute(edge);
@@ -243,7 +243,7 @@ public class MonoActivityExporter extends AbstractTaskImplementation {
       } else {
         WorkspaceUtils.createMissingFolders(path);
       }
-    } catch (final CoreException e) {
+    } catch (final CoreException _) {
       throw new PreesmRuntimeException("Path " + path + " is not a valid path for export.");
     }
 

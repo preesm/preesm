@@ -86,7 +86,7 @@ public abstract class AbstractCreateConfigurableFeature extends AbstractCreateFe
     // TODO create a parameter name validator ?
     final String newConfigurableName = DialogUtil.askString(getFeatureDescription(), getQuestion(), getDefaultName(),
         new VertexNameValidator(graph, null));
-    if ((newConfigurableName == null) || (newConfigurableName.trim().length() == 0)) {
+    if ((newConfigurableName == null) || (newConfigurableName.isBlank())) {
       this.hasDoneChanges = false; // If this is not done, the graph is considered modified.
       return ICreate.EMPTY;
     }

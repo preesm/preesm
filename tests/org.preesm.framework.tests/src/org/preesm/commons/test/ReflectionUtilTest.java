@@ -37,8 +37,8 @@
 package org.preesm.commons.test;
 
 import java.util.Collection;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.ReflectionUtil;
 import org.preesm.workflow.implement.AbstractTaskImplementation;
 
@@ -50,7 +50,7 @@ import org.preesm.workflow.implement.AbstractTaskImplementation;
 public class ReflectionUtilTest {
 
   @Test
-  public void testReflectionClasses() {
+  void testReflectionClasses() {
     final Collection<Class<? extends AbstractTaskImplementation>> lookupChildClassesOf = ReflectionUtil
         .lookupChildClassesOf("org.preesm.commons.plugin", AbstractTaskImplementation.class);
     for (final Class<?> t : lookupChildClassesOf) {
@@ -58,7 +58,7 @@ public class ReflectionUtilTest {
     }
 
     // Replace by Assertions.assertDoesNotThrow from junit5
-    Assert.assertTrue(true);
+    Assertions.assertTrue(true);
   }
 
 }

@@ -44,7 +44,7 @@ import org.preesm.model.pisdf.FunctionPrototype;
 
 /**
  * Pre-processed information of actor prototype for the spider 2 codegen.
- * 
+ *
  * @author farresti
  *
  */
@@ -60,7 +60,7 @@ public class Spider2CodegenPrototype {
 
   /**
    * Constructor of the class;
-   * 
+   *
    * @param refinement
    *          the CHeaderRefinement associated with the prototype
    */
@@ -75,13 +75,13 @@ public class Spider2CodegenPrototype {
     }
     /** Init with empty string for out of order insertions */
     final List<FunctionArgument> arguments = new ArrayList<>(prototype.getArguments());
-    arguments.forEach(x -> this.formatedLoopArgs.add(""));
+    arguments.forEach(_ -> this.formatedLoopArgs.add(""));
     final int maxLength = arguments.stream().map(FunctionArgument::getName).mapToInt(String::length).max().orElse(0);
 
     /* Insert input config parameters */
     final List<FunctionArgument> inputConfigParams = prototype.getInputConfigParameters();
     for (final FunctionArgument param : inputConfigParams) {
-      StringBuilder formatParam = new StringBuilder(START_COMMENT);
+      final StringBuilder formatParam = new StringBuilder(START_COMMENT);
       formatParam.append(StringUtils.rightPad(param.getName(), maxLength, " "));
       formatParam.append(END_COMMENT);
       if (param.getType().equals("int64_t")) {
@@ -96,7 +96,7 @@ public class Spider2CodegenPrototype {
     /* Insert output config parameters */
     final List<FunctionArgument> outputConfigParams = prototype.getOutputConfigParameters();
     for (final FunctionArgument param : outputConfigParams) {
-      StringBuilder formatParam = new StringBuilder(START_COMMENT);
+      final StringBuilder formatParam = new StringBuilder(START_COMMENT);
       formatParam.append(StringUtils.rightPad(param.getName(), maxLength));
       formatParam.append(END_COMMENT);
       if (param.getType().equals("int64_t")) {
@@ -111,7 +111,7 @@ public class Spider2CodegenPrototype {
     /* Insert inputs */
     final List<FunctionArgument> inputs = prototype.getInputArguments();
     for (final FunctionArgument param : inputs) {
-      StringBuilder formatParam = new StringBuilder(START_COMMENT);
+      final StringBuilder formatParam = new StringBuilder(START_COMMENT);
       formatParam.append(StringUtils.rightPad(param.getName(), maxLength));
       formatParam.append(END_COMMENT);
       formatParam.append("reinterpret_cast<" + param.getType().trim() + " *>(inputs[" + inputs.indexOf(param) + "])");
@@ -121,7 +121,7 @@ public class Spider2CodegenPrototype {
     /* Insert outputs */
     final List<FunctionArgument> outputs = prototype.getOutputArguments();
     for (final FunctionArgument param : outputs) {
-      StringBuilder formatParam = new StringBuilder(START_COMMENT);
+      final StringBuilder formatParam = new StringBuilder(START_COMMENT);
       formatParam.append(StringUtils.rightPad(param.getName(), maxLength));
       formatParam.append(END_COMMENT);
       formatParam.append("reinterpret_cast<" + param.getType().trim() + " *>(outputs[" + outputs.indexOf(param) + "])");
@@ -130,7 +130,7 @@ public class Spider2CodegenPrototype {
   }
 
   /**
-   * 
+   *
    * @return init function
    */
   public FunctionPrototype getInit() {
@@ -138,7 +138,7 @@ public class Spider2CodegenPrototype {
   }
 
   /**
-   * 
+   *
    * @return loop function
    */
   public FunctionPrototype getLoop() {
@@ -146,7 +146,7 @@ public class Spider2CodegenPrototype {
   }
 
   /**
-   * 
+   *
    * @return list of formatted argument of the loop function
    */
   public List<String> getFormatedLoopArgList() {
@@ -154,7 +154,7 @@ public class Spider2CodegenPrototype {
   }
 
   /**
-   * 
+   *
    * @return list of formatted argument of the loop function without last one
    */
   public List<String> getFormatedLoopArgListButLast() {
@@ -165,7 +165,7 @@ public class Spider2CodegenPrototype {
   }
 
   /**
-   * 
+   *
    * @return last formatted argument of the loop function
    */
   public String getLastFormatedLoopArg() {

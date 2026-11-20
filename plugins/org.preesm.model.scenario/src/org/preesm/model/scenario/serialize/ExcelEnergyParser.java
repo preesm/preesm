@@ -162,7 +162,7 @@ public class ExcelEnergyParser {
     currentGraph.getActorsWithRefinement().stream().filter(a -> !a.isHierarchical())
         .forEach(a -> parseEnergyForVertex(w, a, opDefIds, missingVertices, missingOperatorTypes));
 
-    currentGraph.getChildrenGraphs().stream()
+    currentGraph.getChildrenGraphs()
         .forEach(g -> parseEnergyForPISDFGraph(w, g, opDefIds, missingVertices, missingOperatorTypes));
 
   }
@@ -204,7 +204,7 @@ public class ExcelEnergyParser {
           final String msg = "Importing Energy: " + actor.getVertexPath() + " on " + component.getVlnv().getName()
               + " takes " + expression;
           PreesmLogger.getLogger().log(Level.INFO, msg);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           final String message = "Problem importing energy of " + actor + " on " + component
               + ". Double with no space or special character needed. Be careful on the special number formats.";
           throw new PreesmRuntimeException(message);

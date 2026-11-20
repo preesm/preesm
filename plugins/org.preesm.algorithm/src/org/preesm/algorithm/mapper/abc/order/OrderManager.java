@@ -384,7 +384,7 @@ public class OrderManager extends Observable {
 
     final List<DAGVertex> newTotalOrder = new ArrayList<>(dag.vertexSet());
 
-    Collections.sort(newTotalOrder, new SchedulingOrderComparator());
+    newTotalOrder.sort(new SchedulingOrderComparator());
 
     for (final DAGVertex vertex : newTotalOrder) {
       final MapperDAGVertex mVertex = (MapperDAGVertex) vertex;

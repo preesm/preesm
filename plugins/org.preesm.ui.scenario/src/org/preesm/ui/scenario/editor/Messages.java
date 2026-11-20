@@ -70,7 +70,7 @@ public class Messages {
     // TODO Auto-generated method stub
     try {
       return Messages.RESOURCE_BUNDLE.getString(key);
-    } catch (final MissingResourceException e) {
+    } catch (final MissingResourceException _) {
       return '!' + key + '!';
     }
   }

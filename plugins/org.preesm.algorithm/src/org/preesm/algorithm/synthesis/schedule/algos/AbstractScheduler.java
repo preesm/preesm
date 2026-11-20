@@ -91,7 +91,7 @@ public abstract class AbstractScheduler implements IScheduler {
     if (!PiGraphSRDAGChecker.isPiGraphSRADG(piGraph)) {
       throw new PreesmSynthesisException(
           "Synthesis can be applied only on SRADG graphs (no hierarchy, single-rate, no cycles, no delays). Please "
-              + "consider using the output of the pisdf-srdag workflow task as an output of  "
+              + "consider using the output of the pisdf-srdag workflow task as an output of "
               + "the synthesis workflow task.");
     }
 

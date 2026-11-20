@@ -162,12 +162,7 @@ public class ScheduleOrderManager {
     if (graphCache != null) {
       return graphCache;
     }
-    final Supplier<DAGedge> eSupplier = new Supplier<>() {
-      @Override
-      public DAGedge get() {
-        return new DAGedge(DAGedgeType.NONE);
-      }
-    };
+    final Supplier<DAGedge> eSupplier = () -> new DAGedge(DAGedgeType.NONE);
 
     DAGedge.count = 0;
     final DirectedAcyclicGraph<AbstractActor, DAGedge> dag = new DirectedAcyclicGraph<>(null, eSupplier, false);
@@ -389,8 +384,8 @@ public class ScheduleOrderManager {
     final List<
         AbstractActor> scheduleAndTopologicalOrderedList = buildScheduleAndTopologicalOrderedList(mapping, operator);
     for (final AbstractActor actor : scheduleAndTopologicalOrderedList) {
-      if (actor instanceof CommunicationActor && mapping.getMapping(actor).contains(operator)) {
-        order.add((CommunicationActor) actor);
+      if (actor instanceof final CommunicationActor commActor && mapping.getMapping(actor).contains(operator)) {
+        order.add(commActor);
       }
     }
     return Collections.unmodifiableList(order);

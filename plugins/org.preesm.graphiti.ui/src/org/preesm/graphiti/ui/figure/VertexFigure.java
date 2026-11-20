@@ -230,7 +230,7 @@ public class VertexFigure extends Figure {
    */
   public void addToList(final Connection conn, final boolean end, final int offset) {
     // get the concrete list
-    this.bendpoints.computeIfAbsent(conn, k -> new ArrayList<>());
+    this.bendpoints.computeIfAbsent(conn, _ -> new ArrayList<>());
 
     final List<ConcreteBendpoint> list = this.bendpoints.get(conn);
 

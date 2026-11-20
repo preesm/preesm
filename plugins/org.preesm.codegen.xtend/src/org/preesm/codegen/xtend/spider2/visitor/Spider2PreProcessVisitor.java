@@ -311,10 +311,10 @@ public class Spider2PreProcessVisitor extends PiMMSwitch<Boolean> {
       final ComponentInstance source = link.getSourceComponentInstance();
       final ComponentInstance target = link.getDestinationComponentInstance();
       if (source.getComponent() instanceof ComNode) {
-        clusters.computeIfAbsent(source, k -> new ArrayList<>());
+        clusters.computeIfAbsent(source, _ -> new ArrayList<>());
         clusters.get(source).add(target);
       } else if (target.getComponent() instanceof ComNode) {
-        clusters.computeIfAbsent(target, k -> new ArrayList<>());
+        clusters.computeIfAbsent(target, _ -> new ArrayList<>());
         clusters.get(target).add(source);
       }
     }

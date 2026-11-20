@@ -36,14 +36,12 @@
  */
 package org.preesm.model.scenario.types.test;
 
-import java.util.Arrays;
-import java.util.Collection;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.runners.Enclosed;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.preesm.model.scenario.ScenarioConstants;
 import org.preesm.model.scenario.util.DefaultTypeSizes;
 
@@ -52,81 +50,67 @@ import org.preesm.model.scenario.util.DefaultTypeSizes;
  * @author anmorvan
  *
  */
-@RunWith(Enclosed.class)
+
 public class DefaultTypeSizesTest {
 
-  private DefaultTypeSizesTest() {
-
+  static Stream<Arguments> data() {
+    return Stream.of(Arguments.of("DEFAULT", ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE), Arguments.of("char", 8),
+        Arguments.of("unsigned char", 8), Arguments.of("short", 16), Arguments.of("unsigned short", 16),
+        Arguments.of("int", 32), Arguments.of("unsigned int", 32), Arguments.of("long", 64),
+        Arguments.of("unsigned long", 64), Arguments.of("long long", 64), Arguments.of("unsigned long long", 64),
+        Arguments.of("float", 32), Arguments.of("double", 64), Arguments.of("long double", 128),
+        Arguments.of("int8_t", 8), Arguments.of("int16_t", 16), Arguments.of("int32_t", 32),
+        Arguments.of("int64_t", 64), Arguments.of("int_fast8_t", 8), Arguments.of("int_fast16_t", 64),
+        Arguments.of("int_fast32_t", 64), Arguments.of("int_fast64_t", 64), Arguments.of("int_least8_t", 8),
+        Arguments.of("int_least16_t", 16), Arguments.of("int_least32_t", 32), Arguments.of("int_least64_t", 64),
+        Arguments.of("intmax_t", 64), Arguments.of("intptr_t", 64), Arguments.of("uint8_t", 8),
+        Arguments.of("uint16_t", 16), Arguments.of("uint32_t", 32), Arguments.of("uint64_t", 64),
+        Arguments.of("uint_fast8_t", 8), Arguments.of("uint_fast16_t", 64), Arguments.of("uint_fast32_t", 64),
+        Arguments.of("uint_fast64_t", 64), Arguments.of("uint_least8_t", 8), Arguments.of("uint_least16_t", 16),
+        Arguments.of("uint_least32_t", 32), Arguments.of("uint_least64_t", 64), Arguments.of("uintmax_t", 64),
+        Arguments.of("uintptr_t", 64));
   }
 
-  @RunWith(Parameterized.class)
-  public static class DefaultTypeSizesParamTest {
-    private final String typeName;
-    private final long   expectedSize;
-
-    public DefaultTypeSizesParamTest(String typeName, long expectedSize) {
-      this.typeName = typeName;
-      this.expectedSize = expectedSize;
-    }
-
-    @Parameters(name = "Test {1} size = {0}")
-    public static Collection<Object[]> data() {
-      final Object[][] data = new Object[][] { { "DEFAULT", ScenarioConstants.DEFAULT_DATA_TYPE_SIZE_VALUE },
-        { "char", 8 }, { "unsigned char", 8 }, { "short", 16 }, { "unsigned short", 16 }, { "int", 32 },
-        { "unsigned int", 32 }, { "long", 64 }, { "unsigned long", 64 }, { "long long", 64 },
-        { "unsigned long long", 64 }, { "float", 32 }, { "double", 64 }, { "long double", 128 }, { "int8_t", 8 },
-        { "int16_t", 16 }, { "int32_t", 32 }, { "int64_t", 64 }, { "int_fast8_t", 8 }, { "int_fast16_t", 64 },
-        { "int_fast32_t", 64 }, { "int_fast64_t", 64 }, { "int_least8_t", 8 }, { "int_least16_t", 16 },
-        { "int_least32_t", 32 }, { "int_least64_t", 64 }, { "intmax_t", 64 }, { "intptr_t", 64 }, { "uint8_t", 8 },
-        { "uint16_t", 16 }, { "uint32_t", 32 }, { "uint64_t", 64 }, { "uint_fast8_t", 8 }, { "uint_fast16_t", 64 },
-        { "uint_fast32_t", 64 }, { "uint_fast64_t", 64 }, { "uint_least8_t", 8 }, { "uint_least16_t", 16 },
-        { "uint_least32_t", 32 }, { "uint_least64_t", 64 }, { "uintmax_t", 64 }, { "uintptr_t", 64 } };
-
-      return Arrays.asList(data);
-    }
-
-    @Test
-    public void testTypeSizeParameterized() {
-      Assert.assertEquals(expectedSize, DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
-    }
+  @ParameterizedTest(name = "Test {1} size = {0}")
+  @MethodSource("data")
+  void testTypeSizeParameterized(String typeName, long expectedSize) {
+    Assertions.assertEquals(expectedSize, DefaultTypeSizes.getInstance().getTypeSizeOrDefault(typeName));
   }
 
-  public static class DefaultTypeSizesSingleTest {
-
-    @Test
-    public void testUnknownTypeSize() {
-      final long unknownTypeSize = DefaultTypeSizes.getInstance().getTypeSize("THIS_IS_AN_UNKNOWN_TYPENAME");
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, unknownTypeSize);
-    }
-
-    @Test
-    public void testVoidTypeSize() {
-      final long voidTypeSize = DefaultTypeSizes.getInstance().getTypeSize("void");
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, voidTypeSize);
-    }
-
-    @Test
-    public void testVitisApIntSize() {
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_int<10>"));
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_uint<10>"));
-
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<0>"));
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<-1>"));
-    }
-
-    @Test
-    public void testVitisApFixedSize() {
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_fixed<10,5>"));
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,5>"));
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND>"));
-      Assert.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND, AP_SAT>"));
-
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
-          DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<0,8, AP_RND>"));
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
-          DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<-1,8, AP_RND>"));
-      Assert.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
-          DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, ERROR>"));
-    }
+  @Test
+  void testUnknownTypeSize() {
+    final long unknownTypeSize = DefaultTypeSizes.getInstance().getTypeSize("THIS_IS_AN_UNKNOWN_TYPENAME");
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, unknownTypeSize);
   }
+
+  @Test
+  void testVoidTypeSize() {
+    final long voidTypeSize = DefaultTypeSizes.getInstance().getTypeSize("void");
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, voidTypeSize);
+  }
+
+  @Test
+  void testVitisApIntSize() {
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_int<10>"));
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_uint<10>"));
+
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<0>"));
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE, DefaultTypeSizes.getInstance().getTypeSize("ap_int<-1>"));
+  }
+
+  @Test
+  void testVitisApFixedSize() {
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_fixed<10,5>"));
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,5>"));
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND>"));
+    Assertions.assertEquals(10L, DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, AP_RND, AP_SAT>"));
+
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
+        DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<0,8, AP_RND>"));
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
+        DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<-1,8, AP_RND>"));
+    Assertions.assertEquals(DefaultTypeSizes.UNKNOWN_TYPE,
+        DefaultTypeSizes.getInstance().getTypeSize("ap_ufixed<10,8, ERROR>"));
+  }
+
 }

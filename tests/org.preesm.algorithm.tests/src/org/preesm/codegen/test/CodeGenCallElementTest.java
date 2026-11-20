@@ -36,8 +36,8 @@
  */
 package org.preesm.codegen.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.codegen.model.CodeGenCallElement;
 
 /**
@@ -45,12 +45,12 @@ import org.preesm.algorithm.codegen.model.CodeGenCallElement;
 public class CodeGenCallElementTest {
 
   @Test
-  public void testConstructor() {
+  void testConstructor() {
     final String inputString = "toto";
     final CodeGenCallElement codeGenCallElement = new CodeGenCallElement(inputString);
     final String name = codeGenCallElement.getName();
-    Assert.assertNotNull(name);
-    Assert.assertEquals(inputString, name);
+    Assertions.assertNotNull(name);
+    Assertions.assertEquals(inputString, name);
   }
 
 }

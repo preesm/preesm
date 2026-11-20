@@ -110,7 +110,7 @@ public class XsltTransformer {
      * factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
      */
 
-    factory.setURIResolver((href, base) -> {
+    factory.setURIResolver((href, _) -> {
       try {
         // What we are doing here is solving the "href" URI and get
         // an InputStream from it.
@@ -191,7 +191,7 @@ public class XsltTransformer {
     this.transformer.transform(source, result);
     try {
       os.close();
-    } catch (final IOException e) {
+    } catch (final IOException _) {
       // never happens on a byte array output stream
     }
 

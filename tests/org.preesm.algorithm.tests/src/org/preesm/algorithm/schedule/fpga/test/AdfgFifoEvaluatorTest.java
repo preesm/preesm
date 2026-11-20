@@ -37,8 +37,8 @@
 package org.preesm.algorithm.schedule.fpga.test;
 
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.schedule.fpga.AbstractGenericFpgaFifoEvaluator.AnalysisResultFPGA;
 import org.preesm.algorithm.schedule.fpga.AdfgOjalgoFpgaFifoEvaluator;
 import org.preesm.algorithm.schedule.fpga.FpgaAnalysis;
@@ -58,77 +58,77 @@ import org.preesm.model.slam.generator.ArchitecturesGenerator;
 public class AdfgFifoEvaluatorTest {
 
   @Test
-  public void diamondPerfectPipelineTest() {
+  void diamondPerfectPipelineTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "1", "100"), List.of("10", "10", "1", "100"));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(1));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(2));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(3));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(0));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(1));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(2));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(3));
   }
 
   @Test
-  public void diamondSlowInputTest() {
+  void diamondSlowInputTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("20", "10", "1", "100"), List.of("20", "10", "1", "100"));
-    Assert.assertEquals(12 * 32L, (long) fifoSize.get(0));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(1));
-    Assert.assertEquals(12 * 32L, (long) fifoSize.get(2));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(3));
+    Assertions.assertEquals(12 * 32L, (long) fifoSize.get(0));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(1));
+    Assertions.assertEquals(12 * 32L, (long) fifoSize.get(2));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(3));
   }
 
   @Test
-  public void diamondSlowOutputTest() {
+  void diamondSlowOutputTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "1", "200"), List.of("10", "10", "1", "200"));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
-    Assert.assertEquals(102 * 32L, (long) fifoSize.get(1));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(2));
-    Assert.assertEquals(102 * 32L, (long) fifoSize.get(3));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(0));
+    Assertions.assertEquals(102 * 32L, (long) fifoSize.get(1));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(2));
+    Assertions.assertEquals(102 * 32L, (long) fifoSize.get(3));
   }
 
   @Test
-  public void diamondLatencyBTest() {
+  void diamondLatencyBTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "20", "1", "100"), List.of("10", "10", "1", "100"));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(0));
-    Assert.assertEquals(11 * 32L, (long) fifoSize.get(1));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(2));
-    Assert.assertEquals(11 * 32L, (long) fifoSize.get(3));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(0));
+    Assertions.assertEquals(11 * 32L, (long) fifoSize.get(1));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(2));
+    Assertions.assertEquals(11 * 32L, (long) fifoSize.get(3));
   }
 
   @Test
-  public void diamondLatencyCTest() {
+  void diamondLatencyCTest() {
     final List<
         Long> fifoSize = createExecuteDiamondGraph(List.of("10", "10", "4", "100"), List.of("10", "10", "1", "100"));
-    Assert.assertEquals(4 * 32L, (long) fifoSize.get(0));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(1));
-    Assert.assertEquals(2 * 32L, (long) fifoSize.get(2));
-    Assert.assertEquals(4 * 32L, (long) fifoSize.get(3));
+    Assertions.assertEquals(4 * 32L, (long) fifoSize.get(0));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(1));
+    Assertions.assertEquals(2 * 32L, (long) fifoSize.get(2));
+    Assertions.assertEquals(4 * 32L, (long) fifoSize.get(3));
   }
 
   @Test
-  public void chainPerfectPipelineTest() {
+  void chainPerfectPipelineTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("10", "10"), List.of("10", "10"));
-    Assert.assertEquals((long) fifoSize, 2 * 32L);
+    Assertions.assertEquals((long) fifoSize, 2 * 32L);
   }
 
   @Test
-  public void chainSlowInputTest() {
+  void chainSlowInputTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("20", "10"), List.of("20", "10"));
-    Assert.assertEquals((long) fifoSize, 12 * 32L);
+    Assertions.assertEquals((long) fifoSize, 12 * 32L);
   }
 
   @Test
-  public void chainSlowOutputTest() {
+  void chainSlowOutputTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("10", "20"), List.of("10", "20"));
-    Assert.assertEquals((long) fifoSize, 12 * 32L);
+    Assertions.assertEquals((long) fifoSize, 12 * 32L);
   }
 
   @Test
-  public void chainLatencyTest() {
+  void chainLatencyTest() {
     final Long fifoSize = createExecuteChainGraph(List.of("20", "20"), List.of("10", "10"));
-    Assert.assertEquals((long) fifoSize, 11 * 32L);
+    Assertions.assertEquals((long) fifoSize, 11 * 32L);
   }
 
   private List<Long> createExecuteDiamondGraph(List<String> executionTimes, List<String> initiationIntervals) {

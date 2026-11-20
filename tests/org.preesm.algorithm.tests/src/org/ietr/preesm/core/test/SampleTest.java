@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.core.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
@@ -47,8 +47,8 @@ import org.junit.Test;
 public class SampleTest {
 
   @Test
-  public void testSample() {
-    Assert.assertTrue(true);
+  void testSample() {
+    Assertions.assertTrue(true);
     // just works
   }
 }

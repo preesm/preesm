@@ -39,7 +39,6 @@
 package org.preesm.algorithm.mapper.ui.stats.overview;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -115,7 +114,7 @@ public class DeploymentProperties implements IStructuredContentProvider, ITableL
       comparator = (o1, o2) -> Long.compare(memoryNeeds.get(o1), memoryNeeds.get(o2));
     }
 
-    Collections.sort(elements, comparator);
+    elements.sort(comparator);
     return elements.toArray();
   }
 

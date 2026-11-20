@@ -38,91 +38,66 @@
 package org.ietr.preesm.test.it.appstest;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.stream.Stream;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  *
  */
-@RunWith(Parameterized.class)
-public class ModelTransfoTest {
+class ModelTransfoTest {
 
-  final String  workflow;
-  final String  scenario;
-  final String  projectName;
-  final boolean shouldSuccess;
+  static final String PROJECT_NAME = "org.ietr.preesm.model_tests";
 
-  /**
-   */
-  public ModelTransfoTest(final String projectName, final String workflow, final String scenario,
-      final boolean shouldSuccess) {
-    this.scenario = scenario;
-    this.workflow = workflow;
-    this.projectName = projectName;
-    this.shouldSuccess = shouldSuccess;
+  static final String[] WORKFLOWS = { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
+
+  static Stream<Arguments> flatData() {
+    final String[] scenarios = { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
+      "Tests_Flat/delay_setter_getter.scenario" };
+
+    return Stream.of(WORKFLOWS).flatMap(
+        workflow -> Stream.of(scenarios).map(scenario -> Arguments.of(PROJECT_NAME, workflow, scenario, true)));
   }
 
-  /**
-   *
-   */
-  @Parameters(name = "{index} - {0}:: {1} - {2} => {3}")
-  public static Collection<Object[]> data() {
-    final List<Object[]> params = new ArrayList<>();
-
-    String projectName = "org.ietr.preesm.model_tests";
-    String[] scenarios = new String[] { "Tests_Flat/simple.scenario", "Tests_Flat/delay_simple.scenario",
-      "Tests_Flat/delay_setter_getter.scenario" };
-    String[] workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        params.add(new Object[] { projectName, workflow, scenario, true });
-      }
-    }
-
-    projectName = "org.ietr.preesm.model_tests";
-    scenarios = new String[] { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
+  static Stream<Arguments> hierarchicalData() {
+    final String[] scenarios = { "Tests_H/simple_H.scenario", "Tests_H/simple_H_delay_p.scenario",
       "Tests_H/simple_H_delay_no_p.scenario", "Tests_H/simple_H_delay_p_no_p.scenario",
       "Tests_H/simple_H_delay_p_p.scenario" };
-    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final boolean shouldFail = scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
-        params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
-      }
-    }
 
-    projectName = "org.ietr.preesm.model_tests";
-    scenarios = new String[] { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
-      "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
-      "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
-    workflows = new String[] { "StaticPiMM2SRDAGCodegen.workflow", "StaticPiMMFlattenerCodegen.workflow" };
-    for (final String workflow : workflows) {
-      for (final String scenario : scenarios) {
-        final boolean shouldFail = scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
-            && workflow.equals("StaticPiMMFlattenerCodegen.workflow");
-        params.add(new Object[] { projectName, workflow, scenario, !shouldFail });
-      }
-    }
+    return Stream.of(WORKFLOWS).flatMap(workflow -> Stream.of(scenarios).map(scenario -> {
+      final boolean expectedSuccess = !(scenario.equals("Tests_H/simple_H_delay_p_no_p.scenario")
+          && workflow.equals("StaticPiMMFlattenerCodegen.workflow"));
 
-    return params;
+      return Arguments.of(PROJECT_NAME, workflow, scenario, expectedSuccess);
+    }));
   }
 
-  @Test
-  public void testModelTransfos() throws IOException, CoreException {
+  static Stream<Arguments> nestedData() {
+    final String[] scenarios = { "Tests_H/nested_H_simple.scenario", "Tests_H/nested_H_BR.scenario",
+      "Tests_H/nested_H_RB.scenario", "Tests_H/nested_H_delay_p.scenario", "Tests_H/nested_H_delay_no_p.scenario",
+      "Tests_H/nested_H_delay_p_no_p.scenario", "Tests_H/nested_H_delay_p_p.scenario" };
+
+    return Stream.of(WORKFLOWS).flatMap(workflow -> Stream.of(scenarios).map(scenario -> {
+      final boolean expectedSuccess = !(scenario.equals("Tests_H/nested_H_delay_p_no_p.scenario")
+          && workflow.equals("StaticPiMMFlattenerCodegen.workflow"));
+
+      return Arguments.of(PROJECT_NAME, workflow, scenario, expectedSuccess);
+    }));
+  }
+
+  @ParameterizedTest(name = "{index} - {0}:: {1} - {2} => {3}")
+  @MethodSource({ "flatData", "hierarchicalData", "nestedData" })
+  void testModelTransfos(final String projectName, final String workflow, final String scenario,
+      final boolean shouldSuccess) throws IOException, CoreException {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertEquals("Workflow [" + workflow + "] with scenario [" + scenario + "] ended unexpectedly",
-        shouldSuccess, success);
+    Assertions.assertEquals(shouldSuccess, success,
+        () -> "Workflow [" + workflow + "] with scenario [" + scenario + "] ended unexpectedly");
   }
 
 }

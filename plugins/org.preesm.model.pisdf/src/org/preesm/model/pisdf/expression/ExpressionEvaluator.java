@@ -303,13 +303,13 @@ public class ExpressionEvaluator {
           // try to parse a long value stored as String
           // NumberFormatException is thrown if the expression String does not represent a long value
           value = Double.parseDouble(expressionString);
-        } catch (final NumberFormatException e) {
+        } catch (final NumberFormatException _) {
           try {
             // try to evaluate the expression without collecting variables, but only the one given in the parameterValue
             // Map. ExpressionEvaluationException is thrown if the evaluation encounter unknown parameters.
             // This can speedup even with empty Map in case expression only involves constant values.
             value = JEPWrapper.evaluate(expressionString, this.parameterValues);
-          } catch (final ExpressionEvaluationException ex) {
+          } catch (final ExpressionEvaluationException _) {
             // gather Expression parameters and evaluate the expression.
             // ExpressionEvaluationException will still be thrown if something goes wrong.
             final Map<String, Double> addInputParameterValues = ExpressionEvaluator.lookupParameterValues(stringExpr,

@@ -37,8 +37,8 @@ package org.ietr.preesm.mapper.schedule.test;
 
 import java.io.File;
 import java.io.IOException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.algorithm.mapper.schedule.Schedule;
 import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 
@@ -50,9 +50,9 @@ import org.preesm.algorithm.mapper.schedule.ScheduleUtils;
 public class JsonParserTest {
 
   @Test
-  public void testParser() throws IOException {
-    File file = new File("resources/schedule_sobel_4X86.json");
-    Schedule parsedSchedule = ScheduleUtils.parseJsonFile(file);
-    Assert.assertNotNull(parsedSchedule);
+  void testParser() throws IOException {
+    final File file = new File("resources/schedule_sobel_4X86.json");
+    final Schedule parsedSchedule = ScheduleUtils.parseJsonFile(file);
+    Assertions.assertNotNull(parsedSchedule);
   }
 }

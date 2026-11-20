@@ -36,8 +36,8 @@
  */
 package org.ietr.preesm.throughput.helpers.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.math.MathFunctionsHelper;
 
 /**
@@ -49,12 +49,12 @@ import org.preesm.commons.math.MathFunctionsHelper;
 public class MathFunctionsHelperTest {
 
   @Test
-  public void testGCDShouldBeComputed() {
-    Assert.assertEquals(1, MathFunctionsHelper.gcd(5, 7), 0);
-    Assert.assertEquals(35, MathFunctionsHelper.lcm(5, 7), 0);
+  void testGCDShouldBeComputed() {
+    Assertions.assertEquals(1, MathFunctionsHelper.gcd(5, 7), 0);
+    Assertions.assertEquals(35, MathFunctionsHelper.lcm(5, 7), 0);
 
     final double[] a = { 2, 6, 12 };
-    Assert.assertEquals(2, MathFunctionsHelper.gcd(a), 0);
-    Assert.assertEquals(12, MathFunctionsHelper.lcm(a), 0);
+    Assertions.assertEquals(2, MathFunctionsHelper.gcd(a), 0);
+    Assertions.assertEquals(12, MathFunctionsHelper.lcm(a), 0);
   }
 }

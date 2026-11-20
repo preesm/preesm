@@ -154,8 +154,8 @@ public class StatGeneratorAbc extends AbstractStatGenerator {
 
       for (final DAGEdge e : this.abc.getDAG().edgeSet()) {
         final MapperDAGEdge me = (MapperDAGEdge) e;
-        final MapperDAGVertex scr = (MapperDAGVertex) me.getSource();
-        final MapperDAGVertex tgt = (MapperDAGVertex) me.getTarget();
+        final MapperDAGVertex scr = me.getSource();
+        final MapperDAGVertex tgt = me.getTarget();
 
         final PropertyBean comSrcBeans = scr.getPropertyBean();
         final PropertyBean comTgtBeans = tgt.getPropertyBean();

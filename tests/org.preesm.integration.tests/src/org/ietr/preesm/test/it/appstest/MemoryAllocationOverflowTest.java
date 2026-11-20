@@ -40,16 +40,16 @@ package org.ietr.preesm.test.it.appstest;
 import java.io.IOException;
 import org.eclipse.core.runtime.CoreException;
 import org.ietr.preesm.test.it.api.WorkflowRunner;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  *
  */
-public class MemoryAllocationOverflowTest {
+class MemoryAllocationOverflowTest {
 
   @Test
-  public void testMemoryAllocationOverflow() throws IOException, CoreException {
+  void testMemoryAllocationOverflow() throws IOException, CoreException {
     final String projectName = "memory.allocator.overflow";
     final String scenario = "HextractSIFT4Corex86_64.scenario";
     final String workflow = "Codegen.workflow";
@@ -57,6 +57,7 @@ public class MemoryAllocationOverflowTest {
     final String workflowFilePathStr = "/Workflows/" + workflow;
     final String scenarioFilePathStr = "/Scenarios/" + scenario;
     final boolean success = WorkflowRunner.runWorkFlow(null, projectName, workflowFilePathStr, scenarioFilePathStr);
-    Assert.assertTrue("[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr, success);
+    Assertions.assertTrue(success,
+        () -> "[FAILED] Workflow " + workflowFilePathStr + " Scenario " + scenarioFilePathStr);
   }
 }

@@ -406,11 +406,11 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     StringConcatenation result = new StringConcatenation();
     final CharSequence coreBlockHeader = printCoreBlockHeader(coreBlock);
     result.append(coreBlockHeader);
-    final String indentationCoreBlock = (coreBlockHeader.length() > 0)
+    final String indentationCoreBlock = (!coreBlockHeader.isEmpty())
         ? CodegenAbstractPrinter.getLastLineIndentation(result)
         : "";
     boolean coreBlockHasNewLine;
-    if (coreBlockHeader.length() > 0) {
+    if (!coreBlockHeader.isEmpty()) {
       result = CodegenAbstractPrinter.trimLastEOL(result);
       coreBlockHasNewLine = CodegenAbstractPrinter.endWithEOL(result);
     } else {
@@ -455,7 +455,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence declarationsHeader = printDeclarationsHeader(declsNotDefs);
 
     result.append(declarationsHeader, indentationCoreBlock);
-    if (declarationsHeader.length() > 0) {
+    if (!declarationsHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -485,7 +485,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_LOOP_BLOCK);
     final CharSequence coreLoopHeader = printCoreLoopBlockHeader(coreBlock.getLoopBlock());
     result.append(coreLoopHeader, indentationCoreBlock);
-    if (coreLoopHeader.length() > 0) {
+    if (!coreLoopHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -510,7 +510,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_INIT_BLOCK);
     final CharSequence coreInitHeader = printCoreInitBlockHeader(coreBlock.getInitBlock());
     result.append(coreInitHeader, indentationCoreBlock);
-    if (coreInitHeader.length() > 0) {
+    if (!coreInitHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -535,7 +535,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     setState(PrinterState.PRINTING_DEFINITIONS);
     final CharSequence definitionsHeader = printDefinitionsHeader(definitions);
     result.append(definitionsHeader, indentationCoreBlock);
-    if (definitionsHeader.length() > 0) {
+    if (!definitionsHeader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -670,7 +670,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence finiteLoopBlockheader = printFiniteLoopBlockHeader(loopBlock);
     result.append(finiteLoopBlockheader, indentation);
 
-    if (finiteLoopBlockheader.length() > 0) {
+    if (!finiteLoopBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -703,7 +703,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence clusterBlockheader = printClusterBlockHeader(clusterBlock);
     result.append(clusterBlockheader, indentation);
 
-    if (clusterBlockheader.length() > 0) {
+    if (!clusterBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);
@@ -744,7 +744,7 @@ public abstract class CodegenAbstractPrinter extends CodegenSwitch<CharSequence>
     final CharSequence sectionBlockheader = printSectionBlockHeader(sectionBlock);
     result.append(sectionBlockheader, indentation);
 
-    if (sectionBlockheader.length() > 0) {
+    if (!sectionBlockheader.isEmpty()) {
       indentation = CodegenAbstractPrinter.getLastLineIndentation(result);
       result = CodegenAbstractPrinter.trimLastEOL(result);
       hasNewLine = CodegenAbstractPrinter.endWithEOL(result);

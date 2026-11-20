@@ -36,8 +36,8 @@
  */
 package org.preesm.model.pisdf.test;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.preesm.commons.model.PreesmCopyTracker;
 import org.preesm.model.pisdf.Actor;
 import org.preesm.model.pisdf.PiGraph;
@@ -49,15 +49,15 @@ import org.preesm.model.pisdf.factory.PiMMUserFactory;
 public class CopyTrackingTest {
 
   @Test
-  public void testCopy() {
+  void testCopy() {
     final PiGraph originalGraph = PiMMUserFactory.instance.createPiGraph();
     final PiGraph copy = PiMMUserFactory.instance.copyWithHistory(originalGraph);
     final PiGraph originalObject = PreesmCopyTracker.getSource(copy);
-    Assert.assertEquals(originalGraph, originalObject);
+    Assertions.assertEquals(originalGraph, originalObject);
   }
 
   @Test
-  public void testMultiCopy() {
+  void testMultiCopy() {
     final PiGraph originalGraph = PiMMUserFactory.instance.createPiGraph();
     final Actor originalActor = PiMMUserFactory.instance.createActor();
     originalActor.setName("A1");
@@ -65,20 +65,20 @@ public class CopyTrackingTest {
 
     final PiGraph copy = PiMMUserFactory.instance.copyPiGraphWithHistory(originalGraph);
     final Actor actor = (Actor) copy.lookupVertex("A1");
-    Assert.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor));
+    Assertions.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor));
 
     final PiGraph copy2 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy);
     final PiGraph copy3 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy2);
     final PiGraph copy4 = PiMMUserFactory.instance.copyPiGraphWithHistory(copy3);
 
     final Actor actor4 = (Actor) copy4.lookupVertex("A1");
-    Assert.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor4));
+    Assertions.assertEquals(originalActor, PreesmCopyTracker.getOriginalSource(actor4));
 
     final PiGraph sourceCopy3 = PreesmCopyTracker.getSource(copy3);
-    Assert.assertEquals(sourceCopy3, copy2);
+    Assertions.assertEquals(sourceCopy3, copy2);
 
     final PiGraph originalSourceCopy4 = PreesmCopyTracker.getOriginalSource(copy4);
-    Assert.assertEquals(originalSourceCopy4, originalGraph);
+    Assertions.assertEquals(originalSourceCopy4, originalGraph);
 
   }
 }

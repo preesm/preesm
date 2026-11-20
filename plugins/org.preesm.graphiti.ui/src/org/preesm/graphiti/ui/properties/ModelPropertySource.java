@@ -255,7 +255,7 @@ public class ModelPropertySource implements IPropertySource, PropertyChangeListe
         }
         value = Boolean.valueOf(str);
       }
-    } catch (final RuntimeException e) {
+    } catch (final RuntimeException _) {
       value = "invalid \"" + value + "\" value for " + parameterType.getSimpleName();
     }
     return value;

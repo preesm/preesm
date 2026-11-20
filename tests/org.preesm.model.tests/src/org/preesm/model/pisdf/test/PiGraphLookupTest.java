@@ -36,9 +36,9 @@
  */
 package org.preesm.model.pisdf.test;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.preesm.model.pisdf.AbstractActor;
 import org.preesm.model.pisdf.Actor;
@@ -60,8 +60,8 @@ public class PiGraphLookupTest {
   static Actor actor2;
   static Actor actor3;
 
-  @BeforeClass
-  public static void testSetup() {
+  @BeforeAll
+  static void testSetup() {
     topGraph = PiMMUserFactory.instance.createPiGraph();
     topGraph.setName("topGraph");
     actor1 = PiMMUserFactory.instance.createActor();
@@ -86,75 +86,75 @@ public class PiGraphLookupTest {
   }
 
   @Test
-  public void testLookupUsualRequests() {
+  void testLookupUsualRequests() {
     // usual requests
     final AbstractActor query1 = VertexPath.lookup(topGraph, "topGraph");
-    Assert.assertNotNull(query1);
-    Assert.assertEquals(topGraph, query1);
+    Assertions.assertNotNull(query1);
+    Assertions.assertEquals(topGraph, query1);
 
     final AbstractActor query2 = VertexPath.lookup(topGraph, "toto");
-    Assert.assertNotNull(query2);
-    Assert.assertEquals(actor1, query2);
+    Assertions.assertNotNull(query2);
+    Assertions.assertEquals(actor1, query2);
 
     final AbstractActor query2_1 = VertexPath.lookup(topGraph, "titi");
-    Assert.assertNull(query2_1);
+    Assertions.assertNull(query2_1);
 
     final AbstractActor query2_2 = VertexPath.lookup(topGraph, "secondLevelGraph");
-    Assert.assertNotNull(query2_2);
-    Assert.assertEquals(secondLevelGraph, query2_2);
+    Assertions.assertNotNull(query2_2);
+    Assertions.assertEquals(secondLevelGraph, query2_2);
 
     final AbstractActor query3 = VertexPath.lookup(topGraph, "topGraph/toto");
-    Assert.assertNotNull(query3);
-    Assert.assertEquals(actor1, query3);
+    Assertions.assertNotNull(query3);
+    Assertions.assertEquals(actor1, query3);
 
     final AbstractActor query3_1 = VertexPath.lookup(topGraph, "topGraph/secondLevelGraph");
-    Assert.assertNotNull(query3_1);
-    Assert.assertEquals(secondLevelGraph, query3_1);
+    Assertions.assertNotNull(query3_1);
+    Assertions.assertEquals(secondLevelGraph, query3_1);
 
     final AbstractActor query3_2 = VertexPath.lookup(secondLevelGraph, "titi");
-    Assert.assertNotNull(query3_2);
-    Assert.assertEquals(actor2, query3_2);
+    Assertions.assertNotNull(query3_2);
+    Assertions.assertEquals(actor2, query3_2);
 
     final AbstractActor query3_3 = VertexPath.lookup(topGraph, "topGraph/secondLevelGraph/titi");
-    Assert.assertNotNull(query3_3);
-    Assert.assertEquals(actor2, query3_3);
+    Assertions.assertNotNull(query3_3);
+    Assertions.assertEquals(actor2, query3_3);
 
     final AbstractActor query3_4 = VertexPath.lookup(topGraph, "topGraph/secondLevelGraph/titi/tutu");
-    Assert.assertNotNull(query3_4);
-    Assert.assertEquals(actor3, query3_4);
+    Assertions.assertNotNull(query3_4);
+    Assertions.assertEquals(actor3, query3_4);
 
   }
 
   @Test
-  public void testLookupUnusualRequests() {
+  void testLookupUnusualRequests() {
     // unusual requests
     final AbstractActor query4 = VertexPath.lookup(topGraph, "topGraph/");
-    Assert.assertNotNull(query4);
-    Assert.assertEquals(topGraph, query4);
+    Assertions.assertNotNull(query4);
+    Assertions.assertEquals(topGraph, query4);
 
     final AbstractActor query5 = VertexPath.lookup(topGraph, "/topGraph");
-    Assert.assertNotNull(query5);
-    Assert.assertEquals(topGraph, query5);
+    Assertions.assertNotNull(query5);
+    Assertions.assertEquals(topGraph, query5);
 
     final AbstractActor query6 = VertexPath.lookup(topGraph, "topGraph/toto/");
-    Assert.assertNotNull(query6);
-    Assert.assertEquals(actor1, query6);
+    Assertions.assertNotNull(query6);
+    Assertions.assertEquals(actor1, query6);
 
     final AbstractActor query7 = VertexPath.lookup(topGraph, "topGraph//toto");
-    Assert.assertNotNull(query7);
-    Assert.assertEquals(actor1, query7);
+    Assertions.assertNotNull(query7);
+    Assertions.assertEquals(actor1, query7);
 
     final AbstractActor query8 = VertexPath.lookup(topGraph, "");
-    Assert.assertNotNull(query8);
-    Assert.assertEquals(topGraph, query8);
+    Assertions.assertNotNull(query8);
+    Assertions.assertEquals(topGraph, query8);
 
     final AbstractActor query9 = VertexPath.lookup(topGraph, "/");
-    Assert.assertNotNull(query9);
-    Assert.assertEquals(topGraph, query9);
+    Assertions.assertNotNull(query9);
+    Assertions.assertEquals(topGraph, query9);
 
     final AbstractActor query10 = VertexPath.lookup(topGraph, "///topGraph/////secondLevelGraph/////titi///");
-    Assert.assertNotNull(query10);
-    Assert.assertEquals(actor2, query10);
+    Assertions.assertNotNull(query10);
+    Assertions.assertEquals(actor2, query10);
 
   }
 }
