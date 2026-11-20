@@ -155,6 +155,7 @@ jobs:
             name_pretty: Video Stabilisation
           }
     runs-on: ${{ matrix.config.os_name }}
+    timeout-minutes: 10
     steps:
 
       - name: Install dependencies
